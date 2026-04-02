@@ -1,5 +1,5 @@
-import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type PairSession from 'homey/lib/PairSession'
+import { type LoginCredentials, DeviceType } from '@olivierzal/melcloud-api'
 
 import { type Homey, Driver } from '../lib/homey.mts'
 
@@ -33,10 +33,7 @@ export class HomeBaseMELCloudDriver extends Driver {
   }
 
   async #discoverDevices(): Promise<{ data: { id: string }; name: string }[]> {
-    const devices = await this.homey.app.getHomeDevices()
-    return devices.map((device) => ({
-      data: { id: device.id },
-      name: device.givenDisplayName,
-    }))
+    const devices = await this.homey.app.getHomeDevicesByType(DeviceType.Ata)
+    return devices.map(({ id, name }) => ({ data: { id }, name }))
   }
 }

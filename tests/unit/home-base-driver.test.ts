@@ -1,7 +1,7 @@
 /* eslint-disable
     @typescript-eslint/consistent-type-imports,
 */
-import type { HomeDevice } from '@olivierzal/melcloud-api'
+import type { HomeDeviceModel } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { HomeBaseMELCloudDriver } from '../../drivers/home-base-driver.mts'
@@ -10,7 +10,7 @@ import { createInstance } from './create-test-instance.ts'
 
 const authenticateMock = vi.fn()
 const isAuthenticatedMock = vi.fn()
-const getHomeDevicesMock = vi.fn()
+const getHomeDevicesByTypeMock = vi.fn()
 const showViewMock = vi.fn()
 const setHandlerMock = vi.fn()
 
@@ -19,7 +19,7 @@ vi.mock('homey', () => {
   class MockDriver {
     public homey = {
       app: {
-        getHomeDevices: getHomeDevicesMock,
+        getHomeDevicesByType: getHomeDevicesByTypeMock,
         homeApi: {
           authenticate: authenticateMock,
           isAuthenticated: isAuthenticatedMock,
@@ -150,16 +150,16 @@ describe(HomeBaseMELCloudDriver, () => {
 
     it('should discover devices on list_devices handler', async () => {
       const devices = [
-        mock<HomeDevice>({
-          givenDisplayName: 'Living Room',
+        mock<HomeDeviceModel>({
           id: 'device-1',
+          name: 'Living Room',
         }),
-        mock<HomeDevice>({
-          givenDisplayName: 'Guest Room',
+        mock<HomeDeviceModel>({
           id: 'device-2',
+          name: 'Guest Room',
         }),
       ]
-      getHomeDevicesMock.mockResolvedValue(devices)
+      getHomeDevicesByTypeMock.mockResolvedValue(devices)
 
       const listHandler = vi.fn()
       const session = mock<import('homey/lib/PairSession')>({
@@ -189,8 +189,8 @@ describe(HomeBaseMELCloudDriver, () => {
       ])
     })
 
-    it('should return empty array when getHomeDevices returns empty', async () => {
-      getHomeDevicesMock.mockResolvedValue([])
+    it('should return empty array when getHomeDevicesByType returns empty', async () => {
+      getHomeDevicesByTypeMock.mockResolvedValue([])
 
       const listHandler = vi.fn()
       const session = mock<import('homey/lib/PairSession')>({

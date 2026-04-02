@@ -148,7 +148,6 @@ describe(HomeBaseMELCloudDevice, () => {
         expect.any(Function),
         expect.any(Number),
       )
-      expect(realtimeMock).toHaveBeenCalledWith('deviceupdate', null)
     })
 
     it('should set default onoff converter in capabilityToDevice', async () => {
@@ -191,7 +190,6 @@ describe(HomeBaseMELCloudDevice, () => {
     it('should set capability values from facade', async () => {
       await device.syncFromDevice()
 
-      expect(realtimeMock).toHaveBeenCalledWith('deviceupdate', null)
       expect(device.setCapabilityValue).toHaveBeenCalledWith(
         'measure_temperature',
         21,
@@ -225,19 +223,16 @@ describe(HomeBaseMELCloudDevice, () => {
 
     it('should not set capability values when getHomeFacade throws', async () => {
       getHomeFacadeMock.mockRejectedValue(new Error('Device not found'))
-      realtimeMock.mockClear()
       await device.syncFromDevice()
 
-      expect(realtimeMock).not.toHaveBeenCalled()
+      expect(device.setCapabilityValue).not.toHaveBeenCalled()
     })
 
     it('should set warning and return null when getHomeFacade throws', async () => {
       getHomeFacadeMock.mockRejectedValue(new Error('API error'))
-      realtimeMock.mockClear()
       await device.syncFromDevice()
 
       expect(superSetWarningMock).toHaveBeenCalledWith('API error')
-      expect(realtimeMock).not.toHaveBeenCalled()
     })
 
     it('should skip capabilities the device does not have', async () => {
@@ -277,8 +272,7 @@ describe(HomeBaseMELCloudDevice, () => {
       const customDevice = createTestHomeDevice()
       Object.defineProperty(customDevice, 'capabilityToDevice', {
         value: {
-          fan_speed: (value: never): HomeAtaValues[keyof HomeAtaValues] =>
-            `speed-${String(value as number)}`,
+          fan_speed: (): HomeAtaValues[keyof HomeAtaValues] => 'Auto',
         },
         writable: true,
       })
@@ -287,7 +281,7 @@ describe(HomeBaseMELCloudDevice, () => {
       await callback({ fan_speed: 3 })
 
       expect(setValuesMock).toHaveBeenCalledWith(
-        expect.objectContaining({ setFanSpeed: 'speed-3' }),
+        expect.objectContaining({ setFanSpeed: 'Auto' }),
       )
     })
 

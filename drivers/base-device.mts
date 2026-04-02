@@ -120,14 +120,6 @@ export abstract class BaseMELCloudDevice<
     return this.getData().id
   }
 
-  public override async onInit(): Promise<void> {
-    this.capabilityToDevice = {
-      onoff: (isOn: boolean): boolean => this.getSetting('always_on') || isOn,
-      ...this.capabilityToDevice,
-    }
-    await super.onInit()
-  }
-
   public override async onSettings({
     changedKeys,
     newSettings,
@@ -188,6 +180,13 @@ export abstract class BaseMELCloudDevice<
     /* v8 ignore next */
     if (newData) {
       await this.setCapabilityValues(newData)
+    }
+  }
+
+  protected override applyDefaultConverters(): void {
+    this.capabilityToDevice = {
+      onoff: (isOn: boolean): boolean => this.alwaysOn || isOn,
+      ...this.capabilityToDevice,
     }
   }
 

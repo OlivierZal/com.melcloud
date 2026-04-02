@@ -7,8 +7,6 @@ import {
   type GroupState,
   type HolidayModeData,
   type HolidayModeQuery,
-  type HomeContext,
-  type HomeDevice,
   type ListDeviceDataAta,
   type LoginCredentials,
   type ReportChartLineOptions,
@@ -92,9 +90,15 @@ const mockApiInstance = {
   },
 }
 
+const mockHomeRegistry = {
+  getById: vi.fn(),
+  getByType: vi.fn(),
+}
+
 const mockHomeApiInstance = {
   authenticate: vi.fn<() => Promise<boolean>>(),
   list: vi.fn(),
+  registry: mockHomeRegistry,
 }
 
 const mockFacadeManagerGet = vi.fn()
@@ -632,57 +636,44 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('home facade retrieval', () => {
-    const mockDevice = mock<HomeDevice>({
-      capabilities: {},
-      givenDisplayName: 'Living Room',
-      id: 'device-1',
-      settings: [],
-    })
+  describe('home device listing by type', () => {
+    it('should delegate to registry getByType after syncing', async () => {
+      const mockModels = [{ id: 'device-1', name: 'Living Room' }]
+      mockHomeApiInstance.list.mockResolvedValue([])
+      mockHomeRegistry.getByType.mockReturnValue(mockModels)
+      await app.onInit()
 
-    const mockContext = (
-      devices: Partial<HomeDevice>[] = [mockDevice],
-    ): HomeContext =>
-      mock<HomeContext>({
-        buildings: [{ airToAirUnits: devices }],
-        guestBuildings: [],
-      })
+      const result = await app.getHomeDevicesByType(DeviceType.Ata)
+
+      expect(result).toBe(mockModels)
+      expect(mockHomeApiInstance.list).toHaveBeenCalledWith()
+      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(DeviceType.Ata)
+    })
+  })
+
+  describe('home facade retrieval', () => {
+    const mockModel = { id: 'device-1', name: 'Living Room' }
 
     it('should return a facade for a matching device', async () => {
-      mockHomeApiInstance.list.mockResolvedValue(mockContext())
+      mockHomeApiInstance.list.mockResolvedValue([])
+      mockHomeRegistry.getById.mockReturnValue(mockModel)
       await app.onInit()
 
       const facade = await app.getHomeFacade('device-1')
 
       expect(facade).toBeInstanceOf(HomeDeviceAtaFacade)
+      expect(mockHomeRegistry.getById).toHaveBeenCalledWith('device-1')
     })
 
-    it('should throw when device is not found in context', async () => {
-      mockHomeApiInstance.list.mockResolvedValue(
-        mockContext([
-          mock<HomeDevice>({
-            capabilities: {},
-            givenDisplayName: 'Other',
-            id: 'device-other',
-            settings: [],
-          }),
-        ]),
-      )
+    it('should throw when device is not found in registry', async () => {
+      mockHomeApiInstance.list.mockResolvedValue([])
+      mockHomeRegistry.getById.mockReset()
       await app.onInit()
 
       await expect(app.getHomeFacade('device-1')).rejects.toThrow(
         'errors.deviceNotFound',
       )
       expect(mockTranslate).toHaveBeenCalledWith('errors.deviceNotFound')
-    })
-
-    it('should throw when list returns null', async () => {
-      mockHomeApiInstance.list.mockResolvedValue(null)
-      await app.onInit()
-
-      await expect(app.getHomeFacade('device-1')).rejects.toThrow(
-        'errors.deviceNotFound',
-      )
     })
   })
 

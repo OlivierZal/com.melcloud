@@ -120,6 +120,8 @@ export {
 } from './generic.mts'
 export {
   type HomeCapabilitiesAta,
+  type HomeConvertFromDevice,
+  type HomeConvertToDevice,
   type HomeGetCapabilitiesAta,
   type HomeListCapabilitiesAta,
   type HomeSetCapabilitiesAta,

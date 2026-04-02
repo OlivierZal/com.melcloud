@@ -9,11 +9,16 @@ export abstract class SharedMELCloudDevice extends withTimers(Device) {
 
   protected abstract readonly thermostatMode: Record<string, string> | null
 
+  protected get alwaysOn(): boolean {
+    return Boolean(this.getSetting('always_on'))
+  }
+
   public override onDeleted(): void {
     this.cleanupDevice()
   }
 
   public override async onInit(): Promise<void> {
+    this.applyDefaultConverters()
     await this.setWarning(null)
     this.#registerCapabilityListeners()
     await this.initDevice()
@@ -43,6 +48,8 @@ export abstract class SharedMELCloudDevice extends withTimers(Device) {
     }
     await super.setWarning(null)
   }
+
+  protected abstract applyDefaultConverters(): void
 
   protected abstract cleanupDevice(): void
 

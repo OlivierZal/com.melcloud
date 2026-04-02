@@ -9,7 +9,7 @@ import {
   type GroupState,
   type HolidayModeData,
   type HolidayModeQuery,
-  type HomeDevice,
+  type HomeDeviceModel,
   type ListDeviceDataAta,
   type LoginCredentials,
   type ModelRegistry,
@@ -325,21 +325,20 @@ export default class MELCloudApp extends App {
     return this.getFacade(zoneType, zoneId).getHolidayMode()
   }
 
-  public async getHomeDevices(): Promise<HomeDevice[]> {
-    const context = await this.#homeApi.list()
-    return [
-      ...(context?.buildings ?? []),
-      ...(context?.guestBuildings ?? []),
-    ].flatMap(({ airToAirUnits }) => airToAirUnits)
+  public async getHomeDevicesByType(
+    type: DeviceType,
+  ): Promise<HomeDeviceModel[]> {
+    await this.#homeApi.list()
+    return this.#homeApi.registry.getByType(type)
   }
 
   public async getHomeFacade(deviceId: string): Promise<HomeDeviceAtaFacade> {
-    const devices = await this.getHomeDevices()
-    const device = devices.find(({ id }) => id === deviceId)
-    if (!device) {
+    await this.#homeApi.list()
+    const model = this.#homeApi.registry.getById(deviceId)
+    if (!model) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
-    return new HomeDeviceAtaFacade(this.#homeApi, device)
+    return new HomeDeviceAtaFacade(this.#homeApi, model)
   }
 
   public async getHourlyTemperatures(

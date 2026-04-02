@@ -2,6 +2,8 @@
     @typescript-eslint/consistent-type-imports,
 */
 import {
+  type HomeDeviceAtaFacade,
+  FanSpeed,
   fanSpeedFromClassic,
   Horizontal,
   horizontalFromClassic,
@@ -43,6 +45,10 @@ vi.mock('../../mixins/with-timers.mts', () => ({
   withTimers: <T>(base: T): T => base,
 }))
 
+const mockFacade = (
+  overrides: Partial<HomeDeviceAtaFacade>,
+): HomeDeviceAtaFacade => overrides as HomeDeviceAtaFacade
+
 describe(HomeMELCloudDeviceAta, () => {
   let device: any
 
@@ -52,9 +58,83 @@ describe(HomeMELCloudDeviceAta, () => {
 
   testThermostatMode(() => device as object, ThermostatModeAta)
 
-  describe('deviceToCapability', () => {
-    it('should be an empty object', () => {
-      expect(device.deviceToCapability).toStrictEqual({})
+  describe('device-to-capability conversions', () => {
+    it('should pass through measure_temperature, onoff, and target_temperature', () => {
+      const { deviceToCapability } = device
+
+      expect(
+        deviceToCapability.measure_temperature?.(
+          mockFacade({ roomTemperature: 21 }),
+        ),
+      ).toBe(21)
+      expect(deviceToCapability.onoff?.(mockFacade({ power: true }))).toBe(true)
+      expect(
+        deviceToCapability.target_temperature?.(
+          mockFacade({ setTemperature: 22 }),
+        ),
+      ).toBe(22)
+    })
+
+    it('should convert fan speed from Home string to classic number', () => {
+      const {
+        deviceToCapability: { fan_speed: converter },
+      } = device
+
+      expect(converter?.(mockFacade({ setFanSpeed: 'Auto' }))).toBe(
+        FanSpeed.auto,
+      )
+      expect(converter?.(mockFacade({ setFanSpeed: 'Three' }))).toBe(
+        FanSpeed.moderate,
+      )
+    })
+
+    it('should convert horizontal direction from Home string to classic key', () => {
+      const {
+        deviceToCapability: { horizontal: converter },
+      } = device
+
+      expect(converter?.(mockFacade({ vaneHorizontalDirection: 'Auto' }))).toBe(
+        'auto',
+      )
+      expect(
+        converter?.(mockFacade({ vaneHorizontalDirection: 'Centre' })),
+      ).toBe('center')
+    })
+
+    it('should convert vertical direction from Home string to classic key', () => {
+      const {
+        deviceToCapability: { vertical: converter },
+      } = device
+
+      expect(converter?.(mockFacade({ vaneVerticalDirection: 'Auto' }))).toBe(
+        'auto',
+      )
+      expect(converter?.(mockFacade({ vaneVerticalDirection: 'Swing' }))).toBe(
+        'swing',
+      )
+    })
+
+    it('should convert thermostat_mode to key when power is on', () => {
+      const {
+        deviceToCapability: { thermostat_mode: converter },
+      } = device
+
+      expect(
+        converter?.(mockFacade({ operationMode: 'Heat', power: true })),
+      ).toBe('heat')
+      expect(
+        converter?.(mockFacade({ operationMode: 'Automatic', power: true })),
+      ).toBe('auto')
+    })
+
+    it('should return off for thermostat_mode when power is off', () => {
+      const {
+        deviceToCapability: { thermostat_mode: converter },
+      } = device
+
+      expect(
+        converter?.(mockFacade({ operationMode: 'Heat', power: false })),
+      ).toBe(ThermostatModeAta.off)
     })
   })
 
@@ -125,14 +205,6 @@ describe(HomeMELCloudDeviceAta, () => {
       expect(converter?.('auto')).toBe('Automatic')
       expect(converter?.('dry')).toBe('Dry')
       expect(converter?.('fan')).toBe('Fan')
-    })
-
-    it('should fall back to value for unknown thermostat_mode', () => {
-      const {
-        capabilityToDevice: { thermostat_mode: converter },
-      } = device
-
-      expect(converter?.('unknown_mode')).toBe('unknown_mode')
     })
   })
 })

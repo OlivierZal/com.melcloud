@@ -370,7 +370,7 @@ const getSubzones = (zone: Zone): Zone[] => [
 
 // ── AuthManager ──
 
-abstract class BaseAuthManager {
+class AuthManager {
   readonly #authenticatedElement: HTMLDivElement
 
   readonly #authenticateElement: HTMLButtonElement
@@ -379,71 +379,6 @@ abstract class BaseAuthManager {
 
   readonly #homey: Homey
 
-  protected abstract readonly endpoint: string
-
-  protected constructor(
-    homey: Homey,
-    {
-      authenticatedId,
-      authenticateId,
-      authenticatingId,
-    }: {
-      authenticatedId: string
-      authenticateId: string
-      authenticatingId: string
-    },
-  ) {
-    this.#homey = homey
-    this.#authenticateElement = getButtonElement(authenticateId)
-    this.#authenticatedElement = getDivElement(authenticatedId)
-    this.#authenticatingElement = getDivElement(authenticatingId)
-  }
-
-  protected abstract onLoginSuccess(): Promise<void>
-
-  public addEventListeners(): void {
-    this.#authenticateElement.addEventListener('click', () => {
-      this.login().catch(() => {
-        // Errors are handled internally via homey.alert in login
-      })
-    })
-  }
-
-  public async login(): Promise<void> {
-    const { password, username } = this.getCredentials()
-    if (!username || !password) {
-      this.#homey
-        .alert(this.#homey.__('settings.authenticate.failure'))
-        .catch(() => {
-          // Best-effort UI notification: the alert itself is the error display
-        })
-      return
-    }
-    await withDisablingButton(this.#authenticateElement.id, async () => {
-      try {
-        const isLoggedIn = await homeyApiPost<boolean>(
-          this.#homey,
-          this.endpoint,
-          { password, username } satisfies LoginCredentials,
-        )
-        await (isLoggedIn ?
-          this.onLoginSuccess()
-        : this.#homey.alert(this.#homey.__('settings.authenticate.failure')))
-      } catch (error) {
-        await this.#homey.alert(getErrorMessage(error))
-      }
-    })
-  }
-
-  public needsAuthentication(isRequired = true): void {
-    hide(this.#authenticatedElement, isRequired)
-    hide(this.#authenticatingElement, !isRequired)
-  }
-
-  protected abstract getCredentials(): { password: string; username: string }
-}
-
-class AuthManager extends BaseAuthManager {
   readonly #loadPostLoginCallback: () => Promise<void>
 
   readonly #loginElement: HTMLDivElement
@@ -452,20 +387,21 @@ class AuthManager extends BaseAuthManager {
 
   #usernameElement: HTMLInputElement | null = null
 
-  protected readonly endpoint = '/sessions'
-
   public constructor(homey: Homey, loadPostLoginCallback: () => Promise<void>) {
-    super(homey, {
-      authenticatedId: 'authenticated',
-      authenticateId: 'authenticate',
-      authenticatingId: 'authenticating',
-    })
+    this.#homey = homey
     this.#loadPostLoginCallback = loadPostLoginCallback
+    this.#authenticateElement = getButtonElement('authenticate')
+    this.#authenticatedElement = getDivElement('authenticated')
+    this.#authenticatingElement = getDivElement('authenticating')
     this.#loginElement = getDivElement('login')
   }
 
-  protected async onLoginSuccess(): Promise<void> {
-    await this.#loadPostLoginCallback()
+  public addEventListeners(): void {
+    this.#authenticateElement.addEventListener('click', () => {
+      this.login().catch(() => {
+        // Errors are handled internally via homey.alert in login
+      })
+    })
   }
 
   public generateCredentials(
@@ -487,11 +423,36 @@ class AuthManager extends BaseAuthManager {
     )
   }
 
-  protected getCredentials(): { password: string; username: string } {
-    return {
-      password: this.#passwordElement?.value ?? '',
-      username: this.#usernameElement?.value ?? '',
+  public async login(): Promise<void> {
+    const username = this.#usernameElement?.value ?? ''
+    const password = this.#passwordElement?.value ?? ''
+    if (!username || !password) {
+      this.#homey
+        .alert(this.#homey.__('settings.authenticate.failure'))
+        .catch(() => {
+          // Best-effort UI notification: the alert itself is the error display
+        })
+      return
     }
+    await withDisablingButton(this.#authenticateElement.id, async () => {
+      try {
+        const isLoggedIn = await homeyApiPost<boolean>(
+          this.#homey,
+          '/sessions',
+          { password, username } satisfies LoginCredentials,
+        )
+        await (isLoggedIn ?
+          this.#loadPostLoginCallback()
+        : this.#homey.alert(this.#homey.__('settings.authenticate.failure')))
+      } catch (error) {
+        await this.#homey.alert(getErrorMessage(error))
+      }
+    })
+  }
+
+  public needsAuthentication(isRequired = true): void {
+    hide(this.#authenticatedElement, isRequired)
+    hide(this.#authenticatingElement, !isRequired)
   }
 
   #generateCredential(
@@ -509,61 +470,6 @@ class AuthManager extends BaseAuthManager {
       return valueElement
     }
     return null
-  }
-}
-
-// ── HomeAuthManager ──
-
-class HomeAuthManager extends BaseAuthManager {
-  readonly #passwordElement: HTMLInputElement
-
-  readonly #usernameElement: HTMLInputElement
-
-  protected readonly endpoint = '/home/sessions'
-
-  public constructor(homey: Homey) {
-    super(homey, {
-      authenticatedId: 'home_authenticated',
-      authenticateId: 'home_authenticate',
-      authenticatingId: 'home_authenticating',
-    })
-    this.#usernameElement = getInputElement('home_username')
-    this.#passwordElement = getInputElement('home_password')
-  }
-
-  protected async onLoginSuccess(): Promise<void> {
-    this.needsAuthentication(false)
-    await Promise.resolve()
-  }
-
-  public setCredentials({
-    homePassword,
-    homeUsername,
-  }: {
-    homePassword?: string | null
-    homeUsername?: string | null
-  }): void {
-    if (
-      homeUsername !== undefined &&
-      homeUsername !== null &&
-      homeUsername !== ''
-    ) {
-      this.#usernameElement.value = homeUsername
-    }
-    if (
-      homePassword !== undefined &&
-      homePassword !== null &&
-      homePassword !== ''
-    ) {
-      this.#passwordElement.value = homePassword
-    }
-  }
-
-  protected getCredentials(): { password: string; username: string } {
-    return {
-      password: this.#passwordElement.value,
-      username: this.#usernameElement.value,
-    }
   }
 }
 
@@ -1451,8 +1357,6 @@ class SettingsApp {
 
   readonly #errorLogManager: ErrorLogManager
 
-  readonly #homeAuthManager: HomeAuthManager
-
   readonly #homey: Homey
 
   readonly #zoneSettingsManager: ZoneSettingsManager
@@ -1468,18 +1372,11 @@ class SettingsApp {
     this.#authManager = new AuthManager(homey, async () =>
       this.#loadPostLogin(),
     )
-    this.#homeAuthManager = new HomeAuthManager(homey)
   }
 
   public async init(): Promise<void> {
-    const {
-      contextKey,
-      homeExpiry,
-      homePassword,
-      homeUsername,
-      password,
-      username,
-    } = await SettingsApp.#fetchHomeySettings(this.#homey)
+    const { contextKey, password, username } =
+      await SettingsApp.#fetchHomeySettings(this.#homey)
     await SettingsApp.#setDocumentLanguage(this.#homey)
     await this.#deviceSettingsManager.fetchDeviceSettings()
     const driverSettings =
@@ -1488,15 +1385,13 @@ class SettingsApp {
       password,
       username,
     })
-    this.#homeAuthManager.setCredentials({ homePassword, homeUsername })
     this.#addEventListeners()
-    await this.#load(contextKey, homeExpiry)
+    await this.#load(contextKey)
     this.#homey.ready()
   }
 
   #addEventListeners(): void {
     this.#authManager.addEventListeners()
-    this.#homeAuthManager.addEventListeners()
     this.#errorLogManager.addEventListeners()
     this.#zoneSettingsManager.addEventListeners()
     getButtonElement('auto_adjust').addEventListener('click', () => {
@@ -1531,10 +1426,7 @@ class SettingsApp {
     await this.#zoneSettingsManager.fetchZoneSettings()
   }
 
-  async #load(
-    contextKey?: string | null,
-    homeExpiry?: string | null,
-  ): Promise<void> {
+  async #load(contextKey?: string | null): Promise<void> {
     if (contextKey !== undefined) {
       try {
         await this.#fetchBuildings()
@@ -1545,11 +1437,6 @@ class SettingsApp {
       }
     }
     this.#authManager.needsAuthentication()
-    if (homeExpiry !== undefined && homeExpiry !== null && homeExpiry !== '') {
-      this.#homeAuthManager.needsAuthentication(false)
-    } else {
-      this.#homeAuthManager.needsAuthentication()
-    }
   }
 
   async #loadPostLogin(): Promise<void> {

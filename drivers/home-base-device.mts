@@ -5,6 +5,9 @@ import type {
 
 import { addToLogs } from '../decorators/add-to-logs.mts'
 import {
+  type HomeCapabilitiesAta,
+  type HomeConvertFromDevice,
+  type HomeConvertToDevice,
   type HomeSetCapabilitiesAta,
   homeSetCapabilityTagMappingAta,
 } from '../types/index.mts'
@@ -12,23 +15,20 @@ import { SharedMELCloudDevice } from './base-device-shared.mts'
 
 @addToLogs('getName()')
 export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
-  #facade?: HomeDeviceAtaFacade
+  #device?: HomeDeviceAtaFacade
 
   readonly #setCapabilityKeys = Object.keys(homeSetCapabilityTagMappingAta)
 
   protected abstract capabilityToDevice: Partial<
-    Record<
-      keyof HomeSetCapabilitiesAta,
-      (value: never) => HomeAtaValues[keyof HomeAtaValues]
-    >
+    Record<keyof HomeSetCapabilitiesAta, HomeConvertToDevice>
   >
 
   protected abstract readonly deviceToCapability: Partial<
-    Record<string, (facade: HomeDeviceAtaFacade) => unknown>
+    Record<keyof HomeCapabilitiesAta, HomeConvertFromDevice>
   >
 
   protected get facade(): HomeDeviceAtaFacade | undefined {
-    return this.#facade
+    return this.#device
   }
 
   public get id(): string {
@@ -36,19 +36,17 @@ export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
     return (this.getData() as { id: string }).id
   }
 
-  public override async onInit(): Promise<void> {
-    this.capabilityToDevice = {
-      onoff: (isOn: boolean): boolean =>
-        Boolean(this.getSetting('always_on')) || isOn,
-      ...this.capabilityToDevice,
+  public async syncFromDevice(): Promise<void> {
+    const device = await this.#fetchDevice()
+    if (device) {
+      await this.#setCapabilityValues(device)
     }
-    await super.onInit()
   }
 
-  public async syncFromDevice(): Promise<void> {
-    const facade = await this.#fetchDevice()
-    if (facade) {
-      await this.#setCapabilityValues(facade)
+  protected override applyDefaultConverters(): void {
+    this.capabilityToDevice = {
+      onoff: (isOn: boolean): boolean => this.alwaysOn || isOn,
+      ...this.capabilityToDevice,
     }
   }
 
@@ -73,8 +71,8 @@ export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
 
   async #fetchDevice(): Promise<HomeDeviceAtaFacade | null> {
     try {
-      this.#facade = await this.homey.app.getHomeFacade(this.id)
-      return this.#facade
+      this.#device = await this.homey.app.getHomeFacade(this.id)
+      return this.#device
     } catch (error) {
       await this.setWarning(error)
       return null
@@ -82,8 +80,8 @@ export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
   }
 
   async #set(values: Partial<HomeSetCapabilitiesAta>): Promise<void> {
-    const facade = this.#facade ?? (await this.#fetchDevice())
-    if (!facade) {
+    const device = this.#device ?? (await this.#fetchDevice())
+    if (!device) {
       return
     }
     this.log('Requested data:', values)
@@ -100,7 +98,7 @@ export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
     ) as HomeAtaValues
     if (Object.keys(homeValues).length > 0) {
       try {
-        await facade.setValues(homeValues)
+        await device.setValues(homeValues)
       } catch (error) {
         if (!(error instanceof Error) || error.message !== 'No data to set') {
           await this.setWarning(error)
@@ -109,37 +107,15 @@ export abstract class HomeBaseMELCloudDevice extends SharedMELCloudDevice {
     }
   }
 
-  async #setCapabilityValues(facade: HomeDeviceAtaFacade): Promise<void> {
-    this.homey.api.realtime('deviceupdate', null)
-    const defaultMappings: Record<string, () => unknown> = {
-      measure_temperature: (): number => facade.roomTemperature,
-      onoff: (): boolean => facade.power,
-      target_temperature: (): number => facade.setTemperature,
-      thermostat_mode: (): string =>
-        facade.power ? facade.operationMode : 'off',
-    }
-    const allMappings: Record<string, () => unknown> = {
-      ...defaultMappings,
-      ...Object.fromEntries(
-        Object.entries(this.deviceToCapability)
-          .filter(
-            (
-              entry,
-            ): entry is [string, (facade: HomeDeviceAtaFacade) => unknown] =>
-              entry[1] !== undefined,
-          )
-          .map(([capability, convert]) => [
-            capability,
-            (): unknown => convert(facade),
-          ]),
-      ),
-    }
+  async #setCapabilityValues(device: HomeDeviceAtaFacade): Promise<void> {
     await Promise.all(
-      Object.entries(allMappings).map(async ([capability, getValue]) => {
-        if (this.hasCapability(capability)) {
-          await this.setCapabilityValue(capability, getValue())
-        }
-      }),
+      Object.entries(this.deviceToCapability).map(
+        async ([capability, convert]) => {
+          if (convert && this.hasCapability(capability)) {
+            await this.setCapabilityValue(capability, convert(device))
+          }
+        },
+      ),
     )
   }
 }
