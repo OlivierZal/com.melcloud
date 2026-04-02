@@ -9,6 +9,7 @@ import {
   mock,
   testCapabilityToDeviceConverters,
   testEnergyReportConfig,
+  testThermostatMode,
 } from '../helpers.ts'
 import MELCloudDeviceErv from '../../drivers/melcloud_erv/device.mts'
 import { createInstance } from './create-test-instance.ts'
@@ -44,12 +45,7 @@ describe(MELCloudDeviceErv, () => {
     device = createInstance(MELCloudDeviceErv)
   })
 
-  describe('thermostat mode configuration', () => {
-    it('should be ThermostatModeErv with off support', () => {
-      expect(device.thermostatMode).toBe(ThermostatModeErv)
-      expect(device.thermostatMode).toHaveProperty('off')
-    })
-  })
+  testThermostatMode(() => device as object, ThermostatModeErv)
 
   testEnergyReportConfig(() => device as object, 'energyReportRegular', null)
 

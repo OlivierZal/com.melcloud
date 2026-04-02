@@ -16,7 +16,7 @@ import {
   type SetCapabilityTagMapping,
   HotWaterMode,
 } from '../../types/index.mts'
-import { mock, testEnergyReportConfig } from '../helpers.ts'
+import { mock, testEnergyReportConfig, testThermostatMode } from '../helpers.ts'
 import MELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -118,11 +118,7 @@ describe(MELCloudDeviceAtw, () => {
     })
   })
 
-  describe('thermostat mode configuration', () => {
-    it('should be null (no off support)', () => {
-      expect(device.thermostatMode).toBeNull()
-    })
-  })
+  testThermostatMode(() => device as object, null)
 
   testEnergyReportConfig(() => device as object, 'energyReportRegular', {
     duration: { days: 1 },

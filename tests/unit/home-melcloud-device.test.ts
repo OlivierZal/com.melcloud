@@ -11,6 +11,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ThermostatModeAta } from '../../types/index.mts'
+import { testThermostatMode } from '../helpers.ts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -49,15 +50,7 @@ describe(HomeMELCloudDeviceAta, () => {
     device = createInstance(HomeMELCloudDeviceAta)
   })
 
-  describe('thermostat mode configuration', () => {
-    it('should be ThermostatModeAta', () => {
-      expect(device.thermostatMode).toBe(ThermostatModeAta)
-    })
-
-    it('should have off support', () => {
-      expect(device.thermostatMode).toHaveProperty('off')
-    })
-  })
+  testThermostatMode(() => device as object, ThermostatModeAta)
 
   describe('deviceToCapability', () => {
     it('should be an empty object', () => {

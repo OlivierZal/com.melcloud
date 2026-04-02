@@ -96,6 +96,16 @@ export const testDeviceToCapabilityConverters = (
   })
 }
 
+export const testDeletion = (getDevice: () => object): void => {
+  describe('deletion', () => {
+    it('should not throw when called', () => {
+      expect(() => {
+        ;(getDevice() as { onDeleted: () => void }).onDeleted()
+      }).not.toThrow()
+    })
+  })
+}
+
 export const testEnergyReportConfig = (
   getDevice: () => object,
   property: string,
@@ -106,6 +116,112 @@ export const testEnergyReportConfig = (
       expect((getDevice() as Record<string, unknown>)[property]).toStrictEqual(
         expected,
       )
+    })
+  })
+}
+
+export const testSetValuesErrorHandling = (
+  getDevice: () => object,
+  getCapabilityListenerCallback: () => (
+    values: Record<string, unknown>,
+  ) => Promise<void>,
+  mocks: {
+    setValuesMock: ReturnType<typeof vi.fn>
+    superSetWarningMock: ReturnType<typeof vi.fn>
+  },
+): void => {
+  const { setValuesMock, superSetWarningMock } = mocks
+
+  describe('setValues error handling', () => {
+    it('should handle setValues error with warning', async () => {
+      setValuesMock.mockRejectedValue(new Error('API error'))
+      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+
+      expect(superSetWarningMock).toHaveBeenCalledWith('API error')
+    })
+
+    it('should ignore "No data to set" error', async () => {
+      setValuesMock.mockRejectedValue(new Error('No data to set'))
+      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+      superSetWarningMock.mockClear()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+
+      expect(superSetWarningMock).not.toHaveBeenCalledWith('No data to set')
+    })
+
+    it('should set warning for non-Error thrown values', async () => {
+      setValuesMock.mockRejectedValue('string error')
+      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+
+      expect(superSetWarningMock).toHaveBeenCalledWith('string error')
+    })
+  })
+}
+
+export const testThermostatMode = (
+  getDevice: () => object,
+  expected: object | null,
+): void => {
+  describe('thermostat mode configuration', () => {
+    it('should match expected thermostat mode', () => {
+      expect((getDevice() as Record<string, unknown>)['thermostatMode']).toBe(
+        expected,
+      )
+    })
+  })
+}
+
+export const testUninitialisation = (getDevice: () => object): void => {
+  describe('uninitialization', () => {
+    it('should call onDeleted and return a resolved promise', async () => {
+      await expect(
+        (getDevice() as { onUninit: () => Promise<void> }).onUninit(),
+      ).resolves.toBeUndefined()
+    })
+  })
+}
+
+export const testWarningManagement = (
+  getDevice: () => object,
+  superSetWarningMock: ReturnType<typeof vi.fn>,
+): void => {
+  describe('warning management', () => {
+    it('should call super.setWarning with error message then null when error is an Error', async () => {
+      await (
+        getDevice() as { setWarning: (error: unknown) => Promise<void> }
+      ).setWarning(new Error('test error'))
+
+      expect(superSetWarningMock).toHaveBeenCalledWith('test error')
+      expect(superSetWarningMock).toHaveBeenCalledWith(null)
+    })
+
+    it('should call super.setWarning with null when null is provided', async () => {
+      await (
+        getDevice() as { setWarning: (error: unknown) => Promise<void> }
+      ).setWarning(null)
+
+      expect(superSetWarningMock).toHaveBeenCalledWith(null)
+    })
+
+    it('should convert string errors directly', async () => {
+      await (
+        getDevice() as { setWarning: (error: unknown) => Promise<void> }
+      ).setWarning('string error')
+
+      expect(superSetWarningMock).toHaveBeenCalledWith('string error')
+    })
+
+    it('should JSON-stringify non-Error non-string values', async () => {
+      await (
+        getDevice() as { setWarning: (error: unknown) => Promise<void> }
+      ).setWarning({ code: 42 })
+
+      expect(superSetWarningMock).toHaveBeenCalledWith('{"code":42}')
     })
   })
 }

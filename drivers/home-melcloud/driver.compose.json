@@ -6,8 +6,8 @@
     "target_temperature",
     "thermostat_mode",
     "fan_speed",
-    "horizontal",
-    "vertical"
+    "vertical",
+    "horizontal"
   ],
   "capabilitiesOptions": {
     "target_temperature": {

@@ -6,7 +6,13 @@ import type {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
-import { getMockCallArg } from '../helpers.ts'
+import {
+  getMockCallArg,
+  testDeletion,
+  testSetValuesErrorHandling,
+  testUninitialisation,
+  testWarningManagement,
+} from '../helpers.ts'
 import {
   type TestHomeDevice,
   createTestHomeDevice,
@@ -175,46 +181,11 @@ describe(HomeBaseMELCloudDevice, () => {
     })
   })
 
-  describe('deletion', () => {
-    it('should not throw when called', () => {
-      expect(() => {
-        device.onDeleted()
-      }).not.toThrow()
-    })
-  })
+  testDeletion(() => device as object)
 
-  describe('uninitialization', () => {
-    it('should call onDeleted and return a resolved promise', async () => {
-      await expect(device.onUninit()).resolves.toBeUndefined()
-    })
-  })
+  testUninitialisation(() => device as object)
 
-  describe('warning management', () => {
-    it('should call super.setWarning with error message then null when error is an Error', async () => {
-      await device.setWarning(new Error('test error'))
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('test error')
-      expect(superSetWarningMock).toHaveBeenCalledWith(null)
-    })
-
-    it('should call super.setWarning with null when null is provided', async () => {
-      await device.setWarning(null)
-
-      expect(superSetWarningMock).toHaveBeenCalledWith(null)
-    })
-
-    it('should convert string errors directly', async () => {
-      await device.setWarning('string error')
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('string error')
-    })
-
-    it('should JSON-stringify non-Error non-string values', async () => {
-      await device.setWarning({ code: 42 })
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('{"code":42}')
-    })
-  })
+  testWarningManagement(() => device as object, superSetWarningMock)
 
   describe('device synchronization', () => {
     it('should set capability values from facade', async () => {
@@ -359,34 +330,6 @@ describe(HomeBaseMELCloudDevice, () => {
       )
     })
 
-    it('should handle setValues error with warning', async () => {
-      setValuesMock.mockRejectedValue(new Error('API error'))
-      await device.onInit()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('API error')
-    })
-
-    it('should ignore "No data to set" error', async () => {
-      setValuesMock.mockRejectedValue(new Error('No data to set'))
-      await device.onInit()
-      superSetWarningMock.mockClear()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(superSetWarningMock).not.toHaveBeenCalledWith('No data to set')
-    })
-
-    it('should set warning for non-Error thrown values', async () => {
-      setValuesMock.mockRejectedValue('string error')
-      await device.onInit()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('string error')
-    })
-
     it('should not call setValues when fetchDevice returns null', async () => {
       getHomeFacadeMock.mockRejectedValue(new Error('not found'))
       const freshDevice = createTestHomeDevice()
@@ -428,6 +371,12 @@ describe(HomeBaseMELCloudDevice, () => {
       expect(setValuesMock).toHaveBeenCalledWith({ power: true })
     })
   })
+
+  testSetValuesErrorHandling(
+    () => device as object,
+    getCapabilityListenerCallback,
+    { setValuesMock, superSetWarningMock },
+  )
 
   describe('facade access', () => {
     it('should expose facade via protected getter after sync', async () => {

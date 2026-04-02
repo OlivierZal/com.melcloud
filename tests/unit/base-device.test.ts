@@ -9,7 +9,14 @@ import type {
   SetCapabilityTagMapping,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
-import { getMockCallArg, mock } from '../helpers.ts'
+import {
+  getMockCallArg,
+  mock,
+  testDeletion,
+  testSetValuesErrorHandling,
+  testUninitialisation,
+  testWarningManagement,
+} from '../helpers.ts'
 import { type TestDeviceType, TestDevice } from './base-device-test-device.ts'
 
 const setValuesMock = vi.fn()
@@ -219,21 +226,9 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('deletion', () => {
-    it('should not throw when called', () => {
-      expect(() => {
-        device.onDeleted()
-      }).not.toThrow()
-    })
-  })
+  testDeletion(() => device as object)
 
-  describe('uninitialization', () => {
-    it('should call onDeleted and return a resolved promise', async () => {
-      const result = device.onUninit()
-
-      await expect(result).resolves.toBeUndefined()
-    })
-  })
+  testUninitialisation(() => device as object)
 
   describe('adding capabilities', () => {
     it('should add capability if not already present', async () => {
@@ -267,32 +262,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('warning management', () => {
-    it('should call super.setWarning with error message then null when error is an Error', async () => {
-      await device.setWarning(new Error('test error'))
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('test error')
-      expect(superSetWarningMock).toHaveBeenCalledWith(null)
-    })
-
-    it('should call super.setWarning with null when null is provided', async () => {
-      await device.setWarning(null)
-
-      expect(superSetWarningMock).toHaveBeenCalledWith(null)
-    })
-
-    it('should convert string errors directly', async () => {
-      await device.setWarning('string error')
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('string error')
-    })
-
-    it('should JSON-stringify non-Error non-string values', async () => {
-      await device.setWarning({ code: 42 })
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('{"code":42}')
-    })
-  })
+  testWarningManagement(() => device as object, superSetWarningMock)
 
   describe('mapping cleanup', () => {
     it('should filter mapping to only capabilities the device has', () => {
@@ -493,25 +463,6 @@ describe(BaseMELCloudDevice, () => {
       })
     })
 
-    it('should handle setValues error with warning', async () => {
-      setValuesMock.mockRejectedValue(new Error('API error'))
-      await device.onInit()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('API error')
-    })
-
-    it('should ignore "No data to set" error', async () => {
-      setValuesMock.mockRejectedValue(new Error('No data to set'))
-      await device.onInit()
-      superSetWarningMock.mockClear()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(superSetWarningMock).not.toHaveBeenCalledWith('No data to set')
-    })
-
     it('should not call setValues when fetchDevice returns null', async () => {
       getFacadeMock.mockImplementation(() => {
         throw new Error('Not found')
@@ -544,16 +495,13 @@ describe(BaseMELCloudDevice, () => {
 
       expect(setValuesMock).not.toHaveBeenCalled()
     })
-
-    it('should set warning for non-Error thrown values', async () => {
-      setValuesMock.mockRejectedValue('string error')
-      await device.onInit()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('string error')
-    })
   })
+
+  testSetValuesErrorHandling(
+    () => device as object,
+    getCapabilityListenerCallback,
+    { setValuesMock, superSetWarningMock },
+  )
 
   describe('capability value conversion', () => {
     it('should use deviceToCapability converter when present', async () => {
