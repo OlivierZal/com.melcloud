@@ -3207,8 +3207,8 @@
         "target_temperature",
         "thermostat_mode",
         "fan_speed",
-        "horizontal",
-        "vertical"
+        "vertical",
+        "horizontal"
       ],
       "name": {
         "ar": "مضخة حرارية هواء-هواء",
