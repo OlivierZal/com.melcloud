@@ -12,7 +12,7 @@
   "capabilitiesOptions": {
     "target_temperature": {
       "max": 31,
-      "min": 16
+      "min": 10
     },
     "thermostat_mode": {
       "values": [

@@ -92,7 +92,7 @@
     "small": "/assets/images/small.jpg",
     "xlarge": "/assets/images/xlarge.jpg"
   },
-  "name": "MELCloud",
+  "name": "MELCloud & MELCloud Home",
   "platforms": [
     "local"
   ],
@@ -2927,7 +2927,7 @@
         },
         "target_temperature": {
           "max": 31,
-          "min": 16
+          "min": 10
         },
         "thermostat_mode": {
           "values": [
