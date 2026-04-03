@@ -603,21 +603,10 @@ export default class MELCloudApp extends App {
 
   async #syncDevices(driverId?: string, ids?: number[]): Promise<void> {
     try {
-      const targetDrivers =
-        driverId === undefined ?
-          Object.values(this.homey.drivers.getDrivers())
-        : [this.homey.drivers.getDriver(driverId)]
       await Promise.all(
-        targetDrivers.flatMap((driver) => {
-          const devices = driver.getDevices()
-          const filtered =
-            ids ? devices.filter(({ id }) => ids.includes(Number(id))) : devices
-          return filtered.map(async (device) =>
-            (
-              device as { syncFromDevice: () => Promise<void> }
-            ).syncFromDevice(),
-          )
-        }),
+        this.#getDevices({ driverId, ids }).map(async (device) =>
+          device.syncFromDevice(),
+        ),
       )
     } catch {
       // Driver not yet initialized during app startup — devices will sync once ready
