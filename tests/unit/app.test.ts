@@ -98,6 +98,7 @@ const mockHomeRegistry = {
 
 const mockHomeApiInstance = {
   authenticate: vi.fn<() => Promise<boolean>>(),
+  clearSync: vi.fn(),
   list: vi.fn(),
   registry: mockHomeRegistry,
 }
@@ -356,6 +357,7 @@ describe('melCloudApp', () => {
       await app.onUninit()
 
       expect(mockApiInstance.clearSync).toHaveBeenCalledTimes(1)
+      expect(mockHomeApiInstance.clearSync).toHaveBeenCalledTimes(1)
     })
   })
 

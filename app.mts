@@ -10,7 +10,6 @@ import {
   type HolidayModeData,
   type HolidayModeQuery,
   type HomeDeviceModel,
-  type HomeDeviceType,
   type ListDeviceDataAta,
   type LoginCredentials,
   type ModelRegistry,
@@ -21,6 +20,7 @@ import {
   FacadeManager,
   FanSpeed,
   HomeDeviceAtaFacade,
+  HomeDeviceType,
   Horizontal,
   MELCloudAPI,
   MELCloudHomeAPI,
@@ -59,10 +59,11 @@ import {
 
 const NOTIFICATION_DELAY_MS = 10_000
 
-const drivers: Record<DeviceType, string> = {
+const drivers: Partial<Record<DeviceType | HomeDeviceType, string>> = {
   [DeviceType.Ata]: 'melcloud',
   [DeviceType.Atw]: 'melcloud_atw',
   [DeviceType.Erv]: 'melcloud_erv',
+  [HomeDeviceType.Ata]: 'home-melcloud',
 }
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
@@ -183,6 +184,7 @@ export default class MELCloudApp extends App {
 
   public override async onUninit(): Promise<void> {
     this.#api.clearSync()
+    this.#homeApi.clearSync()
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
@@ -560,7 +562,8 @@ export default class MELCloudApp extends App {
       logger: this.#createLogger(),
       settingManager: this.homey.settings,
       timezone,
-      onSync: async (params) => this.#syncFromDevices(params),
+      onSync: async ({ ids, type } = {}) =>
+        this.#syncDevices(type === undefined ? undefined : drivers[type], ids),
     })
     this.#facadeManager = new FacadeManager(this.#api, this.#registry)
     setFacadeManager(this.#facadeManager)
@@ -570,7 +573,7 @@ export default class MELCloudApp extends App {
     this.#homeApi = await MELCloudHomeAPI.create({
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager('home'),
-      onSync: async () => this.#syncFromHomeDevices(),
+      onSync: async () => this.#syncDevices(drivers[HomeDeviceType.Ata]),
     })
     await this.#homeApi.list()
   }
@@ -598,32 +601,23 @@ export default class MELCloudApp extends App {
       )
   }
 
-  async #syncFromDevices({
-    ids,
-    type,
-  }: {
-    ids?: number[]
-    type?: DeviceType
-  } = {}): Promise<void> {
-    await Promise.all(
-      this.#getDevices({
-        driverId: type === undefined ? undefined : drivers[type],
-        ids,
-      }).map(async (device) => device.syncFromDevice()),
-    )
-  }
-
-  async #syncFromHomeDevices(): Promise<void> {
+  async #syncDevices(driverId?: string, ids?: number[]): Promise<void> {
     try {
-      const driver = this.homey.drivers.getDriver('home-melcloud')
+      const targetDrivers =
+        driverId === undefined ?
+          Object.values(this.homey.drivers.getDrivers())
+        : [this.homey.drivers.getDriver(driverId)]
       await Promise.all(
-        driver
-          .getDevices()
-          .map(async (device) =>
+        targetDrivers.flatMap((driver) => {
+          const devices = driver.getDevices()
+          const filtered =
+            ids ? devices.filter(({ id }) => ids.includes(Number(id))) : devices
+          return filtered.map(async (device) =>
             (
               device as { syncFromDevice: () => Promise<void> }
             ).syncFromDevice(),
-          ),
+          )
+        }),
       )
     } catch {
       // Driver not yet initialized during app startup — devices will sync once ready
