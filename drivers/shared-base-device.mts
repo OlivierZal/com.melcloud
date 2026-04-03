@@ -275,7 +275,8 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
         }
       }
     }
-    await this.syncFromDevice()
+    // Delay sync to let Homey's optimistic UI update and debounce settle
+    this.homey.setTimeout(async () => this.syncFromDevice(), DEBOUNCE_DELAY)
   }
 
   async #handleOptionalCapabilities(

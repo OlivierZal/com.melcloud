@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
+  getMockCallArg,
   testDeletion,
   testSetValuesErrorHandling,
   testUninitialisation,
@@ -374,6 +375,13 @@ describe(HomeBaseMELCloudDevice, () => {
       setCapabilityValueMock.mockClear()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
+      await getMockCallArg<() => Promise<void>>(
+        device.homey.setTimeout as unknown as {
+          mock: { calls: unknown[][] }
+        },
+        0,
+        0,
+      )()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'measure_temperature',
