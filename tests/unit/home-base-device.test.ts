@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
 import {
-  getMockCallArg,
+  createCapabilityListenerCallbackGetter,
   testDeletion,
   testSetValuesErrorHandling,
   testUninitialisation,
@@ -112,27 +112,9 @@ vi.mock('homey', () => {
   return { default: { Device: MockDevice } }
 })
 
-const { identityDecorator } = vi.hoisted(() => ({
-  identityDecorator: <T>(target: T): T => target,
-}))
-
-vi.mock(import('../../decorators/add-to-logs.mts'), () => ({
-  addToLogs: (): typeof identityDecorator => identityDecorator,
-}))
-
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Identity function return type T is not assignable to T & TimerClass
-vi.mock('../../mixins/with-timers.mts', () => ({
-  withTimers: <T>(base: T): T => base,
-}))
-
-const getCapabilityListenerCallback = (): ((
-  values: Record<string, unknown>,
-) => Promise<void>) =>
-  getMockCallArg<(values: Record<string, unknown>) => Promise<void>>(
-    registerMultipleCapabilityListenerMock,
-    0,
-    1,
-  )
+const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(
+  registerMultipleCapabilityListenerMock,
+)
 
 describe(HomeBaseMELCloudDevice, () => {
   let device: TestHomeDevice

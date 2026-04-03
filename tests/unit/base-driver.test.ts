@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
-import { assertDefined, mock } from '../helpers.ts'
+import { assertDefined, mock, testPairing, testRepairing } from '../helpers.ts'
 import {
   type TestDriverType,
   createTestDriver,
@@ -100,113 +100,14 @@ describe(BaseMELCloudDriver, () => {
     })
   })
 
-  describe('pairing', () => {
-    it('should set handlers on the session', async () => {
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: setHandlerMock,
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
+  testPairing(() => driver, {
+    authenticateMock,
+    isAuthenticatedMock,
+    setHandlerMock,
+    showViewMock,
+  })
 
-      expect(setHandlerMock).toHaveBeenCalledWith(
-        'showView',
-        expect.any(Function),
-      )
-      expect(setHandlerMock).toHaveBeenCalledWith('login', expect.any(Function))
-      expect(setHandlerMock).toHaveBeenCalledWith(
-        'list_devices',
-        expect.any(Function),
-      )
-    })
-
-    it('should show list_devices when authenticated on loading view', async () => {
-      isAuthenticatedMock.mockReturnValue(true)
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'showView') {
-                handler('loading')
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-
-      expect(showViewMock).toHaveBeenCalledWith('list_devices')
-    })
-
-    it('should show login when not authenticated on loading view', async () => {
-      isAuthenticatedMock.mockReturnValue(false)
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'showView') {
-                handler('loading')
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-
-      expect(showViewMock).toHaveBeenCalledWith('login')
-    })
-
-    it('should do nothing when showView is called with a non-loading view', async () => {
-      showViewMock.mockClear()
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'showView') {
-                handler('other_view')
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-
-      expect(showViewMock).not.toHaveBeenCalled()
-    })
-
-    it('should invoke login via the login handler', async () => {
-      authenticateMock.mockResolvedValue(true)
-
-      let loginHandler: (data: unknown) => Promise<unknown> = vi
-        .fn<() => Promise<void>>()
-        .mockResolvedValue()
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (data: unknown) => Promise<unknown>) => {
-              if (event === 'login') {
-                loginHandler = handler
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-      const result = await loginHandler({
-        password: 'pass',
-        username: 'user',
-      })
-
-      expect(result).toBe(true)
-      expect(authenticateMock).toHaveBeenCalledWith({
-        password: 'pass',
-        username: 'user',
-      })
-    })
-
+  describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
       const listHandler = vi.fn()
       const session = mock<import('homey/lib/PairSession')>({
@@ -238,16 +139,7 @@ describe(BaseMELCloudDriver, () => {
     })
   })
 
-  describe('repairing', () => {
-    it('should set login handler on the session', async () => {
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: setHandlerMock,
-      })
-      await driver.onRepair(session)
-
-      expect(setHandlerMock).toHaveBeenCalledWith('login', expect.any(Function))
-    })
-  })
+  testRepairing(() => driver, { authenticateMock, setHandlerMock })
 
   describe('produced and consumed tag mappings', () => {
     it('should separate energy tags into produced and consumed', async () => {

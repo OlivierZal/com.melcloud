@@ -5,7 +5,7 @@ import type { HomeDeviceModel } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { HomeBaseMELCloudDriver } from '../../drivers/home-base-driver.mts'
-import { mock } from '../helpers.ts'
+import { mock, testPairing, testRepairing } from '../helpers.ts'
 import HomeMELCloudDriverAta from '../../drivers/home-melcloud/driver.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -50,113 +50,14 @@ describe(HomeBaseMELCloudDriver, () => {
     })
   })
 
-  describe('pairing', () => {
-    it('should set handlers on the session', async () => {
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: setHandlerMock,
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
+  testPairing(() => driver, {
+    authenticateMock,
+    isAuthenticatedMock,
+    setHandlerMock,
+    showViewMock,
+  })
 
-      expect(setHandlerMock).toHaveBeenCalledWith(
-        'showView',
-        expect.any(Function),
-      )
-      expect(setHandlerMock).toHaveBeenCalledWith('login', expect.any(Function))
-      expect(setHandlerMock).toHaveBeenCalledWith(
-        'list_devices',
-        expect.any(Function),
-      )
-    })
-
-    it('should show list_devices when authenticated on loading view', async () => {
-      isAuthenticatedMock.mockReturnValue(true)
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'showView') {
-                handler('loading')
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-
-      expect(showViewMock).toHaveBeenCalledWith('list_devices')
-    })
-
-    it('should show login when not authenticated on loading view', async () => {
-      isAuthenticatedMock.mockReturnValue(false)
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'showView') {
-                handler('loading')
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-
-      expect(showViewMock).toHaveBeenCalledWith('login')
-    })
-
-    it('should do nothing when showView is called with a non-loading view', async () => {
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'showView') {
-                handler('other')
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-
-      expect(showViewMock).not.toHaveBeenCalled()
-    })
-
-    it('should invoke authenticate via the login handler', async () => {
-      authenticateMock.mockResolvedValue(true)
-
-      let loginHandler: (data: unknown) => Promise<unknown> = vi
-        .fn<() => Promise<void>>()
-        .mockResolvedValue()
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (data: unknown) => Promise<unknown>) => {
-              if (event === 'login') {
-                loginHandler = handler
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-
-      const result = await loginHandler({
-        password: 'pass',
-        username: 'user',
-      })
-
-      expect(result).toBe(true)
-      expect(authenticateMock).toHaveBeenCalledWith({
-        password: 'pass',
-        username: 'user',
-      })
-    })
-
+  describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
       const devices = [
         mock<HomeDeviceModel>({
@@ -221,45 +122,5 @@ describe(HomeBaseMELCloudDriver, () => {
     })
   })
 
-  describe('repairing', () => {
-    it('should set login handler on the session', async () => {
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: setHandlerMock,
-      })
-      await driver.onRepair(session)
-
-      expect(setHandlerMock).toHaveBeenCalledWith('login', expect.any(Function))
-    })
-
-    it('should invoke authenticate via the repair login handler', async () => {
-      authenticateMock.mockResolvedValue(true)
-
-      let loginHandler: (data: unknown) => Promise<unknown> = vi
-        .fn<() => Promise<void>>()
-        .mockResolvedValue()
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (data: unknown) => Promise<unknown>) => {
-              if (event === 'login') {
-                loginHandler = handler
-              }
-            },
-          ),
-      })
-      await driver.onRepair(session)
-
-      const result = await loginHandler({
-        password: 'pass',
-        username: 'user',
-      })
-
-      expect(result).toBe(true)
-      expect(authenticateMock).toHaveBeenCalledWith({
-        password: 'pass',
-        username: 'user',
-      })
-    })
-  })
+  testRepairing(() => driver, { authenticateMock, setHandlerMock })
 })

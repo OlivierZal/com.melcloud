@@ -225,3 +225,175 @@ export const testWarningManagement = (
     })
   })
 }
+
+export const createCapabilityListenerCallbackGetter =
+  (registerMock: {
+    mock: { calls: unknown[][] }
+  }): (() => (values: Record<string, unknown>) => Promise<void>) =>
+  () =>
+    getMockCallArg<(values: Record<string, unknown>) => Promise<void>>(
+      registerMock,
+      0,
+      1,
+    )
+
+const createShowViewSession = (
+  showViewMock: ReturnType<typeof vi.fn>,
+  viewName: string,
+): {
+  setHandler: ReturnType<typeof vi.fn>
+  showView: ReturnType<typeof vi.fn>
+} =>
+  mock({
+    setHandler: vi
+      .fn()
+      .mockImplementation(
+        (event: string, handler: (...args: unknown[]) => unknown) => {
+          if (event === 'showView') {
+            handler(viewName)
+          }
+        },
+      ),
+    showView: showViewMock,
+  })
+
+const createLoginSession = (
+  showViewMock: ReturnType<typeof vi.fn>,
+): {
+  reference: { loginHandler: (data: unknown) => Promise<unknown> }
+  session: unknown
+} => {
+  const reference: { loginHandler: (data: unknown) => Promise<unknown> } = {
+    loginHandler: vi.fn<() => Promise<void>>().mockResolvedValue(),
+  }
+  const session = mock({
+    setHandler: vi
+      .fn()
+      .mockImplementation(
+        (event: string, handler: (data: unknown) => Promise<unknown>) => {
+          if (event === 'login') {
+            reference.loginHandler = handler
+          }
+        },
+      ),
+    showView: showViewMock,
+  })
+  return { reference, session }
+}
+
+export const testPairing = (
+  getDriver: () => {
+    onPair: (session: unknown) => Promise<void>
+  },
+  mocks: {
+    authenticateMock: ReturnType<typeof vi.fn>
+    isAuthenticatedMock: ReturnType<typeof vi.fn>
+    setHandlerMock: ReturnType<typeof vi.fn>
+    showViewMock: ReturnType<typeof vi.fn>
+  },
+): void => {
+  const {
+    authenticateMock,
+    isAuthenticatedMock,
+    setHandlerMock,
+    showViewMock,
+  } = mocks
+
+  describe('pairing', () => {
+    it('should set handlers on the session', async () => {
+      const session = mock({
+        setHandler: setHandlerMock,
+        showView: showViewMock,
+      })
+      await getDriver().onPair(session)
+
+      expect(setHandlerMock).toHaveBeenCalledWith(
+        'showView',
+        expect.any(Function),
+      )
+      expect(setHandlerMock).toHaveBeenCalledWith('login', expect.any(Function))
+      expect(setHandlerMock).toHaveBeenCalledWith(
+        'list_devices',
+        expect.any(Function),
+      )
+    })
+
+    it('should show list_devices when authenticated on loading view', async () => {
+      isAuthenticatedMock.mockReturnValue(true)
+      const session = createShowViewSession(showViewMock, 'loading')
+      await getDriver().onPair(session)
+
+      expect(showViewMock).toHaveBeenCalledWith('list_devices')
+    })
+
+    it('should show login when not authenticated on loading view', async () => {
+      isAuthenticatedMock.mockReturnValue(false)
+      const session = createShowViewSession(showViewMock, 'loading')
+      await getDriver().onPair(session)
+
+      expect(showViewMock).toHaveBeenCalledWith('login')
+    })
+
+    it('should do nothing when showView is called with a non-loading view', async () => {
+      const session = createShowViewSession(showViewMock, 'other')
+      await getDriver().onPair(session)
+
+      expect(showViewMock).not.toHaveBeenCalled()
+    })
+
+    it('should invoke authenticate via the login handler', async () => {
+      authenticateMock.mockResolvedValue(true)
+      const { reference, session } = createLoginSession(showViewMock)
+      await getDriver().onPair(session)
+      const result = await reference.loginHandler({
+        password: 'pass',
+        username: 'user',
+      })
+
+      expect(result).toBe(true)
+      expect(authenticateMock).toHaveBeenCalledWith({
+        password: 'pass',
+        username: 'user',
+      })
+    })
+  })
+}
+
+export const testRepairing = (
+  getDriver: () => {
+    onRepair: (session: unknown) => Promise<void>
+  },
+  mocks: {
+    authenticateMock: ReturnType<typeof vi.fn>
+    setHandlerMock: ReturnType<typeof vi.fn>
+  },
+): void => {
+  const { authenticateMock, setHandlerMock } = mocks
+
+  describe('repairing', () => {
+    it('should set login handler on the session', async () => {
+      const session = mock({
+        setHandler: setHandlerMock,
+      })
+      await getDriver().onRepair(session)
+
+      expect(setHandlerMock).toHaveBeenCalledWith('login', expect.any(Function))
+    })
+
+    it('should invoke authenticate via the repair login handler', async () => {
+      authenticateMock.mockResolvedValue(true)
+      const { reference, session } = createLoginSession(vi.fn())
+      await getDriver().onRepair(session)
+      const result = await reference.loginHandler({
+        password: 'pass',
+        username: 'user',
+      })
+
+      expect(result).toBe(true)
+      expect(authenticateMock).toHaveBeenCalledWith({
+        password: 'pass',
+        username: 'user',
+      })
+    })
+  })
+}

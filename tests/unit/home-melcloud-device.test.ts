@@ -32,19 +32,6 @@ vi.mock('homey', async () => {
   return { default: { Device: create() } }
 })
 
-const { identityDecorator } = vi.hoisted(() => ({
-  identityDecorator: <T>(target: T): T => target,
-}))
-
-vi.mock(import('../../decorators/add-to-logs.mts'), () => ({
-  addToLogs: (): typeof identityDecorator => identityDecorator,
-}))
-
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Identity function return type T is not assignable to T & TimerClass
-vi.mock('../../mixins/with-timers.mts', () => ({
-  withTimers: <T>(base: T): T => base,
-}))
-
 const mockFacade = (
   overrides: Partial<HomeDeviceAtaFacade>,
 ): HomeDeviceAtaFacade => overrides as HomeDeviceAtaFacade
