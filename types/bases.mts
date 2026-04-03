@@ -8,7 +8,7 @@ export const localizeWithAffix = (
   ...typedFromEntries(
     Object.entries(affix).map(([language, localizedAffix]) => [
       language,
-      /* v8 ignore next */
+      /* v8 ignore next -- ternary branch: both paths tested but v8 marks one arm as uncovered */
       position === 'prefix' ?
         `${localizedAffix ?? affix.en} ${(base[language] ?? base.en).toLowerCase()}`
       : `${base[language] ?? base.en} ${localizedAffix ?? affix.en}`,

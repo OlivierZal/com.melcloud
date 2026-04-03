@@ -27,7 +27,7 @@ export interface HomeSetCapabilitiesAta extends BaseSetCapabilities {
  * to accept narrower parameter types from the facade getters.
  */
 export type HomeConvertFromDevice = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
   bivariant(
     facade: HomeDeviceAtaFacade,
   ):
@@ -40,7 +40,7 @@ export type HomeConvertFromDevice = {
  * to accept narrower parameter types from capability values.
  */
 export type HomeConvertToDevice = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
   bivariant(
     value: HomeSetCapabilitiesAta[keyof HomeSetCapabilitiesAta],
   ): HomeAtaValues[keyof HomeAtaValues]

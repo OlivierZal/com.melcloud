@@ -82,22 +82,22 @@ const getDriverSettings = (
   language: string,
 ): DriverSetting[] =>
   (settings ?? []).flatMap(({ children, id: groupId, label: groupLabel }) =>
-    /* v8 ignore next */
+    /* v8 ignore next -- manifest children is optional in SDK type */
     (children ?? []).map(({ id, label, max, min, type, units, values }) => ({
       driverId,
       groupId,
-      /* v8 ignore next */
+      /* v8 ignore next -- language fallback to English */
       groupLabel: groupLabel[language] ?? groupLabel.en,
       id,
       max,
       min,
-      /* v8 ignore next */
+      /* v8 ignore next -- language fallback to English */
       title: label[language] ?? label.en,
       type,
       units,
       values: values?.map(({ id: valueId, label: valueLabel }) => ({
         id: valueId,
-        /* v8 ignore next */
+        /* v8 ignore next -- language fallback to English */
         label: valueLabel[language] ?? valueLabel.en,
       })),
     })),
@@ -125,7 +125,7 @@ const getDriverLoginSetting = (
     driverLoginSetting[key] = {
       ...driverLoginSetting[key],
       [option.endsWith('Placeholder') ? 'placeholder' : 'title']:
-        /* v8 ignore next */
+        /* v8 ignore next -- language fallback to English */
         label[language] ?? label.en,
     }
   }
@@ -137,13 +137,13 @@ const getLocalizedCapabilitiesOptions = (
   language: string,
   enumType?: Record<string, number | string>,
 ): DriverCapabilitiesOptions => ({
-  /* v8 ignore next */
+  /* v8 ignore next -- language fallback to English */
   title: options.title[language] ?? options.title.en,
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
-    /* v8 ignore next */
+    /* v8 ignore next -- enumType mapping: resolves string enum to numeric value */
     id: enumType && id in enumType ? String(enumType[id]) : id,
-    /* v8 ignore next */
+    /* v8 ignore next -- language fallback to English */
     label: title[language] ?? title.en,
   })),
 })
@@ -217,13 +217,13 @@ export default class MELCloudApp extends App {
     if (devices.length === 0) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic GroupState to typed GroupAtaStates
     return typedFromEntries(
       this.getAtaCapabilities().map(([key]) => [
         key,
         devices
           .filter((device) => device.type === DeviceType.Ata)
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic DeviceModel data to ATA-specific type
           .map(({ data }) => data as ListDeviceDataAta)
           .filter((data) => status !== 'on' || data.Power)
           .map((data) => data[key]),
@@ -268,7 +268,7 @@ export default class MELCloudApp extends App {
         ...getDriverSettings(driver, language),
         ...getDriverLoginSetting(driver, language),
       ]),
-      /* v8 ignore next */
+      /* v8 ignore next -- groupId fallback: login settings have no groupId */
       ({ driverId, groupId }) => groupId ?? driverId,
     )
   }
@@ -478,7 +478,7 @@ export default class MELCloudApp extends App {
       `${prefix}${key.charAt(0).toUpperCase()}${key.slice(1)}`
     return {
       get: (key: string): string | null | undefined =>
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Homey settings.get returns unknown
         this.homey.settings.get(prefixKey(key)) as string | null | undefined,
       set: (key: string, value: string): void => {
         this.homey.settings.set(prefixKey(key), value)

@@ -20,7 +20,7 @@ const getArg = <T extends DeviceType>(
   capability: string & keyof OperationalCapabilities<T>,
 ): keyof FlowArgs<T> => {
   const [arg] = capability.split('.')
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- capability prefix maps to a known FlowArgs key
   return arg as keyof FlowArgs<T>
 }
 
@@ -106,7 +106,7 @@ export abstract class BaseMELCloudDriver<
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
         .registerRunListener((args: FlowArgs<T>) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Homey method to typed device capabilities
           const getCapabilityValue = args.device.getCapabilityValue as (
             capability: keyof Capabilities<T>,
           ) => Capabilities<T>[keyof Capabilities<T>]
@@ -129,7 +129,7 @@ export abstract class BaseMELCloudDriver<
       this.#registerConditionRunListener(capability)
       if (capability in this.setCapabilityTagMapping) {
         this.#registerActionRunListener(
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- guarded by `in` check above
           capability as string & keyof SetCapabilities<T>,
         )
       }

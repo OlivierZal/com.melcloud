@@ -43,6 +43,7 @@ export abstract class SharedBaseMELCloudDriver extends Driver {
   }
 
   public getRequiredCapabilities(): string[] {
+    /* v8 ignore next -- manifest.capabilities is optional and readonly in Homey SDK type */
     return [...(this.manifest.capabilities ?? [])]
   }
 

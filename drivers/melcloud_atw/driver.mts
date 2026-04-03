@@ -64,6 +64,7 @@ export default class MELCloudDriverAtw extends BaseMELCloudDriver<
   public override getRequiredCapabilities(
     data?: ListDeviceData<typeof DeviceType.Atw>,
   ): string[] {
+    /* v8 ignore next -- data is always provided by callers */
     const { CanCool: canCool, HasZone2: hasZone2 } = data ?? {}
     return [
       ...this.#zone1Capabilities,

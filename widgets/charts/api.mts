@@ -30,7 +30,7 @@ const api = {
   }): Promise<ReportChartLineOptions> {
     return app.getHourlyTemperatures(
       deviceId,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Number to HourNumbers (0-23)
       hour === undefined ? undefined : (Number(hour) as HourNumbers),
     )
   },
@@ -59,7 +59,7 @@ const api = {
   }): Promise<ReportChartLineOptions> {
     return app.getSignal(
       deviceId,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Number to HourNumbers (0-23)
       hour === undefined ? undefined : (Number(hour) as HourNumbers),
     )
   },

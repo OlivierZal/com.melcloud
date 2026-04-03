@@ -2,7 +2,6 @@ import type {
   DeviceFacade,
   DeviceType,
   ListDeviceData,
-  UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
 
 import type {
@@ -33,8 +32,6 @@ const modes: EnergyReportMode[] = ['regular', 'total']
 export abstract class BaseMELCloudDevice<
   T extends DeviceType,
 > extends SharedBaseMELCloudDevice {
-  #device?: DeviceFacade<T>
-
   #getCapabilityTagMapping: Partial<GetCapabilityTagMapping<T>> = {}
 
   readonly #reports: {
@@ -99,12 +96,16 @@ export abstract class BaseMELCloudDevice<
     string
   > | null
 
+  get #data(): ListDeviceData<T> | undefined {
+    return this.facade?.data
+  }
+
   get #listCapabilityTagMapping(): Partial<ListCapabilityTagMapping<T>> {
     return this.cleanMapping(this.driver.listCapabilityTagMapping)
   }
 
   get #operationalCapabilityTagEntries(): OperationalCapabilityTagEntry<T>[] {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing merged entries to OperationalCapabilityTagEntry
     return typedEntries({
       ...this.#setCapabilityTagMapping,
       ...this.#getCapabilityTagMapping,
@@ -113,7 +114,8 @@ export abstract class BaseMELCloudDevice<
   }
 
   protected get facade(): DeviceFacade<T> | undefined {
-    return this.#device
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from generic base FacadeWithSetValues
+    return this.deviceFacade as DeviceFacade<T> | undefined
   }
 
   public get id(): number {
@@ -154,7 +156,7 @@ export abstract class BaseMELCloudDevice<
       | ListCapabilityTagMapping<T>
       | SetCapabilityTagMapping<T>,
   >(capabilityTagMapping: TMapping): Partial<TMapping> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing filtered Object.fromEntries to Partial<TMapping>
     return Object.fromEntries(
       Object.entries(capabilityTagMapping).filter(([capability]) =>
         this.hasCapability(capability),
@@ -162,22 +164,14 @@ export abstract class BaseMELCloudDevice<
     ) as Partial<TMapping>
   }
 
-  public async fetchDevice(): Promise<DeviceFacade<T> | null> {
-    try {
-      if (!this.#device) {
-        this.#device = this.getFacade()
-        await this.init()
-      }
-      return this.#device
-    } catch (error) {
-      await this.setWarning(error)
-      return null
-    }
+  public override async fetchDevice(): Promise<DeviceFacade<T> | null> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from base FacadeWithSetValues after super call
+    return (await super.fetchDevice()) as DeviceFacade<T> | null
   }
 
   public override async syncFromDevice(): Promise<void> {
-    const data = this.#device?.data ?? (await this.#fetchData())
-    /* v8 ignore next */
+    const data = await this.#getDeviceData()
+    /* v8 ignore next -- defensive guard: data is guaranteed after fetchDevice */
     if (data) {
       await this.setCapabilityValues(data)
     }
@@ -192,19 +186,23 @@ export abstract class BaseMELCloudDevice<
   }
 
   protected override getRequiredCapabilities(): string[] {
-    /* v8 ignore next */
-    return this.#device ?
-        this.driver.getRequiredCapabilities(this.#device.data)
-      : []
+    /* v8 ignore next -- defensive guard: facade is set after init */
+    return this.#data ? this.driver.getRequiredCapabilities(this.#data) : []
   }
 
   protected override getSetCapabilityKeys(): string[] {
     return Object.keys(this.driver.setCapabilityTagMapping)
   }
 
+  protected override getSetCapabilityTagMapping(): Record<string, string> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- widening partial typed mapping to generic Record
+    return this.#setCapabilityTagMapping as Record<string, string>
+  }
+
   protected override async init(): Promise<void> {
-    if (this.#device) {
-      await this.#setCapabilityOptions(this.#device.data)
+    /* v8 ignore next -- #data is guaranteed after getFacade in initDevice */
+    if (this.#data) {
+      await this.#setCapabilityOptions(this.#data)
     }
     await super.init()
     this.#setCapabilityTagMapping = this.cleanMapping(
@@ -214,17 +212,6 @@ export abstract class BaseMELCloudDevice<
       this.driver.getCapabilityTagMapping,
     )
     await this.#handleEnergyReports()
-  }
-
-  protected override async initDevice(): Promise<void> {
-    await this.fetchDevice()
-  }
-
-  protected override async sendUpdate(
-    values: Record<string, unknown>,
-  ): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    await this.#setDeviceValues(values as Partial<SetCapabilities<T>>)
   }
 
   protected async setCapabilityValues(data: ListDeviceData<T>): Promise<void> {
@@ -241,46 +228,17 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  #buildUpdateData(values: Partial<SetCapabilities<T>>): UpdateDeviceData<T> {
-    this.log('Requested data:', values)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    return Object.fromEntries(
-      Object.entries(values).map(([capability, value]) => [
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        this.#setCapabilityTagMapping[capability as keyof SetCapabilities<T>],
-        this.#convertToDevice(
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          capability as keyof SetCapabilities<T>,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-          value as UpdateDeviceData<T>[keyof UpdateDeviceData<T>],
-        ),
-      ]),
-    ) as UpdateDeviceData<T>
-  }
-
   #convertFromDevice<TKey extends keyof Capabilities<T>>(
     capability: TKey,
     value: ListDeviceData<T>[keyof ListDeviceData<T>],
     data?: ListDeviceData<T>,
   ): Capabilities<T>[TKey] {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- converter output narrowed to specific capability type
     return (this.deviceToCapability[capability]?.(value, data) ??
       value) as Capabilities<T>[TKey]
   }
 
-  #convertToDevice(
-    capability: keyof SetCapabilities<T>,
-    value: UpdateDeviceData<T>[keyof UpdateDeviceData<T>],
-  ): UpdateDeviceData<T>[keyof UpdateDeviceData<T>] {
-    return (
-      this.capabilityToDevice[capability]?.(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        value as SetCapabilities<T>[keyof SetCapabilities<T>],
-      ) ?? value
-    )
-  }
-
-  async #fetchData(): Promise<ListDeviceData<T> | null> {
+  async #fetchDeviceData(): Promise<ListDeviceData<T> | null> {
     try {
       const device = await this.fetchDevice()
       return device?.data ?? null
@@ -288,6 +246,10 @@ export abstract class BaseMELCloudDevice<
       await this.setWarning(this.homey.__('errors.deviceNotFound'))
       return null
     }
+  }
+
+  async #getDeviceData(): Promise<ListDeviceData<T> | null> {
+    return this.#data ?? (await this.#fetchDeviceData())
   }
 
   async #handleEnergyReports(): Promise<void> {
@@ -318,7 +280,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   async #setCapabilityOptions(data: ListDeviceData<T>): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Object.entries to typed capability-options tuple
     for (const [capability, options] of Object.entries(
       this.driver.getCapabilitiesOptions(data),
     ) as [
@@ -328,22 +290,6 @@ export abstract class BaseMELCloudDevice<
     ][]) {
       // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
       await this.setCapabilityOptions(capability, options)
-    }
-  }
-
-  async #setDeviceValues(values: Partial<SetCapabilities<T>>): Promise<void> {
-    const device = await this.fetchDevice()
-    if (device) {
-      const updateData = this.#buildUpdateData(values)
-      if (Object.keys(updateData).length > 0) {
-        try {
-          await device.setValues(updateData)
-        } catch (error) {
-          if (!(error instanceof Error) || error.message !== 'No data to set') {
-            await this.setWarning(error)
-          }
-        }
-      }
     }
   }
 

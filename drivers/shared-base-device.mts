@@ -5,10 +5,16 @@ import type { SharedBaseMELCloudDriver } from './shared-base-driver.mts'
 
 const DEBOUNCE_DELAY = 1000
 
+interface FacadeWithSetValues {
+  readonly setValues: (data: Record<string, unknown>) => Promise<unknown>
+}
+
 export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
   protected abstract capabilityToDevice: Partial<
     Record<string, (...args: never[]) => unknown>
   >
+
+  protected deviceFacade?: FacadeWithSetValues
 
   declare public readonly driver: SharedBaseMELCloudDriver
 
@@ -43,6 +49,19 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
     }
   }
 
+  public async fetchDevice(): Promise<FacadeWithSetValues | null> {
+    try {
+      if (!this.deviceFacade) {
+        this.deviceFacade = this.getFacade()
+        await this.init()
+      }
+      return this.deviceFacade
+    } catch (error) {
+      await this.setWarning(error)
+      return null
+    }
+  }
+
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
@@ -65,9 +84,27 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
     }
   }
 
+  protected buildUpdateData(
+    values: Record<string, unknown>,
+  ): Record<string, unknown> {
+    this.log('Requested data:', values)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Object.fromEntries to Record<string, unknown>
+    return Object.fromEntries(
+      Object.entries(values).map(([capability, value]) => [
+        this.getSetCapabilityTagMapping()[capability],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- value is cast to never for variadic converter args
+        this.capabilityToDevice[capability]?.(value as never) ?? value,
+      ]),
+    ) as Record<string, unknown>
+  }
+
   protected abstract cleanupDevice(): void
 
-  protected abstract getFacade(): unknown
+  protected async getDeviceFacade(): Promise<FacadeWithSetValues | null> {
+    return this.deviceFacade ?? this.fetchDevice()
+  }
+
+  protected abstract getFacade(): FacadeWithSetValues
 
   protected getRequiredCapabilities(): string[] {
     return this.driver.getRequiredCapabilities()
@@ -75,18 +112,15 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
 
   protected abstract getSetCapabilityKeys(): string[]
 
+  protected abstract getSetCapabilityTagMapping(): Record<string, string>
+
   protected async init(): Promise<void> {
     await this.#setCapabilities()
     await this.syncFromDevice()
   }
 
   protected async initDevice(): Promise<void> {
-    try {
-      this.getFacade()
-      await this.init()
-    } catch (error) {
-      await this.setWarning(error)
-    }
+    await this.fetchDevice()
   }
 
   protected isManifestCapability(capability: string): boolean {
@@ -94,7 +128,22 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
     return (this.driver.manifest.capabilities ?? []).includes(capability)
   }
 
-  protected abstract sendUpdate(values: Record<string, unknown>): Promise<void>
+  protected async sendUpdate(values: Record<string, unknown>): Promise<void> {
+    const device = await this.getDeviceFacade()
+    if (!device) {
+      return
+    }
+    const updateData = this.buildUpdateData(values)
+    if (Object.keys(updateData).length > 0) {
+      try {
+        await device.setValues(updateData)
+      } catch (error) {
+        if (!(error instanceof Error) || error.message !== 'No data to set') {
+          await this.setWarning(error)
+        }
+      }
+    }
+  }
 
   #isThermostatModeSupportingOff(): boolean {
     return this.thermostatMode !== null && 'off' in this.thermostatMode
@@ -123,7 +172,7 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
   }
 
   async #setCapabilities(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Homey SDK getSettings() returns any
     const settings = this.getSettings() as Record<string, unknown>
     const currentCapabilities = new Set(this.getCapabilities())
 
