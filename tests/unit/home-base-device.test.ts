@@ -49,6 +49,8 @@ vi.mock('homey', () => {
   class MockDevice {
     public driver = {
       energyCapabilityTagMapping: {},
+      getCapabilityTagMapping: {},
+      listCapabilityTagMapping: {},
       manifest: {
         capabilities: [
           'measure_temperature',
@@ -56,6 +58,14 @@ vi.mock('homey', () => {
           'target_temperature',
           'thermostat_mode',
         ],
+      },
+      setCapabilityTagMapping: {
+        fan_speed: 'setFanSpeed',
+        horizontal: 'vaneHorizontalDirection',
+        onoff: 'power',
+        target_temperature: 'setTemperature',
+        thermostat_mode: 'operationMode',
+        vertical: 'vaneVerticalDirection',
       },
       getCapabilitiesOptions: (): Record<string, unknown> => ({}),
       getRequiredCapabilities: (): string[] =>

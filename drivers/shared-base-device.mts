@@ -15,10 +15,16 @@ const modes: EnergyReportMode[] = ['regular', 'total']
 export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
   #deviceFacade?: DeviceFacade
 
+  #getCapabilityTagMapping: Record<string, string> = {}
+
+  #listCapabilityTagMapping: Record<string, string> = {}
+
   readonly #reports: {
     regular?: EnergyReportOperation
     total?: EnergyReportOperation
   } = {}
+
+  #setCapabilityTagMapping: Record<string, string> = {}
 
   protected abstract capabilityToDevice: Partial<
     Record<string, (...args: never[]) => unknown>
@@ -196,15 +202,21 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
 
   protected abstract getFacade(): DeviceFacade
 
-  protected abstract getGetCapabilityTagMapping(): Record<string, string>
+  protected getGetCapabilityTagMapping(): Record<string, string> {
+    return this.#getCapabilityTagMapping
+  }
 
-  protected abstract getListCapabilityTagMapping(): Record<string, string>
+  protected getListCapabilityTagMapping(): Record<string, string> {
+    return this.#listCapabilityTagMapping
+  }
 
   protected getRequiredCapabilities(): string[] {
     return this.driver.getRequiredCapabilities()
   }
 
-  protected abstract getSetCapabilityTagMapping(): Record<string, string>
+  protected getSetCapabilityTagMapping(): Record<string, string> {
+    return this.#setCapabilityTagMapping
+  }
 
   protected async handleEnergyReports(): Promise<void> {
     if (this.energyReportRegular) {
@@ -218,6 +230,18 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
   }
 
   protected async init(): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- driver tag mappings are Record<string, string> at runtime
+    this.#setCapabilityTagMapping = this.cleanMapping(
+      this.driver.setCapabilityTagMapping,
+    ) as Record<string, string>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- driver tag mappings are Record<string, string> at runtime
+    this.#getCapabilityTagMapping = this.cleanMapping(
+      this.driver.getCapabilityTagMapping,
+    ) as Record<string, string>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- driver tag mappings are Record<string, string> at runtime
+    this.#listCapabilityTagMapping = this.cleanMapping(
+      this.driver.listCapabilityTagMapping,
+    ) as Record<string, string>
     await this.applyCapabilitiesOptions()
     await this.#setCapabilities()
     await this.syncFromDevice()

@@ -28,18 +28,6 @@ export abstract class HomeBaseMELCloudDevice extends SharedBaseMELCloudDevice {
   }
   /* v8 ignore stop */
 
-  /* v8 ignore start -- Home overrides syncFromDevice; operationalCapabilityTagEntries is unused */
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected override getGetCapabilityTagMapping(): Record<string, string> {
-    return {}
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  protected override getListCapabilityTagMapping(): Record<string, string> {
-    return {}
-  }
-  /* v8 ignore stop */
-
   async #setCapabilityValues(device: DeviceFacade): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Home converters accept DeviceFacade; shared type is (...args: never[]) for compatibility
     const converters = Object.entries(this.deviceToCapability) as [

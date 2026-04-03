@@ -28,10 +28,6 @@ import { SharedBaseMELCloudDevice } from './shared-base-device.mts'
 export abstract class BaseMELCloudDevice<
   T extends DeviceType,
 > extends SharedBaseMELCloudDevice {
-  #getCapabilityTagMapping: Partial<GetCapabilityTagMapping<T>> = {}
-
-  #setCapabilityTagMapping: Partial<SetCapabilityTagMapping<T>> = {}
-
   protected abstract override capabilityToDevice: Partial<
     Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
   >
@@ -130,37 +126,9 @@ export abstract class BaseMELCloudDevice<
     return this.homey.app.getFacade('devices', this.id)
   }
 
-  protected override getGetCapabilityTagMapping(): Record<string, string> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- widening partial typed mapping to generic Record
-    return this.#getCapabilityTagMapping as Record<string, string>
-  }
-
-  protected override getListCapabilityTagMapping(): Record<string, string> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- widening partial typed mapping to generic Record
-    return this.cleanMapping(this.driver.listCapabilityTagMapping) as Record<
-      string,
-      string
-    >
-  }
-
   protected override getRequiredCapabilities(): string[] {
     /* v8 ignore next -- defensive guard: facade is set after init */
     return this.#data ? this.driver.getRequiredCapabilities(this.#data) : []
-  }
-
-  protected override getSetCapabilityTagMapping(): Record<string, string> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- widening partial typed mapping to generic Record
-    return this.#setCapabilityTagMapping as Record<string, string>
-  }
-
-  protected override async init(): Promise<void> {
-    this.#setCapabilityTagMapping = this.cleanMapping(
-      this.driver.setCapabilityTagMapping,
-    )
-    this.#getCapabilityTagMapping = this.cleanMapping(
-      this.driver.getCapabilityTagMapping,
-    )
-    await super.init()
   }
 
   protected async setCapabilityValues(data: ListDeviceData<T>): Promise<void> {
