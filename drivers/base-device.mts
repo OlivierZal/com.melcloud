@@ -154,13 +154,13 @@ export abstract class BaseMELCloudDevice<
   }
 
   protected override async init(): Promise<void> {
-    await super.init()
     this.#setCapabilityTagMapping = this.cleanMapping(
       this.driver.setCapabilityTagMapping,
     )
     this.#getCapabilityTagMapping = this.cleanMapping(
       this.driver.getCapabilityTagMapping,
     )
+    await super.init()
   }
 
   protected async setCapabilityValues(data: ListDeviceData<T>): Promise<void> {

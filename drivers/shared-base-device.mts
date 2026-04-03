@@ -69,7 +69,6 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
   public override async onInit(): Promise<void> {
     this.applyBaseConverters()
     await this.setWarning(null)
-    this.#registerCapabilityListeners()
     await this.initDevice()
   }
 
@@ -227,6 +226,7 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
 
   protected async initDevice(): Promise<void> {
     await this.fetchDevice()
+    this.#registerCapabilityListeners()
   }
 
   protected isEnergyCapability(setting: string): boolean {
