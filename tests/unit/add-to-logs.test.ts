@@ -1,12 +1,18 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import { addToLogs } from '../../decorators/add-to-logs.mts'
+import {
+  logSpy as importedLogSpy,
+  TestClassWithNonZeroArgMethod,
+} from '../mock-add-to-logs-class.ts'
 
 const logSpy = vi.fn()
 const errorSpy = vi.fn()
 
 @addToLogs('[TestClass]', 'getName()', 'id')
 class TestClass {
+  readonly #name = 'MyDevice'
+
   public readonly id = 42
 
   public error(...args: unknown[]): void {
@@ -14,23 +20,7 @@ class TestClass {
   }
 
   public getName(): string {
-    return 'MyDevice'
-  }
-
-  public log(...args: unknown[]): void {
-    logSpy.call(this, ...args)
-  }
-}
-
-@addToLogs('getLabel()')
-class TestClassWithNonZeroArgMethod {
-  public error(...args: unknown[]): void {
-    errorSpy.call(this, ...args)
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- Parameter needed for function arity check, argsIgnorePattern doesn't match
-  public getLabel(_prefix: string): string {
-    return 'label'
+    return this.#name
   }
 
   public log(...args: unknown[]): void {
@@ -56,11 +46,11 @@ describe(addToLogs, () => {
   })
 
   it('should fall back to literal string when decorated name refers to a function with parameters', () => {
-    logSpy.mockClear()
+    importedLogSpy.mockClear()
     const instance = new TestClassWithNonZeroArgMethod()
     instance.log('test')
 
-    expect(logSpy).toHaveBeenCalledWith('getLabel()', '-', 'test')
+    expect(importedLogSpy).toHaveBeenCalledWith('getLabel()', '-', 'test')
   })
 
   it('should prepend resolved values to error calls', () => {

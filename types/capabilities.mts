@@ -63,7 +63,7 @@ export interface CapabilitiesOptionsAtaErv {
  * type errors.
  */
 export type ConvertFromDevice<T extends DeviceType> = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
   bivariant(
     value: ListDeviceData<T>[keyof ListDeviceData<T>],
     data?: ListDeviceData<T>,
@@ -77,7 +77,7 @@ export type ConvertFromDevice<T extends DeviceType> = {
  * without type errors.
  */
 export type ConvertToDevice<T extends DeviceType> = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
   bivariant(
     value: SetCapabilities<T>[keyof SetCapabilities<T>],
   ): UpdateDeviceData<T>[keyof UpdateDeviceData<T>]

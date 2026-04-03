@@ -1,21 +1,20 @@
 import { defineConfig } from 'vitest/config'
 import swc from 'unplugin-swc'
 
+const swcPlugin = swc.vite({
+  jsc: {
+    parser: {
+      decorators: true,
+      syntax: 'typescript',
+    },
+    target: 'es2024',
+    transform: {
+      decoratorVersion: '2022-03',
+    },
+  },
+})
+
 export default defineConfig({
-  oxc: false,
-  plugins: [
-    swc.vite({
-      jsc: {
-        parser: {
-          decorators: true,
-          syntax: 'typescript',
-        },
-        transform: {
-          decoratorVersion: '2022-03',
-        },
-      },
-    }),
-  ],
   test: {
     coverage: {
       exclude: ['**/public/**/*.mts', 'settings/**/*.mts'],
@@ -28,6 +27,25 @@ export default defineConfig({
         statements: 100,
       },
     },
-    include: ['tests/**/*.test.ts'],
+    projects: [
+      {
+        oxc: false,
+        plugins: [swcPlugin],
+        test: {
+          include: ['tests/unit/*device*.test.ts'],
+          name: 'device',
+          setupFiles: ['tests/setup-device-mocks.ts'],
+        },
+      },
+      {
+        oxc: false,
+        plugins: [swcPlugin],
+        test: {
+          exclude: ['tests/unit/*device*.test.ts'],
+          include: ['tests/**/*.test.ts'],
+          name: 'other',
+        },
+      },
+    ],
   },
 })

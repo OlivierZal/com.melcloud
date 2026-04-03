@@ -8,45 +8,31 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ThermostatModeAta } from '../../types/index.mts'
-import { mock, testEnergyReportConfig } from '../helpers.ts'
+import {
+  mock,
+  testCapabilityToDeviceConverters,
+  testEnergyReportConfig,
+  testThermostatMode,
+} from '../helpers.ts'
 import MELCloudDeviceAta from '../../drivers/melcloud/device.mts'
+import { createInstance } from './create-test-instance.ts'
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', async () => {
   const { createMockDeviceClass: create } = await import('../helpers.ts')
   return { default: { Device: create() } }
-})
-
-vi.mock('../../decorators/add-to-logs.mts', () => ({
-  addToLogs:
-    () =>
-    <T>(target: T): T =>
-      target,
-}))
-
-vi.mock('../../mixins/with-timers.mts', () => ({
-  withTimers: <T>(base: T): T => base,
-}))
-
-vi.mock('../../drivers/base-report.mts', async () => {
-  const { createEnergyReportMock } = await import('../helpers.ts')
-  return createEnergyReportMock()
 })
 
 describe(MELCloudDeviceAta, () => {
   let device: any
 
   beforeEach(() => {
-    device = new (MELCloudDeviceAta as unknown as new () => any)()
+    device = createInstance(MELCloudDeviceAta)
   })
 
-  describe('thermostat mode configuration', () => {
-    it('should be ThermostatModeAta with off support', () => {
-      expect(device.thermostatMode).toBe(ThermostatModeAta)
-      expect(device.thermostatMode).toHaveProperty('off')
-    })
-  })
+  testThermostatMode(() => device as object, ThermostatModeAta)
 
-  testEnergyReportConfig(() => device, 'energyReportRegular', {
+  testEnergyReportConfig(() => device as object, 'energyReportRegular', {
     duration: { hours: 1 },
     interval: { hours: 1 },
     minus: { hours: 1 },
@@ -54,7 +40,7 @@ describe(MELCloudDeviceAta, () => {
     values: { millisecond: 0, minute: 5, second: 0 },
   })
 
-  testEnergyReportConfig(() => device, 'energyReportTotal', {
+  testEnergyReportConfig(() => device as object, 'energyReportTotal', {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { hours: 1 },
@@ -71,35 +57,38 @@ describe(MELCloudDeviceAta, () => {
       ['horizontal', Horizontal.center, 'center'],
       ['vertical', Vertical.auto, 'auto'],
     ])('%s(%s) should return %s', (key, input, expected) => {
-      const converter = device.deviceToCapability[key]
+      const {
+        deviceToCapability: { [key]: converter },
+      } = device
 
       expect(converter?.(input)).toBe(expected)
     })
 
     it('should convert thermostat_mode to key when Power is on', () => {
-      const converter = device.deviceToCapability.thermostat_mode
+      const {
+        deviceToCapability: { thermostat_mode: converter },
+      } = device
       const data = mock<ListDeviceDataAta>({ Power: true })
 
       expect(converter?.(OperationMode.heat, data)).toBe('heat')
     })
 
     it('should return off for thermostat_mode when Power is off', () => {
-      const converter = device.deviceToCapability.thermostat_mode
+      const {
+        deviceToCapability: { thermostat_mode: converter },
+      } = device
       const data = mock<ListDeviceDataAta>({ Power: false })
 
       expect(converter?.(OperationMode.heat, data)).toBe(ThermostatModeAta.off)
     })
   })
 
-  describe('capability-to-device conversions', () => {
-    it.each([
+  testCapabilityToDeviceConverters(
+    () => device as object,
+    [
       ['horizontal', 'center', Horizontal.center],
       ['thermostat_mode', 'heat', OperationMode.heat],
       ['vertical', 'middle', Vertical.middle],
-    ])('%s(%s) should return %s', (key, input, expected) => {
-      const converter = device.capabilityToDevice[key]
-
-      expect(converter?.(input)).toBe(expected)
-    })
-  })
+    ],
+  )
 })

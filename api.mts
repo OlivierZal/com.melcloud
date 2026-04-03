@@ -1,5 +1,4 @@
 import type {
-  ErrorLog,
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionQuery,
@@ -13,6 +12,7 @@ import type {
   BuildingZone,
   DeviceSettings,
   DriverSetting,
+  FormattedErrorLog,
   Settings,
   ZoneData,
 } from './types/index.mts'
@@ -32,14 +32,14 @@ const api = {
   }): Partial<Record<string, DriverSetting[]>> {
     return app.getDriverSettings()
   },
-  async getErrors({
+  async getErrorLog({
     homey: { app },
     query,
   }: {
     homey: Homey
     query: ErrorLogQuery
-  }): Promise<ErrorLog> {
-    return app.getErrors(query)
+  }): Promise<FormattedErrorLog> {
+    return app.getErrorLog(query)
   },
   async getFrostProtectionSettings({
     homey: { app },
@@ -61,6 +61,15 @@ const api = {
   },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()
+  },
+  async homeLogin({
+    body,
+    homey: { app },
+  }: {
+    body: LoginCredentials
+    homey: Homey
+  }): Promise<boolean> {
+    return app.homeLogin(body)
   },
   async login({
     body,

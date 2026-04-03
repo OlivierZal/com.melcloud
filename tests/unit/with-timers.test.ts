@@ -11,22 +11,21 @@ const callback = async (): Promise<void> => {
 }
 
 class BaseClass {
+  public error = vi.fn()
+
   public readonly homey = {
     clearInterval: vi.fn(),
     clearTimeout: vi.fn(),
-    setInterval: vi.fn().mockReturnValue(1 as never),
-    setTimeout: vi.fn().mockReturnValue(2 as never),
+    setInterval: vi.fn().mockReturnValue(1),
+    setTimeout: vi.fn().mockReturnValue(2),
   }
 
   public log = vi.fn()
-
-  public error(..._context: unknown[]): void {
-    // Noop
-  }
 }
 
 const TimerClass = withTimers(
-  BaseClass as unknown as Parameters<typeof withTimers>[0],
+  // @ts-expect-error -- Mock class intentionally doesn't implement full Homey type
+  BaseClass,
 )
 
 describe(withTimers, () => {

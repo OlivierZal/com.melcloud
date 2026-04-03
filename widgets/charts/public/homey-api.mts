@@ -10,7 +10,7 @@ export const homeyApiGet = async <T,>(
   homey: HomeyWidget,
   path: string,
 ): Promise<T> =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Homey widget API returns unknown
   (await homey.api('GET', path)) as T
 
 export const homeyApiPut = async (

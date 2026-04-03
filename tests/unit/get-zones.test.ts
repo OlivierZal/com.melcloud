@@ -1,4 +1,4 @@
-import { DeviceType } from '@olivierzal/melcloud-api'
+import { type FacadeManager, DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -6,6 +6,7 @@ import {
   getZones,
   setFacadeManager,
 } from '../../lib/get-zones.mts'
+import { mock } from '../helpers.ts'
 
 const mockBuildings = [
   {
@@ -45,7 +46,13 @@ describe('get-zones', () => {
 
   describe('when FacadeManager is initialized', () => {
     beforeEach(() => {
-      setFacadeManager(mockFacadeManager as never)
+      setFacadeManager(
+        mock<FacadeManager>({
+          get: mockFacadeManager.get,
+          getBuildings: mockFacadeManager.getBuildings,
+          getZones: mockFacadeManager.getZones,
+        }),
+      )
       vi.clearAllMocks()
       mockFacadeManager.getBuildings.mockReturnValue(mockBuildings)
       mockFacadeManager.getZones.mockReturnValue(mockZones)

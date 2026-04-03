@@ -12,7 +12,7 @@
       "method": "GET",
       "path": "/settings/drivers"
     },
-    "getErrors": {
+    "getErrorLog": {
       "method": "GET",
       "path": "/logs/errors"
     },
@@ -27,6 +27,10 @@
     "getLanguage": {
       "method": "GET",
       "path": "/language"
+    },
+    "homeLogin": {
+      "method": "POST",
+      "path": "/home/sessions"
     },
     "login": {
       "method": "POST",
@@ -87,7 +91,7 @@
     "small": "/assets/images/small.jpg",
     "xlarge": "/assets/images/xlarge.jpg"
   },
-  "name": "MELCloud",
+  "name": "MELCloud & MELCloud Home",
   "platforms": [
     "local"
   ],

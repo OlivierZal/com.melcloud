@@ -95,12 +95,8 @@ export class EnergyReport<T extends DeviceType> {
   ): number {
     const {
       driver: {
-        producedTagMapping: { [capability]: producedTags = [] },
-      },
-    } = this
-    const {
-      driver: {
         consumedTagMapping: { [capability]: consumedTags = [] },
+        producedTagMapping: { [capability]: producedTags = [] },
       },
     } = this
     return sumTags(data, producedTags) / (sumTags(data, consumedTags) || 1)
@@ -188,7 +184,7 @@ export class EnergyReport<T extends DeviceType> {
           if (capability.includes('cop')) {
             await this.#device.setCapabilityValue(
               capability,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
               this.#calculateCopValue(
                 data,
                 capability,
@@ -199,7 +195,7 @@ export class EnergyReport<T extends DeviceType> {
           if (capability.startsWith('measure_power')) {
             await this.#device.setCapabilityValue(
               capability,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
               this.#calculatePowerValue(
                 data,
                 tags,
@@ -210,7 +206,7 @@ export class EnergyReport<T extends DeviceType> {
           }
           await this.#device.setCapabilityValue(
             capability,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
             this.#calculateEnergyValue(data, tags) as Capabilities<T>[string &
               keyof EnergyCapabilities<T>],
           )

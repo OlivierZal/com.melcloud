@@ -10,7 +10,7 @@ import {
   type EnergyReportConfig,
   EnergyReport,
 } from '../../drivers/base-report.mts'
-import { assertDefined, mock } from '../helpers.ts'
+import { getMockCallArg, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof DeviceType.Ata
 
@@ -76,6 +76,38 @@ const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   return getEnergyMock
 }
 
+const createCopMocks = (): BaseMELCloudDevice<TestDeviceType> => {
+  const copConsumed = {
+    'measure_power.cop': ['ConsumedTag'],
+  } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
+  const copProduced = {
+    'measure_power.cop': ['ProducedTag'],
+  } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
+  const copEnergyMapping = {
+    'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
+  } as unknown as EnergyCapabilityTagMapping<TestDeviceType>
+  const copDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
+    consumedTagMapping: copConsumed,
+    energyCapabilityTagMapping: copEnergyMapping,
+    producedTagMapping: copProduced,
+  })
+  return mock<BaseMELCloudDevice<TestDeviceType>>({
+    cleanMapping: vi.fn().mockReturnValue({
+      'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
+    }),
+    driver: copDriver,
+    fetchDevice: fetchDeviceMock,
+    homey: mock<Homey.Homey>({
+      clearInterval: clearIntervalMock,
+      clearTimeout: clearTimeoutMock,
+    }),
+    log: logMock,
+    setCapabilityValue: setCapabilityValueMock,
+    setInterval: setIntervalMock,
+    setTimeout: setTimeoutMock,
+  })
+}
+
 describe(EnergyReport, () => {
   beforeAll(() => {
     Settings.now = (): number => FAKE_NOW_MILLIS
@@ -94,7 +126,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(clearTimeoutMock).toHaveBeenCalled()
+      expect(clearTimeoutMock).toHaveBeenCalledWith(null)
     })
 
     it('should fetch energy data and schedule when entries exist', async () => {
@@ -105,8 +137,10 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(getEnergyMock).toHaveBeenCalled()
-      expect(setTimeoutMock).toHaveBeenCalled()
+      expect(getEnergyMock).toHaveBeenCalledWith(
+        expect.objectContaining({ from: '2026-03-18', to: '2026-03-18' }),
+      )
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
     it('should log error when getEnergy fails', async () => {
@@ -122,7 +156,7 @@ describe(EnergyReport, () => {
         'Energy report fetch failed:',
         energyError,
       )
-      expect(setTimeoutMock).toHaveBeenCalled()
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
     it('should not schedule twice', async () => {
@@ -142,7 +176,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(setTimeoutMock).toHaveBeenCalled()
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -151,7 +185,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       report.unschedule()
 
-      expect(clearTimeoutMock).toHaveBeenCalled()
+      expect(clearTimeoutMock).toHaveBeenCalledWith(null)
       expect(logMock).toHaveBeenCalledWith(
         'regular energy report has been cancelled',
       )
@@ -169,7 +203,10 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(setCapabilityValueMock).toHaveBeenCalled()
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'measure_power',
+        11_000,
+      )
     })
 
     it('should calculate energy values for total mode using total entries', async () => {
@@ -185,26 +222,30 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, totalConfig)
       await report.handle()
 
-      expect(setCapabilityValueMock).toHaveBeenCalled()
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 150)
     })
 
     it('should use zero fallback when hourly array element is undefined', async () => {
       const sparseArray: (number | undefined)[] = []
-      mockEnergyFetch({
-        Auto: sparseArray,
-        Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
-      } as unknown as EnergyDataAta)
+      mockEnergyFetch(
+        mock<EnergyDataAta>({
+          Auto: sparseArray,
+          Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
+        }),
+      )
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(setCapabilityValueMock).toHaveBeenCalled()
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 0)
     })
 
     it('should handle non-array tag data by skipping power calculation', async () => {
-      mockEnergyFetch({
-        Auto: 100,
-        Cooling: 50,
-      } as unknown as EnergyDataAta)
+      mockEnergyFetch(
+        mock<EnergyDataAta>({
+          Auto: 100,
+          Cooling: 50,
+        }),
+      )
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
@@ -222,7 +263,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      expect(setCapabilityValueMock).toHaveBeenCalled()
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 5500)
     })
   })
 
@@ -278,57 +319,31 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.handle()
 
-      const timeoutCallback = setTimeoutMock.mock.calls.at(0)?.at(0) as
-        | (() => Promise<void>)
-        | undefined
-      assertDefined(timeoutCallback)
+      const timeoutCallback = getMockCallArg<() => Promise<void>>(
+        setTimeoutMock,
+        0,
+        0,
+      )
       await timeoutCallback()
 
-      expect(setIntervalMock).toHaveBeenCalled()
+      expect(setIntervalMock).toHaveBeenCalledWith(
+        expect.any(Function),
+        { hours: 1 },
+        'regular energy report',
+      )
 
-      const intervalCallback = setIntervalMock.mock.calls.at(0)?.at(0) as
-        | (() => Promise<void>)
-        | undefined
-      assertDefined(intervalCallback)
+      const intervalCallback = getMockCallArg<() => Promise<void>>(
+        setIntervalMock,
+        0,
+        0,
+      )
       await intervalCallback()
 
-      expect(fetchDeviceMock).toHaveBeenCalled()
+      expect(fetchDeviceMock).toHaveBeenCalledWith()
     })
   })
 
   describe('coefficient of performance calculation', () => {
-    const createCopMocks = (): BaseMELCloudDevice<TestDeviceType> => {
-      const copConsumed = {
-        'measure_power.cop': ['ConsumedTag'],
-      } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
-      const copProduced = {
-        'measure_power.cop': ['ProducedTag'],
-      } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
-      const copEnergyMapping = {
-        'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
-      } as unknown as EnergyCapabilityTagMapping<TestDeviceType>
-      const copDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
-        consumedTagMapping: copConsumed,
-        energyCapabilityTagMapping: copEnergyMapping,
-        producedTagMapping: copProduced,
-      })
-      return mock<BaseMELCloudDevice<TestDeviceType>>({
-        cleanMapping: vi.fn().mockReturnValue({
-          'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
-        }),
-        driver: copDriver,
-        fetchDevice: fetchDeviceMock,
-        homey: mock<Homey.Homey>({
-          clearInterval: clearIntervalMock,
-          clearTimeout: clearTimeoutMock,
-        }),
-        log: logMock,
-        setCapabilityValue: setCapabilityValueMock,
-        setInterval: setIntervalMock,
-        setTimeout: setTimeoutMock,
-      })
-    }
-
     it('should calculate COP as produced / consumed', async () => {
       const mockDeviceWithCop = createCopMocks()
       mockEnergyFetch({ ConsumedTag: 2, ProducedTag: 6 })

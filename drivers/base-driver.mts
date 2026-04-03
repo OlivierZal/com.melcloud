@@ -1,9 +1,4 @@
-import type {
-  DeviceType,
-  ListDeviceData,
-  LoginCredentials,
-} from '@olivierzal/melcloud-api'
-import type PairSession from 'homey/lib/PairSession'
+import type { DeviceType, ListDeviceData } from '@olivierzal/melcloud-api'
 
 import type {
   Capabilities,
@@ -13,49 +8,58 @@ import type {
   FlowArgs,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
-  ManifestDriver,
   MELCloudDevice,
   OperationalCapabilities,
   SetCapabilities,
   SetCapabilityTagMapping,
 } from '../types/index.mts'
-import { type Homey, Driver } from '../lib/homey.mts'
 import { typedEntries, typedKeys } from '../lib/index.mts'
+import { SharedBaseMELCloudDriver } from './shared-base-driver.mts'
 
 const getArg = <T extends DeviceType>(
   capability: string & keyof OperationalCapabilities<T>,
 ): keyof FlowArgs<T> => {
   const [arg] = capability.split('.')
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- capability prefix maps to a known FlowArgs key
   return arg as keyof FlowArgs<T>
 }
 
-export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
+const tryRegisterFlowCard = (register: () => void): void => {
+  try {
+    register()
+  } catch {
+    // Flow card may not exist for this capability
+  }
+}
+
+export abstract class BaseMELCloudDriver<
+  T extends DeviceType,
+> extends SharedBaseMELCloudDriver {
   public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
 
-  public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
+  public abstract override readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
 
-  public abstract readonly getCapabilitiesOptions: (
+  public abstract override readonly getCapabilitiesOptions: (
     data: ListDeviceData<T>,
   ) => Partial<CapabilitiesOptions<T>>
 
-  public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping<T>
+  public abstract override readonly getCapabilityTagMapping: GetCapabilityTagMapping<T>
 
   declare public readonly getDevices: () => MELCloudDevice[]
 
-  declare public readonly homey: Homey.Homey
-
-  public abstract readonly listCapabilityTagMapping: ListCapabilityTagMapping<T>
-
-  declare public readonly manifest: ManifestDriver
+  public abstract override readonly listCapabilityTagMapping: ListCapabilityTagMapping<T>
 
   public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
 
-  public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping<T>
+  public abstract override readonly setCapabilityTagMapping: SetCapabilityTagMapping<T>
 
-  public abstract readonly type: T
+  public abstract override readonly type: T
+
+  protected override get api(): typeof this.homey.app.api {
+    return this.homey.app.api
+  }
 
   public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
@@ -64,58 +68,39 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
     return Promise.resolve()
   }
 
-  public override async onPair(session: PairSession): Promise<void> {
-    session.setHandler('showView', async (view) => {
-      if (view === 'loading') {
-        if (await this.#login()) {
-          await session.showView('list_devices')
-          return
-        }
-        await session.showView('login')
-      }
-    })
-    this.#handleLogin(session)
-    session.setHandler('list_devices', async () => this.#discoverDevices())
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve()
+  public abstract override getRequiredCapabilities(
+    data?: ListDeviceData<T>,
+  ): string[]
+
+  protected override getDeviceModels(): {
+    data: ListDeviceData<T>
+    id: number
+    name: string
+  }[] {
+    return this.homey.app.getDevicesByType(this.type)
   }
 
-  public override async onRepair(session: PairSession): Promise<void> {
-    this.#handleLogin(session)
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve()
-  }
-
-  public abstract getRequiredCapabilities(data: ListDeviceData<T>): string[]
-
-  async #discoverDevices(): Promise<DeviceDetails<T>[]> {
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve(
-      this.homey.app.api.registry
-        .getDevicesByType(this.type)
-        .map(({ data, id, name }) => ({
-          capabilities: this.getRequiredCapabilities(data),
-          capabilitiesOptions: this.getCapabilitiesOptions(data),
-          data: { id },
-          name,
-        })),
-    )
-  }
-
-  #handleLogin(session: PairSession): void {
-    session.setHandler('login', async (data: LoginCredentials) =>
-      this.#login(data),
-    )
-  }
-
-  async #login(data?: LoginCredentials): Promise<boolean> {
-    return this.homey.app.api.authenticate(data)
+  protected override toDeviceDetails({
+    data,
+    id,
+    name,
+  }: {
+    data: ListDeviceData<T>
+    id: number
+    name: string
+  }): DeviceDetails<T> {
+    return {
+      capabilities: this.getRequiredCapabilities(data),
+      capabilitiesOptions: this.getCapabilitiesOptions(data),
+      data: { id },
+      name,
+    }
   }
 
   #registerActionRunListener(
     capability: string & keyof SetCapabilities<T>,
   ): void {
-    try {
+    tryRegisterFlowCard(() => {
       this.homey.flow
         .getActionCard(`${capability}_action`)
         .registerRunListener(async (args: FlowArgs<T>) => {
@@ -124,19 +109,17 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
             args[getArg(capability)],
           )
         })
-    } catch {
-      // Flow card may not exist for this capability
-    }
+    })
   }
 
   #registerConditionRunListener(
     capability: string & keyof OperationalCapabilities<T>,
   ): void {
-    try {
+    tryRegisterFlowCard(() => {
       this.homey.flow
         .getConditionCard(`${capability}_condition`)
         .registerRunListener((args: FlowArgs<T>) => {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Homey method to typed device capabilities
           const getCapabilityValue = args.device.getCapabilityValue as (
             capability: keyof Capabilities<T>,
           ) => Capabilities<T>[keyof Capabilities<T>]
@@ -145,9 +128,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
               value === args[getArg(capability)]
             : value
         })
-    } catch {
-      // Flow card may not exist for this capability
-    }
+    })
   }
 
   #registerRunListeners(): void {
@@ -161,7 +142,7 @@ export abstract class BaseMELCloudDriver<T extends DeviceType> extends Driver {
       this.#registerConditionRunListener(capability)
       if (capability in this.setCapabilityTagMapping) {
         this.#registerActionRunListener(
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- guarded by `in` check above
           capability as string & keyof SetCapabilities<T>,
         )
       }

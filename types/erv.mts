@@ -1,9 +1,10 @@
-import type {
-  DeviceType,
-  FanSpeed,
-  GetDeviceData,
-  ListDeviceDataErv,
-  UpdateDeviceDataErv,
+import {
+  type DeviceType,
+  type FanSpeed,
+  type GetDeviceData,
+  type ListDeviceDataErv,
+  type UpdateDeviceDataErv,
+  VentilationMode,
 } from '@olivierzal/melcloud-api'
 
 import type { MELCloudDeviceErv } from '../drivers/index.mts'
@@ -12,6 +13,12 @@ import type {
   BaseListCapabilities,
   BaseSetCapabilities,
 } from './bases.mts'
+
+export const ventilationModeReverse = {
+  [VentilationMode.auto]: 'auto',
+  [VentilationMode.bypass]: 'bypass',
+  [VentilationMode.recovery]: 'recovery',
+} as const satisfies Record<VentilationMode, keyof typeof VentilationMode>
 
 export const ThermostatModeErv = {
   auto: 'auto',

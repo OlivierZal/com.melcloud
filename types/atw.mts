@@ -1,40 +1,48 @@
-import type {
-  DeviceType,
-  EnergyDataAtw,
-  GetDeviceData,
-  ListDeviceDataAtw,
+import {
+  type DeviceType,
+  type EnergyDataAtw,
+  type GetDeviceData,
+  type ListDeviceDataAtw,
+  type OperationModeStateHotWater,
+  type OperationModeStateZone,
+  type UpdateDeviceDataAtw,
   OperationModeState,
-  OperationModeStateHotWater,
-  OperationModeStateZone,
   OperationModeZone,
-  UpdateDeviceDataAtw,
 } from '@olivierzal/melcloud-api'
 
 import type { MELCloudDeviceAtw } from '../drivers/index.mts'
 import { thermostatMode } from '../files.mts'
-import { typedFromEntries } from '../lib/index.mts'
-import type {
-  BaseGetCapabilities,
-  BaseListCapabilities,
-  BaseSetCapabilities,
-  CapabilitiesOptionsValues,
-  LocalizedStrings,
-  RangeOptions,
+import {
+  type BaseGetCapabilities,
+  type BaseListCapabilities,
+  type BaseSetCapabilities,
+  type CapabilitiesOptionsValues,
+  type LocalizedStrings,
+  type RangeOptions,
+  localizeWithAffix,
 } from './bases.mts'
+
+export const operationModeStateReverse = {
+  [OperationModeState.cooling]: 'cooling',
+  [OperationModeState.defrost]: 'defrost',
+  [OperationModeState.dhw]: 'dhw',
+  [OperationModeState.heating]: 'heating',
+  [OperationModeState.idle]: 'idle',
+  [OperationModeState.legionella]: 'legionella',
+} as const satisfies Record<OperationModeState, keyof typeof OperationModeState>
+
+export const operationModeZoneReverse = {
+  [OperationModeZone.curve]: 'curve',
+  [OperationModeZone.flow]: 'flow',
+  [OperationModeZone.flow_cool]: 'flow_cool',
+  [OperationModeZone.room]: 'room',
+  [OperationModeZone.room_cool]: 'room_cool',
+} as const satisfies Record<OperationModeZone, keyof typeof OperationModeZone>
 
 const addSuffixToTitle = (
   title: LocalizedStrings,
   suffix: LocalizedStrings,
-): LocalizedStrings => ({
-  ...typedFromEntries(
-    Object.entries(suffix).map(([language, localizedSuffix]) => [
-      language,
-      /* v8 ignore next */
-      `${title[language] ?? title.en} ${localizedSuffix ?? suffix.en}`,
-    ]),
-  ),
-  en: `${title.en} ${suffix.en}`,
-})
+): LocalizedStrings => localizeWithAffix(title, suffix, 'suffix')
 
 const curve: CapabilitiesOptionsValues<'curve'> = {
   id: 'curve',

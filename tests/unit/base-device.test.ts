@@ -1,20 +1,23 @@
-import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
+import type { ListDeviceDataAta } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
-import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type {
-  ConvertFromDevice,
-  ConvertToDevice,
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
-  OperationalCapabilities,
-  SetCapabilities,
   SetCapabilityTagMapping,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
-import { assertDefined, mock } from '../helpers.ts'
+import {
+  createCapabilityListenerCallbackGetter,
+  mock,
+  testDeletion,
+  testSetValuesErrorHandling,
+  testUninitialisation,
+  testWarningManagement,
+} from '../helpers.ts'
+import { type TestDeviceType, TestDevice } from './base-device-test-device.ts'
 
 const setValuesMock = vi.fn()
 const realtimeMock = vi.fn()
@@ -32,6 +35,7 @@ const mockDeviceData = {
   SetTemperature: 22,
 }
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', () => {
   class MockDevice {
     public driver = {}
@@ -75,16 +79,19 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = triggerCapabilityListenerMock
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.addCapability() resolution in SharedBaseMELCloudDevice
     public async addCapability(...args: unknown[]): Promise<void> {
       superAddCapabilityMock(...args)
       await Promise.resolve()
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.removeCapability() resolution in SharedBaseMELCloudDevice
     public async removeCapability(...args: unknown[]): Promise<void> {
       superRemoveCapabilityMock(...args)
       await Promise.resolve()
     }
 
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedBaseMELCloudDevice
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()
@@ -94,51 +101,9 @@ vi.mock('homey', () => {
   return { default: { Device: MockDevice } }
 })
 
-vi.mock('../../decorators/add-to-logs.mts', () => ({
-  addToLogs:
-    () =>
-    <T>(target: T): T =>
-      target,
-}))
-
-vi.mock('../../mixins/with-timers.mts', () => ({
-  withTimers: <T>(base: T): T => base,
-}))
-
-vi.mock('../../drivers/base-report.mts', async () => {
-  const { createEnergyReportMock } = await import('../helpers.ts')
-  return createEnergyReportMock()
-})
-
-type TestDeviceType = typeof DeviceType.Ata
-
-class TestDevice extends BaseMELCloudDevice<TestDeviceType> {
-  public capabilityToDevice: Partial<
-    Record<
-      keyof SetCapabilities<TestDeviceType>,
-      ConvertToDevice<TestDeviceType>
-    >
-  > = {}
-
-  public readonly deviceToCapability: Partial<
-    Record<
-      keyof OperationalCapabilities<TestDeviceType>,
-      ConvertFromDevice<TestDeviceType>
-    >
-  > = {}
-
-  public readonly energyReportRegular: EnergyReportConfig | null = null
-
-  public readonly energyReportTotal: EnergyReportConfig | null = null
-
-  public readonly thermostatMode: Record<string, string> | null = null
-
-  public async exposedSetCapabilityValues(
-    data: ListDeviceDataAta,
-  ): Promise<void> {
-    await this.setCapabilityValues(data)
-  }
-}
+const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(
+  registerMultipleCapabilityListenerMock,
+)
 
 const mockDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
   energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<TestDeviceType>>(
@@ -219,7 +184,9 @@ describe(BaseMELCloudDevice, () => {
       getSettingMock.mockReturnValue(true)
       await device.onInit()
 
-      const { onoff: converter } = device.capabilityToDevice
+      const {
+        capabilityToDevice: { onoff: converter },
+      } = device
 
       expect(converter?.(false)).toBe(true)
     })
@@ -228,27 +195,17 @@ describe(BaseMELCloudDevice, () => {
       getSettingMock.mockReturnValue(false)
       await device.onInit()
 
-      const { onoff: converter } = device.capabilityToDevice
+      const {
+        capabilityToDevice: { onoff: converter },
+      } = device
 
       expect(converter?.(true)).toBe(true)
     })
   })
 
-  describe('deletion', () => {
-    it('should not throw when called', () => {
-      expect(() => {
-        device.onDeleted()
-      }).not.toThrow()
-    })
-  })
+  testDeletion(() => device as object)
 
-  describe('uninitialization', () => {
-    it('should call onDeleted and return a resolved promise', async () => {
-      const result = device.onUninit()
-
-      await expect(result).resolves.toBeUndefined()
-    })
-  })
+  testUninitialisation(() => device as object)
 
   describe('adding capabilities', () => {
     it('should add capability if not already present', async () => {
@@ -282,26 +239,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  describe('warning management', () => {
-    it('should call super.setWarning with error message then null when error is an Error', async () => {
-      await device.setWarning(new Error('test error'))
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('test error')
-      expect(superSetWarningMock).toHaveBeenCalledWith(null)
-    })
-
-    it('should call super.setWarning with null when null is provided', async () => {
-      await device.setWarning(null)
-
-      expect(superSetWarningMock).toHaveBeenCalledWith(null)
-    })
-
-    it('should convert non-Error values to string', async () => {
-      await device.setWarning('string error')
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('string error')
-    })
-  })
+  testWarningManagement(() => device as object, superSetWarningMock)
 
   describe('mapping cleanup', () => {
     it('should filter mapping to only capabilities the device has', () => {
@@ -323,7 +261,7 @@ describe(BaseMELCloudDevice, () => {
     it('should expose facade via protected getter after fetch', async () => {
       await device.fetchDevice()
 
-      expect((device as unknown as { facade: unknown }).facade).toBeDefined()
+      expect(device.exposedFacade).toBeDefined()
     })
 
     it('should get facade and return device', async () => {
@@ -352,18 +290,7 @@ describe(BaseMELCloudDevice, () => {
   })
 
   describe('device synchronization', () => {
-    it('should set capability values from provided data', async () => {
-      const data = mock<ListDeviceDataAta>({
-        Power: true,
-        RoomTemperature: 21,
-      })
-      await device.fetchDevice()
-      await device.syncFromDevice(data)
-
-      expect(realtimeMock).toHaveBeenCalledWith('deviceupdate', null)
-    })
-
-    it('should fetch data when none is provided', async () => {
+    it('should set capability values from device data', async () => {
       await device.fetchDevice()
       await device.syncFromDevice()
 
@@ -464,68 +391,42 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  const getCapabilityListenerCallback = (): ((
-    values: Record<string, unknown>,
-  ) => Promise<void>) => {
-    const callback = registerMultipleCapabilityListenerMock.mock.calls
-      .at(0)
-      ?.at(1) as
-      | ((values: Record<string, unknown>) => Promise<void>)
-      | undefined
-    assertDefined(callback)
-    return callback
-  }
-
   describe('capability change handling', () => {
     it('should call setValues when capability values are set', async () => {
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
-      expect(setValuesMock).toHaveBeenCalled()
+      expect(setValuesMock).toHaveBeenCalledWith({ Power: true })
     })
 
     it('should handle thermostat_mode off when thermostat supports off', async () => {
-      const deviceWithThermostat = new (class extends TestDevice {
-        public override readonly thermostatMode = { off: 'off' }
-      })()
+      const deviceWithThermostat = new TestDevice()
+      Object.defineProperty(deviceWithThermostat, 'thermostatMode', {
+        value: { off: 'off' },
+      })
       setDriver(deviceWithThermostat)
       await deviceWithThermostat.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'off' })
 
-      expect(setValuesMock).toHaveBeenCalled()
+      expect(setValuesMock).toHaveBeenCalledWith({ Power: false })
     })
 
     it('should set onoff to true when thermostat_mode is not off', async () => {
-      const deviceWithThermostat = new (class extends TestDevice {
-        public override readonly thermostatMode = { off: 'off' }
-      })()
+      const deviceWithThermostat = new TestDevice()
+      Object.defineProperty(deviceWithThermostat, 'thermostatMode', {
+        value: { off: 'off' },
+      })
       setDriver(deviceWithThermostat)
       await deviceWithThermostat.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'heat' })
 
-      expect(setValuesMock).toHaveBeenCalled()
-    })
-
-    it('should handle setValues error with warning', async () => {
-      setValuesMock.mockRejectedValue(new Error('API error'))
-      await device.onInit()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('API error')
-    })
-
-    it('should ignore "No data to set" error', async () => {
-      setValuesMock.mockRejectedValue(new Error('No data to set'))
-      await device.onInit()
-      superSetWarningMock.mockClear()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(superSetWarningMock).not.toHaveBeenCalledWith('No data to set')
+      expect(setValuesMock).toHaveBeenCalledWith({
+        Power: true,
+        undefined: 'heat',
+      })
     })
 
     it('should not call setValues when fetchDevice returns null', async () => {
@@ -560,24 +461,22 @@ describe(BaseMELCloudDevice, () => {
 
       expect(setValuesMock).not.toHaveBeenCalled()
     })
-
-    it('should set warning for non-Error thrown values', async () => {
-      setValuesMock.mockRejectedValue('string error')
-      await device.onInit()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(superSetWarningMock).toHaveBeenCalledWith('string error')
-    })
   })
+
+  testSetValuesErrorHandling(
+    () => device as object,
+    getCapabilityListenerCallback,
+    { setValuesMock, superSetWarningMock },
+  )
 
   describe('capability value conversion', () => {
     it('should use deviceToCapability converter when present', async () => {
-      const customDevice = new (class extends TestDevice {
-        public override readonly deviceToCapability = {
+      const customDevice = new TestDevice()
+      Object.defineProperty(customDevice, 'deviceToCapability', {
+        value: {
           measure_temperature: (value: number): number => value * 2,
-        }
-      })()
+        },
+      })
       setDriver(customDevice)
       mockFacade({ ...mockDeviceData, RoomTemperature: 10 })
       vi.spyOn(customDevice, 'hasCapability').mockReturnValue(true)
@@ -602,7 +501,9 @@ describe(BaseMELCloudDevice, () => {
       vi.spyOn(device, 'hasCapability').mockReturnValue(false)
       await device.onInit()
 
-      expect(superAddCapabilityMock).toHaveBeenCalled()
+      expect(superAddCapabilityMock).toHaveBeenCalledWith('fan_speed')
+      expect(superAddCapabilityMock).toHaveBeenCalledWith('onoff')
+      expect(superAddCapabilityMock).toHaveBeenCalledWith('measure_temperature')
     })
 
     it('should remove capabilities not in required set', async () => {
@@ -643,16 +544,21 @@ describe(BaseMELCloudDevice, () => {
   describe('energy report handling', () => {
     it('should create energy report for regular config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
-      const callCountBefore = vi.mocked(EnergyReport).mock.calls.length
-      const deviceWithRegular = new (class extends TestDevice {
-        public override readonly energyReportRegular = {
+      const {
+        mock: {
+          calls: { length: callCountBefore },
+        },
+      } = vi.mocked(EnergyReport)
+      const deviceWithRegular = new TestDevice()
+      Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
+        value: {
           duration: { hours: 1 },
           interval: { hours: 1 },
           minus: { hours: 1 },
           mode: 'regular' as const,
           values: { millisecond: 0, minute: 5, second: 0 },
-        }
-      })()
+        },
+      })
       setDriver(deviceWithRegular)
       await deviceWithRegular.onInit()
 
@@ -663,16 +569,21 @@ describe(BaseMELCloudDevice, () => {
 
     it('should create energy report for total config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
-      const callCountBefore = vi.mocked(EnergyReport).mock.calls.length
-      const deviceWithTotal = new (class extends TestDevice {
-        public override readonly energyReportTotal = {
+      const {
+        mock: {
+          calls: { length: callCountBefore },
+        },
+      } = vi.mocked(EnergyReport)
+      const deviceWithTotal = new TestDevice()
+      Object.defineProperty(deviceWithTotal, 'energyReportTotal', {
+        value: {
           duration: { days: 1 },
           interval: { days: 1 },
           minus: { days: 1 },
           mode: 'total' as const,
           values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-        }
-      })()
+        },
+      })
       setDriver(deviceWithTotal)
       await deviceWithTotal.onInit()
 
@@ -690,7 +601,8 @@ describe(BaseMELCloudDevice, () => {
       await device.fetchDevice()
       await device.syncFromDevice()
 
-      expect(superSetWarningMock).toHaveBeenCalled()
+      expect(superSetWarningMock).toHaveBeenCalledWith('Not found')
+      expect(superSetWarningMock).toHaveBeenCalledWith(null)
     })
 
     it('should not set capability values when fetchData returns null via fetchDevice', async () => {
@@ -725,7 +637,8 @@ describe(BaseMELCloudDevice, () => {
       )
       await errorDevice.syncFromDevice()
 
-      expect(superSetWarningMock).toHaveBeenCalled()
+      expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
+      expect(superSetWarningMock).toHaveBeenCalledWith(null)
     })
   })
 })

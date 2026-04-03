@@ -8,11 +8,17 @@
 
 ## Introduction
 
-This app integrates [MELCloud](https://app.melcloud.com/) into [Homey](https://homey.app/) to control Mitsubishi Electric HVAC devices:
+This app integrates [MELCloud](https://app.melcloud.com/) and [MELCloud Home](https://melcloudhome.com/) into [Homey](https://homey.app/) to control Mitsubishi Electric HVAC devices:
+
+### MELCloud (classic)
 
 - **Air-to-air heat pumps** (ATA) — cooling, heating, fan speed, vane position
 - **Air-to-water heat pumps** (ATW) — zones, hot water, flow temperatures
 - **Energy recovery ventilators** (ERV) — ventilation modes, bypass
+
+### MELCloud Home
+
+- **Air-to-air heat pumps** (ATA) — cooling, heating, fan speed, vane position
 
 ## Installation
 

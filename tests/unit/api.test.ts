@@ -1,5 +1,4 @@
 import type {
-  ErrorLog,
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionQuery,
@@ -13,6 +12,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type {
   DeviceSettings,
   DriverSetting,
+  FormattedErrorLog,
   Settings,
   ZoneData,
 } from '../../types/index.mts'
@@ -20,7 +20,7 @@ import { mock } from '../helpers.js'
 
 const mockGetBuildings = vi.fn()
 
-vi.mock('../../lib/index.mts', () => ({
+vi.mock(import('../../lib/index.mts'), () => ({
   getBuildings: mockGetBuildings,
 }))
 
@@ -29,9 +29,10 @@ const { default: api } = await import('../../api.mts')
 const mockApp = {
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
-  getErrors: vi.fn<() => Promise<ErrorLog>>(),
+  getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
   getFrostProtectionSettings: vi.fn<() => Promise<FrostProtectionData>>(),
   getHolidayModeSettings: vi.fn<() => Promise<HolidayModeData>>(),
+  homeLogin: vi.fn<() => Promise<boolean>>(),
   login: vi.fn<() => Promise<boolean>>(),
   setDeviceSettings: vi.fn<() => Promise<void>>(),
   setFrostProtectionSettings: vi.fn<() => Promise<void>>(),
@@ -40,7 +41,7 @@ const mockApp = {
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
 
-const homey = { app: mockApp, i18n: mockI18n } as unknown as Homey
+const homey = mock<Homey>({ app: mockApp, i18n: mockI18n })
 
 describe('api', () => {
   beforeEach(() => {
@@ -84,15 +85,15 @@ describe('api', () => {
   })
 
   describe('error retrieval', () => {
-    it('should delegate to app.getErrors with query', async () => {
-      const errorLog = mock<ErrorLog>()
+    it('should delegate to app.getErrorLog with query', async () => {
+      const errorLog = mock<FormattedErrorLog>()
       const query = mock<ErrorLogQuery>()
-      mockApp.getErrors.mockResolvedValue(errorLog)
+      mockApp.getErrorLog.mockResolvedValue(errorLog)
 
-      const result = await api.getErrors({ homey, query })
+      const result = await api.getErrorLog({ homey, query })
 
       expect(result).toBe(errorLog)
-      expect(mockApp.getErrors).toHaveBeenCalledWith(query)
+      expect(mockApp.getErrorLog).toHaveBeenCalledWith(query)
     })
   })
 
@@ -141,8 +142,21 @@ describe('api', () => {
     })
   })
 
+  describe('home authentication', () => {
+    it('should delegate to app.homeLogin with body', async () => {
+      mockApp.homeLogin.mockResolvedValue(true)
+      const body = mock<LoginCredentials>()
+
+      const isLoggedIn = await api.homeLogin({ body, homey })
+
+      expect(isLoggedIn).toBe(true)
+      expect(mockApp.homeLogin).toHaveBeenCalledWith(body)
+    })
+  })
+
   describe('authentication', () => {
     it('should delegate to app.login with body', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
       const credentials = mock<LoginCredentials>({
         password: 'pass',
         username: 'user',

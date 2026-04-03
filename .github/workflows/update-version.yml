@@ -3,10 +3,10 @@ jobs:
     name: Update app version
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       - id: update_app_version
         name: Update app version
-        uses: athombv/github-action-homey-app-version@3342f092b437550e78074797b52fac6467a456e1 # master
+        uses: athombv/github-action-homey-app-version@3342f092b437550e78074797b52fac6467a456e1
         with:
           changelog: ${{ inputs.changelog }}
           version: ${{ inputs.version }}

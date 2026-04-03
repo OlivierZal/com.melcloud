@@ -671,6 +671,7 @@ const config = defineConfig([
     files: ['**/*.md'],
     language: 'markdown/gfm',
     rules: {
+      'markdown/fenced-code-meta': 'error',
       'markdown/no-bare-urls': 'error',
       'markdown/no-duplicate-headings': 'error',
       'markdown/no-html': 'error',
@@ -680,38 +681,13 @@ const config = defineConfig([
     extends: [vitest.configs.all],
     files: ['tests/**/*.ts'],
     rules: {
-      '@typescript-eslint/class-methods-use-this': 'off',
-      '@typescript-eslint/init-declarations': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-magic-numbers': 'off',
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-unsafe-type-assertion': 'off',
-      '@typescript-eslint/prefer-destructuring': 'off',
-      'import-x/max-dependencies': [
-        'error',
-        {
-          ignoreTypeImports: true,
-          max: 15,
-        },
-      ],
-      'max-classes-per-file': 'off',
       'max-lines-per-function': 'off',
       'max-statements': 'off',
-      'unicorn/consistent-function-scoping': 'off',
-      'unicorn/no-useless-undefined': 'off',
-      'vitest/max-expects': [
-        'error',
-        {
-          max: 12,
-        },
-      ],
+      'vitest/max-expects': 'off',
       'vitest/no-hooks': 'off',
-      'vitest/prefer-called-with': 'off',
       'vitest/prefer-expect-assertions': 'off',
-      'vitest/prefer-import-in-mock': 'off',
       'vitest/require-hook': 'off',
       'vitest/require-mock-type-parameters': 'off',
     },
@@ -719,6 +695,22 @@ const config = defineConfig([
       vitest: {
         typecheck: true,
       },
+    },
+  },
+  {
+    files: ['tests/unit/app.test.ts'],
+    rules: {
+      '@typescript-eslint/init-declarations': 'off',
+    },
+  },
+  {
+    files: ['tests/unit/app.test.ts', 'tests/unit/*-{device,driver}.test.ts'],
+    rules: {
+      '@typescript-eslint/init-declarations': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
     },
   },
   {
@@ -739,7 +731,11 @@ const config = defineConfig([
             natural: true,
             type: 'asc',
           },
-          pathPattern: '^.*$',
+          pathPattern: String.raw`^(?!jobs\.\w+\.steps\[\d+\]).*$`,
+        },
+        {
+          order: ['id', 'name', 'if', 'uses', 'with', 'env', 'run'],
+          pathPattern: String.raw`^jobs\.\w+\.steps\[\d+\]$`,
         },
       ],
       'yml/sort-sequence-values': [

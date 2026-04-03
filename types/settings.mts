@@ -1,4 +1,8 @@
-import type { LoginCredentials } from '@olivierzal/melcloud-api'
+import type {
+  ErrorDetails,
+  ErrorLog,
+  LoginCredentials,
+} from '@olivierzal/melcloud-api'
 
 import type { BaseSettings } from './bases.mts'
 
@@ -26,9 +30,24 @@ export interface DriverSetting {
   readonly values?: readonly { readonly id: string; readonly label: string }[]
 }
 
+export interface FormattedErrorDetails extends Omit<ErrorDetails, 'deviceId'> {
+  readonly device: string
+}
+
+export interface FormattedErrorLog extends Omit<
+  ErrorLog,
+  'errors' | 'fromDate'
+> {
+  readonly errors: readonly FormattedErrorDetails[]
+  readonly fromDateHuman: string
+}
+
 export interface HomeySettings {
   readonly contextKey?: string | null
   readonly expiry?: string | null
+  readonly homeExpiry?: string | null
+  readonly homePassword?: string | null
+  readonly homeUsername?: string | null
   readonly notifiedVersion?: string | null
   readonly password?: string | null
   readonly username?: string | null

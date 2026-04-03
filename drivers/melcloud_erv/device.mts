@@ -4,13 +4,13 @@ import {
   VentilationMode,
 } from '@olivierzal/melcloud-api'
 
-import { keyOfValue } from '../../lib/index.mts'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
   type OperationalCapabilities,
   type SetCapabilities,
   ThermostatModeErv,
+  ventilationModeReverse,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
@@ -36,8 +36,7 @@ export default class MELCloudDeviceErv extends BaseMELCloudDevice<
     thermostat_mode: (
       value: VentilationMode,
       data: ListDeviceData<typeof DeviceType.Erv>,
-    ) =>
-      data.Power ? keyOfValue(VentilationMode, value) : ThermostatModeErv.off,
+    ) => (data.Power ? ventilationModeReverse[value] : ThermostatModeErv.off),
   }
 
   protected readonly energyReportRegular = null

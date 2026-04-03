@@ -24,7 +24,7 @@ export default class MELCloudDriverAta extends BaseMELCloudDriver<
 
   public readonly type = DeviceType.Ata
 
-  public getRequiredCapabilities(): string[] {
+  public override getRequiredCapabilities(): string[] {
     return Object.keys({
       ...this.setCapabilityTagMapping,
       ...this.getCapabilityTagMapping,

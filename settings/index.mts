@@ -1,6 +1,4 @@
 import type {
-  ErrorDetails,
-  ErrorLog,
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionQuery,
@@ -16,6 +14,8 @@ import type {
   DeviceSetting,
   DeviceSettings,
   DriverSetting,
+  FormattedErrorDetails,
+  FormattedErrorLog,
   HomeySettings,
   LoginDriverSetting,
   Settings,
@@ -93,8 +93,12 @@ const getZoneName = (name: string, level: number): string =>
 
 // ── API helpers ──
 
-const getErrorMessage = (error: unknown): string =>
-  error instanceof Error ? error.message : String(error)
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return typeof error === 'string' ? error : JSON.stringify(error)
+}
 
 // Wraps Homey's callback-based settings API in a Promise for async/await usage
 const homeyApiGet = async <T,>(homey: Homey, path: string): Promise<T> =>
@@ -159,7 +163,6 @@ const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
-const commonElementValueTypes = new Set(['boolean', 'number', 'string'])
 
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
@@ -545,7 +548,7 @@ class ErrorLogManager {
   public async fetchErrorLog(): Promise<void> {
     await withDisablingButton(this.#seeElement.id, async () => {
       try {
-        const data = await homeyApiGet<ErrorLog>(
+        const data = await homeyApiGet<FormattedErrorLog>(
           this.#homey,
           `/logs/errors?${new URLSearchParams({
             from: this.#sinceElement.value,
@@ -576,7 +579,7 @@ class ErrorLogManager {
     return tableElement.createTBody()
   }
 
-  #generateErrorLogTableData(errors: readonly ErrorDetails[]): void {
+  #generateErrorLogTableData(errors: readonly FormattedErrorDetails[]): void {
     for (const error of errors) {
       this.#errorLogTBodyElement ??= this.#generateErrorLogTable(
         Object.keys(error),
@@ -607,7 +610,7 @@ class ErrorLogManager {
     fromDateHuman,
     nextFromDate,
     nextToDate,
-  }: ErrorLog): void {
+  }: FormattedErrorLog): void {
     this.#errorCount += errors.length
     this.#from = fromDateHuman
     this.#to = nextToDate
@@ -958,7 +961,13 @@ class DeviceSettingsManager {
     if (id !== undefined) {
       const { [id]: value } = this.#flatDeviceSettings
       element.value =
-        commonElementValueTypes.has(typeof value) ? String(value) : ''
+        (
+          typeof value === 'boolean' ||
+          typeof value === 'number' ||
+          typeof value === 'string'
+        ) ?
+          String(value)
+        : ''
     }
   }
 

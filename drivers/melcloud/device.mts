@@ -8,13 +8,15 @@ import {
 } from '@olivierzal/melcloud-api'
 
 import type { EnergyReportConfig } from '../base-report.mts'
-import { keyOfValue } from '../../lib/index.mts'
 import {
   type ConvertFromDevice,
   type ConvertToDevice,
   type OperationalCapabilities,
   type SetCapabilities,
+  horizontalReverse,
+  operationModeReverse,
   ThermostatModeAta,
+  verticalReverse,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
@@ -42,13 +44,12 @@ export default class MELCloudDeviceAta extends BaseMELCloudDevice<
     'alarm_generic.silent': (value: FanSpeed) => value === FanSpeed.silent,
     fan_speed: (value: FanSpeed) =>
       value === FanSpeed.silent ? FanSpeed.auto : value,
-    horizontal: (value: Horizontal) => keyOfValue(Horizontal, value),
+    horizontal: (value: Horizontal) => horizontalReverse[value],
     thermostat_mode: (
       value: OperationMode,
       data: ListDeviceData<typeof DeviceType.Ata>,
-    ) =>
-      data.Power ? keyOfValue(OperationMode, value) : ThermostatModeAta.off,
-    vertical: (value: Vertical) => keyOfValue(Vertical, value),
+    ) => (data.Power ? operationModeReverse[value] : ThermostatModeAta.off),
+    vertical: (value: Vertical) => verticalReverse[value],
   }
 
   protected readonly energyReportRegular: EnergyReportConfig = {

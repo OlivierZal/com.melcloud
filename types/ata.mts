@@ -1,11 +1,12 @@
-import type {
-  DeviceType,
-  EnergyDataAta,
-  FanSpeed,
-  GetDeviceData,
+import {
+  type DeviceType,
+  type EnergyDataAta,
+  type FanSpeed,
+  type GetDeviceData,
+  type ListDeviceDataAta,
+  type UpdateDeviceDataAta,
   Horizontal,
-  ListDeviceDataAta,
-  UpdateDeviceDataAta,
+  OperationMode,
   Vertical,
 } from '@olivierzal/melcloud-api'
 
@@ -24,6 +25,35 @@ export const ThermostatModeAta = {
   heat: 'heat',
   off: 'off',
 } as const
+
+export const horizontalReverse = {
+  [Horizontal.auto]: 'auto',
+  [Horizontal.center]: 'center',
+  [Horizontal.center_left]: 'center_left',
+  [Horizontal.center_right]: 'center_right',
+  [Horizontal.leftwards]: 'leftwards',
+  [Horizontal.rightwards]: 'rightwards',
+  [Horizontal.swing]: 'swing',
+  [Horizontal.wide]: 'wide',
+} as const satisfies Record<Horizontal, keyof typeof Horizontal>
+
+export const operationModeReverse = {
+  [OperationMode.auto]: 'auto',
+  [OperationMode.cool]: 'cool',
+  [OperationMode.dry]: 'dry',
+  [OperationMode.fan]: 'fan',
+  [OperationMode.heat]: 'heat',
+} as const satisfies Record<OperationMode, keyof typeof OperationMode>
+
+export const verticalReverse = {
+  [Vertical.auto]: 'auto',
+  [Vertical.downwards]: 'downwards',
+  [Vertical.mid_high]: 'mid_high',
+  [Vertical.mid_low]: 'mid_low',
+  [Vertical.middle]: 'middle',
+  [Vertical.swing]: 'swing',
+  [Vertical.upwards]: 'upwards',
+} as const satisfies Record<Vertical, keyof typeof Vertical>
 
 export interface CapabilitiesAta
   extends

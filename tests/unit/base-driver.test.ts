@@ -3,25 +3,24 @@
     @typescript-eslint/consistent-type-imports,
     @typescript-eslint/unbound-method,
 */
-import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type {
-  EnergyCapabilityTagMapping,
-  GetCapabilityTagMapping,
-  ListCapabilityTagMapping,
-  SetCapabilityTagMapping,
-} from '../../types/index.mts'
+import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
-import { assertDefined, mock } from '../helpers.ts'
-
-type TestDriverType = typeof DeviceType.Ata
+import { assertDefined, mock, testPairing, testRepairing } from '../helpers.ts'
+import {
+  type TestDriverType,
+  createTestDriver,
+  TestDriver,
+} from './base-driver-test-driver.ts'
 
 const registerRunListenerMock = vi.fn()
 const authenticateMock = vi.fn()
+const isAuthenticatedMock = vi.fn().mockReturnValue(false)
 const showViewMock = vi.fn()
 const setHandlerMock = vi.fn()
 
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', () => {
   class MockDriver {
     public getDevices = vi.fn().mockReturnValue([])
@@ -30,10 +29,9 @@ vi.mock('homey', () => {
       app: {
         api: {
           authenticate: authenticateMock,
-          registry: {
-            getDevicesByType: vi.fn().mockReturnValue([]),
-          },
+          isAuthenticated: isAuthenticatedMock,
         },
+        getDevicesByType: vi.fn().mockReturnValue([]),
       },
       flow: {
         getActionCard: vi.fn().mockReturnValue({
@@ -53,46 +51,13 @@ vi.mock('homey', () => {
   return { default: { Driver: MockDriver } }
 })
 
-class TestDriver extends BaseMELCloudDriver<TestDriverType> {
-  public readonly energyCapabilityTagMapping = mock<
-    EnergyCapabilityTagMapping<TestDriverType>
-  >({
-    measure_power: ['Auto', 'Cooling'],
-  })
-
-  public readonly getCapabilitiesOptions = vi.fn().mockReturnValue({})
-
-  public readonly getCapabilityTagMapping = mock<
-    GetCapabilityTagMapping<TestDriverType>
-  >({
-    measure_temperature: 'RoomTemperature',
-  })
-
-  public readonly listCapabilityTagMapping = mock<
-    ListCapabilityTagMapping<TestDriverType>
-  >({})
-
-  public readonly setCapabilityTagMapping = mock<
-    SetCapabilityTagMapping<TestDriverType>
-  >({
-    onoff: 'Power',
-    thermostat_mode: 'OperationMode',
-  })
-
-  public readonly type: TestDriverType = 0
-
-  public getRequiredCapabilities(_context: ListDeviceDataAta): string[] {
-    return ['onoff', 'measure_temperature']
-  }
-}
-
 describe(BaseMELCloudDriver, () => {
   let driver: TestDriver
 
   beforeEach(() => {
     vi.clearAllMocks()
 
-    driver = new (TestDriver as unknown as new () => TestDriver)()
+    driver = createTestDriver()
   })
 
   describe('initialization', () => {
@@ -106,129 +71,43 @@ describe(BaseMELCloudDriver, () => {
     it('should register run listeners for flow cards', async () => {
       await driver.onInit()
 
-      expect(registerRunListenerMock).toHaveBeenCalled()
+      expect(registerRunListenerMock).toHaveBeenCalledWith(expect.any(Function))
     })
 
     it('should register condition listeners for all capabilities', async () => {
       await driver.onInit()
 
-      expect(driver.homey.flow.getConditionCard).toHaveBeenCalled()
+      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
+        'onoff_condition',
+      )
+      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
+        'thermostat_mode_condition',
+      )
+      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
+        'measure_temperature_condition',
+      )
     })
 
     it('should register action listeners for set capabilities', async () => {
       await driver.onInit()
 
-      expect(driver.homey.flow.getActionCard).toHaveBeenCalled()
+      expect(driver.homey.flow.getActionCard).toHaveBeenCalledWith(
+        'onoff_action',
+      )
+      expect(driver.homey.flow.getActionCard).toHaveBeenCalledWith(
+        'thermostat_mode_action',
+      )
     })
   })
 
-  describe('pairing', () => {
-    it('should set handlers on the session', async () => {
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: setHandlerMock,
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
+  testPairing(() => driver, {
+    authenticateMock,
+    isAuthenticatedMock,
+    setHandlerMock,
+    showViewMock,
+  })
 
-      expect(setHandlerMock).toHaveBeenCalledWith(
-        'showView',
-        expect.any(Function),
-      )
-      expect(setHandlerMock).toHaveBeenCalledWith('login', expect.any(Function))
-      expect(setHandlerMock).toHaveBeenCalledWith(
-        'list_devices',
-        expect.any(Function),
-      )
-    })
-
-    it('should show list_devices when login succeeds on loading view', async () => {
-      authenticateMock.mockResolvedValue(true)
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'showView') {
-                handler('loading')
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-
-      expect(showViewMock).toHaveBeenCalledWith('list_devices')
-    })
-
-    it('should show login when login fails on loading view', async () => {
-      authenticateMock.mockResolvedValue(false)
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'showView') {
-                handler('loading')
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-
-      expect(showViewMock).toHaveBeenCalledWith('login')
-    })
-
-    it('should do nothing when showView is called with a non-loading view', async () => {
-      showViewMock.mockClear()
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'showView') {
-                handler('other_view')
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-
-      expect(showViewMock).not.toHaveBeenCalled()
-    })
-
-    it('should invoke login via the login handler', async () => {
-      authenticateMock.mockResolvedValue(true)
-
-      let loginHandler: (data: unknown) => Promise<unknown> = vi
-        .fn<() => Promise<void>>()
-        .mockResolvedValue()
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: vi
-          .fn()
-          .mockImplementation(
-            (event: string, handler: (data: unknown) => Promise<unknown>) => {
-              if (event === 'login') {
-                loginHandler = handler
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      await driver.onPair(session)
-      const result = await loginHandler({
-        password: 'pass',
-        username: 'user',
-      })
-
-      expect(result).toBe(true)
-      expect(authenticateMock).toHaveBeenCalledWith({
-        password: 'pass',
-        username: 'user',
-      })
-    })
-
+  describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
       const listHandler = vi.fn()
       const session = mock<import('homey/lib/PairSession')>({
@@ -243,10 +122,7 @@ describe(BaseMELCloudDriver, () => {
           ),
         showView: showViewMock,
       })
-      vi.spyOn(
-        driver.homey.app.api.registry,
-        'getDevicesByType',
-      ).mockReturnValue([
+      vi.spyOn(driver.homey.app, 'getDevicesByType').mockReturnValue([
         { data: { Power: true }, id: 1, name: 'Device 1' } as never,
       ])
       await driver.onPair(session)
@@ -254,7 +130,7 @@ describe(BaseMELCloudDriver, () => {
 
       expect(devices).toStrictEqual([
         {
-          capabilities: ['onoff', 'measure_temperature'],
+          capabilities: ['onoff', 'thermostat_mode'],
           capabilitiesOptions: {},
           data: { id: 1 },
           name: 'Device 1',
@@ -263,16 +139,7 @@ describe(BaseMELCloudDriver, () => {
     })
   })
 
-  describe('repairing', () => {
-    it('should set login handler on the session', async () => {
-      const session = mock<import('homey/lib/PairSession')>({
-        setHandler: setHandlerMock,
-      })
-      await driver.onRepair(session)
-
-      expect(setHandlerMock).toHaveBeenCalledWith('login', expect.any(Function))
-    })
-  })
+  testRepairing(() => driver, { authenticateMock, setHandlerMock })
 
   describe('produced and consumed tag mappings', () => {
     it('should separate energy tags into produced and consumed', async () => {
@@ -283,11 +150,12 @@ describe(BaseMELCloudDriver, () => {
     })
 
     it('should group tags ending with Produced into produced mapping', async () => {
-      const driverWithProduced = new (class extends TestDriver {
-        public override readonly energyCapabilityTagMapping = {
+      const driverWithProduced = createTestDriver()
+      Object.defineProperty(driverWithProduced, 'energyCapabilityTagMapping', {
+        value: mock<EnergyCapabilityTagMapping<TestDriverType>>({
           measure_power: ['TotalHeatingProduced', 'TotalCoolingConsumed'],
-        } as unknown as EnergyCapabilityTagMapping<TestDriverType>
-      })()
+        }),
+      })
       await driverWithProduced.onInit()
 
       expect(driverWithProduced.producedTagMapping.measure_power).toStrictEqual(
@@ -318,7 +186,7 @@ describe(BaseMELCloudDriver, () => {
       )
       await driver.onInit()
 
-      const listener = actionListeners['onoff_action']
+      const { onoff_action: listener } = actionListeners
       assertDefined(listener)
       await listener({
         device: { triggerCapabilityListener: triggerMock },
@@ -355,7 +223,7 @@ describe(BaseMELCloudDriver, () => {
       )
       await driver.onInit()
 
-      const onoffListener = conditionListeners['onoff_condition']
+      const { onoff_condition: onoffListener } = conditionListeners
       assertDefined(onoffListener)
       const result = onoffListener({
         device: { getCapabilityValue: vi.fn().mockReturnValue(true) },
@@ -382,7 +250,8 @@ describe(BaseMELCloudDriver, () => {
       )
       await driver.onInit()
 
-      const thermostatListener = conditionListeners['thermostat_mode_condition']
+      const { thermostat_mode_condition: thermostatListener } =
+        conditionListeners
       assertDefined(thermostatListener)
 
       const resultTrue = thermostatListener({

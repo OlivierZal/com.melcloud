@@ -1,0 +1,145 @@
+{
+  "$extends": ["defaults"],
+  "capabilities": [
+    "onoff",
+    "measure_temperature",
+    "target_temperature",
+    "thermostat_mode",
+    "fan_speed",
+    "vertical",
+    "horizontal"
+  ],
+  "capabilitiesOptions": {
+    "target_temperature": {
+      "max": 31,
+      "min": 10
+    },
+    "thermostat_mode": {
+      "values": [
+        {
+          "id": "auto",
+          "title": {
+            "ar": "تلقائي",
+            "da": "Automatisk",
+            "de": "Automatisch",
+            "en": "Automatic",
+            "es": "Automático",
+            "fr": "Automatique",
+            "it": "Automatica",
+            "ko": "자동",
+            "nl": "Automatisch",
+            "no": "Automatisk",
+            "pl": "Automatyczny",
+            "ru": "Авто",
+            "sv": "Automatiskt"
+          }
+        },
+        {
+          "id": "cool",
+          "title": {
+            "ar": "تبريد",
+            "da": "Køl ned",
+            "de": "Kühlen",
+            "en": "Cool",
+            "es": "Enfriar",
+            "fr": "Refroidir",
+            "it": "Raffreddamento",
+            "ko": "냉방",
+            "nl": "Koelen",
+            "no": "Avkjøle",
+            "pl": "Chłodzenie",
+            "ru": "Охлаждение",
+            "sv": "Kyla"
+          }
+        },
+        {
+          "id": "dry",
+          "title": {
+            "ar": "إزالة الرطوبة",
+            "da": "Affugte",
+            "de": "Entfeuchten",
+            "en": "Dry",
+            "es": "Deshumidificar",
+            "fr": "Déshumidifier",
+            "it": "Deumidificazione",
+            "ko": "제습",
+            "nl": "Ontvochtigen",
+            "no": "Avfukte",
+            "pl": "Osuszanie",
+            "ru": "Осушение",
+            "sv": "Avfukta"
+          }
+        },
+        {
+          "id": "fan",
+          "title": {
+            "ar": "مروحة",
+            "da": "Blæse",
+            "de": "Lüfter",
+            "en": "Fan",
+            "es": "Ventilar",
+            "fr": "Ventiler",
+            "it": "Ventilazione",
+            "ko": "팬",
+            "nl": "Ventileren",
+            "no": "Vifte",
+            "pl": "Wentylator",
+            "ru": "Вентилятор",
+            "sv": "Fläkta"
+          }
+        },
+        {
+          "id": "heat",
+          "title": {
+            "ar": "تدفئة",
+            "da": "Opvarm",
+            "de": "Heizen",
+            "en": "Heat",
+            "es": "Calentar",
+            "fr": "Chauffer",
+            "it": "Riscaldamento",
+            "ko": "난방",
+            "nl": "Verhitten",
+            "no": "Varme",
+            "pl": "Ogrzewanie",
+            "ru": "Отопление",
+            "sv": "Värme"
+          }
+        },
+        {
+          "id": "off",
+          "title": {
+            "ar": "إيقاف",
+            "da": "Deaktiveret",
+            "de": "Aus",
+            "en": "Off",
+            "es": "Desactivado",
+            "fr": "Désactivé",
+            "it": "Spento",
+            "ko": "끄기",
+            "nl": "Uit",
+            "no": "Av",
+            "pl": "Wyłączony",
+            "ru": "Выкл.",
+            "sv": "Av"
+          }
+        }
+      ]
+    }
+  },
+  "name": {
+    "ar": "مضخة حرارية هواء-هواء",
+    "da": "Luft-til-luft varmepumpe (MELCloud Home)",
+    "de": "Luft-Luft-Wärmepumpe (MELCloud Home)",
+    "en": "Air-to-air heat pump (MELCloud Home)",
+    "es": "Bomba de calor aire-aire (MELCloud Home)",
+    "fr": "Pompe à chaleur air-air (MELCloud Home)",
+    "it": "Pompa di calore aria-aria (MELCloud Home)",
+    "ko": "공기-공기 히트펌프 (MELCloud Home)",
+    "nl": "Lucht-lucht warmtepomp (MELCloud Home)",
+    "no": "Luft-til-luft varmepumpe (MELCloud Home)",
+    "pl": "Pompa ciepła powietrze-powietrze (MELCloud Home)",
+    "ru": "Воздушный тепловой насос (MELCloud Home)",
+    "sv": "Luft-till-luft värmepump (MELCloud Home)"
+  }
+}

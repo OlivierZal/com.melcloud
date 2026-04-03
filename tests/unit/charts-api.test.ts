@@ -9,7 +9,7 @@ import { mock } from '../helpers.js'
 
 const mockGetZones = vi.fn()
 
-vi.mock('../../lib/index.mts', async (importOriginal) => ({
+vi.mock(import('../../lib/index.mts'), async (importOriginal) => ({
   ...(await importOriginal()),
   getZones: mockGetZones,
 }))
