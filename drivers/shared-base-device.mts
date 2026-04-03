@@ -275,6 +275,7 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
         }
       }
     }
+    await this.syncFromDevice()
   }
 
   async #handleOptionalCapabilities(
