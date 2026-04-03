@@ -21,6 +21,13 @@ export abstract class HomeBaseMELCloudDevice extends SharedBaseMELCloudDevice {
     }
   }
 
+  protected override async sendUpdate(
+    values: Record<string, unknown>,
+  ): Promise<void> {
+    await super.sendUpdate(values)
+    await this.syncFromDevice()
+  }
+
   /* v8 ignore start -- never called: energyReportRegular/Total are null */
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected override createEnergyReport(): never {
