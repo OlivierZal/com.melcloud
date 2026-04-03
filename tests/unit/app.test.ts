@@ -15,6 +15,7 @@ import {
   DeviceType,
   FacadeManager,
   HomeDeviceAtaFacade,
+  HomeDeviceType,
 } from '@olivierzal/melcloud-api'
 import { Settings as LuxonSettings } from 'luxon'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -643,10 +644,12 @@ describe('melCloudApp', () => {
       mockHomeRegistry.getByType.mockReturnValue(mockModels)
       await app.onInit()
 
-      const result = app.getHomeDevicesByType(DeviceType.Ata)
+      const result = app.getHomeDevicesByType(HomeDeviceType.Ata)
 
       expect(result).toBe(mockModels)
-      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(DeviceType.Ata)
+      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
+        HomeDeviceType.Ata,
+      )
     })
   })
 

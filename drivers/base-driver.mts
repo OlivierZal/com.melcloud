@@ -38,24 +38,24 @@ export abstract class BaseMELCloudDriver<
   public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
 
-  public abstract readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
+  public abstract override readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
 
-  public abstract readonly getCapabilitiesOptions: (
+  public abstract override readonly getCapabilitiesOptions: (
     data: ListDeviceData<T>,
   ) => Partial<CapabilitiesOptions<T>>
 
-  public abstract readonly getCapabilityTagMapping: GetCapabilityTagMapping<T>
+  public abstract override readonly getCapabilityTagMapping: GetCapabilityTagMapping<T>
 
   declare public readonly getDevices: () => MELCloudDevice[]
 
-  public abstract readonly listCapabilityTagMapping: ListCapabilityTagMapping<T>
+  public abstract override readonly listCapabilityTagMapping: ListCapabilityTagMapping<T>
 
   public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
 
-  public abstract readonly setCapabilityTagMapping: SetCapabilityTagMapping<T>
+  public abstract override readonly setCapabilityTagMapping: SetCapabilityTagMapping<T>
 
-  public abstract readonly type: T
+  public abstract override readonly type: T
 
   protected override get api(): typeof this.homey.app.api {
     return this.homey.app.api
@@ -72,16 +72,29 @@ export abstract class BaseMELCloudDriver<
     data?: ListDeviceData<T>,
   ): string[]
 
-  protected override async discoverDevices(): Promise<DeviceDetails<T>[]> {
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve(
-      this.homey.app.getDevicesByType(this.type).map(({ data, id, name }) => ({
-        capabilities: this.getRequiredCapabilities(data),
-        capabilitiesOptions: this.getCapabilitiesOptions(data),
-        data: { id },
-        name,
-      })),
-    )
+  protected override getDeviceModels(): {
+    data: ListDeviceData<T>
+    id: number
+    name: string
+  }[] {
+    return this.homey.app.getDevicesByType(this.type)
+  }
+
+  protected override toDeviceDetails({
+    data,
+    id,
+    name,
+  }: {
+    data: ListDeviceData<T>
+    id: number
+    name: string
+  }): DeviceDetails<T> {
+    return {
+      capabilities: this.getRequiredCapabilities(data),
+      capabilitiesOptions: this.getCapabilitiesOptions(data),
+      data: { id },
+      name,
+    }
   }
 
   #registerActionRunListener(

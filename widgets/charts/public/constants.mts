@@ -7,6 +7,13 @@ export const DeviceType = {
   /** Energy Recovery Ventilation (ERV) unit. */
   Erv: 3,
 }
+/** MELCloud Home API device type identifiers, matching context response keys. */
+export const HomeDeviceType = {
+  /** Air-to-Air (ATA) heat pump. */
+  Ata: 'airToAir',
+  /** Air-to-Water (ATW) heat pump. */
+  Atw: 'airToWater',
+}
 /** Fan speed levels for ATA and ERV devices. */
 export const FanSpeed = {
   auto: 0,

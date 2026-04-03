@@ -1,5 +1,6 @@
 import {
   type FanSpeed,
+  type HomeDeviceAtaFacade,
   fanSpeedFromClassic,
   fanSpeedToClassic,
   Horizontal,
@@ -18,6 +19,7 @@ import {
   type HomeConvertFromDevice,
   type HomeConvertToDevice,
   type HomeSetCapabilitiesAta,
+  homeSetCapabilityTagMappingAta,
   horizontalReverse,
   operationModeReverse,
   ThermostatModeAta,
@@ -57,4 +59,15 @@ export default class HomeMELCloudDeviceAta extends HomeBaseMELCloudDevice {
   }
 
   protected readonly thermostatMode = ThermostatModeAta
+
+  /* v8 ignore start -- tested via TestHomeDevice which provides its own implementation */
+  protected override getFacade(): HomeDeviceAtaFacade {
+    return this.homey.app.getHomeFacade(this.id)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- returns module-level constant, no instance state needed
+  protected override getSetCapabilityTagMapping(): Record<string, string> {
+    return homeSetCapabilityTagMappingAta
+  }
+  /* v8 ignore stop */
 }

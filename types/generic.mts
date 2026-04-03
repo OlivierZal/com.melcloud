@@ -3,6 +3,7 @@ import type {
   FanSpeed,
   ListDeviceDataAta,
   ListDeviceDataErv,
+  LoginCredentials,
 } from '@olivierzal/melcloud-api'
 import type { DateObjectUnits, DurationLike } from 'luxon'
 
@@ -148,14 +149,31 @@ export const fanSpeedValues = [
   createVeryObject(slow),
 ]
 
-export interface DeviceDetails<T extends DeviceType> {
+export interface AuthAPI {
+  readonly authenticate: (data?: LoginCredentials) => Promise<boolean>
+  readonly isAuthenticated: () => boolean
+}
+
+export interface DeviceDetails<
+  T extends DeviceType = DeviceType,
+  TId extends number | string = number,
+> {
   readonly capabilities: readonly string[]
   readonly capabilitiesOptions: Partial<CapabilitiesOptions<T>>
-  readonly data: { readonly id: number }
+  readonly data: { readonly id: TId }
   readonly name: string
 }
 
+export interface DeviceFacade {
+  readonly setValues: (data: Record<string, unknown>) => Promise<unknown>
+}
+
 export type EnergyReportMode = 'regular' | 'total'
+
+export interface EnergyReportOperation {
+  readonly handle: () => Promise<void>
+  readonly unschedule: () => void
+}
 
 export type FlowArgs<T extends DeviceType> =
   T extends typeof DeviceType.Ata ? FlowArgsAta

@@ -1,68 +1,59 @@
-import type { HomeDeviceAtaFacade } from '@olivierzal/melcloud-api'
-
+import type { DeviceFacade } from '../types/index.mts'
 import { addToLogs } from '../decorators/add-to-logs.mts'
-import {
-  type HomeCapabilitiesAta,
-  type HomeConvertFromDevice,
-  type HomeConvertToDevice,
-  type HomeSetCapabilitiesAta,
-  homeSetCapabilityTagMappingAta,
-} from '../types/index.mts'
 import { SharedBaseMELCloudDevice } from './shared-base-device.mts'
 
 @addToLogs('getName()')
 export abstract class HomeBaseMELCloudDevice extends SharedBaseMELCloudDevice {
-  readonly #setCapabilityKeys = Object.keys(homeSetCapabilityTagMappingAta)
+  protected readonly energyReportRegular = null
 
-  protected abstract override capabilityToDevice: Partial<
-    Record<keyof HomeSetCapabilitiesAta, HomeConvertToDevice>
-  >
+  protected readonly energyReportTotal = null
 
-  protected abstract readonly deviceToCapability: Partial<
-    Record<keyof HomeCapabilitiesAta, HomeConvertFromDevice>
-  >
+  declare public readonly getData: () => { id: string }
 
-  public get id(): string {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Homey SDK getData returns untyped device data
-    return (this.getData() as { id: string }).id
+  public override get id(): string {
+    return this.getData().id
   }
 
   public override async syncFromDevice(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from base FacadeWithSetValues
-    const device = (await this.getDeviceFacade()) as HomeDeviceAtaFacade | null
+    const device = await this.getDeviceFacade()
     if (device) {
       await this.#setCapabilityValues(device)
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- no-op: Home has no energy reports to unschedule
-  protected override cleanupDevice(): void {
-    // No energy reports to unschedule
+  /* v8 ignore start -- never called: energyReportRegular/Total are null */
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected override createEnergyReport(): never {
+    throw new Error('Energy reports are not supported for Home devices')
+  }
+  /* v8 ignore stop */
+
+  /* v8 ignore start -- Home overrides syncFromDevice; operationalCapabilityTagEntries is unused */
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected override getGetCapabilityTagMapping(): Record<string, string> {
+    return {}
   }
 
-  protected override getFacade(): HomeDeviceAtaFacade {
-    return this.homey.app.getHomeFacade(this.id)
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected override getListCapabilityTagMapping(): Record<string, string> {
+    return {}
   }
+  /* v8 ignore stop */
 
-  protected override getSetCapabilityKeys(): string[] {
-    return this.#setCapabilityKeys
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- returns module-level constant, no instance state needed
-  protected override getSetCapabilityTagMapping(): Record<string, string> {
-    return homeSetCapabilityTagMappingAta
-  }
-
-  async #setCapabilityValues(device: HomeDeviceAtaFacade): Promise<void> {
+  async #setCapabilityValues(device: DeviceFacade): Promise<void> {
     await Promise.all(
-      Object.entries(this.deviceToCapability).map(
-        async ([capability, convert]) => {
-          /* v8 ignore next -- convert is always defined: deviceToCapability has no undefined values */
-          if (convert && this.hasCapability(capability)) {
-            await this.setCapabilityValue(capability, convert(device))
-          }
-        },
-      ),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Home converters accept DeviceFacade; shared type is (...args: never[]) for compatibility
+      (
+        Object.entries(this.deviceToCapability) as [
+          string,
+          (device: DeviceFacade) => unknown,
+        ][]
+      ).map(async ([capability, convert]) => {
+        /* v8 ignore next -- hasCapability always true in tests */
+        if (this.hasCapability(capability)) {
+          await this.setCapabilityValue(capability, convert(device))
+        }
+      }),
     )
   }
 }

@@ -10,6 +10,7 @@ import {
   type HolidayModeData,
   type HolidayModeQuery,
   type HomeDeviceModel,
+  type HomeDeviceType,
   type ListDeviceDataAta,
   type LoginCredentials,
   type ModelRegistry,
@@ -325,7 +326,7 @@ export default class MELCloudApp extends App {
     return this.getFacade(zoneType, zoneId).getHolidayMode()
   }
 
-  public getHomeDevicesByType(type: DeviceType): HomeDeviceModel[] {
+  public getHomeDevicesByType(type: HomeDeviceType): HomeDeviceModel[] {
     return this.#homeApi.registry.getByType(type)
   }
 
@@ -541,7 +542,9 @@ export default class MELCloudApp extends App {
       : [this.homey.drivers.getDriver(driverId)]
     return targetDrivers.flatMap((driver) => {
       const devices = driver.getDevices()
-      return ids ? devices.filter(({ id }) => ids.includes(id)) : devices
+      return ids ?
+          devices.filter(({ id }) => ids.includes(Number(id)))
+        : devices
     })
   }
 

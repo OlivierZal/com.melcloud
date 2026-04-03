@@ -48,6 +48,7 @@ const createMockFacade = (): HomeDeviceAtaFacade =>
 vi.mock('homey', () => {
   class MockDevice {
     public driver = {
+      energyCapabilityTagMapping: {},
       manifest: {
         capabilities: [
           'measure_temperature',
@@ -56,6 +57,7 @@ vi.mock('homey', () => {
           'thermostat_mode',
         ],
       },
+      getCapabilitiesOptions: (): Record<string, unknown> => ({}),
       getRequiredCapabilities: (): string[] =>
         this.driver.manifest.capabilities,
     }

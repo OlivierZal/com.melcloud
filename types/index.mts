@@ -1,16 +1,6 @@
 export type {
-  BaseGetCapabilities,
-  BaseListCapabilities,
-  BaseSetCapabilities,
-  BaseSettings,
-  CapabilitiesOptionsValues,
-  LocalizedStrings,
-  RangeOptions,
-} from './bases.mts'
-export type {
   Capabilities,
   CapabilitiesOptions,
-  CapabilitiesOptionsAtaErv,
   ConvertFromDevice,
   ConvertToDevice,
   EnergyCapabilities,
@@ -28,9 +18,6 @@ export type {
   Manifest,
   ManifestDriver,
   ManifestDriverCapabilitiesOptions,
-  ManifestDriverSetting,
-  ManifestDriverSettingData,
-  PairSetting,
 } from './manifest.mts'
 export type {
   DeviceSetting,
@@ -53,21 +40,9 @@ export type {
   HourQuery,
   ZoneData,
 } from './widgets.mts'
-export type {
-  AreaZone,
-  BuildingZone,
-  DeviceZone,
-  FloorZone,
-  Zone,
-} from '@olivierzal/melcloud-api'
+export type { BuildingZone, DeviceZone, Zone } from '@olivierzal/melcloud-api'
 
 export {
-  type CapabilitiesAta,
-  type EnergyCapabilitiesAta,
-  type FlowArgsAta,
-  type GetCapabilitiesAta,
-  type ListCapabilitiesAta,
-  type SetCapabilitiesAta,
   energyCapabilityTagMappingAta,
   getCapabilityTagMappingAta,
   horizontalReverse,
@@ -78,13 +53,6 @@ export {
   verticalReverse,
 } from './ata.mts'
 export {
-  type CapabilitiesAtw,
-  type CapabilitiesOptionsAtw,
-  type EnergyCapabilitiesAtw,
-  type FlowArgsAtw,
-  type GetCapabilitiesAtw,
-  type ListCapabilitiesAtw,
-  type SetCapabilitiesAtw,
   type TargetTemperatureFlowCapabilities,
   energyCapabilityTagMappingAtw,
   getCapabilitiesOptionsAtw,
@@ -96,12 +64,6 @@ export {
   setCapabilityTagMappingAtw,
 } from './atw.mts'
 export {
-  type CapabilitiesErv,
-  type EnergyCapabilitiesErv,
-  type FlowArgsErv,
-  type GetCapabilitiesErv,
-  type ListCapabilitiesErv,
-  type SetCapabilitiesErv,
   energyCapabilityTagMappingErv,
   getCapabilityTagMappingErv,
   listCapabilityTagMappingErv,
@@ -110,11 +72,13 @@ export {
   ventilationModeReverse,
 } from './erv.mts'
 export {
+  type AuthAPI,
   type DeviceDetails,
+  type DeviceFacade,
   type EnergyReportMode,
+  type EnergyReportOperation,
   type FlowArgs,
   type MELCloudDevice,
-  type ReportPlanParameters,
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
 } from './generic.mts'
@@ -122,8 +86,6 @@ export {
   type HomeCapabilitiesAta,
   type HomeConvertFromDevice,
   type HomeConvertToDevice,
-  type HomeGetCapabilitiesAta,
-  type HomeListCapabilitiesAta,
   type HomeSetCapabilitiesAta,
   homeSetCapabilityTagMappingAta,
 } from './home-ata.mts'

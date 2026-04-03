@@ -1,9 +1,10 @@
-import type {
-  HomeConvertFromDevice,
-  HomeConvertToDevice,
-  HomeSetCapabilitiesAta,
-} from '../../types/index.mts'
 import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
+import {
+  type HomeConvertFromDevice,
+  type HomeConvertToDevice,
+  type HomeSetCapabilitiesAta,
+  homeSetCapabilityTagMappingAta,
+} from '../../types/index.mts'
 
 export class TestHomeDevice extends HomeBaseMELCloudDevice {
   public capabilityToDevice: Partial<
@@ -24,6 +25,17 @@ export class TestHomeDevice extends HomeBaseMELCloudDevice {
 
   public get exposedFacade(): typeof this.deviceFacade {
     return this.deviceFacade
+  }
+
+  protected override getFacade(): ReturnType<
+    typeof this.homey.app.getHomeFacade
+  > {
+    return this.homey.app.getHomeFacade(this.id)
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  protected override getSetCapabilityTagMapping(): Record<string, string> {
+    return homeSetCapabilityTagMappingAta
   }
 }
 

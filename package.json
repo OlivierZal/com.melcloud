@@ -35,7 +35,7 @@
     "validate:homey": "homey app validate --level publish"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^23.0.0-rc.7",
+    "@olivierzal/melcloud-api": "^23.0.0-rc.8",
     "homey-lib": "^2.49.0",
     "luxon": "^3.7.2"
   },
