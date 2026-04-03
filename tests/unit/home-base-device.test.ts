@@ -9,9 +9,11 @@ import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testDeletion,
+  testFetchDeviceNull,
   testOnoffConverter,
   testPostUpdateSync,
   testSetValuesErrorHandling,
+  testThermostatModeOff,
   testUninitialisation,
   testWarningManagement,
 } from '../helpers.ts'
@@ -281,35 +283,6 @@ describe(HomeBaseMELCloudDevice, () => {
       )
     })
 
-    it('should handle thermostat_mode off when thermostat supports off', async () => {
-      const deviceWithThermostat = createTestHomeDevice()
-      Object.defineProperty(deviceWithThermostat, 'thermostatMode', {
-        value: { off: 'off' },
-      })
-      await deviceWithThermostat.onInit()
-      const callback = getCapabilityListenerCallback()
-      await callback({ thermostat_mode: 'off' })
-
-      expect(setValuesMock).toHaveBeenCalledWith(
-        expect.objectContaining({ power: false }),
-      )
-    })
-
-    it('should set onoff to true when thermostat_mode is not off', async () => {
-      const deviceWithThermostat = createTestHomeDevice()
-      Object.defineProperty(deviceWithThermostat, 'thermostatMode', {
-        value: { off: 'off' },
-      })
-      await deviceWithThermostat.onInit()
-      const callback = getCapabilityListenerCallback()
-      await callback({ thermostat_mode: 'heat' })
-
-      expect(setValuesMock).toHaveBeenCalledWith({
-        operationMode: 'heat',
-        power: true,
-      })
-    })
-
     it('should not modify thermostat_mode when thermostat does not support off', async () => {
       await device.onInit()
       const callback = getCapabilityListenerCallback()
@@ -318,19 +291,6 @@ describe(HomeBaseMELCloudDevice, () => {
       expect(setValuesMock).toHaveBeenCalledWith(
         expect.objectContaining({ operationMode: 'off' }),
       )
-    })
-
-    it('should not call setValues when fetchDevice returns null', async () => {
-      getHomeFacadeMock.mockImplementation(() => {
-        throw new Error('not found')
-      })
-      const freshDevice = createTestHomeDevice()
-      await freshDevice.onInit()
-      setValuesMock.mockClear()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(setValuesMock).not.toHaveBeenCalled()
     })
 
     it('should not call setValues when no homeValues keys remain', async () => {
@@ -367,6 +327,19 @@ describe(HomeBaseMELCloudDevice, () => {
   })
 
   testPostUpdateSync(() => device as object, getCapabilityListenerCallback)
+
+  testThermostatModeOff(createTestHomeDevice, getCapabilityListenerCallback, {
+    expectedValues: {
+      nonOff: { operationMode: 'heat', power: true },
+      off: { power: false },
+    },
+    setValuesMock,
+  })
+
+  testFetchDeviceNull(createTestHomeDevice, getCapabilityListenerCallback, {
+    facadeMock: getHomeFacadeMock,
+    setValuesMock,
+  })
 
   testSetValuesErrorHandling(
     () => device as object,

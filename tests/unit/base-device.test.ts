@@ -13,9 +13,11 @@ import {
   createCapabilityListenerCallbackGetter,
   mock,
   testDeletion,
+  testFetchDeviceNull,
   testOnoffConverter,
   testPostUpdateSync,
   testSetValuesErrorHandling,
+  testThermostatModeOff,
   testUninitialisation,
   testWarningManagement,
 } from '../helpers.ts'
@@ -375,49 +377,6 @@ describe(BaseMELCloudDevice, () => {
       expect(setValuesMock).toHaveBeenCalledWith({ Power: true })
     })
 
-    it('should handle thermostat_mode off when thermostat supports off', async () => {
-      const deviceWithThermostat = new TestDevice()
-      Object.defineProperty(deviceWithThermostat, 'thermostatMode', {
-        value: { off: 'off' },
-      })
-      setDriver(deviceWithThermostat)
-      await deviceWithThermostat.onInit()
-      const callback = getCapabilityListenerCallback()
-      await callback({ thermostat_mode: 'off' })
-
-      expect(setValuesMock).toHaveBeenCalledWith({ Power: false })
-    })
-
-    it('should set onoff to true when thermostat_mode is not off', async () => {
-      const deviceWithThermostat = new TestDevice()
-      Object.defineProperty(deviceWithThermostat, 'thermostatMode', {
-        value: { off: 'off' },
-      })
-      setDriver(deviceWithThermostat)
-      await deviceWithThermostat.onInit()
-      const callback = getCapabilityListenerCallback()
-      await callback({ thermostat_mode: 'heat' })
-
-      expect(setValuesMock).toHaveBeenCalledWith({
-        Power: true,
-        undefined: 'heat',
-      })
-    })
-
-    it('should not call setValues when fetchDevice returns null', async () => {
-      getFacadeMock.mockImplementation(() => {
-        throw new Error('Not found')
-      })
-      const freshDevice = new TestDevice()
-      setDriver(freshDevice)
-      await freshDevice.onInit()
-      setValuesMock.mockClear()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-
-      expect(setValuesMock).not.toHaveBeenCalled()
-    })
-
     it('should not call setValues when buildUpdateData returns empty object', async () => {
       const freshDevice = new TestDevice()
       const driverWithEmptySetMapping = Object.create(
@@ -437,6 +396,29 @@ describe(BaseMELCloudDevice, () => {
       expect(setValuesMock).not.toHaveBeenCalled()
     })
   })
+
+  testThermostatModeOff(
+    () => {
+      const testDevice = new TestDevice()
+      setDriver(testDevice)
+      return testDevice
+    },
+    getCapabilityListenerCallback,
+    {
+      expectedValues: { nonOff: { Power: true }, off: { Power: false } },
+      setValuesMock,
+    },
+  )
+
+  testFetchDeviceNull(
+    () => {
+      const testDevice = new TestDevice()
+      setDriver(testDevice)
+      return testDevice
+    },
+    getCapabilityListenerCallback,
+    { facadeMock: getFacadeMock, setValuesMock },
+  )
 
   testPostUpdateSync(() => device as object, getCapabilityListenerCallback)
 

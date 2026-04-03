@@ -227,6 +227,84 @@ export const testWarningManagement = (
   })
 }
 
+export const testThermostatModeOff = (
+  createDevice: () => {
+    onInit: () => Promise<void>
+  },
+  getCapabilityListenerCallback: () => (
+    values: Record<string, unknown>,
+  ) => Promise<void>,
+  mocks: {
+    expectedValues: {
+      nonOff: Record<string, unknown>
+      off: Record<string, unknown>
+    }
+    setValuesMock: ReturnType<typeof vi.fn>
+  },
+): void => {
+  const { expectedValues, setValuesMock } = mocks
+
+  describe('thermostat mode off handling', () => {
+    it('should handle thermostat_mode off when thermostat supports off', async () => {
+      const device = createDevice()
+      Object.defineProperty(device, 'thermostatMode', {
+        value: { off: 'off' },
+      })
+      await device.onInit()
+      const callback = getCapabilityListenerCallback()
+      await callback({ thermostat_mode: 'off' })
+
+      expect(setValuesMock).toHaveBeenCalledWith(
+        expect.objectContaining(expectedValues.off),
+      )
+    })
+
+    it('should set onoff to true when thermostat_mode is not off', async () => {
+      const device = createDevice()
+      Object.defineProperty(device, 'thermostatMode', {
+        value: { off: 'off' },
+      })
+      await device.onInit()
+      const callback = getCapabilityListenerCallback()
+      await callback({ thermostat_mode: 'heat' })
+
+      expect(setValuesMock).toHaveBeenCalledWith(
+        expect.objectContaining(expectedValues.nonOff),
+      )
+    })
+  })
+}
+
+export const testFetchDeviceNull = (
+  createDevice: () => {
+    onInit: () => Promise<void>
+  },
+  getCapabilityListenerCallback: () => (
+    values: Record<string, unknown>,
+  ) => Promise<void>,
+  mocks: {
+    facadeMock: ReturnType<typeof vi.fn>
+    setValuesMock: ReturnType<typeof vi.fn>
+  },
+): void => {
+  const { facadeMock, setValuesMock } = mocks
+
+  describe('fetchDevice returns null', () => {
+    it('should not call setValues when fetchDevice returns null', async () => {
+      facadeMock.mockImplementation(() => {
+        throw new Error('Not found')
+      })
+      const device = createDevice()
+      await device.onInit()
+      setValuesMock.mockClear()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+
+      expect(setValuesMock).not.toHaveBeenCalled()
+    })
+  })
+}
+
 export const testOnoffConverter = (
   getDevice: () => object,
   getSettingMock: ReturnType<typeof vi.fn>,
