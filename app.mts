@@ -614,13 +614,19 @@ export default class MELCloudApp extends App {
   }
 
   async #syncFromHomeDevices(): Promise<void> {
-    const driver = this.homey.drivers.getDriver('home-melcloud')
-    await Promise.all(
-      driver
-        .getDevices()
-        .map(async (device) =>
-          (device as { syncFromDevice: () => Promise<void> }).syncFromDevice(),
-        ),
-    )
+    try {
+      const driver = this.homey.drivers.getDriver('home-melcloud')
+      await Promise.all(
+        driver
+          .getDevices()
+          .map(async (device) =>
+            (
+              device as { syncFromDevice: () => Promise<void> }
+            ).syncFromDevice(),
+          ),
+      )
+    } catch {
+      // Driver not yet initialized during app startup — devices will sync once ready
+    }
   }
 }
