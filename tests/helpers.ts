@@ -244,7 +244,10 @@ const createShowViewSession = (
   setHandler: ReturnType<typeof vi.fn>
   showView: ReturnType<typeof vi.fn>
 } =>
-  mock({
+  mock<{
+    setHandler: ReturnType<typeof vi.fn>
+    showView: ReturnType<typeof vi.fn>
+  }>({
     setHandler: vi
       .fn()
       .mockImplementation(
@@ -283,7 +286,8 @@ const createLoginSession = (
 
 export const testPairing = (
   getDriver: () => {
-    onPair: (session: unknown) => Promise<void>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- session mock objects are partial stubs that cannot satisfy the full PairSession type
+    onPair: (session: any) => Promise<void>
   },
   mocks: {
     authenticateMock: ReturnType<typeof vi.fn>
@@ -361,7 +365,8 @@ export const testPairing = (
 
 export const testRepairing = (
   getDriver: () => {
-    onRepair: (session: unknown) => Promise<void>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- session mock objects are partial stubs that cannot satisfy the full PairSession type
+    onRepair: (session: any) => Promise<void>
   },
   mocks: {
     authenticateMock: ReturnType<typeof vi.fn>
