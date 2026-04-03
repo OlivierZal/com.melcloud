@@ -7,7 +7,8 @@
     "thermostat_mode",
     "fan_speed",
     "vertical",
-    "horizontal"
+    "horizontal",
+    "measure_signal_strength"
   ],
   "capabilitiesOptions": {
     "target_temperature": {
