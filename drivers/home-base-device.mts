@@ -45,7 +45,10 @@ export abstract class HomeBaseMELCloudDevice extends SharedBaseMELCloudDevice {
       converters.map(async ([capability, convert]) => {
         /* v8 ignore next -- hasCapability always true in tests */
         if (this.hasCapability(capability)) {
-          await this.setCapabilityValue(capability, convert(device))
+          const value = convert(device)
+          if (value !== undefined && value !== null) {
+            await this.setCapabilityValue(capability, value)
+          }
         }
       }),
     )
