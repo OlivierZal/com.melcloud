@@ -5,7 +5,6 @@ import type {
   ListDeviceDataErv,
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
-import type { DateObjectUnits, DurationLike } from 'luxon'
 
 import type {
   MELCloudDeviceAta,
@@ -185,10 +184,3 @@ export type MELCloudDevice =
   | MELCloudDeviceAta
   | MELCloudDeviceAtw
   | MELCloudDeviceErv
-
-export interface ReportPlanParameters {
-  readonly duration: DurationLike
-  readonly interval: DurationLike
-  readonly minus: DurationLike
-  readonly values: DateObjectUnits
-}

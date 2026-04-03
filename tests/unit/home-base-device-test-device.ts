@@ -23,8 +23,8 @@ export class TestHomeDevice extends HomeBaseMELCloudDevice {
 
   public readonly thermostatMode: Record<string, string> | null = null
 
-  public get exposedFacade(): typeof this.deviceFacade {
-    return this.deviceFacade
+  public get exposedFacade(): typeof this.cachedFacade {
+    return this.cachedFacade
   }
 
   protected override getFacade(): ReturnType<

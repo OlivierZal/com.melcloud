@@ -35,20 +35,22 @@ export abstract class SharedBaseMELCloudDriver extends Driver {
         await session.showView('login')
       }
     })
-    session.setHandler('login', async (data: LoginCredentials) =>
-      this.api.authenticate(data),
-    )
+    this.#registerLoginHandler(session)
     session.setHandler('list_devices', async () => this.discoverDevices())
     // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
     return Promise.resolve()
   }
 
   public override async onRepair(session: PairSession): Promise<void> {
+    this.#registerLoginHandler(session)
+    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
+    return Promise.resolve()
+  }
+
+  #registerLoginHandler(session: PairSession): void {
     session.setHandler('login', async (data: LoginCredentials) =>
       this.api.authenticate(data),
     )
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve()
   }
 
   /* v8 ignore start -- default implementation; always overridden by classic or test mock */

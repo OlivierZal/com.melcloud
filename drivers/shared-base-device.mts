@@ -13,11 +13,16 @@ const DEBOUNCE_DELAY = 1000
 const modes: EnergyReportMode[] = ['regular', 'total']
 
 export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
+  #deviceFacade?: DeviceFacade
+
+  readonly #reports: {
+    regular?: EnergyReportOperation
+    total?: EnergyReportOperation
+  } = {}
+
   protected abstract capabilityToDevice: Partial<
     Record<string, (...args: never[]) => unknown>
   >
-
-  protected deviceFacade?: DeviceFacade
 
   protected abstract readonly deviceToCapability: Partial<
     Record<string, (...args: never[]) => unknown>
@@ -35,12 +40,11 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
 
   declare public readonly homey: Homey.Homey
 
-  protected readonly reports: {
-    regular?: EnergyReportOperation
-    total?: EnergyReportOperation
-  } = {}
-
   protected abstract readonly thermostatMode: Record<string, string> | null
+
+  protected get cachedFacade(): DeviceFacade | undefined {
+    return this.#deviceFacade
+  }
 
   public get id(): number | string {
     return this.getData().id
@@ -108,11 +112,11 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
 
   public async fetchDevice(): Promise<DeviceFacade | null> {
     try {
-      if (!this.deviceFacade) {
-        this.deviceFacade = this.getFacade()
+      if (!this.#deviceFacade) {
+        this.#deviceFacade = this.getFacade()
         await this.init()
       }
-      return this.deviceFacade
+      return this.#deviceFacade
     } catch (error) {
       await this.setWarning(error)
       return null
@@ -161,10 +165,11 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
     values: Record<string, unknown>,
   ): Record<string, unknown> {
     this.log('Requested data:', values)
+    const tagMapping = this.getSetCapabilityTagMapping()
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Object.fromEntries to Record<string, unknown>
     return Object.fromEntries(
       Object.entries(values).map(([capability, value]) => [
-        this.getSetCapabilityTagMapping()[capability],
+        tagMapping[capability],
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- value is cast to never for variadic converter args
         this.capabilityToDevice[capability]?.(value as never) ?? value,
       ]),
@@ -182,17 +187,13 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
   }
 
   protected cleanupDevice(): void {
-    this.reports.regular?.unschedule()
-    this.reports.total?.unschedule()
+    this.#reports.regular?.unschedule()
+    this.#reports.total?.unschedule()
   }
 
   protected abstract createEnergyReport(
     config: EnergyReportConfig,
   ): EnergyReportOperation
-
-  protected async getDeviceFacade(): Promise<DeviceFacade | null> {
-    return this.deviceFacade ?? this.fetchDevice()
-  }
 
   protected abstract getFacade(): DeviceFacade
 
@@ -208,12 +209,12 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
 
   protected async handleEnergyReports(): Promise<void> {
     if (this.energyReportRegular) {
-      this.reports.regular = this.createEnergyReport(this.energyReportRegular)
-      await this.reports.regular.handle()
+      this.#reports.regular = this.createEnergyReport(this.energyReportRegular)
+      await this.#reports.regular.handle()
     }
     if (this.energyReportTotal) {
-      this.reports.total = this.createEnergyReport(this.energyReportTotal)
-      await this.reports.total.handle()
+      this.#reports.total = this.createEnergyReport(this.energyReportTotal)
+      await this.#reports.total.handle()
     }
   }
 
@@ -238,7 +239,7 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
   }
 
   protected async sendUpdate(values: Record<string, unknown>): Promise<void> {
-    const device = await this.getDeviceFacade()
+    const device = await this.fetchDevice()
     if (!device) {
       return
     }
@@ -349,7 +350,7 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
             (setting) => isTotalEnergyKey(setting) === (mode === 'total'),
           )
         ) {
-          await this.reports[mode]?.handle()
+          await this.#reports[mode]?.handle()
         }
       }),
     )

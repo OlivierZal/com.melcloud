@@ -89,7 +89,7 @@ export abstract class BaseMELCloudDevice<
 
   protected get facade(): DeviceFacade<T> | undefined {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from generic base FacadeWithSetValues
-    return this.deviceFacade as DeviceFacade<T> | undefined
+    return this.cachedFacade as DeviceFacade<T> | undefined
   }
 
   public override cleanMapping<
@@ -165,12 +165,11 @@ export abstract class BaseMELCloudDevice<
 
   protected async setCapabilityValues(data: ListDeviceData<T>): Promise<void> {
     this.homey.api.realtime('deviceupdate', null)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing shared [string, string][] to typed entries
+    const entries = this
+      .operationalCapabilityTagEntries as OperationalCapabilityTagEntry<T>[]
     await Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing shared [string, string][] to typed entries
-      (
-        this
-          .operationalCapabilityTagEntries as OperationalCapabilityTagEntry<T>[]
-      ).map(async ([capability, tag]) => {
+      entries.map(async ([capability, tag]) => {
         if (tag in data) {
           await this.setCapabilityValue(
             capability,

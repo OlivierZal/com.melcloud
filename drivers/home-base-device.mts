@@ -15,7 +15,7 @@ export abstract class HomeBaseMELCloudDevice extends SharedBaseMELCloudDevice {
   }
 
   public override async syncFromDevice(): Promise<void> {
-    const device = await this.getDeviceFacade()
+    const device = await this.fetchDevice()
     if (device) {
       await this.#setCapabilityValues(device)
     }
@@ -41,14 +41,13 @@ export abstract class HomeBaseMELCloudDevice extends SharedBaseMELCloudDevice {
   /* v8 ignore stop */
 
   async #setCapabilityValues(device: DeviceFacade): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Home converters accept DeviceFacade; shared type is (...args: never[]) for compatibility
+    const converters = Object.entries(this.deviceToCapability) as [
+      string,
+      (device: DeviceFacade) => unknown,
+    ][]
     await Promise.all(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Home converters accept DeviceFacade; shared type is (...args: never[]) for compatibility
-      (
-        Object.entries(this.deviceToCapability) as [
-          string,
-          (device: DeviceFacade) => unknown,
-        ][]
-      ).map(async ([capability, convert]) => {
+      converters.map(async ([capability, convert]) => {
         /* v8 ignore next -- hasCapability always true in tests */
         if (this.hasCapability(capability)) {
           await this.setCapabilityValue(capability, convert(device))
