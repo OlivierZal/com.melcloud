@@ -185,8 +185,7 @@ export default class MELCloudApp extends App {
   public override async onUninit(): Promise<void> {
     this.#api.clearSync()
     this.#homeApi.clearSync()
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve()
+    await Promise.resolve()
   }
 
   public getAtaCapabilities(): [

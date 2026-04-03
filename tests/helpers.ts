@@ -25,8 +25,7 @@ export const createEnergyReportMock = (): {
   EnergyReport: ReturnType<typeof vi.fn>
 } => ({
   EnergyReport: vi.fn().mockImplementation(() => ({
-    // eslint-disable-next-line unicorn/no-useless-undefined -- mockResolvedValue requires an explicit argument
-    handle: vi.fn().mockResolvedValue(undefined),
+    handle: vi.fn<() => Promise<void>>().mockResolvedValue(),
     unschedule: vi.fn(),
   })),
 })

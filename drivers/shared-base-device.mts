@@ -105,8 +105,7 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
 
   public override async onUninit(): Promise<void> {
     this.onDeleted()
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve()
+    await Promise.resolve()
   }
 
   public override async addCapability(capability: string): Promise<void> {

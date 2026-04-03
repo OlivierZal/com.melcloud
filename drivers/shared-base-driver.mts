@@ -37,14 +37,12 @@ export abstract class SharedBaseMELCloudDriver extends Driver {
     })
     this.#registerLoginHandler(session)
     session.setHandler('list_devices', async () => this.discoverDevices())
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve()
+    await Promise.resolve()
   }
 
   public override async onRepair(session: PairSession): Promise<void> {
     this.#registerLoginHandler(session)
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve()
+    await Promise.resolve()
   }
 
   #registerLoginHandler(session: PairSession): void {
@@ -70,10 +68,8 @@ export abstract class SharedBaseMELCloudDriver extends Driver {
   protected async discoverDevices(): Promise<
     { data: { id: number | string }; name: string }[]
   > {
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve(
-      this.getDeviceModels().map((model) => this.toDeviceDetails(model)),
-    )
+    await Promise.resolve()
+    return this.getDeviceModels().map((model) => this.toDeviceDetails(model))
   }
 
   protected abstract getDeviceModels(): {

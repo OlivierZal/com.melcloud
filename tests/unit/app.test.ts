@@ -577,8 +577,7 @@ describe('melCloudApp', () => {
         nextFromDate: '2026-03-15',
         nextToDate: '2026-03-31',
       })
-      // eslint-disable-next-line unicorn/no-useless-undefined -- mockReturnValue requires explicit argument to simulate "not found"
-      mockApiInstance.registry.devices.getById.mockReturnValue(undefined)
+      mockApiInstance.registry.devices.getById.mockReset()
       await app.onInit()
 
       const query = mock<ErrorLogQuery>()
@@ -602,8 +601,7 @@ describe('melCloudApp', () => {
     })
 
     it('should throw for zone not found', async () => {
-      // eslint-disable-next-line unicorn/no-useless-undefined -- mockReturnValue requires explicit argument to simulate "not found"
-      mockApiInstance.registry.buildings.getById.mockReturnValue(undefined)
+      mockApiInstance.registry.buildings.getById.mockReset()
       await app.onInit()
 
       expect(() => app.getFacade('buildings', '999')).toThrow(
@@ -613,8 +611,7 @@ describe('melCloudApp', () => {
     })
 
     it('should throw with device error for device type', async () => {
-      // eslint-disable-next-line unicorn/no-useless-undefined -- mockReturnValue requires explicit argument to simulate "not found"
-      mockApiInstance.registry.devices.getById.mockReturnValue(undefined)
+      mockApiInstance.registry.devices.getById.mockReset()
       await app.onInit()
 
       expect(() => app.getFacade('devices', '999')).toThrow(

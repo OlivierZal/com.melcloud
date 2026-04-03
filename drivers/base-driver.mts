@@ -64,8 +64,7 @@ export abstract class BaseMELCloudDriver<
   public override async onInit(): Promise<void> {
     this.#setProducedAndConsumedTagMappings()
     this.#registerRunListeners()
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject -- Non-async override must return Promise explicitly
-    return Promise.resolve()
+    await Promise.resolve()
   }
 
   public abstract override getRequiredCapabilities(
