@@ -577,7 +577,7 @@ describe('melCloudApp', () => {
         nextFromDate: '2026-03-15',
         nextToDate: '2026-03-31',
       })
-      // eslint-disable-next-line unicorn/no-useless-undefined
+      // eslint-disable-next-line unicorn/no-useless-undefined -- mockReturnValue requires explicit argument to simulate "not found"
       mockApiInstance.registry.devices.getById.mockReturnValue(undefined)
       await app.onInit()
 
@@ -602,7 +602,7 @@ describe('melCloudApp', () => {
     })
 
     it('should throw for zone not found', async () => {
-      // eslint-disable-next-line unicorn/no-useless-undefined
+      // eslint-disable-next-line unicorn/no-useless-undefined -- mockReturnValue requires explicit argument to simulate "not found"
       mockApiInstance.registry.buildings.getById.mockReturnValue(undefined)
       await app.onInit()
 
@@ -613,7 +613,7 @@ describe('melCloudApp', () => {
     })
 
     it('should throw with device error for device type', async () => {
-      // eslint-disable-next-line unicorn/no-useless-undefined
+      // eslint-disable-next-line unicorn/no-useless-undefined -- mockReturnValue requires explicit argument to simulate "not found"
       mockApiInstance.registry.devices.getById.mockReturnValue(undefined)
       await app.onInit()
 
@@ -800,7 +800,7 @@ describe('melCloudApp', () => {
       mockApiInstance.authenticate.mockResolvedValue(true)
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments -- explicit type ensures mock satisfies LoginCredentials for app.login()
       const credentials = mock<LoginCredentials>({
         password: 'pass',
         username: 'user',

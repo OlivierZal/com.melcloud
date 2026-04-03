@@ -368,6 +368,19 @@ describe(HomeBaseMELCloudDevice, () => {
       expect(setValuesMock).not.toHaveBeenCalled()
     })
 
+    it('should sync capabilities after sendUpdate', async () => {
+      await device.onInit()
+      const setCapabilityValueMock = vi.spyOn(device, 'setCapabilityValue')
+      setCapabilityValueMock.mockClear()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'measure_temperature',
+        21,
+      )
+    })
+
     it('should use cached facade when available', async () => {
       await device.onInit()
       const callback = getCapabilityListenerCallback()
