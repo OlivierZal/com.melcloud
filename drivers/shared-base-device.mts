@@ -115,6 +115,17 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
     }
   }
 
+  public cleanMapping(
+    capabilityTagMapping: Record<string, unknown>,
+  ): Record<string, string> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- driver tag mappings are Record<string, string> at runtime; unknown comes from SharedBaseMELCloudDriver's broad type
+    return Object.fromEntries(
+      Object.entries(capabilityTagMapping).filter(([capability]) =>
+        this.hasCapability(capability),
+      ),
+    ) as Record<string, string>
+  }
+
   public async fetchDevice(): Promise<DeviceFacade | null> {
     try {
       if (!this.#deviceFacade) {
@@ -171,23 +182,13 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
   ): Record<string, unknown> {
     this.log('Requested data:', values)
     const tagMapping = this.getSetCapabilityTagMapping()
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Object.fromEntries to Record<string, unknown>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Object.fromEntries returns { [k: string]: any }
     return Object.fromEntries(
       Object.entries(values).map(([capability, value]) => [
         tagMapping[capability],
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- value is cast to never for variadic converter args
         this.capabilityToDevice[capability]?.(value as never) ?? value,
       ]),
-    ) as Record<string, unknown>
-  }
-
-  protected cleanMapping(
-    capabilityTagMapping: Record<string, unknown>,
-  ): Record<string, unknown> {
-    return Object.fromEntries(
-      Object.entries(capabilityTagMapping).filter(([capability]) =>
-        this.hasCapability(capability),
-      ),
     )
   }
 
@@ -230,18 +231,15 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
   }
 
   protected async init(): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- driver tag mappings are Record<string, string> at runtime
     this.#setCapabilityTagMapping = this.cleanMapping(
       this.driver.setCapabilityTagMapping,
-    ) as Record<string, string>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- driver tag mappings are Record<string, string> at runtime
+    )
     this.#getCapabilityTagMapping = this.cleanMapping(
       this.driver.getCapabilityTagMapping,
-    ) as Record<string, string>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- driver tag mappings are Record<string, string> at runtime
+    )
     this.#listCapabilityTagMapping = this.cleanMapping(
       this.driver.listCapabilityTagMapping,
-    ) as Record<string, string>
+    )
     await this.applyCapabilitiesOptions()
     await this.#setCapabilities()
     await this.syncFromDevice()

@@ -1,3 +1,4 @@
+import type PairSession from 'homey/lib/PairSession'
 import { describe, expect, it, vi } from 'vitest'
 
 // eslint-disable-next-line func-style -- TS requires function declaration for asserts predicates
@@ -24,7 +25,7 @@ export const createEnergyReportMock = (): {
   EnergyReport: ReturnType<typeof vi.fn>
 } => ({
   EnergyReport: vi.fn().mockImplementation(() => ({
-    // eslint-disable-next-line unicorn/no-useless-undefined
+    // eslint-disable-next-line unicorn/no-useless-undefined -- mockResolvedValue requires an explicit argument
     handle: vi.fn().mockResolvedValue(undefined),
     unschedule: vi.fn(),
   })),
@@ -240,14 +241,8 @@ export const createCapabilityListenerCallbackGetter =
 const createShowViewSession = (
   showViewMock: ReturnType<typeof vi.fn>,
   viewName: string,
-): {
-  setHandler: ReturnType<typeof vi.fn>
-  showView: ReturnType<typeof vi.fn>
-} =>
-  mock<{
-    setHandler: ReturnType<typeof vi.fn>
-    showView: ReturnType<typeof vi.fn>
-  }>({
+): PairSession =>
+  mock<PairSession>({
     setHandler: vi
       .fn()
       .mockImplementation(
@@ -264,12 +259,12 @@ const createLoginSession = (
   showViewMock: ReturnType<typeof vi.fn>,
 ): {
   reference: { loginHandler: (data: unknown) => Promise<unknown> }
-  session: unknown
+  session: PairSession
 } => {
   const reference: { loginHandler: (data: unknown) => Promise<unknown> } = {
     loginHandler: vi.fn<() => Promise<void>>().mockResolvedValue(),
   }
-  const session = mock({
+  const session = mock<PairSession>({
     setHandler: vi
       .fn()
       .mockImplementation(
@@ -286,8 +281,7 @@ const createLoginSession = (
 
 export const testPairing = (
   getDriver: () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- session mock objects are partial stubs that cannot satisfy the full PairSession type
-    onPair: (session: any) => Promise<void>
+    onPair: (session: PairSession) => Promise<void>
   },
   mocks: {
     authenticateMock: ReturnType<typeof vi.fn>
@@ -305,7 +299,7 @@ export const testPairing = (
 
   describe('pairing', () => {
     it('should set handlers on the session', async () => {
-      const session = mock({
+      const session = mock<PairSession>({
         setHandler: setHandlerMock,
         showView: showViewMock,
       })
@@ -365,8 +359,7 @@ export const testPairing = (
 
 export const testRepairing = (
   getDriver: () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- session mock objects are partial stubs that cannot satisfy the full PairSession type
-    onRepair: (session: any) => Promise<void>
+    onRepair: (session: PairSession) => Promise<void>
   },
   mocks: {
     authenticateMock: ReturnType<typeof vi.fn>
@@ -377,7 +370,7 @@ export const testRepairing = (
 
   describe('repairing', () => {
     it('should set login handler on the session', async () => {
-      const session = mock({
+      const session = mock<PairSession>({
         setHandler: setHandlerMock,
       })
       await getDriver().onRepair(session)

@@ -11,6 +11,7 @@ import type {
   Capabilities,
   EnergyCapabilities,
   EnergyCapabilityTagEntry,
+  EnergyCapabilityTagMapping,
   EnergyReportMode,
 } from '../types/index.mts'
 import {
@@ -51,10 +52,14 @@ export class EnergyReport<T extends DeviceType> {
   private readonly driver: BaseMELCloudDriver<T>
 
   get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- cleanMapping returns Record<string, string>; energy mapping has typed keys/values at runtime
+    const cleaned = this.#device.cleanMapping(
+      this.driver.energyCapabilityTagMapping,
+    ) as unknown as Partial<EnergyCapabilityTagMapping<T>>
     return typedEntries<
       string & keyof EnergyCapabilities<T>,
       readonly (keyof EnergyData<T>)[]
-    >(this.#device.cleanMapping(this.driver.energyCapabilityTagMapping)).filter(
+    >(cleaned).filter(
       ([capability]) =>
         isTotalEnergyKey(capability) === (this.#config.mode === 'total'),
     )

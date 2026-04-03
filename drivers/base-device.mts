@@ -10,13 +10,9 @@ import type {
   ConvertFromDevice,
   ConvertToDevice,
   DeviceDetails,
-  EnergyCapabilityTagMapping,
-  GetCapabilityTagMapping,
-  ListCapabilityTagMapping,
   OperationalCapabilities,
   OperationalCapabilityTagEntry,
   SetCapabilities,
-  SetCapabilityTagMapping,
   Settings,
 } from '../types/index.mts'
 import { addToLogs } from '../decorators/add-to-logs.mts'
@@ -86,17 +82,6 @@ export abstract class BaseMELCloudDevice<
   protected get facade(): DeviceFacade<T> | undefined {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from generic base FacadeWithSetValues
     return this.cachedFacade as DeviceFacade<T> | undefined
-  }
-
-  public override cleanMapping<
-    TMapping extends
-      | EnergyCapabilityTagMapping<T>
-      | GetCapabilityTagMapping<T>
-      | ListCapabilityTagMapping<T>
-      | SetCapabilityTagMapping<T>,
-  >(capabilityTagMapping: TMapping): Partial<TMapping> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic return to typed Partial<TMapping>
-    return super.cleanMapping(capabilityTagMapping) as Partial<TMapping>
   }
 
   public override async fetchDevice(): Promise<DeviceFacade<T> | null> {
