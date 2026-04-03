@@ -81,6 +81,7 @@ export {
   type MELCloudDevice,
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
+  getCapabilitiesOptionsHome,
 } from './generic.mts'
 export {
   type HomeCapabilitiesAta,

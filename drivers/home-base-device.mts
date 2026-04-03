@@ -21,6 +21,13 @@ export abstract class HomeBaseMELCloudDevice extends SharedBaseMELCloudDevice {
     }
   }
 
+  protected override async applyCapabilitiesOptions(): Promise<void> {
+    /* v8 ignore next -- cachedFacade is always set before init() calls applyCapabilitiesOptions */
+    if (this.cachedFacade && 'capabilities' in this.cachedFacade) {
+      await super.applyCapabilitiesOptions(this.cachedFacade.capabilities)
+    }
+  }
+
   /* v8 ignore start -- never called: energyReportRegular/Total are null */
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected override createEnergyReport(): never {

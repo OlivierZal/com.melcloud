@@ -33,6 +33,10 @@ let isFacadePoweredOn = true
 
 const createMockFacade = (): HomeDeviceAtaFacade =>
   ({
+    capabilities: {
+      hasAutomaticFanSpeed: true,
+      numberOfFanSpeeds: 5,
+    },
     setValues: setValuesMock,
     get operationMode(): string {
       return 'Heat'

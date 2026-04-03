@@ -1,6 +1,7 @@
 import type {
   DeviceType,
   FanSpeed,
+  HomeDeviceCapabilities,
   ListDeviceDataAta,
   ListDeviceDataErv,
   LoginCredentials,
@@ -24,14 +25,29 @@ import {
   localizeWithAffix,
 } from './bases.mts'
 
+const getFanSpeedOptions = (
+  hasAutomaticFanSpeed: boolean,
+  numberOfFanSpeeds: number,
+): Partial<CapabilitiesOptionsAtaErv> => ({
+  fan_speed: {
+    max: numberOfFanSpeeds,
+    min: Number(!hasAutomaticFanSpeed),
+    step: 1,
+    units: '',
+  },
+})
+
 export const getCapabilitiesOptionsAtaErv = ({
   HasAutomaticFanSpeed: hasAutomaticFanSpeed,
-  NumberOfFanSpeeds: max,
-}:
-  | ListDeviceDataAta
-  | ListDeviceDataErv): Partial<CapabilitiesOptionsAtaErv> => ({
-  fan_speed: { max, min: Number(!hasAutomaticFanSpeed), step: 1, units: '' },
-})
+  NumberOfFanSpeeds: numberOfFanSpeeds,
+}: ListDeviceDataAta | ListDeviceDataErv): Partial<CapabilitiesOptionsAtaErv> =>
+  getFanSpeedOptions(hasAutomaticFanSpeed, numberOfFanSpeeds)
+
+export const getCapabilitiesOptionsHome = ({
+  hasAutomaticFanSpeed,
+  numberOfFanSpeeds,
+}: HomeDeviceCapabilities): Partial<CapabilitiesOptionsAtaErv> =>
+  getFanSpeedOptions(hasAutomaticFanSpeed, numberOfFanSpeeds)
 
 const addPrefixToTitle = (
   title: LocalizedStrings,

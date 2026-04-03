@@ -1,4 +1,5 @@
 import {
+  type HomeDeviceCapabilities,
   type ListDeviceDataAta,
   type ListDeviceDataAtw,
   type ListDeviceDataErv,
@@ -11,6 +12,7 @@ import { getCapabilitiesOptionsAtw, HotWaterMode } from '../../types/atw.mts'
 import {
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
+  getCapabilitiesOptionsHome,
 } from '../../types/generic.mts'
 import { mock } from '../helpers.ts'
 
@@ -48,6 +50,32 @@ describe(getCapabilitiesOptionsAtaErv, () => {
 
     expect(result).toStrictEqual({
       fan_speed: { max: 4, min: 0, step: 1, units: '' },
+    })
+  })
+})
+
+describe(getCapabilitiesOptionsHome, () => {
+  it('should return fan_speed options from Home device capabilities', () => {
+    const capabilities = mock<HomeDeviceCapabilities>({
+      hasAutomaticFanSpeed: true,
+      numberOfFanSpeeds: 4,
+    })
+    const result = getCapabilitiesOptionsHome(capabilities)
+
+    expect(result).toStrictEqual({
+      fan_speed: { max: 4, min: 0, step: 1, units: '' },
+    })
+  })
+
+  it('should return min 1 when hasAutomaticFanSpeed is false', () => {
+    const capabilities = mock<HomeDeviceCapabilities>({
+      hasAutomaticFanSpeed: false,
+      numberOfFanSpeeds: 5,
+    })
+    const result = getCapabilitiesOptionsHome(capabilities)
+
+    expect(result).toStrictEqual({
+      fan_speed: { max: 5, min: 1, step: 1, units: '' },
     })
   })
 })
