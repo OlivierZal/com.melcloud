@@ -13,6 +13,7 @@ import {
   createCapabilityListenerCallbackGetter,
   mock,
   testDeletion,
+  testPostUpdateSync,
   testSetValuesErrorHandling,
   testUninitialisation,
   testWarningManagement,
@@ -462,6 +463,8 @@ describe(BaseMELCloudDevice, () => {
       expect(setValuesMock).not.toHaveBeenCalled()
     })
   })
+
+  testPostUpdateSync(() => device as object, getCapabilityListenerCallback)
 
   testSetValuesErrorHandling(
     () => device as object,

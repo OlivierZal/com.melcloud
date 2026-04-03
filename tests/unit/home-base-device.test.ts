@@ -8,8 +8,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
-  getMockCallArg,
   testDeletion,
+  testPostUpdateSync,
   testSetValuesErrorHandling,
   testUninitialisation,
   testWarningManagement,
@@ -369,26 +369,6 @@ describe(HomeBaseMELCloudDevice, () => {
       expect(setValuesMock).not.toHaveBeenCalled()
     })
 
-    it('should sync capabilities after sendUpdate', async () => {
-      await device.onInit()
-      const setCapabilityValueMock = vi.spyOn(device, 'setCapabilityValue')
-      setCapabilityValueMock.mockClear()
-      const callback = getCapabilityListenerCallback()
-      await callback({ onoff: true })
-      await getMockCallArg<() => Promise<void>>(
-        device.homey.setTimeout as unknown as {
-          mock: { calls: unknown[][] }
-        },
-        0,
-        0,
-      )()
-
-      expect(setCapabilityValueMock).toHaveBeenCalledWith(
-        'measure_temperature',
-        21,
-      )
-    })
-
     it('should use cached facade when available', async () => {
       await device.onInit()
       const callback = getCapabilityListenerCallback()
@@ -411,6 +391,8 @@ describe(HomeBaseMELCloudDevice, () => {
       expect(setValuesMock).toHaveBeenCalledWith({ power: true })
     })
   })
+
+  testPostUpdateSync(() => device as object, getCapabilityListenerCallback)
 
   testSetValuesErrorHandling(
     () => device as object,

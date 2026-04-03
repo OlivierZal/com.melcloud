@@ -227,6 +227,40 @@ export const testWarningManagement = (
   })
 }
 
+export const testPostUpdateSync = (
+  getDevice: () => object,
+  getCapabilityListenerCallback: () => (
+    values: Record<string, unknown>,
+  ) => Promise<void>,
+): void => {
+  describe('post-update sync', () => {
+    it('should sync capabilities after sendUpdate', async () => {
+      const device = getDevice() as {
+        homey: { setTimeout: ReturnType<typeof vi.fn> }
+        setCapabilityValue: ReturnType<typeof vi.fn>
+        onInit: () => Promise<void>
+      }
+      await device.onInit()
+      device.setCapabilityValue.mockClear()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+      const syncCallback = getMockCallArg<() => Promise<void>>(
+        device.homey.setTimeout as unknown as {
+          mock: { calls: unknown[][] }
+        },
+        0,
+        0,
+      )
+      await syncCallback()
+
+      expect(device.setCapabilityValue).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.anything(),
+      )
+    })
+  })
+}
+
 export const createCapabilityListenerCallbackGetter =
   (registerMock: {
     mock: { calls: unknown[][] }
