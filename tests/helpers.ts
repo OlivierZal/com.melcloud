@@ -227,6 +227,46 @@ export const testWarningManagement = (
   })
 }
 
+export const testOnoffConverter = (
+  getDevice: () => object,
+  getSettingMock: ReturnType<typeof vi.fn>,
+): void => {
+  describe('onoff converter', () => {
+    it('should set default onoff converter in capabilityToDevice', async () => {
+      getSettingMock.mockReturnValue(false)
+      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+
+      expect(getDevice()).toHaveProperty('capabilityToDevice.onoff')
+    })
+
+    it('should respect always_on setting for onoff converter', async () => {
+      getSettingMock.mockReturnValue(true)
+      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+
+      const {
+        capabilityToDevice: { onoff: converter },
+      } = getDevice() as {
+        capabilityToDevice: { onoff?: (value: never) => boolean }
+      }
+
+      expect(converter?.(false as never)).toBe(true)
+    })
+
+    it('should return true for onoff when value is true regardless of always_on', async () => {
+      getSettingMock.mockReturnValue(false)
+      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+
+      const {
+        capabilityToDevice: { onoff: converter },
+      } = getDevice() as {
+        capabilityToDevice: { onoff?: (value: never) => boolean }
+      }
+
+      expect(converter?.(true as never)).toBe(true)
+    })
+  })
+}
+
 export const testPostUpdateSync = (
   getDevice: () => object,
   getCapabilityListenerCallback: () => (

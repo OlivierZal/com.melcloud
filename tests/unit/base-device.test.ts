@@ -13,6 +13,7 @@ import {
   createCapabilityListenerCallbackGetter,
   mock,
   testDeletion,
+  testOnoffConverter,
   testPostUpdateSync,
   testSetValuesErrorHandling,
   testUninitialisation,
@@ -173,36 +174,9 @@ describe(BaseMELCloudDevice, () => {
       )
       expect(getFacadeMock).toHaveBeenCalledWith('devices', 1)
     })
-
-    it('should set default onoff converter in capabilityToDevice', async () => {
-      getSettingMock.mockReturnValue(false)
-      await device.onInit()
-
-      expect(device.capabilityToDevice).toHaveProperty('onoff')
-    })
-
-    it('should respect always_on setting for onoff converter', async () => {
-      getSettingMock.mockReturnValue(true)
-      await device.onInit()
-
-      const {
-        capabilityToDevice: { onoff: converter },
-      } = device
-
-      expect(converter?.(false)).toBe(true)
-    })
-
-    it('should return true for onoff when value is true regardless of always_on', async () => {
-      getSettingMock.mockReturnValue(false)
-      await device.onInit()
-
-      const {
-        capabilityToDevice: { onoff: converter },
-      } = device
-
-      expect(converter?.(true)).toBe(true)
-    })
   })
+
+  testOnoffConverter(() => device as object, getSettingMock)
 
   testDeletion(() => device as object)
 

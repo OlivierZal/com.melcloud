@@ -9,6 +9,7 @@ import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testDeletion,
+  testOnoffConverter,
   testPostUpdateSync,
   testSetValuesErrorHandling,
   testUninitialisation,
@@ -167,36 +168,9 @@ describe(HomeBaseMELCloudDevice, () => {
 
       expect(spy).toHaveBeenCalledWith('obsolete_capability')
     })
-
-    it('should set default onoff converter in capabilityToDevice', async () => {
-      getSettingMock.mockReturnValue(false)
-      await device.onInit()
-
-      expect(device.capabilityToDevice).toHaveProperty('onoff')
-    })
-
-    it('should respect always_on setting for onoff converter', async () => {
-      getSettingMock.mockReturnValue(true)
-      await device.onInit()
-
-      const {
-        capabilityToDevice: { onoff: converter },
-      } = device
-
-      expect(converter?.(false as never)).toBe(true)
-    })
-
-    it('should return true for onoff when value is true regardless of always_on', async () => {
-      getSettingMock.mockReturnValue(false)
-      await device.onInit()
-
-      const {
-        capabilityToDevice: { onoff: converter },
-      } = device
-
-      expect(converter?.(true as never)).toBe(true)
-    })
   })
+
+  testOnoffConverter(() => device as object, getSettingMock)
 
   testDeletion(() => device as object)
 
