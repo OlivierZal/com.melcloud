@@ -1,7 +1,7 @@
 {
   "args": [
     {
-      "filter": "driver_id=melcloud",
+      "filter": "driver_id=melcloud|home-melcloud",
       "name": "device",
       "type": "device"
     }

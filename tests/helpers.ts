@@ -226,6 +226,48 @@ export const testWarningManagement = (
   })
 }
 
+export const testFlowListenerRegistration = (
+  getDriver: () => object,
+  setCapability: string,
+  nonSetCapability: string,
+): void => {
+  interface FlowDriver {
+    homey: {
+      flow: {
+        getActionCard: ReturnType<typeof vi.fn>
+        getConditionCard: ReturnType<typeof vi.fn>
+      }
+    }
+    onInit: () => Promise<void>
+  }
+
+  describe('flow listener registration', () => {
+    it('should register condition listeners for manifest capabilities', async () => {
+      const driver = getDriver() as FlowDriver
+      await driver.onInit()
+
+      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
+        `${setCapability}_condition`,
+      )
+      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
+        `${nonSetCapability}_condition`,
+      )
+    })
+
+    it('should register action listeners only for set capabilities', async () => {
+      const driver = getDriver() as FlowDriver
+      await driver.onInit()
+
+      expect(driver.homey.flow.getActionCard).toHaveBeenCalledWith(
+        `${setCapability}_action`,
+      )
+      expect(driver.homey.flow.getActionCard).not.toHaveBeenCalledWith(
+        `${nonSetCapability}_action`,
+      )
+    })
+  })
+}
+
 export const testThermostatModeOff = (
   createDevice: () => {
     onInit: () => Promise<void>

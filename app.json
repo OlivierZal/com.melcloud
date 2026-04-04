@@ -661,7 +661,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud|home-melcloud",
             "name": "device",
             "type": "device"
           }
@@ -966,7 +966,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud|home-melcloud",
             "name": "device",
             "type": "device"
           }
@@ -1204,7 +1204,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud|home-melcloud",
             "name": "device",
             "type": "device"
           },
@@ -1935,7 +1935,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud|home-melcloud",
             "name": "device",
             "type": "device"
           },
@@ -2109,7 +2109,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud|home-melcloud",
             "name": "device",
             "type": "device"
           },
@@ -2731,7 +2731,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud|home-melcloud",
             "name": "device",
             "type": "device"
           },
@@ -3208,7 +3208,8 @@
         "thermostat_mode",
         "fan_speed",
         "vertical",
-        "horizontal"
+        "horizontal",
+        "measure_signal_strength"
       ],
       "name": {
         "ar": "مضخة حرارية هواء-هواء",

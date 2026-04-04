@@ -8,6 +8,19 @@ import type PairSession from 'homey/lib/PairSession'
 import type { AuthAPI, ManifestDriver } from '../types/index.mts'
 import { type Homey, Driver } from '../lib/homey.mts'
 
+const getArg = (capability: string): string => {
+  const [arg = capability] = capability.split('.')
+  return arg
+}
+
+const tryRegisterFlowCard = (register: () => void): void => {
+  try {
+    register()
+  } catch {
+    // Flow card may not exist for this capability
+  }
+}
+
 export abstract class SharedBaseMELCloudDriver extends Driver {
   protected abstract readonly api: AuthAPI
 
@@ -60,6 +73,11 @@ export abstract class SharedBaseMELCloudDriver extends Driver {
   }
   /* v8 ignore stop */
 
+  public override async onInit(): Promise<void> {
+    this.#registerFlowListeners()
+    await Promise.resolve()
+  }
+
   public getRequiredCapabilities(): string[] {
     return [...this.manifest.capabilities]
   }
@@ -85,5 +103,49 @@ export abstract class SharedBaseMELCloudDriver extends Driver {
     name: string
   }): { data: { id: number | string }; name: string } {
     return { data: { id }, name }
+  }
+
+  #registerFlowListeners(): void {
+    for (const capability of this.manifest.capabilities) {
+      tryRegisterFlowCard(() => {
+        this.homey.flow
+          .getConditionCard(`${capability}_condition`)
+          .registerRunListener(
+            (
+              args: Record<string, unknown> & {
+                device: { getCapabilityValue: (key: string) => unknown }
+              },
+            ) => {
+              const value = args.device.getCapabilityValue(capability)
+              return typeof value === 'string' || typeof value === 'number' ?
+                  value === args[getArg(capability)]
+                : value
+            },
+          )
+      })
+      if (capability in this.setCapabilityTagMapping) {
+        tryRegisterFlowCard(() => {
+          this.homey.flow
+            .getActionCard(`${capability}_action`)
+            .registerRunListener(
+              async (
+                args: Record<string, unknown> & {
+                  device: {
+                    triggerCapabilityListener: (
+                      key: string,
+                      value: unknown,
+                    ) => Promise<void>
+                  }
+                },
+              ) => {
+                await args.device.triggerCapabilityListener(
+                  capability,
+                  args[getArg(capability)],
+                )
+              },
+            )
+        })
+      }
+    }
   }
 }

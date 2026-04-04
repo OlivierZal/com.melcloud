@@ -5,7 +5,12 @@ import type { HomeDeviceModel } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { HomeBaseMELCloudDriver } from '../../drivers/home-base-driver.mts'
-import { mock, testPairing, testRepairing } from '../helpers.ts'
+import {
+  mock,
+  testFlowListenerRegistration,
+  testPairing,
+  testRepairing,
+} from '../helpers.ts'
 import HomeMELCloudDriverAta from '../../drivers/home-melcloud/driver.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -25,6 +30,14 @@ vi.mock('homey', () => {
           authenticate: authenticateMock,
           isAuthenticated: isAuthenticatedMock,
         },
+      },
+      flow: {
+        getActionCard: vi.fn().mockReturnValue({
+          registerRunListener: vi.fn(),
+        }),
+        getConditionCard: vi.fn().mockReturnValue({
+          registerRunListener: vi.fn(),
+        }),
       },
     }
 
@@ -67,6 +80,8 @@ describe(HomeBaseMELCloudDriver, () => {
       expect(driver.getRequiredCapabilities()).toContain('fan_speed')
     })
   })
+
+  testFlowListenerRegistration(() => driver, 'onoff', 'measure_temperature')
 
   testPairing(() => driver, {
     authenticateMock,

@@ -1,13 +1,18 @@
 /* eslint-disable
     @typescript-eslint/consistent-type-assertions,
     @typescript-eslint/consistent-type-imports,
-    @typescript-eslint/unbound-method,
 */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
-import { assertDefined, mock, testPairing, testRepairing } from '../helpers.ts'
+import {
+  assertDefined,
+  mock,
+  testFlowListenerRegistration,
+  testPairing,
+  testRepairing,
+} from '../helpers.ts'
 import {
   type TestDriverType,
   createTestDriver,
@@ -45,7 +50,9 @@ vi.mock('homey', () => {
 
     public log = vi.fn()
 
-    public manifest = { capabilities: ['onoff', 'thermostat_mode'] }
+    public manifest = {
+      capabilities: ['onoff', 'thermostat_mode', 'measure_temperature'],
+    }
   }
 
   return { default: { Driver: MockDriver } }
@@ -67,38 +74,9 @@ describe(BaseMELCloudDriver, () => {
       expect(driver.consumedTagMapping).toBeDefined()
       expect(driver.producedTagMapping).toBeDefined()
     })
-
-    it('should register run listeners for flow cards', async () => {
-      await driver.onInit()
-
-      expect(registerRunListenerMock).toHaveBeenCalledWith(expect.any(Function))
-    })
-
-    it('should register condition listeners for all capabilities', async () => {
-      await driver.onInit()
-
-      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
-        'onoff_condition',
-      )
-      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
-        'thermostat_mode_condition',
-      )
-      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
-        'measure_temperature_condition',
-      )
-    })
-
-    it('should register action listeners for set capabilities', async () => {
-      await driver.onInit()
-
-      expect(driver.homey.flow.getActionCard).toHaveBeenCalledWith(
-        'onoff_action',
-      )
-      expect(driver.homey.flow.getActionCard).toHaveBeenCalledWith(
-        'thermostat_mode_action',
-      )
-    })
   })
+
+  testFlowListenerRegistration(() => driver, 'onoff', 'measure_temperature')
 
   testPairing(() => driver, {
     authenticateMock,
