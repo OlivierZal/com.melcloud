@@ -28,7 +28,7 @@
     "lint:fix": "npm run lint -- --fix",
     "prepare": "npm run build",
     "publish:homey": "homey app publish",
-    "push:github": "npm run validate:homey && npm run lint:fix && npm run format:fix",
+    "push:github": "npm run validate:homey && npm run lint:fix && npm run format:fix && git push",
     "start:homey": "homey app run --remote",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
