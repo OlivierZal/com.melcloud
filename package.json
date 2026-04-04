@@ -23,17 +23,17 @@
     "build:public": "for dir in widgets/ata-group-setting/public widgets/charts/public; do cp public/*.mts \"$dir/\"; done && npm run build:constants",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
-    "install:homey": "homey app install",
+    "install:homey": "npx homey app install",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "prepare": "npm run build",
-    "publish:homey": "homey app publish",
+    "publish:homey": "npx homey app publish",
     "push:github": "npm run validate:homey && npm run lint:fix && npm run format:fix && git push",
-    "start:homey": "homey app run --remote",
+    "start:homey": "npx homey app run --remote",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "validate:homey": "homey app validate --level publish"
+    "validate:homey": "npx homey app validate --level publish"
   },
   "dependencies": {
     "@olivierzal/melcloud-api": "^23.0.0-rc.11",
