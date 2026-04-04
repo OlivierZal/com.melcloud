@@ -25,9 +25,10 @@ export default class MELCloudDriverAta extends BaseMELCloudDriver<
   public readonly type = DeviceType.Ata
 
   public override getRequiredCapabilities(): string[] {
-    /* v8 ignore next -- manifest.capabilities is optional in Homey SDK type */
-    return [...(this.manifest.capabilities ?? [])].filter(
-      (capability) => capability !== 'measure_signal_strength',
-    )
+    return Object.keys({
+      ...this.setCapabilityTagMapping,
+      ...this.getCapabilityTagMapping,
+      ...this.listCapabilityTagMapping,
+    }).filter((capability) => capability !== 'measure_signal_strength')
   }
 }
