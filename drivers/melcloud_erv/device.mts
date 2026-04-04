@@ -36,7 +36,8 @@ export default class MELCloudDeviceErv extends BaseMELCloudDevice<
     thermostat_mode: (
       value: VentilationMode,
       data: ListDeviceData<typeof DeviceType.Erv>,
-    ) => (data.Power ? ventilationModeFromDevice[value] : ThermostatModeErv.off),
+    ) =>
+      data.Power ? ventilationModeFromDevice[value] : ThermostatModeErv.off,
   }
 
   protected readonly energyReportRegular = null

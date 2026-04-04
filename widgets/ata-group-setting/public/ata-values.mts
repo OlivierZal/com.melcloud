@@ -28,12 +28,7 @@ const createLabel = (
   text: string,
 ): HTMLLabelElement => {
   const label = document.createElement('label')
-  label.classList.add(
-    'label',
-    'text-default',
-    'text-color',
-    'font-normal',
-  )
+  label.classList.add('label', 'text-default', 'text-color', 'font-normal')
   ;({ id: label.htmlFor } = formControl)
   label.textContent = text
   label.append(formControl)
@@ -250,9 +245,7 @@ export class AtaValueManager {
     return Object.fromEntries(
       // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
       Array.from(
-        this.#ataValues.querySelectorAll<HTMLValueElement>(
-          'input, select',
-        ),
+        this.#ataValues.querySelectorAll<HTMLValueElement>('input, select'),
       )
         .filter(
           ({ id, value }) =>

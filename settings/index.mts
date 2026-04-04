@@ -224,9 +224,7 @@ const createLabel = (
 ): HTMLLabelElement => {
   const isCheckbox = formControl.type === 'checkbox'
   const label = document.createElement('label')
-  label.classList.add(
-    isCheckbox ? 'homey-form-checkbox' : 'homey-form-label',
-  )
+  label.classList.add(isCheckbox ? 'homey-form-checkbox' : 'homey-form-label')
   ;({ id: label.htmlFor } = formControl)
   if (isCheckbox) {
     addTextToCheckbox(label, formControl, text)
@@ -254,9 +252,7 @@ const createValue = (
 ): void => {
   if (formControl) {
     const label = createLabel(formControl, title)
-    parent.append(
-      shouldWrapWithDiv ? createDiv(label) : label,
-    )
+    parent.append(shouldWrapWithDiv ? createDiv(label) : label)
   }
 }
 
@@ -287,10 +283,7 @@ const createInput = ({
   return input
 }
 
-const createLegend = (
-  fieldSet: HTMLFieldSetElement,
-  text?: string,
-): void => {
+const createLegend = (fieldSet: HTMLFieldSetElement, text?: string): void => {
   const legend = document.createElement('legend')
   legend.classList.add('homey-form-checkbox-set-title')
   if (text !== undefined) {
@@ -299,10 +292,7 @@ const createLegend = (
   fieldSet.append(legend)
 }
 
-const createCheckbox = (
-  id: string,
-  driverId: string,
-): HTMLInputElement => {
+const createCheckbox = (id: string, driverId: string): HTMLInputElement => {
   const checkbox = document.createElement('input')
   checkbox.classList.add('homey-form-checkbox-input')
   checkbox.type = 'checkbox'
@@ -582,9 +572,7 @@ class ErrorLogManager {
 
   #generateErrorLogTableData(errors: readonly FormattedErrorDetails[]): void {
     for (const error of errors) {
-      this.#errorLogTBody ??= this.#generateErrorLogTable(
-        Object.keys(error),
-      )
+      this.#errorLogTBody ??= this.#generateErrorLogTable(Object.keys(error))
       const row = this.#errorLogTBody.insertRow()
       for (const value of Object.values(error)) {
         const cell = row.insertCell()
@@ -616,10 +604,9 @@ class ErrorLogManager {
     this.#from = fromDateHuman
     this.#to = nextToDate
     this.#errorCountLabel.textContent = `${String(this.#errorCount)} ${this.#getErrorCountText(this.#errorCount)}`
-    this.#periodLabel.textContent = this.#homey.__(
-      'settings.errorLog.period',
-      { from: this.#from },
-    )
+    this.#periodLabel.textContent = this.#homey.__('settings.errorLog.period', {
+      from: this.#from,
+    })
     this.#sinceInput.value = nextFromDate
   }
 }
@@ -729,10 +716,7 @@ class DeviceSettingsManager {
     this.#addRefreshSettingsEventListener(elements, driverId)
   }
 
-  async #applyDeviceSettings(
-    body: Settings,
-    driverId?: string,
-  ): Promise<void> {
+  async #applyDeviceSettings(body: Settings, driverId?: string): Promise<void> {
     const driverQuery =
       driverId === undefined ? '' : (
         `?${new URLSearchParams({ driverId } satisfies { driverId: string })}`
@@ -852,20 +836,15 @@ class DeviceSettingsManager {
     }
   }
 
-  #handleNoChanges(
-    elements: HTMLValueElement[],
-    driverId?: string,
-  ): void {
+  #handleNoChanges(elements: HTMLValueElement[], driverId?: string): void {
     if (driverId === undefined) {
       this.#refreshCommonSettings(
         elements.filter((element) => element instanceof HTMLSelectElement),
       )
     }
-    this.#homey
-      .alert(this.#homey.__('settings.devices.nothing'))
-      .catch(() => {
-        // Best-effort UI notification: the alert itself is the error display
-      })
+    this.#homey.alert(this.#homey.__('settings.devices.nothing')).catch(() => {
+      // Best-effort UI notification: the alert itself is the error display
+    })
   }
 
   #processValue(element: HTMLValueElement): ValueOf<Settings> {
@@ -1023,9 +1002,7 @@ class ZoneSettingsManager {
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#zone = getSelect('zones')
-    this.#frostProtectionEnabled = getSelect(
-      'enabled_frost_protection',
-    )
+    this.#frostProtectionEnabled = getSelect('enabled_frost_protection')
     this.#holidayModeEnabled = getSelect('enabled_holiday_mode')
     this.#frostProtectionMinTemperature = initFrostProtectionMin()
     this.#frostProtectionMaxTemperature = initFrostProtectionMax()
@@ -1045,40 +1022,34 @@ class ZoneSettingsManager {
 
   /** @silent Falls back to default values on error. */
   public async fetchFrostProtectionData(): Promise<void> {
-    await withDisablingButtonPair(
-      'frost_protection',
-      async () => {
-        try {
-          const data = await homeyApiGet<FrostProtectionData>(
-            this.#homey,
-            `/zones/${this.#getZonePath()}/settings/frost-protection`,
-          )
-          this.#updateZoneMapping(data)
-          this.refreshFrostProtectionData()
-        } catch {
-          // Non-critical: UI falls back to default values
-        }
-      },
-    )
+    await withDisablingButtonPair('frost_protection', async () => {
+      try {
+        const data = await homeyApiGet<FrostProtectionData>(
+          this.#homey,
+          `/zones/${this.#getZonePath()}/settings/frost-protection`,
+        )
+        this.#updateZoneMapping(data)
+        this.refreshFrostProtectionData()
+      } catch {
+        // Non-critical: UI falls back to default values
+      }
+    })
   }
 
   /** @silent Falls back to default values on error. */
   public async fetchHolidayModeData(): Promise<void> {
-    await withDisablingButtonPair(
-      'holiday_mode',
-      async () => {
-        try {
-          const data = await homeyApiGet<HolidayModeData>(
-            this.#homey,
-            `/zones/${this.#getZonePath()}/settings/holiday-mode`,
-          )
-          this.#updateZoneMapping(data)
-          this.refreshHolidayModeData()
-        } catch {
-          // Non-critical: UI falls back to default values
-        }
-      },
-    )
+    await withDisablingButtonPair('holiday_mode', async () => {
+      try {
+        const data = await homeyApiGet<HolidayModeData>(
+          this.#homey,
+          `/zones/${this.#getZonePath()}/settings/holiday-mode`,
+        )
+        this.#updateZoneMapping(data)
+        this.refreshHolidayModeData()
+      } catch {
+        // Non-critical: UI falls back to default values
+      }
+    })
   }
 
   public async fetchZoneSettings(): Promise<void> {
@@ -1123,8 +1094,7 @@ class ZoneSettingsManager {
         HMStartDate: startDate,
       } = data
       this.#holidayModeEnabled.value = String(isEnabled)
-      this.#holidayModeStartDate.value =
-        isEnabled ? (startDate ?? '') : ''
+      this.#holidayModeStartDate.value = isEnabled ? (startDate ?? '') : ''
       this.#holidayModeEndDate.value = isEnabled ? (endDate ?? '') : ''
     }
   }
@@ -1135,27 +1105,24 @@ class ZoneSettingsManager {
     max,
     min,
   }: FrostProtectionQuery): Promise<void> {
-    await withDisablingButtonPair(
-      'frost_protection',
-      async () => {
-        try {
-          await homeyApiPut<unknown>(
-            this.#homey,
-            `/zones/${this.#getZonePath()}/settings/frost-protection`,
-            { isEnabled, max, min } satisfies FrostProtectionQuery,
-          )
-          this.#updateZoneMapping({
-            FPEnabled: isEnabled,
-            FPMaxTemperature: max,
-            FPMinTemperature: min,
-          })
-          this.refreshFrostProtectionData()
-          await this.#homey.alert(this.#homey.__('settings.success'))
-        } catch (error) {
-          await this.#homey.alert(getErrorMessage(error))
-        }
-      },
-    )
+    await withDisablingButtonPair('frost_protection', async () => {
+      try {
+        await homeyApiPut<unknown>(
+          this.#homey,
+          `/zones/${this.#getZonePath()}/settings/frost-protection`,
+          { isEnabled, max, min } satisfies FrostProtectionQuery,
+        )
+        this.#updateZoneMapping({
+          FPEnabled: isEnabled,
+          FPMaxTemperature: max,
+          FPMinTemperature: min,
+        })
+        this.refreshFrostProtectionData()
+        await this.#homey.alert(this.#homey.__('settings.success'))
+      } catch (error) {
+        await this.#homey.alert(getErrorMessage(error))
+      }
+    })
   }
 
   /** @alerts Displays save errors to the user. */
@@ -1163,27 +1130,24 @@ class ZoneSettingsManager {
     from: startDate,
     to: endDate,
   }: HolidayModeQuery): Promise<void> {
-    await withDisablingButtonPair(
-      'holiday_mode',
-      async () => {
-        try {
-          await homeyApiPut<unknown>(
-            this.#homey,
-            `/zones/${this.#getZonePath()}/settings/holiday-mode`,
-            { from: startDate, to: endDate } satisfies HolidayModeQuery,
-          )
-          this.#updateZoneMapping({
-            HMEnabled: Boolean(endDate),
-            HMEndDate: endDate,
-            HMStartDate: startDate,
-          })
-          this.refreshHolidayModeData()
-          await this.#homey.alert(this.#homey.__('settings.success'))
-        } catch (error) {
-          await this.#homey.alert(getErrorMessage(error))
-        }
-      },
-    )
+    await withDisablingButtonPair('holiday_mode', async () => {
+      try {
+        await homeyApiPut<unknown>(
+          this.#homey,
+          `/zones/${this.#getZonePath()}/settings/holiday-mode`,
+          { from: startDate, to: endDate } satisfies HolidayModeQuery,
+        )
+        this.#updateZoneMapping({
+          HMEnabled: Boolean(endDate),
+          HMEndDate: endDate,
+          HMStartDate: startDate,
+        })
+        this.refreshHolidayModeData()
+        await this.#homey.alert(this.#homey.__('settings.success'))
+      } catch (error) {
+        await this.#homey.alert(getErrorMessage(error))
+      }
+    })
   }
 
   #addDateChangeListener(
@@ -1191,10 +1155,7 @@ class ZoneSettingsManager {
     otherElement: HTMLInputElement,
   ): void {
     primaryElement.addEventListener('change', () => {
-      if (
-        primaryElement.value &&
-        this.#holidayModeEnabled.value === 'false'
-      ) {
+      if (primaryElement.value && this.#holidayModeEnabled.value === 'false') {
         this.#holidayModeEnabled.value = 'true'
         return
       }
@@ -1219,12 +1180,9 @@ class ZoneSettingsManager {
         }
       })
     }
-    getButton('refresh_frost_protection').addEventListener(
-      'click',
-      () => {
-        this.refreshFrostProtectionData()
-      },
-    )
+    getButton('refresh_frost_protection').addEventListener('click', () => {
+      this.refreshFrostProtectionData()
+    })
     getButton('apply_frost_protection').addEventListener('click', () => {
       try {
         const { max, min } = this.#getFPMinAndMax()

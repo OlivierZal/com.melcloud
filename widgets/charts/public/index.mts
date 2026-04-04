@@ -231,10 +231,7 @@ class ChartWidget {
   }
 
   public async init(): Promise<void> {
-    await Promise.all([
-      setDocumentLanguage(this.#homey),
-      this.#fetchDevices(),
-    ])
+    await Promise.all([setDocumentLanguage(this.#homey), this.#fetchDevices()])
     this.#homey.ready({ height: document.body.scrollHeight })
   }
 

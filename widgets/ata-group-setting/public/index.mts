@@ -6,12 +6,7 @@ import type {
 } from '../../../types/index.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
-import {
-  getButton,
-  getCanvas,
-  getDiv,
-  getSelect,
-} from './dom.mts'
+import { getButton, getCanvas, getDiv, getSelect } from './dom.mts'
 import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'
 
 // ── WidgetApp class ──
@@ -38,11 +33,7 @@ class WidgetApp {
       animation,
       canvas,
     )
-    this.#ataValueManager = new AtaValueManager(
-      homey,
-      ataValues,
-      zone,
-    )
+    this.#ataValueManager = new AtaValueManager(homey, ataValues, zone)
   }
 
   public async init(): Promise<void> {
