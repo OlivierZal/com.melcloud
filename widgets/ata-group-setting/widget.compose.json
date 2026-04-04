@@ -6,7 +6,7 @@
     },
     "getAtaValues": {
       "method": "GET",
-      "path": "/values/ata/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/ata"
     },
     "getBuildings": {
       "method": "GET",
@@ -18,7 +18,7 @@
     },
     "setAtaValues": {
       "method": "PUT",
-      "path": "/values/ata/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/ata"
     }
   },
   "name": {

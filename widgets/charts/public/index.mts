@@ -194,7 +194,7 @@ const fetchChartData = async (
     : ''
   return homeyApiGet<ReportChartLineOptions | ReportChartPieOptions>(
     homey,
-    `/logs/${chart}/${getZoneValue()}${daysQuery}`,
+    `/${getZoneValue()}/logs/${chart.replaceAll('_', '-')}${daysQuery}`,
   )
 }
 

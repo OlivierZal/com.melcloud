@@ -19,11 +19,11 @@
     },
     "getFrostProtectionSettings": {
       "method": "GET",
-      "path": "/settings/frost_protection/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
     },
     "getHolidayModeSettings": {
       "method": "GET",
-      "path": "/settings/holiday_mode/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
     },
     "getLanguage": {
       "method": "GET",
@@ -43,11 +43,11 @@
     },
     "setFrostProtectionSettings": {
       "method": "PUT",
-      "path": "/settings/frost_protection/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
     },
     "setHolidayModeSettings": {
       "method": "PUT",
-      "path": "/settings/holiday_mode/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
     }
   },
   "author": {
@@ -7841,7 +7841,7 @@
         },
         "getAtaValues": {
           "method": "GET",
-          "path": "/values/ata/:zoneType/:zoneId"
+          "path": "/zones/:zoneType/:zoneId/ata"
         },
         "getBuildings": {
           "method": "GET",
@@ -7853,7 +7853,7 @@
         },
         "setAtaValues": {
           "method": "PUT",
-          "path": "/values/ata/:zoneType/:zoneId"
+          "path": "/zones/:zoneType/:zoneId/ata"
         }
       },
       "name": {
@@ -7914,7 +7914,7 @@
         },
         "getHourlyTemperatures": {
           "method": "GET",
-          "path": "/logs/hourly_temperatures/devices/:deviceId"
+          "path": "/devices/:deviceId/logs/hourly-temperatures"
         },
         "getLanguage": {
           "method": "GET",
@@ -7922,15 +7922,15 @@
         },
         "getOperationModes": {
           "method": "GET",
-          "path": "/logs/operation_modes/devices/:deviceId"
+          "path": "/devices/:deviceId/logs/operation-modes"
         },
         "getSignal": {
           "method": "GET",
-          "path": "/logs/signal/devices/:deviceId"
+          "path": "/devices/:deviceId/logs/signal"
         },
         "getTemperatures": {
           "method": "GET",
-          "path": "/logs/temperatures/devices/:deviceId"
+          "path": "/devices/:deviceId/logs/temperatures"
         }
       },
       "name": {

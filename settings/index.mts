@@ -1065,7 +1065,7 @@ class ZoneSettingsManager {
         try {
           const data = await homeyApiGet<FrostProtectionData>(
             this.#homey,
-            `/settings/frost_protection/${this.#getZonePath()}`,
+            `/zones/${this.#getZonePath()}/settings/frost-protection`,
           )
           this.#updateZoneMapping(data)
           this.refreshFrostProtectionData()
@@ -1083,7 +1083,7 @@ class ZoneSettingsManager {
         try {
           const data = await homeyApiGet<HolidayModeData>(
             this.#homey,
-            `/settings/holiday_mode/${this.#getZonePath()}`,
+            `/zones/${this.#getZonePath()}/settings/holiday-mode`,
           )
           this.#updateZoneMapping(data)
           this.refreshHolidayModeData()
@@ -1153,7 +1153,7 @@ class ZoneSettingsManager {
         try {
           await homeyApiPut<unknown>(
             this.#homey,
-            `/settings/frost_protection/${this.#getZonePath()}`,
+            `/zones/${this.#getZonePath()}/settings/frost-protection`,
             { isEnabled, max, min } satisfies FrostProtectionQuery,
           )
           this.#updateZoneMapping({
@@ -1180,7 +1180,7 @@ class ZoneSettingsManager {
         try {
           await homeyApiPut<unknown>(
             this.#homey,
-            `/settings/holiday_mode/${this.#zoneElement.value.replace('_', '/')}`,
+            `/zones/${this.#zoneElement.value.replace('_', '/')}/settings/holiday-mode`,
             { from: startDate, to: endDate } satisfies HolidayModeQuery,
           )
           this.#updateZoneMapping({

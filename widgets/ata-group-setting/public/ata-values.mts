@@ -191,7 +191,7 @@ export class AtaValueManager {
   public async fetchValues(): Promise<GroupState> {
     const values = await homeyApiGet<GroupState>(
       this.#homey,
-      `/values/ata/${this.#getZoneValue()}`,
+      `/zones/${this.#getZoneValue()}/ata`,
     )
     this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
     this.#refreshAtaValues()
@@ -240,7 +240,7 @@ export class AtaValueManager {
     if (Object.keys(body).length > 0) {
       await homeyApiPut(
         this.#homey,
-        `/values/ata/${this.#getZoneValue()}`,
+        `/zones/${this.#getZoneValue()}/ata`,
         body satisfies GroupState,
       )
     }

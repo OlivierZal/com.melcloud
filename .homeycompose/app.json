@@ -18,11 +18,11 @@
     },
     "getFrostProtectionSettings": {
       "method": "GET",
-      "path": "/settings/frost_protection/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
     },
     "getHolidayModeSettings": {
       "method": "GET",
-      "path": "/settings/holiday_mode/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
     },
     "getLanguage": {
       "method": "GET",
@@ -42,11 +42,11 @@
     },
     "setFrostProtectionSettings": {
       "method": "PUT",
-      "path": "/settings/frost_protection/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
     },
     "setHolidayModeSettings": {
       "method": "PUT",
-      "path": "/settings/holiday_mode/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
     }
   },
   "author": {

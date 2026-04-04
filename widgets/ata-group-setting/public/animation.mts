@@ -533,7 +533,7 @@ export class AnimationController {
   async #getModes(): Promise<number[]> {
     const detailedAtaValues = await homeyApiGet<GroupAtaStates>(
       this.#homey,
-      `/values/ata/${getZoneValue()}?${new URLSearchParams({
+      `/zones/${getZoneValue()}/ata?${new URLSearchParams({
         mode: 'detailed',
         status: 'on',
       } satisfies Required<GetAtaOptions>)}`,
