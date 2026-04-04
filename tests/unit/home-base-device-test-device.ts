@@ -4,6 +4,7 @@ import type {
   HomeSetCapabilitiesAta,
 } from '../../types/index.mts'
 import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
+import { createInstance } from './create-test-instance.ts'
 
 export class TestHomeDevice extends HomeBaseMELCloudDevice {
   public capabilityToDevice: Partial<
@@ -34,4 +35,4 @@ export class TestHomeDevice extends HomeBaseMELCloudDevice {
 }
 
 export const createTestHomeDevice = (): TestHomeDevice =>
-  new (TestHomeDevice as unknown as new () => TestHomeDevice)()
+  createInstance(TestHomeDevice)

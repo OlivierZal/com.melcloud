@@ -66,6 +66,14 @@ const drivers: Partial<Record<DeviceType | HomeDeviceType, string>> = {
   [HomeDeviceType.Ata]: 'home-melcloud',
 }
 
+const createDateRange = (days: number): { from: string; to: string } => {
+  const now = DateTime.now()
+  return {
+    from: now.minus({ days }).toISO({ includeOffset: false }),
+    to: now.toISO({ includeOffset: false }),
+  }
+}
+
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
     .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
@@ -350,11 +358,9 @@ export default class MELCloudApp extends App {
     deviceId: string,
     days: number,
   ): Promise<ReportChartPieOptions> {
-    const now = DateTime.now()
-    return this.getFacade('devices', deviceId).getOperationModes({
-      from: now.minus({ days }).toISO({ includeOffset: false }),
-      to: now.toISO({ includeOffset: false }),
-    })
+    return this.getFacade('devices', deviceId).getOperationModes(
+      createDateRange(days),
+    )
   }
 
   public async getSignal(
@@ -368,11 +374,9 @@ export default class MELCloudApp extends App {
     deviceId: string,
     days: number,
   ): Promise<ReportChartLineOptions> {
-    const now = DateTime.now()
-    return this.getFacade('devices', deviceId).getTemperatures({
-      from: now.minus({ days }).toISO({ includeOffset: false }),
-      to: now.toISO({ includeOffset: false }),
-    })
+    return this.getFacade('devices', deviceId).getTemperatures(
+      createDateRange(days),
+    )
   }
 
   public async homeLogin(data: LoginCredentials): Promise<boolean> {

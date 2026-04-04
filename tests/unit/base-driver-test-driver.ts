@@ -9,6 +9,7 @@ import type {
 } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import { mock } from '../helpers.ts'
+import { createInstance } from './create-test-instance.ts'
 
 type TestDriverType = typeof DeviceType.Ata
 
@@ -46,5 +47,4 @@ export class TestDriver extends BaseMELCloudDriver<TestDriverType> {
   }
 }
 
-export const createTestDriver = (): TestDriver =>
-  new (TestDriver as unknown as new () => TestDriver)()
+export const createTestDriver = (): TestDriver => createInstance(TestDriver)

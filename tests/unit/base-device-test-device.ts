@@ -8,6 +8,7 @@ import type {
   SetCapabilities,
 } from '../../types/index.mts'
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
+import { createInstance } from './create-test-instance.ts'
 
 type TestDeviceType = typeof DeviceType.Ata
 
@@ -44,5 +45,4 @@ export class TestDevice extends BaseMELCloudDevice<TestDeviceType> {
   }
 }
 
-export const createTestDevice = (): TestDevice =>
-  new (TestDevice as unknown as new () => TestDevice)()
+export const createTestDevice = (): TestDevice => createInstance(TestDevice)

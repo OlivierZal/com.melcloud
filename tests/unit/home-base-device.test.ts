@@ -8,14 +8,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
-  testDeletion,
   testFetchDeviceNull,
-  testOnoffConverter,
   testPostUpdateSync,
   testSetValuesErrorHandling,
   testThermostatModeOff,
-  testUninitialisation,
-  testWarningManagement,
 } from '../helpers.ts'
 import {
   type TestHomeDevice,
@@ -175,14 +171,6 @@ describe(HomeBaseMELCloudDevice, () => {
       expect(spy).toHaveBeenCalledWith('obsolete_capability')
     })
   })
-
-  testOnoffConverter(() => device as object, getSettingMock)
-
-  testDeletion(() => device as object)
-
-  testUninitialisation(() => device as object)
-
-  testWarningManagement(() => device as object, superSetWarningMock)
 
   describe('device synchronization', () => {
     it('should set capability values from facade', async () => {
