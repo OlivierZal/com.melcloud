@@ -30,7 +30,18 @@ vi.mock('homey', () => {
 
     public log = vi.fn()
 
-    public manifest = { capabilities: [] }
+    public manifest = {
+      capabilities: [
+        'onoff',
+        'measure_temperature',
+        'target_temperature',
+        'thermostat_mode',
+        'fan_speed',
+        'vertical',
+        'horizontal',
+        'measure_signal_strength',
+      ],
+    }
   }
 
   return { default: { Driver: MockDriver } }
@@ -45,8 +56,15 @@ describe(HomeBaseMELCloudDriver, () => {
   })
 
   describe('required capabilities', () => {
-    it('should return manifest capabilities by default', () => {
-      expect(driver.getRequiredCapabilities()).toStrictEqual([])
+    it('should exclude measure_signal_strength from required capabilities', () => {
+      expect(driver.getRequiredCapabilities()).not.toContain(
+        'measure_signal_strength',
+      )
+    })
+
+    it('should include all other manifest capabilities', () => {
+      expect(driver.getRequiredCapabilities()).toContain('onoff')
+      expect(driver.getRequiredCapabilities()).toContain('fan_speed')
     })
   })
 
