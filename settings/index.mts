@@ -106,9 +106,9 @@ const homeyApiGet = async <T,>(homey: Homey, path: string): Promise<T> =>
     homey.api('GET', path, (error: Error | null, data: T) => {
       if (error) {
         reject(error)
-      } else {
-        resolve(data)
+        return
       }
+      resolve(data)
     })
   })
 
@@ -121,9 +121,9 @@ const homeyApiPut = async <T,>(
     homey.api('PUT', path, body, (error: Error | null, data: T) => {
       if (error) {
         reject(error)
-      } else {
-        resolve(data)
+        return
       }
+      resolve(data)
     })
   })
 
@@ -136,9 +136,9 @@ const homeyApiPost = async <T,>(
     homey.api('POST', path, body, (error: Error | null, data: T) => {
       if (error) {
         reject(error)
-      } else {
-        resolve(data)
+        return
       }
+      resolve(data)
     })
   })
 
@@ -228,10 +228,10 @@ const createLabel = (
   ;({ id: label.htmlFor } = formControl)
   if (isCheckbox) {
     addTextToCheckbox(label, formControl, text)
-  } else {
-    label.textContent = text
-    label.append(formControl)
+    return label
   }
+  label.textContent = text
+  label.append(formControl)
   return label
 }
 
@@ -1389,18 +1389,16 @@ class SettingsApp {
       if (source === 'init') {
         // Session expired or no devices: fall back to login
         this.#authManager.needsAuthentication()
-      } else {
-        // Post-login: always hide login form
-        this.#authManager.needsAuthentication(false)
-        if (error instanceof NoDeviceError) {
-          this.#disableSettingButtons()
-        }
-        await this.#homey.alert(
-          error instanceof NoDeviceError ?
-            error.message
-          : getErrorMessage(error),
-        )
+        return
       }
+      // Post-login: always hide login form
+      this.#authManager.needsAuthentication(false)
+      if (error instanceof NoDeviceError) {
+        this.#disableSettingButtons()
+      }
+      await this.#homey.alert(
+        error instanceof NoDeviceError ? error.message : getErrorMessage(error),
+      )
     }
   }
 }
