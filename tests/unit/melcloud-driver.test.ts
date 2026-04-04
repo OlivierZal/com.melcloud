@@ -13,7 +13,21 @@ import MELCloudDriverAta from '../../drivers/melcloud/driver.mts'
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', async () => {
   const { createMockDriverClass } = await import('../helpers.ts')
-  return { default: { Driver: createMockDriverClass() } }
+  const {
+    energyCapabilityTagMappingAta: energy,
+    getCapabilityTagMappingAta: get,
+    listCapabilityTagMappingAta: list,
+    setCapabilityTagMappingAta: set,
+  } = await import('../../types/index.mts')
+  return {
+    default: {
+      Driver: createMockDriverClass({
+        manifest: {
+          capabilities: Object.keys({ ...set, ...get, ...list, ...energy }),
+        },
+      }),
+    },
+  }
 })
 
 describe(MELCloudDriverAta, () => {
@@ -41,12 +55,13 @@ describe(MELCloudDriverAta, () => {
       expect(capabilities).toContain('measure_temperature')
     })
 
-    it('should include all set, get, and list capability keys', () => {
+    it('should include all manifest capabilities except measure_signal_strength', () => {
       const capabilities = driver.getRequiredCapabilities()
       const allKeys = Object.keys({
         ...setCapabilityTagMappingAta,
         ...getCapabilityTagMappingAta,
         ...listCapabilityTagMappingAta,
+        ...energyCapabilityTagMappingAta,
       }).filter((key) => key !== 'measure_signal_strength')
 
       expect(capabilities).toStrictEqual(allKeys)
