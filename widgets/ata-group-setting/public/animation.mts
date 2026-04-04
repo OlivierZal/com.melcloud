@@ -7,7 +7,7 @@ import {
   OPERATION_MODE_MIXED,
   OperationMode,
 } from './constants.mts'
-import { getSelectElement } from './dom.mts'
+import { getSelect } from './dom.mts'
 import { type Homey, homeyApiGet } from './homey-api.mts'
 import { SmokeParticle, SmokeThreshold } from './smoke-particle.mts'
 import { generateStyleNumber, generateStyleString } from './style-helpers.mts'
@@ -64,7 +64,7 @@ const generateDelay = (delay: number, speed: number): number =>
       ((speed - FanSpeed.very_slow) /
         (FanSpeed.very_fast - FanSpeed.very_slow)) || 1)
 
-const getZoneValue = (): string => getZonePath(getSelectElement('zones').value)
+const getZoneValue = (): string => getZonePath(getSelect('zones').value)
 
 // ── Animation helpers ──
 
@@ -185,7 +185,7 @@ const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
 // ── AnimationController class ──
 
 export class AnimationController {
-  readonly #animationElement: HTMLDivElement
+  readonly #animation: HTMLDivElement
 
   readonly #animationHandling: Record<
     number,
@@ -246,7 +246,7 @@ export class AnimationController {
     canvas: HTMLCanvasElement,
   ) {
     this.#homey = homey
-    this.#animationElement = animationElement
+    this.#animation = animationElement
     this.#canvas = canvas
     this.#canvasContext = canvas.getContext('2d')
     this.#animationMapping = createAnimationMapping()
@@ -352,7 +352,7 @@ export class AnimationController {
         'px',
       )
       applyStyles(element)
-      this.#animationElement.append(element)
+      this.#animation.append(element)
       animate(element)
     }
   }
@@ -545,7 +545,7 @@ export class AnimationController {
     const sun = document.querySelector('#sun-1')
     if (!(sun instanceof HTMLDivElement)) {
       const newSun = this.#createAnimatedElement('sun')
-      this.#animationElement.append(newSun)
+      this.#animation.append(newSun)
       return newSun
     }
     return sun

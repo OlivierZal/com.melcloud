@@ -20,44 +20,44 @@ export const getElement = <T extends HTMLElement>(
   return element
 }
 
-export const getButtonElement = (id: string): HTMLButtonElement =>
+export const getButton = (id: string): HTMLButtonElement =>
   getElement(id, HTMLButtonElement, 'button')
 
-export const getCanvasElement = (id: string): HTMLCanvasElement =>
+export const getCanvas = (id: string): HTMLCanvasElement =>
   getElement(id, HTMLCanvasElement, 'canvas')
 
-export const getDivElement = (id: string): HTMLDivElement =>
+export const getDiv = (id: string): HTMLDivElement =>
   getElement(id, HTMLDivElement, 'div')
 
-export const getInputElement = (id: string): HTMLInputElement =>
+export const getInput = (id: string): HTMLInputElement =>
   getElement(id, HTMLInputElement, 'input')
 
-export const getLabelElement = (id: string): HTMLLabelElement =>
+export const getLabel = (id: string): HTMLLabelElement =>
   getElement(id, HTMLLabelElement, 'label')
 
-export const getSelectElement = (id: string): HTMLSelectElement =>
+export const getSelect = (id: string): HTMLSelectElement =>
   getElement(id, HTMLSelectElement, 'select')
 
-export const createOptionElement = (
-  selectElement: HTMLSelectElement,
+export const createOption = (
+  select: HTMLSelectElement,
   { id, label }: { id: string; label: string },
 ): void => {
-  if (!selectElement.querySelector(`option[value="${id}"]`)) {
-    selectElement.append(new Option(label, id))
+  if (!select.querySelector(`option[value="${id}"]`)) {
+    select.append(new Option(label, id))
   }
 }
 
-export const handleNumericInputElement = (
-  inputElement: HTMLInputElement,
+export const handleNumericInput = (
+  input: HTMLInputElement,
   { max, min }: { max?: number; min?: number },
 ): void => {
-  if (inputElement.type === 'number') {
-    inputElement.setAttribute('inputmode', 'numeric')
+  if (input.type === 'number') {
+    input.setAttribute('inputmode', 'numeric')
     if (min !== undefined) {
-      inputElement.min = String(min)
+      input.min = String(min)
     }
     if (max !== undefined) {
-      inputElement.max = String(max)
+      input.max = String(max)
     }
   }
 }

@@ -26,7 +26,7 @@ export const ThermostatModeAta = {
   off: 'off',
 } as const
 
-export const horizontalReverse = {
+export const horizontalFromDevice = {
   [Horizontal.auto]: 'auto',
   [Horizontal.center]: 'center',
   [Horizontal.center_left]: 'center_left',
@@ -37,7 +37,7 @@ export const horizontalReverse = {
   [Horizontal.wide]: 'wide',
 } as const satisfies Record<Horizontal, keyof typeof Horizontal>
 
-export const operationModeReverse = {
+export const operationModeFromDevice = {
   [OperationMode.auto]: 'auto',
   [OperationMode.cool]: 'cool',
   [OperationMode.dry]: 'dry',
@@ -45,7 +45,7 @@ export const operationModeReverse = {
   [OperationMode.heat]: 'heat',
 } as const satisfies Record<OperationMode, keyof typeof OperationMode>
 
-export const verticalReverse = {
+export const verticalFromDevice = {
   [Vertical.auto]: 'auto',
   [Vertical.downwards]: 'downwards',
   [Vertical.mid_high]: 'mid_high',

@@ -7,10 +7,10 @@ import type ApexCharts from 'apexcharts'
 import type {
   DaysQuery,
   DeviceZone,
-  HomeyWidgetSettingsCharts as HomeySettings,
+  ChartsWidgetSettings as HomeySettings,
 } from '../../../types/index.mts'
 import { DeviceType } from './constants.mts'
-import { createOptionElement, getDivElement, getSelectElement } from './dom.mts'
+import { createOption, getDiv, getSelect } from './dom.mts'
 import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'
 import { getZoneId, getZonePath } from './zones.mts'
 
@@ -59,8 +59,8 @@ let timeout: NodeJS.Timeout | null = null
 
 // ── DOM helpers ──
 
-const zoneElement = getSelectElement('zones')
-const getZoneValue = (): string => getZonePath(zoneElement.value)
+const zone = getSelect('zones')
+const getZoneValue = (): string => getZonePath(zone.value)
 
 // ── Style helpers ──
 
@@ -261,7 +261,7 @@ const draw = async (
     await myChart.updateOptions(options)
   } else {
     // @ts-expect-error: imported by another script in `./index.html`
-    myChart = new ApexCharts(getDivElement('chart'), options)
+    myChart = new ApexCharts(getDiv('chart'), options)
     await myChart.render()
   }
   await homey.setHeight(document.body.scrollHeight)
@@ -276,7 +276,7 @@ const draw = async (
 
 const generateZones = (zones: DeviceZone[]): void => {
   for (const { id, model, name: label } of zones) {
-    createOptionElement(zoneElement, { id: getZoneId(id, model), label })
+    createOption(zone, { id: getZoneId(id, model), label })
   }
 }
 
@@ -284,7 +284,7 @@ const addEventListeners = (
   homey: Homey,
   config: { chart: HomeySettings['chart']; height: number; days?: number },
 ): void => {
-  zoneElement.addEventListener('change', () => {
+  zone.addEventListener('change', () => {
     if (timeout) {
       clearTimeout(timeout)
     }
@@ -301,7 +301,7 @@ const handleDefaultZone = (defaultZone: DeviceZone | null): void => {
   const { id, model } = defaultZone
   const value = getZoneId(id, model)
   if (document.querySelector(`#zones option[value="${value}"]`)) {
-    zoneElement.value = value
+    zone.value = value
   }
 }
 

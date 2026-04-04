@@ -22,7 +22,7 @@ import {
   localizeWithAffix,
 } from './bases.mts'
 
-export const operationModeStateReverse = {
+export const operationModeStateFromDevice = {
   [OperationModeState.cooling]: 'cooling',
   [OperationModeState.defrost]: 'defrost',
   [OperationModeState.dhw]: 'dhw',
@@ -31,7 +31,7 @@ export const operationModeStateReverse = {
   [OperationModeState.legionella]: 'legionella',
 } as const satisfies Record<OperationModeState, keyof typeof OperationModeState>
 
-export const operationModeZoneReverse = {
+export const operationModeZoneFromDevice = {
   [OperationModeZone.curve]: 'curve',
   [OperationModeZone.flow]: 'flow',
   [OperationModeZone.flow_cool]: 'flow_cool',

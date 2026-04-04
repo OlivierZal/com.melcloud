@@ -7,9 +7,9 @@ import {
 import { describe, expect, it } from 'vitest'
 
 import {
-  horizontalReverse,
-  operationModeReverse,
-  verticalReverse,
+  horizontalFromDevice,
+  operationModeFromDevice,
+  verticalFromDevice,
 } from '../../types/index.mts'
 
 describe('facade interaction patterns', () => {
@@ -21,21 +21,21 @@ describe('facade interaction patterns', () => {
     })
 
     it('should reverse-map Horizontal values', () => {
-      expect(horizontalReverse[Horizontal.auto]).toBe('auto')
-      expect(horizontalReverse[Horizontal.center]).toBe('center')
-      expect(horizontalReverse[Horizontal.swing]).toBe('swing')
+      expect(horizontalFromDevice[Horizontal.auto]).toBe('auto')
+      expect(horizontalFromDevice[Horizontal.center]).toBe('center')
+      expect(horizontalFromDevice[Horizontal.swing]).toBe('swing')
     })
 
     it('should reverse-map Vertical values', () => {
-      expect(verticalReverse[Vertical.auto]).toBe('auto')
-      expect(verticalReverse[Vertical.upwards]).toBe('upwards')
-      expect(verticalReverse[Vertical.swing]).toBe('swing')
+      expect(verticalFromDevice[Vertical.auto]).toBe('auto')
+      expect(verticalFromDevice[Vertical.upwards]).toBe('upwards')
+      expect(verticalFromDevice[Vertical.swing]).toBe('swing')
     })
 
     it('should reverse-map OperationMode values', () => {
-      expect(operationModeReverse[OperationMode.auto]).toBe('auto')
-      expect(operationModeReverse[OperationMode.cool]).toBe('cool')
-      expect(operationModeReverse[OperationMode.heat]).toBe('heat')
+      expect(operationModeFromDevice[OperationMode.auto]).toBe('auto')
+      expect(operationModeFromDevice[OperationMode.cool]).toBe('cool')
+      expect(operationModeFromDevice[OperationMode.heat]).toBe('heat')
     })
 
     it('should forward-map from key to value', () => {

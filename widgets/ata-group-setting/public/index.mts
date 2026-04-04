@@ -2,15 +2,15 @@ import type { DeviceType } from '@olivierzal/melcloud-api'
 
 import type {
   BuildingZone,
-  HomeyWidgetSettingsAtaGroupSetting as HomeySettings,
+  AtaGroupSettingWidgetSettings as HomeySettings,
 } from '../../../types/index.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 import {
-  getButtonElement,
-  getCanvasElement,
-  getDivElement,
-  getSelectElement,
+  getButton,
+  getCanvas,
+  getDiv,
+  getSelect,
 } from './dom.mts'
 import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'
 
@@ -29,19 +29,19 @@ class WidgetApp {
 
   public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
-    const animationElement = getDivElement('animation')
-    const canvas = getCanvasElement('smoke_canvas')
-    const ataValuesElement = getDivElement('values_melcloud')
-    const zoneElement = getSelectElement('zones')
+    const animation = getDiv('animation')
+    const canvas = getCanvas('smoke_canvas')
+    const ataValues = getDiv('values_melcloud')
+    const zone = getSelect('zones')
     this.#animationController = new AnimationController(
       homey,
-      animationElement,
+      animation,
       canvas,
     )
     this.#ataValueManager = new AtaValueManager(
       homey,
-      ataValuesElement,
-      zoneElement,
+      ataValues,
+      zone,
     )
   }
 
@@ -53,19 +53,19 @@ class WidgetApp {
   }
 
   #addEventListeners(): void {
-    const zoneElement = getSelectElement('zones')
-    const refreshAtaValuesElement = getButtonElement('refresh_values_melcloud')
-    const updateAtaValuesElement = getButtonElement('apply_values_melcloud')
-    zoneElement.addEventListener('change', () => {
+    const zone = getSelect('zones')
+    const refreshAtaValues = getButton('refresh_values_melcloud')
+    const updateAtaValues = getButton('apply_values_melcloud')
+    zone.addEventListener('change', () => {
       this.#fetchAndAnimate().catch(() => {
         // Errors are handled internally by fetchValues/handleAnimation
       })
     })
-    refreshAtaValuesElement.addEventListener('click', () => {
+    refreshAtaValues.addEventListener('click', () => {
       this.#homey.hapticFeedback()
       this.#ataValueManager.refreshValues()
     })
-    updateAtaValuesElement.addEventListener('click', () => {
+    updateAtaValues.addEventListener('click', () => {
       this.#homey.hapticFeedback()
       this.#ataValueManager.setValues().catch(() => {
         // Values will resync on next device update

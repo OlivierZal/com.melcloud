@@ -19,10 +19,10 @@ import {
   type HomeConvertFromDevice,
   type HomeConvertToDevice,
   type HomeSetCapabilitiesAta,
-  horizontalReverse,
-  operationModeReverse,
+  horizontalFromDevice,
+  operationModeFromDevice,
   ThermostatModeAta,
-  verticalReverse,
+  verticalFromDevice,
 } from '../../types/index.mts'
 import { HomeBaseMELCloudDevice } from '../home-base-device.mts'
 
@@ -45,17 +45,17 @@ export default class HomeMELCloudDeviceAta extends HomeBaseMELCloudDevice {
   > = {
     fan_speed: ({ setFanSpeed }) => fanSpeedToClassic[setFanSpeed],
     horizontal: ({ vaneHorizontalDirection }) =>
-      horizontalReverse[horizontalToClassic[vaneHorizontalDirection]],
+      horizontalFromDevice[horizontalToClassic[vaneHorizontalDirection]],
     measure_signal_strength: ({ rssi }) => rssi,
     measure_temperature: ({ roomTemperature }) => roomTemperature,
     onoff: ({ power }) => power,
     target_temperature: ({ setTemperature }) => setTemperature,
     thermostat_mode: ({ operationMode, power }) =>
       power ?
-        operationModeReverse[operationModeToClassic[operationMode]]
+        operationModeFromDevice[operationModeToClassic[operationMode]]
       : ThermostatModeAta.off,
     vertical: ({ vaneVerticalDirection }) =>
-      verticalReverse[verticalToClassic[vaneVerticalDirection]],
+      verticalFromDevice[verticalToClassic[vaneVerticalDirection]],
   }
 
   protected readonly thermostatMode = ThermostatModeAta
