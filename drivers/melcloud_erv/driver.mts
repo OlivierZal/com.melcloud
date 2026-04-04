@@ -35,8 +35,7 @@ export default class MELCloudDriverErv extends BaseMELCloudDriver<
     HasPM25Sensor: hasPM25Sensor,
   }: ListDeviceData<typeof DeviceType.Erv>): string[] {
     return [
-      /* v8 ignore next -- manifest.capabilities is optional in Homey SDK type */
-      ...(this.manifest.capabilities ?? []).filter(
+      ...this.manifest.capabilities.filter(
         (capability) => !measureCapabilities.has(capability),
       ),
       ...(hasCO2Sensor ? ['measure_co2'] : []),

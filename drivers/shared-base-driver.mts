@@ -61,8 +61,7 @@ export abstract class SharedBaseMELCloudDriver extends Driver {
   /* v8 ignore stop */
 
   public getRequiredCapabilities(): string[] {
-    /* v8 ignore next -- manifest.capabilities is optional and readonly in Homey SDK type */
-    return [...(this.manifest.capabilities ?? [])]
+    return [...this.manifest.capabilities]
   }
 
   protected async discoverDevices(): Promise<

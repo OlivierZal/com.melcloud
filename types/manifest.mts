@@ -16,8 +16,8 @@ export interface Manifest {
 }
 
 export interface ManifestDriver {
+  readonly capabilities: readonly string[]
   readonly id: string
-  readonly capabilities?: readonly string[]
   readonly capabilitiesOptions?: Record<
     string,
     ManifestDriverCapabilitiesOptions

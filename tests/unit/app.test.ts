@@ -146,6 +146,7 @@ const mockTranslate = vi
 
 const mockManifestDrivers: ManifestDriver[] = [
   {
+    capabilities: [],
     capabilitiesOptions: {
       thermostat_mode: {
         title: { en: 'Mode' },
@@ -1005,6 +1006,7 @@ describe('melCloudApp', () => {
     it('should extract login settings from pair config', async () => {
       const driversWithLogin: ManifestDriver[] = [
         {
+          capabilities: [],
           id: 'melcloud',
           pair: Object.assign(
             [
@@ -1217,6 +1219,7 @@ describe('melCloudApp', () => {
     it('should include values in driver settings when defined', async () => {
       const driversWithValues: ManifestDriver[] = [
         {
+          capabilities: [],
           id: 'melcloud',
           settings: [
             {

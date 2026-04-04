@@ -255,8 +255,7 @@ export abstract class SharedBaseMELCloudDevice extends withTimers(Device) {
   }
 
   protected isManifestCapability(capability: string): boolean {
-    /* v8 ignore next -- manifest.capabilities is optional in the Homey SDK type */
-    return (this.driver.manifest.capabilities ?? []).includes(capability)
+    return this.driver.manifest.capabilities.includes(capability)
   }
 
   protected async sendUpdate(values: Record<string, unknown>): Promise<void> {
