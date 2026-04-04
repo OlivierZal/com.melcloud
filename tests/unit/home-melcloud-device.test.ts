@@ -46,9 +46,12 @@ describe(HomeMELCloudDeviceAta, () => {
   testThermostatMode(() => device as object, ThermostatModeAta)
 
   describe('device-to-capability conversions', () => {
-    it('should pass through measure_temperature, onoff, and target_temperature', () => {
+    it('should pass through measure_signal_strength, measure_temperature, onoff, and target_temperature', () => {
       const { deviceToCapability } = device
 
+      expect(
+        deviceToCapability.measure_signal_strength?.(mockFacade({ rssi: -42 })),
+      ).toBe(-42)
       expect(
         deviceToCapability.measure_temperature?.(
           mockFacade({ roomTemperature: 21 }),

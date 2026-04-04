@@ -4,7 +4,11 @@ import type {
 } from '@olivierzal/melcloud-api'
 
 import type { ThermostatModeAta } from './ata.mts'
-import type { BaseGetCapabilities, BaseSetCapabilities } from './bases.mts'
+import type {
+  BaseGetCapabilities,
+  BaseListCapabilities,
+  BaseSetCapabilities,
+} from './bases.mts'
 
 export type HomeCapabilitiesAta = HomeGetCapabilitiesAta &
   HomeListCapabilitiesAta &
@@ -12,7 +16,7 @@ export type HomeCapabilitiesAta = HomeGetCapabilitiesAta &
 
 export type HomeGetCapabilitiesAta = BaseGetCapabilities
 
-export type HomeListCapabilitiesAta = Record<string, never>
+export type HomeListCapabilitiesAta = BaseListCapabilities
 
 export interface HomeSetCapabilitiesAta extends BaseSetCapabilities {
   readonly fan_speed: number
@@ -31,7 +35,9 @@ export type HomeConvertFromDevice = {
   bivariant(
     facade: HomeDeviceAtaFacade,
   ):
-    | HomeCapabilitiesAta[keyof HomeGetCapabilitiesAta]
+    | HomeCapabilitiesAta[
+        | keyof HomeGetCapabilitiesAta
+        | keyof HomeListCapabilitiesAta]
     | HomeCapabilitiesAta[keyof HomeSetCapabilitiesAta]
 }['bivariant']
 
