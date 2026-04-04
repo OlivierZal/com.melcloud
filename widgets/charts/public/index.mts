@@ -53,15 +53,6 @@ const hidden: ReadonlySet<string> = new Set([
 ])
 const styleCache: Record<string, string> = {}
 
-let myChart: ApexCharts | null = null
-let options: ApexCharts.ApexOptions = {}
-let timeout: NodeJS.Timeout | null = null
-
-// ── DOM helpers ──
-
-const zone = getSelect('zones')
-const getZoneValue = (): string => getZonePath(zone.value)
-
 // ── Style helpers ──
 
 const getStyle = (property: string): string => {
@@ -185,8 +176,11 @@ const getChartOptions = (
 
 const fetchChartData = async (
   homey: Homey,
-  chart: HomeySettings['chart'],
-  days?: number,
+  {
+    chart,
+    days,
+    zoneValue,
+  }: { chart: HomeySettings['chart']; zoneValue: string; days?: number },
 ): Promise<ReportChartLineOptions | ReportChartPieOptions> => {
   const daysQuery =
     chartsWithDays.has(chart) && days !== undefined ?
@@ -194,44 +188,8 @@ const fetchChartData = async (
     : ''
   return homeyApiGet<ReportChartLineOptions | ReportChartPieOptions>(
     homey,
-    `/${getZoneValue()}/logs/${chart.replaceAll('_', '-')}${daysQuery}`,
+    `/${zoneValue}/logs/${chart.replaceAll('_', '-')}${daysQuery}`,
   )
-}
-
-const handleChartAndOptions = async (
-  homey: Homey,
-  {
-    chart,
-    days,
-    height,
-  }: { chart: HomeySettings['chart']; height: number; days?: number },
-): Promise<ApexCharts.ApexOptions> => {
-  /*
-   * Preserve user's hidden series selections across data refreshes. If chart
-   * type changes or a previously hidden series disappears, destroy and
-   * recreate the chart
-   */
-  const hiddenSeries = (options.series ?? []).map((serie) =>
-    typeof serie === 'number' || serie.hidden !== true ? null : serie.name,
-  )
-  const newOptions = getChartOptions(
-    await fetchChartData(homey, chart, days),
-    height,
-  )
-  const shouldRecreateChart =
-    newOptions.chart?.type === 'pie' ||
-    hiddenSeries.some(
-      (name) =>
-        name !== null &&
-        !(newOptions.series ?? [])
-          .map((serie) => (typeof serie === 'number' ? null : serie.name))
-          .includes(name),
-    )
-  if (shouldRecreateChart) {
-    myChart?.destroy()
-    myChart = null
-  }
-  return newOptions
 }
 
 /*
@@ -248,82 +206,146 @@ const getTimeout = (chart: HomeySettings['chart']): number => {
   return next.getTime() - now.getTime()
 }
 
-const draw = async (
-  homey: Homey,
-  {
+interface DrawConfig {
+  readonly chart: HomeySettings['chart']
+  readonly height: number
+  readonly days?: number
+}
+
+// ── ChartWidget class ──
+
+class ChartWidget {
+  #chart: ApexCharts | null = null
+
+  readonly #homey: Homey<HomeySettings>
+
+  #options: ApexCharts.ApexOptions = {}
+
+  #timeout: NodeJS.Timeout | null = null
+
+  readonly #zone: HTMLSelectElement
+
+  public constructor(homey: Homey<HomeySettings>) {
+    this.#homey = homey
+    this.#zone = getSelect('zones')
+  }
+
+  public async init(): Promise<void> {
+    await Promise.all([
+      setDocumentLanguage(this.#homey),
+      this.#fetchDevices(),
+    ])
+    this.#homey.ready({ height: document.body.scrollHeight })
+  }
+
+  #addEventListeners(config: DrawConfig): void {
+    this.#zone.addEventListener('change', () => {
+      if (this.#timeout) {
+        clearTimeout(this.#timeout)
+      }
+      this.#draw(config).catch(() => {
+        // Best-effort: chart will retry on next zone change or refresh
+      })
+    })
+  }
+
+  async #draw({ chart, days, height }: DrawConfig): Promise<void> {
+    this.#options = await this.#handleChartAndOptions({ chart, days, height })
+    if (this.#chart) {
+      await this.#chart.updateOptions(this.#options)
+    } else {
+      // @ts-expect-error: imported by another script in `./index.html`
+      this.#chart = new ApexCharts(getDiv('chart'), this.#options)
+      await this.#chart.render()
+    }
+    await this.#homey.setHeight(document.body.scrollHeight)
+    this.#timeout = setTimeout(() => {
+      this.#draw({ chart, days, height }).catch(() => {
+        // Best-effort: chart will retry on next scheduled refresh
+      })
+    }, getTimeout(chart))
+  }
+
+  async #fetchDevices(): Promise<void> {
+    const {
+      chart,
+      days,
+      default_zone: defaultZone,
+      height,
+    } = this.#homey.getSettings()
+    const typeQuery =
+      chart === 'hourly_temperatures' ?
+        `?${new URLSearchParams({ type: String(DeviceType.Atw) })}`
+      : ''
+    const devices = await homeyApiGet<DeviceZone[]>(
+      this.#homey,
+      `/devices${typeQuery}`,
+    )
+    if (devices.length > 0) {
+      const config: DrawConfig = { chart, days, height: Number(height) }
+      this.#addEventListeners(config)
+      this.#generateZones(devices)
+      this.#handleDefaultZone(defaultZone)
+      await this.#draw(config)
+    }
+  }
+
+  #generateZones(zones: DeviceZone[]): void {
+    for (const { id, model, name: label } of zones) {
+      createOption(this.#zone, { id: getZoneId(id, model), label })
+    }
+  }
+
+  async #handleChartAndOptions({
     chart,
     days,
     height,
-  }: { chart: HomeySettings['chart']; height: number; days?: number },
-): Promise<void> => {
-  options = await handleChartAndOptions(homey, { chart, days, height })
-  if (myChart) {
-    await myChart.updateOptions(options)
-  } else {
-    // @ts-expect-error: imported by another script in `./index.html`
-    myChart = new ApexCharts(getDiv('chart'), options)
-    await myChart.render()
-  }
-  await homey.setHeight(document.body.scrollHeight)
-  timeout = setTimeout(() => {
-    draw(homey, { chart, days, height }).catch(() => {
-      // Best-effort: chart will retry on next scheduled refresh
-    })
-  }, getTimeout(chart))
-}
-
-// ── Setup ──
-
-const generateZones = (zones: DeviceZone[]): void => {
-  for (const { id, model, name: label } of zones) {
-    createOption(zone, { id: getZoneId(id, model), label })
-  }
-}
-
-const addEventListeners = (
-  homey: Homey,
-  config: { chart: HomeySettings['chart']; height: number; days?: number },
-): void => {
-  zone.addEventListener('change', () => {
-    if (timeout) {
-      clearTimeout(timeout)
+  }: DrawConfig): Promise<ApexCharts.ApexOptions> {
+    /*
+     * Preserve user's hidden series selections across data refreshes. If chart
+     * type changes or a previously hidden series disappears, destroy and
+     * recreate the chart
+     */
+    const hiddenSeries = (this.#options.series ?? []).map((serie) =>
+      typeof serie === 'number' || serie.hidden !== true ? null : serie.name,
+    )
+    const zoneValue = getZonePath(this.#zone.value)
+    const newOptions = getChartOptions(
+      await fetchChartData(this.#homey, { chart, days, zoneValue }),
+      height,
+    )
+    const shouldRecreateChart =
+      newOptions.chart?.type === 'pie' ||
+      hiddenSeries.some(
+        (name) =>
+          name !== null &&
+          !(newOptions.series ?? [])
+            .map((serie) => (typeof serie === 'number' ? null : serie.name))
+            .includes(name),
+      )
+    if (shouldRecreateChart) {
+      this.#chart?.destroy()
+      this.#chart = null
     }
-    draw(homey, config).catch(() => {
-      // Best-effort: chart will retry on next zone change or refresh
-    })
-  })
-}
-
-const handleDefaultZone = (defaultZone: DeviceZone | null): void => {
-  if (!defaultZone) {
-    return
+    return newOptions
   }
-  const { id, model } = defaultZone
-  const value = getZoneId(id, model)
-  if (document.querySelector(`#zones option[value="${value}"]`)) {
-    zone.value = value
+
+  #handleDefaultZone(defaultZone: DeviceZone | null): void {
+    if (defaultZone) {
+      const { id, model } = defaultZone
+      const value = getZoneId(id, model)
+      if (document.querySelector(`#zones option[value="${value}"]`)) {
+        this.#zone.value = value
+      }
+    }
   }
 }
 
-const fetchDevices = async (homey: Homey<HomeySettings>): Promise<void> => {
-  const { chart, days, default_zone: defaultZone, height } = homey.getSettings()
-  const typeQuery =
-    chart === 'hourly_temperatures' ?
-      `?${new URLSearchParams({ type: String(DeviceType.Atw) })}`
-    : ''
-  const devices = await homeyApiGet<DeviceZone[]>(homey, `/devices${typeQuery}`)
-  if (devices.length > 0) {
-    addEventListeners(homey, { chart, days, height: Number(height) })
-    generateZones(devices)
-    handleDefaultZone(defaultZone)
-    await draw(homey, { chart, days, height: Number(height) })
-  }
-}
+// ── Entry point ──
 
 const onHomeyReady = async (homey: Homey<HomeySettings>): Promise<void> => {
-  await setDocumentLanguage(homey)
-  await fetchDevices(homey)
-  homey.ready({ height: document.body.scrollHeight })
+  const widget = new ChartWidget(homey)
+  await widget.init()
 }
 
 Object.assign(globalThis, { onHomeyReady })

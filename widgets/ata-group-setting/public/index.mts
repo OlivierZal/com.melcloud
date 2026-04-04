@@ -46,8 +46,10 @@ class WidgetApp {
   }
 
   public async init(): Promise<void> {
-    await setDocumentLanguage(this.#homey)
-    await this.#ataValueManager.fetchCapabilities()
+    await Promise.all([
+      setDocumentLanguage(this.#homey),
+      this.#ataValueManager.fetchCapabilities(),
+    ])
     await this.#initBuildings()
     this.#homey.ready({ height: document.body.scrollHeight })
   }

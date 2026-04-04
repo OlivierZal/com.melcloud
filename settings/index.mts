@@ -190,6 +190,17 @@ const withDisablingButton = async (
   disableButton(id, false)
 }
 
+const withDisablingButtonPair = async (
+  id: string,
+  action: () => Promise<void>,
+): Promise<void> => {
+  disableButton(`apply_${id}`)
+  disableButton(`refresh_${id}`)
+  await action()
+  disableButton(`apply_${id}`, false)
+  disableButton(`refresh_${id}`, false)
+}
+
 const hide = (element: HTMLDivElement, isHidden = true): void => {
   element.hidden = isHidden
 }
@@ -423,6 +434,7 @@ class AuthManager {
     )
   }
 
+  /** @alerts Displays authentication errors to the user. */
   public async login(): Promise<void> {
     const username = this.#usernameInput?.value ?? ''
     const password = this.#passwordInput?.value ?? ''
@@ -496,22 +508,6 @@ class ErrorLogManager {
 
   #to = ''
 
-  public get from(): string {
-    return this.#from
-  }
-
-  public get seeButtonId(): string {
-    return this.#seeButton.id
-  }
-
-  public get sinceInput(): HTMLInputElement {
-    return this.#sinceInput
-  }
-
-  public get to(): string {
-    return this.#to
-  }
-
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#errorLog = getDiv('error_log')
@@ -545,6 +541,11 @@ class ErrorLogManager {
     })
   }
 
+  public disable(): void {
+    disableButton(this.#seeButton.id)
+  }
+
+  /** @alerts Displays fetch errors to the user. */
   public async fetchErrorLog(): Promise<void> {
     await withDisablingButton(this.#seeButton.id, async () => {
       try {
@@ -660,10 +661,7 @@ class DeviceSettingsManager {
     this.#settingsCommon = getDiv('settings_common')
   }
 
-  public disableButtons(id: string, isDisabled = true): void {
-    this.#disableButtons(id, isDisabled)
-  }
-
+  /** @alerts Displays fetch errors to the user. */
   public async fetchDeviceSettings(): Promise<void> {
     try {
       this.#deviceSettings = await homeyApiGet<DeviceSettings>(
@@ -675,6 +673,7 @@ class DeviceSettingsManager {
     }
   }
 
+  /** @alerts Displays fetch errors to the user. Returns empty fallback on error. */
   public async fetchDriverSettings(): Promise<
     Partial<Record<string, DriverSetting[]>>
   > {
@@ -688,15 +687,6 @@ class DeviceSettingsManager {
       await this.#homey.alert(getErrorMessage(error))
       return {}
     }
-  }
-
-  public async withDisablingButtons(
-    id: string,
-    action: () => Promise<void>,
-  ): Promise<void> {
-    this.#disableButtons(id)
-    await action()
-    this.#disableButtons(id, false)
   }
 
   #addApplySettingsEventListener(
@@ -737,6 +727,23 @@ class DeviceSettingsManager {
   ): void {
     this.#addApplySettingsEventListener(elements, driverId)
     this.#addRefreshSettingsEventListener(elements, driverId)
+  }
+
+  async #applyDeviceSettings(
+    body: Settings,
+    driverId?: string,
+  ): Promise<void> {
+    const driverQuery =
+      driverId === undefined ? '' : (
+        `?${new URLSearchParams({ driverId } satisfies { driverId: string })}`
+      )
+    await homeyApiPut<unknown>(
+      this.#homey,
+      `/settings/devices${driverQuery}`,
+      body satisfies Settings,
+    )
+    this.#updateDeviceSettings(body, driverId)
+    await this.#homey.alert(this.#homey.__('settings.success'))
   }
 
   #buildSettingsBody(elements: HTMLValueElement[]): Settings {
@@ -845,6 +852,22 @@ class DeviceSettingsManager {
     }
   }
 
+  #handleNoChanges(
+    elements: HTMLValueElement[],
+    driverId?: string,
+  ): void {
+    if (driverId === undefined) {
+      this.#refreshCommonSettings(
+        elements.filter((element) => element instanceof HTMLSelectElement),
+      )
+    }
+    this.#homey
+      .alert(this.#homey.__('settings.devices.nothing'))
+      .catch(() => {
+        // Best-effort UI notification: the alert itself is the error display
+      })
+  }
+
   #processValue(element: HTMLValueElement): ValueOf<Settings> {
     if (element.value) {
       if (element.type === 'checkbox') {
@@ -884,38 +907,18 @@ class DeviceSettingsManager {
   ): Promise<void> {
     const body = this.#buildSettingsBody(elements)
     if (Object.keys(body).length === 0) {
-      if (driverId === undefined) {
-        this.#refreshCommonSettings(
-          elements.filter((element) => element instanceof HTMLSelectElement),
-        )
-      }
-      this.#homey
-        .alert(this.#homey.__('settings.devices.nothing'))
-        .catch(() => {
-          // Best-effort UI notification: the alert itself is the error display
-        })
+      this.#handleNoChanges(elements, driverId)
       return
     }
-    await this.withDisablingButtons(
-      `settings_${driverId ?? 'common'}`,
-      async () => {
-        try {
-          const driverQuery =
-            driverId === undefined ? '' : (
-              `?${new URLSearchParams({ driverId } satisfies { driverId: string })}`
-            )
-          await homeyApiPut<unknown>(
-            this.#homey,
-            `/settings/devices${driverQuery}`,
-            body satisfies Settings,
-          )
-          this.#updateDeviceSettings(body, driverId)
-          await this.#homey.alert(this.#homey.__('settings.success'))
-        } catch (error) {
-          await this.#homey.alert(getErrorMessage(error))
-        }
-      },
-    )
+    const settingsId = `settings_${driverId ?? 'common'}`
+    this.#disableButtons(settingsId)
+    try {
+      await this.#applyDeviceSettings(body, driverId)
+    } catch (error) {
+      await this.#homey.alert(getErrorMessage(error))
+    } finally {
+      this.#disableButtons(settingsId, false)
+    }
   }
 
   #setSetting(settings: Settings, element: HTMLValueElement): void {
@@ -999,8 +1002,6 @@ class DeviceSettingsManager {
 // ── ZoneSettingsManager ──
 
 class ZoneSettingsManager {
-  readonly #deviceSettingsManager: DeviceSettingsManager
-
   readonly #frostProtectionEnabled: HTMLSelectElement
 
   readonly #frostProtectionMaxTemperature: HTMLInputElement
@@ -1019,12 +1020,8 @@ class ZoneSettingsManager {
 
   #zoneMapping: Partial<Record<string, Partial<ZoneSettings>>> = {}
 
-  public constructor(
-    homey: Homey,
-    deviceSettingsManager: DeviceSettingsManager,
-  ) {
+  public constructor(homey: Homey) {
     this.#homey = homey
-    this.#deviceSettingsManager = deviceSettingsManager
     this.#zone = getSelect('zones')
     this.#frostProtectionEnabled = getSelect(
       'enabled_frost_protection',
@@ -1046,8 +1043,9 @@ class ZoneSettingsManager {
     this.#addFrostProtectionEventListeners()
   }
 
+  /** @silent Falls back to default values on error. */
   public async fetchFrostProtectionData(): Promise<void> {
-    await this.#deviceSettingsManager.withDisablingButtons(
+    await withDisablingButtonPair(
       'frost_protection',
       async () => {
         try {
@@ -1064,8 +1062,9 @@ class ZoneSettingsManager {
     )
   }
 
+  /** @silent Falls back to default values on error. */
   public async fetchHolidayModeData(): Promise<void> {
-    await this.#deviceSettingsManager.withDisablingButtons(
+    await withDisablingButtonPair(
       'holiday_mode',
       async () => {
         try {
@@ -1130,12 +1129,13 @@ class ZoneSettingsManager {
     }
   }
 
+  /** @alerts Displays save errors to the user. */
   public async setFrostProtectionData({
     isEnabled,
     max,
     min,
   }: FrostProtectionQuery): Promise<void> {
-    await this.#deviceSettingsManager.withDisablingButtons(
+    await withDisablingButtonPair(
       'frost_protection',
       async () => {
         try {
@@ -1158,11 +1158,12 @@ class ZoneSettingsManager {
     )
   }
 
+  /** @alerts Displays save errors to the user. */
   public async setHolidayModeData({
     from: startDate,
     to: endDate,
   }: HolidayModeQuery): Promise<void> {
-    await this.#deviceSettingsManager.withDisablingButtons(
+    await withDisablingButtonPair(
       'holiday_mode',
       async () => {
         try {
@@ -1352,21 +1353,19 @@ class SettingsApp {
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#deviceSettingsManager = new DeviceSettingsManager(homey)
-    this.#zoneSettingsManager = new ZoneSettingsManager(
-      homey,
-      this.#deviceSettingsManager,
-    )
+    this.#zoneSettingsManager = new ZoneSettingsManager(homey)
     this.#errorLogManager = new ErrorLogManager(homey)
     this.#authManager = new AuthManager(homey, async () =>
-      this.#loadPostLogin(),
+      this.#loadBuildings('login'),
     )
   }
 
   public async init(): Promise<void> {
-    const { contextKey, password, username } =
-      await SettingsApp.#fetchHomeySettings(this.#homey)
-    await SettingsApp.#setDocumentLanguage(this.#homey)
-    await this.#deviceSettingsManager.fetchDeviceSettings()
+    const [{ contextKey, password, username }] = await Promise.all([
+      SettingsApp.#fetchHomeySettings(this.#homey),
+      SettingsApp.#setDocumentLanguage(this.#homey),
+      this.#deviceSettingsManager.fetchDeviceSettings(),
+    ])
     const driverSettings =
       await this.#deviceSettingsManager.fetchDriverSettings()
     this.#authManager.generateCredentials(driverSettings, {
@@ -1374,7 +1373,11 @@ class SettingsApp {
       username,
     })
     this.#addEventListeners()
-    await this.#load(contextKey)
+    if (contextKey === undefined) {
+      this.#authManager.needsAuthentication()
+    } else {
+      await this.#loadBuildings('init')
+    }
     this.#homey.ready()
   }
 
@@ -1392,51 +1395,54 @@ class SettingsApp {
   }
 
   #disableSettingButtons(): void {
-    disableButton(this.#errorLogManager.seeButtonId)
-    this.#deviceSettingsManager.disableButtons('frost_protection')
-    this.#deviceSettingsManager.disableButtons('holiday_mode')
-    this.#deviceSettingsManager.disableButtons('settings_common')
+    this.#errorLogManager.disable()
+    for (const id of ['frost_protection', 'holiday_mode', 'settings_common']) {
+      disableButton(`apply_${id}`)
+      disableButton(`refresh_${id}`)
+    }
+    for (const driverId of Object.keys(
+      this.#deviceSettingsManager.deviceSettings,
+    )) {
+      disableButton(`apply_settings_${driverId}`)
+      disableButton(`refresh_settings_${driverId}`)
+    }
   }
 
   async #fetchBuildings(): Promise<void> {
     const buildings = await homeyApiGet<BuildingZone[]>(
       this.#homey,
       '/buildings',
-    ).catch(async (error: unknown) => {
-      await this.#homey.alert(getErrorMessage(error))
-      throw error
-    })
+    )
     if (buildings.length === 0) {
       throw new NoDeviceError(this.#homey)
     }
     await this.#zoneSettingsManager.generateZones(buildings)
-    await this.#errorLogManager.fetchErrorLog()
-    await this.#zoneSettingsManager.fetchZoneSettings()
+    await Promise.all([
+      this.#errorLogManager.fetchErrorLog(),
+      this.#zoneSettingsManager.fetchZoneSettings(),
+    ])
   }
 
-  async #load(contextKey?: string | null): Promise<void> {
-    if (contextKey !== undefined) {
-      try {
-        await this.#fetchBuildings()
-        this.#authManager.needsAuthentication(false)
-        return
-      } catch {
-        // Session expired or no devices: fall through to login
-      }
-    }
-    this.#authManager.needsAuthentication()
-  }
-
-  async #loadPostLogin(): Promise<void> {
+  async #loadBuildings(source: 'init' | 'login'): Promise<void> {
     try {
       await this.#fetchBuildings()
-    } catch (error) {
-      if (error instanceof NoDeviceError) {
-        this.#disableSettingButtons()
-        await this.#homey.alert(error.message)
-      }
-    } finally {
       this.#authManager.needsAuthentication(false)
+    } catch (error) {
+      if (source === 'init') {
+        // Session expired or no devices: fall back to login
+        this.#authManager.needsAuthentication()
+      } else {
+        // Post-login: always hide login form
+        this.#authManager.needsAuthentication(false)
+        if (error instanceof NoDeviceError) {
+          this.#disableSettingButtons()
+        }
+        await this.#homey.alert(
+          error instanceof NoDeviceError ?
+            error.message
+          : getErrorMessage(error),
+        )
+      }
     }
   }
 }
