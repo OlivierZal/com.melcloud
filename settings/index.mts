@@ -628,8 +628,6 @@ class ErrorLogManager {
 class DeviceSettingsManager {
   #deviceSettings: Partial<DeviceSettings> = {}
 
-  #flatDeviceSettings: Partial<DeviceSetting> = {}
-
   readonly #homey: Homey
 
   readonly #settingsCommon: HTMLDivElement
@@ -639,7 +637,22 @@ class DeviceSettingsManager {
   }
 
   public get flatDeviceSettings(): Partial<DeviceSetting> {
-    return this.#flatDeviceSettings
+    return Object.fromEntries(
+      Object.entries(
+        Object.groupBy(
+          Object.values(this.#deviceSettings).flatMap((settings) =>
+            Object.entries(settings ?? {}).map(([id, values]) => ({
+              id,
+              values,
+            })),
+          ),
+          ({ id }) => id,
+        ),
+      ).map(([id, groupedValues]) => {
+        const set = new Set(groupedValues?.map(({ values }) => values))
+        return [id, set.size === 1 ? set.values().next().value : null]
+      }),
+    )
   }
 
   public constructor(homey: Homey) {
@@ -657,7 +670,6 @@ class DeviceSettingsManager {
         this.#homey,
         '/settings/devices',
       )
-      this.#fetchFlattenDeviceSettings()
     } catch (error) {
       await this.#homey.alert(getErrorMessage(error))
     }
@@ -756,25 +768,6 @@ class DeviceSettingsManager {
         }
       }
     }
-  }
-
-  #fetchFlattenDeviceSettings(): void {
-    this.#flatDeviceSettings = Object.fromEntries(
-      Object.entries(
-        Object.groupBy(
-          Object.values(this.#deviceSettings).flatMap((settings) =>
-            Object.entries(settings ?? {}).map(([id, values]) => ({
-              id,
-              values,
-            })),
-          ),
-          ({ id }) => id,
-        ),
-      ).map(([id, groupedValues]) => {
-        const set = new Set(groupedValues?.map(({ values }) => values))
-        return [id, set.size === 1 ? set.values().next().value : null]
-      }),
-    )
   }
 
   #generateCommonSettings(
@@ -949,17 +942,18 @@ class DeviceSettingsManager {
     if (value === null) {
       return false
     }
-    const setting =
+    const { [id]: setting } =
       driverId === undefined ?
-        this.#flatDeviceSettings[id]
-      : this.#deviceSettings[driverId]?.[id]
+        this.flatDeviceSettings
+      : (this.#deviceSettings[driverId] ?? {})
     return setting === null || value !== setting
   }
 
   #updateCommonSetting(element: HTMLSelectElement): void {
     const [id] = element.id.split('__settings_')
     if (id !== undefined) {
-      const { [id]: value } = this.#flatDeviceSettings
+      // eslint-disable-next-line @typescript-eslint/prefer-destructuring -- Already destructuring; computed key not recognized by rule
+      const { [id]: value } = this.flatDeviceSettings
       element.value =
         (
           typeof value === 'boolean' ||
@@ -979,12 +973,6 @@ class DeviceSettingsManager {
         this.#deviceSettings[driver] ??= {}
         this.#deviceSettings[driver][id] = value
       }
-      if (driverId === undefined) {
-        this.#flatDeviceSettings[id] = value
-      }
-    }
-    if (driverId !== undefined) {
-      this.#fetchFlattenDeviceSettings()
     }
   }
 
