@@ -19,6 +19,24 @@ import type {
 import { getBuildings } from './lib/index.mts'
 
 const api = {
+  async createHomeSession({
+    body,
+    homey: { app },
+  }: {
+    body: LoginCredentials
+    homey: Homey
+  }): Promise<boolean> {
+    return app.createHomeSession(body)
+  },
+  async createSession({
+    body,
+    homey: { app },
+  }: {
+    body: LoginCredentials
+    homey: Homey
+  }): Promise<boolean> {
+    return app.createSession(body)
+  },
   getBuildings(): BuildingZone[] {
     return getBuildings()
   },
@@ -32,53 +50,35 @@ const api = {
   }): Partial<Record<string, DriverSetting[]>> {
     return app.getDriverSettings()
   },
-  async getErrorLog({
+  async getErrors({
     homey: { app },
     query,
   }: {
     homey: Homey
     query: ErrorLogQuery
   }): Promise<FormattedErrorLog> {
-    return app.getErrorLog(query)
+    return app.getErrors(query)
   },
-  async getFrostProtectionSettings({
+  async getFrostProtection({
     homey: { app },
     params,
   }: {
     homey: Homey
     params: ZoneData
   }): Promise<FrostProtectionData> {
-    return app.getFrostProtectionSettings(params)
+    return app.getFrostProtection(params)
   },
-  async getHolidayModeSettings({
+  async getHolidayMode({
     homey: { app },
     params,
   }: {
     homey: Homey
     params: ZoneData
   }): Promise<HolidayModeData> {
-    return app.getHolidayModeSettings(params)
+    return app.getHolidayMode(params)
   },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()
-  },
-  async homeLogin({
-    body,
-    homey: { app },
-  }: {
-    body: LoginCredentials
-    homey: Homey
-  }): Promise<boolean> {
-    return app.homeLogin(body)
-  },
-  async login({
-    body,
-    homey: { app },
-  }: {
-    body: LoginCredentials
-    homey: Homey
-  }): Promise<boolean> {
-    return app.login(body)
   },
   async setDeviceSettings({
     body,
@@ -91,7 +91,7 @@ const api = {
   }): Promise<void> {
     return app.setDeviceSettings(body, { driverId })
   },
-  async setFrostProtectionSettings({
+  async setFrostProtection({
     body,
     homey: { app },
     params,
@@ -100,9 +100,9 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return app.setFrostProtectionSettings(body, params)
+    return app.setFrostProtection(body, params)
   },
-  async setHolidayModeSettings({
+  async setHolidayMode({
     body,
     homey: { app },
     params,
@@ -111,7 +111,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return app.setHolidayModeSettings(body, params)
+    return app.setHolidayMode(body, params)
   },
 }
 

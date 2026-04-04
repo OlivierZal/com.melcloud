@@ -1,5 +1,13 @@
 {
   "api": {
+    "createHomeSession": {
+      "method": "POST",
+      "path": "/home/sessions"
+    },
+    "createSession": {
+      "method": "POST",
+      "path": "/sessions"
+    },
     "getBuildings": {
       "method": "GET",
       "path": "/buildings"
@@ -12,41 +20,33 @@
       "method": "GET",
       "path": "/settings/drivers"
     },
-    "getErrorLog": {
+    "getErrors": {
       "method": "GET",
       "path": "/logs/errors"
     },
-    "getFrostProtectionSettings": {
+    "getFrostProtection": {
       "method": "GET",
-      "path": "/settings/frost_protection/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
     },
-    "getHolidayModeSettings": {
+    "getHolidayMode": {
       "method": "GET",
-      "path": "/settings/holiday_mode/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
     },
     "getLanguage": {
       "method": "GET",
       "path": "/language"
     },
-    "homeLogin": {
-      "method": "POST",
-      "path": "/home/sessions"
-    },
-    "login": {
-      "method": "POST",
-      "path": "/sessions"
-    },
     "setDeviceSettings": {
       "method": "PUT",
       "path": "/settings/devices"
     },
-    "setFrostProtectionSettings": {
+    "setFrostProtection": {
       "method": "PUT",
-      "path": "/settings/frost_protection/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
     },
-    "setHolidayModeSettings": {
+    "setHolidayMode": {
       "method": "PUT",
-      "path": "/settings/holiday_mode/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
     }
   },
   "author": {

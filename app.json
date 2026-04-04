@@ -1,6 +1,14 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "api": {
+    "createHomeSession": {
+      "method": "POST",
+      "path": "/home/sessions"
+    },
+    "createSession": {
+      "method": "POST",
+      "path": "/sessions"
+    },
     "getBuildings": {
       "method": "GET",
       "path": "/buildings"
@@ -13,41 +21,33 @@
       "method": "GET",
       "path": "/settings/drivers"
     },
-    "getErrorLog": {
+    "getErrors": {
       "method": "GET",
       "path": "/logs/errors"
     },
-    "getFrostProtectionSettings": {
+    "getFrostProtection": {
       "method": "GET",
-      "path": "/settings/frost_protection/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
     },
-    "getHolidayModeSettings": {
+    "getHolidayMode": {
       "method": "GET",
-      "path": "/settings/holiday_mode/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
     },
     "getLanguage": {
       "method": "GET",
       "path": "/language"
     },
-    "homeLogin": {
-      "method": "POST",
-      "path": "/home/sessions"
-    },
-    "login": {
-      "method": "POST",
-      "path": "/sessions"
-    },
     "setDeviceSettings": {
       "method": "PUT",
       "path": "/settings/devices"
     },
-    "setFrostProtectionSettings": {
+    "setFrostProtection": {
       "method": "PUT",
-      "path": "/settings/frost_protection/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
     },
-    "setHolidayModeSettings": {
+    "setHolidayMode": {
       "method": "PUT",
-      "path": "/settings/holiday_mode/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
     }
   },
   "author": {
@@ -7839,9 +7839,9 @@
           "method": "GET",
           "path": "/capabilities/ata"
         },
-        "getAtaValues": {
+        "getAtaState": {
           "method": "GET",
-          "path": "/values/ata/:zoneType/:zoneId"
+          "path": "/zones/:zoneType/:zoneId/ata"
         },
         "getBuildings": {
           "method": "GET",
@@ -7851,9 +7851,9 @@
           "method": "GET",
           "path": "/language"
         },
-        "setAtaValues": {
+        "setAtaState": {
           "method": "PUT",
-          "path": "/values/ata/:zoneType/:zoneId"
+          "path": "/zones/:zoneType/:zoneId/ata"
         }
       },
       "name": {
@@ -7914,7 +7914,7 @@
         },
         "getHourlyTemperatures": {
           "method": "GET",
-          "path": "/logs/hourly_temperatures/devices/:deviceId"
+          "path": "/devices/:deviceId/logs/hourly-temperatures"
         },
         "getLanguage": {
           "method": "GET",
@@ -7922,15 +7922,15 @@
         },
         "getOperationModes": {
           "method": "GET",
-          "path": "/logs/operation_modes/devices/:deviceId"
+          "path": "/devices/:deviceId/logs/operation-modes"
         },
         "getSignal": {
           "method": "GET",
-          "path": "/logs/signal/devices/:deviceId"
+          "path": "/devices/:deviceId/logs/signal"
         },
         "getTemperatures": {
           "method": "GET",
-          "path": "/logs/temperatures/devices/:deviceId"
+          "path": "/devices/:deviceId/logs/temperatures"
         }
       },
       "name": {

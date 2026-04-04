@@ -27,16 +27,16 @@ vi.mock(import('../../lib/index.mts'), () => ({
 const { default: api } = await import('../../api.mts')
 
 const mockApp = {
+  createHomeSession: vi.fn<() => Promise<boolean>>(),
+  createSession: vi.fn<() => Promise<boolean>>(),
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
-  getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
-  getFrostProtectionSettings: vi.fn<() => Promise<FrostProtectionData>>(),
-  getHolidayModeSettings: vi.fn<() => Promise<HolidayModeData>>(),
-  homeLogin: vi.fn<() => Promise<boolean>>(),
-  login: vi.fn<() => Promise<boolean>>(),
+  getErrors: vi.fn<() => Promise<FormattedErrorLog>>(),
+  getFrostProtection: vi.fn<() => Promise<FrostProtectionData>>(),
+  getHolidayMode: vi.fn<() => Promise<HolidayModeData>>(),
   setDeviceSettings: vi.fn<() => Promise<void>>(),
-  setFrostProtectionSettings: vi.fn<() => Promise<void>>(),
-  setHolidayModeSettings: vi.fn<() => Promise<void>>(),
+  setFrostProtection: vi.fn<() => Promise<void>>(),
+  setHolidayMode: vi.fn<() => Promise<void>>(),
 }
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
@@ -85,41 +85,41 @@ describe('api', () => {
   })
 
   describe('error retrieval', () => {
-    it('should delegate to app.getErrorLog with query', async () => {
+    it('should delegate to app.getErrors with query', async () => {
       const errorLog = mock<FormattedErrorLog>()
       const query = mock<ErrorLogQuery>()
-      mockApp.getErrorLog.mockResolvedValue(errorLog)
+      mockApp.getErrors.mockResolvedValue(errorLog)
 
-      const result = await api.getErrorLog({ homey, query })
+      const result = await api.getErrors({ homey, query })
 
       expect(result).toBe(errorLog)
-      expect(mockApp.getErrorLog).toHaveBeenCalledWith(query)
+      expect(mockApp.getErrors).toHaveBeenCalledWith(query)
     })
   })
 
   describe('frost protection settings retrieval', () => {
-    it('should delegate to app.getFrostProtectionSettings with params', async () => {
+    it('should delegate to app.getFrostProtection with params', async () => {
       const frostProtection = mock<FrostProtectionData>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
-      mockApp.getFrostProtectionSettings.mockResolvedValue(frostProtection)
+      mockApp.getFrostProtection.mockResolvedValue(frostProtection)
 
-      const result = await api.getFrostProtectionSettings({ homey, params })
+      const result = await api.getFrostProtection({ homey, params })
 
       expect(result).toBe(frostProtection)
-      expect(mockApp.getFrostProtectionSettings).toHaveBeenCalledWith(params)
+      expect(mockApp.getFrostProtection).toHaveBeenCalledWith(params)
     })
   })
 
   describe('holiday mode settings retrieval', () => {
-    it('should delegate to app.getHolidayModeSettings with params', async () => {
+    it('should delegate to app.getHolidayMode with params', async () => {
       const holidayMode = mock<HolidayModeData>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
-      mockApp.getHolidayModeSettings.mockResolvedValue(holidayMode)
+      mockApp.getHolidayMode.mockResolvedValue(holidayMode)
 
-      const result = await api.getHolidayModeSettings({ homey, params })
+      const result = await api.getHolidayMode({ homey, params })
 
       expect(result).toBe(holidayMode)
-      expect(mockApp.getHolidayModeSettings).toHaveBeenCalledWith(params)
+      expect(mockApp.getHolidayMode).toHaveBeenCalledWith(params)
     })
   })
 
@@ -143,37 +143,37 @@ describe('api', () => {
   })
 
   describe('home authentication', () => {
-    it('should delegate to app.homeLogin with body', async () => {
-      mockApp.homeLogin.mockResolvedValue(true)
+    it('should delegate to app.createHomeSession with body', async () => {
+      mockApp.createHomeSession.mockResolvedValue(true)
       const body = mock<LoginCredentials>()
 
-      const isLoggedIn = await api.homeLogin({ body, homey })
+      const isLoggedIn = await api.createHomeSession({ body, homey })
 
       expect(isLoggedIn).toBe(true)
-      expect(mockApp.homeLogin).toHaveBeenCalledWith(body)
+      expect(mockApp.createHomeSession).toHaveBeenCalledWith(body)
     })
   })
 
   describe('authentication', () => {
-    it('should delegate to app.login with body', async () => {
+    it('should delegate to app.createSession with body', async () => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
       const credentials = mock<LoginCredentials>({
         password: 'pass',
         username: 'user',
       })
-      mockApp.login.mockResolvedValue(true)
+      mockApp.createSession.mockResolvedValue(true)
 
-      const isLoggedIn = await api.login({ body: credentials, homey })
+      const isLoggedIn = await api.createSession({ body: credentials, homey })
 
       expect(isLoggedIn).toBe(true)
-      expect(mockApp.login).toHaveBeenCalledWith(credentials)
+      expect(mockApp.createSession).toHaveBeenCalledWith(credentials)
     })
 
     it('should return false on failed login', async () => {
       const credentials = mock<LoginCredentials>()
-      mockApp.login.mockResolvedValue(false)
+      mockApp.createSession.mockResolvedValue(false)
 
-      const isLoggedIn = await api.login({ body: credentials, homey })
+      const isLoggedIn = await api.createSession({ body: credentials, homey })
 
       expect(isLoggedIn).toBe(false)
     })
@@ -212,29 +212,26 @@ describe('api', () => {
   })
 
   describe('frost protection settings update', () => {
-    it('should delegate to app.setFrostProtectionSettings', async () => {
+    it('should delegate to app.setFrostProtection', async () => {
       const body = mock<FrostProtectionQuery>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
-      mockApp.setFrostProtectionSettings.mockResolvedValue()
+      mockApp.setFrostProtection.mockResolvedValue()
 
-      await api.setFrostProtectionSettings({ body, homey, params })
+      await api.setFrostProtection({ body, homey, params })
 
-      expect(mockApp.setFrostProtectionSettings).toHaveBeenCalledWith(
-        body,
-        params,
-      )
+      expect(mockApp.setFrostProtection).toHaveBeenCalledWith(body, params)
     })
   })
 
   describe('holiday mode settings update', () => {
-    it('should delegate to app.setHolidayModeSettings', async () => {
+    it('should delegate to app.setHolidayMode', async () => {
       const body = mock<HolidayModeQuery>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
-      mockApp.setHolidayModeSettings.mockResolvedValue()
+      mockApp.setHolidayMode.mockResolvedValue()
 
-      await api.setHolidayModeSettings({ body, homey, params })
+      await api.setHolidayMode({ body, homey, params })
 
-      expect(mockApp.setHolidayModeSettings).toHaveBeenCalledWith(body, params)
+      expect(mockApp.setHolidayMode).toHaveBeenCalledWith(body, params)
     })
   })
 })

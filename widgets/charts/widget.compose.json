@@ -6,7 +6,7 @@
     },
     "getHourlyTemperatures": {
       "method": "GET",
-      "path": "/logs/hourly_temperatures/devices/:deviceId"
+      "path": "/devices/:deviceId/logs/hourly-temperatures"
     },
     "getLanguage": {
       "method": "GET",
@@ -14,15 +14,15 @@
     },
     "getOperationModes": {
       "method": "GET",
-      "path": "/logs/operation_modes/devices/:deviceId"
+      "path": "/devices/:deviceId/logs/operation-modes"
     },
     "getSignal": {
       "method": "GET",
-      "path": "/logs/signal/devices/:deviceId"
+      "path": "/devices/:deviceId/logs/signal"
     },
     "getTemperatures": {
       "method": "GET",
-      "path": "/logs/temperatures/devices/:deviceId"
+      "path": "/devices/:deviceId/logs/temperatures"
     }
   },
   "name": {

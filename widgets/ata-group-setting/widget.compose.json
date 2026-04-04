@@ -4,9 +4,9 @@
       "method": "GET",
       "path": "/capabilities/ata"
     },
-    "getAtaValues": {
+    "getAtaState": {
       "method": "GET",
-      "path": "/values/ata/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/ata"
     },
     "getBuildings": {
       "method": "GET",
@@ -16,9 +16,9 @@
       "method": "GET",
       "path": "/language"
     },
-    "setAtaValues": {
+    "setAtaState": {
       "method": "PUT",
-      "path": "/values/ata/:zoneType/:zoneId"
+      "path": "/zones/:zoneType/:zoneId/ata"
     }
   },
   "name": {

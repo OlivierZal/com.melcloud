@@ -196,6 +196,14 @@ export default class MELCloudApp extends App {
     await Promise.resolve()
   }
 
+  public async createHomeSession(data: LoginCredentials): Promise<boolean> {
+    return this.#homeApi.authenticate(data)
+  }
+
+  public async createSession(data: LoginCredentials): Promise<boolean> {
+    return this.api.authenticate(data)
+  }
+
   public getAtaCapabilities(): [
     keyof GroupState & keyof ListDeviceDataAta,
     DriverCapabilitiesOptions,
@@ -241,7 +249,7 @@ export default class MELCloudApp extends App {
     ) as GroupAtaStates
   }
 
-  public async getAtaValues({
+  public async getAtaState({
     zoneId,
     zoneType,
   }: ZoneData): Promise<GroupState> {
@@ -283,7 +291,7 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public async getErrorLog(query: ErrorLogQuery): Promise<FormattedErrorLog> {
+  public async getErrors(query: ErrorLogQuery): Promise<FormattedErrorLog> {
     const { errors, fromDate, ...rest } = await this.#api.getErrorLog(query)
     return {
       ...rest,
@@ -321,14 +329,14 @@ export default class MELCloudApp extends App {
     return this.#facadeManager.get(instance)
   }
 
-  public async getFrostProtectionSettings({
+  public async getFrostProtection({
     zoneId,
     zoneType,
   }: ZoneData): Promise<FrostProtectionData> {
     return this.getFacade(zoneType, zoneId).getFrostProtection()
   }
 
-  public async getHolidayModeSettings({
+  public async getHolidayMode({
     zoneId,
     zoneType,
   }: ZoneData): Promise<HolidayModeData> {
@@ -379,15 +387,7 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public async homeLogin(data: LoginCredentials): Promise<boolean> {
-    return this.#homeApi.authenticate(data)
-  }
-
-  public async login(data: LoginCredentials): Promise<boolean> {
-    return this.api.authenticate(data)
-  }
-
-  public async setAtaValues(
+  public async setAtaState(
     state: GroupState,
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
@@ -418,7 +418,7 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public async setFrostProtectionSettings(
+  public async setFrostProtection(
     settings: FrostProtectionQuery,
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
@@ -428,7 +428,7 @@ export default class MELCloudApp extends App {
     handleResponse(data.AttributeErrors)
   }
 
-  public async setHolidayModeSettings(
+  public async setHolidayMode(
     settings: HolidayModeQuery,
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {

@@ -466,7 +466,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const groupState = await app.getAtaValues({
+      const groupState = await app.getAtaState({
         zoneId: '1',
         zoneType: 'buildings',
       })
@@ -552,7 +552,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       const query = mock<ErrorLogQuery>()
-      const errorLog = await app.getErrorLog(query)
+      const errorLog = await app.getErrors(query)
 
       expect(mockApiInstance.getErrorLog).toHaveBeenCalledWith(query)
       expect(errorLog).toStrictEqual({
@@ -582,7 +582,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       const query = mock<ErrorLogQuery>()
-      const errorLog = await app.getErrorLog(query)
+      const errorLog = await app.getErrors(query)
 
       expect(errorLog.errors[0]?.device).toBe('')
     })
@@ -689,7 +689,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const frostProtection = await app.getFrostProtectionSettings({
+      const frostProtection = await app.getFrostProtection({
         zoneId: '1',
         zoneType: 'buildings',
       })
@@ -708,7 +708,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const holidayMode = await app.getHolidayModeSettings({
+      const holidayMode = await app.getHolidayMode({
         zoneId: '1',
         zoneType: 'buildings',
       })
@@ -798,12 +798,12 @@ describe('melCloudApp', () => {
       mockApiInstance.authenticate.mockResolvedValue(true)
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments -- explicit type ensures mock satisfies LoginCredentials for app.login()
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments -- explicit type ensures mock satisfies LoginCredentials for app.createSession()
       const credentials = mock<LoginCredentials>({
         password: 'pass',
         username: 'user',
       })
-      const isAuthenticated = await app.login(credentials)
+      const isAuthenticated = await app.createSession(credentials)
 
       expect(isAuthenticated).toBe(true)
       expect(mockApiInstance.authenticate).toHaveBeenCalledWith(credentials)
@@ -817,11 +817,11 @@ describe('melCloudApp', () => {
       expect(app.homeApi).toBe(mockHomeApiInstance)
     })
 
-    it('should delegate homeLogin to homeApi authenticate', async () => {
+    it('should delegate createHomeSession to homeApi authenticate', async () => {
       mockHomeApiInstance.authenticate.mockResolvedValue(true)
       await app.onInit()
 
-      const isLoggedIn = await app.homeLogin(mock<LoginCredentials>())
+      const isLoggedIn = await app.createHomeSession(mock<LoginCredentials>())
 
       expect(isLoggedIn).toBe(true)
     })
@@ -853,7 +853,7 @@ describe('melCloudApp', () => {
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setAtaValues(mock<GroupState>(), {
+        app.setAtaState(mock<GroupState>(), {
           zoneId: '1',
           zoneType: 'buildings',
         }),
@@ -869,7 +869,7 @@ describe('melCloudApp', () => {
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setAtaValues(mock<GroupState>(), {
+        app.setAtaState(mock<GroupState>(), {
           zoneId: '1',
           zoneType: 'buildings',
         }),
@@ -946,7 +946,7 @@ describe('melCloudApp', () => {
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setFrostProtectionSettings(mock<FrostProtectionQuery>(), {
+        app.setFrostProtection(mock<FrostProtectionQuery>(), {
           zoneId: '1',
           zoneType: 'buildings',
         }),
@@ -962,7 +962,7 @@ describe('melCloudApp', () => {
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setFrostProtectionSettings(mock<FrostProtectionQuery>(), {
+        app.setFrostProtection(mock<FrostProtectionQuery>(), {
           zoneId: '1',
           zoneType: 'buildings',
         }),
@@ -978,7 +978,7 @@ describe('melCloudApp', () => {
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setHolidayModeSettings(mock<HolidayModeQuery>(), {
+        app.setHolidayMode(mock<HolidayModeQuery>(), {
           zoneId: '1',
           zoneType: 'buildings',
         }),
@@ -994,7 +994,7 @@ describe('melCloudApp', () => {
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setHolidayModeSettings(mock<HolidayModeQuery>(), {
+        app.setHolidayMode(mock<HolidayModeQuery>(), {
           zoneId: '1',
           zoneType: 'buildings',
         }),
