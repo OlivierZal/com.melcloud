@@ -1,6 +1,14 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "api": {
+    "createHomeSession": {
+      "method": "POST",
+      "path": "/home/sessions"
+    },
+    "createSession": {
+      "method": "POST",
+      "path": "/sessions"
+    },
     "getBuildings": {
       "method": "GET",
       "path": "/buildings"
@@ -13,15 +21,15 @@
       "method": "GET",
       "path": "/settings/drivers"
     },
-    "getErrorLog": {
+    "getErrors": {
       "method": "GET",
       "path": "/logs/errors"
     },
-    "getFrostProtectionSettings": {
+    "getFrostProtection": {
       "method": "GET",
       "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
     },
-    "getHolidayModeSettings": {
+    "getHolidayMode": {
       "method": "GET",
       "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
     },
@@ -29,23 +37,15 @@
       "method": "GET",
       "path": "/language"
     },
-    "homeLogin": {
-      "method": "POST",
-      "path": "/home/sessions"
-    },
-    "login": {
-      "method": "POST",
-      "path": "/sessions"
-    },
     "setDeviceSettings": {
       "method": "PUT",
       "path": "/settings/devices"
     },
-    "setFrostProtectionSettings": {
+    "setFrostProtection": {
       "method": "PUT",
       "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
     },
-    "setHolidayModeSettings": {
+    "setHolidayMode": {
       "method": "PUT",
       "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
     }
@@ -7839,7 +7839,7 @@
           "method": "GET",
           "path": "/capabilities/ata"
         },
-        "getAtaValues": {
+        "getAtaState": {
           "method": "GET",
           "path": "/zones/:zoneType/:zoneId/ata"
         },
@@ -7851,7 +7851,7 @@
           "method": "GET",
           "path": "/language"
         },
-        "setAtaValues": {
+        "setAtaState": {
           "method": "PUT",
           "path": "/zones/:zoneType/:zoneId/ata"
         }

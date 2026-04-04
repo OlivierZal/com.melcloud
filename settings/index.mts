@@ -1180,7 +1180,7 @@ class ZoneSettingsManager {
         try {
           await homeyApiPut<unknown>(
             this.#homey,
-            `/zones/${this.#zoneElement.value.replace('_', '/')}/settings/holiday-mode`,
+            `/zones/${this.#getZonePath()}/settings/holiday-mode`,
             { from: startDate, to: endDate } satisfies HolidayModeQuery,
           )
           this.#updateZoneMapping({

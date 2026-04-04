@@ -23,8 +23,8 @@ const mockApp = {
   getAtaCapabilities:
     vi.fn<() => [keyof GroupState, DriverCapabilitiesOptions][]>(),
   getAtaDetailedValues: vi.fn<() => Promise<GroupAtaStates>>(),
-  getAtaValues: vi.fn<() => Promise<GroupState>>(),
-  setAtaValues: vi.fn<() => Promise<void>>(),
+  getAtaState: vi.fn<() => Promise<GroupState>>(),
+  setAtaState: vi.fn<() => Promise<void>>(),
 }
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
@@ -56,7 +56,7 @@ describe('ata-group-setting api', () => {
       const detailedValues = mock<GroupAtaStates>()
       mockApp.getAtaDetailedValues.mockResolvedValue(detailedValues)
 
-      const result = await api.getAtaValues({
+      const result = await api.getAtaState({
         homey,
         params,
         query: { mode: 'detailed', status: 'on' },
@@ -68,18 +68,18 @@ describe('ata-group-setting api', () => {
       })
     })
 
-    it('should call getAtaValues when mode is not detailed', async () => {
+    it('should call getAtaState when mode is not detailed', async () => {
       const values = mock<GroupState>()
-      mockApp.getAtaValues.mockResolvedValue(values)
+      mockApp.getAtaState.mockResolvedValue(values)
 
-      const result = await api.getAtaValues({
+      const result = await api.getAtaState({
         homey,
         params,
         query: { mode: undefined, status: undefined },
       })
 
       expect(result).toBe(values)
-      expect(mockApp.getAtaValues).toHaveBeenCalledWith(params)
+      expect(mockApp.getAtaState).toHaveBeenCalledWith(params)
     })
   })
 
@@ -117,14 +117,14 @@ describe('ata-group-setting api', () => {
   })
 
   describe('ata value update', () => {
-    it('should delegate to app.setAtaValues', async () => {
+    it('should delegate to app.setAtaState', async () => {
       const body = mock<GroupState>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
-      mockApp.setAtaValues.mockResolvedValue()
+      mockApp.setAtaState.mockResolvedValue()
 
-      await api.setAtaValues({ body, homey, params })
+      await api.setAtaState({ body, homey, params })
 
-      expect(mockApp.setAtaValues).toHaveBeenCalledWith(body, params)
+      expect(mockApp.setAtaState).toHaveBeenCalledWith(body, params)
     })
   })
 })

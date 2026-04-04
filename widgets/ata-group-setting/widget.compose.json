@@ -4,7 +4,7 @@
       "method": "GET",
       "path": "/capabilities/ata"
     },
-    "getAtaValues": {
+    "getAtaState": {
       "method": "GET",
       "path": "/zones/:zoneType/:zoneId/ata"
     },
@@ -16,7 +16,7 @@
       "method": "GET",
       "path": "/language"
     },
-    "setAtaValues": {
+    "setAtaState": {
       "method": "PUT",
       "path": "/zones/:zoneType/:zoneId/ata"
     }

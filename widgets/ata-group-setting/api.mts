@@ -18,7 +18,7 @@ const api = {
   }): [keyof GroupState, DriverCapabilitiesOptions][] {
     return app.getAtaCapabilities()
   },
-  async getAtaValues({
+  async getAtaState({
     homey: { app },
     params,
     query: { mode, status },
@@ -29,7 +29,7 @@ const api = {
   }): Promise<GroupAtaStates | GroupState> {
     return mode === 'detailed' ?
         app.getAtaDetailedValues(params, { status })
-      : app.getAtaValues(params)
+      : app.getAtaState(params)
   },
   getBuildings({
     query: { type },
@@ -43,7 +43,7 @@ const api = {
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()
   },
-  async setAtaValues({
+  async setAtaState({
     body,
     homey: { app },
     params,
@@ -52,7 +52,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return app.setAtaValues(body, params)
+    return app.setAtaState(body, params)
   },
 }
 
