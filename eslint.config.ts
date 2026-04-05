@@ -1,5 +1,6 @@
 import { defineConfig } from 'eslint/config'
 import { flatConfigs as importXConfigs } from 'eslint-plugin-import-x'
+import { jsdoc } from 'eslint-plugin-jsdoc'
 import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
 import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
 import { configs as ymlConfigs } from 'eslint-plugin-yml'
@@ -546,6 +547,10 @@ const config = defineConfig([
         type: 'custom',
       },
     },
+  },
+  {
+    ...jsdoc({ config: 'flat/recommended-typescript-error' }),
+    files: ['**/api.mts'],
   },
   {
     extends: [tsConfigs.disableTypeChecked],
