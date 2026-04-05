@@ -25,7 +25,7 @@
     "format:fix": "prettier . --write",
     "homey:install": "npx homey app install",
     "homey:publish": "npx homey app publish",
-    "homey:push": "npm run homey:validate && npm run lint:fix && npm run format:fix && git push",
+    "github:push": "npm run homey:validate && npm run lint:fix && npm run format:fix && git push",
     "homey:start": "npx homey app run --remote",
     "homey:validate": "npx homey app validate --level=publish",
     "lint": "eslint .",
