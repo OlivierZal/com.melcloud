@@ -7,14 +7,14 @@ import type {
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
 } from '../../types/index.mts'
-import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
+import { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
 import { mock } from '../helpers.ts'
 import { createInstance } from './create-test-instance.ts'
 
 type TestDriverType = typeof DeviceType.Ata
 
 export type { TestDriverType }
-export class TestDriver extends BaseMELCloudDriver<TestDriverType> {
+export class TestDriver extends ClassicMELCloudDriver<TestDriverType> {
   public readonly energyCapabilityTagMapping = mock<
     EnergyCapabilityTagMapping<TestDriverType>
   >({

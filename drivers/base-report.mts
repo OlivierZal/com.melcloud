@@ -19,8 +19,8 @@ import {
   KILOWATT_TO_WATT,
   typedEntries,
 } from '../lib/index.mts'
-import type { BaseMELCloudDevice } from './base-device.mts'
-import type { BaseMELCloudDriver } from './base-driver.mts'
+import type { ClassicMELCloudDevice } from './classic-base-device.mts'
+import type { ClassicMELCloudDriver } from './classic-base-driver.mts'
 
 const sumTags = <T extends DeviceType>(
   data: EnergyData<T>,
@@ -39,7 +39,7 @@ export interface EnergyReportConfig {
 export class EnergyReport<T extends DeviceType> {
   readonly #config: EnergyReportConfig
 
-  readonly #device: BaseMELCloudDevice<T>
+  readonly #device: ClassicMELCloudDevice<T>
 
   readonly #homey: Homey.Homey
 
@@ -49,7 +49,7 @@ export class EnergyReport<T extends DeviceType> {
 
   #reportTimeout: NodeJS.Timeout | null = null
 
-  private readonly driver: BaseMELCloudDriver<T>
+  private readonly driver: ClassicMELCloudDriver<T>
 
   get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- cleanMapping returns Record<string, string>; energy mapping has typed keys/values at runtime
@@ -66,7 +66,7 @@ export class EnergyReport<T extends DeviceType> {
   }
 
   public constructor(
-    device: BaseMELCloudDevice<T>,
+    device: ClassicMELCloudDevice<T>,
     config: EnergyReportConfig,
   ) {
     this.#device = device
@@ -74,7 +74,7 @@ export class EnergyReport<T extends DeviceType> {
     ;({ driver: this.driver, homey: this.#homey } = this.#device)
   }
 
-  public async handle(): Promise<void> {
+  public async start(): Promise<void> {
     if (this.#energyCapabilityTagEntries.length === 0) {
       this.unschedule()
       return
@@ -159,9 +159,9 @@ export class EnergyReport<T extends DeviceType> {
       const actionType = `${this.#config.mode} energy report`
       this.#reportTimeout = this.#device.setTimeout(
         async () => {
-          await this.handle()
+          await this.start()
           this.#reportInterval = this.#device.setInterval(
-            async () => this.handle(),
+            async () => this.start(),
             this.#config.interval,
             actionType,
           )

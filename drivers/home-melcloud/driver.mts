@@ -4,15 +4,19 @@ import {
   getCapabilitiesOptionsHome,
   homeSetCapabilityTagMappingAta,
 } from '../../types/index.mts'
-import { HomeBaseMELCloudDriver } from '../home-base-driver.mts'
+import { BaseMELCloudDriver } from '../base-driver.mts'
 
-export default class HomeMELCloudDriverAta extends HomeBaseMELCloudDriver {
+export default class HomeMELCloudDriverAta extends BaseMELCloudDriver {
   public override readonly getCapabilitiesOptions = getCapabilitiesOptionsHome
 
   public override readonly setCapabilityTagMapping =
     homeSetCapabilityTagMappingAta
 
   public override readonly type = HomeDeviceType.Ata
+
+  protected override get api(): typeof this.homey.app.homeApi {
+    return this.homey.app.homeApi
+  }
 
   public override getRequiredCapabilities(): string[] {
     return super

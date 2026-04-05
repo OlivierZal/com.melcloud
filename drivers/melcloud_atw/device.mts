@@ -17,10 +17,10 @@ import {
   type SetCapabilities,
   type TargetTemperatureFlowCapabilities,
   HotWaterMode,
-  operationModeStateReverse,
-  operationModeZoneReverse,
+  operationModeStateFromDevice,
+  operationModeZoneFromDevice,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../base-device.mts'
+import { ClassicMELCloudDevice } from '../classic-base-device.mts'
 
 const convertFromDeviceMeasurePower: ConvertFromDevice<
   typeof DeviceType.Atw
@@ -28,9 +28,9 @@ const convertFromDeviceMeasurePower: ConvertFromDevice<
 
 const convertFromDeviceOperationZone: ConvertFromDevice<
   typeof DeviceType.Atw
-> = (value: OperationModeZone) => operationModeZoneReverse[value]
+> = (value: OperationModeZone) => operationModeZoneFromDevice[value]
 
-export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
+export default class MELCloudDeviceAtw extends ClassicMELCloudDevice<
   typeof DeviceType.Atw
 > {
   protected readonly capabilityToDevice: Partial<
@@ -85,7 +85,7 @@ export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
         weekday: 'short',
       }),
     operational_state: (value: OperationModeState) =>
-      operationModeStateReverse[value],
+      operationModeStateFromDevice[value],
   }
 
   protected readonly energyReportRegular: EnergyReportConfig = {

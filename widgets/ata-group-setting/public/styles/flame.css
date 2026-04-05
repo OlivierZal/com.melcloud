@@ -1,4 +1,5 @@
 .flame {
+  font-size: var(--size);
   inset-block-end: -20px;
   position: absolute;
 }

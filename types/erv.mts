@@ -14,7 +14,7 @@ import type {
   BaseSetCapabilities,
 } from './bases.mts'
 
-export const ventilationModeReverse = {
+export const ventilationModeFromDevice = {
   [VentilationMode.auto]: 'auto',
   [VentilationMode.bypass]: 'bypass',
   [VentilationMode.recovery]: 'recovery',

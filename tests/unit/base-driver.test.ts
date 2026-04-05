@@ -5,25 +5,32 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
-import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
+import { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
 import {
-  assertDefined,
-  mock,
   testFlowListenerRegistration,
   testPairing,
   testRepairing,
-} from '../helpers.ts'
+} from '../driver-descriptors.ts'
+import { assertDefined, mock } from '../helpers.ts'
 import {
   type TestDriverType,
   createTestDriver,
   TestDriver,
 } from './base-driver-test-driver.ts'
 
-const registerRunListenerMock = vi.fn()
-const authenticateMock = vi.fn()
-const isAuthenticatedMock = vi.fn().mockReturnValue(false)
-const showViewMock = vi.fn()
-const setHandlerMock = vi.fn()
+const {
+  authenticateMock,
+  isAuthenticatedMock,
+  registerRunListenerMock,
+  setHandlerMock,
+  showViewMock,
+} = vi.hoisted(() => ({
+  authenticateMock: vi.fn(),
+  isAuthenticatedMock: vi.fn().mockReturnValue(false),
+  registerRunListenerMock: vi.fn(),
+  setHandlerMock: vi.fn(),
+  showViewMock: vi.fn(),
+}))
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', () => {
@@ -58,7 +65,7 @@ vi.mock('homey', () => {
   return { default: { Driver: MockDriver } }
 })
 
-describe(BaseMELCloudDriver, () => {
+describe(ClassicMELCloudDriver, () => {
   let driver: TestDriver
 
   beforeEach(() => {

@@ -62,128 +62,6 @@
                 </div>
             </fieldset>
             <fieldset class="homey-form-fieldset">
-                <legend class="homey-form-legend" data-i18n="settings.zones.legend"></legend>
-                <div class="homey-form-group">
-                    <select
-                        id="zones"
-                        class="homey-form-select"
-                        aria-label="Buildings"
-                    ></select>
-                </div>
-                <div class="homey-form-group">
-                    <label
-                        class="homey-form-label"
-                        aria-label="Enabled"
-                        data-i18n="settings.holidayMode.enabled"
-                        for="enabled_holiday_mode"
-                    ></label>
-                    <select id="enabled_holiday_mode" class="homey-form-select">
-                        <option data-i18n="settings.boolean.false" value="false"></option>
-                        <option data-i18n="settings.boolean.true" value="true"></option>
-                    </select>
-                </div>
-                <div class="homey-form-group container">
-                    <div>
-                        <label
-                            class="homey-form-label"
-                            aria-label="Start date"
-                            data-i18n="settings.holidayMode.startDate"
-                            for="start_date"
-                        ></label>
-                        <input
-                            id="start_date"
-                            type="datetime-local"
-                        >
-                    </div>
-                    <div>
-                        <label
-                            class="homey-form-label"
-                            aria-label="End date"
-                            data-i18n="settings.holidayMode.endDate"
-                            for="end_date"
-                        ></label>
-                        <input
-                            id="end_date"
-                            type="datetime-local"
-                        >
-                    </div>
-                </div>
-                <div class="homey-form-group container">
-                    <button
-                        id="refresh_holiday_mode"
-                        type="button"
-                        class="homey-button-secondary-shadow"
-                        aria-label="Refresh"
-                        data-i18n="settings.refresh"
-                    ></button>
-                    <button
-                        id="apply_holiday_mode"
-                        type="button"
-                        class="homey-button-danger-shadow"
-                        aria-label="Update"
-                        data-i18n="settings.update"
-                    ></button>
-                </div>
-                <div class="homey-form-group">
-                    <label
-                        class="homey-form-label"
-                        aria-label="Enabled"
-                        data-i18n="settings.frostProtection.enabled"
-                        for="enabled_frost_protection"
-                    ></label>
-                    <select id="enabled_frost_protection" class="homey-form-select">
-                        <option data-i18n="settings.boolean.false" value="false"></option>
-                        <option data-i18n="settings.boolean.true" value="true"></option>
-                    </select>
-                </div>
-                <div class="homey-form-group">
-                    <label
-                        class="homey-form-label"
-                        aria-label="Minimum temperature"
-                        data-i18n="settings.frostProtection.min"
-                        for="min"
-                    ></label>
-                    <input
-                        id="min"
-                        type="number"
-                        class="homey-form-input"
-                        inputmode="numeric"
-                        value="10"
-                    >
-                </div>
-                <div class="homey-form-group">
-                    <label
-                        class="homey-form-label"
-                        aria-label="Maximum temperature"
-                        data-i18n="settings.frostProtection.max"
-                        for="max"
-                    ></label>
-                    <input
-                        id="max"
-                        type="number"
-                        class="homey-form-input"
-                        inputmode="numeric"
-                        value="12"
-                    >
-                </div>
-                <div class="homey-form-group container">
-                    <button
-                        id="refresh_frost_protection"
-                        type="button"
-                        class="homey-button-secondary-shadow"
-                        aria-label="Refresh"
-                        data-i18n="settings.refresh"
-                    ></button>
-                    <button
-                        id="apply_frost_protection"
-                        type="button"
-                        class="homey-button-danger-shadow"
-                        aria-label="Update"
-                        data-i18n="settings.update"
-                    ></button>
-                </div>
-            </fieldset>
-            <fieldset class="homey-form-fieldset">
                 <legend class="homey-form-legend" data-i18n="settings.devices.legend"></legend>
                 <div id="settings_common"></div>
                 <div class="homey-form-group container">
@@ -265,6 +143,124 @@
                     </div>
                 </fieldset>
             </div>
+            <fieldset class="homey-form-fieldset">
+                <legend class="homey-form-legend" data-i18n="settings.zones.legend"></legend>
+                <div class="homey-form-group">
+                    <select
+                        id="zones"
+                        class="homey-form-select"
+                        aria-label="Buildings"
+                    ></select>
+                </div>
+                <div class="homey-form-group">
+                    <label
+                        class="homey-form-label"
+                        aria-label="Enabled"
+                        data-i18n="settings.holidayMode.enabled"
+                        for="enabled_holiday_mode"
+                    ></label>
+                    <select id="enabled_holiday_mode" class="homey-form-select">
+                        <option data-i18n="settings.boolean.false" value="false"></option>
+                        <option data-i18n="settings.boolean.true" value="true"></option>
+                    </select>
+                </div>
+                <div class="homey-form-group">
+                    <label
+                        class="homey-form-label"
+                        aria-label="Start date"
+                        data-i18n="settings.holidayMode.startDate"
+                        for="start_date"
+                    ></label>
+                    <input
+                        id="start_date"
+                        type="datetime-local"
+                    >
+                </div>
+                <div class="homey-form-group">
+                    <label
+                        class="homey-form-label"
+                        aria-label="End date"
+                        data-i18n="settings.holidayMode.endDate"
+                        for="end_date"
+                    ></label>
+                    <input
+                        id="end_date"
+                        type="datetime-local"
+                    >
+                </div>
+                <div class="homey-form-group container">
+                    <button
+                        id="refresh_holiday_mode"
+                        type="button"
+                        class="homey-button-secondary-shadow"
+                        aria-label="Refresh"
+                        data-i18n="settings.refresh"
+                    ></button>
+                    <button
+                        id="apply_holiday_mode"
+                        type="button"
+                        class="homey-button-danger-shadow"
+                        aria-label="Update"
+                        data-i18n="settings.update"
+                    ></button>
+                </div>
+                <div class="homey-form-group">
+                    <label
+                        class="homey-form-label"
+                        aria-label="Enabled"
+                        data-i18n="settings.frostProtection.enabled"
+                        for="enabled_frost_protection"
+                    ></label>
+                    <select id="enabled_frost_protection" class="homey-form-select">
+                        <option data-i18n="settings.boolean.false" value="false"></option>
+                        <option data-i18n="settings.boolean.true" value="true"></option>
+                    </select>
+                </div>
+                <div class="homey-form-group">
+                    <label
+                        class="homey-form-label"
+                        aria-label="Minimum temperature"
+                        data-i18n="settings.frostProtection.min"
+                        for="min"
+                    ></label>
+                    <input
+                        id="min"
+                        type="number"
+                        class="homey-form-input"
+                        inputmode="numeric"
+                    >
+                </div>
+                <div class="homey-form-group">
+                    <label
+                        class="homey-form-label"
+                        aria-label="Maximum temperature"
+                        data-i18n="settings.frostProtection.max"
+                        for="max"
+                    ></label>
+                    <input
+                        id="max"
+                        type="number"
+                        class="homey-form-input"
+                        inputmode="numeric"
+                    >
+                </div>
+                <div class="homey-form-group container">
+                    <button
+                        id="refresh_frost_protection"
+                        type="button"
+                        class="homey-button-secondary-shadow"
+                        aria-label="Refresh"
+                        data-i18n="settings.refresh"
+                    ></button>
+                    <button
+                        id="apply_frost_protection"
+                        type="button"
+                        class="homey-button-danger-shadow"
+                        aria-label="Update"
+                        data-i18n="settings.update"
+                    ></button>
+                </div>
+            </fieldset>
         </div>
     </body>
 </html>

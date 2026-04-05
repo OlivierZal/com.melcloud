@@ -8,7 +8,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
+import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
 import {
   type EnergyCapabilityTagMapping,
   type GetCapabilityTagMapping,
@@ -16,7 +16,11 @@ import {
   type SetCapabilityTagMapping,
   HotWaterMode,
 } from '../../types/index.mts'
-import { mock, testEnergyReportConfig, testThermostatMode } from '../helpers.ts'
+import {
+  testEnergyReportConfig,
+  testThermostatMode,
+} from '../device-descriptors.ts'
+import { mock } from '../helpers.ts'
 import MELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -45,7 +49,7 @@ vi.mock('homey', async () => {
   }
 })
 
-const mockDriver = mock<BaseMELCloudDriver<AtwType>>({
+const mockDriver = mock<ClassicMELCloudDriver<AtwType>>({
   energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<AtwType>>({}),
   getCapabilitiesOptions: vi.fn().mockReturnValue({}),
   getCapabilityTagMapping: mock<GetCapabilityTagMapping<AtwType>>({}),
@@ -167,65 +171,24 @@ describe(MELCloudDeviceAtw, () => {
   })
 
   describe('operation mode state mapping', () => {
-    it('should set hot water operation state to dhw when facade reports dhw', async () => {
-      mockAtwFacade(device, {
-        hotWater: { operationalState: OperationModeStateHotWater.dhw },
-      })
-      await callSetCapabilityValues(device)
+    it.each([
+      ['hot_water', 'hotWater', OperationModeStateHotWater.dhw],
+      ['hot_water', 'hotWater', OperationModeStateHotWater.prohibited],
+      ['zone1', 'zone1', OperationModeStateZone.prohibited],
+      ['zone1', 'zone1', OperationModeStateZone.idle],
+      ['zone2', 'zone2', OperationModeStateZone.heating],
+    ] as const)(
+      'should set operational_state.%s from facade %s state %s',
+      async (capability, zone, state) => {
+        mockAtwFacade(device, { [zone]: { operationalState: state } })
+        await callSetCapabilityValues(device)
 
-      expect(setCapabilityValueMock).toHaveBeenCalledWith(
-        'operational_state.hot_water',
-        OperationModeStateHotWater.dhw,
-      )
-    })
-
-    it('should set hot water operation state to prohibited when facade reports prohibited', async () => {
-      mockAtwFacade(device, {
-        hotWater: { operationalState: OperationModeStateHotWater.prohibited },
-      })
-      await callSetCapabilityValues(device)
-
-      expect(setCapabilityValueMock).toHaveBeenCalledWith(
-        'operational_state.hot_water',
-        OperationModeStateHotWater.prohibited,
-      )
-    })
-
-    it('should set zone1 operation state from facade', async () => {
-      mockAtwFacade(device, {
-        zone1: { operationalState: OperationModeStateZone.prohibited },
-      })
-      await callSetCapabilityValues(device)
-
-      expect(setCapabilityValueMock).toHaveBeenCalledWith(
-        'operational_state.zone1',
-        OperationModeStateZone.prohibited,
-      )
-    })
-
-    it('should set zone operation state to idle from facade', async () => {
-      mockAtwFacade(device, {
-        zone1: { operationalState: OperationModeStateZone.idle },
-      })
-      await callSetCapabilityValues(device)
-
-      expect(setCapabilityValueMock).toHaveBeenCalledWith(
-        'operational_state.zone1',
-        OperationModeStateZone.idle,
-      )
-    })
-
-    it('should set zone2 operation state when capability is present and facade has zone2', async () => {
-      mockAtwFacade(device, {
-        zone2: { operationalState: OperationModeStateZone.heating },
-      })
-      await callSetCapabilityValues(device)
-
-      expect(setCapabilityValueMock).toHaveBeenCalledWith(
-        'operational_state.zone2',
-        OperationModeStateZone.heating,
-      )
-    })
+        expect(setCapabilityValueMock).toHaveBeenCalledWith(
+          `operational_state.${capability}`,
+          state,
+        )
+      },
+    )
 
     it('should skip zone2 operation state when capability is not present', async () => {
       hasCapabilityMock.mockImplementation(

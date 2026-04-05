@@ -186,7 +186,7 @@ export interface DeviceFacade {
 export type EnergyReportMode = 'regular' | 'total'
 
 export interface EnergyReportOperation {
-  readonly handle: () => Promise<void>
+  readonly start: () => Promise<void>
   readonly unschedule: () => void
 }
 

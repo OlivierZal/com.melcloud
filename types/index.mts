@@ -32,11 +32,11 @@ export type {
   ValueOf,
 } from './settings.mts'
 export type {
+  AtaGroupSettingWidgetSettings,
+  ChartsWidgetSettings,
   DaysQuery,
   GetAtaOptions,
   GroupAtaStates,
-  HomeyWidgetSettingsAtaGroupSetting,
-  HomeyWidgetSettingsCharts,
   HourQuery,
   ZoneData,
 } from './widgets.mts'
@@ -45,12 +45,12 @@ export type { BuildingZone, DeviceZone, Zone } from '@olivierzal/melcloud-api'
 export {
   energyCapabilityTagMappingAta,
   getCapabilityTagMappingAta,
-  horizontalReverse,
+  horizontalFromDevice,
   listCapabilityTagMappingAta,
-  operationModeReverse,
+  operationModeFromDevice,
   setCapabilityTagMappingAta,
   ThermostatModeAta,
-  verticalReverse,
+  verticalFromDevice,
 } from './ata.mts'
 export {
   type TargetTemperatureFlowCapabilities,
@@ -59,8 +59,8 @@ export {
   getCapabilityTagMappingAtw,
   HotWaterMode,
   listCapabilityTagMappingAtw,
-  operationModeStateReverse,
-  operationModeZoneReverse,
+  operationModeStateFromDevice,
+  operationModeZoneFromDevice,
   setCapabilityTagMappingAtw,
 } from './atw.mts'
 export {
@@ -69,7 +69,7 @@ export {
   listCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
   ThermostatModeErv,
-  ventilationModeReverse,
+  ventilationModeFromDevice,
 } from './erv.mts'
 export {
   type AuthAPI,

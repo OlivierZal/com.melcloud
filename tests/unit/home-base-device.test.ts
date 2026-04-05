@@ -5,25 +5,34 @@ import type {
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
+import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testFetchDeviceNull,
   testPostUpdateSync,
   testSetValuesErrorHandling,
   testThermostatModeOff,
-} from '../helpers.ts'
+} from '../device-descriptors.ts'
 import {
   type TestHomeDevice,
   createTestHomeDevice,
 } from './home-base-device-test-device.ts'
 
-const realtimeMock = vi.fn()
-const superSetWarningMock = vi.fn()
-const registerMultipleCapabilityListenerMock = vi.fn()
-const setValuesMock = vi.fn()
-const getSettingMock = vi.fn()
-const getHomeFacadeMock = vi.fn()
+const {
+  getHomeFacadeMock,
+  getSettingMock,
+  realtimeMock,
+  registerMultipleCapabilityListenerMock,
+  setValuesMock,
+  superSetWarningMock,
+} = vi.hoisted(() => ({
+  getHomeFacadeMock: vi.fn(),
+  getSettingMock: vi.fn(),
+  realtimeMock: vi.fn(),
+  registerMultipleCapabilityListenerMock: vi.fn(),
+  setValuesMock: vi.fn(),
+  superSetWarningMock: vi.fn(),
+}))
 
 let isFacadePoweredOn = true
 
@@ -116,7 +125,7 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = vi.fn()
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedBaseMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in BaseMELCloudDevice
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()
@@ -130,7 +139,7 @@ const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(
   registerMultipleCapabilityListenerMock,
 )
 
-describe(HomeBaseMELCloudDevice, () => {
+describe(BaseMELCloudDevice, () => {
   let device: TestHomeDevice
 
   beforeEach(() => {

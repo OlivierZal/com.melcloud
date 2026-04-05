@@ -9,6 +9,22 @@ import type { HourNumbers } from 'luxon'
 
 import type { BaseSettings } from './bases.mts'
 
+export interface AtaGroupSettingWidgetSettings extends BaseSettings {
+  readonly animations: boolean
+  readonly default_zone: DeviceZone | null
+}
+
+export interface ChartsWidgetSettings extends BaseSettings {
+  readonly chart:
+    | 'hourly_temperatures'
+    | 'operation_modes'
+    | 'signal'
+    | 'temperatures'
+  readonly days: number
+  readonly default_zone: DeviceZone | null
+  readonly height: `${number}`
+}
+
 export interface DaysQuery {
   readonly days?: string
 }
@@ -27,22 +43,6 @@ export interface GroupAtaStates {
   readonly VaneHorizontalSwing: boolean[]
   readonly VaneVerticalDirection: Vertical[]
   readonly VaneVerticalSwing: boolean[]
-}
-
-export interface HomeyWidgetSettingsAtaGroupSetting extends BaseSettings {
-  readonly animations: boolean
-  readonly default_zone: DeviceZone | null
-}
-
-export interface HomeyWidgetSettingsCharts extends BaseSettings {
-  readonly chart:
-    | 'hourly_temperatures'
-    | 'operation_modes'
-    | 'signal'
-    | 'temperatures'
-  readonly days: number
-  readonly default_zone: DeviceZone | null
-  readonly height: `${number}`
 }
 
 export interface HourQuery {

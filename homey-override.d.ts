@@ -2,7 +2,7 @@ import type { DeviceType } from '@olivierzal/melcloud-api'
 import type HomeyLib from 'homey/lib/Homey.js'
 
 import type MELCloudApp from './app.mts'
-import type { BaseMELCloudDriver } from './drivers/base-driver.mts'
+import type { ClassicMELCloudDriver } from './drivers/classic-base-driver.mts'
 import type { HomeySettings, Manifest } from './types/index.mts'
 
 declare module 'homey' {
@@ -14,10 +14,12 @@ declare module 'homey' {
   }
 
   interface ManagerDrivers extends HomeyLib.ManagerDrivers {
-    getDriver: <T extends DeviceType>(driverId: string) => BaseMELCloudDriver<T>
+    getDriver: <T extends DeviceType>(
+      driverId: string,
+    ) => ClassicMELCloudDriver<T>
     getDrivers: <T extends DeviceType>() => Record<
       string,
-      BaseMELCloudDriver<T>
+      ClassicMELCloudDriver<T>
     >
   }
 

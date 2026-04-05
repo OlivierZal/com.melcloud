@@ -79,7 +79,7 @@ const formatErrors = (errors: Record<string, readonly string[]>): string =>
     .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
     .join('\n')
 
-const handleResponse = (
+const throwOnErrors = (
   errors: Record<string, readonly string[]> | null,
 ): void => {
   if (errors) {
@@ -392,7 +392,7 @@ export default class MELCloudApp extends App {
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
     const data = await this.getFacade(zoneType, zoneId).setGroup(state)
-    handleResponse(data.AttributeErrors)
+    throwOnErrors(data.AttributeErrors)
   }
 
   public async setDeviceSettings(
@@ -425,7 +425,7 @@ export default class MELCloudApp extends App {
     const data = await this.getFacade(zoneType, zoneId).setFrostProtection(
       settings,
     )
-    handleResponse(data.AttributeErrors)
+    throwOnErrors(data.AttributeErrors)
   }
 
   public async setHolidayMode(
@@ -433,7 +433,7 @@ export default class MELCloudApp extends App {
     { zoneId, zoneType }: ZoneData,
   ): Promise<void> {
     const data = await this.getFacade(zoneType, zoneId).setHolidayMode(settings)
-    handleResponse(data.AttributeErrors)
+    throwOnErrors(data.AttributeErrors)
   }
 
   #createLogger(): {

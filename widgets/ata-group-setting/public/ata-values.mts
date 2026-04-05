@@ -10,9 +10,9 @@ import { coolModes, Temperature } from './constants.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
-  createOptionElement,
-  getSelectElement,
-  handleNumericInputElement,
+  configureNumericInput,
+  createOption,
+  getSelect,
 } from './dom.mts'
 import { type Homey, homeyApiGet, homeyApiPut } from './homey-api.mts'
 import { getZoneId, getZoneName, getZonePath } from './zones.mts'
@@ -23,36 +23,31 @@ const elementTypes = new Set(['boolean', 'enum'])
 
 // ── DOM creation helpers ──
 
-const createLabelElement = (
-  valueElement: HTMLValueElement,
+const createLabel = (
+  formControl: HTMLValueElement,
   text: string,
 ): HTMLLabelElement => {
-  const labelElement = document.createElement('label')
-  labelElement.classList.add(
-    'label',
-    'text-default',
-    'text-color',
-    'font-normal',
-  )
-  ;({ id: labelElement.htmlFor } = valueElement)
-  labelElement.textContent = text
-  labelElement.append(valueElement)
-  return labelElement
+  const label = document.createElement('label')
+  label.classList.add('label', 'text-default', 'text-color', 'font-normal')
+  ;({ id: label.htmlFor } = formControl)
+  label.textContent = text
+  label.append(formControl)
+  return label
 }
 
-const createValueElement = (
-  parentElement: HTMLElement,
+const appendFormControl = (
+  parent: HTMLElement,
   {
+    formControl,
     title,
-    valueElement,
-  }: { title: string; valueElement: HTMLValueElement | null },
+  }: { formControl: HTMLValueElement | null; title: string },
 ): void => {
-  if (valueElement) {
-    parentElement.append(createLabelElement(valueElement, title))
+  if (formControl) {
+    parent.append(createLabel(formControl, title))
   }
 }
 
-const createInputElement = ({
+const createInput = ({
   id,
   max,
   min,
@@ -67,38 +62,38 @@ const createInputElement = ({
   placeholder?: string
   value?: string
 }): HTMLInputElement => {
-  const inputElement = document.createElement('input')
-  inputElement.classList.add(
+  const input = document.createElement('input')
+  input.classList.add(
     'input',
     'input-ghost',
     'text-default',
     'text-light',
     'font-normal',
   )
-  inputElement.id = id
-  inputElement.value = value ?? ''
-  inputElement.type = type
-  handleNumericInputElement(inputElement, { max, min })
+  input.id = id
+  input.value = value ?? ''
+  input.type = type
+  configureNumericInput(input, { max, min })
   if (placeholder !== undefined) {
-    inputElement.placeholder = placeholder
+    input.placeholder = placeholder
   }
-  return inputElement
+  return input
 }
 
-const createSelectElement = (
+const createSelect = (
   homey: Homey,
   id: string,
   values?: readonly { id: string; label: string }[],
 ): HTMLSelectElement => {
-  const selectElement = document.createElement('select')
-  selectElement.classList.add(
+  const select = document.createElement('select')
+  select.classList.add(
     'select',
     'select-ghost',
     'text-default',
     'text-light',
     'font-normal',
   )
-  selectElement.id = id
+  select.id = id
   for (const option of [
     { id: '', label: '' },
     ...(values ??
@@ -107,24 +102,29 @@ const createSelectElement = (
         label: homey.__(`settings.boolean.${value}`),
       }))),
   ]) {
-    createOptionElement(selectElement, option)
+    createOption(select, option)
   }
-  return selectElement
+  return select
 }
 
 // ── Value processing ──
 
-const handleIntMin = (id: string, min: string): string =>
+const getCoolingAdjustedMin = (id: string, min: string): string =>
   (
     id === 'SetTemperature' &&
-    coolModes.has(Number(getSelectElement('OperationMode').value))
+    coolModes.has(Number(getSelect('OperationMode').value))
   ) ?
     String(Temperature.cooling_min)
   : min
 
-const int = ({ id, max, min, value }: HTMLInputElement): number => {
+const clampNumericInput = ({
+  id,
+  max,
+  min,
+  value,
+}: HTMLInputElement): number => {
   const numberValue = Number(value)
-  const newMin = Number(handleIntMin(id, min))
+  const newMin = Number(getCoolingAdjustedMin(id, min))
   const newMax = Number(max)
   if (!Number.isFinite(numberValue)) {
     throw new TypeError('Invalid number')
@@ -132,13 +132,13 @@ const int = ({ id, max, min, value }: HTMLInputElement): number => {
   return Math.min(Math.max(numberValue, newMin), newMax)
 }
 
-const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
+const parseFormValue = (element: HTMLValueElement): ValueOf<Settings> => {
   if (element.value) {
     if (element.type === 'checkbox') {
       return element.indeterminate ? null : element.checked
     }
     if (element.type === 'number' && element.min !== '' && element.max !== '') {
-      return int(element)
+      return clampNumericInput(element)
     }
     if (booleanStrings.includes(element.value)) {
       return element.value === 'true'
@@ -159,13 +159,13 @@ const getSubzones = (zone: Zone): Zone[] => [
 export class AtaValueManager {
   #ataCapabilities: [keyof GroupState, DriverCapabilitiesOptions][] = []
 
-  readonly #ataValuesElement: HTMLDivElement
+  readonly #ataValues: HTMLDivElement
 
   #defaultAtaValues: Partial<Record<keyof GroupState, null>> = {}
 
   readonly #homey: Homey
 
-  readonly #zoneElement: HTMLSelectElement
+  readonly #zone: HTMLSelectElement
 
   readonly #zoneMapping: Partial<Record<string, Partial<GroupState>>> = {}
 
@@ -175,8 +175,31 @@ export class AtaValueManager {
     zoneElement: HTMLSelectElement,
   ) {
     this.#homey = homey
-    this.#ataValuesElement = ataValuesElement
-    this.#zoneElement = zoneElement
+    this.#ataValues = ataValuesElement
+    this.#zone = zoneElement
+  }
+
+  public applyDefaultZone(defaultZone: Zone | null): void {
+    if (defaultZone) {
+      const { id, model } = defaultZone
+      const value = getZoneId(id, model)
+      if (document.querySelector(`#zones option[value="${value}"]`)) {
+        this.#zone.value = value
+      }
+    }
+  }
+
+  public createAtaFormControls(): void {
+    for (const [id, { title, type, values }] of this.#ataCapabilities) {
+      appendFormControl(this.#ataValues, {
+        formControl: this.#createAtaControl({ id, type, values }),
+        title,
+      })
+    }
+  }
+
+  public displayValues(): void {
+    this.#syncAtaValues()
   }
 
   public async fetchCapabilities(): Promise<void> {
@@ -194,45 +217,22 @@ export class AtaValueManager {
       `/zones/${this.#getZoneValue()}/ata`,
     )
     this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
-    this.#refreshAtaValues()
+    this.#syncAtaValues()
     return values
   }
 
-  public generateAtaValues(): void {
-    for (const [id, { title, type, values }] of this.#ataCapabilities) {
-      createValueElement(this.#ataValuesElement, {
-        title,
-        valueElement: this.#generateAtaValue({ id, type, values }),
-      })
-    }
-  }
-
-  public async generateZones(zones: Zone[] = []): Promise<void> {
+  public async populateZoneOptions(zones: Zone[] = []): Promise<void> {
     if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
-        createOptionElement(this.#zoneElement, {
+        createOption(this.#zone, {
           id: getZoneId(id, model),
           label: getZoneName(name, level),
         })
         // eslint-disable-next-line no-await-in-loop -- Sequential: parent-child order required for tree rendering
-        await this.generateZones(getSubzones(zone))
+        await this.populateZoneOptions(getSubzones(zone))
       }
     }
-  }
-
-  public handleDefaultZone(defaultZone: Zone | null): void {
-    if (defaultZone) {
-      const { id, model } = defaultZone
-      const value = getZoneId(id, model)
-      if (document.querySelector(`#zones option[value="${value}"]`)) {
-        this.#zoneElement.value = value
-      }
-    }
-  }
-
-  public refreshValues(): void {
-    this.#refreshAtaValues()
   }
 
   public async setValues(): Promise<void> {
@@ -250,23 +250,21 @@ export class AtaValueManager {
     return Object.fromEntries(
       // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
       Array.from(
-        this.#ataValuesElement.querySelectorAll<HTMLValueElement>(
-          'input, select',
-        ),
+        this.#ataValues.querySelectorAll<HTMLValueElement>('input, select'),
       )
         .filter(
           ({ id, value }) =>
             this.#isGroupAtaState(id) &&
             ![
               '',
-              this.#zoneMapping[this.#zoneElement.value]?.[id]?.toString(),
+              this.#zoneMapping[this.#zone.value]?.[id]?.toString(),
             ].includes(value),
         )
-        .map((element) => [element.id, processValue(element)]),
+        .map((element) => [element.id, parseFormValue(element)]),
     )
   }
 
-  #generateAtaValue({
+  #createAtaControl({
     id,
     type,
     values,
@@ -276,10 +274,10 @@ export class AtaValueManager {
     values?: readonly { id: string; label: string }[]
   }): HTMLValueElement | null {
     if (elementTypes.has(type)) {
-      return createSelectElement(this.#homey, id, values)
+      return createSelect(this.#homey, id, values)
     }
     if (type === 'number') {
-      return createInputElement({
+      return createInput({
         id,
         max: id === 'SetTemperature' ? Temperature.max : undefined,
         min: id === 'SetTemperature' ? Temperature.min : undefined,
@@ -290,33 +288,33 @@ export class AtaValueManager {
   }
 
   #getZoneValue(): string {
-    return getZonePath(this.#zoneElement.value)
+    return getZonePath(this.#zone.value)
   }
 
   #isGroupAtaState(value: string): value is keyof GroupState {
     return value in this.#defaultAtaValues
   }
 
-  #refreshAtaValues(): void {
+  #syncAtaValues(): void {
     for (const [ataKey] of this.#ataCapabilities) {
       this.#updateAtaValue(ataKey)
     }
   }
 
   #updateAtaValue(id: keyof GroupState): void {
-    const ataValueElement = document.querySelector(`#${id}`)
+    const ataValue = document.querySelector(`#${id}`)
     if (
-      ataValueElement &&
-      (ataValueElement instanceof HTMLInputElement ||
-        ataValueElement instanceof HTMLSelectElement)
+      ataValue &&
+      (ataValue instanceof HTMLInputElement ||
+        ataValue instanceof HTMLSelectElement)
     ) {
-      ataValueElement.value =
-        this.#zoneMapping[this.#zoneElement.value]?.[id]?.toString() ?? ''
+      ataValue.value =
+        this.#zoneMapping[this.#zone.value]?.[id]?.toString() ?? ''
     }
   }
 
   #updateZoneMapping(data: Partial<GroupState>): void {
-    const { value } = this.#zoneElement
+    const { value } = this.#zone
     this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
   }
 }

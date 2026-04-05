@@ -2,8 +2,8 @@ import type { DeviceType, EnergyDataAta } from '@olivierzal/melcloud-api'
 import { DateTime, Settings } from 'luxon'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { BaseMELCloudDevice } from '../../drivers/base-device.mts'
-import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
+import type { ClassicMELCloudDevice } from '../../drivers/classic-base-device.mts'
+import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
 import type { Homey } from '../../lib/homey.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 import {
@@ -49,13 +49,13 @@ const energyCapabilityTagMapping = mock<
   'meter_power.daily': ['TotalAutoConsumed', 'TotalCoolingConsumed'],
 })
 
-const mockDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
+const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
   consumedTagMapping: { measure_power: ['Auto', 'Cooling'] },
   energyCapabilityTagMapping,
   producedTagMapping: {},
 })
 
-const mockDevice = mock<BaseMELCloudDevice<TestDeviceType>>({
+const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   cleanMapping: cleanMappingMock,
   driver: mockDriver,
   error: errorMock,
@@ -76,7 +76,7 @@ const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   return getEnergyMock
 }
 
-const createCopMocks = (): BaseMELCloudDevice<TestDeviceType> => {
+const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
   const copConsumed = {
     'measure_power.cop': ['ConsumedTag'],
   } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
@@ -86,12 +86,12 @@ const createCopMocks = (): BaseMELCloudDevice<TestDeviceType> => {
   const copEnergyMapping = {
     'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
   } as unknown as EnergyCapabilityTagMapping<TestDeviceType>
-  const copDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
+  const copDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
     consumedTagMapping: copConsumed,
     energyCapabilityTagMapping: copEnergyMapping,
     producedTagMapping: copProduced,
   })
-  return mock<BaseMELCloudDevice<TestDeviceType>>({
+  return mock<ClassicMELCloudDevice<TestDeviceType>>({
     cleanMapping: vi.fn().mockReturnValue({
       'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
     }),
@@ -124,7 +124,7 @@ describe(EnergyReport, () => {
     it('should unschedule when no energy capability tag entries', async () => {
       cleanMappingMock.mockReturnValue({})
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(clearTimeoutMock).toHaveBeenCalledWith(null)
     })
@@ -135,7 +135,7 @@ describe(EnergyReport, () => {
         Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
       })
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(getEnergyMock).toHaveBeenCalledWith(
         expect.objectContaining({ from: '2026-03-18', to: '2026-03-18' }),
@@ -150,7 +150,7 @@ describe(EnergyReport, () => {
         getEnergy: vi.fn().mockRejectedValue(energyError),
       })
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(errorMock).toHaveBeenCalledWith(
         'Energy report fetch failed:',
@@ -165,8 +165,8 @@ describe(EnergyReport, () => {
         Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
       })
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
-      await report.handle()
+      await report.start()
+      await report.start()
 
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
@@ -174,7 +174,7 @@ describe(EnergyReport, () => {
     it('should handle null device from fetchDevice', async () => {
       fetchDeviceMock.mockResolvedValue(null)
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
@@ -201,7 +201,7 @@ describe(EnergyReport, () => {
         }),
       )
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'measure_power',
@@ -220,7 +220,7 @@ describe(EnergyReport, () => {
         }),
       )
       const report = new EnergyReport(mockDevice, totalConfig)
-      await report.handle()
+      await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 150)
     })
@@ -234,7 +234,7 @@ describe(EnergyReport, () => {
         }),
       )
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 0)
     })
@@ -247,7 +247,7 @@ describe(EnergyReport, () => {
         }),
       )
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 0)
     })
@@ -261,7 +261,7 @@ describe(EnergyReport, () => {
         }),
       )
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 5500)
     })
@@ -285,7 +285,7 @@ describe(EnergyReport, () => {
         mode: 'total',
         values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
       })
-      await report.handle()
+      await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 150)
     })
@@ -302,7 +302,7 @@ describe(EnergyReport, () => {
         }),
       )
       const report = new EnergyReport(mockDevice, totalConfig)
-      await report.handle()
+      await report.start()
 
       expect(getEnergyMockLocal).toHaveBeenCalledWith(
         expect.objectContaining({ from: undefined }),
@@ -317,7 +317,7 @@ describe(EnergyReport, () => {
         Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
       })
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
+      await report.start()
 
       const timeoutCallback = getMockCallArg<() => Promise<void>>(
         setTimeoutMock,
@@ -348,7 +348,7 @@ describe(EnergyReport, () => {
       const mockDeviceWithCop = createCopMocks()
       mockEnergyFetch({ ConsumedTag: 2, ProducedTag: 6 })
       const report = new EnergyReport(mockDeviceWithCop, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'measure_power.cop',
@@ -360,7 +360,7 @@ describe(EnergyReport, () => {
       const mockDeviceWithCop = createCopMocks()
       mockEnergyFetch({ ConsumedTag: 0, ProducedTag: 5 })
       const report = new EnergyReport(mockDeviceWithCop, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'measure_power.cop',
@@ -382,7 +382,7 @@ describe(EnergyReport, () => {
         }),
       )
       const report = new EnergyReport(mockDevice, regularConfig)
-      await report.handle()
+      await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'meter_power.daily',

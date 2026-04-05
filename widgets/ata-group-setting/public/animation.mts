@@ -7,7 +7,7 @@ import {
   OPERATION_MODE_MIXED,
   OperationMode,
 } from './constants.mts'
-import { getSelectElement } from './dom.mts'
+import { getSelect } from './dom.mts'
 import { type Homey, homeyApiGet } from './homey-api.mts'
 import { SmokeParticle, SmokeThreshold } from './smoke-particle.mts'
 import { generateStyleNumber, generateStyleString } from './style-helpers.mts'
@@ -64,7 +64,7 @@ const generateDelay = (delay: number, speed: number): number =>
       ((speed - FanSpeed.very_slow) /
         (FanSpeed.very_fast - FanSpeed.very_slow)) || 1)
 
-const getZoneValue = (): string => getZonePath(getSelectElement('zones').value)
+const getZoneValue = (): string => getZonePath(getSelect('zones').value)
 
 // ── Animation helpers ──
 
@@ -185,22 +185,27 @@ const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
 // ── AnimationController class ──
 
 export class AnimationController {
-  readonly #animationElement: HTMLDivElement
+  readonly #animation: HTMLDivElement
 
-  readonly #animationHandling: Record<
+  readonly #animationMapping: Record<
+    AnimatedElement,
+    { readonly innerHTML: string; readonly getIndex: () => number }
+  >
+
+  readonly #animationRunners: Record<
     number,
     (speed: number) => Promise<void> | void
   > = {
-    [OPERATION_MODE_MIXED]: async (speed) => this.#handleMixedAnimation(speed),
+    [OPERATION_MODE_MIXED]: async (speed) => this.#runMixedAnimation(speed),
     [OperationMode.auto]: (speed) => {
-      this.#handleFireAnimation(speed)
-      this.#handleSnowAnimation(speed)
+      this.#runFireAnimation(speed)
+      this.#runSnowAnimation(speed)
     },
     [OperationMode.cool]: (speed) => {
-      this.#handleSnowAnimation(speed)
+      this.#runSnowAnimation(speed)
     },
     [OperationMode.dry]: (speed) => {
-      this.#handleSunAnimation(speed)
+      this.#runSunAnimation(speed)
     },
     [OperationMode.fan]: (speed) => {
       this.#generateRecurring(
@@ -212,14 +217,9 @@ export class AnimationController {
       )
     },
     [OperationMode.heat]: (speed) => {
-      this.#handleFireAnimation(speed)
+      this.#runFireAnimation(speed)
     },
   }
-
-  readonly #animationMapping: Record<
-    AnimatedElement,
-    { readonly innerHTML: string; readonly getIndex: () => number }
-  >
 
   readonly #canvas: HTMLCanvasElement
 
@@ -246,13 +246,13 @@ export class AnimationController {
     canvas: HTMLCanvasElement,
   ) {
     this.#homey = homey
-    this.#animationElement = animationElement
+    this.#animation = animationElement
     this.#canvas = canvas
     this.#canvasContext = canvas.getContext('2d')
     this.#animationMapping = createAnimationMapping()
   }
 
-  public async handleAnimation(
+  public async applyAnimation(
     state: GroupState,
     isAnimations: boolean,
   ): Promise<void> {
@@ -266,7 +266,7 @@ export class AnimationController {
       await this.#reset({ isSomethingOn, mode: newMode })
 
       if (isSomethingOn && this.#hasModeAnimation(newMode)) {
-        await this.#animationHandling[newMode]?.(newSpeed)
+        await this.#animationRunners[newMode]?.(newSpeed)
       }
     }
   }
@@ -296,7 +296,10 @@ export class AnimationController {
         this.#generateFlameAnimation(flame, speed)
       },
       applyStyles: (flame) => {
-        flame.style.fontSize = generateStyleString({ gap: 1, min: 3 }, 'rem')
+        flame.style.setProperty(
+          '--size',
+          generateStyleString({ gap: 1, min: 3 }, 'rem'),
+        )
       },
     })
   }
@@ -311,11 +314,14 @@ export class AnimationController {
         generateLeafAnimation(leaf, speed)
       },
       applyStyles: (leaf) => {
-        leaf.style.fontSize = generateStyleString({ gap: 1, min: 2 }, 'rem')
-        leaf.style.filter = `brightness(${generateStyleString(
-          { gap: 50, min: 100 },
-          '%',
-        )})`
+        leaf.style.setProperty(
+          '--size',
+          generateStyleString({ gap: 1, min: 2 }, 'rem'),
+        )
+        leaf.style.setProperty(
+          '--brightness',
+          generateStyleString({ gap: 50, min: 100 }, '%'),
+        )
       },
     })
   }
@@ -352,7 +358,7 @@ export class AnimationController {
         'px',
       )
       applyStyles(element)
-      this.#animationElement.append(element)
+      this.#animation.append(element)
       animate(element)
     }
   }
@@ -388,14 +394,14 @@ export class AnimationController {
         generateSnowflakeAnimation(snowflake, speed)
       },
       applyStyles: (snowflake) => {
-        snowflake.style.fontSize = generateStyleString(
-          { divisor: speed, gap: 1, min: 2 },
-          'rem',
+        snowflake.style.setProperty(
+          '--size',
+          generateStyleString({ divisor: speed, gap: 1, min: 2 }, 'rem'),
         )
-        snowflake.style.filter = `brightness(${generateStyleString(
-          { gap: 20, min: 100 },
-          '%',
-        )})`
+        snowflake.style.setProperty(
+          '--brightness',
+          generateStyleString({ gap: 20, min: 100 }, '%'),
+        )
       },
     })
   }
@@ -531,78 +537,28 @@ export class AnimationController {
   }
 
   async #getModes(): Promise<number[]> {
-    const detailedAtaValues = await homeyApiGet<GroupAtaStates>(
+    const detailedAtaStates = await homeyApiGet<GroupAtaStates>(
       this.#homey,
       `/zones/${getZoneValue()}/ata?${new URLSearchParams({
         mode: 'detailed',
         status: 'on',
       } satisfies Required<GetAtaOptions>)}`,
     )
-    return detailedAtaValues.OperationMode
+    return detailedAtaStates.OperationMode
   }
 
   #getSunElement(): HTMLDivElement {
     const sun = document.querySelector('#sun-1')
     if (!(sun instanceof HTMLDivElement)) {
       const newSun = this.#createAnimatedElement('sun')
-      this.#animationElement.append(newSun)
+      this.#animation.append(newSun)
       return newSun
     }
     return sun
   }
 
-  #handleFireAnimation(speed: number): void {
-    this.#generateRecurring(
-      (flameSpeed) => {
-        this.#createFlame(flameSpeed)
-      },
-      AnimationDelay.flame,
-      speed,
-    )
-    this.#generateSmoke(speed)
-  }
-
-  async #handleMixedAnimation(speed: number): Promise<void> {
-    const modes = new Set(await this.#getModes())
-    if (modes.has(OperationMode.auto) || modes.has(OperationMode.cool)) {
-      this.#handleSnowAnimation(speed)
-    }
-    if (modes.has(OperationMode.auto) || modes.has(OperationMode.heat)) {
-      this.#handleFireAnimation(speed)
-    }
-    if (modes.has(OperationMode.dry)) {
-      this.#handleSunAnimation(speed)
-    }
-    if (modes.has(OperationMode.fan)) {
-      this.#generateRecurring(
-        (leafSpeed) => {
-          this.#createLeaf(leafSpeed)
-        },
-        AnimationDelay.leaf,
-        speed,
-      )
-    }
-  }
-
-  #handleSnowAnimation(speed: number): void {
-    this.#generateRecurring(
-      (snowSpeed) => {
-        this.#createSnowflake(snowSpeed)
-      },
-      AnimationDelay.snowflake,
-      speed,
-    )
-  }
-
-  #handleSunAnimation(speed: number): void {
-    const sun = this.#getSunElement()
-    this.#sunAnimation.shine ??= generateSunShineAnimation(sun)
-    this.#sunAnimation.shine.playbackRate = speed
-    this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
-  }
-
   #hasModeAnimation(mode: number): boolean {
-    return mode in this.#animationHandling
+    return mode in this.#animationRunners
   }
 
   async #reset(resetParams?: ResetParams): Promise<void> {
@@ -660,5 +616,55 @@ export class AnimationController {
       }
     }
     this.#sunAnimation.exit = this.#generateSunExitAnimation(sun)
+  }
+
+  #runFireAnimation(speed: number): void {
+    this.#generateRecurring(
+      (flameSpeed) => {
+        this.#createFlame(flameSpeed)
+      },
+      AnimationDelay.flame,
+      speed,
+    )
+    this.#generateSmoke(speed)
+  }
+
+  async #runMixedAnimation(speed: number): Promise<void> {
+    const modes = new Set(await this.#getModes())
+    if (modes.has(OperationMode.auto) || modes.has(OperationMode.cool)) {
+      this.#runSnowAnimation(speed)
+    }
+    if (modes.has(OperationMode.auto) || modes.has(OperationMode.heat)) {
+      this.#runFireAnimation(speed)
+    }
+    if (modes.has(OperationMode.dry)) {
+      this.#runSunAnimation(speed)
+    }
+    if (modes.has(OperationMode.fan)) {
+      this.#generateRecurring(
+        (leafSpeed) => {
+          this.#createLeaf(leafSpeed)
+        },
+        AnimationDelay.leaf,
+        speed,
+      )
+    }
+  }
+
+  #runSnowAnimation(speed: number): void {
+    this.#generateRecurring(
+      (snowSpeed) => {
+        this.#createSnowflake(snowSpeed)
+      },
+      AnimationDelay.snowflake,
+      speed,
+    )
+  }
+
+  #runSunAnimation(speed: number): void {
+    const sun = this.#getSunElement()
+    this.#sunAnimation.shine ??= generateSunShineAnimation(sun)
+    this.#sunAnimation.shine.playbackRate = speed
+    this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
   }
 }

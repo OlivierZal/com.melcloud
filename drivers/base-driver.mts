@@ -1,90 +1,151 @@
-import type { DeviceType, ListDeviceData } from '@olivierzal/melcloud-api'
-
 import type {
-  CapabilitiesOptions,
-  DeviceDetails,
-  EnergyCapabilityTagMapping,
-  GetCapabilityTagMapping,
-  ListCapabilityTagMapping,
-  MELCloudDevice,
-  SetCapabilityTagMapping,
-} from '../types/index.mts'
-import { typedEntries } from '../lib/index.mts'
-import { SharedBaseMELCloudDriver } from './shared-base-driver.mts'
+  DeviceType,
+  HomeDeviceType,
+  LoginCredentials,
+} from '@olivierzal/melcloud-api'
+import type PairSession from 'homey/lib/PairSession'
 
-export abstract class BaseMELCloudDriver<
-  T extends DeviceType,
-> extends SharedBaseMELCloudDriver {
-  public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
-    {}
+import type { AuthAPI, ManifestDriver } from '../types/index.mts'
+import { type Homey, Driver } from '../lib/homey.mts'
 
-  public abstract override readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
+const getArg = (capability: string): string => {
+  const [arg = capability] = capability.split('.')
+  return arg
+}
 
-  public abstract override readonly getCapabilitiesOptions: (
-    data: ListDeviceData<T>,
-  ) => Partial<CapabilitiesOptions<T>>
-
-  public abstract override readonly getCapabilityTagMapping: GetCapabilityTagMapping<T>
-
-  declare public readonly getDevices: () => MELCloudDevice[]
-
-  public abstract override readonly listCapabilityTagMapping: ListCapabilityTagMapping<T>
-
-  public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
-    {}
-
-  public abstract override readonly setCapabilityTagMapping: SetCapabilityTagMapping<T>
-
-  public abstract override readonly type: T
-
-  protected override get api(): typeof this.homey.app.api {
-    return this.homey.app.api
+const tryRegisterFlowCard = (register: () => void): void => {
+  try {
+    register()
+  } catch {
+    // Flow card may not exist for this capability
   }
+}
+
+export abstract class BaseMELCloudDriver extends Driver {
+  protected abstract readonly api: AuthAPI
+
+  public readonly energyCapabilityTagMapping: Record<string, unknown> = {}
+
+  public readonly getCapabilityTagMapping: Record<string, unknown> = {}
+
+  declare public readonly homey: Homey.Homey
+
+  public readonly listCapabilityTagMapping: Record<string, unknown> = {}
+
+  declare public readonly manifest: ManifestDriver
+
+  public readonly setCapabilityTagMapping: Record<string, unknown> = {}
+
+  public abstract readonly type: DeviceType | HomeDeviceType
+
+  public override async onPair(session: PairSession): Promise<void> {
+    session.setHandler('showView', async (view) => {
+      if (view === 'loading') {
+        if (this.api.isAuthenticated()) {
+          await session.showView('list_devices')
+          return
+        }
+        await session.showView('login')
+      }
+    })
+    this.#registerLoginHandler(session)
+    session.setHandler('list_devices', async () => this.discoverDevices())
+    await Promise.resolve()
+  }
+
+  public override async onRepair(session: PairSession): Promise<void> {
+    this.#registerLoginHandler(session)
+    await Promise.resolve()
+  }
+
+  #registerLoginHandler(session: PairSession): void {
+    session.setHandler('login', async (data: LoginCredentials) =>
+      this.api.authenticate(data),
+    )
+  }
+
+  /* v8 ignore start -- default implementation; always overridden by classic or test mock */
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  public getCapabilitiesOptions(
+    ..._context: unknown[]
+  ): Partial<Record<string, unknown>> {
+    return {}
+  }
+  /* v8 ignore stop */
 
   public override async onInit(): Promise<void> {
-    await super.onInit()
-    this.#setProducedAndConsumedTagMappings()
+    this.#registerFlowListeners()
+    await Promise.resolve()
   }
 
-  public abstract override getRequiredCapabilities(
-    data?: ListDeviceData<T>,
-  ): string[]
+  public getRequiredCapabilities(): string[] {
+    return [...this.manifest.capabilities]
+  }
 
-  protected override getDeviceModels(): {
-    data: ListDeviceData<T>
-    id: number
+  protected async discoverDevices(): Promise<
+    { data: { id: number | string }; name: string }[]
+  > {
+    await Promise.resolve()
+    return this.getDeviceModels().map((model) => this.toDeviceDetails(model))
+  }
+
+  protected abstract getDeviceModels(): {
+    id: number | string
     name: string
-  }[] {
-    return this.homey.app.getDevicesByType(this.type)
-  }
+  }[]
 
-  protected override toDeviceDetails({
-    data,
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- default mapping; overridden in classic to add capabilities
+  protected toDeviceDetails({
     id,
     name,
   }: {
-    data: ListDeviceData<T>
-    id: number
+    id: number | string
     name: string
-  }): DeviceDetails<T> {
-    return {
-      capabilities: this.getRequiredCapabilities(data),
-      capabilitiesOptions: this.getCapabilitiesOptions(data),
-      data: { id },
-      name,
-    }
+  }): { data: { id: number | string }; name: string } {
+    return { data: { id }, name }
   }
 
-  #setProducedAndConsumedTagMappings(): void {
-    for (const [capability, tags] of typedEntries<
-      string & keyof EnergyCapabilityTagMapping<T>,
-      EnergyCapabilityTagMapping<T>[keyof EnergyCapabilityTagMapping<T>]
-    >(this.energyCapabilityTagMapping)) {
-      const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
-        tag.endsWith('Consumed') ? 'consumed' : 'produced',
-      )
-      this.consumedTagMapping[capability] = consumed
-      this.producedTagMapping[capability] = produced
+  #registerFlowListeners(): void {
+    for (const capability of this.manifest.capabilities) {
+      tryRegisterFlowCard(() => {
+        this.homey.flow
+          .getConditionCard(`${capability}_condition`)
+          .registerRunListener(
+            (
+              args: Record<string, unknown> & {
+                device: { getCapabilityValue: (key: string) => unknown }
+              },
+            ) => {
+              const value = args.device.getCapabilityValue(capability)
+              return typeof value === 'string' || typeof value === 'number' ?
+                  value === args[getArg(capability)]
+                : value
+            },
+          )
+      })
+      if (capability in this.setCapabilityTagMapping) {
+        tryRegisterFlowCard(() => {
+          this.homey.flow
+            .getActionCard(`${capability}_action`)
+            .registerRunListener(
+              async (
+                args: Record<string, unknown> & {
+                  device: {
+                    triggerCapabilityListener: (
+                      key: string,
+                      value: unknown,
+                    ) => Promise<void>
+                  }
+                },
+              ) => {
+                await args.device.triggerCapabilityListener(
+                  capability,
+                  args[getArg(capability)],
+                )
+              },
+            )
+        })
+      }
     }
   }
 }

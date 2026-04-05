@@ -1,17 +1,16 @@
 import type { ListDeviceDataAta } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
+import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
 import type {
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
+import { ClassicMELCloudDevice } from '../../drivers/classic-base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
-  mock,
   testDeletion,
   testFetchDeviceNull,
   testOnoffConverter,
@@ -20,18 +19,31 @@ import {
   testThermostatModeOff,
   testUninitialisation,
   testWarningManagement,
-} from '../helpers.ts'
+} from '../device-descriptors.ts'
+import { mock } from '../helpers.ts'
 import { type TestDeviceType, TestDevice } from './base-device-test-device.ts'
 
-const setValuesMock = vi.fn()
-const realtimeMock = vi.fn()
-const superSetWarningMock = vi.fn()
-const superAddCapabilityMock = vi.fn()
-const superRemoveCapabilityMock = vi.fn()
-const registerMultipleCapabilityListenerMock = vi.fn()
-const triggerCapabilityListenerMock = vi.fn()
-const getFacadeMock = vi.fn()
-const getSettingMock = vi.fn()
+const {
+  getFacadeMock,
+  getSettingMock,
+  realtimeMock,
+  registerMultipleCapabilityListenerMock,
+  setValuesMock,
+  superAddCapabilityMock,
+  superRemoveCapabilityMock,
+  superSetWarningMock,
+  triggerCapabilityListenerMock,
+} = vi.hoisted(() => ({
+  getFacadeMock: vi.fn(),
+  getSettingMock: vi.fn(),
+  realtimeMock: vi.fn(),
+  registerMultipleCapabilityListenerMock: vi.fn(),
+  setValuesMock: vi.fn(),
+  superAddCapabilityMock: vi.fn(),
+  superRemoveCapabilityMock: vi.fn(),
+  superSetWarningMock: vi.fn(),
+  triggerCapabilityListenerMock: vi.fn(),
+}))
 
 const mockDeviceData = {
   FanSpeed: 3,
@@ -83,19 +95,19 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = triggerCapabilityListenerMock
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.addCapability() resolution in SharedBaseMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.addCapability() resolution in BaseMELCloudDevice
     public async addCapability(...args: unknown[]): Promise<void> {
       superAddCapabilityMock(...args)
       await Promise.resolve()
     }
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.removeCapability() resolution in SharedBaseMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.removeCapability() resolution in BaseMELCloudDevice
     public async removeCapability(...args: unknown[]): Promise<void> {
       superRemoveCapabilityMock(...args)
       await Promise.resolve()
     }
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedBaseMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in BaseMELCloudDevice
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()
@@ -109,7 +121,7 @@ const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(
   registerMultipleCapabilityListenerMock,
 )
 
-const mockDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
+const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
   energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<TestDeviceType>>(
     {},
   ),
@@ -140,7 +152,7 @@ const mockFacade = (data: Record<string, unknown> = mockDeviceData): void => {
 
 const setDriver = (
   target: TestDevice,
-  driver: BaseMELCloudDriver<TestDeviceType> = mockDriver,
+  driver: ClassicMELCloudDriver<TestDeviceType> = mockDriver,
 ): void => {
   Object.defineProperty(target, 'driver', {
     configurable: true,
@@ -148,7 +160,7 @@ const setDriver = (
   })
 }
 
-describe(BaseMELCloudDevice, () => {
+describe(ClassicMELCloudDevice, () => {
   let device: TestDevice
 
   beforeEach(() => {
@@ -584,6 +596,24 @@ describe(BaseMELCloudDevice, () => {
       await freshDevice.syncFromDevice()
 
       expect(realtimeMock).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('timer methods', () => {
+    it('should delegate setInterval to homey.setInterval with duration in ms', () => {
+      const callback = vi.fn<() => Promise<void>>()
+      device.setInterval(callback, { hours: 1 }, 'energy report')
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Asserting mock was called with this exact function reference
+      expect(device.homey.setInterval).toHaveBeenCalledWith(callback, 3_600_000)
+    })
+
+    it('should delegate setTimeout to homey.setTimeout with duration in ms', () => {
+      const callback = vi.fn<() => Promise<void>>()
+      device.setTimeout(callback, { minutes: 5 }, 'sync')
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method -- Asserting mock was called with this exact function reference
+      expect(device.homey.setTimeout).toHaveBeenCalledWith(callback, 300_000)
     })
   })
 

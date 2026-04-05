@@ -2,16 +2,11 @@ import type { DeviceType } from '@olivierzal/melcloud-api'
 
 import type {
   BuildingZone,
-  HomeyWidgetSettingsAtaGroupSetting as HomeySettings,
+  AtaGroupSettingWidgetSettings as HomeySettings,
 } from '../../../types/index.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
-import {
-  getButtonElement,
-  getCanvasElement,
-  getDivElement,
-  getSelectElement,
-} from './dom.mts'
+import { getButton, getCanvas, getDiv, getSelect } from './dom.mts'
 import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'
 
 // ── WidgetApp class ──
@@ -29,43 +24,41 @@ class WidgetApp {
 
   public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
-    const animationElement = getDivElement('animation')
-    const canvas = getCanvasElement('smoke_canvas')
-    const ataValuesElement = getDivElement('values_melcloud')
-    const zoneElement = getSelectElement('zones')
+    const animation = getDiv('animation')
+    const canvas = getCanvas('smoke_canvas')
+    const ataValues = getDiv('values_melcloud')
+    const zone = getSelect('zones')
     this.#animationController = new AnimationController(
       homey,
-      animationElement,
+      animation,
       canvas,
     )
-    this.#ataValueManager = new AtaValueManager(
-      homey,
-      ataValuesElement,
-      zoneElement,
-    )
+    this.#ataValueManager = new AtaValueManager(homey, ataValues, zone)
   }
 
   public async init(): Promise<void> {
-    await setDocumentLanguage(this.#homey)
-    await this.#ataValueManager.fetchCapabilities()
+    await Promise.all([
+      setDocumentLanguage(this.#homey),
+      this.#ataValueManager.fetchCapabilities(),
+    ])
     await this.#initBuildings()
     this.#homey.ready({ height: document.body.scrollHeight })
   }
 
   #addEventListeners(): void {
-    const zoneElement = getSelectElement('zones')
-    const refreshAtaValuesElement = getButtonElement('refresh_values_melcloud')
-    const updateAtaValuesElement = getButtonElement('apply_values_melcloud')
-    zoneElement.addEventListener('change', () => {
+    const zone = getSelect('zones')
+    const refreshAtaValues = getButton('refresh_values_melcloud')
+    const updateAtaValues = getButton('apply_values_melcloud')
+    zone.addEventListener('change', () => {
       this.#fetchAndAnimate().catch(() => {
-        // Errors are handled internally by fetchValues/handleAnimation
+        // Errors are handled internally by fetchValues/applyAnimation
       })
     })
-    refreshAtaValuesElement.addEventListener('click', () => {
+    refreshAtaValues.addEventListener('click', () => {
       this.#homey.hapticFeedback()
-      this.#ataValueManager.refreshValues()
+      this.#ataValueManager.displayValues()
     })
-    updateAtaValuesElement.addEventListener('click', () => {
+    updateAtaValues.addEventListener('click', () => {
       this.#homey.hapticFeedback()
       this.#ataValueManager.setValues().catch(() => {
         // Values will resync on next device update
@@ -77,7 +70,7 @@ class WidgetApp {
       }
       this.#debounceTimeout = setTimeout(() => {
         this.#fetchAndAnimate().catch(() => {
-          // Errors are handled internally by fetchValues/handleAnimation
+          // Errors are handled internally by fetchValues/applyAnimation
         })
       }, AnimationDelay.debounce)
     })
@@ -85,7 +78,7 @@ class WidgetApp {
 
   async #fetchAndAnimate(): Promise<void> {
     const values = await this.#ataValueManager.fetchValues()
-    await this.#animationController.handleAnimation(values, this.#isAnimations)
+    await this.#animationController.applyAnimation(values, this.#isAnimations)
   }
 
   async #initBuildings(): Promise<void> {
@@ -100,9 +93,9 @@ class WidgetApp {
         this.#homey.getSettings()
       this.#isAnimations = isAnimations
       this.#addEventListeners()
-      this.#ataValueManager.generateAtaValues()
-      await this.#ataValueManager.generateZones(buildings)
-      this.#ataValueManager.handleDefaultZone(defaultZone)
+      this.#ataValueManager.createAtaFormControls()
+      await this.#ataValueManager.populateZoneOptions(buildings)
+      this.#ataValueManager.applyDefaultZone(defaultZone)
       await this.#fetchAndAnimate()
     }
   }

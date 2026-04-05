@@ -7,7 +7,7 @@ import {
   listCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
 } from '../../types/index.mts'
-import { BaseMELCloudDriver } from '../base-driver.mts'
+import { ClassicMELCloudDriver } from '../classic-base-driver.mts'
 
 const measureCapabilities = new Set([
   'measure_co2',
@@ -15,7 +15,7 @@ const measureCapabilities = new Set([
   'measure_signal_strength',
 ])
 
-export default class MELCloudDriverErv extends BaseMELCloudDriver<
+export default class MELCloudDriverErv extends ClassicMELCloudDriver<
   typeof DeviceType.Erv
 > {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv

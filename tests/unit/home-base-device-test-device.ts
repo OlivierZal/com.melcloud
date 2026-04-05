@@ -1,36 +1,30 @@
 import type {
-  HomeConvertFromDevice,
   HomeConvertToDevice,
   HomeSetCapabilitiesAta,
 } from '../../types/index.mts'
-import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
+import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
-export class TestHomeDevice extends HomeBaseMELCloudDevice {
-  public capabilityToDevice: Partial<
+export class TestHomeDevice extends HomeMELCloudDeviceAta {
+  public override capabilityToDevice: Partial<
     Record<keyof HomeSetCapabilitiesAta, HomeConvertToDevice>
   > = {}
 
-  public readonly deviceToCapability: Partial<
-    Record<string, HomeConvertFromDevice>
-  > = {
-    measure_temperature: ({ roomTemperature }) => roomTemperature,
-    onoff: ({ power }) => power,
-    target_temperature: ({ setTemperature }) => setTemperature,
-    thermostat_mode: ({ operationMode, power }) =>
-      power ? operationMode : 'off',
-  }
+  public override readonly deviceToCapability = {
+    measure_temperature: (facade: { roomTemperature: number }) =>
+      facade.roomTemperature,
+    onoff: (facade: { power: boolean }) => facade.power,
+    target_temperature: (facade: { setTemperature: number }) =>
+      facade.setTemperature,
+    thermostat_mode: (facade: { operationMode: string; power: boolean }) =>
+      facade.power ? facade.operationMode : 'off',
+  } as unknown as HomeMELCloudDeviceAta['deviceToCapability']
 
-  public readonly thermostatMode: Record<string, string> | null = null
+  public override readonly thermostatMode =
+    null as unknown as HomeMELCloudDeviceAta['thermostatMode']
 
   public get exposedFacade(): typeof this.cachedFacade {
     return this.cachedFacade
-  }
-
-  protected override getFacade(): ReturnType<
-    typeof this.homey.app.getHomeFacade
-  > {
-    return this.homey.app.getHomeFacade(this.id)
   }
 }
 

@@ -13,14 +13,14 @@ import {
   type ConvertToDevice,
   type OperationalCapabilities,
   type SetCapabilities,
-  horizontalReverse,
-  operationModeReverse,
+  horizontalFromDevice,
+  operationModeFromDevice,
   ThermostatModeAta,
-  verticalReverse,
+  verticalFromDevice,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../base-device.mts'
+import { ClassicMELCloudDevice } from '../classic-base-device.mts'
 
-export default class MELCloudDeviceAta extends BaseMELCloudDevice<
+export default class MELCloudDeviceAta extends ClassicMELCloudDevice<
   typeof DeviceType.Ata
 > {
   protected readonly capabilityToDevice: Partial<
@@ -44,12 +44,12 @@ export default class MELCloudDeviceAta extends BaseMELCloudDevice<
     'alarm_generic.silent': (value: FanSpeed) => value === FanSpeed.silent,
     fan_speed: (value: FanSpeed) =>
       value === FanSpeed.silent ? FanSpeed.auto : value,
-    horizontal: (value: Horizontal) => horizontalReverse[value],
+    horizontal: (value: Horizontal) => horizontalFromDevice[value],
     thermostat_mode: (
       value: OperationMode,
       data: ListDeviceData<typeof DeviceType.Ata>,
-    ) => (data.Power ? operationModeReverse[value] : ThermostatModeAta.off),
-    vertical: (value: Vertical) => verticalReverse[value],
+    ) => (data.Power ? operationModeFromDevice[value] : ThermostatModeAta.off),
+    vertical: (value: Vertical) => verticalFromDevice[value],
   }
 
   protected readonly energyReportRegular: EnergyReportConfig = {
