@@ -30,7 +30,6 @@
     "homey:validate": "npx homey app validate --level=publish",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "npm run build",
     "test": "vitest run",
     "test:coverage": "npm test -- --coverage",
     "typecheck": "tsc --noEmit"
