@@ -9,6 +9,7 @@ import {
   type GroupState,
   type HolidayModeData,
   type HolidayModeQuery,
+  type HomeDeviceAtaFacade,
   type HomeDeviceModel,
   type ListDeviceDataAta,
   type LoginCredentials,
@@ -19,8 +20,8 @@ import {
   DeviceType,
   FacadeManager,
   FanSpeed,
-  HomeDeviceAtaFacade,
   HomeDeviceType,
+  HomeFacadeManager,
   Horizontal,
   MELCloudAPI,
   MELCloudHomeAPI,
@@ -174,6 +175,8 @@ export default class MELCloudApp extends App {
   #facadeManager!: FacadeManager
 
   #homeApi!: MELCloudHomeAPI
+
+  #homeFacadeManager!: HomeFacadeManager
 
   get #registry(): ModelRegistry {
     return this.#api.registry
@@ -352,7 +355,7 @@ export default class MELCloudApp extends App {
     if (!model) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
-    return new HomeDeviceAtaFacade(this.#homeApi, model)
+    return this.#homeFacadeManager.get(model)
   }
 
   public async getHourlyTemperatures(
@@ -578,6 +581,7 @@ export default class MELCloudApp extends App {
       settingManager: this.#createSettingManager('home'),
       onSync: async () => this.#syncDevices(drivers[HomeDeviceType.Ata]),
     })
+    this.#homeFacadeManager = new HomeFacadeManager(this.#homeApi)
     await this.#homeApi.list()
   }
 
