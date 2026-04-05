@@ -192,7 +192,7 @@ export class AtaValueManager {
   public createAtaFormControls(): void {
     for (const [id, { title, type, values }] of this.#ataCapabilities) {
       appendFormControl(this.#ataValues, {
-        formControl: this.#generateAtaValue({ id, type, values }),
+        formControl: this.#createAtaControl({ id, type, values }),
         title,
       })
     }
@@ -264,7 +264,7 @@ export class AtaValueManager {
     )
   }
 
-  #generateAtaValue({
+  #createAtaControl({
     id,
     type,
     values,

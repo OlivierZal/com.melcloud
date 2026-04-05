@@ -412,12 +412,12 @@ class AuthManager {
       username,
     }: { password?: string | null; username?: string | null },
   ): void {
-    this.#usernameInput = this.#generateCredential(
+    this.#usernameInput = this.#createCredentialInput(
       'username',
       driverSettings,
       username,
     )
-    this.#passwordInput = this.#generateCredential(
+    this.#passwordInput = this.#createCredentialInput(
       'password',
       driverSettings,
       password,
@@ -457,7 +457,7 @@ class AuthManager {
     hide(this.#authenticatingSection, !isRequired)
   }
 
-  #generateCredential(
+  #createCredentialInput(
     credentialKey: keyof LoginCredentials,
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     value?: string | null,
@@ -549,14 +549,25 @@ class ErrorLogManager {
           } satisfies ErrorLogQuery)}`,
         )
         this.#updateErrorLogElements(data)
-        this.#generateErrorLogTableData(data.errors)
+        this.#appendErrorLogRows(data.errors)
       } catch (error) {
         await this.#homey.alert(getErrorMessage(error))
       }
     })
   }
 
-  #generateErrorLogTable(keys: string[]): HTMLTableSectionElement {
+  #appendErrorLogRows(errors: readonly FormattedErrorDetails[]): void {
+    for (const error of errors) {
+      this.#errorLogTBody ??= this.#createErrorLogTable(Object.keys(error))
+      const row = this.#errorLogTBody.insertRow()
+      for (const value of Object.values(error)) {
+        const cell = row.insertCell()
+        cell.textContent = String(value)
+      }
+    }
+  }
+
+  #createErrorLogTable(keys: string[]): HTMLTableSectionElement {
     const table = document.createElement('table')
     table.classList.add('bordered')
     const thead = table.createTHead()
@@ -568,17 +579,6 @@ class ErrorLogManager {
     }
     this.#errorLog.append(table)
     return table.createTBody()
-  }
-
-  #generateErrorLogTableData(errors: readonly FormattedErrorDetails[]): void {
-    for (const error of errors) {
-      this.#errorLogTBody ??= this.#generateErrorLogTable(Object.keys(error))
-      const row = this.#errorLogTBody.insertRow()
-      for (const value of Object.values(error)) {
-        const cell = row.insertCell()
-        cell.textContent = String(value)
-      }
-    }
   }
 
   #getErrorCountText(count: number): string {
@@ -668,7 +668,7 @@ class DeviceSettingsManager {
       const settings = await homeyApiGet<
         Partial<Record<string, DriverSetting[]>>
       >(this.#homey, '/settings/drivers')
-      this.#generateSettings(settings)
+      this.#createSettingControls(settings)
       return settings
     } catch (error) {
       await this.#homey.alert(getErrorMessage(error))
@@ -757,6 +757,26 @@ class DeviceSettingsManager {
     return settings
   }
 
+  #createCommonSettingControls(
+    driverSettings: Partial<Record<string, DriverSetting[]>>,
+  ): void {
+    for (const { id, title, type, values } of driverSettings['options'] ?? []) {
+      const settingId = `${id}__settings_common`
+      if (
+        !this.#settingsCommon.querySelector(`select#${settingId}`) &&
+        commonElementTypes.has(type)
+      ) {
+        const formControl = createSelect(this.#homey, settingId, values)
+        appendFormControl(this.#settingsCommon, { formControl, title })
+        this.#updateCommonSetting(formControl)
+      }
+    }
+    this.#addSettingsEventListeners(
+      // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
+      Array.from(this.#settingsCommon.querySelectorAll('select')),
+    )
+  }
+
   #createDriverSettingControls(
     driverSetting: DriverSetting[],
     fieldSet: HTMLFieldSetElement,
@@ -781,42 +801,7 @@ class DeviceSettingsManager {
     }
   }
 
-  #disableButtons(id: string, isDisabled = true): void {
-    const isCommon = id.endsWith('common')
-    for (const action of ['apply', 'refresh']) {
-      disableButton(`${action}_${id}`, isDisabled)
-      if (isCommon) {
-        for (const driverId of Object.keys(this.#deviceSettings)) {
-          disableButton(
-            `${action}_${id.replace(/common$/u, driverId)}`,
-            isDisabled,
-          )
-        }
-      }
-    }
-  }
-
-  #generateCommonSettings(
-    driverSettings: Partial<Record<string, DriverSetting[]>>,
-  ): void {
-    for (const { id, title, type, values } of driverSettings['options'] ?? []) {
-      const settingId = `${id}__settings_common`
-      if (
-        !this.#settingsCommon.querySelector(`select#${settingId}`) &&
-        commonElementTypes.has(type)
-      ) {
-        const formControl = createSelect(this.#homey, settingId, values)
-        appendFormControl(this.#settingsCommon, { formControl, title })
-        this.#updateCommonSetting(formControl)
-      }
-    }
-    this.#addSettingsEventListeners(
-      // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
-      Array.from(this.#settingsCommon.querySelectorAll('select')),
-    )
-  }
-
-  #generateDriverSettings(
+  #createDriverSettingSection(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     driverId: string,
   ): void {
@@ -838,12 +823,27 @@ class DeviceSettingsManager {
     }
   }
 
-  #generateSettings(
+  #createSettingControls(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
   ): void {
-    this.#generateCommonSettings(driverSettings)
+    this.#createCommonSettingControls(driverSettings)
     for (const driverId of Object.keys(this.#deviceSettings)) {
-      this.#generateDriverSettings(driverSettings, driverId)
+      this.#createDriverSettingSection(driverSettings, driverId)
+    }
+  }
+
+  #disableButtons(id: string, isDisabled = true): void {
+    const isCommon = id.endsWith('common')
+    for (const action of ['apply', 'refresh']) {
+      disableButton(`${action}_${id}`, isDisabled)
+      if (isCommon) {
+        for (const driverId of Object.keys(this.#deviceSettings)) {
+          disableButton(
+            `${action}_${id.replace(/common$/u, driverId)}`,
+            isDisabled,
+          )
+        }
+      }
     }
   }
 
