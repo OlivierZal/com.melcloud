@@ -14,7 +14,7 @@
       "true": "Oui"
     },
     "devices": {
-      "legend": "Paramètres des appareils",
+      "legend": "Paramètres de tous les appareils",
       "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !",
       "nothing": "Aucun changement à appliquer.",
       "apply": {

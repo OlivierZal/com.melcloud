@@ -14,7 +14,7 @@
       "true": "Tak"
     },
     "devices": {
-      "legend": "Ustawienia urządzenia",
+      "legend": "Ustawienia wszystkich urządzeń",
       "none": "Dodaj urządzenie, aby odblokować wszystkie ustawienia aplikacji!",
       "nothing": "Brak zmian do zastosowania.",
       "apply": {

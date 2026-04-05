@@ -14,7 +14,7 @@
       "true": "Ja"
     },
     "devices": {
-      "legend": "Geräteeinstellungen",
+      "legend": "Alle Geräteeinstellungen",
       "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!",
       "nothing": "Keine Änderung zum Anwenden.",
       "apply": {

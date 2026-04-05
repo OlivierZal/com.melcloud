@@ -14,7 +14,7 @@
       "true": "Yes"
     },
     "devices": {
-      "legend": "Device settings",
+      "legend": "All device settings",
       "none": "Add a device to unlock all the app's settings!",
       "nothing": "No change to apply.",
       "apply": {
