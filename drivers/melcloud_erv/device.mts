@@ -12,9 +12,9 @@ import {
   ThermostatModeErv,
   ventilationModeFromDevice,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../base-device.mts'
+import { ClassicMELCloudDevice } from '../classic-base-device.mts'
 
-export default class MELCloudDeviceErv extends BaseMELCloudDevice<
+export default class MELCloudDeviceErv extends ClassicMELCloudDevice<
   typeof DeviceType.Erv
 > {
   protected readonly capabilityToDevice: Partial<

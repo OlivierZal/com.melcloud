@@ -8,7 +8,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
+import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
 import {
   type EnergyCapabilityTagMapping,
   type GetCapabilityTagMapping,
@@ -45,7 +45,7 @@ vi.mock('homey', async () => {
   }
 })
 
-const mockDriver = mock<BaseMELCloudDriver<AtwType>>({
+const mockDriver = mock<ClassicMELCloudDriver<AtwType>>({
   energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<AtwType>>({}),
   getCapabilitiesOptions: vi.fn().mockReturnValue({}),
   getCapabilityTagMapping: mock<GetCapabilityTagMapping<AtwType>>({}),

@@ -8,9 +8,9 @@ import {
   listCapabilityTagMappingAtw,
   setCapabilityTagMappingAtw,
 } from '../../types/index.mts'
-import { BaseMELCloudDriver } from '../base-driver.mts'
+import { ClassicMELCloudDriver } from '../classic-base-driver.mts'
 
-export default class MELCloudDriverAtw extends BaseMELCloudDriver<
+export default class MELCloudDriverAtw extends ClassicMELCloudDriver<
   typeof DeviceType.Atw
 > {
   readonly #zone1Capabilities: (keyof Capabilities<typeof DeviceType.Atw>)[] = [

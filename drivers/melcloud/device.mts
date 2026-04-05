@@ -18,9 +18,9 @@ import {
   ThermostatModeAta,
   verticalFromDevice,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../base-device.mts'
+import { ClassicMELCloudDevice } from '../classic-base-device.mts'
 
-export default class MELCloudDeviceAta extends BaseMELCloudDevice<
+export default class MELCloudDeviceAta extends ClassicMELCloudDevice<
   typeof DeviceType.Ata
 > {
   protected readonly capabilityToDevice: Partial<

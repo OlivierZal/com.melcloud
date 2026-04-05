@@ -5,7 +5,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
-import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
+import { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
 import {
   assertDefined,
   mock,
@@ -58,7 +58,7 @@ vi.mock('homey', () => {
   return { default: { Driver: MockDriver } }
 })
 
-describe(BaseMELCloudDriver, () => {
+describe(ClassicMELCloudDriver, () => {
   let driver: TestDriver
 
   beforeEach(() => {

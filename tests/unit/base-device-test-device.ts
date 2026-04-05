@@ -7,13 +7,13 @@ import type {
   OperationalCapabilities,
   SetCapabilities,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
+import { ClassicMELCloudDevice } from '../../drivers/classic-base-device.mts'
 import { createInstance } from './create-test-instance.ts'
 
 type TestDeviceType = typeof DeviceType.Ata
 
 export type { TestDeviceType }
-export class TestDevice extends BaseMELCloudDevice<TestDeviceType> {
+export class TestDevice extends ClassicMELCloudDevice<TestDeviceType> {
   public capabilityToDevice: Partial<
     Record<
       keyof SetCapabilities<TestDeviceType>,

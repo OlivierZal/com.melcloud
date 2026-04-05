@@ -1,14 +1,14 @@
 import type { ListDeviceDataAta } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
+import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
 import type {
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
+import { ClassicMELCloudDevice } from '../../drivers/classic-base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
   mock,
@@ -83,19 +83,19 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = triggerCapabilityListenerMock
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.addCapability() resolution in SharedBaseMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.addCapability() resolution in BaseMELCloudDevice
     public async addCapability(...args: unknown[]): Promise<void> {
       superAddCapabilityMock(...args)
       await Promise.resolve()
     }
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.removeCapability() resolution in SharedBaseMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.removeCapability() resolution in BaseMELCloudDevice
     public async removeCapability(...args: unknown[]): Promise<void> {
       superRemoveCapabilityMock(...args)
       await Promise.resolve()
     }
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedBaseMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in BaseMELCloudDevice
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()
@@ -109,7 +109,7 @@ const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(
   registerMultipleCapabilityListenerMock,
 )
 
-const mockDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
+const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
   energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<TestDeviceType>>(
     {},
   ),
@@ -140,7 +140,7 @@ const mockFacade = (data: Record<string, unknown> = mockDeviceData): void => {
 
 const setDriver = (
   target: TestDevice,
-  driver: BaseMELCloudDriver<TestDeviceType> = mockDriver,
+  driver: ClassicMELCloudDriver<TestDeviceType> = mockDriver,
 ): void => {
   Object.defineProperty(target, 'driver', {
     configurable: true,
@@ -148,7 +148,7 @@ const setDriver = (
   })
 }
 
-describe(BaseMELCloudDevice, () => {
+describe(ClassicMELCloudDevice, () => {
   let device: TestDevice
 
   beforeEach(() => {

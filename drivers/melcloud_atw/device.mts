@@ -20,7 +20,7 @@ import {
   operationModeStateFromDevice,
   operationModeZoneFromDevice,
 } from '../../types/index.mts'
-import { BaseMELCloudDevice } from '../base-device.mts'
+import { ClassicMELCloudDevice } from '../classic-base-device.mts'
 
 const convertFromDeviceMeasurePower: ConvertFromDevice<
   typeof DeviceType.Atw
@@ -30,7 +30,7 @@ const convertFromDeviceOperationZone: ConvertFromDevice<
   typeof DeviceType.Atw
 > = (value: OperationModeZone) => operationModeZoneFromDevice[value]
 
-export default class MELCloudDeviceAtw extends BaseMELCloudDevice<
+export default class MELCloudDeviceAtw extends ClassicMELCloudDevice<
   typeof DeviceType.Atw
 > {
   protected readonly capabilityToDevice: Partial<

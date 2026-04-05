@@ -2,8 +2,8 @@ import type { DeviceType, EnergyDataAta } from '@olivierzal/melcloud-api'
 import { DateTime, Settings } from 'luxon'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { BaseMELCloudDevice } from '../../drivers/base-device.mts'
-import type { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
+import type { ClassicMELCloudDevice } from '../../drivers/classic-base-device.mts'
+import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
 import type { Homey } from '../../lib/homey.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
 import {
@@ -49,13 +49,13 @@ const energyCapabilityTagMapping = mock<
   'meter_power.daily': ['TotalAutoConsumed', 'TotalCoolingConsumed'],
 })
 
-const mockDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
+const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
   consumedTagMapping: { measure_power: ['Auto', 'Cooling'] },
   energyCapabilityTagMapping,
   producedTagMapping: {},
 })
 
-const mockDevice = mock<BaseMELCloudDevice<TestDeviceType>>({
+const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   cleanMapping: cleanMappingMock,
   driver: mockDriver,
   error: errorMock,
@@ -76,7 +76,7 @@ const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   return getEnergyMock
 }
 
-const createCopMocks = (): BaseMELCloudDevice<TestDeviceType> => {
+const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
   const copConsumed = {
     'measure_power.cop': ['ConsumedTag'],
   } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
@@ -86,12 +86,12 @@ const createCopMocks = (): BaseMELCloudDevice<TestDeviceType> => {
   const copEnergyMapping = {
     'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
   } as unknown as EnergyCapabilityTagMapping<TestDeviceType>
-  const copDriver = mock<BaseMELCloudDriver<TestDeviceType>>({
+  const copDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
     consumedTagMapping: copConsumed,
     energyCapabilityTagMapping: copEnergyMapping,
     producedTagMapping: copProduced,
   })
-  return mock<BaseMELCloudDevice<TestDeviceType>>({
+  return mock<ClassicMELCloudDevice<TestDeviceType>>({
     cleanMapping: vi.fn().mockReturnValue({
       'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
     }),

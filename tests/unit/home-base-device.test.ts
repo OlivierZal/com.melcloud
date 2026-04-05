@@ -5,7 +5,7 @@ import type {
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { HomeBaseMELCloudDevice } from '../../drivers/home-base-device.mts'
+import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testFetchDeviceNull,
@@ -116,7 +116,7 @@ vi.mock('homey', () => {
 
     public triggerCapabilityListener = vi.fn()
 
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in SharedBaseMELCloudDevice
+    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in BaseMELCloudDevice
     public async setWarning(...args: unknown[]): Promise<void> {
       superSetWarningMock(...args)
       await Promise.resolve()
@@ -130,7 +130,7 @@ const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(
   registerMultipleCapabilityListenerMock,
 )
 
-describe(HomeBaseMELCloudDevice, () => {
+describe(BaseMELCloudDevice, () => {
   let device: TestHomeDevice
 
   beforeEach(() => {

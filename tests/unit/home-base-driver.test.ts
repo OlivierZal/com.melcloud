@@ -4,7 +4,7 @@
 import type { HomeDeviceModel } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { HomeBaseMELCloudDriver } from '../../drivers/home-base-driver.mts'
+import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import {
   mock,
   testFlowListenerRegistration,
@@ -60,8 +60,8 @@ vi.mock('homey', () => {
   return { default: { Driver: MockDriver } }
 })
 
-describe(HomeBaseMELCloudDriver, () => {
-  let driver: HomeBaseMELCloudDriver
+describe(BaseMELCloudDriver, () => {
+  let driver: BaseMELCloudDriver
 
   beforeEach(() => {
     vi.clearAllMocks()
