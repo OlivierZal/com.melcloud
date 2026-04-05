@@ -7,6 +7,9 @@ import ataGroupSettingConfig from '../../widgets/ata-group-setting/widget.compos
 import chartsApi from '../../widgets/charts/api.mts'
 import chartsConfig from '../../widgets/charts/widget.compose.json' with { type: 'json' }
 
+const sortedKeys = (object: object): string[] =>
+  Object.keys(object).toSorted((left, right) => left.localeCompare(right))
+
 describe('api contract', () => {
   describe('app API', () => {
     it.each(Object.keys(appConfig.api))(
@@ -19,9 +22,7 @@ describe('api contract', () => {
     )
 
     it('should not have handlers missing from app.json', () => {
-      expect(Object.keys(api).toSorted()).toStrictEqual(
-        Object.keys(appConfig.api).toSorted(),
-      )
+      expect(sortedKeys(api)).toStrictEqual(sortedKeys(appConfig.api))
     })
   })
 
@@ -38,8 +39,8 @@ describe('api contract', () => {
     )
 
     it('should not have handlers missing from widget.compose.json', () => {
-      expect(Object.keys(ataGroupSettingApi).toSorted()).toStrictEqual(
-        Object.keys(ataGroupSettingConfig.api).toSorted(),
+      expect(sortedKeys(ataGroupSettingApi)).toStrictEqual(
+        sortedKeys(ataGroupSettingConfig.api),
       )
     })
   })
@@ -50,16 +51,12 @@ describe('api contract', () => {
       (name) => {
         expect(chartsApi).toHaveProperty(name)
 
-        expectTypeOf(
-          chartsApi[name as keyof typeof chartsApi],
-        ).toBeFunction()
+        expectTypeOf(chartsApi[name as keyof typeof chartsApi]).toBeFunction()
       },
     )
 
     it('should not have handlers missing from widget.compose.json', () => {
-      expect(Object.keys(chartsApi).toSorted()).toStrictEqual(
-        Object.keys(chartsConfig.api).toSorted(),
-      )
+      expect(sortedKeys(chartsApi)).toStrictEqual(sortedKeys(chartsConfig.api))
     })
   })
 })

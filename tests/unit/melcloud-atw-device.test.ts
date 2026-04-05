@@ -16,7 +16,10 @@ import {
   type SetCapabilityTagMapping,
   HotWaterMode,
 } from '../../types/index.mts'
-import { testEnergyReportConfig, testThermostatMode } from '../device-descriptors.ts'
+import {
+  testEnergyReportConfig,
+  testThermostatMode,
+} from '../device-descriptors.ts'
 import { mock } from '../helpers.ts'
 import MELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
