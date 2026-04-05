@@ -371,8 +371,13 @@ const config = defineConfig([
               selector: 'method',
             },
             {
-              elementNamePattern: '^onPair$|^onRepair$',
-              groupName: 'homey-lifecycle-pairing',
+              elementNamePattern: '^onPair$',
+              groupName: 'homey-lifecycle-pair',
+              selector: 'method',
+            },
+            {
+              elementNamePattern: '^onRepair$',
+              groupName: 'homey-lifecycle-repair',
               selector: 'method',
             },
             {
@@ -381,8 +386,13 @@ const config = defineConfig([
               selector: 'method',
             },
             {
-              elementNamePattern: '^onUninit$|^onDeleted$',
-              groupName: 'homey-lifecycle-teardown',
+              elementNamePattern: '^onDeleted$',
+              groupName: 'homey-lifecycle-deleted',
+              selector: 'method',
+            },
+            {
+              elementNamePattern: '^onUninit$',
+              groupName: 'homey-lifecycle-uninit',
               selector: 'method',
             },
           ],
@@ -428,9 +438,11 @@ const config = defineConfig([
 
             // ── Homey lifecycle hooks ─────────────────────────────
             'homey-lifecycle-init',
-            'homey-lifecycle-pairing',
+            'homey-lifecycle-pair',
+            'homey-lifecycle-repair',
             'homey-lifecycle-settings',
-            'homey-lifecycle-teardown',
+            'homey-lifecycle-deleted',
+            'homey-lifecycle-uninit',
 
             // ── Static methods ────────────────────────────────────
             'static-decorated-method',
