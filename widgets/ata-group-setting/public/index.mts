@@ -51,12 +51,12 @@ class WidgetApp {
     const updateAtaValues = getButton('apply_values_melcloud')
     zone.addEventListener('change', () => {
       this.#fetchAndAnimate().catch(() => {
-        // Errors are handled internally by fetchValues/handleAnimation
+        // Errors are handled internally by fetchValues/applyAnimation
       })
     })
     refreshAtaValues.addEventListener('click', () => {
       this.#homey.hapticFeedback()
-      this.#ataValueManager.refreshValues()
+      this.#ataValueManager.displayValues()
     })
     updateAtaValues.addEventListener('click', () => {
       this.#homey.hapticFeedback()
@@ -70,7 +70,7 @@ class WidgetApp {
       }
       this.#debounceTimeout = setTimeout(() => {
         this.#fetchAndAnimate().catch(() => {
-          // Errors are handled internally by fetchValues/handleAnimation
+          // Errors are handled internally by fetchValues/applyAnimation
         })
       }, AnimationDelay.debounce)
     })
@@ -78,7 +78,7 @@ class WidgetApp {
 
   async #fetchAndAnimate(): Promise<void> {
     const values = await this.#ataValueManager.fetchValues()
-    await this.#animationController.handleAnimation(values, this.#isAnimations)
+    await this.#animationController.applyAnimation(values, this.#isAnimations)
   }
 
   async #initBuildings(): Promise<void> {
@@ -93,9 +93,9 @@ class WidgetApp {
         this.#homey.getSettings()
       this.#isAnimations = isAnimations
       this.#addEventListeners()
-      this.#ataValueManager.generateAtaValues()
-      await this.#ataValueManager.generateZones(buildings)
-      this.#ataValueManager.handleDefaultZone(defaultZone)
+      this.#ataValueManager.createAtaFormControls()
+      await this.#ataValueManager.populateZoneOptions(buildings)
+      this.#ataValueManager.applyDefaultZone(defaultZone)
       await this.#fetchAndAnimate()
     }
   }

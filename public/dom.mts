@@ -47,7 +47,7 @@ export const createOption = (
   }
 }
 
-export const handleNumericInput = (
+export const configureNumericInput = (
   input: HTMLInputElement,
   { max, min }: { max?: number; min?: number },
 ): void => {

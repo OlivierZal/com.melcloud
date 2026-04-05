@@ -14,7 +14,7 @@
       "true": "Sí"
     },
     "devices": {
-      "legend": "Configuración de todos los dispositivos",
+      "legend": "Configuración de los dispositivos",
       "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!",
       "nothing": "No hay cambios que aplicar.",
       "apply": {

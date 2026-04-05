@@ -14,7 +14,7 @@
       "true": "Ja"
     },
     "devices": {
-      "legend": "Alle apparaatinstellingen",
+      "legend": "Apparaatinstellingen",
       "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!",
       "nothing": "Geen wijziging om toe te passen.",
       "apply": {

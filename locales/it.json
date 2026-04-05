@@ -14,7 +14,7 @@
       "true": "Sì"
     },
     "devices": {
-      "legend": "Impostazioni di tutti i dispositivi",
+      "legend": "Impostazioni dispositivo",
       "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!",
       "nothing": "Nessuna modifica da applicare.",
       "apply": {

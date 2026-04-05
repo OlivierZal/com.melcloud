@@ -10,9 +10,9 @@ import { coolModes, Temperature } from './constants.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
+  configureNumericInput,
   createOption,
   getSelect,
-  handleNumericInput,
 } from './dom.mts'
 import { type Homey, homeyApiGet, homeyApiPut } from './homey-api.mts'
 import { getZoneId, getZoneName, getZonePath } from './zones.mts'
@@ -35,7 +35,7 @@ const createLabel = (
   return label
 }
 
-const createValue = (
+const appendFormControl = (
   parent: HTMLElement,
   {
     formControl,
@@ -73,7 +73,7 @@ const createInput = ({
   input.id = id
   input.value = value ?? ''
   input.type = type
-  handleNumericInput(input, { max, min })
+  configureNumericInput(input, { max, min })
   if (placeholder !== undefined) {
     input.placeholder = placeholder
   }
@@ -109,7 +109,7 @@ const createSelect = (
 
 // ── Value processing ──
 
-const handleIntMin = (id: string, min: string): string =>
+const getCoolingAdjustedMin = (id: string, min: string): string =>
   (
     id === 'SetTemperature' &&
     coolModes.has(Number(getSelect('OperationMode').value))
@@ -117,9 +117,14 @@ const handleIntMin = (id: string, min: string): string =>
     String(Temperature.cooling_min)
   : min
 
-const int = ({ id, max, min, value }: HTMLInputElement): number => {
+const clampNumericInput = ({
+  id,
+  max,
+  min,
+  value,
+}: HTMLInputElement): number => {
   const numberValue = Number(value)
-  const newMin = Number(handleIntMin(id, min))
+  const newMin = Number(getCoolingAdjustedMin(id, min))
   const newMax = Number(max)
   if (!Number.isFinite(numberValue)) {
     throw new TypeError('Invalid number')
@@ -127,13 +132,13 @@ const int = ({ id, max, min, value }: HTMLInputElement): number => {
   return Math.min(Math.max(numberValue, newMin), newMax)
 }
 
-const processValue = (element: HTMLValueElement): ValueOf<Settings> => {
+const parseFormValue = (element: HTMLValueElement): ValueOf<Settings> => {
   if (element.value) {
     if (element.type === 'checkbox') {
       return element.indeterminate ? null : element.checked
     }
     if (element.type === 'number' && element.min !== '' && element.max !== '') {
-      return int(element)
+      return clampNumericInput(element)
     }
     if (booleanStrings.includes(element.value)) {
       return element.value === 'true'
@@ -174,6 +179,29 @@ export class AtaValueManager {
     this.#zone = zoneElement
   }
 
+  public applyDefaultZone(defaultZone: Zone | null): void {
+    if (defaultZone) {
+      const { id, model } = defaultZone
+      const value = getZoneId(id, model)
+      if (document.querySelector(`#zones option[value="${value}"]`)) {
+        this.#zone.value = value
+      }
+    }
+  }
+
+  public createAtaFormControls(): void {
+    for (const [id, { title, type, values }] of this.#ataCapabilities) {
+      appendFormControl(this.#ataValues, {
+        formControl: this.#generateAtaValue({ id, type, values }),
+        title,
+      })
+    }
+  }
+
+  public displayValues(): void {
+    this.#syncAtaValues()
+  }
+
   public async fetchCapabilities(): Promise<void> {
     this.#ataCapabilities = await homeyApiGet<
       [keyof GroupState, DriverCapabilitiesOptions][]
@@ -189,20 +217,11 @@ export class AtaValueManager {
       `/zones/${this.#getZoneValue()}/ata`,
     )
     this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
-    this.#refreshAtaValues()
+    this.#syncAtaValues()
     return values
   }
 
-  public generateAtaValues(): void {
-    for (const [id, { title, type, values }] of this.#ataCapabilities) {
-      createValue(this.#ataValues, {
-        formControl: this.#generateAtaValue({ id, type, values }),
-        title,
-      })
-    }
-  }
-
-  public async generateZones(zones: Zone[] = []): Promise<void> {
+  public async populateZoneOptions(zones: Zone[] = []): Promise<void> {
     if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
@@ -211,23 +230,9 @@ export class AtaValueManager {
           label: getZoneName(name, level),
         })
         // eslint-disable-next-line no-await-in-loop -- Sequential: parent-child order required for tree rendering
-        await this.generateZones(getSubzones(zone))
+        await this.populateZoneOptions(getSubzones(zone))
       }
     }
-  }
-
-  public handleDefaultZone(defaultZone: Zone | null): void {
-    if (defaultZone) {
-      const { id, model } = defaultZone
-      const value = getZoneId(id, model)
-      if (document.querySelector(`#zones option[value="${value}"]`)) {
-        this.#zone.value = value
-      }
-    }
-  }
-
-  public refreshValues(): void {
-    this.#refreshAtaValues()
   }
 
   public async setValues(): Promise<void> {
@@ -255,7 +260,7 @@ export class AtaValueManager {
               this.#zoneMapping[this.#zone.value]?.[id]?.toString(),
             ].includes(value),
         )
-        .map((element) => [element.id, processValue(element)]),
+        .map((element) => [element.id, parseFormValue(element)]),
     )
   }
 
@@ -290,7 +295,7 @@ export class AtaValueManager {
     return value in this.#defaultAtaValues
   }
 
-  #refreshAtaValues(): void {
+  #syncAtaValues(): void {
     for (const [ataKey] of this.#ataCapabilities) {
       this.#updateAtaValue(ataKey)
     }

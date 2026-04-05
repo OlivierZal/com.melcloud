@@ -24,7 +24,7 @@ export const createEnergyReportMock = (): {
   EnergyReport: ReturnType<typeof vi.fn>
 } => ({
   EnergyReport: vi.fn().mockImplementation(() => ({
-    handle: vi.fn<() => Promise<void>>().mockResolvedValue(),
+    start: vi.fn<() => Promise<void>>().mockResolvedValue(),
     unschedule: vi.fn(),
   })),
 })

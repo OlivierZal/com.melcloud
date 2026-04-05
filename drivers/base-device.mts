@@ -223,21 +223,6 @@ export abstract class BaseMELCloudDevice extends Device {
     }
   }
 
-  protected buildUpdateData(
-    values: Record<string, unknown>,
-  ): Record<string, unknown> {
-    this.log('Requested data:', values)
-    const tagMapping = this.getSetCapabilityTagMapping()
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Object.fromEntries returns { [k: string]: any }
-    return Object.fromEntries(
-      Object.entries(values).map(([capability, value]) => [
-        tagMapping[capability],
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- value is cast to never for variadic converter args
-        this.capabilityToDevice[capability]?.(value as never) ?? value,
-      ]),
-    )
-  }
-
   protected cleanupDevice(): void {
     this.#reports.regular?.unschedule()
     this.#reports.total?.unschedule()
@@ -265,17 +250,6 @@ export abstract class BaseMELCloudDevice extends Device {
     return this.#setCapabilityTagMapping
   }
 
-  protected async handleEnergyReports(): Promise<void> {
-    if (this.energyReportRegular) {
-      this.#reports.regular = this.createEnergyReport(this.energyReportRegular)
-      await this.#reports.regular.handle()
-    }
-    if (this.energyReportTotal) {
-      this.#reports.total = this.createEnergyReport(this.energyReportTotal)
-      await this.#reports.total.handle()
-    }
-  }
-
   protected async init(): Promise<void> {
     this.#setCapabilityTagMapping = this.cleanMapping(
       this.driver.setCapabilityTagMapping,
@@ -289,7 +263,7 @@ export abstract class BaseMELCloudDevice extends Device {
     await this.applyCapabilitiesOptions()
     await this.#setCapabilities()
     await this.syncFromDevice()
-    await this.handleEnergyReports()
+    await this.scheduleEnergyReports()
   }
 
   protected async initDevice(): Promise<void> {
@@ -305,12 +279,38 @@ export abstract class BaseMELCloudDevice extends Device {
     return this.driver.manifest.capabilities.includes(capability)
   }
 
+  protected mapCapabilitiesToDeviceTags(
+    values: Record<string, unknown>,
+  ): Record<string, unknown> {
+    this.log('Requested data:', values)
+    const tagMapping = this.getSetCapabilityTagMapping()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Object.fromEntries returns { [k: string]: any }
+    return Object.fromEntries(
+      Object.entries(values).map(([capability, value]) => [
+        tagMapping[capability],
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- value is cast to never for variadic converter args
+        this.capabilityToDevice[capability]?.(value as never) ?? value,
+      ]),
+    )
+  }
+
+  protected async scheduleEnergyReports(): Promise<void> {
+    if (this.energyReportRegular) {
+      this.#reports.regular = this.createEnergyReport(this.energyReportRegular)
+      await this.#reports.regular.start()
+    }
+    if (this.energyReportTotal) {
+      this.#reports.total = this.createEnergyReport(this.energyReportTotal)
+      await this.#reports.total.start()
+    }
+  }
+
   protected async sendUpdate(values: Record<string, unknown>): Promise<void> {
     const device = await this.fetchDevice()
     if (!device) {
       return
     }
-    const updateData = this.buildUpdateData(values)
+    const updateData = this.mapCapabilitiesToDeviceTags(values)
     if (Object.keys(updateData).length > 0) {
       try {
         await device.setValues(updateData)
@@ -322,18 +322,6 @@ export abstract class BaseMELCloudDevice extends Device {
     }
     // Delay sync to let Homey's optimistic UI update and debounce settle
     this.homey.setTimeout(async () => this.syncFromDevice(), DEBOUNCE_DELAY)
-  }
-
-  async #handleOptionalCapabilities(
-    newSettings: Record<string, unknown>,
-    changedCapabilities: string[],
-  ): Promise<void> {
-    for (const capability of changedCapabilities) {
-      // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
-      await (newSettings[capability] === true ?
-        this.addCapability(capability)
-      : this.removeCapability(capability))
-    }
   }
 
   #isThermostatModeSupportingOff(): boolean {
@@ -405,13 +393,25 @@ export abstract class BaseMELCloudDevice extends Device {
     return this.homey[timerType](callback, duration.as('milliseconds'))
   }
 
+  async #syncOptionalCapabilities(
+    newSettings: Record<string, unknown>,
+    changedCapabilities: string[],
+  ): Promise<void> {
+    for (const capability of changedCapabilities) {
+      // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
+      await (newSettings[capability] === true ?
+        this.addCapability(capability)
+      : this.removeCapability(capability))
+    }
+  }
+
   async #updateDeviceOnSettings(
     changedKeys: string[],
     changedCapabilities: string[],
     newSettings: Record<string, unknown>,
   ): Promise<void> {
     if (changedCapabilities.length > 0) {
-      await this.#handleOptionalCapabilities(newSettings, changedCapabilities)
+      await this.#syncOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }
     if (
@@ -439,7 +439,7 @@ export abstract class BaseMELCloudDevice extends Device {
             (setting) => isTotalEnergyKey(setting) === (mode === 'total'),
           )
         ) {
-          await this.#reports[mode]?.handle()
+          await this.#reports[mode]?.start()
         }
       }),
     )

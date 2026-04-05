@@ -74,7 +74,7 @@ export class EnergyReport<T extends DeviceType> {
     ;({ driver: this.driver, homey: this.#homey } = this.#device)
   }
 
-  public async handle(): Promise<void> {
+  public async start(): Promise<void> {
     if (this.#energyCapabilityTagEntries.length === 0) {
       this.unschedule()
       return
@@ -159,9 +159,9 @@ export class EnergyReport<T extends DeviceType> {
       const actionType = `${this.#config.mode} energy report`
       this.#reportTimeout = this.#device.setTimeout(
         async () => {
-          await this.handle()
+          await this.start()
           this.#reportInterval = this.#device.setInterval(
-            async () => this.handle(),
+            async () => this.start(),
             this.#config.interval,
             actionType,
           )

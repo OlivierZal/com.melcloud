@@ -187,20 +187,25 @@ const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
 export class AnimationController {
   readonly #animation: HTMLDivElement
 
-  readonly #animationHandling: Record<
+  readonly #animationMapping: Record<
+    AnimatedElement,
+    { readonly innerHTML: string; readonly getIndex: () => number }
+  >
+
+  readonly #animationRunners: Record<
     number,
     (speed: number) => Promise<void> | void
   > = {
-    [OPERATION_MODE_MIXED]: async (speed) => this.#handleMixedAnimation(speed),
+    [OPERATION_MODE_MIXED]: async (speed) => this.#runMixedAnimation(speed),
     [OperationMode.auto]: (speed) => {
-      this.#handleFireAnimation(speed)
-      this.#handleSnowAnimation(speed)
+      this.#runFireAnimation(speed)
+      this.#runSnowAnimation(speed)
     },
     [OperationMode.cool]: (speed) => {
-      this.#handleSnowAnimation(speed)
+      this.#runSnowAnimation(speed)
     },
     [OperationMode.dry]: (speed) => {
-      this.#handleSunAnimation(speed)
+      this.#runSunAnimation(speed)
     },
     [OperationMode.fan]: (speed) => {
       this.#generateRecurring(
@@ -212,14 +217,9 @@ export class AnimationController {
       )
     },
     [OperationMode.heat]: (speed) => {
-      this.#handleFireAnimation(speed)
+      this.#runFireAnimation(speed)
     },
   }
-
-  readonly #animationMapping: Record<
-    AnimatedElement,
-    { readonly innerHTML: string; readonly getIndex: () => number }
-  >
 
   readonly #canvas: HTMLCanvasElement
 
@@ -252,7 +252,7 @@ export class AnimationController {
     this.#animationMapping = createAnimationMapping()
   }
 
-  public async handleAnimation(
+  public async applyAnimation(
     state: GroupState,
     isAnimations: boolean,
   ): Promise<void> {
@@ -266,7 +266,7 @@ export class AnimationController {
       await this.#reset({ isSomethingOn, mode: newMode })
 
       if (isSomethingOn && this.#hasModeAnimation(newMode)) {
-        await this.#animationHandling[newMode]?.(newSpeed)
+        await this.#animationRunners[newMode]?.(newSpeed)
       }
     }
   }
@@ -557,58 +557,8 @@ export class AnimationController {
     return sun
   }
 
-  #handleFireAnimation(speed: number): void {
-    this.#generateRecurring(
-      (flameSpeed) => {
-        this.#createFlame(flameSpeed)
-      },
-      AnimationDelay.flame,
-      speed,
-    )
-    this.#generateSmoke(speed)
-  }
-
-  async #handleMixedAnimation(speed: number): Promise<void> {
-    const modes = new Set(await this.#getModes())
-    if (modes.has(OperationMode.auto) || modes.has(OperationMode.cool)) {
-      this.#handleSnowAnimation(speed)
-    }
-    if (modes.has(OperationMode.auto) || modes.has(OperationMode.heat)) {
-      this.#handleFireAnimation(speed)
-    }
-    if (modes.has(OperationMode.dry)) {
-      this.#handleSunAnimation(speed)
-    }
-    if (modes.has(OperationMode.fan)) {
-      this.#generateRecurring(
-        (leafSpeed) => {
-          this.#createLeaf(leafSpeed)
-        },
-        AnimationDelay.leaf,
-        speed,
-      )
-    }
-  }
-
-  #handleSnowAnimation(speed: number): void {
-    this.#generateRecurring(
-      (snowSpeed) => {
-        this.#createSnowflake(snowSpeed)
-      },
-      AnimationDelay.snowflake,
-      speed,
-    )
-  }
-
-  #handleSunAnimation(speed: number): void {
-    const sun = this.#getSunElement()
-    this.#sunAnimation.shine ??= generateSunShineAnimation(sun)
-    this.#sunAnimation.shine.playbackRate = speed
-    this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
-  }
-
   #hasModeAnimation(mode: number): boolean {
-    return mode in this.#animationHandling
+    return mode in this.#animationRunners
   }
 
   async #reset(resetParams?: ResetParams): Promise<void> {
@@ -666,5 +616,55 @@ export class AnimationController {
       }
     }
     this.#sunAnimation.exit = this.#generateSunExitAnimation(sun)
+  }
+
+  #runFireAnimation(speed: number): void {
+    this.#generateRecurring(
+      (flameSpeed) => {
+        this.#createFlame(flameSpeed)
+      },
+      AnimationDelay.flame,
+      speed,
+    )
+    this.#generateSmoke(speed)
+  }
+
+  async #runMixedAnimation(speed: number): Promise<void> {
+    const modes = new Set(await this.#getModes())
+    if (modes.has(OperationMode.auto) || modes.has(OperationMode.cool)) {
+      this.#runSnowAnimation(speed)
+    }
+    if (modes.has(OperationMode.auto) || modes.has(OperationMode.heat)) {
+      this.#runFireAnimation(speed)
+    }
+    if (modes.has(OperationMode.dry)) {
+      this.#runSunAnimation(speed)
+    }
+    if (modes.has(OperationMode.fan)) {
+      this.#generateRecurring(
+        (leafSpeed) => {
+          this.#createLeaf(leafSpeed)
+        },
+        AnimationDelay.leaf,
+        speed,
+      )
+    }
+  }
+
+  #runSnowAnimation(speed: number): void {
+    this.#generateRecurring(
+      (snowSpeed) => {
+        this.#createSnowflake(snowSpeed)
+      },
+      AnimationDelay.snowflake,
+      speed,
+    )
+  }
+
+  #runSunAnimation(speed: number): void {
+    const sun = this.#getSunElement()
+    this.#sunAnimation.shine ??= generateSunShineAnimation(sun)
+    this.#sunAnimation.shine.playbackRate = speed
+    this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
   }
 }
