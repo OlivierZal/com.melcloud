@@ -138,6 +138,7 @@ export abstract class BaseMELCloudDevice extends Device {
     ) as Record<string, string>
   }
 
+  /* v8 ignore next -- trivial override: prepends device name to all error logs */
   public override error(...args: unknown[]): void {
     super.error(this.getName(), '-', ...args)
   }
@@ -155,6 +156,7 @@ export abstract class BaseMELCloudDevice extends Device {
     }
   }
 
+  /* v8 ignore next -- trivial override: prepends device name to all logs */
   public override log(...args: unknown[]): void {
     super.log(this.getName(), '-', ...args)
   }
