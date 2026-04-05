@@ -376,12 +376,15 @@ const config = defineConfig([
             'index-signature',
 
             // ── Static fields ─────────────────────────────────────
+            'static-decorated-property',
             'static-property',
             'static-accessor-property',
             ['static-get-method', 'static-set-method'],
+            'protected-static-decorated-property',
             'protected-static-property',
             'protected-static-accessor-property',
             ['protected-static-get-method', 'protected-static-set-method'],
+            'private-static-decorated-property',
             'private-static-property',
             'private-static-accessor-property',
             ['private-static-get-method', 'private-static-set-method'],
@@ -412,10 +415,13 @@ const config = defineConfig([
             'homey-lifecycle',
 
             // ── Static methods ────────────────────────────────────
+            'static-decorated-method',
             'static-function-property',
             'static-method',
+            'protected-static-decorated-method',
             'protected-static-function-property',
             'protected-static-method',
+            'private-static-decorated-method',
             'private-static-function-property',
             'private-static-method',
 
