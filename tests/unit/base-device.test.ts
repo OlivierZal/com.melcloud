@@ -11,7 +11,6 @@ import type {
 import { ClassicMELCloudDevice } from '../../drivers/classic-base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
-  mock,
   testDeletion,
   testFetchDeviceNull,
   testOnoffConverter,
@@ -20,18 +19,31 @@ import {
   testThermostatModeOff,
   testUninitialisation,
   testWarningManagement,
-} from '../helpers.ts'
+} from '../device-descriptors.ts'
+import { mock } from '../helpers.ts'
 import { type TestDeviceType, TestDevice } from './base-device-test-device.ts'
 
-const setValuesMock = vi.fn()
-const realtimeMock = vi.fn()
-const superSetWarningMock = vi.fn()
-const superAddCapabilityMock = vi.fn()
-const superRemoveCapabilityMock = vi.fn()
-const registerMultipleCapabilityListenerMock = vi.fn()
-const triggerCapabilityListenerMock = vi.fn()
-const getFacadeMock = vi.fn()
-const getSettingMock = vi.fn()
+const {
+  getFacadeMock,
+  getSettingMock,
+  realtimeMock,
+  registerMultipleCapabilityListenerMock,
+  setValuesMock,
+  superAddCapabilityMock,
+  superRemoveCapabilityMock,
+  superSetWarningMock,
+  triggerCapabilityListenerMock,
+} = vi.hoisted(() => ({
+  getFacadeMock: vi.fn(),
+  getSettingMock: vi.fn(),
+  realtimeMock: vi.fn(),
+  registerMultipleCapabilityListenerMock: vi.fn(),
+  setValuesMock: vi.fn(),
+  superAddCapabilityMock: vi.fn(),
+  superRemoveCapabilityMock: vi.fn(),
+  superSetWarningMock: vi.fn(),
+  triggerCapabilityListenerMock: vi.fn(),
+}))
 
 const mockDeviceData = {
   FanSpeed: 3,

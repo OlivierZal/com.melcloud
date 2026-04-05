@@ -12,18 +12,27 @@ import {
   testPostUpdateSync,
   testSetValuesErrorHandling,
   testThermostatModeOff,
-} from '../helpers.ts'
+} from '../device-descriptors.ts'
 import {
   type TestHomeDevice,
   createTestHomeDevice,
 } from './home-base-device-test-device.ts'
 
-const realtimeMock = vi.fn()
-const superSetWarningMock = vi.fn()
-const registerMultipleCapabilityListenerMock = vi.fn()
-const setValuesMock = vi.fn()
-const getSettingMock = vi.fn()
-const getHomeFacadeMock = vi.fn()
+const {
+  getHomeFacadeMock,
+  getSettingMock,
+  realtimeMock,
+  registerMultipleCapabilityListenerMock,
+  setValuesMock,
+  superSetWarningMock,
+} = vi.hoisted(() => ({
+  getHomeFacadeMock: vi.fn(),
+  getSettingMock: vi.fn(),
+  realtimeMock: vi.fn(),
+  registerMultipleCapabilityListenerMock: vi.fn(),
+  setValuesMock: vi.fn(),
+  superSetWarningMock: vi.fn(),
+}))
 
 let isFacadePoweredOn = true
 

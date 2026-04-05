@@ -7,7 +7,8 @@ import {
   listCapabilityTagMappingErv,
   setCapabilityTagMappingErv,
 } from '../../types/index.mts'
-import { mock, testDriverType, testTagMappings } from '../helpers.ts'
+import { testDriverType, testTagMappings } from '../driver-descriptors.ts'
+import { mock } from '../helpers.ts'
 import MELCloudDriverErv from '../../drivers/melcloud_erv/driver.mts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)

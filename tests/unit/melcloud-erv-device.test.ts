@@ -6,11 +6,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ThermostatModeErv } from '../../types/index.mts'
 import {
-  mock,
   testCapabilityToDeviceConverters,
   testEnergyReportConfig,
   testThermostatMode,
-} from '../helpers.ts'
+} from '../device-descriptors.ts'
+import { mock } from '../helpers.ts'
 import MELCloudDeviceErv from '../../drivers/melcloud_erv/device.mts'
 import { createInstance } from './create-test-instance.ts'
 

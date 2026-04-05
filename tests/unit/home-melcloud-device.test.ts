@@ -13,7 +13,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ThermostatModeAta } from '../../types/index.mts'
-import { testThermostatMode } from '../helpers.ts'
+import { testThermostatMode } from '../device-descriptors.ts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
