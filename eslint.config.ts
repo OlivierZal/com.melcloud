@@ -366,8 +366,23 @@ const config = defineConfig([
         {
           customGroups: [
             {
-              elementNamePattern: '^on[A-Z]',
-              groupName: 'homey-lifecycle',
+              elementNamePattern: '^onInit$',
+              groupName: 'homey-lifecycle-init',
+              selector: 'method',
+            },
+            {
+              elementNamePattern: '^onPair$|^onRepair$',
+              groupName: 'homey-lifecycle-pairing',
+              selector: 'method',
+            },
+            {
+              elementNamePattern: '^onSettings$',
+              groupName: 'homey-lifecycle-settings',
+              selector: 'method',
+            },
+            {
+              elementNamePattern: '^onUninit$|^onDeleted$',
+              groupName: 'homey-lifecycle-teardown',
               selector: 'method',
             },
           ],
@@ -412,7 +427,10 @@ const config = defineConfig([
             'constructor',
 
             // ── Homey lifecycle hooks ─────────────────────────────
-            'homey-lifecycle',
+            'homey-lifecycle-init',
+            'homey-lifecycle-pairing',
+            'homey-lifecycle-settings',
+            'homey-lifecycle-teardown',
 
             // ── Static methods ────────────────────────────────────
             'static-decorated-method',

@@ -81,10 +81,6 @@ export abstract class BaseMELCloudDevice extends Device {
 
   #setCapabilityTagMapping: Record<string, string> = {}
 
-  public override onDeleted(): void {
-    this.cleanupDevice()
-  }
-
   public override async onInit(): Promise<void> {
     this.applyBaseConverters()
     await this.setWarning(null)
@@ -116,10 +112,22 @@ export abstract class BaseMELCloudDevice extends Device {
     }
   }
 
+  public override onDeleted(): void {
+    this.cleanupDevice()
+  }
+
   public override async onUninit(): Promise<void> {
     this.onDeleted()
     await Promise.resolve()
   }
+
+  protected abstract createEnergyReport(
+    config: EnergyReportConfig,
+  ): EnergyReportOperation
+
+  protected abstract getFacade(): DeviceFacade
+
+  public abstract syncFromDevice(): Promise<void>
 
   public override async addCapability(capability: string): Promise<void> {
     if (!this.hasCapability(capability)) {
@@ -138,10 +146,11 @@ export abstract class BaseMELCloudDevice extends Device {
     ) as Record<string, string>
   }
 
-  /* v8 ignore next -- trivial override: prepends device name to all error logs */
+  /* v8 ignore start -- trivial override: prepends device name to all error logs */
   public override error(...args: unknown[]): void {
     super.error(this.getName(), '-', ...args)
   }
+  /* v8 ignore stop */
 
   public async fetchDevice(): Promise<DeviceFacade | null> {
     try {
@@ -156,18 +165,11 @@ export abstract class BaseMELCloudDevice extends Device {
     }
   }
 
-  /* v8 ignore next -- trivial override: prepends device name to all logs */
-  protected abstract createEnergyReport(
-    config: EnergyReportConfig,
-  ): EnergyReportOperation
-
-  protected abstract getFacade(): DeviceFacade
-
-  public abstract syncFromDevice(): Promise<void>
-
+  /* v8 ignore start -- trivial override: prepends device name to all logs */
   public override log(...args: unknown[]): void {
     super.log(this.getName(), '-', ...args)
   }
+  /* v8 ignore stop */
 
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
