@@ -1,4 +1,6 @@
 .leaf {
+  filter: brightness(var(--brightness));
+  font-size: var(--size);
   inset-block-start: -50px;
   position: absolute;
 }

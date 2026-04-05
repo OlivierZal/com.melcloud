@@ -296,7 +296,10 @@ export class AnimationController {
         this.#generateFlameAnimation(flame, speed)
       },
       applyStyles: (flame) => {
-        flame.style.fontSize = generateStyleString({ gap: 1, min: 3 }, 'rem')
+        flame.style.setProperty(
+          '--size',
+          generateStyleString({ gap: 1, min: 3 }, 'rem'),
+        )
       },
     })
   }
@@ -311,11 +314,14 @@ export class AnimationController {
         generateLeafAnimation(leaf, speed)
       },
       applyStyles: (leaf) => {
-        leaf.style.fontSize = generateStyleString({ gap: 1, min: 2 }, 'rem')
-        leaf.style.filter = `brightness(${generateStyleString(
-          { gap: 50, min: 100 },
-          '%',
-        )})`
+        leaf.style.setProperty(
+          '--size',
+          generateStyleString({ gap: 1, min: 2 }, 'rem'),
+        )
+        leaf.style.setProperty(
+          '--brightness',
+          generateStyleString({ gap: 50, min: 100 }, '%'),
+        )
       },
     })
   }
@@ -388,14 +394,14 @@ export class AnimationController {
         generateSnowflakeAnimation(snowflake, speed)
       },
       applyStyles: (snowflake) => {
-        snowflake.style.fontSize = generateStyleString(
-          { divisor: speed, gap: 1, min: 2 },
-          'rem',
+        snowflake.style.setProperty(
+          '--size',
+          generateStyleString({ divisor: speed, gap: 1, min: 2 }, 'rem'),
         )
-        snowflake.style.filter = `brightness(${generateStyleString(
-          { gap: 20, min: 100 },
-          '%',
-        )})`
+        snowflake.style.setProperty(
+          '--brightness',
+          generateStyleString({ gap: 20, min: 100 }, '%'),
+        )
       },
     })
   }

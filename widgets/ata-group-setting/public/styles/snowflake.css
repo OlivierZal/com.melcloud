@@ -1,4 +1,6 @@
 .snowflake {
+  filter: brightness(var(--brightness));
+  font-size: var(--size);
   inset-block-start: -10px;
   position: absolute;
 }
