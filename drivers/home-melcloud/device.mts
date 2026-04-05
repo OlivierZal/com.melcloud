@@ -28,6 +28,12 @@ import {
 import { BaseMELCloudDevice } from '../base-device.mts'
 
 export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
+  declare public readonly getData: () => { id: string }
+
+  public override get id(): string {
+    return this.getData().id
+  }
+
   protected readonly capabilityToDevice: Partial<
     Record<keyof HomeSetCapabilitiesAta, HomeConvertToDevice>
   > = {
@@ -63,13 +69,7 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
 
   protected readonly energyReportTotal = null
 
-  declare public readonly getData: () => { id: string }
-
   protected readonly thermostatMode = ThermostatModeAta
-
-  public override get id(): string {
-    return this.getData().id
-  }
 
   public override async syncFromDevice(): Promise<void> {
     const device = await this.fetchDevice()

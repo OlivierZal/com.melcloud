@@ -159,17 +159,7 @@ const getLocalizedCapabilitiesOptions = (
 })
 
 export default class MELCloudApp extends App {
-  #api!: MELCloudAPI
-
-  #facadeManager!: FacadeManager
-
-  #homeApi!: MELCloudHomeAPI
-
   declare public readonly homey: Homey.Homey
-
-  get #registry(): ModelRegistry {
-    return this.#api.registry
-  }
 
   public get api(): MELCloudAPI {
     return this.#api
@@ -177,6 +167,16 @@ export default class MELCloudApp extends App {
 
   public get homeApi(): MELCloudHomeAPI {
     return this.#homeApi
+  }
+
+  #api!: MELCloudAPI
+
+  #facadeManager!: FacadeManager
+
+  #homeApi!: MELCloudHomeAPI
+
+  get #registry(): ModelRegistry {
+    return this.#api.registry
   }
 
   public override async onInit(): Promise<void> {

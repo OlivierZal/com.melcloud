@@ -13,6 +13,18 @@ import { ClassicMELCloudDriver } from '../classic-base-driver.mts'
 export default class MELCloudDriverAtw extends ClassicMELCloudDriver<
   typeof DeviceType.Atw
 > {
+  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAtw
+
+  public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtw
+
+  public readonly getCapabilityTagMapping = getCapabilityTagMappingAtw
+
+  public readonly listCapabilityTagMapping = listCapabilityTagMappingAtw
+
+  public readonly setCapabilityTagMapping = setCapabilityTagMappingAtw
+
+  public readonly type = DeviceType.Atw
+
   readonly #zone1Capabilities: (keyof Capabilities<typeof DeviceType.Atw>)[] = [
     'onoff',
     'hot_water_mode',
@@ -48,18 +60,6 @@ export default class MELCloudDriverAtw extends ClassicMELCloudDriver<
   readonly #zone2CoolCapabilities: (keyof Capabilities<
     typeof DeviceType.Atw
   >)[] = ['target_temperature.flow_cool_zone2']
-
-  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAtw
-
-  public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtw
-
-  public readonly getCapabilityTagMapping = getCapabilityTagMappingAtw
-
-  public readonly listCapabilityTagMapping = listCapabilityTagMappingAtw
-
-  public readonly setCapabilityTagMapping = setCapabilityTagMappingAtw
-
-  public readonly type = DeviceType.Atw
 
   public override getRequiredCapabilities(
     data?: ListDeviceData<typeof DeviceType.Atw>,

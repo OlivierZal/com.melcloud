@@ -22,14 +22,6 @@ import { type EnergyReportConfig, EnergyReport } from './base-report.mts'
 export abstract class ClassicMELCloudDevice<
   T extends DeviceType,
 > extends BaseMELCloudDevice {
-  protected abstract override capabilityToDevice: Partial<
-    Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
-  >
-
-  protected abstract override readonly deviceToCapability: Partial<
-    Record<keyof OperationalCapabilities<T>, ConvertFromDevice<T>>
-  >
-
   declare public readonly driver: ClassicMELCloudDriver<T>
 
   declare public readonly getCapabilityOptions: <
@@ -68,18 +60,26 @@ export abstract class ClassicMELCloudDevice<
 
   declare public readonly setSettings: (settings: Settings) => Promise<void>
 
+  protected abstract override capabilityToDevice: Partial<
+    Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
+  >
+
+  protected abstract override readonly deviceToCapability: Partial<
+    Record<keyof OperationalCapabilities<T>, ConvertFromDevice<T>>
+  >
+
   protected abstract override readonly thermostatMode: Record<
     string,
     string
   > | null
 
-  get #data(): ListDeviceData<T> | undefined {
-    return this.facade?.data
-  }
-
   protected get facade(): DeviceFacade<T> | undefined {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from generic base FacadeWithSetValues
     return this.cachedFacade as DeviceFacade<T> | undefined
+  }
+
+  get #data(): ListDeviceData<T> | undefined {
+    return this.facade?.data
   }
 
   public override async fetchDevice(): Promise<DeviceFacade<T> | null> {

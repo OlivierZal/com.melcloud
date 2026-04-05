@@ -26,18 +26,13 @@ const DEBOUNCE_DELAY = 1000
 const modes: EnergyReportMode[] = ['regular', 'total']
 
 export abstract class BaseMELCloudDevice extends Device {
-  #deviceFacade?: DeviceFacade
+  declare public readonly driver: BaseMELCloudDriver
 
-  #getCapabilityTagMapping: Record<string, string> = {}
+  declare public readonly getData: () => { id: number | string }
 
-  #listCapabilityTagMapping: Record<string, string> = {}
+  declare public readonly getSettings: () => Record<string, unknown>
 
-  readonly #reports: {
-    regular?: EnergyReportOperation
-    total?: EnergyReportOperation
-  } = {}
-
-  #setCapabilityTagMapping: Record<string, string> = {}
+  declare public readonly homey: Homey.Homey
 
   protected abstract capabilityToDevice: Partial<
     Record<string, (...args: never[]) => unknown>
@@ -47,26 +42,18 @@ export abstract class BaseMELCloudDevice extends Device {
     Record<string, (...args: never[]) => unknown>
   >
 
-  declare public readonly driver: BaseMELCloudDriver
-
   protected abstract readonly energyReportRegular: EnergyReportConfig | null
 
   protected abstract readonly energyReportTotal: EnergyReportConfig | null
 
-  declare public readonly getData: () => { id: number | string }
-
-  declare public readonly getSettings: () => Record<string, unknown>
-
-  declare public readonly homey: Homey.Homey
-
   protected abstract readonly thermostatMode: Record<string, string> | null
-
-  protected get cachedFacade(): DeviceFacade | undefined {
-    return this.#deviceFacade
-  }
 
   public get id(): number | string {
     return this.getData().id
+  }
+
+  protected get cachedFacade(): DeviceFacade | undefined {
+    return this.#deviceFacade
   }
 
   protected get isAlwaysOn(): boolean {
@@ -80,6 +67,19 @@ export abstract class BaseMELCloudDevice extends Device {
       ...this.getListCapabilityTagMapping(),
     })
   }
+
+  #deviceFacade?: DeviceFacade
+
+  #getCapabilityTagMapping: Record<string, string> = {}
+
+  #listCapabilityTagMapping: Record<string, string> = {}
+
+  readonly #reports: {
+    regular?: EnergyReportOperation
+    total?: EnergyReportOperation
+  } = {}
+
+  #setCapabilityTagMapping: Record<string, string> = {}
 
   public override onDeleted(): void {
     this.cleanupDevice()
@@ -157,6 +157,14 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   /* v8 ignore next -- trivial override: prepends device name to all logs */
+  protected abstract createEnergyReport(
+    config: EnergyReportConfig,
+  ): EnergyReportOperation
+
+  protected abstract getFacade(): DeviceFacade
+
+  public abstract syncFromDevice(): Promise<void>
+
   public override log(...args: unknown[]): void {
     super.log(this.getName(), '-', ...args)
   }
@@ -198,8 +206,6 @@ export abstract class BaseMELCloudDevice extends Device {
     await super.setWarning(null)
   }
 
-  public abstract syncFromDevice(): Promise<void>
-
   protected applyBaseConverters(): void {
     this.capabilityToDevice = {
       onoff: (isOn: boolean): boolean => this.isAlwaysOn || isOn,
@@ -227,12 +233,6 @@ export abstract class BaseMELCloudDevice extends Device {
     this.#reports.regular?.unschedule()
     this.#reports.total?.unschedule()
   }
-
-  protected abstract createEnergyReport(
-    config: EnergyReportConfig,
-  ): EnergyReportOperation
-
-  protected abstract getFacade(): DeviceFacade
 
   protected getGetCapabilityTagMapping(): Record<string, string> {
     return this.#getCapabilityTagMapping

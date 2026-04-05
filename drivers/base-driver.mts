@@ -22,21 +22,21 @@ const tryRegisterFlowCard = (register: () => void): void => {
 }
 
 export abstract class BaseMELCloudDriver extends Driver {
+  declare public readonly homey: Homey.Homey
+
+  declare public readonly manifest: ManifestDriver
+
   protected abstract readonly api: AuthAPI
+
+  public abstract readonly type: DeviceType | HomeDeviceType
 
   public readonly energyCapabilityTagMapping: Record<string, unknown> = {}
 
   public readonly getCapabilityTagMapping: Record<string, unknown> = {}
 
-  declare public readonly homey: Homey.Homey
-
   public readonly listCapabilityTagMapping: Record<string, unknown> = {}
 
-  declare public readonly manifest: ManifestDriver
-
   public readonly setCapabilityTagMapping: Record<string, unknown> = {}
-
-  public abstract readonly type: DeviceType | HomeDeviceType
 
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
@@ -78,6 +78,11 @@ export abstract class BaseMELCloudDriver extends Driver {
     await Promise.resolve()
   }
 
+  protected abstract getDeviceModels(): {
+    id: number | string
+    name: string
+  }[]
+
   public getRequiredCapabilities(): string[] {
     return [...this.manifest.capabilities]
   }
@@ -88,11 +93,6 @@ export abstract class BaseMELCloudDriver extends Driver {
     await Promise.resolve()
     return this.getDeviceModels().map((model) => this.toDeviceDetails(model))
   }
-
-  protected abstract getDeviceModels(): {
-    id: number | string
-    name: string
-  }[]
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- default mapping; overridden in classic to add capabilities
   protected toDeviceDetails({

@@ -366,33 +366,66 @@ const config = defineConfig([
         {
           customGroups: [
             {
-              elementNamePattern: '^on.+',
-              groupName: 'event-handler',
+              elementNamePattern: '^on[A-Z]',
+              groupName: 'homey-lifecycle',
               selector: 'method',
             },
           ],
           groups: [
-            // ── Static ────────────────────────────────────────────
+            // ── Signatures ────────────────────────────────────────
+            'index-signature',
+
+            // ── Static fields ─────────────────────────────────────
             'static-property',
             'static-accessor-property',
+            ['static-get-method', 'static-set-method'],
+            'protected-static-property',
+            'protected-static-accessor-property',
+            ['protected-static-get-method', 'protected-static-set-method'],
+            'private-static-property',
+            'private-static-accessor-property',
+            ['private-static-get-method', 'private-static-set-method'],
             'static-block',
-            'static-method',
 
-            // ── Instance: shape ───────────────────────────────────
-            'index-signature',
+            // ── Instance fields ───────────────────────────────────
+            'declare-property',
+            'abstract-property',
+            'abstract-accessor-property',
+            ['abstract-get-method', 'abstract-set-method'],
+            'decorated-property',
             'property',
             'accessor-property',
             ['get-method', 'set-method'],
+            'protected-decorated-property',
+            'protected-property',
+            'protected-accessor-property',
+            ['protected-get-method', 'protected-set-method'],
+            'private-decorated-property',
+            'private-property',
+            'private-accessor-property',
+            ['private-get-method', 'private-set-method'],
+
+            // ── Constructor ───────────────────────────────────────
             'constructor',
 
-            // ── Instance: public behavior ──────────────────────────
-            'event-handler',
+            // ── Homey lifecycle hooks ─────────────────────────────
+            'homey-lifecycle',
+
+            // ── Static methods ────────────────────────────────────
+            'static-method',
+            'protected-static-method',
+            'private-static-method',
+
+            // ── Instance methods ──────────────────────────────────
+            'abstract-method',
             'decorated-method',
             'function-property',
             'method',
-
-            // ── Instance: implementation ───────────────────────────
+            'protected-decorated-method',
+            'protected-function-property',
             'protected-method',
+            'private-decorated-method',
+            'private-function-property',
             'private-method',
 
             'unknown',

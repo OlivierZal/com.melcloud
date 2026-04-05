@@ -614,12 +614,6 @@ class ErrorLogManager {
 // ── DeviceSettingsManager ──
 
 class DeviceSettingsManager {
-  #deviceSettings: Partial<DeviceSettings> = {}
-
-  readonly #homey: Homey
-
-  readonly #settingsCommon: HTMLDivElement
-
   public get deviceSettings(): Partial<DeviceSettings> {
     return this.#deviceSettings
   }
@@ -642,6 +636,12 @@ class DeviceSettingsManager {
       }),
     )
   }
+
+  #deviceSettings: Partial<DeviceSettings> = {}
+
+  readonly #homey: Homey
+
+  readonly #settingsCommon: HTMLDivElement
 
   public constructor(homey: Homey) {
     this.#homey = homey
@@ -1274,6 +1274,26 @@ class ZoneSettingsManager {
 // ── SettingsApp ──
 
 class SettingsApp {
+  readonly #authManager: AuthManager
+
+  readonly #deviceSettingsManager: DeviceSettingsManager
+
+  readonly #errorLogManager: ErrorLogManager
+
+  readonly #homey: Homey
+
+  readonly #zoneSettingsManager: ZoneSettingsManager
+
+  public constructor(homey: Homey) {
+    this.#homey = homey
+    this.#deviceSettingsManager = new DeviceSettingsManager(homey)
+    this.#zoneSettingsManager = new ZoneSettingsManager(homey)
+    this.#errorLogManager = new ErrorLogManager(homey)
+    this.#authManager = new AuthManager(homey, async () =>
+      this.#loadBuildings('login'),
+    )
+  }
+
   static async #fetchHomeySettings(homey: Homey): Promise<HomeySettings> {
     return new Promise((resolve) => {
       homey.get(async (error: Error | null, settings: HomeySettings) => {
@@ -1296,26 +1316,6 @@ class SettingsApp {
     } catch {
       // Non-critical: page defaults to browser language
     }
-  }
-
-  readonly #authManager: AuthManager
-
-  readonly #deviceSettingsManager: DeviceSettingsManager
-
-  readonly #errorLogManager: ErrorLogManager
-
-  readonly #homey: Homey
-
-  readonly #zoneSettingsManager: ZoneSettingsManager
-
-  public constructor(homey: Homey) {
-    this.#homey = homey
-    this.#deviceSettingsManager = new DeviceSettingsManager(homey)
-    this.#zoneSettingsManager = new ZoneSettingsManager(homey)
-    this.#errorLogManager = new ErrorLogManager(homey)
-    this.#authManager = new AuthManager(homey, async () =>
-      this.#loadBuildings('login'),
-    )
   }
 
   public async init(): Promise<void> {

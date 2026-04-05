@@ -11,6 +11,12 @@ export const SmokeThreshold = {
 } as const
 
 export class SmokeParticle {
+  public opacity = generateStyleNumber({ gap: 0.05, min: 0.05 })
+
+  public positionY: number
+
+  public size = generateStyleNumber({ gap: 2, min: 2 })
+
   readonly #context: CanvasRenderingContext2D
 
   #positionX: number
@@ -18,12 +24,6 @@ export class SmokeParticle {
   readonly #speedX: number
 
   readonly #speedY: number
-
-  public opacity = generateStyleNumber({ gap: 0.05, min: 0.05 })
-
-  public positionY: number
-
-  public size = generateStyleNumber({ gap: 2, min: 2 })
 
   public constructor(
     context: CanvasRenderingContext2D,
