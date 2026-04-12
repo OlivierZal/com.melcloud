@@ -479,12 +479,12 @@ export default class MELCloudApp extends App {
     }
   }
 
-  #createSettingManager(prefix: string): {
+  #createSettingManager(prefix = ''): {
     get: (key: string) => string | null | undefined
     set: (key: string, value: string) => void
   } {
     const prefixKey = (key: string): string =>
-      `${prefix}${key.charAt(0).toUpperCase()}${key.slice(1)}`
+      prefix === '' ? key : `${prefix}${key.charAt(0).toUpperCase()}${key.slice(1)}`
     return {
       get: (key: string): string | null | undefined =>
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Homey settings.get returns unknown
@@ -566,7 +566,7 @@ export default class MELCloudApp extends App {
     this.#api = await ClassicAPI.create({
       language,
       logger: this.#createLogger(),
-      settingManager: this.homey.settings,
+      settingManager: this.#createSettingManager(),
       timezone,
       onSync: async (params) => {
         const { ids, type } = params ?? {}
