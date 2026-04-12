@@ -842,6 +842,24 @@ describe('melCloudApp', () => {
 
       expect(mockSettingsSet).toHaveBeenCalledWith('homePassword', 'secret')
     })
+
+    it('should create classic setting manager without key prefixing', async () => {
+      await app.onInit()
+
+      const { settingManager } = getMockCallArg<{
+        settingManager: {
+          get: (key: string) => unknown
+          set: (key: string, value: string) => void
+        }
+      }>(mockCreate, 0, 0)
+      settingManager.get('contextKey')
+
+      expect(mockSettingsGet).toHaveBeenCalledWith('contextKey')
+
+      settingManager.set('expiry', '2026-12-31')
+
+      expect(mockSettingsSet).toHaveBeenCalledWith('expiry', '2026-12-31')
+    })
   })
 
   describe('ata value update', () => {

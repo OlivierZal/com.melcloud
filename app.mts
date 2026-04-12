@@ -484,7 +484,9 @@ export default class MELCloudApp extends App {
     set: (key: string, value: string) => void
   } {
     const prefixKey = (key: string): string =>
-      prefix === '' ? key : `${prefix}${key.charAt(0).toUpperCase()}${key.slice(1)}`
+      prefix === '' ? key : (
+        `${prefix}${key.charAt(0).toUpperCase()}${key.slice(1)}`
+      )
     return {
       get: (key: string): string | null | undefined =>
         // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Homey settings.get returns unknown
