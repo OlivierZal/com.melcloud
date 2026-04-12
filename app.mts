@@ -1,7 +1,8 @@
 import {
   type BuildingFacade,
+  type ClassicRegistry,
+  type Device,
   type DeviceFacade,
-  type DeviceModel,
   type ErrorLogQuery,
   type Facade,
   type FrostProtectionData,
@@ -9,22 +10,21 @@ import {
   type GroupState,
   type HolidayModeData,
   type HolidayModeQuery,
+  type HomeDevice,
   type HomeDeviceAtaFacade,
-  type HomeDeviceModel,
   type ListDeviceDataAta,
   type LoginCredentials,
-  type ModelRegistry,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
   type ZoneFacade,
+  ClassicAPI,
+  ClassicFacadeManager,
   DeviceType,
-  FacadeManager,
   FanSpeed,
+  HomeAPI,
   HomeDeviceType,
   HomeFacadeManager,
   Horizontal,
-  MELCloudAPI,
-  MELCloudHomeAPI,
   OperationMode,
   Vertical,
 } from '@olivierzal/melcloud-api'
@@ -162,23 +162,23 @@ const getLocalizedCapabilitiesOptions = (
 export default class MELCloudApp extends App {
   declare public readonly homey: Homey.Homey
 
-  public get api(): MELCloudAPI {
+  public get api(): ClassicAPI {
     return this.#api
   }
 
-  public get homeApi(): MELCloudHomeAPI {
+  public get homeApi(): HomeAPI {
     return this.#homeApi
   }
 
-  #api!: MELCloudAPI
+  #api!: ClassicAPI
 
-  #facadeManager!: FacadeManager
+  #facadeManager!: ClassicFacadeManager
 
-  #homeApi!: MELCloudHomeAPI
+  #homeApi!: HomeAPI
 
   #homeFacadeManager!: HomeFacadeManager
 
-  get #registry(): ModelRegistry {
+  get #registry(): ClassicRegistry {
     return this.#api.registry
   }
 
@@ -278,7 +278,7 @@ export default class MELCloudApp extends App {
     return deviceSettings
   }
 
-  public getDevicesByType<T extends DeviceType>(type: T): DeviceModel<T>[] {
+  public getDevicesByType<T extends DeviceType>(type: T): Device<T>[] {
     return this.#registry.getDevicesByType(type)
   }
 
@@ -346,7 +346,7 @@ export default class MELCloudApp extends App {
     return this.getFacade(zoneType, zoneId).getHolidayMode()
   }
 
-  public getHomeDevicesByType(type: HomeDeviceType): HomeDeviceModel[] {
+  public getHomeDevicesByType(type: HomeDeviceType): HomeDevice[] {
     return this.#homeApi.registry.getByType(type)
   }
 
@@ -563,20 +563,25 @@ export default class MELCloudApp extends App {
     language: string
     timezone: string
   }): Promise<void> {
-    this.#api = await MELCloudAPI.create({
+    this.#api = await ClassicAPI.create({
       language,
       logger: this.#createLogger(),
       settingManager: this.homey.settings,
       timezone,
-      onSync: async ({ ids, type } = {}) =>
-        this.#syncDevices(type === undefined ? undefined : drivers[type], ids),
+      onSync: async (params) => {
+        const { ids, type } = params ?? {}
+        await this.#syncDevices(
+          type === undefined ? undefined : drivers[type],
+          ids,
+        )
+      },
     })
-    this.#facadeManager = new FacadeManager(this.#api, this.#registry)
+    this.#facadeManager = new ClassicFacadeManager(this.#api, this.#registry)
     setFacadeManager(this.#facadeManager)
   }
 
   async #initHomeApi(): Promise<void> {
-    this.#homeApi = await MELCloudHomeAPI.create({
+    this.#homeApi = await HomeAPI.create({
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager('home'),
       onSync: async () => this.#syncDevices(drivers[HomeDeviceType.Ata]),

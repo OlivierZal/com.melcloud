@@ -1,13 +1,13 @@
 import type {
   BuildingZone,
+  ClassicFacadeManager,
   DeviceType,
-  FacadeManager,
   Zone,
 } from '@olivierzal/melcloud-api'
 
-const state: { facadeManager?: FacadeManager } = {}
+const state: { facadeManager?: ClassicFacadeManager } = {}
 
-const getFacadeManager = (): FacadeManager => {
+const getFacadeManager = (): ClassicFacadeManager => {
   const { facadeManager } = state
   if (!facadeManager) {
     throw new Error('FacadeManager has not been initialized')
@@ -15,7 +15,7 @@ const getFacadeManager = (): FacadeManager => {
   return facadeManager
 }
 
-export const setFacadeManager = (value: FacadeManager): void => {
+export const setFacadeManager = (value: ClassicFacadeManager): void => {
   state.facadeManager = value
 }
 

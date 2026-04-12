@@ -12,8 +12,8 @@ import {
   type ReportChartLineOptions,
   type ReportChartPieOptions,
   type ZoneFacade,
+  ClassicFacadeManager,
   DeviceType,
-  FacadeManager,
   HomeDeviceAtaFacade,
   HomeDeviceType,
 } from '@olivierzal/melcloud-api'
@@ -114,14 +114,14 @@ const { mockCreate, mockFacadeManagerConstructor, mockHomeCreate } = vi.hoisted(
   }),
 )
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock API classes lack prototype/static members required by typeof MELCloudAPI
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock API classes lack prototype/static members required by typeof ClassicAPI
 vi.mock('@olivierzal/melcloud-api', async (importOriginal) => ({
   ...(await importOriginal()),
-  FacadeManager: mockFacadeManagerConstructor,
-  MELCloudAPI: {
+  ClassicAPI: {
     create: mockCreate,
   },
-  MELCloudHomeAPI: {
+  ClassicFacadeManager: mockFacadeManagerConstructor,
+  HomeAPI: {
     create: mockHomeCreate,
   },
 }))
@@ -180,7 +180,7 @@ const setupMocks = (): void => {
   mockHomeCreate.mockResolvedValue(mockHomeApiInstance)
   // eslint-disable-next-line prefer-arrow-callback -- Constructor mock requires function expression for `new` semantics
   mockFacadeManagerConstructor.mockImplementation(function mockConstructor() {
-    return mock<FacadeManager>({
+    return mock<ClassicFacadeManager>({
       get: mockFacadeManagerGet,
       getZones: mockFacadeManagerGetZones,
     })
@@ -291,7 +291,7 @@ describe('melCloudApp', () => {
           }),
         }),
       )
-      expect(FacadeManager).toHaveBeenCalledTimes(1)
+      expect(ClassicFacadeManager).toHaveBeenCalledTimes(1)
       expect(mockSetFacadeManager).toHaveBeenCalledTimes(1)
     })
 
@@ -798,7 +798,6 @@ describe('melCloudApp', () => {
       mockApiInstance.authenticate.mockResolvedValue(true)
       await app.onInit()
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments -- explicit type ensures mock satisfies LoginCredentials for app.createSession()
       const credentials = mock<LoginCredentials>({
         password: 'pass',
         username: 'user',

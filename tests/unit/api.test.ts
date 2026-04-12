@@ -156,7 +156,6 @@ describe('api', () => {
 
   describe('authentication', () => {
     it('should delegate to app.createSession with body', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments
       const credentials = mock<LoginCredentials>({
         password: 'pass',
         username: 'user',

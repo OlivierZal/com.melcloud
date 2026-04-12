@@ -1,7 +1,7 @@
 /* eslint-disable
     @typescript-eslint/consistent-type-imports,
 */
-import type { HomeDeviceModel } from '@olivierzal/melcloud-api'
+import type { HomeDevice } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
@@ -101,11 +101,11 @@ describe(BaseMELCloudDriver, () => {
   describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
       const devices = [
-        mock<HomeDeviceModel>({
+        mock<HomeDevice>({
           id: 'device-1',
           name: 'Living Room',
         }),
-        mock<HomeDeviceModel>({
+        mock<HomeDevice>({
           id: 'device-2',
           name: 'Guest Room',
         }),

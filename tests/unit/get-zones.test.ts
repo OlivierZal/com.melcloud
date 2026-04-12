@@ -1,4 +1,4 @@
-import { type FacadeManager, DeviceType } from '@olivierzal/melcloud-api'
+import { type ClassicFacadeManager, DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -47,7 +47,7 @@ describe('get-zones', () => {
   describe('when FacadeManager is initialized', () => {
     beforeEach(() => {
       setFacadeManager(
-        mock<FacadeManager>({
+        mock<ClassicFacadeManager>({
           get: mockFacadeManager.get,
           getBuildings: mockFacadeManager.getBuildings,
           getZones: mockFacadeManager.getZones,

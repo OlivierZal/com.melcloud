@@ -11,7 +11,11 @@
     </head>
     <body>
         <header class="homey-header">
-            <h1 class="homey-title" data-i18n="settings.title"></h1>
+            <h1
+                class="homey-title"
+                aria-label="Settings"
+                data-i18n="settings.title"
+            ></h1>
         </header>
         <!-- Shown before authentication -->
         <div id="authenticating" hidden>
@@ -56,8 +60,16 @@
                 </div>
                 <div id="error_log" class="homey-form-group">
                     <div class="container-inline-end">
-                        <label id="period" class="homey-form-label unset-margin bolded"></label>
-                        <label id="error_count" class="homey-form-label unset-margin"></label>
+                        <label
+                            id="period"
+                            class="homey-form-label unset-margin bolded"
+                            aria-label="Period"
+                        ></label>
+                        <label
+                            id="error_count"
+                            class="homey-form-label unset-margin"
+                            aria-label="Error count"
+                        ></label>
                     </div>
                 </div>
             </fieldset>
@@ -88,6 +100,7 @@
                     <div class="homey-form-group">
                         <label
                             class="homey-form-label"
+                            aria-label="Auto-adjust"
                             data-i18n="settings.devicesAta.autoAdjust"
                             for="auto_adjust"
                         ></label>
@@ -160,8 +173,16 @@
                         for="enabled_holiday_mode"
                     ></label>
                     <select id="enabled_holiday_mode" class="homey-form-select">
-                        <option data-i18n="settings.boolean.false" value="false"></option>
-                        <option data-i18n="settings.boolean.true" value="true"></option>
+                        <option
+                            aria-label="No"
+                            data-i18n="settings.boolean.false"
+                            value="false"
+                        ></option>
+                        <option
+                            aria-label="Yes"
+                            data-i18n="settings.boolean.true"
+                            value="true"
+                        ></option>
                     </select>
                 </div>
                 <div class="homey-form-group">
@@ -212,8 +233,16 @@
                         for="enabled_frost_protection"
                     ></label>
                     <select id="enabled_frost_protection" class="homey-form-select">
-                        <option data-i18n="settings.boolean.false" value="false"></option>
-                        <option data-i18n="settings.boolean.true" value="true"></option>
+                        <option
+                            aria-label="No"
+                            data-i18n="settings.boolean.false"
+                            value="false"
+                        ></option>
+                        <option
+                            aria-label="Yes"
+                            data-i18n="settings.boolean.true"
+                            value="true"
+                        ></option>
                     </select>
                 </div>
                 <div class="homey-form-group">
