@@ -1227,6 +1227,28 @@ describe('melCloudApp', () => {
 
       expect(syncFromDevice).toHaveBeenCalledTimes(1)
     })
+
+    it('should log error when device sync fails', async () => {
+      const errorSpy = vi.fn()
+      Object.defineProperty(app, 'error', {
+        configurable: true,
+        value: errorSpy,
+      })
+      const { device } = createSyncDevice(
+        1,
+        vi.fn<() => Promise<void>>().mockRejectedValue(new Error('sync error')),
+      )
+      const mockDriver = createMockDriver([device])
+      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      await app.onInit()
+
+      await getOnSyncCallback()()
+
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Device sync failed:',
+        expect.any(Error),
+      )
+    })
   })
 
   describe('home device synchronization via onSync callback', () => {

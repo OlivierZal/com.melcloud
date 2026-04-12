@@ -641,8 +641,8 @@ export default class MELCloudApp extends App {
           device.syncFromDevice(),
         ),
       )
-    } catch {
-      // Driver not yet initialized during app startup — devices will sync once ready
+    } catch (error) {
+      this.error('Device sync failed:', error)
     }
   }
 }
