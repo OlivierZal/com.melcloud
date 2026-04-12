@@ -89,7 +89,7 @@ const api = {
     homey: Homey
     query: { driverId?: string }
   }): Promise<void> {
-    return app.setDeviceSettings(body, { driverId })
+    return app.setDeviceSettings({ driverId, settings: body })
   },
   async setFrostProtection({
     body,
@@ -100,7 +100,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return app.setFrostProtection(body, params)
+    return app.setFrostProtection({ settings: body, ...params })
   },
   async setHolidayMode({
     body,
@@ -111,7 +111,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return app.setHolidayMode(body, params)
+    return app.setHolidayMode({ settings: body, ...params })
   },
 }
 

@@ -94,7 +94,10 @@ describe('charts api', () => {
       })
 
       expect(result).toBe(lineOptions)
-      expect(mockApp.getHourlyTemperatures).toHaveBeenCalledWith('dev1', 10)
+      expect(mockApp.getHourlyTemperatures).toHaveBeenCalledWith({
+        deviceId: 'dev1',
+        hour: 10,
+      })
     })
 
     it('should pass undefined when hour is undefined', async () => {
@@ -108,10 +111,10 @@ describe('charts api', () => {
       })
 
       expect(result).toBe(lineOptions)
-      expect(mockApp.getHourlyTemperatures).toHaveBeenCalledWith(
-        'dev1',
-        undefined,
-      )
+      expect(mockApp.getHourlyTemperatures).toHaveBeenCalledWith({
+        deviceId: 'dev1',
+        hour: undefined,
+      })
     })
   })
 
@@ -138,7 +141,10 @@ describe('charts api', () => {
       })
 
       expect(result).toBe(pieOptions)
-      expect(mockApp.getOperationModes).toHaveBeenCalledWith('dev1', 7)
+      expect(mockApp.getOperationModes).toHaveBeenCalledWith({
+        days: 7,
+        deviceId: 'dev1',
+      })
     })
   })
 
@@ -154,7 +160,10 @@ describe('charts api', () => {
       })
 
       expect(result).toBe(lineOptions)
-      expect(mockApp.getSignal).toHaveBeenCalledWith('dev1', 5)
+      expect(mockApp.getSignal).toHaveBeenCalledWith({
+        deviceId: 'dev1',
+        hour: 5,
+      })
     })
 
     it('should pass undefined when hour is undefined', async () => {
@@ -168,7 +177,10 @@ describe('charts api', () => {
       })
 
       expect(result).toBe(lineOptions)
-      expect(mockApp.getSignal).toHaveBeenCalledWith('dev1', undefined)
+      expect(mockApp.getSignal).toHaveBeenCalledWith({
+        deviceId: 'dev1',
+        hour: undefined,
+      })
     })
   })
 
@@ -184,7 +196,10 @@ describe('charts api', () => {
       })
 
       expect(result).toBe(lineOptions)
-      expect(mockApp.getTemperatures).toHaveBeenCalledWith('dev1', 30)
+      expect(mockApp.getTemperatures).toHaveBeenCalledWith({
+        days: 30,
+        deviceId: 'dev1',
+      })
     })
   })
 })

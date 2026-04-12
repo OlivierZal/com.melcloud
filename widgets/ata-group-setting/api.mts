@@ -28,7 +28,7 @@ const api = {
     query: GetAtaOptions
   }): Promise<GroupAtaStates | GroupState> {
     return mode === 'detailed' ?
-        app.getAtaDetailedValues(params, { status })
+        app.getAtaDetailedValues({ ...params, status })
       : app.getAtaState(params)
   },
   getBuildings({
@@ -52,7 +52,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return app.setAtaState(body, params)
+    return app.setAtaState({ state: body, ...params })
   },
 }
 

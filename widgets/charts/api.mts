@@ -28,11 +28,11 @@ const api = {
     params: { deviceId: string }
     query: HourQuery
   }): Promise<ReportChartLineOptions> {
-    return app.getHourlyTemperatures(
+    return app.getHourlyTemperatures({
       deviceId,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Number to HourNumbers (0-23)
-      hour === undefined ? undefined : (Number(hour) as HourNumbers),
-    )
+      hour: hour === undefined ? undefined : (Number(hour) as HourNumbers),
+    })
   },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()
@@ -46,7 +46,7 @@ const api = {
     params: { deviceId: string }
     query: DaysQuery
   }): Promise<ReportChartPieOptions> {
-    return app.getOperationModes(deviceId, Number(days))
+    return app.getOperationModes({ days: Number(days), deviceId })
   },
   async getSignal({
     homey: { app },
@@ -57,11 +57,11 @@ const api = {
     params: { deviceId: string }
     query: HourQuery
   }): Promise<ReportChartLineOptions> {
-    return app.getSignal(
+    return app.getSignal({
       deviceId,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Number to HourNumbers (0-23)
-      hour === undefined ? undefined : (Number(hour) as HourNumbers),
-    )
+      hour: hour === undefined ? undefined : (Number(hour) as HourNumbers),
+    })
   },
   async getTemperatures({
     homey: { app },
@@ -72,7 +72,7 @@ const api = {
     params: { deviceId: string }
     query: DaysQuery
   }): Promise<ReportChartLineOptions> {
-    return app.getTemperatures(deviceId, Number(days))
+    return app.getTemperatures({ days: Number(days), deviceId })
   },
 }
 

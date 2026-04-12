@@ -189,8 +189,9 @@ describe('api', () => {
         query: { driverId: 'melcloud' },
       })
 
-      expect(mockApp.setDeviceSettings).toHaveBeenCalledWith(body, {
+      expect(mockApp.setDeviceSettings).toHaveBeenCalledWith({
         driverId: 'melcloud',
+        settings: body,
       })
     })
 
@@ -204,8 +205,9 @@ describe('api', () => {
         query: { driverId: undefined },
       })
 
-      expect(mockApp.setDeviceSettings).toHaveBeenCalledWith(body, {
+      expect(mockApp.setDeviceSettings).toHaveBeenCalledWith({
         driverId: undefined,
+        settings: body,
       })
     })
   })
@@ -218,7 +220,10 @@ describe('api', () => {
 
       await api.setFrostProtection({ body, homey, params })
 
-      expect(mockApp.setFrostProtection).toHaveBeenCalledWith(body, params)
+      expect(mockApp.setFrostProtection).toHaveBeenCalledWith({
+        settings: body,
+        ...params,
+      })
     })
   })
 
@@ -230,7 +235,10 @@ describe('api', () => {
 
       await api.setHolidayMode({ body, homey, params })
 
-      expect(mockApp.setHolidayMode).toHaveBeenCalledWith(body, params)
+      expect(mockApp.setHolidayMode).toHaveBeenCalledWith({
+        settings: body,
+        ...params,
+      })
     })
   })
 })

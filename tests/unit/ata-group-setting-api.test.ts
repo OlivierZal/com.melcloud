@@ -63,7 +63,8 @@ describe('ata-group-setting api', () => {
       })
 
       expect(result).toBe(detailedValues)
-      expect(mockApp.getAtaDetailedValues).toHaveBeenCalledWith(params, {
+      expect(mockApp.getAtaDetailedValues).toHaveBeenCalledWith({
+        ...params,
         status: 'on',
       })
     })
@@ -124,7 +125,10 @@ describe('ata-group-setting api', () => {
 
       await api.setAtaState({ body, homey, params })
 
-      expect(mockApp.setAtaState).toHaveBeenCalledWith(body, params)
+      expect(mockApp.setAtaState).toHaveBeenCalledWith({
+        state: body,
+        ...params,
+      })
     })
   })
 })

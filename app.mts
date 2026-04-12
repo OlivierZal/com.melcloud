@@ -230,10 +230,11 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public getAtaDetailedValues(
-    { zoneId, zoneType }: ZoneData,
-    { status }: { status?: GetAtaOptions['status'] } = {},
-  ): GroupAtaStates {
+  public getAtaDetailedValues({
+    status,
+    zoneId,
+    zoneType,
+  }: ZoneData & { status?: GetAtaOptions['status'] }): GroupAtaStates {
     const { devices } = this.getFacade(zoneType, zoneId)
     if (devices.length === 0) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
@@ -358,50 +359,66 @@ export default class MELCloudApp extends App {
     return this.#homeFacadeManager.get(model)
   }
 
-  public async getHourlyTemperatures(
-    deviceId: string,
-    hour?: HourNumbers,
-  ): Promise<ReportChartLineOptions> {
+  public async getHourlyTemperatures({
+    deviceId,
+    hour,
+  }: {
+    deviceId: string
+    hour?: HourNumbers
+  }): Promise<ReportChartLineOptions> {
     return this.getFacade('devices', deviceId).getHourlyTemperatures(hour)
   }
 
-  public async getOperationModes(
-    deviceId: string,
-    days: number,
-  ): Promise<ReportChartPieOptions> {
+  public async getOperationModes({
+    days,
+    deviceId,
+  }: {
+    days: number
+    deviceId: string
+  }): Promise<ReportChartPieOptions> {
     return this.getFacade('devices', deviceId).getOperationModes(
       createDateRange(days),
     )
   }
 
-  public async getSignal(
-    deviceId: string,
-    hour?: HourNumbers,
-  ): Promise<ReportChartLineOptions> {
+  public async getSignal({
+    deviceId,
+    hour,
+  }: {
+    deviceId: string
+    hour?: HourNumbers
+  }): Promise<ReportChartLineOptions> {
     return this.getFacade('devices', deviceId).getSignalStrength(hour)
   }
 
-  public async getTemperatures(
-    deviceId: string,
-    days: number,
-  ): Promise<ReportChartLineOptions> {
+  public async getTemperatures({
+    days,
+    deviceId,
+  }: {
+    days: number
+    deviceId: string
+  }): Promise<ReportChartLineOptions> {
     return this.getFacade('devices', deviceId).getTemperatures(
       createDateRange(days),
     )
   }
 
-  public async setAtaState(
-    state: GroupState,
-    { zoneId, zoneType }: ZoneData,
-  ): Promise<void> {
+  public async setAtaState({
+    state,
+    zoneId,
+    zoneType,
+  }: ZoneData & { state: GroupState }): Promise<void> {
     const data = await this.getFacade(zoneType, zoneId).setGroup(state)
     throwOnErrors(data.AttributeErrors)
   }
 
-  public async setDeviceSettings(
-    settings: Settings,
-    { driverId }: { driverId?: string } = {},
-  ): Promise<void> {
+  public async setDeviceSettings({
+    driverId,
+    settings,
+  }: {
+    settings: Settings
+    driverId?: string
+  }): Promise<void> {
     await Promise.all(
       this.#getDevices({ driverId }).map(async (device) => {
         const changedKeys = Object.keys(settings).filter(
@@ -421,20 +438,22 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public async setFrostProtection(
-    settings: FrostProtectionQuery,
-    { zoneId, zoneType }: ZoneData,
-  ): Promise<void> {
+  public async setFrostProtection({
+    settings,
+    zoneId,
+    zoneType,
+  }: ZoneData & { settings: FrostProtectionQuery }): Promise<void> {
     const data = await this.getFacade(zoneType, zoneId).setFrostProtection(
       settings,
     )
     throwOnErrors(data.AttributeErrors)
   }
 
-  public async setHolidayMode(
-    settings: HolidayModeQuery,
-    { zoneId, zoneType }: ZoneData,
-  ): Promise<void> {
+  public async setHolidayMode({
+    settings,
+    zoneId,
+    zoneType,
+  }: ZoneData & { settings: HolidayModeQuery }): Promise<void> {
     const data = await this.getFacade(zoneType, zoneId).setHolidayMode(settings)
     throwOnErrors(data.AttributeErrors)
   }
