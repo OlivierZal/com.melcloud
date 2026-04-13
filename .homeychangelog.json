@@ -271,5 +271,20 @@
     "pl": "✨ **Nowe funkcje** ✨\n• Obsługa pomp ciepła powietrze-powietrze MELCloud Home.\n• Karty przepływu (akcje i warunki) są teraz dostępne dla urządzeń MELCloud Home.\n• Dodano siłę sygnału Wi-Fi dla urządzeń MELCloud Home.\n• Nowe tłumaczenia: arabski, niemiecki, włoski, koreański, polski, rosyjski.",
     "ru": "✨ **Новые функции** ✨\n• Поддержка тепловых насосов воздух-воздух MELCloud Home.\n• Карточки потоков (действия и условия) теперь доступны для устройств MELCloud Home.\n• Добавлена мощность сигнала Wi-Fi для устройств MELCloud Home.\n• Новые переводы: арабский, немецкий, итальянский, корейский, польский, русский.",
     "sv": "✨ **Nya funktioner** ✨\n• Stöd för MELCloud Home luft-till-luft-värmepumpar.\n• Flödeskort (åtgärder och villkor) är nu tillgängliga för MELCloud Home-enheter.\n• Wi-Fi-signalstyrka tillagd för MELCloud Home-enheter.\n• Nya översättningar: arabiska, tyska, italienska, koreanska, polska, ryska."
+  },
+  "44.0.1": {
+    "ar": "إصلاح المصادقة لواجهة برمجة تطبيقات MELCloud Home.",
+    "da": "Rettet godkendelse for MELCloud Home API.",
+    "de": "Authentifizierung für die MELCloud Home API behoben.",
+    "en": "Fixed authentication for MELCloud Home API.",
+    "es": "Corregida la autenticación para la API de MELCloud Home.",
+    "fr": "Correction de l'authentification pour l'API MELCloud Home.",
+    "it": "Corretta l'autenticazione per l'API MELCloud Home.",
+    "ko": "MELCloud Home API 인증 수정.",
+    "nl": "Authenticatie voor MELCloud Home API hersteld.",
+    "no": "Rettet autentisering for MELCloud Home API.",
+    "pl": "Naprawiono uwierzytelnianie dla API MELCloud Home.",
+    "ru": "Исправлена аутентификация для API MELCloud Home.",
+    "sv": "Autentisering för MELCloud Home API har åtgärdats."
   }
 }
