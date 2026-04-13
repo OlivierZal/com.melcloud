@@ -1,6 +1,3 @@
-/* eslint-disable
-    @typescript-eslint/consistent-type-imports,
-*/
 import {
   type HomeDeviceAtaFacade,
   FanSpeed,
@@ -19,6 +16,7 @@ import { createInstance } from './create-test-instance.ts'
 
 vi.mock(import('@olivierzal/melcloud-api'), async (importOriginal) => {
   const actual =
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- typeof import() required by vitest importOriginal generic
     await importOriginal<typeof import('@olivierzal/melcloud-api')>()
   return {
     ...actual,

@@ -1,7 +1,7 @@
 /* eslint-disable
     @typescript-eslint/consistent-type-assertions,
-    @typescript-eslint/consistent-type-imports,
 */
+import type PairSession from 'homey/lib/PairSession'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
@@ -13,9 +13,9 @@ import {
 } from '../driver-descriptors.ts'
 import { assertDefined, mock } from '../helpers.ts'
 import {
+  type TestDriver,
   type TestDriverType,
   createTestDriver,
-  TestDriver,
 } from './base-driver-test-driver.ts'
 
 const {
@@ -95,7 +95,7 @@ describe(ClassicMELCloudDriver, () => {
   describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
       const listHandler = vi.fn()
-      const session = mock<import('homey/lib/PairSession')>({
+      const session = mock<PairSession>({
         setHandler: vi
           .fn()
           .mockImplementation(
