@@ -62,8 +62,8 @@ export abstract class BaseMELCloudDevice extends Device {
 
   protected get operationalCapabilityTagEntries(): [string, string][] {
     return Object.entries({
-      ...this.getSetCapabilityTagMapping(),
-      ...this.getGetCapabilityTagMapping(),
+      ...this.#setCapabilityTagMapping,
+      ...this.#getCapabilityTagMapping,
       ...this.#listCapabilityTagMapping,
     })
   }
@@ -235,16 +235,8 @@ export abstract class BaseMELCloudDevice extends Device {
     this.#reports.total?.unschedule()
   }
 
-  protected getGetCapabilityTagMapping(): Record<string, string> {
-    return this.#getCapabilityTagMapping
-  }
-
   protected getRequiredCapabilities(): string[] {
     return this.driver.getRequiredCapabilities()
-  }
-
-  protected getSetCapabilityTagMapping(): Record<string, string> {
-    return this.#setCapabilityTagMapping
   }
 
   protected isEnergyCapability(setting: string): boolean {
@@ -259,7 +251,7 @@ export abstract class BaseMELCloudDevice extends Device {
     values: Record<string, unknown>,
   ): Record<string, unknown> {
     this.log('Requested data:', values)
-    const tagMapping = this.getSetCapabilityTagMapping()
+    const tagMapping = this.#setCapabilityTagMapping
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Object.fromEntries returns { [k: string]: any }
     return Object.fromEntries(
       Object.entries(values).map(([capability, value]) => [
