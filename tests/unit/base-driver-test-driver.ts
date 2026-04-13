@@ -1,4 +1,4 @@
-import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
+import type { DeviceType } from '@olivierzal/melcloud-api'
 import { vi } from 'vitest'
 
 import type {
@@ -42,7 +42,7 @@ export class TestDriver extends ClassicMELCloudDriver<TestDriverType> {
 
   public readonly type: TestDriverType = 0
 
-  public getRequiredCapabilities(_context: ListDeviceDataAta): string[] {
+  public getRequiredCapabilities(): string[] {
     return Object.keys(this.setCapabilityTagMapping)
   }
 }

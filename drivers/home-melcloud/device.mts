@@ -86,7 +86,7 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
   }
 
   /* v8 ignore start -- never called: energyReportRegular/Total are null */
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- required override of abstract method; Home devices do not support energy reports
   protected override createEnergyReport(): never {
     throw new Error('Energy reports are not supported for Home devices')
   }

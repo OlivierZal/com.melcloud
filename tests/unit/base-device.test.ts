@@ -604,7 +604,6 @@ describe(ClassicMELCloudDevice, () => {
       const callback = vi.fn<() => Promise<void>>()
       device.setInterval(callback, { hours: 1 }, 'energy report')
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method -- Asserting mock was called with this exact function reference
       expect(device.homey.setInterval).toHaveBeenCalledWith(callback, 3_600_000)
     })
 
@@ -612,7 +611,6 @@ describe(ClassicMELCloudDevice, () => {
       const callback = vi.fn<() => Promise<void>>()
       device.setTimeout(callback, { minutes: 5 }, 'sync')
 
-      // eslint-disable-next-line @typescript-eslint/unbound-method -- Asserting mock was called with this exact function reference
       expect(device.homey.setTimeout).toHaveBeenCalledWith(callback, 300_000)
     })
   })

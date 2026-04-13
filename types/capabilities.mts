@@ -38,10 +38,9 @@ export interface CapabilitiesOptionsAtaErv {
 }
 
 /*
- * Uses method signature syntax (bivariant) instead of arrow function syntax
- * (contravariant). This allows converter functions to accept narrower parameter
- * types (e.g., FanSpeed instead of the full ListDeviceData value union) without
- * type errors.
+ * Uses method signature syntax (bivariant) to allow converter functions
+ * to accept narrower parameter types (e.g., FanSpeed instead of the full
+ * ListDeviceData value union).
  */
 export type ConvertFromDevice<T extends DeviceType> = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
@@ -52,10 +51,9 @@ export type ConvertFromDevice<T extends DeviceType> = {
 }['bivariant']
 
 /*
- * Uses method signature syntax (bivariant) instead of arrow function syntax
- * (contravariant). This allows converter functions to accept narrower parameter
- * types (e.g., FanSpeed instead of the full UpdateDeviceData value union)
- * without type errors.
+ * Uses method signature syntax (bivariant) to allow converter functions
+ * to accept narrower parameter types (e.g., FanSpeed instead of the full
+ * UpdateDeviceData value union).
  */
 export type ConvertToDevice<T extends DeviceType> = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking

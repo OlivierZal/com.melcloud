@@ -275,7 +275,6 @@ const config = defineConfig([
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
-          argsIgnorePattern: '^_context$',
           enableAutofixRemoval: {
             imports: true,
           },
@@ -755,11 +754,12 @@ const config = defineConfig([
     },
   },
   {
-    extends: [vitest.configs.all],
+    extends: [vitest.configs.all, vitest.configs.recommended],
     files: ['tests/**/*.ts'],
     rules: {
       '@typescript-eslint/no-magic-numbers': 'off',
       '@typescript-eslint/no-unsafe-type-assertion': 'off',
+      '@typescript-eslint/unbound-method': 'off',
       'max-lines-per-function': 'off',
       'max-statements': 'off',
       'vitest/max-expects': 'off',
