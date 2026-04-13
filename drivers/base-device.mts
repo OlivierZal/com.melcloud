@@ -173,9 +173,7 @@ export abstract class BaseMELCloudDevice extends Device {
   }
   /* v8 ignore stop */
 
-  get #listCapabilityTagMapping(): Record<string, string> {
-    return this.cleanMapping(this.driver.listCapabilityTagMapping)
-  }
+  #listCapabilityTagMapping: Record<string, string> = {}
 
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
@@ -351,6 +349,9 @@ export abstract class BaseMELCloudDevice extends Device {
     this.#getCapabilityTagMapping = this.cleanMapping(
       this.driver.getCapabilityTagMapping,
     )
+    this.#listCapabilityTagMapping = this.cleanMapping(
+      this.driver.listCapabilityTagMapping,
+    )
   }
 
   #setTimer(
@@ -383,6 +384,15 @@ export abstract class BaseMELCloudDevice extends Device {
         this.addCapability(capability)
       : this.removeCapability(capability))
     }
+    this.#setCapabilityTagMapping = this.cleanMapping(
+      this.driver.setCapabilityTagMapping,
+    )
+    this.#getCapabilityTagMapping = this.cleanMapping(
+      this.driver.getCapabilityTagMapping,
+    )
+    this.#listCapabilityTagMapping = this.cleanMapping(
+      this.driver.listCapabilityTagMapping,
+    )
   }
 
   async #updateDeviceOnSettings(
