@@ -1,11 +1,11 @@
 import type {
-  type DeviceType,
-  type EnergyDataAta,
-  type FanSpeed,
-  type GetDeviceData,
-  type ListDeviceDataAta,
-  type UpdateDeviceDataAta,
+  DeviceType,
+  EnergyDataAta,
+  FanSpeed,
+  GetDeviceData,
   Horizontal,
+  ListDeviceDataAta,
+  UpdateDeviceDataAta,
   Vertical,
 } from '@olivierzal/melcloud-api'
 

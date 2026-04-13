@@ -7,8 +7,9 @@ export interface Homey<
 }
 
 export const fireAndForget = (promise: Promise<unknown>): void => {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function -- intentional no-op: errors are handled internally or non-critical
-  promise.catch(() => {})
+  promise.catch(() => {
+    // Intentional no-op
+  })
 }
 
 export const homeyApiGet = async <T,>(
