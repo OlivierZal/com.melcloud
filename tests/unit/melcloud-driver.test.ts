@@ -2,11 +2,11 @@ import { DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
-  classicEnergyCapabilityTagMappingAta,
-  classicGetCapabilityTagMappingAta,
-  classicListCapabilityTagMappingAta,
-  classicSetCapabilityTagMappingAta,
-} from '../../types/index.mts'
+  energyCapabilityTagMapping,
+  getCapabilityTagMapping,
+  listCapabilityTagMapping,
+  setCapabilityTagMapping,
+} from '../../types/classic-ata.mts'
 import { testDriverType, testTagMappings } from '../driver-descriptors.ts'
 import ClassicMELCloudDriverAta from '../../drivers/melcloud/driver.mts'
 
@@ -26,10 +26,10 @@ describe(ClassicMELCloudDriverAta, () => {
   testDriverType(() => driver, DeviceType.Ata)
 
   testTagMappings(() => driver, {
-    energyCapabilityTagMapping: classicEnergyCapabilityTagMappingAta,
-    getCapabilityTagMapping: classicGetCapabilityTagMappingAta,
-    listCapabilityTagMapping: classicListCapabilityTagMappingAta,
-    setCapabilityTagMapping: classicSetCapabilityTagMappingAta,
+    energyCapabilityTagMapping,
+    getCapabilityTagMapping,
+    listCapabilityTagMapping,
+    setCapabilityTagMapping,
   })
 
   describe('required capabilities', () => {
@@ -44,9 +44,9 @@ describe(ClassicMELCloudDriverAta, () => {
     it('should include all set, get, and list capability keys', () => {
       const capabilities = driver.getRequiredCapabilities()
       const allKeys = Object.keys({
-        ...classicSetCapabilityTagMappingAta,
-        ...classicGetCapabilityTagMappingAta,
-        ...classicListCapabilityTagMappingAta,
+        ...setCapabilityTagMapping,
+        ...getCapabilityTagMapping,
+        ...listCapabilityTagMapping,
       }).filter((key) => key !== 'measure_signal_strength')
 
       expect(capabilities).toStrictEqual(allKeys)

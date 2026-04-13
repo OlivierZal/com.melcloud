@@ -12,13 +12,13 @@ import type {
   ClassicMELCloudDeviceAtw,
   ClassicMELCloudDeviceErv,
 } from '../drivers/index.mts'
-import type { ClassicFlowArgsAta } from './ata.mts'
-import type { ClassicFlowArgsAtw } from './atw.mts'
 import type {
   CapabilitiesOptions,
   CapabilitiesOptionsAtaErv,
 } from './capabilities.mts'
-import type { ClassicFlowArgsErv } from './erv.mts'
+import type * as classicAta from './classic-ata.mts'
+import type * as classicAtw from './classic-atw.mts'
+import type * as classicErv from './classic-erv.mts'
 import {
   type CapabilitiesOptionsValues,
   type LocalizedStrings,
@@ -170,9 +170,9 @@ export interface AuthAPI {
 }
 
 export type ClassicFlowArgs<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? ClassicFlowArgsAta
-  : T extends typeof DeviceType.Atw ? ClassicFlowArgsAtw
-  : T extends typeof DeviceType.Erv ? ClassicFlowArgsErv
+  T extends typeof DeviceType.Ata ? classicAta.FlowArgs
+  : T extends typeof DeviceType.Atw ? classicAtw.FlowArgs
+  : T extends typeof DeviceType.Erv ? classicErv.FlowArgs
   : never
 
 export type ClassicMELCloudDevice =

@@ -1,28 +1,27 @@
 import { type ListDeviceData, DeviceType } from '@olivierzal/melcloud-api'
 
+import type { Capabilities } from '../../types/index.mts'
 import {
-  type Capabilities,
-  classicEnergyCapabilityTagMappingAtw,
-  classicGetCapabilitiesOptionsAtw,
-  classicGetCapabilityTagMappingAtw,
-  classicListCapabilityTagMappingAtw,
-  classicSetCapabilityTagMappingAtw,
-} from '../../types/index.mts'
+  energyCapabilityTagMapping,
+  getCapabilitiesOptions,
+  getCapabilityTagMapping,
+  listCapabilityTagMapping,
+  setCapabilityTagMapping,
+} from '../../types/classic-atw.mts'
 import { ClassicMELCloudDriver } from '../classic-base-driver.mts'
 
 export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
   typeof DeviceType.Atw
 > {
-  public readonly energyCapabilityTagMapping =
-    classicEnergyCapabilityTagMappingAtw
+  public readonly energyCapabilityTagMapping = energyCapabilityTagMapping
 
-  public readonly getCapabilitiesOptions = classicGetCapabilitiesOptionsAtw
+  public readonly getCapabilitiesOptions = getCapabilitiesOptions
 
-  public readonly getCapabilityTagMapping = classicGetCapabilityTagMappingAtw
+  public readonly getCapabilityTagMapping = getCapabilityTagMapping
 
-  public readonly listCapabilityTagMapping = classicListCapabilityTagMappingAtw
+  public readonly listCapabilityTagMapping = listCapabilityTagMapping
 
-  public readonly setCapabilityTagMapping = classicSetCapabilityTagMappingAtw
+  public readonly setCapabilityTagMapping = setCapabilityTagMapping
 
   public readonly type = DeviceType.Atw
 

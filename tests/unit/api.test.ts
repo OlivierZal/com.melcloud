@@ -161,18 +161,18 @@ describe('api', () => {
     it('should delegate to app.api.isAuthenticated', () => {
       mockIsAuthenticated.mockReturnValue(true)
 
-      const result = api.getClassicSession({ homey })
+      const isAuthenticated = api.getClassicSession({ homey })
 
-      expect(result).toBe(true)
+      expect(isAuthenticated).toBe(true)
       expect(mockIsAuthenticated).toHaveBeenCalledTimes(1)
     })
 
     it('should return false when not authenticated', () => {
       mockIsAuthenticated.mockReturnValue(false)
 
-      const result = api.getClassicSession({ homey })
+      const isAuthenticated = api.getClassicSession({ homey })
 
-      expect(result).toBe(false)
+      expect(isAuthenticated).toBe(false)
     })
   })
 

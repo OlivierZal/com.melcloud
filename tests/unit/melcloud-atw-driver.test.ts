@@ -2,11 +2,11 @@ import { type ListDeviceDataAtw, DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
-  classicEnergyCapabilityTagMappingAtw,
-  classicGetCapabilityTagMappingAtw,
-  classicListCapabilityTagMappingAtw,
-  classicSetCapabilityTagMappingAtw,
-} from '../../types/index.mts'
+  energyCapabilityTagMapping,
+  getCapabilityTagMapping,
+  listCapabilityTagMapping,
+  setCapabilityTagMapping,
+} from '../../types/classic-atw.mts'
 import { testDriverType, testTagMappings } from '../driver-descriptors.ts'
 import { mock } from '../helpers.ts'
 import ClassicMELCloudDriverAtw from '../../drivers/melcloud_atw/driver.mts'
@@ -27,10 +27,10 @@ describe(ClassicMELCloudDriverAtw, () => {
   testDriverType(() => driver, DeviceType.Atw)
 
   testTagMappings(() => driver, {
-    energyCapabilityTagMapping: classicEnergyCapabilityTagMappingAtw,
-    getCapabilityTagMapping: classicGetCapabilityTagMappingAtw,
-    listCapabilityTagMapping: classicListCapabilityTagMappingAtw,
-    setCapabilityTagMapping: classicSetCapabilityTagMappingAtw,
+    energyCapabilityTagMapping,
+    getCapabilityTagMapping,
+    listCapabilityTagMapping,
+    setCapabilityTagMapping,
   })
 
   describe('required capabilities', () => {

@@ -43,34 +43,16 @@ export type {
 export type { BuildingZone, DeviceZone, Zone } from '@olivierzal/melcloud-api'
 
 export {
-  classicEnergyCapabilityTagMappingAta,
-  classicGetCapabilityTagMappingAta,
-  classicListCapabilityTagMappingAta,
-  classicSetCapabilityTagMappingAta,
   horizontalFromDevice,
   operationModeFromDevice,
   ThermostatModeAta,
   verticalFromDevice,
 } from './ata.mts'
 export {
-  type ClassicTargetTemperatureFlowCapabilities,
-  ClassicHotWaterMode,
-  classicEnergyCapabilityTagMappingAtw,
-  classicGetCapabilitiesOptionsAtw,
-  classicGetCapabilityTagMappingAtw,
-  classicListCapabilityTagMappingAtw,
-  classicSetCapabilityTagMappingAtw,
   operationModeStateFromDevice,
   operationModeZoneFromDevice,
-} from './atw.mts'
-export {
-  ThermostatModeErv,
-  classicEnergyCapabilityTagMappingErv,
-  classicGetCapabilityTagMappingErv,
-  classicListCapabilityTagMappingErv,
-  classicSetCapabilityTagMappingErv,
-  ventilationModeFromDevice,
-} from './erv.mts'
+} from './classic-atw.mts'
+export { ThermostatModeErv, ventilationModeFromDevice } from './erv.mts'
 export {
   type AuthAPI,
   type ClassicFlowArgs,

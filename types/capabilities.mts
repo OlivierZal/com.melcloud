@@ -6,50 +6,31 @@ import type {
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
 
-import type {
-  ClassicCapabilitiesAta,
-  ClassicEnergyCapabilitiesAta,
-  ClassicGetCapabilitiesAta,
-  ClassicListCapabilitiesAta,
-  ClassicSetCapabilitiesAta,
-} from './ata.mts'
-import type {
-  ClassicCapabilitiesAtw,
-  ClassicCapabilitiesOptionsAtw,
-  ClassicEnergyCapabilitiesAtw,
-  ClassicGetCapabilitiesAtw,
-  ClassicListCapabilitiesAtw,
-  ClassicSetCapabilitiesAtw,
-} from './atw.mts'
 import type { RangeOptions } from './bases.mts'
-import type {
-  ClassicCapabilitiesErv,
-  ClassicEnergyCapabilitiesErv,
-  ClassicGetCapabilitiesErv,
-  ClassicListCapabilitiesErv,
-  ClassicSetCapabilitiesErv,
-} from './erv.mts'
+import type * as classicAta from './classic-ata.mts'
+import type * as classicAtw from './classic-atw.mts'
+import type * as classicErv from './classic-erv.mts'
 
 type GetCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? ClassicGetCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? ClassicGetCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? ClassicGetCapabilitiesErv
+  T extends typeof DeviceType.Ata ? classicAta.GetCapabilities
+  : T extends typeof DeviceType.Atw ? classicAtw.GetCapabilities
+  : T extends typeof DeviceType.Erv ? classicErv.GetCapabilities
   : never
 
 type ListCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? ClassicListCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? ClassicListCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? ClassicListCapabilitiesErv
+  T extends typeof DeviceType.Ata ? classicAta.ListCapabilities
+  : T extends typeof DeviceType.Atw ? classicAtw.ListCapabilities
+  : T extends typeof DeviceType.Erv ? classicErv.ListCapabilities
   : never
 
 export type Capabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? ClassicCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? ClassicCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? ClassicCapabilitiesErv
+  T extends typeof DeviceType.Ata ? classicAta.Capabilities
+  : T extends typeof DeviceType.Atw ? classicAtw.Capabilities
+  : T extends typeof DeviceType.Erv ? classicErv.Capabilities
   : never
 
 export type CapabilitiesOptions<T extends DeviceType> =
-  T extends typeof DeviceType.Atw ? ClassicCapabilitiesOptionsAtw
+  T extends typeof DeviceType.Atw ? classicAtw.CapabilitiesOptions
   : CapabilitiesOptionsAtaErv
 
 export interface CapabilitiesOptionsAtaErv {
@@ -84,9 +65,9 @@ export type ConvertToDevice<T extends DeviceType> = {
 }['bivariant']
 
 export type EnergyCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? ClassicEnergyCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? ClassicEnergyCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? ClassicEnergyCapabilitiesErv
+  T extends typeof DeviceType.Ata ? classicAta.EnergyCapabilities
+  : T extends typeof DeviceType.Atw ? classicAtw.EnergyCapabilities
+  : T extends typeof DeviceType.Erv ? classicErv.EnergyCapabilities
   : Record<string, never>
 
 export type EnergyCapabilityTagEntry<T extends DeviceType> = [
@@ -119,9 +100,9 @@ export type OperationalCapabilityTagEntry<T extends DeviceType> = [
 ]
 
 export type SetCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? ClassicSetCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? ClassicSetCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? ClassicSetCapabilitiesErv
+  T extends typeof DeviceType.Ata ? classicAta.SetCapabilities
+  : T extends typeof DeviceType.Atw ? classicAtw.SetCapabilities
+  : T extends typeof DeviceType.Erv ? classicErv.SetCapabilities
   : never
 
 export type SetCapabilityTagMapping<T extends DeviceType> = Record<

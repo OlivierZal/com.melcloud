@@ -94,6 +94,7 @@ const getZoneName = (name: string, level: number): string =>
 // ── Helpers ──
 
 const fireAndForget = (promise: Promise<unknown>): void => {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function -- intentional no-op: errors are handled internally or non-critical
   promise.catch(() => {})
 }
 

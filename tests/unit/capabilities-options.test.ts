@@ -9,9 +9,9 @@ import {
 import { describe, expect, it } from 'vitest'
 
 import {
-  ClassicHotWaterMode,
-  classicGetCapabilitiesOptionsAtw,
-} from '../../types/atw.mts'
+  getCapabilitiesOptions as getCapabilitiesOptionsAtw,
+  HotWaterMode,
+} from '../../types/classic-atw.mts'
 import {
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
@@ -116,13 +116,13 @@ describe('fan speed values', () => {
   })
 })
 
-describe(classicGetCapabilitiesOptionsAtw, () => {
+describe(getCapabilitiesOptionsAtw, () => {
   it('should include only non-cool values when CanCool is false', () => {
     const data = mock<ListDeviceDataAtw>({
       CanCool: false,
       HasZone2: false,
     })
-    const result = classicGetCapabilitiesOptionsAtw(data)
+    const result = getCapabilitiesOptionsAtw(data)
     const ids = result.thermostat_mode?.values.map(({ id }) => id)
 
     expect(ids).toStrictEqual(['room', 'flow', 'curve'])
@@ -134,7 +134,7 @@ describe(classicGetCapabilitiesOptionsAtw, () => {
       CanCool: true,
       HasZone2: false,
     })
-    const result = classicGetCapabilitiesOptionsAtw(data)
+    const result = getCapabilitiesOptionsAtw(data)
     const ids = result.thermostat_mode?.values.map(({ id }) => id)
 
     expect(ids).toStrictEqual([
@@ -152,7 +152,7 @@ describe(classicGetCapabilitiesOptionsAtw, () => {
       CanCool: false,
       HasZone2: true,
     })
-    const result = classicGetCapabilitiesOptionsAtw(data)
+    const result = getCapabilitiesOptionsAtw(data)
 
     expect(result['thermostat_mode.zone2']).toBeDefined()
     expect(result['thermostat_mode.zone2']?.title.en).toContain('zone 2')
@@ -163,7 +163,7 @@ describe(classicGetCapabilitiesOptionsAtw, () => {
       CanCool: true,
       HasZone2: true,
     })
-    const result = classicGetCapabilitiesOptionsAtw(data)
+    const result = getCapabilitiesOptionsAtw(data)
     const zone2Ids = result['thermostat_mode.zone2']?.values.map(({ id }) => id)
 
     expect(zone2Ids).toStrictEqual([
@@ -180,7 +180,7 @@ describe(classicGetCapabilitiesOptionsAtw, () => {
       CanCool: true,
       HasZone2: false,
     })
-    const result = classicGetCapabilitiesOptionsAtw(data)
+    const result = getCapabilitiesOptionsAtw(data)
     const roomCool = result.thermostat_mode?.values.find(
       ({ id }) => id === 'room_cool',
     )
@@ -194,7 +194,7 @@ describe(classicGetCapabilitiesOptionsAtw, () => {
 
 describe('hot water mode options', () => {
   it('should have the correct values', () => {
-    expect(ClassicHotWaterMode).toStrictEqual({
+    expect(HotWaterMode).toStrictEqual({
       auto: 'auto',
       forced: 'forced',
     })

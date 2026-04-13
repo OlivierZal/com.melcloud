@@ -9,13 +9,13 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
-import {
-  type EnergyCapabilityTagMapping,
-  type GetCapabilityTagMapping,
-  type ListCapabilityTagMapping,
-  type SetCapabilityTagMapping,
-  ClassicHotWaterMode,
+import type {
+  EnergyCapabilityTagMapping,
+  GetCapabilityTagMapping,
+  ListCapabilityTagMapping,
+  SetCapabilityTagMapping,
 } from '../../types/index.mts'
+import { HotWaterMode } from '../../types/classic-atw.mts'
 import {
   testEnergyReportConfig,
   testThermostatMode,
@@ -130,8 +130,8 @@ describe(ClassicMELCloudDeviceAtw, () => {
       ['measure_power.produced', 1.5, 1.5 * K_MULTIPLIER],
       ['thermostat_mode', OperationModeZone.room, 'room'],
       ['thermostat_mode.zone2', OperationModeZone.flow, 'flow'],
-      ['hot_water_mode', true, ClassicHotWaterMode.forced],
-      ['hot_water_mode', false, ClassicHotWaterMode.auto],
+      ['hot_water_mode', true, HotWaterMode.forced],
+      ['hot_water_mode', false, HotWaterMode.auto],
       ['operational_state', OperationModeState.heating, 'heating'],
       ['target_temperature.flow_heat', 0, 10],
       ['target_temperature.flow_heat', 35, 35],
