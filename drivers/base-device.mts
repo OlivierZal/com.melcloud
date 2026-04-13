@@ -1,6 +1,7 @@
 import { type DurationLike, DateTime, Duration } from 'luxon'
 
 import type {
+  CapabilityConverter,
   DeviceFacade,
   EnergyReportMode,
   EnergyReportOperation,
@@ -35,11 +36,11 @@ export abstract class BaseMELCloudDevice extends Device {
   declare public readonly homey: Homey.Homey
 
   protected abstract capabilityToDevice: Partial<
-    Record<string, (...args: never[]) => unknown>
+    Record<string, CapabilityConverter>
   >
 
   protected abstract readonly deviceToCapability: Partial<
-    Record<string, (...args: never[]) => unknown>
+    Record<string, CapabilityConverter>
   >
 
   protected abstract readonly energyReportRegular: EnergyReportConfig | null
@@ -254,8 +255,7 @@ export abstract class BaseMELCloudDevice extends Device {
     return Object.fromEntries(
       Object.entries(values).map(([capability, value]) => [
         tagMapping[capability],
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- value is cast to never for variadic converter args
-        this.capabilityToDevice[capability]?.(value as never) ?? value,
+        this.capabilityToDevice[capability]?.(value) ?? value,
       ]),
     )
   }

@@ -1,6 +1,7 @@
 export type {
   Capabilities,
   CapabilitiesOptions,
+  CapabilityConverter,
   ConvertFromDevice,
   ConvertToDevice,
   EnergyCapabilities,

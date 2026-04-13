@@ -98,7 +98,7 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
   }
 
   async #setCapabilityValues(device: DeviceFacade): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Home converters accept DeviceFacade; shared type is (...args: never[]) for compatibility
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- converters accept DeviceFacade at runtime; concrete HomeConvertFromDevice type is narrower for bivariance
     const converters = Object.entries(this.deviceToCapability) as [
       string,
       (device: DeviceFacade) => unknown,

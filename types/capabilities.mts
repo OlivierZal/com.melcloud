@@ -38,6 +38,15 @@ export interface CapabilitiesOptionsAtaErv {
 }
 
 /*
+ * Uses method signature syntax (bivariant) so that concrete converter
+ * implementations can accept narrower parameter types without type errors.
+ */
+export type CapabilityConverter = {
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
+  bivariant(value: unknown, data?: unknown): unknown
+}['bivariant']
+
+/*
  * Uses method signature syntax (bivariant) to allow converter functions
  * to accept narrower parameter types (e.g., FanSpeed instead of the full
  * ListDeviceData value union).

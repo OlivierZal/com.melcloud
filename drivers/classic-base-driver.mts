@@ -1,4 +1,4 @@
-import type { DeviceType, ListDeviceData } from '@olivierzal/melcloud-api'
+import type { ClassicAPI, DeviceType, ListDeviceData } from '@olivierzal/melcloud-api'
 
 import type {
   CapabilitiesOptions,
@@ -37,7 +37,7 @@ export abstract class ClassicMELCloudDriver<
   public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
 
-  protected override get api(): typeof this.homey.app.api {
+  protected override get api(): ClassicAPI {
     return this.homey.app.api
   }
 

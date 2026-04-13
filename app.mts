@@ -30,6 +30,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
 
+import type { ClassicMELCloudDriver } from './drivers/classic-base-driver.mts'
 import {
   changelog,
   fanSpeed,
@@ -568,13 +569,22 @@ export default class MELCloudApp extends App {
     const targetDrivers =
       driverId === undefined ?
         Object.values(this.homey.drivers.getDrivers())
-      : [this.homey.drivers.getDriver(driverId)]
+      : this.#getDriverSafe(driverId)
     return targetDrivers.flatMap((driver) => {
       const devices = driver.getDevices()
       return ids ?
           devices.filter(({ id }) => ids.includes(Number(id)))
         : devices
     })
+  }
+
+  #getDriverSafe(driverId: string): ClassicMELCloudDriver<DeviceType>[] {
+    try {
+      return [this.homey.drivers.getDriver(driverId)]
+    } catch {
+      // Driver not yet initialized during early sync callbacks
+      return []
+    }
   }
 
   async #initApi({
