@@ -384,12 +384,6 @@ export abstract class BaseMELCloudDevice extends Device {
         this.addCapability(capability)
       : this.removeCapability(capability))
     }
-    this.#setCapabilityTagMapping = this.cleanMapping(
-      this.driver.setCapabilityTagMapping,
-    )
-    this.#getCapabilityTagMapping = this.cleanMapping(
-      this.driver.getCapabilityTagMapping,
-    )
     this.#listCapabilityTagMapping = this.cleanMapping(
       this.driver.listCapabilityTagMapping,
     )
