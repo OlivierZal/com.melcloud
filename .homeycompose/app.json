@@ -6,11 +6,15 @@
     },
     "createSession": {
       "method": "POST",
-      "path": "/sessions"
+      "path": "/classic/sessions"
     },
     "getBuildings": {
       "method": "GET",
-      "path": "/buildings"
+      "path": "/classic/buildings"
+    },
+    "getClassicSession": {
+      "method": "GET",
+      "path": "/classic/sessions"
     },
     "getDeviceSettings": {
       "method": "GET",
@@ -22,15 +26,15 @@
     },
     "getErrors": {
       "method": "GET",
-      "path": "/logs/errors"
+      "path": "/classic/logs/errors"
     },
     "getFrostProtection": {
       "method": "GET",
-      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
+      "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"
     },
     "getHolidayMode": {
       "method": "GET",
-      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
+      "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
     },
     "getLanguage": {
       "method": "GET",
@@ -42,11 +46,11 @@
     },
     "setFrostProtection": {
       "method": "PUT",
-      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
+      "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"
     },
     "setHolidayMode": {
       "method": "PUT",
-      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
+      "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
     }
   },
   "author": {

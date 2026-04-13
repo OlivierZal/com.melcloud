@@ -2,11 +2,11 @@ import type { DeviceType, ListDeviceData } from '@olivierzal/melcloud-api'
 
 import type {
   CapabilitiesOptions,
+  ClassicMELCloudDevice,
   DeviceDetails,
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
-  MELCloudDevice,
   SetCapabilityTagMapping,
 } from '../types/index.mts'
 import { typedEntries } from '../lib/index.mts'
@@ -15,7 +15,7 @@ import { BaseMELCloudDriver } from './base-driver.mts'
 export abstract class ClassicMELCloudDriver<
   T extends DeviceType,
 > extends BaseMELCloudDriver {
-  declare public readonly getDevices: () => MELCloudDevice[]
+  declare public readonly getDevices: () => ClassicMELCloudDevice[]
 
   public abstract override readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
 

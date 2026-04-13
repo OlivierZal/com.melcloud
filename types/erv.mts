@@ -7,7 +7,7 @@ import {
   VentilationMode,
 } from '@olivierzal/melcloud-api'
 
-import type { MELCloudDeviceErv } from '../drivers/index.mts'
+import type { ClassicMELCloudDeviceErv } from '../drivers/index.mts'
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,
@@ -27,24 +27,24 @@ export const ThermostatModeErv = {
   recovery: 'recovery',
 } as const
 
-export type CapabilitiesErv = EnergyCapabilitiesErv &
-  GetCapabilitiesErv &
-  ListCapabilitiesErv &
-  SetCapabilitiesErv
+export type ClassicCapabilitiesErv = ClassicEnergyCapabilitiesErv &
+  ClassicGetCapabilitiesErv &
+  ClassicListCapabilitiesErv &
+  ClassicSetCapabilitiesErv
 
-export type EnergyCapabilitiesErv = Record<string, never>
+export type ClassicEnergyCapabilitiesErv = Record<string, never>
 
-export interface GetCapabilitiesErv extends BaseGetCapabilities {
+export interface ClassicGetCapabilitiesErv extends BaseGetCapabilities {
   readonly measure_co2: number
   readonly measure_temperature: number
   readonly 'measure_temperature.outdoor': number
 }
 
-export interface ListCapabilitiesErv extends BaseListCapabilities {
+export interface ClassicListCapabilitiesErv extends BaseListCapabilities {
   readonly measure_pm25: number
 }
 
-export interface SetCapabilitiesErv extends BaseSetCapabilities {
+export interface ClassicSetCapabilitiesErv extends BaseSetCapabilities {
   readonly fan_speed: FanSpeed
   readonly thermostat_mode: keyof typeof ThermostatModeErv
 }
@@ -52,8 +52,8 @@ export interface SetCapabilitiesErv extends BaseSetCapabilities {
 export type ThermostatModeErv =
   (typeof ThermostatModeErv)[keyof typeof ThermostatModeErv]
 
-export const setCapabilityTagMappingErv: Record<
-  keyof SetCapabilitiesErv,
+export const classicSetCapabilityTagMappingErv: Record<
+  keyof ClassicSetCapabilitiesErv,
   keyof UpdateDeviceDataErv
 > = {
   fan_speed: 'SetFanSpeed',
@@ -61,8 +61,8 @@ export const setCapabilityTagMappingErv: Record<
   thermostat_mode: 'VentilationMode',
 }
 
-export const getCapabilityTagMappingErv: Record<
-  keyof GetCapabilitiesErv,
+export const classicGetCapabilityTagMappingErv: Record<
+  keyof ClassicGetCapabilitiesErv,
   keyof GetDeviceData<typeof DeviceType.Erv>
 > = {
   measure_co2: 'RoomCO2Level',
@@ -70,16 +70,16 @@ export const getCapabilityTagMappingErv: Record<
   'measure_temperature.outdoor': 'OutdoorTemperature',
 }
 
-export const listCapabilityTagMappingErv: Record<
-  keyof ListCapabilitiesErv,
+export const classicListCapabilityTagMappingErv: Record<
+  keyof ClassicListCapabilitiesErv,
   keyof ListDeviceDataErv
 > = {
   measure_pm25: 'PM25Level',
   measure_signal_strength: 'WifiSignalStrength',
 }
 
-export const energyCapabilityTagMappingErv: Record<string, never> = {}
+export const classicEnergyCapabilityTagMappingErv: Record<string, never> = {}
 
-export interface FlowArgsErv extends SetCapabilitiesErv {
-  readonly device: MELCloudDeviceErv
+export interface ClassicFlowArgsErv extends ClassicSetCapabilitiesErv {
+  readonly device: ClassicMELCloudDeviceErv
 }

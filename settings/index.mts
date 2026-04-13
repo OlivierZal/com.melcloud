@@ -91,7 +91,11 @@ const getZoneId = (id: number, model: string): string =>
 const getZoneName = (name: string, level: number): string =>
   `${'···'.repeat(level)} ${name}`
 
-// ── API helpers ──
+// ── Helpers ──
+
+const fireAndForget = (promise: Promise<unknown>): void => {
+  promise.catch(() => {})
+}
 
 const getErrorMessage = (error: unknown): string => {
   if (error instanceof Error) {
@@ -101,30 +105,22 @@ const getErrorMessage = (error: unknown): string => {
 }
 
 // Wraps Homey's callback-based settings API in a Promise for async/await usage
+const createCallback =
+  <T,>(
+    resolve: (value: T) => void,
+    reject: (reason: Error) => void,
+  ): ((error: Error | null, data: T) => void) =>
+  (error, data) => {
+    if (error) {
+      reject(error)
+      return
+    }
+    resolve(data)
+  }
+
 const homeyApiGet = async <T,>(homey: Homey, path: string): Promise<T> =>
   new Promise((resolve, reject) => {
-    homey.api('GET', path, (error: Error | null, data: T) => {
-      if (error) {
-        reject(error)
-        return
-      }
-      resolve(data)
-    })
-  })
-
-const homeyApiPut = async <T,>(
-  homey: Homey,
-  path: string,
-  body: unknown,
-): Promise<T> =>
-  new Promise((resolve, reject) => {
-    homey.api('PUT', path, body, (error: Error | null, data: T) => {
-      if (error) {
-        reject(error)
-        return
-      }
-      resolve(data)
-    })
+    homey.api('GET', path, createCallback(resolve, reject))
   })
 
 const homeyApiPost = async <T,>(
@@ -133,13 +129,16 @@ const homeyApiPost = async <T,>(
   body: unknown,
 ): Promise<T> =>
   new Promise((resolve, reject) => {
-    homey.api('POST', path, body, (error: Error | null, data: T) => {
-      if (error) {
-        reject(error)
-        return
-      }
-      resolve(data)
-    })
+    homey.api('POST', path, body, createCallback(resolve, reject))
+  })
+
+const homeyApiPut = async <T,>(
+  homey: Homey,
+  path: string,
+  body: unknown,
+): Promise<T> =>
+  new Promise((resolve, reject) => {
+    homey.api('PUT', path, body, createCallback(resolve, reject))
   })
 
 // ── DOM helpers ──
@@ -399,9 +398,7 @@ class AuthManager {
 
   public addEventListeners(): void {
     this.#authenticateButton.addEventListener('click', () => {
-      this.login().catch(() => {
-        // Errors are handled internally via homey.alert in login
-      })
+      fireAndForget(this.login())
     })
   }
 
@@ -429,18 +426,16 @@ class AuthManager {
     const username = this.#usernameInput?.value ?? ''
     const password = this.#passwordInput?.value ?? ''
     if (!username || !password) {
-      this.#homey
-        .alert(this.#homey.__('settings.authenticate.failure'))
-        .catch(() => {
-          // Best-effort UI notification: the alert itself is the error display
-        })
+      fireAndForget(
+        this.#homey.alert(this.#homey.__('settings.authenticate.failure')),
+      )
       return
     }
     await withDisablingButton(this.#authenticateButton.id, async () => {
       try {
         const isLoggedIn = await homeyApiPost<boolean>(
           this.#homey,
-          '/sessions',
+          '/classic/sessions',
           { password, username } satisfies LoginCredentials,
         )
         await (isLoggedIn ?
@@ -452,7 +447,7 @@ class AuthManager {
     })
   }
 
-  public needsAuthentication(isRequired = true): void {
+  public showLogin(isRequired = true): void {
     hide(this.#authenticatedSection, isRequired)
     hide(this.#authenticatingSection, !isRequired)
   }
@@ -515,19 +510,15 @@ class ErrorLogManager {
         Date.parse(this.#sinceInput.value) > Date.parse(this.#to)
       ) {
         this.#sinceInput.value = this.#to
-        this.#homey
-          .alert(
+        fireAndForget(
+          this.#homey.alert(
             this.#homey.__('settings.errorLog.error', { from: this.#from }),
-          )
-          .catch(() => {
-            // Best-effort UI notification: the alert itself is the error display
-          })
+          ),
+        )
       }
     })
     this.#seeButton.addEventListener('click', () => {
-      this.fetchErrorLog().catch(() => {
-        // Errors are handled internally via homey.alert in fetchErrorLog
-      })
+      fireAndForget(this.fetchErrorLog())
     })
   }
 
@@ -541,7 +532,7 @@ class ErrorLogManager {
       try {
         const data = await homeyApiGet<FormattedErrorLog>(
           this.#homey,
-          `/logs/errors?${new URLSearchParams({
+          `/classic/logs/errors?${new URLSearchParams({
             from: this.#sinceInput.value,
             limit: '29',
             offset: '0',
@@ -683,9 +674,7 @@ class DeviceSettingsManager {
     const settings = `settings_${driverId ?? 'common'}`
     const button = getButton(`apply_${settings}`)
     button.addEventListener('click', () => {
-      this.#setDeviceSettings(elements, driverId).catch(() => {
-        // Errors are handled internally via homey.alert in #setDeviceSettings
-      })
+      fireAndForget(this.#setDeviceSettings(elements, driverId))
     })
   }
 
@@ -722,9 +711,7 @@ class DeviceSettingsManager {
         elements.filter((element) => element instanceof HTMLSelectElement),
       )
     }
-    this.#homey.alert(this.#homey.__('settings.devices.nothing')).catch(() => {
-      // Best-effort UI notification: the alert itself is the error display
-    })
+    fireAndForget(this.#homey.alert(this.#homey.__('settings.devices.nothing')))
   }
 
   async #applyDeviceSettings(body: Settings, driverId?: string): Promise<void> {
@@ -1012,9 +999,7 @@ class ZoneSettingsManager {
 
   public addEventListeners(): void {
     this.#zone.addEventListener('change', () => {
-      this.fetchZoneSettings().catch(() => {
-        // Errors are handled internally by fetchFrostProtectionData and fetchHolidayModeData
-      })
+      fireAndForget(this.fetchZoneSettings())
     })
     this.#addHolidayModeEventListeners()
     this.#addFrostProtectionEventListeners()
@@ -1026,7 +1011,7 @@ class ZoneSettingsManager {
       try {
         const data = await homeyApiGet<FrostProtectionData>(
           this.#homey,
-          `/zones/${this.#getZonePath()}/settings/frost-protection`,
+          `/classic/zones/${this.#getZonePath()}/settings/frost-protection`,
         )
         this.#updateZoneMapping(data)
         this.displayFrostProtectionData()
@@ -1070,7 +1055,7 @@ class ZoneSettingsManager {
       try {
         const data = await homeyApiGet<HolidayModeData>(
           this.#homey,
-          `/zones/${this.#getZonePath()}/settings/holiday-mode`,
+          `/classic/zones/${this.#getZonePath()}/settings/holiday-mode`,
         )
         this.#updateZoneMapping(data)
         this.displayHolidayModeData()
@@ -1109,7 +1094,7 @@ class ZoneSettingsManager {
       try {
         await homeyApiPut<unknown>(
           this.#homey,
-          `/zones/${this.#getZonePath()}/settings/frost-protection`,
+          `/classic/zones/${this.#getZonePath()}/settings/frost-protection`,
           { isEnabled, max, min } satisfies FrostProtectionQuery,
         )
         this.#updateZoneMapping({
@@ -1134,7 +1119,7 @@ class ZoneSettingsManager {
       try {
         await homeyApiPut<unknown>(
           this.#homey,
-          `/zones/${this.#getZonePath()}/settings/holiday-mode`,
+          `/classic/zones/${this.#getZonePath()}/settings/holiday-mode`,
           { from: startDate, to: endDate } satisfies HolidayModeQuery,
         )
         this.#updateZoneMapping({
@@ -1186,17 +1171,15 @@ class ZoneSettingsManager {
     getButton('apply_frost_protection').addEventListener('click', () => {
       try {
         const { max, min } = this.#getFPMinAndMax()
-        this.setFrostProtectionData({
-          isEnabled: this.#frostProtectionEnabled.value === 'true',
-          max,
-          min,
-        }).catch(() => {
-          // Errors are handled internally via homey.alert in setFrostProtectionData
-        })
+        fireAndForget(
+          this.setFrostProtectionData({
+            isEnabled: this.#frostProtectionEnabled.value === 'true',
+            max,
+            min,
+          }),
+        )
       } catch (error) {
-        this.#homey.alert(getErrorMessage(error)).catch(() => {
-          // Best-effort UI notification: the alert itself is the error display
-        })
+        fireAndForget(this.#homey.alert(getErrorMessage(error)))
       }
     })
   }
@@ -1223,19 +1206,19 @@ class ZoneSettingsManager {
       const isEnabled = this.#holidayModeEnabled.value === 'true'
       const endDate = this.#holidayModeEndDate.value || undefined
       if (isEnabled && endDate === undefined) {
-        this.#homey
-          .alert(this.#homey.__('settings.holidayMode.endDateMissing'))
-          .catch(() => {
-            // Best-effort UI notification: the alert itself is the error display
-          })
+        fireAndForget(
+          this.#homey.alert(
+            this.#homey.__('settings.holidayMode.endDateMissing'),
+          ),
+        )
         return
       }
-      this.setHolidayModeData({
-        from: this.#holidayModeStartDate.value || undefined,
-        to: endDate,
-      }).catch(() => {
-        // Errors are handled internally via homey.alert in setHolidayModeData
-      })
+      fireAndForget(
+        this.setHolidayModeData({
+          from: this.#holidayModeStartDate.value || undefined,
+          to: endDate,
+        }),
+      )
     })
   }
 
@@ -1319,8 +1302,9 @@ class SettingsApp {
   }
 
   public async init(): Promise<void> {
-    const [{ contextKey, password, username }] = await Promise.all([
+    const [{ password, username }, isAuthenticated] = await Promise.all([
       SettingsApp.#fetchHomeySettings(this.#homey),
+      homeyApiGet<boolean>(this.#homey, '/classic/sessions'),
       SettingsApp.#setDocumentLanguage(this.#homey),
       this.#deviceSettingsManager.fetchDeviceSettings(),
     ])
@@ -1331,10 +1315,10 @@ class SettingsApp {
       username,
     })
     this.#addEventListeners()
-    if (contextKey === undefined) {
-      this.#authManager.needsAuthentication()
-    } else {
+    if (isAuthenticated) {
       await this.#loadBuildings('init')
+    } else {
+      this.#authManager.showLogin()
     }
     this.#homey.ready()
   }
@@ -1344,11 +1328,9 @@ class SettingsApp {
     this.#errorLogManager.addEventListeners()
     this.#zoneSettingsManager.addEventListeners()
     getButton('auto_adjust').addEventListener('click', () => {
-      this.#homey
-        .openURL('https://homey.app/a/com.mecloud.extension')
-        .catch(() => {
-          // Best-effort navigation: if opening the URL fails, there is nothing more to do
-        })
+      fireAndForget(
+        this.#homey.openURL('https://homey.app/a/com.mecloud.extension'),
+      )
     })
   }
 
@@ -1369,7 +1351,7 @@ class SettingsApp {
   async #fetchBuildings(): Promise<void> {
     const buildings = await homeyApiGet<BuildingZone[]>(
       this.#homey,
-      '/buildings',
+      '/classic/buildings',
     )
     if (buildings.length === 0) {
       throw new NoDeviceError(this.#homey)
@@ -1384,15 +1366,15 @@ class SettingsApp {
   async #loadBuildings(source: 'init' | 'login'): Promise<void> {
     try {
       await this.#fetchBuildings()
-      this.#authManager.needsAuthentication(false)
+      this.#authManager.showLogin(false)
     } catch (error) {
       if (source === 'init') {
         // Session expired or no devices: fall back to login
-        this.#authManager.needsAuthentication()
+        this.#authManager.showLogin()
         return
       }
       // Post-login: always hide login form
-      this.#authManager.needsAuthentication(false)
+      this.#authManager.showLogin(false)
       if (error instanceof NoDeviceError) {
         this.#disableSettingButtons()
       }

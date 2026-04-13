@@ -14,14 +14,14 @@ import {
   type GetCapabilityTagMapping,
   type ListCapabilityTagMapping,
   type SetCapabilityTagMapping,
-  HotWaterMode,
+  ClassicHotWaterMode,
 } from '../../types/index.mts'
 import {
   testEnergyReportConfig,
   testThermostatMode,
 } from '../device-descriptors.ts'
 import { mock } from '../helpers.ts'
-import MELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
+import ClassicMELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
 type AtwType = typeof DeviceType.Atw
@@ -89,7 +89,7 @@ const callSetCapabilityValues = async (target: any): Promise<void> =>
     }
   ).setCapabilityValues(mock<ListDeviceDataAtw>({}))
 
-describe(MELCloudDeviceAtw, () => {
+describe(ClassicMELCloudDeviceAtw, () => {
   let device: any
 
   beforeEach(() => {
@@ -97,7 +97,7 @@ describe(MELCloudDeviceAtw, () => {
     hasCapabilityMock.mockReturnValue(true)
     getCapabilityOptionsMock.mockReturnValue({ min: 10 })
 
-    device = createInstance(MELCloudDeviceAtw)
+    device = createInstance(ClassicMELCloudDeviceAtw)
     Object.defineProperty(device, 'driver', {
       configurable: true,
       value: mockDriver,
@@ -130,8 +130,8 @@ describe(MELCloudDeviceAtw, () => {
       ['measure_power.produced', 1.5, 1.5 * K_MULTIPLIER],
       ['thermostat_mode', OperationModeZone.room, 'room'],
       ['thermostat_mode.zone2', OperationModeZone.flow, 'flow'],
-      ['hot_water_mode', true, HotWaterMode.forced],
-      ['hot_water_mode', false, HotWaterMode.auto],
+      ['hot_water_mode', true, ClassicHotWaterMode.forced],
+      ['hot_water_mode', false, ClassicHotWaterMode.auto],
       ['operational_state', OperationModeState.heating, 'heating'],
       ['target_temperature.flow_heat', 0, 10],
       ['target_temperature.flow_heat', 35, 35],

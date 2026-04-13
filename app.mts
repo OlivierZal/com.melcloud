@@ -43,6 +43,7 @@ import { setFacadeManager } from './lib/get-zones.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { typedFromEntries } from './lib/index.mts'
 import {
+  type ClassicMELCloudDevice,
   type DeviceSettings,
   type DriverCapabilitiesOptions,
   type DriverSetting,
@@ -52,7 +53,6 @@ import {
   type LoginSetting,
   type ManifestDriver,
   type ManifestDriverCapabilitiesOptions,
-  type MELCloudDevice,
   type Settings,
   type ZoneData,
   fanSpeedValues,
@@ -564,7 +564,7 @@ export default class MELCloudApp extends App {
   }: {
     driverId?: string
     ids?: number[]
-  } = {}): MELCloudDevice[] {
+  } = {}): ClassicMELCloudDevice[] {
     const targetDrivers =
       driverId === undefined ?
         Object.values(this.homey.drivers.getDrivers())
@@ -635,14 +635,15 @@ export default class MELCloudApp extends App {
   }
 
   async #syncDevices(driverId?: string, ids?: number[]): Promise<void> {
-    try {
-      await Promise.all(
-        this.#getDevices({ driverId, ids }).map(async (device) =>
-          device.syncFromDevice(),
-        ),
-      )
-    } catch (error) {
-      this.error('Device sync failed:', error)
+    const results = await Promise.allSettled(
+      this.#getDevices({ driverId, ids }).map(async (device) =>
+        device.syncFromDevice(),
+      ),
+    )
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        this.error('Device sync failed:', result.reason)
+      }
     }
   }
 }

@@ -10,7 +10,7 @@ import {
   OperationModeZone,
 } from '@olivierzal/melcloud-api'
 
-import type { MELCloudDeviceAtw } from '../drivers/index.mts'
+import type { ClassicMELCloudDeviceAtw } from '../drivers/index.mts'
 import { thermostatMode } from '../files.mts'
 import {
   type BaseGetCapabilities,
@@ -152,10 +152,10 @@ const thermostatModeValuesAtw = [
   createCoolObject(flow),
 ]
 
-export const getCapabilitiesOptionsAtw = ({
+export const classicGetCapabilitiesOptionsAtw = ({
   CanCool: canCool,
   HasZone2: hasZone2,
-}: ListDeviceDataAtw): Partial<CapabilitiesOptionsAtw> => {
+}: ListDeviceDataAtw): Partial<ClassicCapabilitiesOptionsAtw> => {
   const values =
     canCool ?
       thermostatModeValuesAtw
@@ -168,23 +168,23 @@ export const getCapabilitiesOptionsAtw = ({
   }
 }
 
-export const HotWaterMode = {
+export const ClassicHotWaterMode = {
   auto: 'auto',
   forced: 'forced',
 } as const
 
-export interface CapabilitiesAtw
+export interface ClassicCapabilitiesAtw
   extends
-    EnergyCapabilitiesAtw,
-    GetCapabilitiesAtw,
-    ListCapabilitiesAtw,
-    SetCapabilitiesAtw {
+    ClassicEnergyCapabilitiesAtw,
+    ClassicGetCapabilitiesAtw,
+    ClassicListCapabilitiesAtw,
+    ClassicSetCapabilitiesAtw {
   readonly 'operational_state.hot_water': OperationModeStateHotWater
   readonly 'operational_state.zone1': OperationModeStateZone
   readonly 'operational_state.zone2': OperationModeStateZone
 }
 
-export interface EnergyCapabilitiesAtw {
+export interface ClassicEnergyCapabilitiesAtw {
   readonly meter_power: number
   readonly 'meter_power.cooling': number
   readonly 'meter_power.cop': number
@@ -211,16 +211,17 @@ export interface EnergyCapabilitiesAtw {
   readonly 'meter_power.produced_hotwater': number
 }
 
-export interface GetCapabilitiesAtw extends BaseGetCapabilities {
+export interface ClassicGetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
   readonly operational_state: keyof typeof OperationModeState
 }
 
-export type HotWaterMode = (typeof HotWaterMode)[keyof typeof HotWaterMode]
+export type ClassicHotWaterMode =
+  (typeof ClassicHotWaterMode)[keyof typeof ClassicHotWaterMode]
 
-export interface ListCapabilitiesAtw extends BaseListCapabilities {
+export interface ClassicListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'alarm_generic.booster_heater1': boolean
   readonly 'alarm_generic.booster_heater2': boolean
   readonly 'alarm_generic.booster_heater2_plus': boolean
@@ -243,9 +244,9 @@ export interface ListCapabilitiesAtw extends BaseListCapabilities {
   readonly 'measure_temperature.target_curve_zone2': number
 }
 
-export interface SetCapabilitiesAtw
-  extends BaseSetCapabilities, TargetTemperatureFlowCapabilities {
-  readonly hot_water_mode: keyof typeof HotWaterMode
+export interface ClassicSetCapabilitiesAtw
+  extends BaseSetCapabilities, ClassicTargetTemperatureFlowCapabilities {
+  readonly hot_water_mode: keyof typeof ClassicHotWaterMode
   readonly target_temperature: number
   readonly 'target_temperature.tank_water': number
   readonly 'target_temperature.zone2': number
@@ -253,15 +254,15 @@ export interface SetCapabilitiesAtw
   readonly 'thermostat_mode.zone2': keyof typeof OperationModeZone
 }
 
-export interface TargetTemperatureFlowCapabilities {
+export interface ClassicTargetTemperatureFlowCapabilities {
   readonly 'target_temperature.flow_cool': number
   readonly 'target_temperature.flow_cool_zone2': number
   readonly 'target_temperature.flow_heat': number
   readonly 'target_temperature.flow_heat_zone2': number
 }
 
-export const setCapabilityTagMappingAtw: Record<
-  keyof SetCapabilitiesAtw,
+export const classicSetCapabilityTagMappingAtw: Record<
+  keyof ClassicSetCapabilitiesAtw,
   keyof UpdateDeviceDataAtw
 > = {
   hot_water_mode: 'ForcedHotWaterMode',
@@ -277,8 +278,8 @@ export const setCapabilityTagMappingAtw: Record<
   'thermostat_mode.zone2': 'OperationModeZone2',
 }
 
-export const getCapabilityTagMappingAtw: Record<
-  keyof GetCapabilitiesAtw,
+export const classicGetCapabilityTagMappingAtw: Record<
+  keyof ClassicGetCapabilitiesAtw,
   keyof GetDeviceData<typeof DeviceType.Atw>
 > = {
   measure_temperature: 'RoomTemperatureZone1',
@@ -288,8 +289,8 @@ export const getCapabilityTagMappingAtw: Record<
   operational_state: 'OperationMode',
 }
 
-export const listCapabilityTagMappingAtw: Record<
-  keyof ListCapabilitiesAtw,
+export const classicListCapabilityTagMappingAtw: Record<
+  keyof ClassicListCapabilitiesAtw,
   keyof ListDeviceDataAtw
 > = {
   'alarm_generic.booster_heater1': 'BoosterHeater1Status',
@@ -315,8 +316,8 @@ export const listCapabilityTagMappingAtw: Record<
   'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
 }
 
-export const energyCapabilityTagMappingAtw: Record<
-  keyof EnergyCapabilitiesAtw,
+export const classicEnergyCapabilityTagMappingAtw: Record<
+  keyof ClassicEnergyCapabilitiesAtw,
   readonly (keyof EnergyDataAtw)[]
 > = {
   meter_power: [
@@ -380,7 +381,7 @@ export const energyCapabilityTagMappingAtw: Record<
   'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
 }
 
-export interface CapabilitiesOptionsAtw {
+export interface ClassicCapabilitiesOptionsAtw {
   readonly 'target_temperature.flow_cool': RangeOptions
   readonly 'target_temperature.flow_cool_zone2': RangeOptions
   readonly 'target_temperature.flow_heat': RangeOptions
@@ -399,8 +400,8 @@ export interface CapabilitiesOptionsAtw {
   }
 }
 
-export interface FlowArgsAtw {
-  readonly device: MELCloudDeviceAtw
+export interface ClassicFlowArgsAtw {
+  readonly device: ClassicMELCloudDeviceAtw
   readonly onoff: boolean
   readonly operation_mode_zone: keyof typeof OperationModeZone
   readonly operational_state: keyof typeof OperationModeState

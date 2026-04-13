@@ -11,7 +11,12 @@ import type {
 } from '../../../types/index.mts'
 import { DeviceType } from './constants.mts'
 import { createOption, getDiv, getSelect } from './dom.mts'
-import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'
+import {
+  type Homey,
+  fireAndForget,
+  homeyApiGet,
+  setDocumentLanguage,
+} from './homey-api.mts'
 import { getZoneId, getZonePath } from './zones.mts'
 
 // Below --homey-font-size-small (14px) — intentional for compact chart labels
@@ -188,7 +193,7 @@ const fetchChartData = async (
     : ''
   return homeyApiGet<ReportChartLineOptions | ReportChartPieOptions>(
     homey,
-    `/${zoneValue}/logs/${chart.replaceAll('_', '-')}${daysQuery}`,
+    `/classic/${zoneValue}/logs/${chart.replaceAll('_', '-')}${daysQuery}`,
   )
 }
 
@@ -240,9 +245,7 @@ class ChartWidget {
       if (this.#timeout) {
         clearTimeout(this.#timeout)
       }
-      this.#draw(config).catch(() => {
-        // Best-effort: chart will retry on next zone change or refresh
-      })
+      fireAndForget(this.#draw(config))
     })
   }
 
@@ -267,9 +270,7 @@ class ChartWidget {
     }
     await this.#homey.setHeight(document.body.scrollHeight)
     this.#timeout = setTimeout(() => {
-      this.#draw({ chart, days, height }).catch(() => {
-        // Best-effort: chart will retry on next scheduled refresh
-      })
+      fireAndForget(this.#draw({ chart, days, height }))
     }, getTimeout(chart))
   }
 
@@ -320,7 +321,7 @@ class ChartWidget {
       : ''
     const devices = await homeyApiGet<DeviceZone[]>(
       this.#homey,
-      `/devices${typeQuery}`,
+      `/classic/devices${typeQuery}`,
     )
     if (devices.length > 0) {
       const config: DrawConfig = { chart, days, height: Number(height) }

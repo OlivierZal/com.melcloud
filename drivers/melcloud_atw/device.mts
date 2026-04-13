@@ -11,12 +11,12 @@ import { DateTime } from 'luxon'
 import type { EnergyReportConfig } from '../base-report.mts'
 import { KILOWATT_TO_WATT } from '../../lib/index.mts'
 import {
+  type ClassicTargetTemperatureFlowCapabilities,
   type ConvertFromDevice,
   type ConvertToDevice,
   type OperationalCapabilities,
   type SetCapabilities,
-  type TargetTemperatureFlowCapabilities,
-  HotWaterMode,
+  ClassicHotWaterMode,
   operationModeStateFromDevice,
   operationModeZoneFromDevice,
 } from '../../types/index.mts'
@@ -30,7 +30,7 @@ const convertFromDeviceOperationZone: ConvertFromDevice<
   typeof DeviceType.Atw
 > = (value: OperationModeZone) => operationModeZoneFromDevice[value]
 
-export default class MELCloudDeviceAtw extends ClassicMELCloudDevice<
+export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
   typeof DeviceType.Atw
 > {
   protected readonly capabilityToDevice: Partial<
@@ -39,8 +39,8 @@ export default class MELCloudDeviceAtw extends ClassicMELCloudDevice<
       ConvertToDevice<typeof DeviceType.Atw>
     >
   > = {
-    hot_water_mode: (value: keyof typeof HotWaterMode) =>
-      HotWaterMode[value] === HotWaterMode.forced,
+    hot_water_mode: (value: keyof typeof ClassicHotWaterMode) =>
+      ClassicHotWaterMode[value] === ClassicHotWaterMode.forced,
     thermostat_mode: (value: keyof typeof OperationModeZone) =>
       OperationModeZone[value],
     'thermostat_mode.zone2': (value: keyof typeof OperationModeZone) =>
@@ -77,7 +77,7 @@ export default class MELCloudDeviceAtw extends ClassicMELCloudDevice<
     thermostat_mode: convertFromDeviceOperationZone,
     'thermostat_mode.zone2': convertFromDeviceOperationZone,
     hot_water_mode: (isForced: boolean) =>
-      isForced ? HotWaterMode.forced : HotWaterMode.auto,
+      isForced ? ClassicHotWaterMode.forced : ClassicHotWaterMode.auto,
     legionella: (value: string) =>
       DateTime.fromISO(value).toLocaleString({
         day: 'numeric',
@@ -114,7 +114,7 @@ export default class MELCloudDeviceAtw extends ClassicMELCloudDevice<
   }
 
   #convertFromDeviceTargetTemperatureFlow(
-    capability: keyof TargetTemperatureFlowCapabilities,
+    capability: keyof ClassicTargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<typeof DeviceType.Atw> {
     // Fall back to the minimum allowed value in case of undefined or null
     return (value: number) => value || this.getCapabilityOptions(capability).min

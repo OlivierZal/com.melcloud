@@ -10,7 +10,7 @@ import {
   Vertical,
 } from '@olivierzal/melcloud-api'
 
-import type { MELCloudDeviceAta } from '../drivers/index.mts'
+import type { ClassicMELCloudDeviceAta } from '../drivers/index.mts'
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,
@@ -55,14 +55,14 @@ export const verticalFromDevice = {
   [Vertical.upwards]: 'upwards',
 } as const satisfies Record<Vertical, keyof typeof Vertical>
 
-export interface CapabilitiesAta
+export interface ClassicCapabilitiesAta
   extends
-    EnergyCapabilitiesAta,
-    GetCapabilitiesAta,
-    ListCapabilitiesAta,
-    SetCapabilitiesAta {}
+    ClassicEnergyCapabilitiesAta,
+    ClassicGetCapabilitiesAta,
+    ClassicListCapabilitiesAta,
+    ClassicSetCapabilitiesAta {}
 
-export interface EnergyCapabilitiesAta {
+export interface ClassicEnergyCapabilitiesAta {
   readonly measure_power: number
   readonly 'measure_power.auto': number
   readonly 'measure_power.cooling': number
@@ -86,17 +86,17 @@ export interface EnergyCapabilitiesAta {
   readonly 'meter_power.other': number
 }
 
-export interface GetCapabilitiesAta extends BaseGetCapabilities {
+export interface ClassicGetCapabilitiesAta extends BaseGetCapabilities {
   readonly 'alarm_generic.silent': boolean
 }
 
-export interface ListCapabilitiesAta extends BaseListCapabilities {
+export interface ClassicListCapabilitiesAta extends BaseListCapabilities {
   readonly 'alarm_generic.silent': boolean
   readonly 'fan_speed.state': number
   readonly 'measure_temperature.outdoor': number
 }
 
-export interface SetCapabilitiesAta extends BaseSetCapabilities {
+export interface ClassicSetCapabilitiesAta extends BaseSetCapabilities {
   readonly fan_speed: FanSpeed
   readonly horizontal: keyof typeof Horizontal
   readonly target_temperature: number
@@ -107,8 +107,8 @@ export interface SetCapabilitiesAta extends BaseSetCapabilities {
 export type ThermostatModeAta =
   (typeof ThermostatModeAta)[keyof typeof ThermostatModeAta]
 
-export const setCapabilityTagMappingAta: Record<
-  keyof SetCapabilitiesAta,
+export const classicSetCapabilityTagMappingAta: Record<
+  keyof ClassicSetCapabilitiesAta,
   keyof UpdateDeviceDataAta
 > = {
   fan_speed: 'SetFanSpeed',
@@ -119,16 +119,16 @@ export const setCapabilityTagMappingAta: Record<
   vertical: 'VaneVertical',
 }
 
-export const getCapabilityTagMappingAta: Record<
-  keyof GetCapabilitiesAta,
+export const classicGetCapabilityTagMappingAta: Record<
+  keyof ClassicGetCapabilitiesAta,
   keyof GetDeviceData<typeof DeviceType.Ata>
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
   measure_temperature: 'RoomTemperature',
 }
 
-export const listCapabilityTagMappingAta: Record<
-  'fan_speed' | 'horizontal' | 'vertical' | keyof ListCapabilitiesAta,
+export const classicListCapabilityTagMappingAta: Record<
+  'fan_speed' | 'horizontal' | 'vertical' | keyof ClassicListCapabilitiesAta,
   keyof ListDeviceDataAta
 > = {
   'alarm_generic.silent': 'FanSpeed',
@@ -140,8 +140,8 @@ export const listCapabilityTagMappingAta: Record<
   vertical: 'VaneVerticalDirection',
 }
 
-export const energyCapabilityTagMappingAta: Record<
-  keyof EnergyCapabilitiesAta,
+export const classicEnergyCapabilityTagMappingAta: Record<
+  keyof ClassicEnergyCapabilitiesAta,
   readonly (keyof EnergyDataAta)[]
 > = {
   measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
@@ -181,6 +181,6 @@ export const energyCapabilityTagMappingAta: Record<
   'meter_power.other': ['TotalOtherConsumed'],
 }
 
-export interface FlowArgsAta extends SetCapabilitiesAta {
-  readonly device: MELCloudDeviceAta
+export interface ClassicFlowArgsAta extends ClassicSetCapabilitiesAta {
+  readonly device: ClassicMELCloudDeviceAta
 }

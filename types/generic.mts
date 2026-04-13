@@ -8,17 +8,17 @@ import type {
 } from '@olivierzal/melcloud-api'
 
 import type {
-  MELCloudDeviceAta,
-  MELCloudDeviceAtw,
-  MELCloudDeviceErv,
+  ClassicMELCloudDeviceAta,
+  ClassicMELCloudDeviceAtw,
+  ClassicMELCloudDeviceErv,
 } from '../drivers/index.mts'
-import type { FlowArgsAta } from './ata.mts'
-import type { FlowArgsAtw } from './atw.mts'
+import type { ClassicFlowArgsAta } from './ata.mts'
+import type { ClassicFlowArgsAtw } from './atw.mts'
 import type {
   CapabilitiesOptions,
   CapabilitiesOptionsAtaErv,
 } from './capabilities.mts'
-import type { FlowArgsErv } from './erv.mts'
+import type { ClassicFlowArgsErv } from './erv.mts'
 import {
   type CapabilitiesOptionsValues,
   type LocalizedStrings,
@@ -169,6 +169,17 @@ export interface AuthAPI {
   readonly isAuthenticated: () => boolean
 }
 
+export type ClassicFlowArgs<T extends DeviceType> =
+  T extends typeof DeviceType.Ata ? ClassicFlowArgsAta
+  : T extends typeof DeviceType.Atw ? ClassicFlowArgsAtw
+  : T extends typeof DeviceType.Erv ? ClassicFlowArgsErv
+  : never
+
+export type ClassicMELCloudDevice =
+  | ClassicMELCloudDeviceAta
+  | ClassicMELCloudDeviceAtw
+  | ClassicMELCloudDeviceErv
+
 export interface DeviceDetails<
   T extends DeviceType = DeviceType,
   TId extends number | string = number,
@@ -189,14 +200,3 @@ export interface EnergyReportOperation {
   readonly start: () => Promise<void>
   readonly unschedule: () => void
 }
-
-export type FlowArgs<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? FlowArgsAta
-  : T extends typeof DeviceType.Atw ? FlowArgsAtw
-  : T extends typeof DeviceType.Erv ? FlowArgsErv
-  : never
-
-export type MELCloudDevice =
-  | MELCloudDeviceAta
-  | MELCloudDeviceAtw
-  | MELCloudDeviceErv

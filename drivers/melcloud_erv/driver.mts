@@ -1,11 +1,11 @@
 import { type ListDeviceData, DeviceType } from '@olivierzal/melcloud-api'
 
 import {
-  energyCapabilityTagMappingErv,
+  classicEnergyCapabilityTagMappingErv,
+  classicGetCapabilityTagMappingErv,
+  classicListCapabilityTagMappingErv,
+  classicSetCapabilityTagMappingErv,
   getCapabilitiesOptionsAtaErv,
-  getCapabilityTagMappingErv,
-  listCapabilityTagMappingErv,
-  setCapabilityTagMappingErv,
 } from '../../types/index.mts'
 import { ClassicMELCloudDriver } from '../classic-base-driver.mts'
 
@@ -15,18 +15,19 @@ const measureCapabilities = new Set([
   'measure_signal_strength',
 ])
 
-export default class MELCloudDriverErv extends ClassicMELCloudDriver<
+export default class ClassicMELCloudDriverErv extends ClassicMELCloudDriver<
   typeof DeviceType.Erv
 > {
-  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingErv
+  public readonly energyCapabilityTagMapping =
+    classicEnergyCapabilityTagMappingErv
 
   public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtaErv
 
-  public readonly getCapabilityTagMapping = getCapabilityTagMappingErv
+  public readonly getCapabilityTagMapping = classicGetCapabilityTagMappingErv
 
-  public readonly listCapabilityTagMapping = listCapabilityTagMappingErv
+  public readonly listCapabilityTagMapping = classicListCapabilityTagMappingErv
 
-  public readonly setCapabilityTagMapping = setCapabilityTagMappingErv
+  public readonly setCapabilityTagMapping = classicSetCapabilityTagMappingErv
 
   public readonly type = DeviceType.Erv
 

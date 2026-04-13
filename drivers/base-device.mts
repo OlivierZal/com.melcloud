@@ -416,7 +416,7 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   async #updateEnergyReportsOnSettings(changedKeys: string[]): Promise<void> {
-    await Promise.all(
+    const results = await Promise.allSettled(
       modes.map(async (mode) => {
         if (
           changedKeys.some(
@@ -427,5 +427,11 @@ export abstract class BaseMELCloudDevice extends Device {
         }
       }),
     )
+    for (const result of results) {
+      /* v8 ignore next -- defensive: report.start() rejection is not reachable in unit tests */
+      if (result.status === 'rejected') {
+        this.error('Energy report update failed:', result.reason)
+      }
+    }
   }
 }

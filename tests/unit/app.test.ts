@@ -22,8 +22,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type * as FilesModule from '../../files.mts'
 import type {
+  ClassicMELCloudDevice,
   ManifestDriver,
-  MELCloudDevice,
   Settings,
 } from '../../types/index.mts'
 import { getMockCallArg, mock } from '../helpers.js'
@@ -226,7 +226,7 @@ const initWithFacade = async (
 }
 
 const createMockDriver = (
-  devices: MELCloudDevice[],
+  devices: ClassicMELCloudDevice[],
 ): { getDevices: ReturnType<typeof vi.fn> } => ({
   getDevices: vi.fn().mockReturnValue(devices),
 })
@@ -245,10 +245,10 @@ const createSyncDevice = (
   id: number,
   syncFromDevice = vi.fn<() => Promise<void>>().mockResolvedValue(),
 ): {
-  device: MELCloudDevice
+  device: ClassicMELCloudDevice
   syncFromDevice: ReturnType<typeof vi.fn>
 } => ({
-  device: mock<MELCloudDevice>({
+  device: mock<ClassicMELCloudDevice>({
     driver: { id: 'melcloud' },
     getSettings: vi.fn().mockReturnValue({}),
     id,
@@ -478,11 +478,11 @@ describe('melCloudApp', () => {
 
   describe('device settings retrieval', () => {
     it('should aggregate device settings', async () => {
-      const mockDevice1 = mock<MELCloudDevice>({
+      const mockDevice1 = mock<ClassicMELCloudDevice>({
         driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
       })
-      const mockDevice2 = mock<MELCloudDevice>({
+      const mockDevice2 = mock<ClassicMELCloudDevice>({
         driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
       })
@@ -496,11 +496,11 @@ describe('melCloudApp', () => {
     })
 
     it('should set to null when settings differ between devices', async () => {
-      const mockDevice1 = mock<MELCloudDevice>({
+      const mockDevice1 = mock<ClassicMELCloudDevice>({
         driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
       })
-      const mockDevice2 = mock<MELCloudDevice>({
+      const mockDevice2 = mock<ClassicMELCloudDevice>({
         driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({ always_on: false }),
       })
@@ -910,7 +910,7 @@ describe('melCloudApp', () => {
     it('should update changed settings on matching devices', async () => {
       const mockSetSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
       const mockOnSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
-      const mockDevice = mock<MELCloudDevice>({
+      const mockDevice = mock<ClassicMELCloudDevice>({
         driver: { id: 'melcloud' },
         getSetting: vi.fn().mockReturnValue(false),
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
@@ -930,7 +930,7 @@ describe('melCloudApp', () => {
 
     it('should skip devices with no changed keys', async () => {
       const mockSetSettings = vi.fn()
-      const mockDevice = mock<MELCloudDevice>({
+      const mockDevice = mock<ClassicMELCloudDevice>({
         driver: { id: 'melcloud' },
         getSetting: vi.fn().mockReturnValue(true),
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
@@ -947,7 +947,7 @@ describe('melCloudApp', () => {
     })
 
     it('should filter by driverId when provided', async () => {
-      const mockDevice = mock<MELCloudDevice>({
+      const mockDevice = mock<ClassicMELCloudDevice>({
         driver: { id: 'melcloud' },
         getSetting: vi.fn().mockReturnValue(false),
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
@@ -1119,12 +1119,12 @@ describe('melCloudApp', () => {
 
   describe('device filtering by ids', () => {
     it('should filter devices by ids', async () => {
-      const mockDevice1 = mock<MELCloudDevice>({
+      const mockDevice1 = mock<ClassicMELCloudDevice>({
         driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({}),
         id: 1,
       })
-      const mockDevice2 = mock<MELCloudDevice>({
+      const mockDevice2 = mock<ClassicMELCloudDevice>({
         driver: { id: 'melcloud' },
         getSettings: vi.fn().mockReturnValue({}),
         id: 2,
@@ -1255,7 +1255,7 @@ describe('melCloudApp', () => {
     it('should sync home devices from onSync callback', async () => {
       const syncMock = vi.fn<() => Promise<void>>().mockResolvedValue()
       const mockDriver = createMockDriver([
-        mock<MELCloudDevice>({ syncFromDevice: syncMock }),
+        mock<ClassicMELCloudDevice>({ syncFromDevice: syncMock }),
       ])
       mockGetDriver.mockReturnValue(mockDriver)
       mockHomeApiInstance.list.mockResolvedValue([])

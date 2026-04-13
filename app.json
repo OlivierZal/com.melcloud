@@ -7,11 +7,15 @@
     },
     "createSession": {
       "method": "POST",
-      "path": "/sessions"
+      "path": "/classic/sessions"
     },
     "getBuildings": {
       "method": "GET",
-      "path": "/buildings"
+      "path": "/classic/buildings"
+    },
+    "getClassicSession": {
+      "method": "GET",
+      "path": "/classic/sessions"
     },
     "getDeviceSettings": {
       "method": "GET",
@@ -23,15 +27,15 @@
     },
     "getErrors": {
       "method": "GET",
-      "path": "/logs/errors"
+      "path": "/classic/logs/errors"
     },
     "getFrostProtection": {
       "method": "GET",
-      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
+      "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"
     },
     "getHolidayMode": {
       "method": "GET",
-      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
+      "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
     },
     "getLanguage": {
       "method": "GET",
@@ -43,11 +47,11 @@
     },
     "setFrostProtection": {
       "method": "PUT",
-      "path": "/zones/:zoneType/:zoneId/settings/frost-protection"
+      "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"
     },
     "setHolidayMode": {
       "method": "PUT",
-      "path": "/zones/:zoneType/:zoneId/settings/holiday-mode"
+      "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
     }
   },
   "author": {
@@ -7837,15 +7841,15 @@
       "api": {
         "getAtaCapabilities": {
           "method": "GET",
-          "path": "/capabilities/ata"
+          "path": "/classic/capabilities/ata"
         },
         "getAtaState": {
           "method": "GET",
-          "path": "/zones/:zoneType/:zoneId/ata"
+          "path": "/classic/zones/:zoneType/:zoneId/ata"
         },
         "getBuildings": {
           "method": "GET",
-          "path": "/buildings"
+          "path": "/classic/buildings"
         },
         "getLanguage": {
           "method": "GET",
@@ -7853,7 +7857,7 @@
         },
         "setAtaState": {
           "method": "PUT",
-          "path": "/zones/:zoneType/:zoneId/ata"
+          "path": "/classic/zones/:zoneType/:zoneId/ata"
         }
       },
       "name": {
@@ -7910,11 +7914,11 @@
       "api": {
         "getDevices": {
           "method": "GET",
-          "path": "/devices"
+          "path": "/classic/devices"
         },
         "getHourlyTemperatures": {
           "method": "GET",
-          "path": "/devices/:deviceId/logs/hourly-temperatures"
+          "path": "/classic/devices/:deviceId/logs/hourly-temperatures"
         },
         "getLanguage": {
           "method": "GET",
@@ -7922,15 +7926,15 @@
         },
         "getOperationModes": {
           "method": "GET",
-          "path": "/devices/:deviceId/logs/operation-modes"
+          "path": "/classic/devices/:deviceId/logs/operation-modes"
         },
         "getSignal": {
           "method": "GET",
-          "path": "/devices/:deviceId/logs/signal"
+          "path": "/classic/devices/:deviceId/logs/signal"
         },
         "getTemperatures": {
           "method": "GET",
-          "path": "/devices/:deviceId/logs/temperatures"
+          "path": "/classic/devices/:deviceId/logs/temperatures"
         }
       },
       "name": {
