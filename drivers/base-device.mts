@@ -173,6 +173,10 @@ export abstract class BaseMELCloudDevice extends Device {
   }
   /* v8 ignore stop */
 
+  get #listCapabilityTagMapping(): Record<string, string> {
+    return this.cleanMapping(this.driver.listCapabilityTagMapping)
+  }
+
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
       await super.removeCapability(capability)
@@ -296,8 +300,11 @@ export abstract class BaseMELCloudDevice extends Device {
     this.homey.setTimeout(async () => this.syncFromDevice(), DEBOUNCE_DELAY)
   }
 
-  get #listCapabilityTagMapping(): Record<string, string> {
-    return this.cleanMapping(this.driver.listCapabilityTagMapping)
+  async #init(): Promise<void> {
+    await this.#setCapabilities()
+    await this.applyCapabilitiesOptions()
+    await this.syncFromDevice()
+    await this.scheduleEnergyReports()
   }
 
   #isThermostatModeSupportingOff(): boolean {
@@ -322,13 +329,6 @@ export abstract class BaseMELCloudDevice extends Device {
       },
       DEBOUNCE_DELAY,
     )
-  }
-
-  async #init(): Promise<void> {
-    await this.#setCapabilities()
-    await this.applyCapabilitiesOptions()
-    await this.syncFromDevice()
-    await this.scheduleEnergyReports()
   }
 
   async #setCapabilities(): Promise<void> {
