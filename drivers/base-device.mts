@@ -64,15 +64,13 @@ export abstract class BaseMELCloudDevice extends Device {
     return Object.entries({
       ...this.getSetCapabilityTagMapping(),
       ...this.getGetCapabilityTagMapping(),
-      ...this.getListCapabilityTagMapping(),
+      ...this.#listCapabilityTagMapping,
     })
   }
 
   #deviceFacade?: DeviceFacade
 
   #getCapabilityTagMapping: Record<string, string> = {}
-
-  #listCapabilityTagMapping: Record<string, string> = {}
 
   readonly #reports: {
     regular?: EnergyReportOperation
@@ -82,9 +80,13 @@ export abstract class BaseMELCloudDevice extends Device {
   #setCapabilityTagMapping: Record<string, string> = {}
 
   public override async onInit(): Promise<void> {
-    this.applyBaseConverters()
+    this.capabilityToDevice = {
+      onoff: (isOn: boolean): boolean => this.isAlwaysOn || isOn,
+      ...this.capabilityToDevice,
+    }
     await this.setWarning(null)
-    await this.initDevice()
+    this.#registerCapabilityListeners()
+    await this.fetchDevice()
   }
 
   public override async onSettings({
@@ -156,7 +158,7 @@ export abstract class BaseMELCloudDevice extends Device {
     try {
       if (!this.#deviceFacade) {
         this.#deviceFacade = this.getFacade()
-        await this.init()
+        await this.#init()
       }
       return this.#deviceFacade
     } catch (error) {
@@ -208,13 +210,6 @@ export abstract class BaseMELCloudDevice extends Device {
     await super.setWarning(null)
   }
 
-  protected applyBaseConverters(): void {
-    this.capabilityToDevice = {
-      onoff: (isOn: boolean): boolean => this.isAlwaysOn || isOn,
-      ...this.capabilityToDevice,
-    }
-  }
-
   protected async applyCapabilitiesOptions(data?: unknown): Promise<void> {
     for (const [capability, options] of Object.entries(
       this.driver.getCapabilitiesOptions(data),
@@ -240,37 +235,12 @@ export abstract class BaseMELCloudDevice extends Device {
     return this.#getCapabilityTagMapping
   }
 
-  protected getListCapabilityTagMapping(): Record<string, string> {
-    return this.#listCapabilityTagMapping
-  }
-
   protected getRequiredCapabilities(): string[] {
     return this.driver.getRequiredCapabilities()
   }
 
   protected getSetCapabilityTagMapping(): Record<string, string> {
     return this.#setCapabilityTagMapping
-  }
-
-  protected async init(): Promise<void> {
-    this.#setCapabilityTagMapping = this.cleanMapping(
-      this.driver.setCapabilityTagMapping,
-    )
-    this.#getCapabilityTagMapping = this.cleanMapping(
-      this.driver.getCapabilityTagMapping,
-    )
-    this.#listCapabilityTagMapping = this.cleanMapping(
-      this.driver.listCapabilityTagMapping,
-    )
-    await this.applyCapabilitiesOptions()
-    await this.#setCapabilities()
-    await this.syncFromDevice()
-    await this.scheduleEnergyReports()
-  }
-
-  protected async initDevice(): Promise<void> {
-    await this.fetchDevice()
-    this.#registerCapabilityListeners()
   }
 
   protected isEnergyCapability(setting: string): boolean {
@@ -326,15 +296,17 @@ export abstract class BaseMELCloudDevice extends Device {
     this.homey.setTimeout(async () => this.syncFromDevice(), DEBOUNCE_DELAY)
   }
 
+  get #listCapabilityTagMapping(): Record<string, string> {
+    return this.cleanMapping(this.driver.listCapabilityTagMapping)
+  }
+
   #isThermostatModeSupportingOff(): boolean {
     return this.thermostatMode !== null && 'off' in this.thermostatMode
   }
 
   #registerCapabilityListeners(): void {
     this.registerMultipleCapabilityListener(
-      Object.keys(this.getSetCapabilityTagMapping()).filter((capability) =>
-        this.hasCapability(capability),
-      ),
+      Object.keys(this.driver.setCapabilityTagMapping),
       async (values) => {
         if (
           'thermostat_mode' in values &&
@@ -350,6 +322,13 @@ export abstract class BaseMELCloudDevice extends Device {
       },
       DEBOUNCE_DELAY,
     )
+  }
+
+  async #init(): Promise<void> {
+    await this.#setCapabilities()
+    await this.applyCapabilitiesOptions()
+    await this.syncFromDevice()
+    await this.scheduleEnergyReports()
   }
 
   async #setCapabilities(): Promise<void> {
@@ -373,6 +352,13 @@ export abstract class BaseMELCloudDevice extends Device {
         this.addCapability(capability)
       : this.removeCapability(capability))
     }
+
+    this.#setCapabilityTagMapping = this.cleanMapping(
+      this.driver.setCapabilityTagMapping,
+    )
+    this.#getCapabilityTagMapping = this.cleanMapping(
+      this.driver.getCapabilityTagMapping,
+    )
   }
 
   #setTimer(
