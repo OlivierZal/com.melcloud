@@ -14,12 +14,14 @@ import {
   verticalToClassic,
 } from '@olivierzal/melcloud-api'
 
+import type {
+  HomeCapabilitiesAta,
+  HomeConvertFromDevice,
+  HomeConvertToDevice,
+  HomeSetCapabilitiesAta,
+} from '../../types/home-ata.mts'
 import {
   type DeviceFacade,
-  type HomeCapabilitiesAta,
-  type HomeConvertFromDevice,
-  type HomeConvertToDevice,
-  type HomeSetCapabilitiesAta,
   horizontalFromDevice,
   operationModeFromDevice,
   ThermostatModeAta,

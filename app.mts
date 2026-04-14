@@ -31,6 +31,20 @@ import {
 import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
 
 import type { ClassicMELCloudDriver } from './drivers/classic-base-driver.mts'
+import type { ClassicMELCloudDevice } from './types/classic.mts'
+import type {
+  DeviceSettings,
+  DriverCapabilitiesOptions,
+  DriverSetting,
+  FormattedErrorLog,
+  GetAtaOptions,
+  GroupAtaStates,
+  LoginSetting,
+  ManifestDriver,
+  ManifestDriverCapabilitiesOptions,
+  Settings,
+  ZoneData,
+} from './types/index.mts'
 import {
   changelog,
   fanSpeed,
@@ -40,24 +54,9 @@ import {
   thermostatMode,
   vertical,
 } from './files.mts'
-import { setFacadeManager } from './lib/get-zones.mts'
 import { type Homey, App } from './lib/homey.mts'
-import { typedFromEntries } from './lib/index.mts'
-import {
-  type ClassicMELCloudDevice,
-  type DeviceSettings,
-  type DriverCapabilitiesOptions,
-  type DriverSetting,
-  type FormattedErrorLog,
-  type GetAtaOptions,
-  type GroupAtaStates,
-  type LoginSetting,
-  type ManifestDriver,
-  type ManifestDriverCapabilitiesOptions,
-  type Settings,
-  type ZoneData,
-  fanSpeedValues,
-} from './types/index.mts'
+import { setFacadeManager, typedFromEntries } from './lib/index.mts'
+import { fanSpeedValues } from './types/ata-erv.mts'
 
 const NOTIFICATION_DELAY_MS = 10_000
 

@@ -21,11 +21,8 @@ import { Settings as LuxonSettings } from 'luxon'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type * as FilesModule from '../../files.mts'
-import type {
-  ClassicMELCloudDevice,
-  ManifestDriver,
-  Settings,
-} from '../../types/index.mts'
+import type { ClassicMELCloudDevice } from '../../types/classic.mts'
+import type { ManifestDriver, Settings } from '../../types/index.mts'
 import { getMockCallArg, mock } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()

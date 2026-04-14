@@ -251,13 +251,13 @@ export abstract class BaseMELCloudDevice extends Device {
   ): Record<string, unknown> {
     this.log('Requested data:', values)
     const tagMapping = this.#setCapabilityTagMapping
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Object.fromEntries returns { [k: string]: any }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Object.fromEntries returns { [k: string]: any }
     return Object.fromEntries(
       Object.entries(values).map(([capability, value]) => [
         tagMapping[capability],
         this.capabilityToDevice[capability]?.(value) ?? value,
       ]),
-    )
+    ) as Record<string, unknown>
   }
 
   protected async scheduleEnergyReports(): Promise<void> {

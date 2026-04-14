@@ -4,9 +4,9 @@ import type {
   ListDeviceData,
 } from '@olivierzal/melcloud-api'
 
+import type { ClassicMELCloudDevice } from '../types/classic.mts'
 import type {
   CapabilitiesOptions,
-  ClassicMELCloudDevice,
   DeviceDetails,
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,

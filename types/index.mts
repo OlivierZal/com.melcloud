@@ -15,6 +15,13 @@ export type {
   SetCapabilityTagMapping,
 } from './capabilities.mts'
 export type {
+  AuthAPI,
+  DeviceDetails,
+  DeviceFacade,
+  EnergyReportMode,
+  EnergyReportOperation,
+} from './device.mts'
+export type {
   LoginSetting,
   Manifest,
   ManifestDriver,
@@ -44,33 +51,9 @@ export type {
 export type { BuildingZone, DeviceZone, Zone } from '@olivierzal/melcloud-api'
 
 export {
-  fanSpeedValues,
-  getCapabilitiesOptionsAtaErv,
-  getCapabilitiesOptionsHome,
-} from './ata-erv.mts'
-export {
   horizontalFromDevice,
   operationModeFromDevice,
   ThermostatModeAta,
   verticalFromDevice,
 } from './ata.mts'
-export {
-  operationModeStateFromDevice,
-  operationModeZoneFromDevice,
-} from './classic-atw.mts'
-export {
-  type AuthAPI,
-  type ClassicMELCloudDevice,
-  type DeviceDetails,
-  type DeviceFacade,
-  type EnergyReportMode,
-  type EnergyReportOperation,
-} from './classic.mts'
 export { ThermostatModeErv, ventilationModeFromDevice } from './erv.mts'
-export {
-  type HomeCapabilitiesAta,
-  type HomeConvertFromDevice,
-  type HomeConvertToDevice,
-  type HomeSetCapabilitiesAta,
-  homeSetCapabilityTagMappingAta,
-} from './home-ata.mts'
