@@ -408,8 +408,10 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { state: GroupState }): Promise<void> {
-    const data = await this.getFacade(zoneType, zoneId).setGroup(state)
-    throwOnErrors(data.AttributeErrors)
+    const { AttributeErrors } = await this.getFacade(zoneType, zoneId).setGroup(
+      state,
+    )
+    throwOnErrors(AttributeErrors)
   }
 
   public async setDeviceSettings({
@@ -443,10 +445,11 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { settings: FrostProtectionQuery }): Promise<void> {
-    const data = await this.getFacade(zoneType, zoneId).setFrostProtection(
-      settings,
-    )
-    throwOnErrors(data.AttributeErrors)
+    const { AttributeErrors } = await this.getFacade(
+      zoneType,
+      zoneId,
+    ).setFrostProtection(settings)
+    throwOnErrors(AttributeErrors)
   }
 
   public async setHolidayMode({
@@ -454,8 +457,11 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { settings: HolidayModeQuery }): Promise<void> {
-    const data = await this.getFacade(zoneType, zoneId).setHolidayMode(settings)
-    throwOnErrors(data.AttributeErrors)
+    const { AttributeErrors } = await this.getFacade(
+      zoneType,
+      zoneId,
+    ).setHolidayMode(settings)
+    throwOnErrors(AttributeErrors)
   }
 
   #createLogger(): {
