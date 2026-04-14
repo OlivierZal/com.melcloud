@@ -297,7 +297,9 @@ const createCheckbox = (id: string, driverId: string): HTMLInputElement => {
   const checkbox = document.createElement('input')
   checkbox.classList.add('homey-form-checkbox-input')
   checkbox.type = 'checkbox'
-  checkbox.id = `${id}__settings_${driverId}`
+  checkbox.id = `${id}_${driverId}`
+  checkbox.dataset['settingId'] = id
+  checkbox.dataset['driverId'] = driverId
   return checkbox
 }
 
@@ -750,12 +752,15 @@ class DeviceSettingsManager {
     driverSettings: Partial<Record<string, DriverSetting[]>>,
   ): void {
     for (const { id, title, type, values } of driverSettings['options'] ?? []) {
-      const settingId = `${id}__settings_common`
       if (
-        !this.#settingsCommon.querySelector(`select#${settingId}`) &&
+        !this.#settingsCommon.querySelector(
+          `select[data-setting-id="${id}"]`,
+        ) &&
         commonElementTypes.has(type)
       ) {
-        const formControl = createSelect(this.#homey, settingId, values)
+        const formControl = createSelect(this.#homey, id, values)
+        formControl.dataset['settingId'] = id
+        formControl.dataset['driverId'] = 'common'
         appendFormControl(this.#settingsCommon, { formControl, title })
         this.#updateCommonSetting(formControl)
       }
@@ -878,17 +883,19 @@ class DeviceSettingsManager {
   }
 
   #setSetting(settings: Settings, element: HTMLValueElement): void {
-    const [id, driverId] = element.id.split('__settings_')
-    if (id !== undefined) {
+    const {
+      dataset: { driverId, settingId },
+    } = element
+    if (settingId !== undefined) {
       const value = this.#parseFormValue(element)
       if (
         this.#shouldUpdate(
-          id,
+          settingId,
           value,
           driverId === 'common' ? undefined : driverId,
         )
       ) {
-        settings[id] = value
+        settings[settingId] = value
       }
     }
   }
@@ -921,10 +928,12 @@ class DeviceSettingsManager {
   }
 
   #updateCommonSetting(element: HTMLSelectElement): void {
-    const [id] = element.id.split('__settings_')
-    if (id !== undefined) {
+    const {
+      dataset: { settingId },
+    } = element
+    if (settingId !== undefined) {
       const {
-        flatDeviceSettings: { [id]: value },
+        flatDeviceSettings: { [settingId]: value },
       } = this
       element.value =
         (
@@ -949,7 +958,9 @@ class DeviceSettingsManager {
   }
 
   #updateDriverSetting(element: HTMLInputElement): void {
-    const [id, driverId] = element.id.split('__settings_')
+    const {
+      dataset: { driverId, settingId: id },
+    } = element
     if (id !== undefined && driverId !== undefined) {
       const isChecked = this.#deviceSettings[driverId]?.[id]
       if (typeof isChecked === 'boolean') {
