@@ -111,9 +111,9 @@ const getChartLineOptions = (
       xaxis: { lines: { show: false } },
     },
     legend: { ...getLegendConfig(), ...fontStyle },
-    series: series.map(({ data, name: seriesName }) => {
-      const name = normalizeSeriesName(seriesName)
-      return { data, hidden: hidden.has(name), name }
+    series: series.map(({ data, name }) => {
+      const seriesName = normalizeSeriesName(name)
+      return { data, hidden: hidden.has(seriesName), seriesName }
     }),
     stroke: { curve: 'smooth' },
     title: {
@@ -333,8 +333,8 @@ class ChartWidget {
   }
 
   #populateDeviceOptions(zones: DeviceZone[]): void {
-    for (const { id, model, name: label } of zones) {
-      createOption(this.#zone, { id: getZoneId(id, model), label })
+    for (const { id, model, name } of zones) {
+      createOption(this.#zone, { id: getZoneId(id, model), label: name })
     }
   }
 }
