@@ -14,17 +14,17 @@ const mockGetBuildings = vi.fn<() => BuildingZone[]>()
 
 vi.mock(import('../../lib/index.mts'), async (importOriginal) => ({
   ...(await importOriginal()),
-  getBuildings: mockGetBuildings,
+  getClassicBuildings: mockGetBuildings,
 }))
 
 const { default: api } = await import('../../widgets/ata-group-setting/api.mts')
 
 const mockApp = {
-  getAtaCapabilities:
-    vi.fn<() => [keyof GroupState, DriverCapabilitiesOptions][]>(),
   getAtaDetailedValues: vi.fn<() => Promise<GroupAtaStates>>(),
-  getAtaState: vi.fn<() => Promise<GroupState>>(),
-  setAtaState: vi.fn<() => Promise<void>>(),
+  getClassicAtaCapabilities:
+    vi.fn<() => [keyof GroupState, DriverCapabilitiesOptions][]>(),
+  getClassicAtaState: vi.fn<() => Promise<GroupState>>(),
+  updateClassicAtaState: vi.fn<() => Promise<void>>(),
 }
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
@@ -37,15 +37,15 @@ describe('ata-group-setting api', () => {
   })
 
   describe('ata capability retrieval', () => {
-    it('should delegate to app.getAtaCapabilities', () => {
+    it('should delegate to app.getClassicAtaCapabilities', () => {
       const capabilities =
         mock<[keyof GroupState, DriverCapabilitiesOptions][]>()
-      mockApp.getAtaCapabilities.mockReturnValue(capabilities)
+      mockApp.getClassicAtaCapabilities.mockReturnValue(capabilities)
 
-      const result = api.getAtaCapabilities({ homey })
+      const result = api.getClassicAtaCapabilities({ homey })
 
       expect(result).toBe(capabilities)
-      expect(mockApp.getAtaCapabilities).toHaveBeenCalledTimes(1)
+      expect(mockApp.getClassicAtaCapabilities).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -56,7 +56,7 @@ describe('ata-group-setting api', () => {
       const detailedValues = mock<GroupAtaStates>()
       mockApp.getAtaDetailedValues.mockResolvedValue(detailedValues)
 
-      const result = await api.getAtaState({
+      const result = await api.getClassicAtaState({
         homey,
         params,
         query: { mode: 'detailed', status: 'on' },
@@ -69,27 +69,27 @@ describe('ata-group-setting api', () => {
       })
     })
 
-    it('should call getAtaState when mode is not detailed', async () => {
+    it('should call getClassicAtaState when mode is not detailed', async () => {
       const values = mock<GroupState>()
-      mockApp.getAtaState.mockResolvedValue(values)
+      mockApp.getClassicAtaState.mockResolvedValue(values)
 
-      const result = await api.getAtaState({
+      const result = await api.getClassicAtaState({
         homey,
         params,
         query: { mode: undefined, status: undefined },
       })
 
       expect(result).toBe(values)
-      expect(mockApp.getAtaState).toHaveBeenCalledWith(params)
+      expect(mockApp.getClassicAtaState).toHaveBeenCalledWith(params)
     })
   })
 
   describe('building retrieval', () => {
-    it('should delegate to getBuildings without type', () => {
+    it('should delegate to getClassicBuildings without type', () => {
       const buildings = mock<BuildingZone[]>()
       mockGetBuildings.mockReturnValue(buildings)
 
-      const result = api.getBuildings({ query: { type: undefined } })
+      const result = api.getClassicBuildings({ query: { type: undefined } })
 
       expect(result).toBe(buildings)
       expect(mockGetBuildings).toHaveBeenCalledWith({ type: undefined })
@@ -99,7 +99,7 @@ describe('ata-group-setting api', () => {
       const buildings = mock<BuildingZone[]>()
       mockGetBuildings.mockReturnValue(buildings)
 
-      const result = api.getBuildings({ query: { type: '0' } })
+      const result = api.getClassicBuildings({ query: { type: '0' } })
 
       expect(result).toBe(buildings)
       expect(mockGetBuildings).toHaveBeenCalledWith({ type: 0 })
@@ -118,14 +118,14 @@ describe('ata-group-setting api', () => {
   })
 
   describe('ata value update', () => {
-    it('should delegate to app.setAtaState', async () => {
+    it('should delegate to app.updateClassicAtaState', async () => {
       const body = mock<GroupState>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
-      mockApp.setAtaState.mockResolvedValue()
+      mockApp.updateClassicAtaState.mockResolvedValue()
 
-      await api.setAtaState({ body, homey, params })
+      await api.updateClassicAtaState({ body, homey, params })
 
-      expect(mockApp.setAtaState).toHaveBeenCalledWith({
+      expect(mockApp.updateClassicAtaState).toHaveBeenCalledWith({
         state: body,
         ...params,
       })

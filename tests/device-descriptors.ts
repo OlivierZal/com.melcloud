@@ -76,8 +76,8 @@ export const testSetValuesErrorHandling = (
 ): void => {
   const { setValuesMock, superSetWarningMock } = mocks
 
-  describe('setValues error handling', () => {
-    it('should handle setValues error with warning', async () => {
+  describe('updateValues error handling', () => {
+    it('should handle updateValues error with warning', async () => {
       setValuesMock.mockRejectedValue(new Error('API error'))
       await (getDevice() as { onInit: () => Promise<void> }).onInit()
       const callback = getCapabilityListenerCallback()
@@ -233,7 +233,7 @@ export const testEnsureDeviceNull = (
   const { facadeMock, setValuesMock } = mocks
 
   describe('ensureDevice returns null', () => {
-    it('should not call setValues when ensureDevice returns null', async () => {
+    it('should not call updateValues when ensureDevice returns null', async () => {
       facadeMock.mockImplementation(() => {
         throw new Error('Not found')
       })

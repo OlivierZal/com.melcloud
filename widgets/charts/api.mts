@@ -7,19 +7,19 @@ import type { Homey } from 'homey/lib/Homey'
 import type { HourNumbers } from 'luxon'
 
 import type { DaysQuery, DeviceZone, HourQuery } from '../../types/index.mts'
-import { getZones, toDeviceType } from '../../lib/index.mts'
+import { getClassicZones, toDeviceType } from '../../lib/index.mts'
 
 const api = {
-  getDevices({
+  getClassicDevices({
     query: { type },
   }: {
     query: { type?: `${DeviceType}` }
   }): DeviceZone[] {
-    return getZones({
+    return getClassicZones({
       type: type ? toDeviceType(type) : undefined,
     }).filter((zone) => zone.model === 'devices')
   },
-  async getHourlyTemperatures({
+  async getClassicHourlyTemperatures({
     homey: { app },
     params: { deviceId },
     query: { hour },
@@ -28,16 +28,13 @@ const api = {
     params: { deviceId: string }
     query: HourQuery
   }): Promise<ReportChartLineOptions> {
-    return app.getHourlyTemperatures({
+    return app.getClassicHourlyTemperatures({
       deviceId,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Number to HourNumbers (0-23)
       hour: hour === undefined ? undefined : (Number(hour) as HourNumbers),
     })
   },
-  getLanguage({ homey: { i18n } }: { homey: Homey }): string {
-    return i18n.getLanguage()
-  },
-  async getOperationModes({
+  async getClassicOperationModes({
     homey: { app },
     params: { deviceId },
     query: { days },
@@ -46,9 +43,9 @@ const api = {
     params: { deviceId: string }
     query: DaysQuery
   }): Promise<ReportChartPieOptions> {
-    return app.getOperationModes({ days: Number(days), deviceId })
+    return app.getClassicOperationModes({ days: Number(days), deviceId })
   },
-  async getSignal({
+  async getClassicSignal({
     homey: { app },
     params: { deviceId },
     query: { hour },
@@ -57,13 +54,13 @@ const api = {
     params: { deviceId: string }
     query: HourQuery
   }): Promise<ReportChartLineOptions> {
-    return app.getSignal({
+    return app.getClassicSignal({
       deviceId,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Number to HourNumbers (0-23)
       hour: hour === undefined ? undefined : (Number(hour) as HourNumbers),
     })
   },
-  async getTemperatures({
+  async getClassicTemperatures({
     homey: { app },
     params: { deviceId },
     query: { days },
@@ -72,7 +69,10 @@ const api = {
     params: { deviceId: string }
     query: DaysQuery
   }): Promise<ReportChartLineOptions> {
-    return app.getTemperatures({ days: Number(days), deviceId })
+    return app.getClassicTemperatures({ days: Number(days), deviceId })
+  },
+  getLanguage({ homey: { i18n } }: { homey: Homey }): string {
+    return i18n.getLanguage()
   },
 }
 

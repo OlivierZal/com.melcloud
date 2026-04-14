@@ -18,7 +18,7 @@ export interface DeviceDetails<
 }
 
 export interface DeviceFacade {
-  readonly setValues: (data: Record<string, unknown>) => Promise<unknown>
+  readonly updateValues: (data: Record<string, unknown>) => Promise<unknown>
 }
 
 export type EnergyReportMode = 'regular' | 'total'

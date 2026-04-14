@@ -146,7 +146,7 @@ const mockFacade = (data: Record<string, unknown> = mockDeviceData): void => {
   getFacadeMock.mockReturnValue({
     data,
     getEnergy: vi.fn(),
-    setValues: setValuesMock,
+    updateValues: setValuesMock,
   })
 }
 
@@ -381,7 +381,7 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('capability change handling', () => {
-    it('should call setValues when capability values are set', async () => {
+    it('should call updateValues when capability values are set', async () => {
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
@@ -389,7 +389,7 @@ describe(ClassicMELCloudDevice, () => {
       expect(setValuesMock).toHaveBeenCalledWith({ Power: true })
     })
 
-    it('should not call setValues when buildUpdateData returns empty object', async () => {
+    it('should not call updateValues when buildUpdateData returns empty object', async () => {
       const freshDevice = new TestDevice()
       const driverWithEmptySetMapping = Object.create(
         mockDriver,

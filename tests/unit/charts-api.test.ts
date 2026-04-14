@@ -7,20 +7,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { mock } from '../helpers.js'
 
-const mockGetZones = vi.fn()
+const mockGetClassicZones = vi.fn()
 
 vi.mock(import('../../lib/index.mts'), async (importOriginal) => ({
   ...(await importOriginal()),
-  getZones: mockGetZones,
+  getClassicZones: mockGetClassicZones,
 }))
 
 const { default: api } = await import('../../widgets/charts/api.mts')
 
 const mockApp = {
-  getHourlyTemperatures: vi.fn<() => Promise<ReportChartLineOptions>>(),
-  getOperationModes: vi.fn<() => Promise<ReportChartPieOptions>>(),
-  getSignal: vi.fn<() => Promise<ReportChartLineOptions>>(),
-  getTemperatures: vi.fn<() => Promise<ReportChartLineOptions>>(),
+  getClassicHourlyTemperatures: vi.fn<() => Promise<ReportChartLineOptions>>(),
+  getClassicOperationModes: vi.fn<() => Promise<ReportChartPieOptions>>(),
+  getClassicSignal: vi.fn<() => Promise<ReportChartLineOptions>>(),
+  getClassicTemperatures: vi.fn<() => Promise<ReportChartLineOptions>>(),
 }
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
@@ -39,62 +39,62 @@ describe('charts api', () => {
         { id: 2, level: 1, model: 'devices' as const, name: 'Device 1' },
         { id: 3, level: 1, model: 'devices' as const, name: 'Device 2' },
       ]
-      mockGetZones.mockReturnValue(zones)
+      mockGetClassicZones.mockReturnValue(zones)
 
-      const result = api.getDevices({ query: { type: undefined } })
+      const result = api.getClassicDevices({ query: { type: undefined } })
 
       expect(result).toStrictEqual([
         { id: 2, level: 1, model: 'devices', name: 'Device 1' },
         { id: 3, level: 1, model: 'devices', name: 'Device 2' },
       ])
-      expect(mockGetZones).toHaveBeenCalledWith({ type: undefined })
+      expect(mockGetClassicZones).toHaveBeenCalledWith({ type: undefined })
     })
 
     it('should pass numeric type filter', () => {
       const zones = [
         { id: 2, level: 1, model: 'devices' as const, name: 'Device 1' },
       ]
-      mockGetZones.mockReturnValue(zones)
+      mockGetClassicZones.mockReturnValue(zones)
 
-      const result = api.getDevices({ query: { type: '0' } })
+      const result = api.getClassicDevices({ query: { type: '0' } })
 
       expect(result).toStrictEqual([
         { id: 2, level: 1, model: 'devices', name: 'Device 1' },
       ])
-      expect(mockGetZones).toHaveBeenCalledWith({ type: 0 })
+      expect(mockGetClassicZones).toHaveBeenCalledWith({ type: 0 })
     })
 
     it('should throw on invalid device type', () => {
-      expect(() => api.getDevices({ query: { type: '99' as '0' } })).toThrow(
-        RangeError,
-      )
+      expect(() =>
+        api.getClassicDevices({ query: { type: '99' as '0' } }),
+      ).toThrow(RangeError)
     })
 
     it('should return empty array when no device zones exist', () => {
       const zones = [
         { id: 1, level: 0, model: 'buildings' as const, name: 'Building 1' },
       ]
-      mockGetZones.mockReturnValue(zones)
+      mockGetClassicZones.mockReturnValue(zones)
 
-      const result = api.getDevices({ query: { type: undefined } })
+      const result = api.getClassicDevices({ query: { type: undefined } })
 
       expect(result).toStrictEqual([])
     })
   })
 
   describe('hourly temperature retrieval', () => {
-    it('should call app.getHourlyTemperatures with hour number', async () => {
+    it('should call app.getClassicHourlyTemperatures with hour number', async () => {
       const lineOptions = mock<ReportChartLineOptions>()
-      mockApp.getHourlyTemperatures.mockResolvedValue(lineOptions)
+      mockApp.getClassicHourlyTemperatures.mockResolvedValue(lineOptions)
 
-      const result = await api.getHourlyTemperatures({
+      const result = await api.getClassicHourlyTemperatures({
         homey,
         params: { deviceId: 'dev1' },
         query: { hour: '10' },
       })
 
       expect(result).toBe(lineOptions)
-      expect(mockApp.getHourlyTemperatures).toHaveBeenCalledWith({
+      expect(mockApp.getClassicHourlyTemperatures).toHaveBeenCalledWith({
         deviceId: 'dev1',
         hour: 10,
       })
@@ -102,16 +102,16 @@ describe('charts api', () => {
 
     it('should pass undefined when hour is undefined', async () => {
       const lineOptions = mock<ReportChartLineOptions>()
-      mockApp.getHourlyTemperatures.mockResolvedValue(lineOptions)
+      mockApp.getClassicHourlyTemperatures.mockResolvedValue(lineOptions)
 
-      const result = await api.getHourlyTemperatures({
+      const result = await api.getClassicHourlyTemperatures({
         homey,
         params: { deviceId: 'dev1' },
         query: { hour: undefined },
       })
 
       expect(result).toBe(lineOptions)
-      expect(mockApp.getHourlyTemperatures).toHaveBeenCalledWith({
+      expect(mockApp.getClassicHourlyTemperatures).toHaveBeenCalledWith({
         deviceId: 'dev1',
         hour: undefined,
       })
@@ -130,18 +130,18 @@ describe('charts api', () => {
   })
 
   describe('operation mode retrieval', () => {
-    it('should call app.getOperationModes with numeric days', async () => {
+    it('should call app.getClassicOperationModes with numeric days', async () => {
       const pieOptions = mock<ReportChartPieOptions>()
-      mockApp.getOperationModes.mockResolvedValue(pieOptions)
+      mockApp.getClassicOperationModes.mockResolvedValue(pieOptions)
 
-      const result = await api.getOperationModes({
+      const result = await api.getClassicOperationModes({
         homey,
         params: { deviceId: 'dev1' },
         query: { days: '7' },
       })
 
       expect(result).toBe(pieOptions)
-      expect(mockApp.getOperationModes).toHaveBeenCalledWith({
+      expect(mockApp.getClassicOperationModes).toHaveBeenCalledWith({
         days: 7,
         deviceId: 'dev1',
       })
@@ -149,18 +149,18 @@ describe('charts api', () => {
   })
 
   describe('signal retrieval', () => {
-    it('should call app.getSignal with hour number', async () => {
+    it('should call app.getClassicSignal with hour number', async () => {
       const lineOptions = mock<ReportChartLineOptions>()
-      mockApp.getSignal.mockResolvedValue(lineOptions)
+      mockApp.getClassicSignal.mockResolvedValue(lineOptions)
 
-      const result = await api.getSignal({
+      const result = await api.getClassicSignal({
         homey,
         params: { deviceId: 'dev1' },
         query: { hour: '5' },
       })
 
       expect(result).toBe(lineOptions)
-      expect(mockApp.getSignal).toHaveBeenCalledWith({
+      expect(mockApp.getClassicSignal).toHaveBeenCalledWith({
         deviceId: 'dev1',
         hour: 5,
       })
@@ -168,16 +168,16 @@ describe('charts api', () => {
 
     it('should pass undefined when hour is undefined', async () => {
       const lineOptions = mock<ReportChartLineOptions>()
-      mockApp.getSignal.mockResolvedValue(lineOptions)
+      mockApp.getClassicSignal.mockResolvedValue(lineOptions)
 
-      const result = await api.getSignal({
+      const result = await api.getClassicSignal({
         homey,
         params: { deviceId: 'dev1' },
         query: { hour: undefined },
       })
 
       expect(result).toBe(lineOptions)
-      expect(mockApp.getSignal).toHaveBeenCalledWith({
+      expect(mockApp.getClassicSignal).toHaveBeenCalledWith({
         deviceId: 'dev1',
         hour: undefined,
       })
@@ -185,18 +185,18 @@ describe('charts api', () => {
   })
 
   describe('temperature retrieval', () => {
-    it('should call app.getTemperatures with numeric days', async () => {
+    it('should call app.getClassicTemperatures with numeric days', async () => {
       const lineOptions = mock<ReportChartLineOptions>()
-      mockApp.getTemperatures.mockResolvedValue(lineOptions)
+      mockApp.getClassicTemperatures.mockResolvedValue(lineOptions)
 
-      const result = await api.getTemperatures({
+      const result = await api.getClassicTemperatures({
         homey,
         params: { deviceId: 'dev1' },
         query: { days: '30' },
       })
 
       expect(result).toBe(lineOptions)
-      expect(mockApp.getTemperatures).toHaveBeenCalledWith({
+      expect(mockApp.getClassicTemperatures).toHaveBeenCalledWith({
         days: 30,
         deviceId: 'dev1',
       })

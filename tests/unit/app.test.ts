@@ -32,10 +32,13 @@ vi.mock('../../lib/homey.mts', () => ({
   App: Function,
 }))
 
-vi.mock(import('../../lib/get-zones.mts'), async (importOriginal) => ({
-  ...(await importOriginal()),
-  setFacadeManager: mockSetFacadeManager,
-}))
+vi.mock(
+  import('../../lib/classic-facade-manager.mts'),
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    setClassicFacadeManager: mockSetFacadeManager,
+  }),
+)
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Partial mock data is not assignable to the full file exports
 vi.mock('../../files.mts', async (importOriginal) => {
@@ -362,7 +365,7 @@ describe('melCloudApp', () => {
   describe('ata capabilities', () => {
     it('should return localized capability configs', async () => {
       await app.onInit()
-      const capabilities = app.getAtaCapabilities()
+      const capabilities = app.getClassicAtaCapabilities()
 
       expect(capabilities).toBeInstanceOf(Array)
       expect(capabilities.length).toBeGreaterThan(0)
@@ -380,7 +383,7 @@ describe('melCloudApp', () => {
 
     it('should filter out off mode from thermostat values', async () => {
       await app.onInit()
-      const capabilities = app.getAtaCapabilities()
+      const capabilities = app.getClassicAtaCapabilities()
       const [, operationModeOptions] =
         capabilities.find(([key]) => key === 'OperationMode') ?? []
 
@@ -464,7 +467,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const groupState = await app.getAtaState({
+      const groupState = await app.getClassicAtaState({
         zoneId: '1',
         zoneType: 'buildings',
       })
@@ -550,7 +553,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       const query = mock<ErrorLogQuery>()
-      const errorLog = await app.getErrors(query)
+      const errorLog = await app.getClassicErrorLog(query)
 
       expect(mockApiInstance.getErrorLog).toHaveBeenCalledWith(query)
       expect(errorLog).toStrictEqual({
@@ -580,7 +583,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       const query = mock<ErrorLogQuery>()
-      const errorLog = await app.getErrors(query)
+      const errorLog = await app.getClassicErrorLog(query)
 
       expect(errorLog.errors[0]?.device).toBe('')
     })
@@ -687,7 +690,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const frostProtection = await app.getFrostProtection({
+      const frostProtection = await app.getClassicFrostProtection({
         zoneId: '1',
         zoneType: 'buildings',
       })
@@ -706,7 +709,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const holidayMode = await app.getHolidayMode({
+      const holidayMode = await app.getClassicHolidayMode({
         zoneId: '1',
         zoneType: 'buildings',
       })
@@ -728,7 +731,7 @@ describe('melCloudApp', () => {
       mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
       await app.onInit()
 
-      const temperatures = await app.getHourlyTemperatures({
+      const temperatures = await app.getClassicHourlyTemperatures({
         deviceId: '1',
         hour: 10,
       })
@@ -750,7 +753,7 @@ describe('melCloudApp', () => {
       mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
       await app.onInit()
 
-      const operationModes = await app.getOperationModes({
+      const operationModes = await app.getClassicOperationModes({
         days: 7,
         deviceId: '1',
       })
@@ -772,7 +775,7 @@ describe('melCloudApp', () => {
       mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
       await app.onInit()
 
-      const signal = await app.getSignal({ deviceId: '1', hour: 5 })
+      const signal = await app.getClassicSignal({ deviceId: '1', hour: 5 })
 
       expect(signal).toBe(mockData)
     })
@@ -791,7 +794,7 @@ describe('melCloudApp', () => {
       mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
       await app.onInit()
 
-      const temperatures = await app.getTemperatures({
+      const temperatures = await app.getClassicTemperatures({
         days: 30,
         deviceId: '1',
       })
@@ -809,7 +812,7 @@ describe('melCloudApp', () => {
         password: 'pass',
         username: 'user',
       })
-      const isAuthenticated = await app.createSession(credentials)
+      const isAuthenticated = await app.authenticateClassic(credentials)
 
       expect(isAuthenticated).toBe(true)
       expect(mockApiInstance.authenticate).toHaveBeenCalledWith(credentials)
@@ -823,11 +826,11 @@ describe('melCloudApp', () => {
       expect(app.homeApi).toBe(mockHomeApiInstance)
     })
 
-    it('should delegate createHomeSession to homeApi authenticate', async () => {
+    it('should delegate authenticateHome to homeApi authenticate', async () => {
       mockHomeApiInstance.authenticate.mockResolvedValue(true)
       await app.onInit()
 
-      const isLoggedIn = await app.createHomeSession(mock<LoginCredentials>())
+      const isLoggedIn = await app.authenticateHome(mock<LoginCredentials>())
 
       expect(isLoggedIn).toBe(true)
     })
@@ -872,12 +875,12 @@ describe('melCloudApp', () => {
   describe('ata value update', () => {
     it('should set group values and not throw on success', async () => {
       const mockFacade = mock<BuildingFacade>({
-        setGroup: vi.fn().mockResolvedValue({ AttributeErrors: null }),
+        updateGroupState: vi.fn().mockResolvedValue({ AttributeErrors: null }),
       })
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setAtaState({
+        app.updateClassicAtaState({
           state: mock<GroupState>(),
           zoneId: '1',
           zoneType: 'buildings',
@@ -887,14 +890,14 @@ describe('melCloudApp', () => {
 
     it('should throw on attribute errors', async () => {
       const mockFacade = mock<BuildingFacade>({
-        setGroup: vi.fn().mockResolvedValue({
+        updateGroupState: vi.fn().mockResolvedValue({
           AttributeErrors: { temp: ['Invalid value'] },
         }),
       })
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setAtaState({
+        app.updateClassicAtaState({
           state: mock<GroupState>(),
           zoneId: '1',
           zoneType: 'buildings',
@@ -919,7 +922,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       const settings = mock<Settings>({ always_on: true })
-      await app.setDeviceSettings({ settings })
+      await app.updateDeviceSettings({ settings })
 
       expect(mockSetSettings).toHaveBeenCalledWith({ always_on: true })
       expect(mockOnSettings).toHaveBeenCalledTimes(1)
@@ -938,7 +941,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       const settings = mock<Settings>({ always_on: true })
-      await app.setDeviceSettings({ settings })
+      await app.updateDeviceSettings({ settings })
 
       expect(mockSetSettings).not.toHaveBeenCalled()
     })
@@ -956,7 +959,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       const settings = mock<Settings>({ always_on: true })
-      await app.setDeviceSettings({ driverId: 'melcloud', settings })
+      await app.updateDeviceSettings({ driverId: 'melcloud', settings })
 
       expect(mockGetDriver).toHaveBeenCalledWith('melcloud')
     })
@@ -965,14 +968,14 @@ describe('melCloudApp', () => {
   describe('frost protection settings update', () => {
     it('should delegate to facade and not throw on success', async () => {
       const mockFacade = mock<ZoneFacade>({
-        setFrostProtection: vi
+        updateFrostProtection: vi
           .fn()
           .mockResolvedValue({ AttributeErrors: null }),
       })
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setFrostProtection({
+        app.updateClassicFrostProtection({
           settings: mock<FrostProtectionQuery>(),
           zoneId: '1',
           zoneType: 'buildings',
@@ -982,14 +985,14 @@ describe('melCloudApp', () => {
 
     it('should throw on attribute errors', async () => {
       const mockFacade = mock<ZoneFacade>({
-        setFrostProtection: vi.fn().mockResolvedValue({
+        updateFrostProtection: vi.fn().mockResolvedValue({
           AttributeErrors: { min: ['Too low'] },
         }),
       })
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setFrostProtection({
+        app.updateClassicFrostProtection({
           settings: mock<FrostProtectionQuery>(),
           zoneId: '1',
           zoneType: 'buildings',
@@ -1001,12 +1004,12 @@ describe('melCloudApp', () => {
   describe('holiday mode settings update', () => {
     it('should delegate to facade and not throw on success', async () => {
       const mockFacade = mock<ZoneFacade>({
-        setHolidayMode: vi.fn().mockResolvedValue({ AttributeErrors: null }),
+        updateHolidayMode: vi.fn().mockResolvedValue({ AttributeErrors: null }),
       })
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setHolidayMode({
+        app.updateClassicHolidayMode({
           settings: mock<HolidayModeQuery>(),
           zoneId: '1',
           zoneType: 'buildings',
@@ -1016,14 +1019,14 @@ describe('melCloudApp', () => {
 
     it('should throw on attribute errors', async () => {
       const mockFacade = mock<ZoneFacade>({
-        setHolidayMode: vi.fn().mockResolvedValue({
+        updateHolidayMode: vi.fn().mockResolvedValue({
           AttributeErrors: { date: ['Invalid date'] },
         }),
       })
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.setHolidayMode({
+        app.updateClassicHolidayMode({
           settings: mock<HolidayModeQuery>(),
           zoneId: '1',
           zoneType: 'buildings',

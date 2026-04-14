@@ -8,17 +8,17 @@ import type {
   GroupAtaStates,
   ZoneData,
 } from '../../types/index.mts'
-import { getBuildings, toDeviceType } from '../../lib/index.mts'
+import { getClassicBuildings, toDeviceType } from '../../lib/index.mts'
 
 const api = {
-  getAtaCapabilities({
+  getClassicAtaCapabilities({
     homey: { app },
   }: {
     homey: Homey
   }): [keyof GroupState, DriverCapabilitiesOptions][] {
-    return app.getAtaCapabilities()
+    return app.getClassicAtaCapabilities()
   },
-  async getAtaState({
+  async getClassicAtaState({
     homey: { app },
     params,
     query: { mode, status },
@@ -29,21 +29,21 @@ const api = {
   }): Promise<GroupAtaStates | GroupState> {
     return mode === 'detailed' ?
         app.getAtaDetailedValues({ ...params, status })
-      : app.getAtaState(params)
+      : app.getClassicAtaState(params)
   },
-  getBuildings({
+  getClassicBuildings({
     query: { type },
   }: {
     query: { type?: `${DeviceType}` }
   }): BuildingZone[] {
-    return getBuildings({
+    return getClassicBuildings({
       type: type ? toDeviceType(type) : undefined,
     })
   },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()
   },
-  async setAtaState({
+  async updateClassicAtaState({
     body,
     homey: { app },
     params,
@@ -52,7 +52,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return app.setAtaState({ state: body, ...params })
+    return app.updateClassicAtaState({ state: body, ...params })
   },
 }
 

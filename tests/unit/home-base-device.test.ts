@@ -41,7 +41,7 @@ const createMockFacade = (): HomeDeviceAtaFacade =>
       hasAutomaticFanSpeed: true,
       numberOfFanSpeeds: 5,
     },
-    setValues: setValuesMock,
+    updateValues: setValuesMock,
     get operationMode(): string {
       return 'Heat'
     },
@@ -258,7 +258,7 @@ describe(BaseMELCloudDevice, () => {
   })
 
   describe('capability change handling', () => {
-    it('should call setValues when capability values are set', async () => {
+    it('should call updateValues when capability values are set', async () => {
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
@@ -293,7 +293,7 @@ describe(BaseMELCloudDevice, () => {
       )
     })
 
-    it('should not call setValues when no homeValues keys remain', async () => {
+    it('should not call updateValues when no homeValues keys remain', async () => {
       vi.spyOn(device, 'hasCapability').mockReturnValue(false)
       await device.onInit()
       setValuesMock.mockClear()

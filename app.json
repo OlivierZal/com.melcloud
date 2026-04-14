@@ -1,21 +1,29 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "api": {
-    "createHomeSession": {
+    "authenticateClassic": {
+      "method": "POST",
+      "path": "/classic/sessions"
+    },
+    "authenticateHome": {
       "method": "POST",
       "path": "/home/sessions"
     },
-    "createSession": {
-      "method": "POST",
-      "path": "/classic/sessions"
-    },
-    "getBuildings": {
+    "getClassicBuildings": {
       "method": "GET",
       "path": "/classic/buildings"
     },
-    "getClassicSession": {
+    "getClassicErrorLog": {
       "method": "GET",
-      "path": "/classic/sessions"
+      "path": "/classic/logs/errors"
+    },
+    "getClassicFrostProtection": {
+      "method": "GET",
+      "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"
+    },
+    "getClassicHolidayMode": {
+      "method": "GET",
+      "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
     },
     "getDeviceSettings": {
       "method": "GET",
@@ -25,33 +33,25 @@
       "method": "GET",
       "path": "/settings/drivers"
     },
-    "getErrors": {
-      "method": "GET",
-      "path": "/classic/logs/errors"
-    },
-    "getFrostProtection": {
-      "method": "GET",
-      "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"
-    },
-    "getHolidayMode": {
-      "method": "GET",
-      "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
-    },
     "getLanguage": {
       "method": "GET",
       "path": "/language"
     },
-    "setDeviceSettings": {
-      "method": "PUT",
-      "path": "/settings/devices"
+    "isClassicAuthenticated": {
+      "method": "GET",
+      "path": "/classic/sessions"
     },
-    "setFrostProtection": {
+    "updateClassicFrostProtection": {
       "method": "PUT",
       "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"
     },
-    "setHolidayMode": {
+    "updateClassicHolidayMode": {
       "method": "PUT",
       "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
+    },
+    "updateDeviceSettings": {
+      "method": "PUT",
+      "path": "/settings/devices"
     }
   },
   "author": {
@@ -7839,15 +7839,15 @@
   "widgets": {
     "ata-group-setting": {
       "api": {
-        "getAtaCapabilities": {
+        "getClassicAtaCapabilities": {
           "method": "GET",
           "path": "/classic/capabilities/ata"
         },
-        "getAtaState": {
+        "getClassicAtaState": {
           "method": "GET",
           "path": "/classic/zones/:zoneType/:zoneId/ata"
         },
-        "getBuildings": {
+        "getClassicBuildings": {
           "method": "GET",
           "path": "/classic/buildings"
         },
@@ -7855,7 +7855,7 @@
           "method": "GET",
           "path": "/language"
         },
-        "setAtaState": {
+        "updateClassicAtaState": {
           "method": "PUT",
           "path": "/classic/zones/:zoneType/:zoneId/ata"
         }
@@ -7912,29 +7912,29 @@
     },
     "charts": {
       "api": {
-        "getDevices": {
+        "getClassicDevices": {
           "method": "GET",
           "path": "/classic/devices"
         },
-        "getHourlyTemperatures": {
+        "getClassicHourlyTemperatures": {
           "method": "GET",
           "path": "/classic/devices/:deviceId/logs/hourly-temperatures"
+        },
+        "getClassicOperationModes": {
+          "method": "GET",
+          "path": "/classic/devices/:deviceId/logs/operation-modes"
+        },
+        "getClassicSignal": {
+          "method": "GET",
+          "path": "/classic/devices/:deviceId/logs/signal"
+        },
+        "getClassicTemperatures": {
+          "method": "GET",
+          "path": "/classic/devices/:deviceId/logs/temperatures"
         },
         "getLanguage": {
           "method": "GET",
           "path": "/language"
-        },
-        "getOperationModes": {
-          "method": "GET",
-          "path": "/classic/devices/:deviceId/logs/operation-modes"
-        },
-        "getSignal": {
-          "method": "GET",
-          "path": "/classic/devices/:deviceId/logs/signal"
-        },
-        "getTemperatures": {
-          "method": "GET",
-          "path": "/classic/devices/:deviceId/logs/temperatures"
         }
       },
       "name": {

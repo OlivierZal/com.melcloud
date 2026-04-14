@@ -279,7 +279,7 @@ export abstract class BaseMELCloudDevice extends Device {
     const updateData = this.mapCapabilitiesToDeviceTags(values)
     if (Object.keys(updateData).length > 0) {
       try {
-        await device.setValues(updateData)
+        await device.updateValues(updateData)
       } catch (error) {
         if (!(error instanceof Error) || error.message !== 'No data to set') {
           await this.setWarning(error)

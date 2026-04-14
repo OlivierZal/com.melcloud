@@ -678,7 +678,7 @@ class DeviceSettingsManager {
     const settings = `settings_${driverId ?? 'common'}`
     const button = getButton(`apply_${settings}`)
     button.addEventListener('click', () => {
-      fireAndForget(this.#setDeviceSettings(elements, driverId))
+      fireAndForget(this.#submitDeviceSettings(elements, driverId))
     })
   }
 
@@ -862,26 +862,6 @@ class DeviceSettingsManager {
     return null
   }
 
-  async #setDeviceSettings(
-    elements: HTMLValueElement[],
-    driverId?: string,
-  ): Promise<void> {
-    const body = this.#buildSettingsBody(elements)
-    if (Object.keys(body).length === 0) {
-      this.#alertNoChanges(elements, driverId)
-      return
-    }
-    const settingsId = `settings_${driverId ?? 'common'}`
-    this.#disableButtons(settingsId)
-    try {
-      await this.#applyDeviceSettings(body, driverId)
-    } catch (error) {
-      await this.#homey.alert(getErrorMessage(error))
-    } finally {
-      this.#disableButtons(settingsId, false)
-    }
-  }
-
   #setSetting(settings: Settings, element: HTMLValueElement): void {
     const {
       dataset: { driverId, settingId },
@@ -913,6 +893,26 @@ class DeviceSettingsManager {
         this.flatDeviceSettings
       : (this.#deviceSettings[driverId] ?? {})
     return setting === null || value !== setting
+  }
+
+  async #submitDeviceSettings(
+    elements: HTMLValueElement[],
+    driverId?: string,
+  ): Promise<void> {
+    const body = this.#buildSettingsBody(elements)
+    if (Object.keys(body).length === 0) {
+      this.#alertNoChanges(elements, driverId)
+      return
+    }
+    const settingsId = `settings_${driverId ?? 'common'}`
+    this.#disableButtons(settingsId)
+    try {
+      await this.#applyDeviceSettings(body, driverId)
+    } catch (error) {
+      await this.#homey.alert(getErrorMessage(error))
+    } finally {
+      this.#disableButtons(settingsId, false)
+    }
   }
 
   #syncCommonSettings(elements: HTMLSelectElement[]): void {

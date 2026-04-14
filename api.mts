@@ -16,32 +16,56 @@ import type {
   Settings,
   ZoneData,
 } from './types/index.mts'
-import { getBuildings } from './lib/index.mts'
+import { getClassicBuildings } from './lib/index.mts'
 
 const api = {
-  async createHomeSession({
+  async authenticateClassic({
     body,
     homey: { app },
   }: {
     body: LoginCredentials
     homey: Homey
   }): Promise<boolean> {
-    return app.createHomeSession(body)
+    return app.authenticateClassic(body)
   },
-  async createSession({
+  async authenticateHome({
     body,
     homey: { app },
   }: {
     body: LoginCredentials
     homey: Homey
   }): Promise<boolean> {
-    return app.createSession(body)
+    return app.authenticateHome(body)
   },
-  getBuildings(): BuildingZone[] {
-    return getBuildings()
+  getClassicBuildings(): BuildingZone[] {
+    return getClassicBuildings()
   },
-  getClassicSession({ homey: { app } }: { homey: Homey }): boolean {
-    return app.api.isAuthenticated()
+  async getClassicErrorLog({
+    homey: { app },
+    query,
+  }: {
+    homey: Homey
+    query: ErrorLogQuery
+  }): Promise<FormattedErrorLog> {
+    return app.getClassicErrorLog(query)
+  },
+  async getClassicFrostProtection({
+    homey: { app },
+    params,
+  }: {
+    homey: Homey
+    params: ZoneData
+  }): Promise<FrostProtectionData> {
+    return app.getClassicFrostProtection(params)
+  },
+  async getClassicHolidayMode({
+    homey: { app },
+    params,
+  }: {
+    homey: Homey
+    params: ZoneData
+  }): Promise<HolidayModeData> {
+    return app.getClassicHolidayMode(params)
   },
   getDeviceSettings({ homey: { app } }: { homey: Homey }): DeviceSettings {
     return app.getDeviceSettings()
@@ -53,48 +77,13 @@ const api = {
   }): Partial<Record<string, DriverSetting[]>> {
     return app.getDriverSettings()
   },
-  async getErrors({
-    homey: { app },
-    query,
-  }: {
-    homey: Homey
-    query: ErrorLogQuery
-  }): Promise<FormattedErrorLog> {
-    return app.getErrors(query)
-  },
-  async getFrostProtection({
-    homey: { app },
-    params,
-  }: {
-    homey: Homey
-    params: ZoneData
-  }): Promise<FrostProtectionData> {
-    return app.getFrostProtection(params)
-  },
-  async getHolidayMode({
-    homey: { app },
-    params,
-  }: {
-    homey: Homey
-    params: ZoneData
-  }): Promise<HolidayModeData> {
-    return app.getHolidayMode(params)
-  },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()
   },
-  async setDeviceSettings({
-    body,
-    homey: { app },
-    query: { driverId },
-  }: {
-    body: Settings
-    homey: Homey
-    query: { driverId?: string }
-  }): Promise<void> {
-    return app.setDeviceSettings({ driverId, settings: body })
+  isClassicAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
+    return app.api.isAuthenticated()
   },
-  async setFrostProtection({
+  async updateClassicFrostProtection({
     body,
     homey: { app },
     params,
@@ -103,9 +92,9 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return app.setFrostProtection({ settings: body, ...params })
+    return app.updateClassicFrostProtection({ settings: body, ...params })
   },
-  async setHolidayMode({
+  async updateClassicHolidayMode({
     body,
     homey: { app },
     params,
@@ -114,7 +103,18 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return app.setHolidayMode({ settings: body, ...params })
+    return app.updateClassicHolidayMode({ settings: body, ...params })
+  },
+  async updateDeviceSettings({
+    body,
+    homey: { app },
+    query: { driverId },
+  }: {
+    body: Settings
+    homey: Homey
+    query: { driverId?: string }
+  }): Promise<void> {
+    return app.updateDeviceSettings({ driverId, settings: body })
   },
 }
 

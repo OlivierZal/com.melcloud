@@ -1,28 +1,28 @@
 {
   "api": {
-    "getDevices": {
+    "getClassicDevices": {
       "method": "GET",
       "path": "/classic/devices"
     },
-    "getHourlyTemperatures": {
+    "getClassicHourlyTemperatures": {
       "method": "GET",
       "path": "/classic/devices/:deviceId/logs/hourly-temperatures"
+    },
+    "getClassicOperationModes": {
+      "method": "GET",
+      "path": "/classic/devices/:deviceId/logs/operation-modes"
+    },
+    "getClassicSignal": {
+      "method": "GET",
+      "path": "/classic/devices/:deviceId/logs/signal"
+    },
+    "getClassicTemperatures": {
+      "method": "GET",
+      "path": "/classic/devices/:deviceId/logs/temperatures"
     },
     "getLanguage": {
       "method": "GET",
       "path": "/language"
-    },
-    "getOperationModes": {
-      "method": "GET",
-      "path": "/classic/devices/:deviceId/logs/operation-modes"
-    },
-    "getSignal": {
-      "method": "GET",
-      "path": "/classic/devices/:deviceId/logs/signal"
-    },
-    "getTemperatures": {
-      "method": "GET",
-      "path": "/classic/devices/:deviceId/logs/temperatures"
     }
   },
   "name": {
