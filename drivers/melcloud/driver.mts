@@ -1,26 +1,26 @@
 import { DeviceType } from '@olivierzal/melcloud-api'
 
+import { getCapabilitiesOptionsAtaErv } from '../../types/ata-erv.mts'
 import {
-  energyCapabilityTagMappingAta,
-  getCapabilitiesOptionsAtaErv,
-  getCapabilityTagMappingAta,
-  listCapabilityTagMappingAta,
-  setCapabilityTagMappingAta,
-} from '../../types/index.mts'
+  energyCapabilityTagMapping,
+  getCapabilityTagMapping,
+  listCapabilityTagMapping,
+  setCapabilityTagMapping,
+} from '../../types/classic-ata.mts'
 import { ClassicMELCloudDriver } from '../classic-base-driver.mts'
 
-export default class MELCloudDriverAta extends ClassicMELCloudDriver<
+export default class ClassicMELCloudDriverAta extends ClassicMELCloudDriver<
   typeof DeviceType.Ata
 > {
-  public readonly energyCapabilityTagMapping = energyCapabilityTagMappingAta
+  public readonly energyCapabilityTagMapping = energyCapabilityTagMapping
 
   public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtaErv
 
-  public readonly getCapabilityTagMapping = getCapabilityTagMappingAta
+  public readonly getCapabilityTagMapping = getCapabilityTagMapping
 
-  public readonly listCapabilityTagMapping = listCapabilityTagMappingAta
+  public readonly listCapabilityTagMapping = listCapabilityTagMapping
 
-  public readonly setCapabilityTagMapping = setCapabilityTagMappingAta
+  public readonly setCapabilityTagMapping = setCapabilityTagMapping
 
   public readonly type = DeviceType.Ata
 

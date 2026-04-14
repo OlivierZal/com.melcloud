@@ -2,13 +2,13 @@ import { DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
-  energyCapabilityTagMappingAta,
-  getCapabilityTagMappingAta,
-  listCapabilityTagMappingAta,
-  setCapabilityTagMappingAta,
-} from '../../types/index.mts'
+  energyCapabilityTagMapping,
+  getCapabilityTagMapping,
+  listCapabilityTagMapping,
+  setCapabilityTagMapping,
+} from '../../types/classic-ata.mts'
 import { testDriverType, testTagMappings } from '../driver-descriptors.ts'
-import MELCloudDriverAta from '../../drivers/melcloud/driver.mts'
+import ClassicMELCloudDriverAta from '../../drivers/melcloud/driver.mts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', async () => {
@@ -16,20 +16,20 @@ vi.mock('homey', async () => {
   return { default: { Driver: createMockDriverClass() } }
 })
 
-describe(MELCloudDriverAta, () => {
-  let driver: MELCloudDriverAta
+describe(ClassicMELCloudDriverAta, () => {
+  let driver: ClassicMELCloudDriverAta
 
   beforeEach(() => {
-    driver = new MELCloudDriverAta()
+    driver = new ClassicMELCloudDriverAta()
   })
 
   testDriverType(() => driver, DeviceType.Ata)
 
   testTagMappings(() => driver, {
-    energyCapabilityTagMapping: energyCapabilityTagMappingAta,
-    getCapabilityTagMapping: getCapabilityTagMappingAta,
-    listCapabilityTagMapping: listCapabilityTagMappingAta,
-    setCapabilityTagMapping: setCapabilityTagMappingAta,
+    energyCapabilityTagMapping,
+    getCapabilityTagMapping,
+    listCapabilityTagMapping,
+    setCapabilityTagMapping,
   })
 
   describe('required capabilities', () => {
@@ -44,9 +44,9 @@ describe(MELCloudDriverAta, () => {
     it('should include all set, get, and list capability keys', () => {
       const capabilities = driver.getRequiredCapabilities()
       const allKeys = Object.keys({
-        ...setCapabilityTagMappingAta,
-        ...getCapabilityTagMappingAta,
-        ...listCapabilityTagMappingAta,
+        ...setCapabilityTagMapping,
+        ...getCapabilityTagMapping,
+        ...listCapabilityTagMapping,
       }).filter((key) => key !== 'measure_signal_strength')
 
       expect(capabilities).toStrictEqual(allKeys)

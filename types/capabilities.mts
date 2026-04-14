@@ -6,50 +6,31 @@ import type {
   UpdateDeviceData,
 } from '@olivierzal/melcloud-api'
 
-import type {
-  CapabilitiesAta,
-  EnergyCapabilitiesAta,
-  GetCapabilitiesAta,
-  ListCapabilitiesAta,
-  SetCapabilitiesAta,
-} from './ata.mts'
-import type {
-  CapabilitiesAtw,
-  CapabilitiesOptionsAtw,
-  EnergyCapabilitiesAtw,
-  GetCapabilitiesAtw,
-  ListCapabilitiesAtw,
-  SetCapabilitiesAtw,
-} from './atw.mts'
 import type { RangeOptions } from './bases.mts'
-import type {
-  CapabilitiesErv,
-  EnergyCapabilitiesErv,
-  GetCapabilitiesErv,
-  ListCapabilitiesErv,
-  SetCapabilitiesErv,
-} from './erv.mts'
+import type * as classicAta from './classic-ata.mts'
+import type * as classicAtw from './classic-atw.mts'
+import type * as classicErv from './classic-erv.mts'
 
 type GetCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? GetCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? GetCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? GetCapabilitiesErv
+  T extends typeof DeviceType.Ata ? classicAta.GetCapabilities
+  : T extends typeof DeviceType.Atw ? classicAtw.GetCapabilities
+  : T extends typeof DeviceType.Erv ? classicErv.GetCapabilities
   : never
 
 type ListCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? ListCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? ListCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? ListCapabilitiesErv
+  T extends typeof DeviceType.Ata ? classicAta.ListCapabilities
+  : T extends typeof DeviceType.Atw ? classicAtw.ListCapabilities
+  : T extends typeof DeviceType.Erv ? classicErv.ListCapabilities
   : never
 
 export type Capabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? CapabilitiesAta
-  : T extends typeof DeviceType.Atw ? CapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? CapabilitiesErv
+  T extends typeof DeviceType.Ata ? classicAta.Capabilities
+  : T extends typeof DeviceType.Atw ? classicAtw.Capabilities
+  : T extends typeof DeviceType.Erv ? classicErv.Capabilities
   : never
 
 export type CapabilitiesOptions<T extends DeviceType> =
-  T extends typeof DeviceType.Atw ? CapabilitiesOptionsAtw
+  T extends typeof DeviceType.Atw ? classicAtw.CapabilitiesOptions
   : CapabilitiesOptionsAtaErv
 
 export interface CapabilitiesOptionsAtaErv {
@@ -57,10 +38,18 @@ export interface CapabilitiesOptionsAtaErv {
 }
 
 /*
- * Uses method signature syntax (bivariant) instead of arrow function syntax
- * (contravariant). This allows converter functions to accept narrower parameter
- * types (e.g., FanSpeed instead of the full ListDeviceData value union) without
- * type errors.
+ * Uses method signature syntax (bivariant) so that concrete converter
+ * implementations can accept narrower parameter types without type errors.
+ */
+export type CapabilityConverter = {
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
+  bivariant(value: unknown, data?: unknown): unknown
+}['bivariant']
+
+/*
+ * Uses method signature syntax (bivariant) to allow converter functions
+ * to accept narrower parameter types (e.g., FanSpeed instead of the full
+ * ListDeviceData value union).
  */
 export type ConvertFromDevice<T extends DeviceType> = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
@@ -71,10 +60,9 @@ export type ConvertFromDevice<T extends DeviceType> = {
 }['bivariant']
 
 /*
- * Uses method signature syntax (bivariant) instead of arrow function syntax
- * (contravariant). This allows converter functions to accept narrower parameter
- * types (e.g., FanSpeed instead of the full UpdateDeviceData value union)
- * without type errors.
+ * Uses method signature syntax (bivariant) to allow converter functions
+ * to accept narrower parameter types (e.g., FanSpeed instead of the full
+ * UpdateDeviceData value union).
  */
 export type ConvertToDevice<T extends DeviceType> = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
@@ -84,9 +72,9 @@ export type ConvertToDevice<T extends DeviceType> = {
 }['bivariant']
 
 export type EnergyCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? EnergyCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? EnergyCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? EnergyCapabilitiesErv
+  T extends typeof DeviceType.Ata ? classicAta.EnergyCapabilities
+  : T extends typeof DeviceType.Atw ? classicAtw.EnergyCapabilities
+  : T extends typeof DeviceType.Erv ? classicErv.EnergyCapabilities
   : Record<string, never>
 
 export type EnergyCapabilityTagEntry<T extends DeviceType> = [
@@ -119,9 +107,9 @@ export type OperationalCapabilityTagEntry<T extends DeviceType> = [
 ]
 
 export type SetCapabilities<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? SetCapabilitiesAta
-  : T extends typeof DeviceType.Atw ? SetCapabilitiesAtw
-  : T extends typeof DeviceType.Erv ? SetCapabilitiesErv
+  T extends typeof DeviceType.Ata ? classicAta.SetCapabilities
+  : T extends typeof DeviceType.Atw ? classicAtw.SetCapabilities
+  : T extends typeof DeviceType.Erv ? classicErv.SetCapabilities
   : never
 
 export type SetCapabilityTagMapping<T extends DeviceType> = Record<

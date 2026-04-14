@@ -135,7 +135,7 @@ export class EnergyReport<T extends DeviceType> {
   }
 
   async #get(): Promise<void> {
-    const device = await this.#device.fetchDevice()
+    const device = await this.#device.ensureDevice()
     if (device) {
       try {
         // Fetch energy data from the previous period (offset by config.minus)

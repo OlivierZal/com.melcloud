@@ -14,7 +14,7 @@ import {
   testThermostatMode,
 } from '../device-descriptors.ts'
 import { mock } from '../helpers.ts'
-import MELCloudDeviceAta from '../../drivers/melcloud/device.mts'
+import ClassicMELCloudDeviceAta from '../../drivers/melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
@@ -23,11 +23,11 @@ vi.mock('homey', async () => {
   return { default: { Device: create() } }
 })
 
-describe(MELCloudDeviceAta, () => {
+describe(ClassicMELCloudDeviceAta, () => {
   let device: any
 
   beforeEach(() => {
-    device = createInstance(MELCloudDeviceAta)
+    device = createInstance(ClassicMELCloudDeviceAta)
   })
 
   testThermostatMode(() => device as object, ThermostatModeAta)

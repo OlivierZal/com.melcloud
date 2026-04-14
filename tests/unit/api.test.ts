@@ -26,7 +26,10 @@ vi.mock(import('../../lib/index.mts'), () => ({
 
 const { default: api } = await import('../../api.mts')
 
+const mockIsAuthenticated = vi.fn<() => boolean>()
+
 const mockApp = {
+  api: { isAuthenticated: mockIsAuthenticated },
   createHomeSession: vi.fn<() => Promise<boolean>>(),
   createSession: vi.fn<() => Promise<boolean>>(),
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
@@ -151,6 +154,25 @@ describe('api', () => {
 
       expect(isLoggedIn).toBe(true)
       expect(mockApp.createHomeSession).toHaveBeenCalledWith(body)
+    })
+  })
+
+  describe('classic session retrieval', () => {
+    it('should delegate to app.api.isAuthenticated', () => {
+      mockIsAuthenticated.mockReturnValue(true)
+
+      const isAuthenticated = api.getClassicSession({ homey })
+
+      expect(isAuthenticated).toBe(true)
+      expect(mockIsAuthenticated).toHaveBeenCalledTimes(1)
+    })
+
+    it('should return false when not authenticated', () => {
+      mockIsAuthenticated.mockReturnValue(false)
+
+      const isAuthenticated = api.getClassicSession({ homey })
+
+      expect(isAuthenticated).toBe(false)
     })
   })
 

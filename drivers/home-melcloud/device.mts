@@ -14,12 +14,14 @@ import {
   verticalToClassic,
 } from '@olivierzal/melcloud-api'
 
+import type {
+  HomeCapabilitiesAta,
+  HomeConvertFromDevice,
+  HomeConvertToDevice,
+  HomeSetCapabilitiesAta,
+} from '../../types/home-ata.mts'
 import {
   type DeviceFacade,
-  type HomeCapabilitiesAta,
-  type HomeConvertFromDevice,
-  type HomeConvertToDevice,
-  type HomeSetCapabilitiesAta,
   horizontalFromDevice,
   operationModeFromDevice,
   ThermostatModeAta,
@@ -72,7 +74,7 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
   protected readonly thermostatMode = ThermostatModeAta
 
   public override async syncFromDevice(): Promise<void> {
-    const device = await this.fetchDevice()
+    const device = await this.ensureDevice()
     if (device) {
       await this.#setCapabilityValues(device)
     }
@@ -86,7 +88,7 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
   }
 
   /* v8 ignore start -- never called: energyReportRegular/Total are null */
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- required override of abstract method; Home devices do not support energy reports
   protected override createEnergyReport(): never {
     throw new Error('Energy reports are not supported for Home devices')
   }
@@ -98,7 +100,7 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
   }
 
   async #setCapabilityValues(device: DeviceFacade): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Home converters accept DeviceFacade; shared type is (...args: never[]) for compatibility
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- converters accept DeviceFacade at runtime; concrete HomeConvertFromDevice type is narrower for bivariance
     const converters = Object.entries(this.deviceToCapability) as [
       string,
       (device: DeviceFacade) => unknown,

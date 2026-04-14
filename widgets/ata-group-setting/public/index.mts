@@ -7,7 +7,12 @@ import type {
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 import { getButton, getCanvas, getDiv, getSelect } from './dom.mts'
-import { type Homey, homeyApiGet, setDocumentLanguage } from './homey-api.mts'
+import {
+  type Homey,
+  fireAndForget,
+  homeyApiGet,
+  setDocumentLanguage,
+} from './homey-api.mts'
 
 // ── WidgetApp class ──
 
@@ -50,9 +55,7 @@ class WidgetApp {
     const refreshAtaValues = getButton('refresh_values_melcloud')
     const updateAtaValues = getButton('apply_values_melcloud')
     zone.addEventListener('change', () => {
-      this.#fetchAndAnimate().catch(() => {
-        // Errors are handled internally by fetchValues/applyAnimation
-      })
+      fireAndForget(this.#fetchAndAnimate())
     })
     refreshAtaValues.addEventListener('click', () => {
       this.#homey.hapticFeedback()
@@ -60,18 +63,14 @@ class WidgetApp {
     })
     updateAtaValues.addEventListener('click', () => {
       this.#homey.hapticFeedback()
-      this.#ataValueManager.setValues().catch(() => {
-        // Values will resync on next device update
-      })
+      fireAndForget(this.#ataValueManager.setValues())
     })
     this.#homey.on('deviceupdate', () => {
       if (this.#debounceTimeout) {
         clearTimeout(this.#debounceTimeout)
       }
       this.#debounceTimeout = setTimeout(() => {
-        this.#fetchAndAnimate().catch(() => {
-          // Errors are handled internally by fetchValues/applyAnimation
-        })
+        fireAndForget(this.#fetchAndAnimate())
       }, AnimationDelay.debounce)
     })
   }
@@ -84,7 +83,7 @@ class WidgetApp {
   async #initBuildings(): Promise<void> {
     const buildings = await homeyApiGet<BuildingZone[]>(
       this.#homey,
-      `/buildings?${new URLSearchParams({
+      `/classic/buildings?${new URLSearchParams({
         type: '0',
       } satisfies { type: `${DeviceType}` })}`,
     )

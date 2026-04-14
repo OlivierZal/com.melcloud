@@ -40,6 +40,9 @@ const api = {
   getBuildings(): BuildingZone[] {
     return getBuildings()
   },
+  getClassicSession({ homey: { app } }: { homey: Homey }): boolean {
+    return app.api.isAuthenticated()
+  },
   getDeviceSettings({ homey: { app } }: { homey: Homey }): DeviceSettings {
     return app.getDeviceSettings()
   },

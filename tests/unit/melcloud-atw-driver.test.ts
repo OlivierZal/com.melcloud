@@ -2,14 +2,14 @@ import { type ListDeviceDataAtw, DeviceType } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
-  energyCapabilityTagMappingAtw,
-  getCapabilityTagMappingAtw,
-  listCapabilityTagMappingAtw,
-  setCapabilityTagMappingAtw,
-} from '../../types/index.mts'
+  energyCapabilityTagMapping,
+  getCapabilityTagMapping,
+  listCapabilityTagMapping,
+  setCapabilityTagMapping,
+} from '../../types/classic-atw.mts'
 import { testDriverType, testTagMappings } from '../driver-descriptors.ts'
 import { mock } from '../helpers.ts'
-import MELCloudDriverAtw from '../../drivers/melcloud_atw/driver.mts'
+import ClassicMELCloudDriverAtw from '../../drivers/melcloud_atw/driver.mts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', async () => {
@@ -17,20 +17,20 @@ vi.mock('homey', async () => {
   return { default: { Driver: createMockDriverClass() } }
 })
 
-describe(MELCloudDriverAtw, () => {
-  let driver: MELCloudDriverAtw
+describe(ClassicMELCloudDriverAtw, () => {
+  let driver: ClassicMELCloudDriverAtw
 
   beforeEach(() => {
-    driver = new MELCloudDriverAtw()
+    driver = new ClassicMELCloudDriverAtw()
   })
 
   testDriverType(() => driver, DeviceType.Atw)
 
   testTagMappings(() => driver, {
-    energyCapabilityTagMapping: energyCapabilityTagMappingAtw,
-    getCapabilityTagMapping: getCapabilityTagMappingAtw,
-    listCapabilityTagMapping: listCapabilityTagMappingAtw,
-    setCapabilityTagMapping: setCapabilityTagMappingAtw,
+    energyCapabilityTagMapping,
+    getCapabilityTagMapping,
+    listCapabilityTagMapping,
+    setCapabilityTagMapping,
   })
 
   describe('required capabilities', () => {

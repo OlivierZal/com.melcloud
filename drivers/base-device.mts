@@ -1,6 +1,7 @@
 import { type DurationLike, DateTime, Duration } from 'luxon'
 
 import type {
+  CapabilityConverter,
   DeviceFacade,
   EnergyReportMode,
   EnergyReportOperation,
@@ -35,11 +36,11 @@ export abstract class BaseMELCloudDevice extends Device {
   declare public readonly homey: Homey.Homey
 
   protected abstract capabilityToDevice: Partial<
-    Record<string, (...args: never[]) => unknown>
+    Record<string, CapabilityConverter>
   >
 
   protected abstract readonly deviceToCapability: Partial<
-    Record<string, (...args: never[]) => unknown>
+    Record<string, CapabilityConverter>
   >
 
   protected abstract readonly energyReportRegular: EnergyReportConfig | null
@@ -86,7 +87,7 @@ export abstract class BaseMELCloudDevice extends Device {
     }
     await this.setWarning(null)
     this.#registerCapabilityListeners()
-    await this.fetchDevice()
+    await this.ensureDevice()
   }
 
   public override async onSettings({
@@ -154,7 +155,7 @@ export abstract class BaseMELCloudDevice extends Device {
   }
   /* v8 ignore stop */
 
-  public async fetchDevice(): Promise<DeviceFacade | null> {
+  public async ensureDevice(): Promise<DeviceFacade | null> {
     try {
       if (!this.#deviceFacade) {
         this.#deviceFacade = this.getFacade()
@@ -250,14 +251,13 @@ export abstract class BaseMELCloudDevice extends Device {
   ): Record<string, unknown> {
     this.log('Requested data:', values)
     const tagMapping = this.#setCapabilityTagMapping
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Object.fromEntries returns { [k: string]: any }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Object.fromEntries returns { [k: string]: any }
     return Object.fromEntries(
       Object.entries(values).map(([capability, value]) => [
         tagMapping[capability],
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- value is cast to never for variadic converter args
-        this.capabilityToDevice[capability]?.(value as never) ?? value,
+        this.capabilityToDevice[capability]?.(value) ?? value,
       ]),
-    )
+    ) as Record<string, unknown>
   }
 
   protected async scheduleEnergyReports(): Promise<void> {
@@ -272,7 +272,7 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   protected async sendUpdate(values: Record<string, unknown>): Promise<void> {
-    const device = await this.fetchDevice()
+    const device = await this.ensureDevice()
     if (!device) {
       return
     }
@@ -416,7 +416,7 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   async #updateEnergyReportsOnSettings(changedKeys: string[]): Promise<void> {
-    await Promise.all(
+    const results = await Promise.allSettled(
       modes.map(async (mode) => {
         if (
           changedKeys.some(
@@ -427,5 +427,11 @@ export abstract class BaseMELCloudDevice extends Device {
         }
       }),
     )
+    for (const result of results) {
+      /* v8 ignore next -- defensive: report.start() rejection is not reachable in unit tests */
+      if (result.status === 'rejected') {
+        this.error('Energy report update failed:', result.reason)
+      }
+    }
   }
 }

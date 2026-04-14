@@ -1,24 +1,11 @@
 import type {
-  DeviceType,
   FanSpeed,
   HomeDeviceCapabilities,
   ListDeviceDataAta,
   ListDeviceDataErv,
-  LoginCredentials,
 } from '@olivierzal/melcloud-api'
 
-import type {
-  MELCloudDeviceAta,
-  MELCloudDeviceAtw,
-  MELCloudDeviceErv,
-} from '../drivers/index.mts'
-import type { FlowArgsAta } from './ata.mts'
-import type { FlowArgsAtw } from './atw.mts'
-import type {
-  CapabilitiesOptions,
-  CapabilitiesOptionsAtaErv,
-} from './capabilities.mts'
-import type { FlowArgsErv } from './erv.mts'
+import type { CapabilitiesOptionsAtaErv } from './capabilities.mts'
 import {
   type CapabilitiesOptionsValues,
   type LocalizedStrings,
@@ -163,40 +150,3 @@ export const fanSpeedValues = [
   slow,
   createVeryObject(slow),
 ]
-
-export interface AuthAPI {
-  readonly authenticate: (data?: LoginCredentials) => Promise<boolean>
-  readonly isAuthenticated: () => boolean
-}
-
-export interface DeviceDetails<
-  T extends DeviceType = DeviceType,
-  TId extends number | string = number,
-> {
-  readonly capabilities: readonly string[]
-  readonly capabilitiesOptions: Partial<CapabilitiesOptions<T>>
-  readonly data: { readonly id: TId }
-  readonly name: string
-}
-
-export interface DeviceFacade {
-  readonly setValues: (data: Record<string, unknown>) => Promise<unknown>
-}
-
-export type EnergyReportMode = 'regular' | 'total'
-
-export interface EnergyReportOperation {
-  readonly start: () => Promise<void>
-  readonly unschedule: () => void
-}
-
-export type FlowArgs<T extends DeviceType> =
-  T extends typeof DeviceType.Ata ? FlowArgsAta
-  : T extends typeof DeviceType.Atw ? FlowArgsAtw
-  : T extends typeof DeviceType.Erv ? FlowArgsErv
-  : never
-
-export type MELCloudDevice =
-  | MELCloudDeviceAta
-  | MELCloudDeviceAtw
-  | MELCloudDeviceErv

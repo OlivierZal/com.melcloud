@@ -1,7 +1,4 @@
-/* eslint-disable
-    @typescript-eslint/consistent-type-assertions,
-    @typescript-eslint/consistent-type-imports,
-*/
+import type PairSession from 'homey/lib/PairSession'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
@@ -13,9 +10,9 @@ import {
 } from '../driver-descriptors.ts'
 import { assertDefined, mock } from '../helpers.ts'
 import {
+  type TestDriver,
   type TestDriverType,
   createTestDriver,
-  TestDriver,
 } from './base-driver-test-driver.ts'
 
 const {
@@ -95,7 +92,7 @@ describe(ClassicMELCloudDriver, () => {
   describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
       const listHandler = vi.fn()
-      const session = mock<import('homey/lib/PairSession')>({
+      const session = mock<PairSession>({
         setHandler: vi
           .fn()
           .mockImplementation(
@@ -108,6 +105,7 @@ describe(ClassicMELCloudDriver, () => {
         showView: showViewMock,
       })
       vi.spyOn(driver.homey.app, 'getDevicesByType').mockReturnValue([
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- partial mock data cannot satisfy the full Device<T> generic type
         { data: { Power: true }, id: 1, name: 'Device 1' } as never,
       ])
       await driver.onPair(session)
@@ -161,6 +159,7 @@ describe(ClassicMELCloudDriver, () => {
       > = {}
       vi.spyOn(driver.homey.flow, 'getActionCard').mockImplementation(
         (cardName: string) =>
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- partial mock: only registerRunListener is needed from FlowCardAction
           ({
             registerRunListener: (
               listener: (args: Record<string, unknown>) => Promise<void>,
@@ -198,6 +197,7 @@ describe(ClassicMELCloudDriver, () => {
       > = {}
       vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
         (cardName: string) =>
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- partial mock: only registerRunListener is needed from FlowCardCondition
           ({
             registerRunListener: (
               listener: (args: Record<string, unknown>) => unknown,
@@ -225,6 +225,7 @@ describe(ClassicMELCloudDriver, () => {
       > = {}
       vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
         (cardName: string) =>
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- partial mock: only registerRunListener is needed from FlowCardCondition
           ({
             registerRunListener: (
               listener: (args: Record<string, unknown>) => unknown,

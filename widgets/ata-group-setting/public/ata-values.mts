@@ -205,7 +205,7 @@ export class AtaValueManager {
   public async fetchCapabilities(): Promise<void> {
     this.#ataCapabilities = await homeyApiGet<
       [keyof GroupState, DriverCapabilitiesOptions][]
-    >(this.#homey, '/capabilities/ata')
+    >(this.#homey, '/classic/capabilities/ata')
     this.#defaultAtaValues = Object.fromEntries(
       this.#ataCapabilities.map(([ataKey]) => [ataKey, null]),
     )
@@ -214,7 +214,7 @@ export class AtaValueManager {
   public async fetchValues(): Promise<GroupState> {
     const values = await homeyApiGet<GroupState>(
       this.#homey,
-      `/zones/${this.#getZoneValue()}/ata`,
+      `/classic/zones/${this.#getZoneValue()}/ata`,
     )
     this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
     this.#syncAtaValues()
@@ -240,7 +240,7 @@ export class AtaValueManager {
     if (Object.keys(body).length > 0) {
       await homeyApiPut(
         this.#homey,
-        `/zones/${this.#getZoneValue()}/ata`,
+        `/classic/zones/${this.#getZoneValue()}/ata`,
         body satisfies GroupState,
       )
     }

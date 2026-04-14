@@ -2,11 +2,11 @@
   "api": {
     "getDevices": {
       "method": "GET",
-      "path": "/devices"
+      "path": "/classic/devices"
     },
     "getHourlyTemperatures": {
       "method": "GET",
-      "path": "/devices/:deviceId/logs/hourly-temperatures"
+      "path": "/classic/devices/:deviceId/logs/hourly-temperatures"
     },
     "getLanguage": {
       "method": "GET",
@@ -14,15 +14,15 @@
     },
     "getOperationModes": {
       "method": "GET",
-      "path": "/devices/:deviceId/logs/operation-modes"
+      "path": "/classic/devices/:deviceId/logs/operation-modes"
     },
     "getSignal": {
       "method": "GET",
-      "path": "/devices/:deviceId/logs/signal"
+      "path": "/classic/devices/:deviceId/logs/signal"
     },
     "getTemperatures": {
       "method": "GET",
-      "path": "/devices/:deviceId/logs/temperatures"
+      "path": "/classic/devices/:deviceId/logs/temperatures"
     }
   },
   "name": {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import type {
   HomeAtaValues,
   HomeDeviceAtaFacade,
@@ -8,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
-  testFetchDeviceNull,
+  testEnsureDeviceNull,
   testPostUpdateSync,
   testSetValuesErrorHandling,
   testThermostatModeOff,
@@ -337,7 +336,7 @@ describe(BaseMELCloudDevice, () => {
     setValuesMock,
   })
 
-  testFetchDeviceNull(createTestHomeDevice, getCapabilityListenerCallback, {
+  testEnsureDeviceNull(createTestHomeDevice, getCapabilityListenerCallback, {
     facadeMock: getHomeFacadeMock,
     setValuesMock,
   })

@@ -2,15 +2,15 @@
   "api": {
     "getAtaCapabilities": {
       "method": "GET",
-      "path": "/capabilities/ata"
+      "path": "/classic/capabilities/ata"
     },
     "getAtaState": {
       "method": "GET",
-      "path": "/zones/:zoneType/:zoneId/ata"
+      "path": "/classic/zones/:zoneType/:zoneId/ata"
     },
     "getBuildings": {
       "method": "GET",
-      "path": "/buildings"
+      "path": "/classic/buildings"
     },
     "getLanguage": {
       "method": "GET",
@@ -18,7 +18,7 @@
     },
     "setAtaState": {
       "method": "PUT",
-      "path": "/zones/:zoneType/:zoneId/ata"
+      "path": "/classic/zones/:zoneType/:zoneId/ata"
     }
   },
   "name": {

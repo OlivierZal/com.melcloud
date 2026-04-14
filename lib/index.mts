@@ -1,6 +1,6 @@
 export { KILOWATT_TO_WATT } from './constants.mts'
 export { getErrorMessage } from './get-error-message.mts'
-export { getBuildings, getZones } from './get-zones.mts'
+export { getBuildings, getZones, setFacadeManager } from './get-zones.mts'
 export { isTotalEnergyKey } from './is-total-energy-key.mts'
 export { toDeviceType } from './to-device-type.mts'
 export { typedEntries, typedFromEntries, typedKeys } from './typed-object.mts'

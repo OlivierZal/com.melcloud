@@ -1,7 +1,5 @@
-/* eslint-disable
-    @typescript-eslint/consistent-type-imports,
-*/
 import type { HomeDevice } from '@olivierzal/melcloud-api'
+import type PairSession from 'homey/lib/PairSession'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
@@ -113,7 +111,7 @@ describe(BaseMELCloudDriver, () => {
       getHomeDevicesByTypeMock.mockReturnValue(devices)
 
       const listHandler = vi.fn()
-      const session = mock<import('homey/lib/PairSession')>({
+      const session = mock<PairSession>({
         setHandler: vi
           .fn()
           .mockImplementation(
@@ -144,7 +142,7 @@ describe(BaseMELCloudDriver, () => {
       getHomeDevicesByTypeMock.mockReturnValue([])
 
       const listHandler = vi.fn()
-      const session = mock<import('homey/lib/PairSession')>({
+      const session = mock<PairSession>({
         setHandler: vi
           .fn()
           .mockImplementation(

@@ -20,7 +20,7 @@ import {
 } from '../../types/index.mts'
 import { ClassicMELCloudDevice } from '../classic-base-device.mts'
 
-export default class MELCloudDeviceAta extends ClassicMELCloudDevice<
+export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
   typeof DeviceType.Ata
 > {
   protected readonly capabilityToDevice: Partial<

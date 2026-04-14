@@ -6,6 +6,12 @@ export interface Homey<
   readonly getSettings: () => TSettings
 }
 
+export const fireAndForget = (promise: Promise<unknown>): void => {
+  promise.catch(() => {
+    // Intentional no-op
+  })
+}
+
 export const homeyApiGet = async <T,>(
   homey: HomeyWidget,
   path: string,

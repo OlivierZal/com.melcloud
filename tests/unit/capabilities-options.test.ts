@@ -8,12 +8,15 @@ import {
 } from '@olivierzal/melcloud-api'
 import { describe, expect, it } from 'vitest'
 
-import { getCapabilitiesOptionsAtw, HotWaterMode } from '../../types/atw.mts'
 import {
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
   getCapabilitiesOptionsHome,
-} from '../../types/generic.mts'
+} from '../../types/ata-erv.mts'
+import {
+  getCapabilitiesOptions as getCapabilitiesOptionsAtw,
+  HotWaterMode,
+} from '../../types/classic-atw.mts'
 import { mock } from '../helpers.ts'
 
 describe(getCapabilitiesOptionsAtaErv, () => {

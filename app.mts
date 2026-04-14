@@ -30,6 +30,21 @@ import {
 } from '@olivierzal/melcloud-api'
 import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
 
+import type { ClassicMELCloudDriver } from './drivers/classic-base-driver.mts'
+import type { ClassicMELCloudDevice } from './types/classic.mts'
+import type {
+  DeviceSettings,
+  DriverCapabilitiesOptions,
+  DriverSetting,
+  FormattedErrorLog,
+  GetAtaOptions,
+  GroupAtaStates,
+  LoginSetting,
+  ManifestDriver,
+  ManifestDriverCapabilitiesOptions,
+  Settings,
+  ZoneData,
+} from './types/index.mts'
 import {
   changelog,
   fanSpeed,
@@ -39,24 +54,9 @@ import {
   thermostatMode,
   vertical,
 } from './files.mts'
-import { setFacadeManager } from './lib/get-zones.mts'
 import { type Homey, App } from './lib/homey.mts'
-import { typedFromEntries } from './lib/index.mts'
-import {
-  type DeviceSettings,
-  type DriverCapabilitiesOptions,
-  type DriverSetting,
-  type FormattedErrorLog,
-  type GetAtaOptions,
-  type GroupAtaStates,
-  type LoginSetting,
-  type ManifestDriver,
-  type ManifestDriverCapabilitiesOptions,
-  type MELCloudDevice,
-  type Settings,
-  type ZoneData,
-  fanSpeedValues,
-} from './types/index.mts'
+import { setFacadeManager, typedFromEntries } from './lib/index.mts'
+import { fanSpeedValues } from './types/ata-erv.mts'
 
 const NOTIFICATION_DELAY_MS = 10_000
 
@@ -408,8 +408,10 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { state: GroupState }): Promise<void> {
-    const data = await this.getFacade(zoneType, zoneId).setGroup(state)
-    throwOnErrors(data.AttributeErrors)
+    const { AttributeErrors } = await this.getFacade(zoneType, zoneId).setGroup(
+      state,
+    )
+    throwOnErrors(AttributeErrors)
   }
 
   public async setDeviceSettings({
@@ -443,10 +445,11 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { settings: FrostProtectionQuery }): Promise<void> {
-    const data = await this.getFacade(zoneType, zoneId).setFrostProtection(
-      settings,
-    )
-    throwOnErrors(data.AttributeErrors)
+    const { AttributeErrors } = await this.getFacade(
+      zoneType,
+      zoneId,
+    ).setFrostProtection(settings)
+    throwOnErrors(AttributeErrors)
   }
 
   public async setHolidayMode({
@@ -454,8 +457,11 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { settings: HolidayModeQuery }): Promise<void> {
-    const data = await this.getFacade(zoneType, zoneId).setHolidayMode(settings)
-    throwOnErrors(data.AttributeErrors)
+    const { AttributeErrors } = await this.getFacade(
+      zoneType,
+      zoneId,
+    ).setHolidayMode(settings)
+    throwOnErrors(AttributeErrors)
   }
 
   #createLogger(): {
@@ -516,6 +522,18 @@ export default class MELCloudApp extends App {
     }
   }
 
+  #findDrivers(driverId?: string): ClassicMELCloudDriver<DeviceType>[] {
+    if (driverId === undefined) {
+      return Object.values(this.homey.drivers.getDrivers())
+    }
+    try {
+      return [this.homey.drivers.getDriver(driverId)]
+    } catch {
+      // Driver not yet initialized during early sync callbacks
+      return []
+    }
+  }
+
   /*
    * ATA capability configuration. `enumType` maps Homey's string capability IDs
    * to MELCloud's numeric enum values for localization
@@ -564,11 +582,8 @@ export default class MELCloudApp extends App {
   }: {
     driverId?: string
     ids?: number[]
-  } = {}): MELCloudDevice[] {
-    const targetDrivers =
-      driverId === undefined ?
-        Object.values(this.homey.drivers.getDrivers())
-      : [this.homey.drivers.getDriver(driverId)]
+  } = {}): ClassicMELCloudDevice[] {
+    const targetDrivers = this.#findDrivers(driverId)
     return targetDrivers.flatMap((driver) => {
       const devices = driver.getDevices()
       return ids ?
@@ -635,14 +650,15 @@ export default class MELCloudApp extends App {
   }
 
   async #syncDevices(driverId?: string, ids?: number[]): Promise<void> {
-    try {
-      await Promise.all(
-        this.#getDevices({ driverId, ids }).map(async (device) =>
-          device.syncFromDevice(),
-        ),
-      )
-    } catch (error) {
-      this.error('Device sync failed:', error)
+    const results = await Promise.allSettled(
+      this.#getDevices({ driverId, ids }).map(async (device) =>
+        device.syncFromDevice(),
+      ),
+    )
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        this.error('Device sync failed:', result.reason)
+      }
     }
   }
 }

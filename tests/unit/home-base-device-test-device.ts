@@ -1,7 +1,7 @@
 import type {
   HomeConvertToDevice,
   HomeSetCapabilitiesAta,
-} from '../../types/index.mts'
+} from '../../types/home-ata.mts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 

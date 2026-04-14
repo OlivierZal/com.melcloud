@@ -9,19 +9,19 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
-import {
-  type EnergyCapabilityTagMapping,
-  type GetCapabilityTagMapping,
-  type ListCapabilityTagMapping,
-  type SetCapabilityTagMapping,
-  HotWaterMode,
+import type {
+  EnergyCapabilityTagMapping,
+  GetCapabilityTagMapping,
+  ListCapabilityTagMapping,
+  SetCapabilityTagMapping,
 } from '../../types/index.mts'
+import { HotWaterMode } from '../../types/classic-atw.mts'
 import {
   testEnergyReportConfig,
   testThermostatMode,
 } from '../device-descriptors.ts'
 import { mock } from '../helpers.ts'
-import MELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
+import ClassicMELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
 type AtwType = typeof DeviceType.Atw
@@ -89,7 +89,7 @@ const callSetCapabilityValues = async (target: any): Promise<void> =>
     }
   ).setCapabilityValues(mock<ListDeviceDataAtw>({}))
 
-describe(MELCloudDeviceAtw, () => {
+describe(ClassicMELCloudDeviceAtw, () => {
   let device: any
 
   beforeEach(() => {
@@ -97,7 +97,7 @@ describe(MELCloudDeviceAtw, () => {
     hasCapabilityMock.mockReturnValue(true)
     getCapabilityOptionsMock.mockReturnValue({ min: 10 })
 
-    device = createInstance(MELCloudDeviceAtw)
+    device = createInstance(ClassicMELCloudDeviceAtw)
     Object.defineProperty(device, 'driver', {
       configurable: true,
       value: mockDriver,

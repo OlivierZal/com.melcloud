@@ -8,18 +8,20 @@ import {
 } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
 
+import type {
+  ConvertFromDevice,
+  ConvertToDevice,
+  OperationalCapabilities,
+  SetCapabilities,
+} from '../../types/index.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
 import { KILOWATT_TO_WATT } from '../../lib/index.mts'
 import {
-  type ConvertFromDevice,
-  type ConvertToDevice,
-  type OperationalCapabilities,
-  type SetCapabilities,
   type TargetTemperatureFlowCapabilities,
   HotWaterMode,
   operationModeStateFromDevice,
   operationModeZoneFromDevice,
-} from '../../types/index.mts'
+} from '../../types/classic-atw.mts'
 import { ClassicMELCloudDevice } from '../classic-base-device.mts'
 
 const convertFromDeviceMeasurePower: ConvertFromDevice<
@@ -30,7 +32,7 @@ const convertFromDeviceOperationZone: ConvertFromDevice<
   typeof DeviceType.Atw
 > = (value: OperationModeZone) => operationModeZoneFromDevice[value]
 
-export default class MELCloudDeviceAtw extends ClassicMELCloudDevice<
+export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
   typeof DeviceType.Atw
 > {
   protected readonly capabilityToDevice: Partial<

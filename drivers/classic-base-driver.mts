@@ -1,12 +1,16 @@
-import type { DeviceType, ListDeviceData } from '@olivierzal/melcloud-api'
+import type {
+  ClassicAPI,
+  DeviceType,
+  ListDeviceData,
+} from '@olivierzal/melcloud-api'
 
+import type { ClassicMELCloudDevice } from '../types/classic.mts'
 import type {
   CapabilitiesOptions,
   DeviceDetails,
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
-  MELCloudDevice,
   SetCapabilityTagMapping,
 } from '../types/index.mts'
 import { typedEntries } from '../lib/index.mts'
@@ -15,7 +19,7 @@ import { BaseMELCloudDriver } from './base-driver.mts'
 export abstract class ClassicMELCloudDriver<
   T extends DeviceType,
 > extends BaseMELCloudDriver {
-  declare public readonly getDevices: () => MELCloudDevice[]
+  declare public readonly getDevices: () => ClassicMELCloudDevice[]
 
   public abstract override readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
 
@@ -37,7 +41,7 @@ export abstract class ClassicMELCloudDriver<
   public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
     {}
 
-  protected override get api(): typeof this.homey.app.api {
+  protected override get api(): ClassicAPI {
     return this.homey.app.api
   }
 

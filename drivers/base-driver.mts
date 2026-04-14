@@ -65,9 +65,10 @@ export abstract class BaseMELCloudDriver extends Driver {
   }
 
   /* v8 ignore start -- default implementation; always overridden by classic or test mock */
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic default; overridden by subclasses that use this
   public getCapabilitiesOptions(
-    ..._context: unknown[]
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature must match overrides that use this parameter
+    ..._data: unknown[]
   ): Partial<Record<string, unknown>> {
     return {}
   }

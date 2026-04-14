@@ -218,7 +218,7 @@ export const testThermostatModeOff = (
   })
 }
 
-export const testFetchDeviceNull = (
+export const testEnsureDeviceNull = (
   createDevice: () => {
     onInit: () => Promise<void>
   },
@@ -232,8 +232,8 @@ export const testFetchDeviceNull = (
 ): void => {
   const { facadeMock, setValuesMock } = mocks
 
-  describe('fetchDevice returns null', () => {
-    it('should not call setValues when fetchDevice returns null', async () => {
+  describe('ensureDevice returns null', () => {
+    it('should not call setValues when ensureDevice returns null', async () => {
       facadeMock.mockImplementation(() => {
         throw new Error('Not found')
       })
