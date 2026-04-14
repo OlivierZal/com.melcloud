@@ -17,7 +17,7 @@ type TestDeviceType = typeof DeviceType.Ata
 const FAKE_NOW_MILLIS = DateTime.fromISO('2026-03-18T12:00:00.000').toMillis()
 
 const setCapabilityValueMock = vi.fn()
-const fetchDeviceMock = vi.fn()
+const ensureDeviceMock = vi.fn()
 const cleanMappingMock = vi.fn()
 const clearTimeoutMock = vi.fn()
 const clearIntervalMock = vi.fn()
@@ -58,8 +58,8 @@ const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
 const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   cleanMapping: cleanMappingMock,
   driver: mockDriver,
+  ensureDevice: ensureDeviceMock,
   error: errorMock,
-  fetchDevice: fetchDeviceMock,
   homey: mock<Homey.Homey>({
     clearInterval: clearIntervalMock,
     clearTimeout: clearTimeoutMock,
@@ -72,7 +72,7 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
 
 const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   const getEnergyMock = vi.fn().mockResolvedValue(energyData)
-  fetchDeviceMock.mockResolvedValue({ data: {}, getEnergy: getEnergyMock })
+  ensureDeviceMock.mockResolvedValue({ data: {}, getEnergy: getEnergyMock })
   return getEnergyMock
 }
 
@@ -96,7 +96,7 @@ const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
       'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
     }),
     driver: copDriver,
-    fetchDevice: fetchDeviceMock,
+    ensureDevice: ensureDeviceMock,
     homey: mock<Homey.Homey>({
       clearInterval: clearIntervalMock,
       clearTimeout: clearTimeoutMock,
@@ -145,7 +145,7 @@ describe(EnergyReport, () => {
 
     it('should log error when getEnergy fails', async () => {
       const energyError = new Error('fetch failed')
-      fetchDeviceMock.mockResolvedValue({
+      ensureDeviceMock.mockResolvedValue({
         data: {},
         getEnergy: vi.fn().mockRejectedValue(energyError),
       })
@@ -171,8 +171,8 @@ describe(EnergyReport, () => {
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
-    it('should handle null device from fetchDevice', async () => {
-      fetchDeviceMock.mockResolvedValue(null)
+    it('should handle null device from ensureDevice', async () => {
+      ensureDeviceMock.mockResolvedValue(null)
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
@@ -339,7 +339,7 @@ describe(EnergyReport, () => {
       )
       await intervalCallback()
 
-      expect(fetchDeviceMock).toHaveBeenCalledWith()
+      expect(ensureDeviceMock).toHaveBeenCalledWith()
     })
   })
 

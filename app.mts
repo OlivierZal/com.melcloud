@@ -517,6 +517,18 @@ export default class MELCloudApp extends App {
     }
   }
 
+  #findDrivers(driverId?: string): ClassicMELCloudDriver<DeviceType>[] {
+    if (driverId === undefined) {
+      return Object.values(this.homey.drivers.getDrivers())
+    }
+    try {
+      return [this.homey.drivers.getDriver(driverId)]
+    } catch {
+      // Driver not yet initialized during early sync callbacks
+      return []
+    }
+  }
+
   /*
    * ATA capability configuration. `enumType` maps Homey's string capability IDs
    * to MELCloud's numeric enum values for localization
@@ -566,25 +578,13 @@ export default class MELCloudApp extends App {
     driverId?: string
     ids?: number[]
   } = {}): ClassicMELCloudDevice[] {
-    const targetDrivers =
-      driverId === undefined ?
-        Object.values(this.homey.drivers.getDrivers())
-      : this.#getDriverSafe(driverId)
+    const targetDrivers = this.#findDrivers(driverId)
     return targetDrivers.flatMap((driver) => {
       const devices = driver.getDevices()
       return ids ?
           devices.filter(({ id }) => ids.includes(Number(id)))
         : devices
     })
-  }
-
-  #getDriverSafe(driverId: string): ClassicMELCloudDriver<DeviceType>[] {
-    try {
-      return [this.homey.drivers.getDriver(driverId)]
-    } catch {
-      // Driver not yet initialized during early sync callbacks
-      return []
-    }
   }
 
   async #initApi({

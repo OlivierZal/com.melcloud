@@ -1,4 +1,8 @@
-import type { ClassicAPI, DeviceType, ListDeviceData } from '@olivierzal/melcloud-api'
+import type {
+  ClassicAPI,
+  DeviceType,
+  ListDeviceData,
+} from '@olivierzal/melcloud-api'
 
 import type {
   CapabilitiesOptions,

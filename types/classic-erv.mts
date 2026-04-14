@@ -6,7 +6,6 @@ import type {
   UpdateDeviceDataErv,
 } from '@olivierzal/melcloud-api'
 
-import type { ClassicMELCloudDeviceErv } from '../drivers/index.mts'
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,
@@ -63,7 +62,3 @@ export const listCapabilityTagMapping: Record<
 }
 
 export const energyCapabilityTagMapping: Record<string, never> = {}
-
-export interface FlowArgs extends SetCapabilities {
-  readonly device: ClassicMELCloudDeviceErv
-}

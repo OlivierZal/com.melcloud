@@ -1,12 +1,12 @@
 import { type ListDeviceData, DeviceType } from '@olivierzal/melcloud-api'
 
+import { getCapabilitiesOptionsAtaErv } from '../../types/ata-erv.mts'
 import {
   energyCapabilityTagMapping,
   getCapabilityTagMapping,
   listCapabilityTagMapping,
   setCapabilityTagMapping,
 } from '../../types/classic-erv.mts'
-import { getCapabilitiesOptionsAtaErv } from '../../types/index.mts'
 import { ClassicMELCloudDriver } from '../classic-base-driver.mts'
 
 const measureCapabilities = new Set([

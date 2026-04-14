@@ -12,7 +12,7 @@ import { ClassicMELCloudDevice } from '../../drivers/classic-base-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testDeletion,
-  testFetchDeviceNull,
+  testEnsureDeviceNull,
   testOnoffConverter,
   testPostUpdateSync,
   testSetValuesErrorHandling,
@@ -177,7 +177,7 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('initialization', () => {
-    it('should clear warning, register listeners, and fetch device', async () => {
+    it('should clear warning, register listeners, and ensure device', async () => {
       await device.onInit()
 
       expect(superSetWarningMock).toHaveBeenCalledWith(null)
@@ -246,23 +246,23 @@ describe(ClassicMELCloudDevice, () => {
     })
   })
 
-  describe('device fetching', () => {
-    it('should expose facade via protected getter after fetch', async () => {
-      await device.fetchDevice()
+  describe('device initialization', () => {
+    it('should expose facade via protected getter after init', async () => {
+      await device.ensureDevice()
 
       expect(device.exposedFacade).toBeDefined()
     })
 
     it('should get facade and return device', async () => {
-      const result = await device.fetchDevice()
+      const result = await device.ensureDevice()
 
       expect(result).toBeDefined()
       expect(getFacadeMock).toHaveBeenCalledWith('devices', 1)
     })
 
     it('should return same device on subsequent calls', async () => {
-      const first = await device.fetchDevice()
-      const second = await device.fetchDevice()
+      const first = await device.ensureDevice()
+      const second = await device.ensureDevice()
 
       expect(first).toBe(second)
       expect(getFacadeMock).toHaveBeenCalledTimes(1)
@@ -272,7 +272,7 @@ describe(ClassicMELCloudDevice, () => {
       getFacadeMock.mockImplementation(() => {
         throw new Error('Not found')
       })
-      const result = await device.fetchDevice()
+      const result = await device.ensureDevice()
 
       expect(result).toBeNull()
     })
@@ -280,7 +280,7 @@ describe(ClassicMELCloudDevice, () => {
 
   describe('device synchronization', () => {
     it('should set capability values from device data', async () => {
-      await device.fetchDevice()
+      await device.ensureDevice()
       await device.syncFromDevice()
 
       expect(realtimeMock).toHaveBeenCalledWith('deviceupdate', null)
@@ -293,7 +293,7 @@ describe(ClassicMELCloudDevice, () => {
         Power: true,
         RoomTemperature: 21,
       })
-      await device.fetchDevice()
+      await device.ensureDevice()
       await device.exposedSetCapabilityValues(data)
 
       expect(realtimeMock).toHaveBeenCalledWith('deviceupdate', null)
@@ -332,7 +332,7 @@ describe(ClassicMELCloudDevice, () => {
     })
 
     it('should sync from device when non-always_on non-energy setting changes', async () => {
-      await device.fetchDevice()
+      await device.ensureDevice()
       await device.onSettings({
         changedKeys: ['some_other_setting'],
         newSettings: { some_other_setting: 'value' },
@@ -422,7 +422,7 @@ describe(ClassicMELCloudDevice, () => {
     },
   )
 
-  testFetchDeviceNull(
+  testEnsureDeviceNull(
     () => {
       const testDevice = new TestDevice()
       setDriver(testDevice)
@@ -451,7 +451,7 @@ describe(ClassicMELCloudDevice, () => {
       setDriver(customDevice)
       mockFacade({ ...mockDeviceData, RoomTemperature: 10 })
       vi.spyOn(customDevice, 'hasCapability').mockReturnValue(true)
-      await customDevice.fetchDevice()
+      await customDevice.ensureDevice()
       await customDevice.exposedSetCapabilityValues(
         mock<ListDeviceDataAta>({ Power: true, RoomTemperature: 10 }),
       )
@@ -565,18 +565,18 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('synchronization when device is unavailable', () => {
-    it('should not throw when fetchDevice returns null', async () => {
+    it('should not throw when ensureDevice returns null', async () => {
       getFacadeMock.mockImplementation(() => {
         throw new Error('Not found')
       })
-      await device.fetchDevice()
+      await device.ensureDevice()
       await device.syncFromDevice()
 
       expect(superSetWarningMock).toHaveBeenCalledWith('Not found')
       expect(superSetWarningMock).toHaveBeenCalledWith(null)
     })
 
-    it('should not set capability values when fetchData returns null via fetchDevice', async () => {
+    it('should not set capability values when fetchData returns null via ensureDevice', async () => {
       const freshDevice = new TestDevice()
       setDriver(freshDevice)
       getFacadeMock.mockImplementation(() => {
@@ -591,7 +591,7 @@ describe(ClassicMELCloudDevice, () => {
     it('should skip setCapabilityValues when syncFromDevice gets null from fetchData', async () => {
       const freshDevice = new TestDevice()
       setDriver(freshDevice)
-      vi.spyOn(freshDevice, 'fetchDevice').mockResolvedValue(null)
+      vi.spyOn(freshDevice, 'ensureDevice').mockResolvedValue(null)
       realtimeMock.mockClear()
       await freshDevice.syncFromDevice()
 
@@ -615,11 +615,11 @@ describe(ClassicMELCloudDevice, () => {
     })
   })
 
-  describe('fetch error handling', () => {
-    it('should set warning when fetchDevice throws', async () => {
+  describe('init error handling', () => {
+    it('should set warning when ensureDevice throws', async () => {
       const errorDevice = new TestDevice()
       setDriver(errorDevice)
-      vi.spyOn(errorDevice, 'fetchDevice').mockRejectedValue(
+      vi.spyOn(errorDevice, 'ensureDevice').mockRejectedValue(
         new Error('fetch failed'),
       )
       await errorDevice.syncFromDevice()

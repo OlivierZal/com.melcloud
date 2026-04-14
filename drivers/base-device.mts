@@ -87,7 +87,7 @@ export abstract class BaseMELCloudDevice extends Device {
     }
     await this.setWarning(null)
     this.#registerCapabilityListeners()
-    await this.fetchDevice()
+    await this.ensureDevice()
   }
 
   public override async onSettings({
@@ -155,7 +155,7 @@ export abstract class BaseMELCloudDevice extends Device {
   }
   /* v8 ignore stop */
 
-  public async fetchDevice(): Promise<DeviceFacade | null> {
+  public async ensureDevice(): Promise<DeviceFacade | null> {
     try {
       if (!this.#deviceFacade) {
         this.#deviceFacade = this.getFacade()
@@ -272,7 +272,7 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   protected async sendUpdate(values: Record<string, unknown>): Promise<void> {
-    const device = await this.fetchDevice()
+    const device = await this.ensureDevice()
     if (!device) {
       return
     }

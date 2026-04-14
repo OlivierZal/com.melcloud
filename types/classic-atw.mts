@@ -10,7 +10,6 @@ import {
   OperationModeZone,
 } from '@olivierzal/melcloud-api'
 
-import type { ClassicMELCloudDeviceAtw } from '../drivers/index.mts'
 import { thermostatMode } from '../files.mts'
 import {
   type BaseGetCapabilities,
@@ -397,12 +396,4 @@ export interface CapabilitiesOptions {
       readonly title: LocalizedStrings
     }[]
   }
-}
-
-export interface FlowArgs {
-  readonly device: ClassicMELCloudDeviceAtw
-  readonly onoff: boolean
-  readonly operation_mode_zone: keyof typeof OperationModeZone
-  readonly operational_state: keyof typeof OperationModeState
-  readonly target_temperature: number
 }

@@ -1,9 +1,7 @@
 import { type HomeAPI, HomeDeviceType } from '@olivierzal/melcloud-api'
 
-import {
-  getCapabilitiesOptionsHome,
-  homeSetCapabilityTagMappingAta,
-} from '../../types/index.mts'
+import { getCapabilitiesOptionsHome } from '../../types/ata-erv.mts'
+import { homeSetCapabilityTagMappingAta } from '../../types/index.mts'
 import { BaseMELCloudDriver } from '../base-driver.mts'
 
 export default class HomeMELCloudDriverAta extends BaseMELCloudDriver {

@@ -44,6 +44,11 @@ export type {
 export type { BuildingZone, DeviceZone, Zone } from '@olivierzal/melcloud-api'
 
 export {
+  fanSpeedValues,
+  getCapabilitiesOptionsAtaErv,
+  getCapabilitiesOptionsHome,
+} from './ata-erv.mts'
+export {
   horizontalFromDevice,
   operationModeFromDevice,
   ThermostatModeAta,
@@ -53,19 +58,15 @@ export {
   operationModeStateFromDevice,
   operationModeZoneFromDevice,
 } from './classic-atw.mts'
-export { ThermostatModeErv, ventilationModeFromDevice } from './erv.mts'
 export {
   type AuthAPI,
-  type ClassicFlowArgs,
   type ClassicMELCloudDevice,
   type DeviceDetails,
   type DeviceFacade,
   type EnergyReportMode,
   type EnergyReportOperation,
-  fanSpeedValues,
-  getCapabilitiesOptionsAtaErv,
-  getCapabilitiesOptionsHome,
-} from './generic.mts'
+} from './classic.mts'
+export { ThermostatModeErv, ventilationModeFromDevice } from './erv.mts'
 export {
   type HomeCapabilitiesAta,
   type HomeConvertFromDevice,

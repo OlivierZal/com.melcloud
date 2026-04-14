@@ -82,14 +82,14 @@ export abstract class ClassicMELCloudDevice<
     return this.facade?.data
   }
 
-  public override async fetchDevice(): Promise<DeviceFacade<T> | null> {
+  public override async ensureDevice(): Promise<DeviceFacade<T> | null> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from base FacadeWithSetValues after super call
-    return (await super.fetchDevice()) as DeviceFacade<T> | null
+    return (await super.ensureDevice()) as DeviceFacade<T> | null
   }
 
   public override async syncFromDevice(): Promise<void> {
     const data = await this.#getDeviceData()
-    /* v8 ignore next -- defensive guard: data is guaranteed after fetchDevice */
+    /* v8 ignore next -- defensive guard: data is guaranteed after ensureDevice */
     if (data) {
       await this.setCapabilityValues(data)
     }
@@ -143,7 +143,7 @@ export abstract class ClassicMELCloudDevice<
 
   async #fetchDeviceData(): Promise<ListDeviceData<T> | null> {
     try {
-      const device = await this.fetchDevice()
+      const device = await this.ensureDevice()
       return device?.data ?? null
     } catch {
       await this.setWarning(this.homey.__('errors.deviceNotFound'))

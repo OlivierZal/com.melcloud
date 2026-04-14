@@ -9,7 +9,6 @@ import type {
   Vertical,
 } from '@olivierzal/melcloud-api'
 
-import type { ClassicMELCloudDeviceAta } from '../drivers/index.mts'
 import type { ThermostatModeAta } from './ata.mts'
 import type {
   BaseGetCapabilities,
@@ -138,8 +137,4 @@ export const energyCapabilityTagMapping: Record<
   'meter_power.fan': ['TotalFanConsumed'],
   'meter_power.heating': ['TotalHeatingConsumed'],
   'meter_power.other': ['TotalOtherConsumed'],
-}
-
-export interface FlowArgs extends SetCapabilities {
-  readonly device: ClassicMELCloudDeviceAta
 }

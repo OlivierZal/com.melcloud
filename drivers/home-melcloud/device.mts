@@ -72,7 +72,7 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
   protected readonly thermostatMode = ThermostatModeAta
 
   public override async syncFromDevice(): Promise<void> {
-    const device = await this.fetchDevice()
+    const device = await this.ensureDevice()
     if (device) {
       await this.#setCapabilityValues(device)
     }
