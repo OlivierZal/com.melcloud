@@ -959,10 +959,10 @@ class DeviceSettingsManager {
 
   #updateDriverSetting(element: HTMLInputElement): void {
     const {
-      dataset: { driverId, settingId: id },
+      dataset: { driverId, settingId },
     } = element
-    if (id !== undefined && driverId !== undefined) {
-      const isChecked = this.#deviceSettings[driverId]?.[id]
+    if (settingId !== undefined && driverId !== undefined) {
+      const isChecked = this.#deviceSettings[driverId]?.[settingId]
       if (typeof isChecked === 'boolean') {
         element.checked = isChecked
         return
