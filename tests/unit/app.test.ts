@@ -227,8 +227,12 @@ const initWithFacade = async (
 
 const createMockDriver = (
   devices: ClassicMELCloudDevice[],
-): { getDevices: ReturnType<typeof vi.fn> } => ({
+): {
+  getDevices: ReturnType<typeof vi.fn>
+  ready: ReturnType<typeof vi.fn>
+} => ({
   getDevices: vi.fn().mockReturnValue(devices),
+  ready: vi.fn<() => Promise<void>>().mockResolvedValue(),
 })
 
 const getOnSyncCallback = (): ((params?: {
@@ -1292,27 +1296,6 @@ describe('melCloudApp', () => {
       await onSync()
 
       expect(syncMock).toHaveBeenCalledTimes(1)
-    })
-
-    it('should silently skip sync when driver is not yet initialized', async () => {
-      const syncMock = vi.fn<() => Promise<void>>().mockResolvedValue()
-      const mockDriver = createMockDriver([
-        mock<ClassicMELCloudDevice>({ syncFromDevice: syncMock }),
-      ])
-      mockGetDriver.mockReturnValue(mockDriver)
-      mockHomeApiInstance.list.mockResolvedValue([])
-      await app.onInit()
-
-      mockGetDriver.mockImplementation(() => {
-        throw new Error('Driver Not Initialized: home-melcloud')
-      })
-      const { onSync } = getMockCallArg<{
-        onSync: () => Promise<void>
-      }>(mockHomeCreate, 0, 0)
-      syncMock.mockClear()
-      await onSync()
-
-      expect(syncMock).not.toHaveBeenCalled()
     })
   })
 
