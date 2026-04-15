@@ -13,7 +13,7 @@ import {
   type TestDriver,
   type TestDriverType,
   createTestDriver,
-} from './base-driver-test-driver.ts'
+} from './classic-driver-test-driver.ts'
 
 const {
   authenticateMock,
