@@ -14,7 +14,6 @@ declare module 'homey' {
   }
 
   interface ManagerDrivers extends HomeyLib.ManagerDrivers {
-    getDriver: (driverId: string) => MELCloudDriver
     getDrivers: () => Record<string, MELCloudDriver>
   }
 

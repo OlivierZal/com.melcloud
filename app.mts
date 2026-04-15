@@ -197,12 +197,7 @@ export default class MELCloudApp extends App {
     const timezone = this.homey.clock.getTimezone()
     LuxonSettings.defaultLocale = language
     LuxonSettings.defaultZone = timezone
-    await Promise.all(
-      Object.values(this.homey.drivers.getDrivers()).map(async (driver) =>
-        driver.ready(),
-      ),
-    )
-    await this.#initApi({ language, timezone })
+    await this.#initClassicApi({ language, timezone })
     await this.#initHomeApi()
     this.#createNotification(language)
     this.#registerWidgetListeners()
@@ -546,16 +541,11 @@ export default class MELCloudApp extends App {
     }
   }
 
-  #findDrivers(driverId?: string): MELCloudDriver[] {
-    if (driverId === undefined) {
-      return Object.values(this.homey.drivers.getDrivers())
-    }
-    try {
-      return [this.homey.drivers.getDriver(driverId)]
-    } catch {
-      // Driver not yet registered during early sync callbacks
-      return []
-    }
+  #getDrivers(driverId?: string): MELCloudDriver[] {
+    const drivers = Object.values(this.homey.drivers.getDrivers())
+    return driverId === undefined ? drivers : (
+        drivers.filter((driver) => driver.id === driverId)
+      )
   }
 
   /*
@@ -605,18 +595,19 @@ export default class MELCloudApp extends App {
     ids,
   }: {
     driverId?: string
-    ids?: number[]
+    ids?: (number | string)[]
   } = {}): MELCloudDevice[] {
-    const drivers = this.#findDrivers(driverId)
+    const drivers = this.#getDrivers(driverId)
+    const stringIds = ids?.map(String)
     return drivers.flatMap((driver) => {
       const devices = driver.getDevices()
-      return ids ?
-          devices.filter(({ id }) => ids.includes(Number(id)))
+      return stringIds ?
+          devices.filter(({ id }) => stringIds.includes(String(id)))
         : devices
     })
   }
 
-  async #initApi({
+  async #initClassicApi({
     language,
     timezone,
   }: {
@@ -630,10 +621,10 @@ export default class MELCloudApp extends App {
       timezone,
       onSync: async (params) => {
         const { ids, type } = params ?? {}
-        await this.#syncDevices(
-          type === undefined ? undefined : DRIVER_IDS_BY_TYPE[type],
+        await this.#syncDevices({
+          driverId: type === undefined ? undefined : DRIVER_IDS_BY_TYPE[type],
           ids,
-        )
+        })
       },
     })
     this.#facadeManager = new ClassicFacadeManager(
@@ -647,8 +638,13 @@ export default class MELCloudApp extends App {
     this.#homeApi = await HomeAPI.create({
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager('home'),
-      onSync: async () =>
-        this.#syncDevices(DRIVER_IDS_BY_TYPE[HomeDeviceType.Ata]),
+      onSync: async (params) => {
+        const { ids } = params ?? {}
+        await this.#syncDevices({
+          driverId: DRIVER_IDS_BY_TYPE[HomeDeviceType.Ata],
+          ids,
+        })
+      },
     })
     this.#homeFacadeManager = new HomeFacadeManager(this.#homeApi)
     await this.#homeApi.list()
@@ -677,11 +673,11 @@ export default class MELCloudApp extends App {
       )
   }
 
-  async #syncDevices(driverId?: string, ids?: number[]): Promise<void> {
+  async #syncDevices(
+    filter: { driverId?: string; ids?: (number | string)[] } = {},
+  ): Promise<void> {
     const results = await Promise.allSettled(
-      this.#getDevices({ driverId, ids }).map(async (device) =>
-        device.syncFromDevice(),
-      ),
+      this.#getDevices(filter).map(async (device) => device.syncFromDevice()),
     )
     for (const result of results) {
       if (result.status === 'rejected') {
