@@ -1,4 +1,7 @@
-import type { ListDeviceDataAta } from '@olivierzal/melcloud-api'
+import {
+  type ListDeviceDataAta,
+  EntityNotFoundError,
+} from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
@@ -616,16 +619,25 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('init error handling', () => {
-    it('should set warning when ensureDevice throws', async () => {
+    it('should set warning when ensureDevice throws EntityNotFoundError', async () => {
       const errorDevice = new TestDevice()
       setDriver(errorDevice)
       vi.spyOn(errorDevice, 'ensureDevice').mockRejectedValue(
-        new Error('fetch failed'),
+        new EntityNotFoundError('DeviceLocation', 1),
       )
       await errorDevice.syncFromDevice()
 
       expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
       expect(superSetWarningMock).toHaveBeenCalledWith(null)
+    })
+
+    it('should rethrow unexpected errors from ensureDevice', async () => {
+      const errorDevice = new TestDevice()
+      setDriver(errorDevice)
+      const unexpected = new Error('unexpected failure')
+      vi.spyOn(errorDevice, 'ensureDevice').mockRejectedValue(unexpected)
+
+      await expect(errorDevice.syncFromDevice()).rejects.toThrow(unexpected)
     })
   })
 })

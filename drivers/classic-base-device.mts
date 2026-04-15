@@ -1,7 +1,8 @@
-import type {
-  DeviceFacade,
-  DeviceType,
-  ListDeviceData,
+import {
+  type DeviceFacade,
+  type DeviceType,
+  type ListDeviceData,
+  EntityNotFoundError,
 } from '@olivierzal/melcloud-api'
 
 import type {
@@ -142,17 +143,19 @@ export abstract class ClassicMELCloudDevice<
       value) as Capabilities<T>[TKey]
   }
 
-  async #fetchDeviceData(): Promise<ListDeviceData<T> | null> {
+  async #getDeviceData(): Promise<ListDeviceData<T> | null> {
     try {
+      if (this.#data) {
+        return this.#data
+      }
       const device = await this.ensureDevice()
       return device?.data ?? null
-    } catch {
+    } catch (error) {
+      if (!(error instanceof EntityNotFoundError)) {
+        throw error
+      }
       await this.setWarning(this.homey.__('errors.deviceNotFound'))
       return null
     }
-  }
-
-  async #getDeviceData(): Promise<ListDeviceData<T> | null> {
-    return this.#data ?? (await this.#fetchDeviceData())
   }
 }

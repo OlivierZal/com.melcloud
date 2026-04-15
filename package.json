@@ -28,7 +28,7 @@
     "homey:publish": "npx homey app publish",
     "homey:start": "npx homey app run --remote",
     "homey:validate": "npx homey app validate --level=publish",
-    "lint": "eslint .",
+    "lint": "NODE_OPTIONS=--max-old-space-size=8192 eslint .",
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run",
     "test:coverage": "npm test -- --coverage",
