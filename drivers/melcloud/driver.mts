@@ -7,7 +7,7 @@ import {
   listCapabilityTagMapping,
   setCapabilityTagMapping,
 } from '../../types/classic-ata.mts'
-import { ClassicMELCloudDriver } from '../classic-base-driver.mts'
+import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
 export default class ClassicMELCloudDriverAta extends ClassicMELCloudDriver<
   typeof DeviceType.Ata

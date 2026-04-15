@@ -9,7 +9,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ThermostatModeAta } from '../../types/index.mts'
+import { ThermostatModeAta } from '../../types/ata.mts'
 import { testThermostatMode } from '../device-descriptors.ts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'

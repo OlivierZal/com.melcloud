@@ -1,9 +1,6 @@
-import type { DeviceType } from '@olivierzal/melcloud-api'
+import type { BuildingZone, DeviceType } from '@olivierzal/melcloud-api'
 
-import type {
-  BuildingZone,
-  AtaGroupSettingWidgetSettings as HomeySettings,
-} from '../../../types/index.mts'
+import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 import { getButton, getCanvas, getDiv, getSelect } from './dom.mts'

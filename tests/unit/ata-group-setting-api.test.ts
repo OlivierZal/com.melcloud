@@ -1,21 +1,20 @@
-import type { GroupState } from '@olivierzal/melcloud-api'
+import type { BuildingZone, GroupState } from '@olivierzal/melcloud-api'
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type {
-  BuildingZone,
-  DriverCapabilitiesOptions,
-  GroupAtaStates,
-  ZoneData,
-} from '../../types/index.mts'
+import type { DriverCapabilitiesOptions } from '../../types/settings.mts'
+import type { GroupAtaStates, ZoneData } from '../../types/widgets.mts'
 import { mock } from '../helpers.js'
 
 const mockGetBuildings = vi.fn<() => BuildingZone[]>()
 
-vi.mock(import('../../lib/index.mts'), async (importOriginal) => ({
-  ...(await importOriginal()),
-  getClassicBuildings: mockGetBuildings,
-}))
+vi.mock(
+  import('../../lib/classic-facade-manager.mts'),
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    getClassicBuildings: mockGetBuildings,
+  }),
+)
 
 const { default: api } = await import('../../widgets/ata-group-setting/api.mts')
 

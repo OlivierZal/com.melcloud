@@ -7,7 +7,7 @@ import {
   listCapabilityTagMapping,
   setCapabilityTagMapping,
 } from '../../types/classic-erv.mts'
-import { ClassicMELCloudDriver } from '../classic-base-driver.mts'
+import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
 const measureCapabilities = new Set([
   'measure_co2',

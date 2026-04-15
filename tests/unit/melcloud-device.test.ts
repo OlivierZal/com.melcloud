@@ -7,7 +7,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ThermostatModeAta } from '../../types/index.mts'
+import { ThermostatModeAta } from '../../types/ata.mts'
 import {
   testCapabilityToDeviceConverters,
   testEnergyReportConfig,

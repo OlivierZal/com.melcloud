@@ -1,6 +1,6 @@
 import { type ListDeviceData, DeviceType } from '@olivierzal/melcloud-api'
 
-import type { Capabilities } from '../../types/index.mts'
+import type { Capabilities } from '../../types/capabilities.mts'
 import {
   energyCapabilityTagMapping,
   getCapabilitiesOptions,
@@ -8,7 +8,7 @@ import {
   listCapabilityTagMapping,
   setCapabilityTagMapping,
 } from '../../types/classic-atw.mts'
-import { ClassicMELCloudDriver } from '../classic-base-driver.mts'
+import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
 export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
   typeof DeviceType.Atw

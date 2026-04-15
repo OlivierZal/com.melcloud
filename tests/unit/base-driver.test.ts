@@ -1,8 +1,8 @@
 import type PairSession from 'homey/lib/PairSession'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
-import { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
+import type { EnergyCapabilityTagMapping } from '../../types/capabilities.mts'
+import { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import {
   testFlowListenerRegistration,
   testPairing,

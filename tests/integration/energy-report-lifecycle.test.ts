@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { isTotalEnergyKey, KILOWATT_TO_WATT } from '../../lib/index.mts'
+import { KILOWATT_TO_WATT } from '../../lib/constants.mts'
+import { isTotalEnergyKey } from '../../lib/is-total-energy-key.mts'
 
 describe('energy report lifecycle', () => {
   describe('kilowatt to watt conversion', () => {

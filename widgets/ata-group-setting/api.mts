@@ -1,14 +1,18 @@
-import type { DeviceType, GroupState } from '@olivierzal/melcloud-api'
-import type { Homey } from 'homey/lib/Homey'
-
 import type {
   BuildingZone,
-  DriverCapabilitiesOptions,
+  DeviceType,
+  GroupState,
+} from '@olivierzal/melcloud-api'
+import type { Homey } from 'homey/lib/Homey'
+
+import type { DriverCapabilitiesOptions } from '../../types/settings.mts'
+import type {
   GetAtaOptions,
   GroupAtaStates,
   ZoneData,
-} from '../../types/index.mts'
-import { getClassicBuildings, toDeviceType } from '../../lib/index.mts'
+} from '../../types/widgets.mts'
+import { getClassicBuildings } from '../../lib/classic-facade-manager.mts'
+import { toDeviceType } from '../../lib/to-device-type.mts'
 
 const api = {
   getClassicAtaCapabilities({

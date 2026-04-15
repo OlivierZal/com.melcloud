@@ -6,8 +6,8 @@ import type {
   ConvertToDevice,
   OperationalCapabilities,
   SetCapabilities,
-} from '../../types/index.mts'
-import { ClassicMELCloudDevice } from '../../drivers/classic-base-device.mts'
+} from '../../types/capabilities.mts'
+import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import { createInstance } from './create-test-instance.ts'
 
 type TestDeviceType = typeof DeviceType.Ata

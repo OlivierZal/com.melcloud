@@ -9,10 +9,13 @@ import { mock } from '../helpers.js'
 
 const mockGetClassicZones = vi.fn()
 
-vi.mock(import('../../lib/index.mts'), async (importOriginal) => ({
-  ...(await importOriginal()),
-  getClassicZones: mockGetClassicZones,
-}))
+vi.mock(
+  import('../../lib/classic-facade-manager.mts'),
+  async (importOriginal) => ({
+    ...(await importOriginal()),
+    getClassicZones: mockGetClassicZones,
+  }),
+)
 
 const { default: api } = await import('../../widgets/charts/api.mts')
 

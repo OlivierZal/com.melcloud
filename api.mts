@@ -1,4 +1,5 @@
 import type {
+  BuildingZone,
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionQuery,
@@ -9,14 +10,13 @@ import type {
 import type { Homey } from 'homey/lib/Homey'
 
 import type {
-  BuildingZone,
   DeviceSettings,
   DriverSetting,
   FormattedErrorLog,
   Settings,
-  ZoneData,
-} from './types/index.mts'
-import { getClassicBuildings } from './lib/index.mts'
+} from './types/settings.mts'
+import type { ZoneData } from './types/widgets.mts'
+import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 
 const api = {
   async authenticateClassic({

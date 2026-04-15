@@ -14,13 +14,13 @@ import type {
   DriverSetting,
   FormattedErrorLog,
   Settings,
-  ZoneData,
-} from '../../types/index.mts'
+} from '../../types/settings.mts'
+import type { ZoneData } from '../../types/widgets.mts'
 import { mock } from '../helpers.js'
 
 const mockGetBuildings = vi.fn()
 
-vi.mock(import('../../lib/index.mts'), () => ({
+vi.mock(import('../../lib/classic-facade-manager.mts'), () => ({
   getClassicBuildings: mockGetBuildings,
 }))
 

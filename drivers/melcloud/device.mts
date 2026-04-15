@@ -7,18 +7,20 @@ import {
   Vertical,
 } from '@olivierzal/melcloud-api'
 
+import type {
+  ConvertFromDevice,
+  ConvertToDevice,
+  OperationalCapabilities,
+  SetCapabilities,
+} from '../../types/capabilities.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
 import {
-  type ConvertFromDevice,
-  type ConvertToDevice,
-  type OperationalCapabilities,
-  type SetCapabilities,
   horizontalFromDevice,
   operationModeFromDevice,
   ThermostatModeAta,
   verticalFromDevice,
-} from '../../types/index.mts'
-import { ClassicMELCloudDevice } from '../classic-base-device.mts'
+} from '../../types/ata.mts'
+import { ClassicMELCloudDevice } from '../classic-device.mts'
 
 export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
   typeof DeviceType.Ata

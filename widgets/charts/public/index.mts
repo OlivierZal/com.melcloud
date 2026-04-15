@@ -1,4 +1,5 @@
 import type {
+  DeviceZone,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
@@ -6,9 +7,8 @@ import type ApexCharts from 'apexcharts'
 
 import type {
   DaysQuery,
-  DeviceZone,
   ChartsWidgetSettings as HomeySettings,
-} from '../../../types/index.mts'
+} from '../../../types/widgets.mts'
 import { DeviceType } from './constants.mts'
 import { createOption, getDiv, getSelect } from './dom.mts'
 import {

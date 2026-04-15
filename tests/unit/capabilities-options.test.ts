@@ -11,7 +11,7 @@ import { describe, expect, it } from 'vitest'
 import {
   fanSpeedValues,
   getCapabilitiesOptionsAtaErv,
-  getCapabilitiesOptionsHome,
+  homeGetCapabilitiesOptions,
 } from '../../types/ata-erv.mts'
 import {
   getCapabilitiesOptions as getCapabilitiesOptionsAtw,
@@ -57,13 +57,13 @@ describe(getCapabilitiesOptionsAtaErv, () => {
   })
 })
 
-describe(getCapabilitiesOptionsHome, () => {
+describe(homeGetCapabilitiesOptions, () => {
   it('should return fan_speed options from Home device capabilities', () => {
     const capabilities = mock<HomeDeviceCapabilities>({
       hasAutomaticFanSpeed: true,
       numberOfFanSpeeds: 4,
     })
-    const result = getCapabilitiesOptionsHome(capabilities)
+    const result = homeGetCapabilitiesOptions(capabilities)
 
     expect(result).toStrictEqual({
       fan_speed: { max: 4, min: 0, step: 1, units: '' },
@@ -75,7 +75,7 @@ describe(getCapabilitiesOptionsHome, () => {
       hasAutomaticFanSpeed: false,
       numberOfFanSpeeds: 5,
     })
-    const result = getCapabilitiesOptionsHome(capabilities)
+    const result = homeGetCapabilitiesOptions(capabilities)
 
     expect(result).toStrictEqual({
       fan_speed: { max: 5, min: 1, step: 1, units: '' },

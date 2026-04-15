@@ -4,14 +4,14 @@ import {
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
+import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type {
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
-} from '../../types/index.mts'
-import { ClassicMELCloudDevice } from '../../drivers/classic-base-device.mts'
+} from '../../types/capabilities.mts'
+import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testDeletion,

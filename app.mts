@@ -31,21 +31,24 @@ import {
 } from '@olivierzal/melcloud-api'
 import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
 
-import type { ClassicMELCloudDriver } from './drivers/classic-base-driver.mts'
-import type { ClassicMELCloudDevice } from './types/classic.mts'
+import type {
+  LoginSetting,
+  ManifestDriver,
+  ManifestDriverCapabilitiesOptions,
+} from './types/manifest.mts'
+import type { MELCloudDevice, MELCloudDriver } from './types/melcloud.mts'
 import type {
   DeviceSettings,
   DriverCapabilitiesOptions,
   DriverSetting,
   FormattedErrorLog,
+  Settings,
+} from './types/settings.mts'
+import type {
   GetAtaOptions,
   GroupAtaStates,
-  LoginSetting,
-  ManifestDriver,
-  ManifestDriverCapabilitiesOptions,
-  Settings,
   ZoneData,
-} from './types/index.mts'
+} from './types/widgets.mts'
 import {
   changelog,
   fanSpeed,
@@ -55,8 +58,9 @@ import {
   thermostatMode,
   vertical,
 } from './files.mts'
+import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { type Homey, App } from './lib/homey.mts'
-import { setClassicFacadeManager, typedFromEntries } from './lib/index.mts'
+import { typedFromEntries } from './lib/typed-object.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 
 const NOTIFICATION_DELAY_MS = 10_000
@@ -542,11 +546,16 @@ export default class MELCloudApp extends App {
     }
   }
 
-  #getDrivers(driverId?: string): ClassicMELCloudDriver<DeviceType>[] {
+  #findDrivers(driverId?: string): MELCloudDriver[] {
     if (driverId === undefined) {
       return Object.values(this.homey.drivers.getDrivers())
     }
-    return [this.homey.drivers.getDriver(driverId)]
+    try {
+      return [this.homey.drivers.getDriver(driverId)]
+    } catch {
+      // Driver not yet registered during early sync callbacks
+      return []
+    }
   }
 
   /*
@@ -597,8 +606,8 @@ export default class MELCloudApp extends App {
   }: {
     driverId?: string
     ids?: number[]
-  } = {}): ClassicMELCloudDevice[] {
-    const drivers = this.#getDrivers(driverId)
+  } = {}): MELCloudDevice[] {
+    const drivers = this.#findDrivers(driverId)
     return drivers.flatMap((driver) => {
       const devices = driver.getDevices()
       return ids ?

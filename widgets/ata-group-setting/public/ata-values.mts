@@ -1,11 +1,10 @@
-import type { GroupState } from '@olivierzal/melcloud-api'
+import type { GroupState, Zone } from '@olivierzal/melcloud-api'
 
 import type {
   DriverCapabilitiesOptions,
   Settings,
   ValueOf,
-  Zone,
-} from '../../../types/index.mts'
+} from '../../../types/settings.mts'
 import { coolModes, Temperature } from './constants.mts'
 import {
   type HTMLValueElement,

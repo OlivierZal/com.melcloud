@@ -1,4 +1,4 @@
-import { typedFromEntries } from '../lib/index.mts'
+import { typedFromEntries } from '../lib/typed-object.mts'
 
 export const localizeWithAffix = (
   base: LocalizedStrings,

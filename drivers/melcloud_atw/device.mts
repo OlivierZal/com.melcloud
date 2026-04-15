@@ -13,16 +13,16 @@ import type {
   ConvertToDevice,
   OperationalCapabilities,
   SetCapabilities,
-} from '../../types/index.mts'
+} from '../../types/capabilities.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
-import { KILOWATT_TO_WATT } from '../../lib/index.mts'
+import { KILOWATT_TO_WATT } from '../../lib/constants.mts'
 import {
   type TargetTemperatureFlowCapabilities,
   HotWaterMode,
   operationModeStateFromDevice,
   operationModeZoneFromDevice,
 } from '../../types/classic-atw.mts'
-import { ClassicMELCloudDevice } from '../classic-base-device.mts'
+import { ClassicMELCloudDevice } from '../classic-device.mts'
 
 const convertFromDeviceMeasurePower: ConvertFromDevice<
   typeof DeviceType.Atw

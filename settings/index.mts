@@ -1,16 +1,17 @@
 import type {
+  BuildingZone,
   ErrorLogQuery,
   FrostProtectionData,
   FrostProtectionQuery,
   HolidayModeData,
   HolidayModeQuery,
   LoginCredentials,
+  Zone,
   ZoneSettings,
 } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/HomeySettings'
 
 import type {
-  BuildingZone,
   DeviceSetting,
   DeviceSettings,
   DriverSetting,
@@ -20,8 +21,7 @@ import type {
   LoginDriverSetting,
   Settings,
   ValueOf,
-  Zone,
-} from '../types/index.mts'
+} from '../types/settings.mts'
 
 // ── Shared DOM helpers ──
 

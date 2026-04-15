@@ -4,15 +4,17 @@ import {
   VentilationMode,
 } from '@olivierzal/melcloud-api'
 
+import type {
+  ConvertFromDevice,
+  ConvertToDevice,
+  OperationalCapabilities,
+  SetCapabilities,
+} from '../../types/capabilities.mts'
 import {
-  type ConvertFromDevice,
-  type ConvertToDevice,
-  type OperationalCapabilities,
-  type SetCapabilities,
   ThermostatModeErv,
   ventilationModeFromDevice,
-} from '../../types/index.mts'
-import { ClassicMELCloudDevice } from '../classic-base-device.mts'
+} from '../../types/erv.mts'
+import { ClassicMELCloudDevice } from '../classic-device.mts'
 
 export default class ClassicMELCloudDeviceErv extends ClassicMELCloudDevice<
   typeof DeviceType.Erv

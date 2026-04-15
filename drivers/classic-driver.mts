@@ -4,16 +4,16 @@ import type {
   ListDeviceData,
 } from '@olivierzal/melcloud-api'
 
-import type { ClassicMELCloudDevice } from '../types/classic.mts'
 import type {
   CapabilitiesOptions,
-  DeviceDetails,
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
-} from '../types/index.mts'
-import { typedEntries } from '../lib/index.mts'
+} from '../types/capabilities.mts'
+import type { ClassicMELCloudDevice } from '../types/classic.mts'
+import type { DeviceDetails } from '../types/device.mts'
+import { typedEntries } from '../lib/typed-object.mts'
 import { BaseMELCloudDriver } from './base-driver.mts'
 
 export abstract class ClassicMELCloudDriver<

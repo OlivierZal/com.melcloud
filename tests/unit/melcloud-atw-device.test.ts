@@ -8,13 +8,13 @@ import {
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
+import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type {
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
-} from '../../types/index.mts'
+} from '../../types/capabilities.mts'
 import { HotWaterMode } from '../../types/classic-atw.mts'
 import {
   testEnergyReportConfig,

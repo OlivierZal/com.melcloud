@@ -1,6 +1,6 @@
 import type { GroupState } from '@olivierzal/melcloud-api'
 
-import type { GetAtaOptions, GroupAtaStates } from '../../../types/index.mts'
+import type { GetAtaOptions, GroupAtaStates } from '../../../types/widgets.mts'
 import {
   FanSpeed,
   heatModes,

@@ -4,7 +4,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ThermostatModeErv } from '../../types/index.mts'
+import { ThermostatModeErv } from '../../types/erv.mts'
 import {
   testCapabilityToDeviceConverters,
   testEnergyReportConfig,

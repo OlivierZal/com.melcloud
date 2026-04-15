@@ -5,7 +5,8 @@ import type {
 } from '@olivierzal/melcloud-api'
 import type PairSession from 'homey/lib/PairSession'
 
-import type { AuthAPI, ManifestDriver } from '../types/index.mts'
+import type { AuthAPI } from '../types/device.mts'
+import type { ManifestDriver } from '../types/manifest.mts'
 import { type Homey, Driver } from '../lib/homey.mts'
 
 const getArg = (capability: string): string => {

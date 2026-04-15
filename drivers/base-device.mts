@@ -1,14 +1,15 @@
 import { NoChangesError } from '@olivierzal/melcloud-api'
 import { type DurationLike, DateTime, Duration } from 'luxon'
 
+import type { CapabilityConverter } from '../types/capabilities.mts'
 import type {
-  CapabilityConverter,
   DeviceFacade,
   EnergyReportMode,
   EnergyReportOperation,
-} from '../types/index.mts'
+} from '../types/device.mts'
+import { getErrorMessage } from '../lib/get-error-message.mts'
 import { type Homey, Device } from '../lib/homey.mts'
-import { getErrorMessage, isTotalEnergyKey } from '../lib/index.mts'
+import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 

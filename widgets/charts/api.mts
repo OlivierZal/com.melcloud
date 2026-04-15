@@ -1,13 +1,15 @@
 import type {
   DeviceType,
+  DeviceZone,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
 import type { Homey } from 'homey/lib/Homey'
 import type { HourNumbers } from 'luxon'
 
-import type { DaysQuery, DeviceZone, HourQuery } from '../../types/index.mts'
-import { getClassicZones, toDeviceType } from '../../lib/index.mts'
+import type { DaysQuery, HourQuery } from '../../types/widgets.mts'
+import { getClassicZones } from '../../lib/classic-facade-manager.mts'
+import { toDeviceType } from '../../lib/to-device-type.mts'
 
 const api = {
   getClassicDevices({

@@ -12,15 +12,13 @@ import type {
   EnergyCapabilities,
   EnergyCapabilityTagEntry,
   EnergyCapabilityTagMapping,
-  EnergyReportMode,
-} from '../types/index.mts'
-import {
-  isTotalEnergyKey,
-  KILOWATT_TO_WATT,
-  typedEntries,
-} from '../lib/index.mts'
-import type { ClassicMELCloudDevice } from './classic-base-device.mts'
-import type { ClassicMELCloudDriver } from './classic-base-driver.mts'
+} from '../types/capabilities.mts'
+import type { EnergyReportMode } from '../types/device.mts'
+import { KILOWATT_TO_WATT } from '../lib/constants.mts'
+import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import { typedEntries } from '../lib/typed-object.mts'
+import type { ClassicMELCloudDevice } from './classic-device.mts'
+import type { ClassicMELCloudDriver } from './classic-driver.mts'
 
 const sumTags = <T extends DeviceType>(
   data: EnergyData<T>,

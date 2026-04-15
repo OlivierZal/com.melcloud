@@ -10,13 +10,13 @@ import type {
   CapabilitiesOptions,
   ConvertFromDevice,
   ConvertToDevice,
-  DeviceDetails,
   OperationalCapabilities,
   OperationalCapabilityTagEntry,
   SetCapabilities,
-  Settings,
-} from '../types/index.mts'
-import type { ClassicMELCloudDriver } from './classic-base-driver.mts'
+} from '../types/capabilities.mts'
+import type { DeviceDetails } from '../types/device.mts'
+import type { Settings } from '../types/settings.mts'
+import type { ClassicMELCloudDriver } from './classic-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
 import { type EnergyReportConfig, EnergyReport } from './base-report.mts'
 

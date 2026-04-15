@@ -2,10 +2,10 @@ import type { DeviceType, EnergyDataAta } from '@olivierzal/melcloud-api'
 import { DateTime, Settings } from 'luxon'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { ClassicMELCloudDevice } from '../../drivers/classic-base-device.mts'
-import type { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
+import type { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
+import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type { Homey } from '../../lib/homey.mts'
-import type { EnergyCapabilityTagMapping } from '../../types/index.mts'
+import type { EnergyCapabilityTagMapping } from '../../types/capabilities.mts'
 import {
   type EnergyReportConfig,
   EnergyReport,

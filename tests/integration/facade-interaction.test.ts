@@ -10,7 +10,7 @@ import {
   horizontalFromDevice,
   operationModeFromDevice,
   verticalFromDevice,
-} from '../../types/index.mts'
+} from '../../types/ata.mts'
 
 describe('facade interaction patterns', () => {
   describe('reverse mapping with as-const enums', () => {

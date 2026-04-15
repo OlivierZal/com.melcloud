@@ -14,6 +14,7 @@ import {
   verticalToClassic,
 } from '@olivierzal/melcloud-api'
 
+import type { DeviceFacade } from '../../types/device.mts'
 import type {
   HomeCapabilitiesAta,
   HomeConvertFromDevice,
@@ -21,12 +22,11 @@ import type {
   HomeSetCapabilitiesAta,
 } from '../../types/home-ata.mts'
 import {
-  type DeviceFacade,
   horizontalFromDevice,
   operationModeFromDevice,
   ThermostatModeAta,
   verticalFromDevice,
-} from '../../types/index.mts'
+} from '../../types/ata.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
 export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {

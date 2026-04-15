@@ -6,8 +6,8 @@ import type {
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
-} from '../../types/index.mts'
-import { ClassicMELCloudDriver } from '../../drivers/classic-base-driver.mts'
+} from '../../types/capabilities.mts'
+import { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import { mock } from '../helpers.ts'
 import { createInstance } from './create-test-instance.ts'
 
