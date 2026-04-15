@@ -1,3 +1,4 @@
+import { NoChangesError } from '@olivierzal/melcloud-api'
 import { type vi, describe, expect, it } from 'vitest'
 
 import { getMockCallArg } from './helpers.ts'
@@ -86,14 +87,14 @@ export const testSetValuesErrorHandling = (
       expect(superSetWarningMock).toHaveBeenCalledWith('API error')
     })
 
-    it('should ignore "No data to set" error', async () => {
-      setValuesMock.mockRejectedValue(new Error('No data to set'))
+    it('should ignore NoChangesError', async () => {
+      setValuesMock.mockRejectedValue(new NoChangesError(1))
       await (getDevice() as { onInit: () => Promise<void> }).onInit()
       superSetWarningMock.mockClear()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
-      expect(superSetWarningMock).not.toHaveBeenCalledWith('No data to set')
+      expect(superSetWarningMock).not.toHaveBeenCalled()
     })
 
     it('should set warning for non-Error thrown values', async () => {

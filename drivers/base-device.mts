@@ -1,3 +1,4 @@
+import { NoChangesError } from '@olivierzal/melcloud-api'
 import { type DurationLike, DateTime, Duration } from 'luxon'
 
 import type {
@@ -281,7 +282,7 @@ export abstract class BaseMELCloudDevice extends Device {
       try {
         await device.updateValues(updateData)
       } catch (error) {
-        if (!(error instanceof Error) || error.message !== 'No data to set') {
+        if (!(error instanceof NoChangesError)) {
           await this.setWarning(error)
         }
       }
