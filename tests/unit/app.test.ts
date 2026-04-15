@@ -225,6 +225,20 @@ const initWithFacade = async (
   await app.onInit()
 }
 
+const initWithDeviceFacade = async (
+  app: InstanceType<typeof MelCloudApp>,
+  method: string,
+  mockData: unknown,
+): Promise<void> => {
+  mockFacadeManagerGet.mockReturnValue(
+    mock({
+      [method]: vi.fn().mockResolvedValue(mockData),
+    }),
+  )
+  mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
+  await app.onInit()
+}
+
 const createMockDriver = (
   devices: ClassicMELCloudDevice[],
 ): {
@@ -725,15 +739,7 @@ describe('melCloudApp', () => {
   describe('hourly temperature retrieval', () => {
     it('should delegate to device facade', async () => {
       const mockData = mock<ReportChartLineOptions>()
-      mockFacadeManagerGet.mockReturnValue(
-        mock({
-          getHourlyTemperatures: vi
-            .fn<() => Promise<ReportChartLineOptions>>()
-            .mockResolvedValue(mockData),
-        }),
-      )
-      mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithDeviceFacade(app, 'getHourlyTemperatures', mockData)
 
       const temperatures = await app.getClassicHourlyTemperatures({
         deviceId: '1',
@@ -747,15 +753,7 @@ describe('melCloudApp', () => {
   describe('operation mode retrieval', () => {
     it('should delegate to device facade with date range', async () => {
       const mockData = mock<ReportChartPieOptions>()
-      mockFacadeManagerGet.mockReturnValue(
-        mock({
-          getOperationModes: vi
-            .fn<() => Promise<ReportChartPieOptions>>()
-            .mockResolvedValue(mockData),
-        }),
-      )
-      mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithDeviceFacade(app, 'getOperationModes', mockData)
 
       const operationModes = await app.getClassicOperationModes({
         days: 7,
@@ -769,15 +767,7 @@ describe('melCloudApp', () => {
   describe('signal retrieval', () => {
     it('should delegate to device facade', async () => {
       const mockData = mock<ReportChartLineOptions>()
-      mockFacadeManagerGet.mockReturnValue(
-        mock({
-          getSignalStrength: vi
-            .fn<() => Promise<ReportChartLineOptions>>()
-            .mockResolvedValue(mockData),
-        }),
-      )
-      mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithDeviceFacade(app, 'getSignalStrength', mockData)
 
       const signal = await app.getClassicSignal({ deviceId: '1', hour: 5 })
 
@@ -788,15 +778,7 @@ describe('melCloudApp', () => {
   describe('temperature retrieval', () => {
     it('should delegate to device facade with date range', async () => {
       const mockData = mock<ReportChartLineOptions>()
-      mockFacadeManagerGet.mockReturnValue(
-        mock({
-          getTemperatures: vi
-            .fn<() => Promise<ReportChartLineOptions>>()
-            .mockResolvedValue(mockData),
-        }),
-      )
-      mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
-      await app.onInit()
+      await initWithDeviceFacade(app, 'getTemperatures', mockData)
 
       const temperatures = await app.getClassicTemperatures({
         days: 30,
