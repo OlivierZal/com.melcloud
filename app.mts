@@ -12,6 +12,7 @@ import {
   type HolidayModeQuery,
   type HomeDevice,
   type HomeDeviceAtaFacade,
+  type HomeRegistry,
   type ListDeviceDataAta,
   type LoginCredentials,
   type ReportChartLineOptions,
@@ -163,15 +164,15 @@ const getLocalizedCapabilitiesOptions = (
 export default class MELCloudApp extends App {
   declare public readonly homey: Homey.Homey
 
-  public get api(): ClassicAPI {
-    return this.#api
+  public get classicApi(): ClassicAPI {
+    return this.#classicApi
   }
 
   public get homeApi(): HomeAPI {
     return this.#homeApi
   }
 
-  #api!: ClassicAPI
+  #classicApi!: ClassicAPI
 
   #facadeManager!: ClassicFacadeManager
 
@@ -179,8 +180,12 @@ export default class MELCloudApp extends App {
 
   #homeFacadeManager!: HomeFacadeManager
 
-  get #registry(): ClassicRegistry {
-    return this.#api.registry
+  get #classicRegistry(): ClassicRegistry {
+    return this.#classicApi.registry
+  }
+
+  get #homeRegistry(): HomeRegistry {
+    return this.#homeApi.registry
   }
 
   public override async onInit(): Promise<void> {
@@ -200,13 +205,13 @@ export default class MELCloudApp extends App {
   }
 
   public override async onUninit(): Promise<void> {
-    this.#api.clearSync()
+    this.#classicApi.clearSync()
     this.#homeApi.clearSync()
     await Promise.resolve()
   }
 
   public async authenticateClassic(data: LoginCredentials): Promise<boolean> {
-    return this.api.authenticate(data)
+    return this.#classicApi.authenticate(data)
   }
 
   public async authenticateHome(data: LoginCredentials): Promise<boolean> {
@@ -236,7 +241,7 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public getClassicAtaDetailedValues({
+  public getClassicAtaDetailedStates({
     status,
     zoneId,
     zoneType,
@@ -269,13 +274,14 @@ export default class MELCloudApp extends App {
   public async getClassicErrorLog(
     query: ErrorLogQuery,
   ): Promise<FormattedErrorLog> {
-    const { errors, fromDate, ...rest } = await this.#api.getErrorLog(query)
+    const { errors, fromDate, ...rest } =
+      await this.#classicApi.getErrorLog(query)
     return {
       ...rest,
       errors: errors.map(({ date, deviceId, ...errorRest }) => ({
         ...errorRest,
         date: DateTime.fromISO(date).toLocaleString(DateTime.DATETIME_MED),
-        device: this.#registry.devices.getById(deviceId)?.name ?? '',
+        device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
       })),
       fromDateHuman: DateTime.fromISO(fromDate).toLocaleString(
         DateTime.DATE_FULL,
@@ -361,7 +367,7 @@ export default class MELCloudApp extends App {
   }
 
   public getDevicesByType<T extends DeviceType>(type: T): Device<T>[] {
-    return this.#registry.getDevicesByType(type)
+    return this.#classicRegistry.getDevicesByType(type)
   }
 
   public getDriverSettings(): Partial<Record<string, DriverSetting[]>> {
@@ -388,7 +394,7 @@ export default class MELCloudApp extends App {
     zoneType: 'areas' | 'buildings' | 'devices' | 'floors',
     id: number | string,
   ): Facade {
-    const instance = this.#registry[zoneType].getById(Number(id))
+    const instance = this.#classicRegistry[zoneType].getById(Number(id))
     if (!instance) {
       throw new Error(
         this.homey.__(
@@ -400,11 +406,11 @@ export default class MELCloudApp extends App {
   }
 
   public getHomeDevicesByType(type: HomeDeviceType): HomeDevice[] {
-    return this.#homeApi.registry.getByType(type)
+    return this.#homeRegistry.getByType(type)
   }
 
   public getHomeFacade(deviceId: string): HomeDeviceAtaFacade {
-    const model = this.#homeApi.registry.getById(deviceId)
+    const model = this.#homeRegistry.getById(deviceId)
     if (!model) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
@@ -606,7 +612,7 @@ export default class MELCloudApp extends App {
     language: string
     timezone: string
   }): Promise<void> {
-    this.#api = await ClassicAPI.create({
+    this.#classicApi = await ClassicAPI.create({
       language,
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager(),
@@ -619,7 +625,10 @@ export default class MELCloudApp extends App {
         )
       },
     })
-    this.#facadeManager = new ClassicFacadeManager(this.#api, this.#registry)
+    this.#facadeManager = new ClassicFacadeManager(
+      this.#classicApi,
+      this.#classicRegistry,
+    )
     setClassicFacadeManager(this.#facadeManager)
   }
 

@@ -36,7 +36,7 @@ vi.mock('homey', () => {
 
     public homey = {
       app: {
-        api: {
+        classicApi: {
           authenticate: authenticateMock,
           isAuthenticated: isAuthenticatedMock,
         },

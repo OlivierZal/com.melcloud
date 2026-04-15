@@ -42,7 +42,7 @@ export abstract class ClassicMELCloudDriver<
     {}
 
   protected override get api(): ClassicAPI {
-    return this.homey.app.api
+    return this.homey.app.classicApi
   }
 
   public override async onInit(): Promise<void> {

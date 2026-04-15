@@ -81,7 +81,7 @@ const api = {
     return i18n.getLanguage()
   },
   isClassicAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
-    return app.api.isAuthenticated()
+    return app.classicApi.isAuthenticated()
   },
   async updateClassicFrostProtection({
     body,

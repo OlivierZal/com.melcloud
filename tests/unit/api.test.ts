@@ -29,9 +29,9 @@ const { default: api } = await import('../../api.mts')
 const mockIsAuthenticated = vi.fn<() => boolean>()
 
 const mockApp = {
-  api: { isAuthenticated: mockIsAuthenticated },
   authenticateClassic: vi.fn<() => Promise<boolean>>(),
   authenticateHome: vi.fn<() => Promise<boolean>>(),
+  classicApi: { isAuthenticated: mockIsAuthenticated },
   getClassicErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
   getClassicFrostProtection: vi.fn<() => Promise<FrostProtectionData>>(),
   getClassicHolidayMode: vi.fn<() => Promise<HolidayModeData>>(),
@@ -158,7 +158,7 @@ describe('api', () => {
   })
 
   describe('classic session retrieval', () => {
-    it('should delegate to app.api.isAuthenticated', () => {
+    it('should delegate to app.classicApi.isAuthenticated', () => {
       mockIsAuthenticated.mockReturnValue(true)
 
       const isAuthenticated = api.isClassicAuthenticated({ homey })

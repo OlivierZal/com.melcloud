@@ -398,8 +398,8 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('ata detailed values', () => {
-    it('should return detailed values for ATA devices', async () => {
+  describe('ata detailed states', () => {
+    it('should return detailed states for ATA devices', async () => {
       const mockFacade = mock<BuildingFacade>({
         devices: [
           {
@@ -410,7 +410,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const detailedValues = app.getClassicAtaDetailedValues({
+      const detailedValues = app.getClassicAtaDetailedStates({
         zoneId: '1',
         zoneType: 'buildings',
       })
@@ -442,7 +442,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const detailedValues = app.getClassicAtaDetailedValues({
+      const detailedValues = app.getClassicAtaDetailedStates({
         status: 'on',
         zoneId: '1',
         zoneType: 'buildings',
@@ -456,7 +456,7 @@ describe('melCloudApp', () => {
       await initWithFacade(app, mockFacade)
 
       expect(() =>
-        app.getClassicAtaDetailedValues({ zoneId: '1', zoneType: 'buildings' }),
+        app.getClassicAtaDetailedStates({ zoneId: '1', zoneType: 'buildings' }),
       ).toThrow('errors.deviceNotFound')
     })
   })
@@ -808,6 +808,12 @@ describe('melCloudApp', () => {
   })
 
   describe('authentication', () => {
+    it('should expose classicApi getter', async () => {
+      await app.onInit()
+
+      expect(app.classicApi).toBe(mockApiInstance)
+    })
+
     it('should delegate to api authenticate', async () => {
       mockApiInstance.authenticate.mockResolvedValue(true)
       await app.onInit()

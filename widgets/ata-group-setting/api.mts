@@ -28,7 +28,7 @@ const api = {
     query: GetAtaOptions
   }): Promise<GroupAtaStates | GroupState> {
     return mode === 'detailed' ?
-        app.getClassicAtaDetailedValues({ ...params, status })
+        app.getClassicAtaDetailedStates({ ...params, status })
       : app.getClassicAtaState(params)
   },
   getClassicBuildings({
