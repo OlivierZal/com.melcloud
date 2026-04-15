@@ -24,7 +24,10 @@ import {
   testWarningManagement,
 } from '../device-descriptors.ts'
 import { mock } from '../helpers.ts'
-import { type TestDeviceType, TestDevice } from './classic-device-test-device.ts'
+import {
+  type TestDeviceType,
+  TestDevice,
+} from './classic-device-test-device.ts'
 
 const {
   getFacadeMock,
