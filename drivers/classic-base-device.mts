@@ -90,9 +90,10 @@ export abstract class ClassicMELCloudDevice<
   public override async syncFromDevice(): Promise<void> {
     const data = await this.#getDeviceData()
     /* v8 ignore next -- defensive guard: data is guaranteed after ensureDevice */
-    if (data) {
-      await this.setCapabilityValues(data)
+    if (!data) {
+      return
     }
+    await this.setCapabilityValues(data)
   }
 
   protected override async applyCapabilitiesOptions(): Promise<void> {

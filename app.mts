@@ -460,15 +460,16 @@ export default class MELCloudApp extends App {
           (changedKey) =>
             settings[changedKey] !== device.getSetting(changedKey),
         )
-        if (changedKeys.length > 0) {
-          await device.setSettings(
-            Object.fromEntries(changedKeys.map((key) => [key, settings[key]])),
-          )
-          await device.onSettings({
-            changedKeys,
-            newSettings: device.getSettings(),
-          })
+        if (changedKeys.length === 0) {
+          return
         }
+        await device.setSettings(
+          Object.fromEntries(changedKeys.map((key) => [key, settings[key]])),
+        )
+        await device.onSettings({
+          changedKeys,
+          newSettings: device.getSettings(),
+        })
       }),
     )
   }
@@ -494,23 +495,25 @@ export default class MELCloudApp extends App {
       notifications,
       settings,
     } = homey
-    if (settings.get('notifiedVersion') !== version) {
-      const { [version]: versionChangelog = {} } = changelog as Record<
-        string,
-        Record<string, string>
-      >
-      const { [language]: excerpt } = versionChangelog
-      if (excerpt !== undefined) {
-        homey.setTimeout(async () => {
-          try {
-            await notifications.createNotification({ excerpt })
-            settings.set('notifiedVersion', version)
-          } catch {
-            // Non-critical: notification display is best-effort
-          }
-        }, NOTIFICATION_DELAY_MS)
-      }
+    if (settings.get('notifiedVersion') === version) {
+      return
     }
+    const { [version]: versionChangelog = {} } = changelog as Record<
+      string,
+      Record<string, string>
+    >
+    const { [language]: excerpt } = versionChangelog
+    if (excerpt === undefined) {
+      return
+    }
+    homey.setTimeout(async () => {
+      try {
+        await notifications.createNotification({ excerpt })
+        settings.set('notifiedVersion', version)
+      } catch {
+        // Non-critical: notification display is best-effort
+      }
+    }, NOTIFICATION_DELAY_MS)
   }
 
   #createSettingManager(prefix = ''): {

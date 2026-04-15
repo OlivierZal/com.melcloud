@@ -136,43 +136,45 @@ export class EnergyReport<T extends DeviceType> {
 
   async #get(): Promise<void> {
     const device = await this.#device.ensureDevice()
-    if (device) {
-      try {
-        // Fetch energy data from the previous period (offset by config.minus)
-        const toDateTime = DateTime.now().minus(this.#config.minus)
-        const to = toDateTime.toISODate()
-        await this.#set(
-          await device.getEnergy({
-            from: this.#config.mode === 'total' ? undefined : to,
-            to,
-          }),
-          toDateTime.hour,
-        )
-      } catch (error) {
-        this.#device.error('Energy report fetch failed:', error)
-      }
+    if (!device) {
+      return
+    }
+    try {
+      // Fetch energy data from the previous period (offset by config.minus)
+      const toDateTime = DateTime.now().minus(this.#config.minus)
+      const to = toDateTime.toISODate()
+      await this.#set(
+        await device.getEnergy({
+          from: this.#config.mode === 'total' ? undefined : to,
+          to,
+        }),
+        toDateTime.hour,
+      )
+    } catch (error) {
+      this.#device.error('Energy report fetch failed:', error)
     }
   }
 
   #schedule(): void {
-    if (!this.#reportTimeout) {
-      const actionType = `${this.#config.mode} energy report`
-      this.#reportTimeout = this.#device.setTimeout(
-        async () => {
-          await this.start()
-          this.#reportInterval = this.#device.setInterval(
-            async () => this.start(),
-            this.#config.interval,
-            actionType,
-          )
-        },
-        DateTime.now()
-          .plus(this.#config.duration)
-          .set(this.#config.values)
-          .diffNow(),
-        actionType,
-      )
+    if (this.#reportTimeout) {
+      return
     }
+    const actionType = `${this.#config.mode} energy report`
+    this.#reportTimeout = this.#device.setTimeout(
+      async () => {
+        await this.start()
+        this.#reportInterval = this.#device.setInterval(
+          async () => this.start(),
+          this.#config.interval,
+          actionType,
+        )
+      },
+      DateTime.now()
+        .plus(this.#config.duration)
+        .set(this.#config.values)
+        .diffNow(),
+      actionType,
+    )
   }
 
   async #set(data: EnergyData<T>, hour: HourNumbers): Promise<void> {
