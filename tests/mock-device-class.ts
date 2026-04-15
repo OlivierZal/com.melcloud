@@ -27,7 +27,7 @@ export const createMockDeviceClass = (
     public homey = {
       __: vi.fn(),
       api: { realtime: vi.fn() },
-      app: { getFacade: vi.fn() },
+      app: { getClassicFacade: vi.fn() },
       clearInterval: vi.fn(),
       clearTimeout: vi.fn(),
       setInterval: vi.fn(),

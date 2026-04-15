@@ -246,7 +246,7 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { status?: GetAtaOptions['status'] }): GroupAtaStates {
-    const { devices } = this.getFacade(zoneType, zoneId)
+    const { devices } = this.getClassicFacade(zoneType, zoneId)
     if (devices.length === 0) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
@@ -268,7 +268,7 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData): Promise<GroupState> {
-    return this.getFacade(zoneType, zoneId).getGroup()
+    return this.getClassicFacade(zoneType, zoneId).getGroup()
   }
 
   public async getClassicErrorLog(
@@ -289,18 +289,41 @@ export default class MELCloudApp extends App {
     }
   }
 
+  public getClassicFacade<T extends DeviceType>(
+    zoneType: 'devices',
+    id: number | string,
+  ): DeviceFacade<T>
+  public getClassicFacade(
+    zoneType: 'areas' | 'buildings' | 'floors',
+    id: number | string,
+  ): BuildingFacade | ZoneFacade
+  public getClassicFacade(
+    zoneType: 'areas' | 'buildings' | 'devices' | 'floors',
+    id: number | string,
+  ): Facade {
+    const instance = this.#classicRegistry[zoneType].getById(Number(id))
+    if (!instance) {
+      throw new Error(
+        this.homey.__(
+          `errors.${zoneType === 'devices' ? 'device' : 'zone'}NotFound`,
+        ),
+      )
+    }
+    return this.#facadeManager.get(instance)
+  }
+
   public async getClassicFrostProtection({
     zoneId,
     zoneType,
   }: ZoneData): Promise<FrostProtectionData> {
-    return this.getFacade(zoneType, zoneId).getFrostProtection()
+    return this.getClassicFacade(zoneType, zoneId).getFrostProtection()
   }
 
   public async getClassicHolidayMode({
     zoneId,
     zoneType,
   }: ZoneData): Promise<HolidayModeData> {
-    return this.getFacade(zoneType, zoneId).getHolidayMode()
+    return this.getClassicFacade(zoneType, zoneId).getHolidayMode()
   }
 
   public async getClassicHourlyTemperatures({
@@ -310,7 +333,9 @@ export default class MELCloudApp extends App {
     deviceId: string
     hour?: HourNumbers
   }): Promise<ReportChartLineOptions> {
-    return this.getFacade('devices', deviceId).getHourlyTemperatures(hour)
+    return this.getClassicFacade('devices', deviceId).getHourlyTemperatures(
+      hour,
+    )
   }
 
   public async getClassicOperationModes({
@@ -320,7 +345,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
-    return this.getFacade('devices', deviceId).getOperationModes(
+    return this.getClassicFacade('devices', deviceId).getOperationModes(
       createDateRange(days),
     )
   }
@@ -332,7 +357,7 @@ export default class MELCloudApp extends App {
     deviceId: string
     hour?: HourNumbers
   }): Promise<ReportChartLineOptions> {
-    return this.getFacade('devices', deviceId).getSignalStrength(hour)
+    return this.getClassicFacade('devices', deviceId).getSignalStrength(hour)
   }
 
   public async getClassicTemperatures({
@@ -342,7 +367,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    return this.getFacade('devices', deviceId).getTemperatures(
+    return this.getClassicFacade('devices', deviceId).getTemperatures(
       createDateRange(days),
     )
   }
@@ -382,29 +407,6 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public getFacade<T extends DeviceType>(
-    zoneType: 'devices',
-    id: number | string,
-  ): DeviceFacade<T>
-  public getFacade(
-    zoneType: 'areas' | 'buildings' | 'floors',
-    id: number | string,
-  ): BuildingFacade | ZoneFacade
-  public getFacade(
-    zoneType: 'areas' | 'buildings' | 'devices' | 'floors',
-    id: number | string,
-  ): Facade {
-    const instance = this.#classicRegistry[zoneType].getById(Number(id))
-    if (!instance) {
-      throw new Error(
-        this.homey.__(
-          `errors.${zoneType === 'devices' ? 'device' : 'zone'}NotFound`,
-        ),
-      )
-    }
-    return this.#facadeManager.get(instance)
-  }
-
   public getHomeDevicesByType(type: HomeDeviceType): HomeDevice[] {
     return this.#homeRegistry.getByType(type)
   }
@@ -422,7 +424,7 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { state: GroupState }): Promise<void> {
-    const { AttributeErrors } = await this.getFacade(
+    const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
       zoneId,
     ).updateGroupState(state)
@@ -434,7 +436,7 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { settings: FrostProtectionQuery }): Promise<void> {
-    const { AttributeErrors } = await this.getFacade(
+    const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
       zoneId,
     ).updateFrostProtection(settings)
@@ -446,7 +448,7 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { settings: HolidayModeQuery }): Promise<void> {
-    const { AttributeErrors } = await this.getFacade(
+    const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
       zoneId,
     ).updateHolidayMode(settings)

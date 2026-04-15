@@ -601,7 +601,7 @@ describe('melCloudApp', () => {
       mockFacadeManagerGet.mockReturnValue(mockFacade)
       await app.onInit()
 
-      const facade = app.getFacade('buildings', '1')
+      const facade = app.getClassicFacade('buildings', '1')
 
       expect(facade).toBe(mockFacade)
     })
@@ -610,7 +610,7 @@ describe('melCloudApp', () => {
       mockApiInstance.registry.buildings.getById.mockReset()
       await app.onInit()
 
-      expect(() => app.getFacade('buildings', '999')).toThrow(
+      expect(() => app.getClassicFacade('buildings', '999')).toThrow(
         'errors.zoneNotFound',
       )
       expect(mockTranslate).toHaveBeenCalledWith('errors.zoneNotFound')
@@ -620,7 +620,7 @@ describe('melCloudApp', () => {
       mockApiInstance.registry.devices.getById.mockReset()
       await app.onInit()
 
-      expect(() => app.getFacade('devices', '999')).toThrow(
+      expect(() => app.getClassicFacade('devices', '999')).toThrow(
         'errors.deviceNotFound',
       )
       expect(mockTranslate).toHaveBeenCalledWith('errors.deviceNotFound')

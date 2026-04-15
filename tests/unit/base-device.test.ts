@@ -78,7 +78,7 @@ vi.mock('homey', () => {
     public homey = {
       __: vi.fn().mockImplementation((key: string) => key),
       api: { realtime: realtimeMock },
-      app: { getFacade: getFacadeMock },
+      app: { getClassicFacade: getFacadeMock },
       clearInterval: vi.fn(),
       clearTimeout: vi.fn(),
       setInterval: vi.fn(),

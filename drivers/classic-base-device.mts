@@ -108,7 +108,7 @@ export abstract class ClassicMELCloudDevice<
   }
 
   protected override getFacade(): DeviceFacade<T> {
-    return this.homey.app.getFacade('devices', this.id)
+    return this.homey.app.getClassicFacade('devices', this.id)
   }
 
   protected override getRequiredCapabilities(): string[] {
