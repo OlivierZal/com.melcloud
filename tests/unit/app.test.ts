@@ -410,7 +410,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const detailedValues = app.getAtaDetailedValues({
+      const detailedValues = app.getClassicAtaDetailedValues({
         zoneId: '1',
         zoneType: 'buildings',
       })
@@ -442,7 +442,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const detailedValues = app.getAtaDetailedValues({
+      const detailedValues = app.getClassicAtaDetailedValues({
         status: 'on',
         zoneId: '1',
         zoneType: 'buildings',
@@ -456,7 +456,7 @@ describe('melCloudApp', () => {
       await initWithFacade(app, mockFacade)
 
       expect(() =>
-        app.getAtaDetailedValues({ zoneId: '1', zoneType: 'buildings' }),
+        app.getClassicAtaDetailedValues({ zoneId: '1', zoneType: 'buildings' }),
       ).toThrow('errors.deviceNotFound')
     })
   })

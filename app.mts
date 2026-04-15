@@ -213,29 +213,6 @@ export default class MELCloudApp extends App {
     return this.#homeApi.authenticate(data)
   }
 
-  public getAtaDetailedValues({
-    status,
-    zoneId,
-    zoneType,
-  }: ZoneData & { status?: GetAtaOptions['status'] }): GroupAtaStates {
-    const { devices } = this.getFacade(zoneType, zoneId)
-    if (devices.length === 0) {
-      throw new Error(this.homey.__('errors.deviceNotFound'))
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic GroupState to typed GroupAtaStates
-    return typedFromEntries(
-      this.getClassicAtaCapabilities().map(([key]) => [
-        key,
-        devices
-          .filter((device) => device.type === DeviceType.Ata)
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic DeviceModel data to ATA-specific type
-          .map(({ data }) => data as ListDeviceDataAta)
-          .filter((data) => status !== 'on' || data.Power)
-          .map((data) => data[key]),
-      ]),
-    ) as GroupAtaStates
-  }
-
   public getClassicAtaCapabilities(): [
     keyof GroupState & keyof ListDeviceDataAta,
     DriverCapabilitiesOptions,
@@ -257,6 +234,29 @@ export default class MELCloudApp extends App {
         ),
       ],
     )
+  }
+
+  public getClassicAtaDetailedValues({
+    status,
+    zoneId,
+    zoneType,
+  }: ZoneData & { status?: GetAtaOptions['status'] }): GroupAtaStates {
+    const { devices } = this.getFacade(zoneType, zoneId)
+    if (devices.length === 0) {
+      throw new Error(this.homey.__('errors.deviceNotFound'))
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic GroupState to typed GroupAtaStates
+    return typedFromEntries(
+      this.getClassicAtaCapabilities().map(([key]) => [
+        key,
+        devices
+          .filter((device) => device.type === DeviceType.Ata)
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic DeviceModel data to ATA-specific type
+          .map(({ data }) => data as ListDeviceDataAta)
+          .filter((data) => status !== 'on' || data.Power)
+          .map((data) => data[key]),
+      ]),
+    ) as GroupAtaStates
   }
 
   public async getClassicAtaState({

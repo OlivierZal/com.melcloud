@@ -20,9 +20,9 @@ vi.mock(import('../../lib/index.mts'), async (importOriginal) => ({
 const { default: api } = await import('../../widgets/ata-group-setting/api.mts')
 
 const mockApp = {
-  getAtaDetailedValues: vi.fn<() => Promise<GroupAtaStates>>(),
   getClassicAtaCapabilities:
     vi.fn<() => [keyof GroupState, DriverCapabilitiesOptions][]>(),
+  getClassicAtaDetailedValues: vi.fn<() => Promise<GroupAtaStates>>(),
   getClassicAtaState: vi.fn<() => Promise<GroupState>>(),
   updateClassicAtaState: vi.fn<() => Promise<void>>(),
 }
@@ -52,9 +52,9 @@ describe('ata-group-setting api', () => {
   describe('ata value retrieval', () => {
     const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
 
-    it('should call getAtaDetailedValues when mode is detailed', async () => {
+    it('should call getClassicAtaDetailedValues when mode is detailed', async () => {
       const detailedValues = mock<GroupAtaStates>()
-      mockApp.getAtaDetailedValues.mockResolvedValue(detailedValues)
+      mockApp.getClassicAtaDetailedValues.mockResolvedValue(detailedValues)
 
       const result = await api.getClassicAtaState({
         homey,
@@ -63,7 +63,7 @@ describe('ata-group-setting api', () => {
       })
 
       expect(result).toBe(detailedValues)
-      expect(mockApp.getAtaDetailedValues).toHaveBeenCalledWith({
+      expect(mockApp.getClassicAtaDetailedValues).toHaveBeenCalledWith({
         ...params,
         status: 'on',
       })
