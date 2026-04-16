@@ -1,4 +1,7 @@
-import type { DeviceType, ListDeviceDataAta } from '@olivierzal/melcloud-api'
+import type {
+  ClassicDeviceType,
+  ListDeviceDataAta,
+} from '@olivierzal/melcloud-api'
 
 import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type {
@@ -10,7 +13,7 @@ import type {
 import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import { createInstance } from './create-test-instance.ts'
 
-type TestDeviceType = typeof DeviceType.Ata
+type TestDeviceType = typeof ClassicDeviceType.Ata
 
 export type { TestDeviceType }
 export class TestDevice extends ClassicMELCloudDevice<TestDeviceType> {

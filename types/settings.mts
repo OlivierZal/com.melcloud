@@ -13,7 +13,7 @@ export type DeviceSettings = Record<string, DeviceSetting>
 export interface DriverCapabilitiesOptions {
   readonly title: string
   readonly type: string
-  readonly values?: readonly { readonly id: string; readonly label: string }[]
+  readonly values?: readonly DriverSettingValue[]
 }
 
 export interface DriverSetting {
@@ -27,7 +27,12 @@ export interface DriverSetting {
   readonly min?: number
   readonly placeholder?: string
   readonly units?: string
-  readonly values?: readonly { readonly id: string; readonly label: string }[]
+  readonly values?: readonly DriverSettingValue[]
+}
+
+export interface DriverSettingValue {
+  readonly id: string
+  readonly label: string
 }
 
 export interface FormattedErrorDetails extends Omit<ErrorDetails, 'deviceId'> {

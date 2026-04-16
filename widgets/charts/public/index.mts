@@ -9,7 +9,7 @@ import type {
   DaysQuery,
   ChartsWidgetSettings as HomeySettings,
 } from '../../../types/widgets.mts'
-import { DeviceType } from './constants.mts'
+import { ClassicDeviceType } from './constants.mts'
 import { createOption, getDiv, getSelect } from './dom.mts'
 import {
   type Homey,
@@ -317,7 +317,7 @@ class ChartWidget {
     } = this.#homey.getSettings()
     const typeQuery =
       chart === 'hourly_temperatures' ?
-        `?${new URLSearchParams({ type: String(DeviceType.Atw) })}`
+        `?${new URLSearchParams({ type: String(ClassicDeviceType.Atw) })}`
       : ''
     const devices = await homeyApiGet<DeviceZone[]>(
       this.#homey,

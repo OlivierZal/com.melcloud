@@ -1,4 +1,7 @@
-import { type ListDeviceDataAtw, DeviceType } from '@olivierzal/melcloud-api'
+import {
+  type ListDeviceDataAtw,
+  ClassicDeviceType,
+} from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -24,7 +27,7 @@ describe(ClassicMELCloudDriverAtw, () => {
     driver = new ClassicMELCloudDriverAtw()
   })
 
-  testDriverType(() => driver, DeviceType.Atw)
+  testDriverType(() => driver, ClassicDeviceType.Atw)
 
   testTagMappings(() => driver, {
     energyCapabilityTagMapping,

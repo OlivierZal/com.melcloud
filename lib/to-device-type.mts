@@ -1,14 +1,14 @@
-import { DeviceType } from '@olivierzal/melcloud-api'
+import { ClassicDeviceType } from '@olivierzal/melcloud-api'
 
-const assertDeviceType: (value: number) => asserts value is DeviceType = (
-  value,
-) => {
-  if (!(Object.values(DeviceType) as number[]).includes(value)) {
-    throw new RangeError(`Invalid DeviceType: ${String(value)}`)
+const assertDeviceType: (
+  value: number,
+) => asserts value is ClassicDeviceType = (value) => {
+  if (!(Object.values(ClassicDeviceType) as number[]).includes(value)) {
+    throw new RangeError(`Invalid ClassicDeviceType: ${String(value)}`)
   }
 }
 
-export const toDeviceType = (value: string): DeviceType => {
+export const toDeviceType = (value: string): ClassicDeviceType => {
   const deviceType = Number(value)
   assertDeviceType(deviceType)
   return deviceType

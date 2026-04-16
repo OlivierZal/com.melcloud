@@ -1,4 +1,4 @@
-import type { DeviceType, EnergyData } from '@olivierzal/melcloud-api'
+import type { ClassicDeviceType, EnergyData } from '@olivierzal/melcloud-api'
 import type Homey from 'homey/lib/Homey'
 import {
   type DateObjectUnits,
@@ -20,7 +20,7 @@ import { typedEntries } from '../lib/typed-object.mts'
 import type { ClassicMELCloudDevice } from './classic-device.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 
-const sumTags = <T extends DeviceType>(
+const sumTags = <T extends ClassicDeviceType>(
   data: EnergyData<T>,
   tags: readonly (keyof EnergyData<T>)[],
 ): number =>
@@ -34,7 +34,7 @@ export interface EnergyReportConfig {
   readonly values: DateObjectUnits
 }
 
-export class EnergyReport<T extends DeviceType> {
+export class EnergyReport<T extends ClassicDeviceType> {
   readonly #config: EnergyReportConfig
 
   readonly #device: ClassicMELCloudDevice<T>

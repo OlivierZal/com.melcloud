@@ -9,11 +9,12 @@ import {
   type HolidayModeQuery,
   type ListDeviceDataAta,
   type LoginCredentials,
+  type OnSyncFunction,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
   type ZoneFacade,
+  ClassicDeviceType,
   ClassicFacadeManager,
-  DeviceType,
   HomeDeviceAtaFacade,
   HomeDeviceType,
 } from '@olivierzal/melcloud-api'
@@ -252,27 +253,16 @@ const createMockDriver = (
   ready: vi.fn<() => Promise<void>>().mockResolvedValue(),
 })
 
-const getOnSyncCallback = (): ((params?: {
-  ids?: (number | string)[]
-  type?: number
-}) => Promise<void>) => {
-  const config = getMockCallArg<{
-    onSync: (params?: {
-      ids?: (number | string)[]
-      type?: number
-    }) => Promise<void>
-  }>(mockCreate, 0, 0)
-  return config.onSync
-}
+const getOnSyncFunctionFrom = (
+  mockCreateFunction: ReturnType<typeof vi.fn>,
+): OnSyncFunction =>
+  getMockCallArg<{ onSync: OnSyncFunction }>(mockCreateFunction, 0, 0).onSync
 
-const getHomeOnSyncCallback = (): ((params?: {
-  ids?: (number | string)[]
-}) => Promise<void>) => {
-  const config = getMockCallArg<{
-    onSync: (params?: { ids?: (number | string)[] }) => Promise<void>
-  }>(mockHomeCreate, 0, 0)
-  return config.onSync
-}
+const getOnSyncFunction = (): OnSyncFunction =>
+  getOnSyncFunctionFrom(mockCreate)
+
+const getHomeOnSyncFunction = (): OnSyncFunction =>
+  getOnSyncFunctionFrom(mockHomeCreate)
 
 const createSyncDevice = (
   id: number,
@@ -433,7 +423,7 @@ describe('melCloudApp', () => {
         devices: [
           {
             data: { FanSpeed: 3, Power: true, SetTemperature: 21 },
-            type: DeviceType.Ata,
+            type: ClassicDeviceType.Ata,
           },
         ],
       })
@@ -457,7 +447,7 @@ describe('melCloudApp', () => {
               Power: true,
               SetTemperature: 21,
             }),
-            type: DeviceType.Ata,
+            type: ClassicDeviceType.Ata,
           },
           {
             data: mock<ListDeviceDataAta>({
@@ -465,7 +455,7 @@ describe('melCloudApp', () => {
               Power: false,
               SetTemperature: 19,
             }),
-            type: DeviceType.Ata,
+            type: ClassicDeviceType.Ata,
           },
         ],
       })
@@ -662,11 +652,11 @@ describe('melCloudApp', () => {
       mockApiInstance.registry.getDevicesByType.mockReturnValue(mockDevices)
       await app.onInit()
 
-      const result = app.getDevicesByType(DeviceType.Ata)
+      const result = app.getDevicesByType(ClassicDeviceType.Ata)
 
       expect(result).toBe(mockDevices)
       expect(mockApiInstance.registry.getDevicesByType).toHaveBeenCalledWith(
-        DeviceType.Ata,
+        ClassicDeviceType.Ata,
       )
     })
   })
@@ -1219,7 +1209,7 @@ describe('melCloudApp', () => {
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
-      await getOnSyncCallback()({ type: DeviceType.Ata })
+      await getOnSyncFunction()({ type: ClassicDeviceType.Ata })
 
       expect(syncFromDevice).toHaveBeenCalledTimes(1)
     })
@@ -1231,7 +1221,7 @@ describe('melCloudApp', () => {
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
-      await getOnSyncCallback()({ ids: [1], type: DeviceType.Ata })
+      await getOnSyncFunction()({ ids: [1], type: ClassicDeviceType.Ata })
 
       expect(syncFromDevice).toHaveBeenCalledTimes(1)
     })
@@ -1242,7 +1232,7 @@ describe('melCloudApp', () => {
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
-      await getOnSyncCallback()()
+      await getOnSyncFunction()()
 
       expect(syncFromDevice).toHaveBeenCalledTimes(1)
     })
@@ -1261,7 +1251,7 @@ describe('melCloudApp', () => {
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
-      await getOnSyncCallback()()
+      await getOnSyncFunction()()
 
       expect(errorSpy).toHaveBeenCalledWith(
         'Device sync failed:',
@@ -1285,7 +1275,7 @@ describe('melCloudApp', () => {
       mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
       await app.onInit()
 
-      await getOnSyncCallback()()
+      await getOnSyncFunction()()
 
       expect(healthySync).toHaveBeenCalledTimes(1)
       expect(errorSpy).toHaveBeenCalledWith(
@@ -1306,7 +1296,7 @@ describe('melCloudApp', () => {
       mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
-      await getHomeOnSyncCallback()()
+      await getHomeOnSyncFunction()()
 
       expect(syncMock).toHaveBeenCalledTimes(1)
     })
@@ -1331,7 +1321,7 @@ describe('melCloudApp', () => {
       mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
-      await getHomeOnSyncCallback()({
+      await getHomeOnSyncFunction()({
         ids: ['e9f997d3-d537-4628-aeed-ad638fad6515'],
       })
 
@@ -1345,9 +1335,16 @@ describe('melCloudApp', () => {
       mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
-      await getHomeOnSyncCallback()()
+      await getHomeOnSyncFunction()()
 
       expect(syncMock).not.toHaveBeenCalled()
+    })
+
+    it('should wire the same onSync callback on both Classic and Home APIs', async () => {
+      mockHomeApiInstance.list.mockResolvedValue([])
+      await app.onInit()
+
+      expect(getOnSyncFunction()).toBe(getHomeOnSyncFunction())
     })
   })
 

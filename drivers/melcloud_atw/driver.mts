@@ -1,4 +1,7 @@
-import { type ListDeviceData, DeviceType } from '@olivierzal/melcloud-api'
+import {
+  type ListDeviceData,
+  ClassicDeviceType,
+} from '@olivierzal/melcloud-api'
 
 import type { Capabilities } from '../../types/capabilities.mts'
 import {
@@ -11,7 +14,7 @@ import {
 import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
 export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
-  typeof DeviceType.Atw
+  typeof ClassicDeviceType.Atw
 > {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMapping
 
@@ -23,9 +26,11 @@ export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
 
   public readonly setCapabilityTagMapping = setCapabilityTagMapping
 
-  public readonly type = DeviceType.Atw
+  public readonly type = ClassicDeviceType.Atw
 
-  readonly #zone1Capabilities: (keyof Capabilities<typeof DeviceType.Atw>)[] = [
+  readonly #zone1Capabilities: (keyof Capabilities<
+    typeof ClassicDeviceType.Atw
+  >)[] = [
     'onoff',
     'hot_water_mode',
     'measure_temperature',
@@ -46,10 +51,12 @@ export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
   ]
 
   readonly #zone1CoolCapabilities: (keyof Capabilities<
-    typeof DeviceType.Atw
+    typeof ClassicDeviceType.Atw
   >)[] = ['target_temperature.flow_cool']
 
-  readonly #zone2Capabilities: (keyof Capabilities<typeof DeviceType.Atw>)[] = [
+  readonly #zone2Capabilities: (keyof Capabilities<
+    typeof ClassicDeviceType.Atw
+  >)[] = [
     'measure_temperature.zone2',
     'target_temperature.zone2',
     'target_temperature.flow_heat_zone2',
@@ -58,11 +65,11 @@ export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
   ]
 
   readonly #zone2CoolCapabilities: (keyof Capabilities<
-    typeof DeviceType.Atw
+    typeof ClassicDeviceType.Atw
   >)[] = ['target_temperature.flow_cool_zone2']
 
   public override getRequiredCapabilities(
-    data?: ListDeviceData<typeof DeviceType.Atw>,
+    data?: ListDeviceData<typeof ClassicDeviceType.Atw>,
   ): string[] {
     /* v8 ignore next -- data is always provided by callers */
     const { CanCool: canCool, HasZone2: hasZone2 } = data ?? {}

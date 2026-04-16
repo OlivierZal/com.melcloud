@@ -1,5 +1,5 @@
 import {
-  type DeviceType,
+  type ClassicDeviceType,
   type ListDeviceData,
   FanSpeed,
   Horizontal,
@@ -23,12 +23,12 @@ import {
 import { ClassicMELCloudDevice } from '../classic-device.mts'
 
 export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
-  typeof DeviceType.Ata
+  typeof ClassicDeviceType.Ata
 > {
   protected readonly capabilityToDevice: Partial<
     Record<
-      keyof SetCapabilities<typeof DeviceType.Ata>,
-      ConvertToDevice<typeof DeviceType.Ata>
+      keyof SetCapabilities<typeof ClassicDeviceType.Ata>,
+      ConvertToDevice<typeof ClassicDeviceType.Ata>
     >
   > = {
     horizontal: (value: keyof typeof Horizontal) => Horizontal[value],
@@ -39,8 +39,8 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
 
   protected readonly deviceToCapability: Partial<
     Record<
-      keyof OperationalCapabilities<typeof DeviceType.Ata>,
-      ConvertFromDevice<typeof DeviceType.Ata>
+      keyof OperationalCapabilities<typeof ClassicDeviceType.Ata>,
+      ConvertFromDevice<typeof ClassicDeviceType.Ata>
     >
   > = {
     'alarm_generic.silent': (value: FanSpeed) => value === FanSpeed.silent,
@@ -49,7 +49,7 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
     horizontal: (value: Horizontal) => horizontalFromDevice[value],
     thermostat_mode: (
       value: OperationMode,
-      data: ListDeviceData<typeof DeviceType.Ata>,
+      data: ListDeviceData<typeof ClassicDeviceType.Ata>,
     ) => (data.Power ? operationModeFromDevice[value] : ThermostatModeAta.off),
     vertical: (value: Vertical) => verticalFromDevice[value],
   }

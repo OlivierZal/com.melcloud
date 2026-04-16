@@ -1,4 +1,7 @@
-import type { DeviceType, LoginCredentials } from '@olivierzal/melcloud-api'
+import type {
+  ClassicDeviceType,
+  LoginCredentials,
+} from '@olivierzal/melcloud-api'
 
 import type { CapabilitiesOptions } from './capabilities.mts'
 
@@ -8,7 +11,7 @@ export interface AuthAPI {
 }
 
 export interface DeviceDetails<
-  T extends DeviceType = DeviceType,
+  T extends ClassicDeviceType = ClassicDeviceType,
   TId extends number | string = number,
 > {
   readonly capabilities: readonly string[]

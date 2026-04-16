@@ -1,5 +1,5 @@
 import {
-  type DeviceType,
+  type ClassicDeviceType,
   type EnergyDataAtw,
   type GetDeviceData,
   type ListDeviceDataAtw,
@@ -278,7 +278,7 @@ export const setCapabilityTagMapping: Record<
 
 export const getCapabilityTagMapping: Record<
   keyof GetCapabilities,
-  keyof GetDeviceData<typeof DeviceType.Atw>
+  keyof GetDeviceData<typeof ClassicDeviceType.Atw>
 > = {
   measure_temperature: 'RoomTemperatureZone1',
   'measure_temperature.outdoor': 'OutdoorTemperature',

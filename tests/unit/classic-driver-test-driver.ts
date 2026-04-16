@@ -1,4 +1,4 @@
-import type { DeviceType } from '@olivierzal/melcloud-api'
+import type { ClassicDeviceType } from '@olivierzal/melcloud-api'
 import { vi } from 'vitest'
 
 import type {
@@ -11,7 +11,7 @@ import { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import { mock } from '../helpers.ts'
 import { createInstance } from './create-test-instance.ts'
 
-type TestDriverType = typeof DeviceType.Ata
+type TestDriverType = typeof ClassicDeviceType.Ata
 
 export type { TestDriverType }
 export class TestDriver extends ClassicMELCloudDriver<TestDriverType> {

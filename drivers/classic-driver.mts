@@ -1,6 +1,6 @@
 import type {
   ClassicAPI,
-  DeviceType,
+  ClassicDeviceType,
   ListDeviceData,
 } from '@olivierzal/melcloud-api'
 
@@ -17,7 +17,7 @@ import { typedEntries } from '../lib/typed-object.mts'
 import { BaseMELCloudDriver } from './base-driver.mts'
 
 export abstract class ClassicMELCloudDriver<
-  T extends DeviceType,
+  T extends ClassicDeviceType,
 > extends BaseMELCloudDriver {
   declare public readonly getDevices: () => ClassicMELCloudDevice[]
 

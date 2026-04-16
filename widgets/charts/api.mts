@@ -1,5 +1,5 @@
 import type {
-  DeviceType,
+  ClassicDeviceType,
   DeviceZone,
   ReportChartLineOptions,
   ReportChartPieOptions,
@@ -15,7 +15,7 @@ const api = {
   getClassicDevices({
     query: { type },
   }: {
-    query: { type?: `${DeviceType}` }
+    query: { type?: `${ClassicDeviceType}` }
   }): DeviceZone[] {
     return getClassicZones({
       type: type ? toDeviceType(type) : undefined,

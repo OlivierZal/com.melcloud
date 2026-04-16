@@ -1,6 +1,6 @@
 import {
   type ListDeviceDataAtw,
-  DeviceType,
+  ClassicDeviceType,
   OperationModeState,
   OperationModeStateHotWater,
   OperationModeStateZone,
@@ -24,7 +24,7 @@ import { mock } from '../helpers.ts'
 import ClassicMELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
-type AtwType = typeof DeviceType.Atw
+type AtwType = typeof ClassicDeviceType.Atw
 
 const K_MULTIPLIER = 1000
 
@@ -73,7 +73,7 @@ const mockAtwFacade = (
       hotWater: overrides.hotWater ?? {
         operationalState: OperationModeStateHotWater.idle,
       },
-      type: DeviceType.Atw,
+      type: ClassicDeviceType.Atw,
       zone1: overrides.zone1 ?? {
         operationalState: OperationModeStateZone.idle,
       },

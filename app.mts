@@ -3,6 +3,7 @@ import {
   type ClassicRegistry,
   type Device,
   type DeviceFacade,
+  type DeviceType,
   type ErrorLogQuery,
   type Facade,
   type FrostProtectionData,
@@ -14,13 +15,16 @@ import {
   type HomeDeviceAtaFacade,
   type HomeRegistry,
   type ListDeviceDataAta,
+  type Logger,
   type LoginCredentials,
+  type OnSyncFunction,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
+  type SettingManager,
   type ZoneFacade,
   ClassicAPI,
+  ClassicDeviceType,
   ClassicFacadeManager,
-  DeviceType,
   FanSpeed,
   HomeAPI,
   HomeDeviceType,
@@ -65,13 +69,12 @@ import { fanSpeedValues } from './types/ata-erv.mts'
 
 const NOTIFICATION_DELAY_MS = 10_000
 
-const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType | HomeDeviceType, string>> =
-  {
-    [DeviceType.Ata]: 'melcloud',
-    [DeviceType.Atw]: 'melcloud_atw',
-    [DeviceType.Erv]: 'melcloud_erv',
-    [HomeDeviceType.Ata]: 'home-melcloud',
-  }
+const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
+  [ClassicDeviceType.Ata]: 'melcloud',
+  [ClassicDeviceType.Atw]: 'melcloud_atw',
+  [ClassicDeviceType.Erv]: 'melcloud_erv',
+  [HomeDeviceType.Ata]: 'home-melcloud',
+}
 
 const createDateRange = (days: number): { from: string; to: string } => {
   const now = DateTime.now()
@@ -254,7 +257,7 @@ export default class MELCloudApp extends App {
       this.getClassicAtaCapabilities().map(([key]) => [
         key,
         devices
-          .filter((device) => device.type === DeviceType.Ata)
+          .filter((device) => device.type === ClassicDeviceType.Ata)
           // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic DeviceModel data to ATA-specific type
           .map(({ data }) => data as ListDeviceDataAta)
           .filter((data) => status !== 'on' || data.Power)
@@ -288,7 +291,7 @@ export default class MELCloudApp extends App {
     }
   }
 
-  public getClassicFacade<T extends DeviceType>(
+  public getClassicFacade<T extends ClassicDeviceType>(
     zoneType: 'devices',
     id: number | string,
   ): DeviceFacade<T>
@@ -390,7 +393,7 @@ export default class MELCloudApp extends App {
     return deviceSettings
   }
 
-  public getDevicesByType<T extends DeviceType>(type: T): Device<T>[] {
+  public getDevicesByType<T extends ClassicDeviceType>(type: T): Device<T>[] {
     return this.#classicRegistry.getDevicesByType(type)
   }
 
@@ -481,10 +484,14 @@ export default class MELCloudApp extends App {
     )
   }
 
-  #createLogger(): {
-    error: (...args: unknown[]) => void
-    log: (...args: unknown[]) => void
-  } {
+  readonly #onSync: OnSyncFunction = async ({ ids, type } = {}) => {
+    await this.#syncDevices({
+      driverId: type === undefined ? undefined : DRIVER_IDS_BY_TYPE[type],
+      ids,
+    })
+  }
+
+  #createLogger(): Logger {
     return {
       error: (...args: unknown[]): void => {
         this.error(...args)
@@ -523,10 +530,7 @@ export default class MELCloudApp extends App {
     }, NOTIFICATION_DELAY_MS)
   }
 
-  #createSettingManager(prefix = ''): {
-    get: (key: string) => string | null | undefined
-    set: (key: string, value: string) => void
-  } {
+  #createSettingManager(prefix = ''): SettingManager {
     const prefixKey = (key: string): string =>
       prefix === '' ? key : (
         `${prefix}${key.charAt(0).toUpperCase()}${key.slice(1)}`
@@ -618,25 +622,15 @@ export default class MELCloudApp extends App {
     })
   }
 
-  async #initClassicApi({
-    language,
-    timezone,
-  }: {
+  async #initClassicApi(config: {
     language: string
     timezone: string
   }): Promise<void> {
     this.#classicApi = await ClassicAPI.create({
-      language,
+      ...config,
       logger: this.#createLogger(),
+      onSync: this.#onSync,
       settingManager: this.#createSettingManager(),
-      timezone,
-      onSync: async (params) => {
-        const { ids, type } = params ?? {}
-        await this.#syncDevices({
-          driverId: type === undefined ? undefined : DRIVER_IDS_BY_TYPE[type],
-          ids,
-        })
-      },
     })
     this.#facadeManager = new ClassicFacadeManager(
       this.#classicApi,
@@ -648,14 +642,8 @@ export default class MELCloudApp extends App {
   async #initHomeApi(): Promise<void> {
     this.#homeApi = await HomeAPI.create({
       logger: this.#createLogger(),
+      onSync: this.#onSync,
       settingManager: this.#createSettingManager('home'),
-      onSync: async (params) => {
-        const { ids } = params ?? {}
-        await this.#syncDevices({
-          driverId: DRIVER_IDS_BY_TYPE[HomeDeviceType.Ata],
-          ids,
-        })
-      },
     })
     this.#homeFacadeManager = new HomeFacadeManager(this.#homeApi)
     await this.#homeApi.list()
@@ -666,7 +654,7 @@ export default class MELCloudApp extends App {
       .getWidget('ata-group-setting')
       .registerSettingAutocompleteListener('default_zone', (query) =>
         this.#facadeManager
-          .getZones({ type: DeviceType.Ata })
+          .getZones({ type: ClassicDeviceType.Ata })
           .filter(({ model }) => model !== 'devices')
           .filter(({ name }) =>
             name.toLowerCase().includes(query.toLowerCase()),

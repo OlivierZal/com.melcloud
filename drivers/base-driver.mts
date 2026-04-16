@@ -1,8 +1,4 @@
-import type {
-  DeviceType,
-  HomeDeviceType,
-  LoginCredentials,
-} from '@olivierzal/melcloud-api'
+import type { DeviceType, LoginCredentials } from '@olivierzal/melcloud-api'
 import type PairSession from 'homey/lib/PairSession'
 
 import type { AuthAPI } from '../types/device.mts'
@@ -29,7 +25,7 @@ export abstract class BaseMELCloudDriver extends Driver {
 
   protected abstract readonly api: AuthAPI
 
-  public abstract readonly type: DeviceType | HomeDeviceType
+  public abstract readonly type: DeviceType
 
   public readonly energyCapabilityTagMapping: Record<string, unknown> = {}
 

@@ -1,4 +1,7 @@
-import { type ClassicFacadeManager, DeviceType } from '@olivierzal/melcloud-api'
+import {
+  type ClassicFacadeManager,
+  ClassicDeviceType,
+} from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -67,10 +70,10 @@ describe('classic-facade-manager', () => {
       })
 
       it('should pass type filter', () => {
-        getClassicBuildings({ type: DeviceType.Ata })
+        getClassicBuildings({ type: ClassicDeviceType.Ata })
 
         expect(mockFacadeManager.getBuildings).toHaveBeenCalledWith({
-          type: DeviceType.Ata,
+          type: ClassicDeviceType.Ata,
         })
       })
     })
@@ -84,10 +87,10 @@ describe('classic-facade-manager', () => {
       })
 
       it('should pass type filter', () => {
-        getClassicZones({ type: DeviceType.Atw })
+        getClassicZones({ type: ClassicDeviceType.Atw })
 
         expect(mockFacadeManager.getZones).toHaveBeenCalledWith({
-          type: DeviceType.Atw,
+          type: ClassicDeviceType.Atw,
         })
       })
     })

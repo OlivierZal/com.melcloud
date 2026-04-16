@@ -1,5 +1,5 @@
 import {
-  type DeviceType,
+  type ClassicDeviceType,
   type ListDeviceData,
   VentilationMode,
 } from '@olivierzal/melcloud-api'
@@ -17,12 +17,12 @@ import {
 import { ClassicMELCloudDevice } from '../classic-device.mts'
 
 export default class ClassicMELCloudDeviceErv extends ClassicMELCloudDevice<
-  typeof DeviceType.Erv
+  typeof ClassicDeviceType.Erv
 > {
   protected readonly capabilityToDevice: Partial<
     Record<
-      keyof SetCapabilities<typeof DeviceType.Erv>,
-      ConvertToDevice<typeof DeviceType.Erv>
+      keyof SetCapabilities<typeof ClassicDeviceType.Erv>,
+      ConvertToDevice<typeof ClassicDeviceType.Erv>
     >
   > = {
     thermostat_mode: (value: keyof typeof VentilationMode) =>
@@ -31,13 +31,13 @@ export default class ClassicMELCloudDeviceErv extends ClassicMELCloudDevice<
 
   protected readonly deviceToCapability: Partial<
     Record<
-      keyof OperationalCapabilities<typeof DeviceType.Erv>,
-      ConvertFromDevice<typeof DeviceType.Erv>
+      keyof OperationalCapabilities<typeof ClassicDeviceType.Erv>,
+      ConvertFromDevice<typeof ClassicDeviceType.Erv>
     >
   > = {
     thermostat_mode: (
       value: VentilationMode,
-      data: ListDeviceData<typeof DeviceType.Erv>,
+      data: ListDeviceData<typeof ClassicDeviceType.Erv>,
     ) =>
       data.Power ? ventilationModeFromDevice[value] : ThermostatModeErv.off,
   }

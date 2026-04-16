@@ -1,5 +1,5 @@
 import {
-  DeviceType,
+  ClassicDeviceType,
   Horizontal,
   OperationMode,
   Vertical,
@@ -14,10 +14,10 @@ import {
 
 describe('facade interaction patterns', () => {
   describe('reverse mapping with as-const enums', () => {
-    it('should resolve DeviceType values', () => {
-      expect(DeviceType.Ata).toBe(DeviceType.Ata)
-      expect(DeviceType.Atw).toBe(DeviceType.Atw)
-      expect(DeviceType.Erv).toBe(DeviceType.Erv)
+    it('should resolve ClassicDeviceType values', () => {
+      expect(ClassicDeviceType.Ata).toBe(ClassicDeviceType.Ata)
+      expect(ClassicDeviceType.Atw).toBe(ClassicDeviceType.Atw)
+      expect(ClassicDeviceType.Erv).toBe(ClassicDeviceType.Erv)
     })
 
     it('should reverse-map Horizontal values', () => {

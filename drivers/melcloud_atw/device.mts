@@ -1,5 +1,5 @@
 import {
-  type DeviceType,
+  type ClassicDeviceType,
   type ListDeviceData,
   type OperationModeState,
   hasZone2,
@@ -25,20 +25,20 @@ import {
 import { ClassicMELCloudDevice } from '../classic-device.mts'
 
 const convertFromDeviceMeasurePower: ConvertFromDevice<
-  typeof DeviceType.Atw
+  typeof ClassicDeviceType.Atw
 > = (value: number) => value * KILOWATT_TO_WATT
 
 const convertFromDeviceOperationZone: ConvertFromDevice<
-  typeof DeviceType.Atw
+  typeof ClassicDeviceType.Atw
 > = (value: OperationModeZone) => operationModeZoneFromDevice[value]
 
 export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
-  typeof DeviceType.Atw
+  typeof ClassicDeviceType.Atw
 > {
   protected readonly capabilityToDevice: Partial<
     Record<
-      keyof SetCapabilities<typeof DeviceType.Atw>,
-      ConvertToDevice<typeof DeviceType.Atw>
+      keyof SetCapabilities<typeof ClassicDeviceType.Atw>,
+      ConvertToDevice<typeof ClassicDeviceType.Atw>
     >
   > = {
     hot_water_mode: (value: keyof typeof HotWaterMode) =>
@@ -51,12 +51,12 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
 
   protected readonly deviceToCapability: Partial<
     Record<
-      keyof OperationalCapabilities<typeof DeviceType.Atw>,
-      ConvertFromDevice<typeof DeviceType.Atw>
+      keyof OperationalCapabilities<typeof ClassicDeviceType.Atw>,
+      ConvertFromDevice<typeof ClassicDeviceType.Atw>
     >
   > = {
     'alarm_generic.defrost': Boolean as ConvertFromDevice<
-      typeof DeviceType.Atw
+      typeof ClassicDeviceType.Atw
     >,
     measure_power: convertFromDeviceMeasurePower,
     'measure_power.produced': convertFromDeviceMeasurePower,
@@ -109,7 +109,7 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
   protected readonly thermostatMode = null
 
   protected override async setCapabilityValues(
-    data: ListDeviceData<typeof DeviceType.Atw>,
+    data: ListDeviceData<typeof ClassicDeviceType.Atw>,
   ): Promise<void> {
     await super.setCapabilityValues(data)
     await this.#setOperationModeStates()
@@ -117,7 +117,7 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
 
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
-  ): ConvertFromDevice<typeof DeviceType.Atw> {
+  ): ConvertFromDevice<typeof ClassicDeviceType.Atw> {
     // Fall back to the minimum allowed value in case of undefined or null
     return (value: number) => value || this.getCapabilityOptions(capability).min
   }

@@ -1,4 +1,4 @@
-import type { DeviceType, EnergyDataAta } from '@olivierzal/melcloud-api'
+import type { ClassicDeviceType, EnergyDataAta } from '@olivierzal/melcloud-api'
 import { DateTime, Settings } from 'luxon'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -12,7 +12,7 @@ import {
 } from '../../drivers/base-report.mts'
 import { getMockCallArg, mock } from '../helpers.ts'
 
-type TestDeviceType = typeof DeviceType.Ata
+type TestDeviceType = typeof ClassicDeviceType.Ata
 
 const FAKE_NOW_MILLIS = DateTime.fromISO('2026-03-18T12:00:00.000').toMillis()
 

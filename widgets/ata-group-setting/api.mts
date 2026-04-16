@@ -1,6 +1,6 @@
 import type {
   BuildingZone,
-  DeviceType,
+  ClassicDeviceType,
   GroupState,
 } from '@olivierzal/melcloud-api'
 import type { Homey } from 'homey/lib/Homey'
@@ -38,7 +38,7 @@ const api = {
   getClassicBuildings({
     query: { type },
   }: {
-    query: { type?: `${DeviceType}` }
+    query: { type?: `${ClassicDeviceType}` }
   }): BuildingZone[] {
     return getClassicBuildings({
       type: type ? toDeviceType(type) : undefined,

@@ -1,5 +1,5 @@
 import type {
-  DeviceType,
+  ClassicDeviceType,
   FanSpeed,
   GetDeviceData,
   ListDeviceDataErv,
@@ -46,7 +46,7 @@ export const setCapabilityTagMapping: Record<
 
 export const getCapabilityTagMapping: Record<
   keyof GetCapabilities,
-  keyof GetDeviceData<typeof DeviceType.Erv>
+  keyof GetDeviceData<typeof ClassicDeviceType.Erv>
 > = {
   measure_co2: 'RoomCO2Level',
   measure_temperature: 'RoomTemperature',

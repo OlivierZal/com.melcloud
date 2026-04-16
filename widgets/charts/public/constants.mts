@@ -1,5 +1,5 @@
-/** MELCloud device type identifiers. */
-export const DeviceType = {
+/** MELCloud Classic API device type identifiers. */
+export const ClassicDeviceType = {
   /** Air-to-Air (ATA) heat pump. */
   Ata: 0,
   /** Air-to-Water (ATW) heat pump. */

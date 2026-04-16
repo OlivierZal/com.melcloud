@@ -1,4 +1,7 @@
-import { type ListDeviceData, DeviceType } from '@olivierzal/melcloud-api'
+import {
+  type ListDeviceData,
+  ClassicDeviceType,
+} from '@olivierzal/melcloud-api'
 
 import { getCapabilitiesOptionsAtaErv } from '../../types/ata-erv.mts'
 import {
@@ -16,7 +19,7 @@ const measureCapabilities = new Set([
 ])
 
 export default class ClassicMELCloudDriverErv extends ClassicMELCloudDriver<
-  typeof DeviceType.Erv
+  typeof ClassicDeviceType.Erv
 > {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMapping
 
@@ -28,12 +31,12 @@ export default class ClassicMELCloudDriverErv extends ClassicMELCloudDriver<
 
   public readonly setCapabilityTagMapping = setCapabilityTagMapping
 
-  public readonly type = DeviceType.Erv
+  public readonly type = ClassicDeviceType.Erv
 
   public getRequiredCapabilities({
     HasCO2Sensor: hasCO2Sensor,
     HasPM25Sensor: hasPM25Sensor,
-  }: ListDeviceData<typeof DeviceType.Erv>): string[] {
+  }: ListDeviceData<typeof ClassicDeviceType.Erv>): string[] {
     return [
       ...this.manifest.capabilities.filter(
         (capability) => !measureCapabilities.has(capability),

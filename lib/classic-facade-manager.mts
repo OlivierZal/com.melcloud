@@ -1,7 +1,7 @@
 import type {
   BuildingZone,
+  ClassicDeviceType,
   ClassicFacadeManager,
-  DeviceType,
   Zone,
 } from '@olivierzal/melcloud-api'
 
@@ -21,8 +21,10 @@ export const setClassicFacadeManager = (value: ClassicFacadeManager): void => {
 
 export const getClassicBuildings = ({
   type,
-}: { type?: DeviceType } = {}): BuildingZone[] =>
+}: { type?: ClassicDeviceType } = {}): BuildingZone[] =>
   getClassicFacadeManager().getBuildings({ type })
 
-export const getClassicZones = ({ type }: { type?: DeviceType } = {}): Zone[] =>
+export const getClassicZones = ({
+  type,
+}: { type?: ClassicDeviceType } = {}): Zone[] =>
   getClassicFacadeManager().getZones({ type })

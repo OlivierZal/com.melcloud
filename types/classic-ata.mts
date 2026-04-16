@@ -1,5 +1,5 @@
 import type {
-  DeviceType,
+  ClassicDeviceType,
   EnergyDataAta,
   FanSpeed,
   GetDeviceData,
@@ -79,7 +79,7 @@ export const setCapabilityTagMapping: Record<
 
 export const getCapabilityTagMapping: Record<
   keyof GetCapabilities,
-  keyof GetDeviceData<typeof DeviceType.Ata>
+  keyof GetDeviceData<typeof ClassicDeviceType.Ata>
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
   measure_temperature: 'RoomTemperature',

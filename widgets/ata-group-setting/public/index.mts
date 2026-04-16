@@ -1,4 +1,4 @@
-import type { BuildingZone, DeviceType } from '@olivierzal/melcloud-api'
+import type { BuildingZone, ClassicDeviceType } from '@olivierzal/melcloud-api'
 
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
@@ -82,7 +82,7 @@ class WidgetApp {
       this.#homey,
       `/classic/buildings?${new URLSearchParams({
         type: '0',
-      } satisfies { type: `${DeviceType}` })}`,
+      } satisfies { type: `${ClassicDeviceType}` })}`,
     )
     if (buildings.length > 0) {
       const { animations: isAnimations, default_zone: defaultZone } =

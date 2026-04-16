@@ -1,6 +1,6 @@
 import {
+  type ClassicDeviceType,
   type DeviceFacade,
-  type DeviceType,
   type ListDeviceData,
   EntityNotFoundError,
 } from '@olivierzal/melcloud-api'
@@ -21,7 +21,7 @@ import { BaseMELCloudDevice } from './base-device.mts'
 import { type EnergyReportConfig, EnergyReport } from './base-report.mts'
 
 export abstract class ClassicMELCloudDevice<
-  T extends DeviceType,
+  T extends ClassicDeviceType,
 > extends BaseMELCloudDevice {
   declare public readonly driver: ClassicMELCloudDriver<T>
 
