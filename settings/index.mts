@@ -1,14 +1,4 @@
-import type {
-  BuildingZone,
-  ErrorLogQuery,
-  FrostProtectionData,
-  FrostProtectionQuery,
-  HolidayModeData,
-  HolidayModeQuery,
-  LoginCredentials,
-  Zone,
-  ZoneSettings,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
 
 import type {
@@ -366,7 +356,7 @@ const initFrostProtectionMax = (): HTMLInputElement => {
   return element
 }
 
-const getSubzones = (zone: Zone): Zone[] => [
+const getSubzones = (zone: Classic.Zone): Classic.Zone[] => [
   ...('devices' in zone ? zone.devices : []),
   ...('areas' in zone ? zone.areas : []),
   ...('floors' in zone ? zone.floors : []),
@@ -440,7 +430,7 @@ class AuthManager {
         const isLoggedIn = await homeyApiPost<boolean>(
           this.#homey,
           '/classic/sessions',
-          { password, username } satisfies LoginCredentials,
+          { password, username } satisfies Classic.LoginCredentials,
         )
         await (isLoggedIn ?
           this.#loadPostLoginCallback()
@@ -457,7 +447,7 @@ class AuthManager {
   }
 
   #createCredentialInput(
-    credentialKey: keyof LoginCredentials,
+    credentialKey: keyof Classic.LoginCredentials,
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     value?: string | null,
   ): HTMLInputElement | null {
@@ -541,7 +531,7 @@ class ErrorLogManager {
             limit: '29',
             offset: '0',
             to: this.#to,
-          } satisfies ErrorLogQuery)}`,
+          } satisfies Classic.ErrorLogQuery)}`,
         )
         this.#updateErrorLogElements(data)
         this.#appendErrorLogRows(data.errors)
@@ -998,7 +988,7 @@ class ZoneSettingsManager {
 
   readonly #zone: HTMLSelectElement
 
-  #zoneMapping: Partial<Record<string, Partial<ZoneSettings>>> = {}
+  #zoneMapping: Partial<Record<string, Partial<Classic.ZoneSettings>>> = {}
 
   public constructor(homey: Homey) {
     this.#homey = homey
@@ -1023,7 +1013,7 @@ class ZoneSettingsManager {
   public async fetchFrostProtectionData(): Promise<void> {
     await withDisablingButtonPair('frost_protection', async () => {
       try {
-        const data = await homeyApiGet<FrostProtectionData>(
+        const data = await homeyApiGet<Classic.FrostProtectionData>(
           this.#homey,
           `/classic/zones/${this.#getZonePath()}/settings/frost-protection`,
         )
@@ -1067,7 +1057,7 @@ class ZoneSettingsManager {
   public async fetchHolidayModeData(): Promise<void> {
     await withDisablingButtonPair('holiday_mode', async () => {
       try {
-        const data = await homeyApiGet<HolidayModeData>(
+        const data = await homeyApiGet<Classic.HolidayModeData>(
           this.#homey,
           `/classic/zones/${this.#getZonePath()}/settings/holiday-mode`,
         )
@@ -1084,7 +1074,7 @@ class ZoneSettingsManager {
     await this.fetchHolidayModeData()
   }
 
-  public async populateZoneOptions(zones: Zone[] = []): Promise<void> {
+  public async populateZoneOptions(zones: Classic.Zone[] = []): Promise<void> {
     if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
@@ -1103,13 +1093,13 @@ class ZoneSettingsManager {
     isEnabled,
     max,
     min,
-  }: FrostProtectionQuery): Promise<void> {
+  }: Classic.FrostProtectionQuery): Promise<void> {
     await withDisablingButtonPair('frost_protection', async () => {
       try {
         await homeyApiPut<unknown>(
           this.#homey,
           `/classic/zones/${this.#getZonePath()}/settings/frost-protection`,
-          { isEnabled, max, min } satisfies FrostProtectionQuery,
+          { isEnabled, max, min } satisfies Classic.FrostProtectionQuery,
         )
         this.#updateZoneMapping({
           FPEnabled: isEnabled,
@@ -1128,13 +1118,13 @@ class ZoneSettingsManager {
   public async setHolidayModeData({
     from: startDate,
     to: endDate,
-  }: HolidayModeQuery): Promise<void> {
+  }: Classic.HolidayModeQuery): Promise<void> {
     await withDisablingButtonPair('holiday_mode', async () => {
       try {
         await homeyApiPut<unknown>(
           this.#homey,
           `/classic/zones/${this.#getZonePath()}/settings/holiday-mode`,
-          { from: startDate, to: endDate } satisfies HolidayModeQuery,
+          { from: startDate, to: endDate } satisfies Classic.HolidayModeQuery,
         )
         this.#updateZoneMapping({
           HMEnabled: Boolean(endDate),
@@ -1262,7 +1252,7 @@ class ZoneSettingsManager {
     return this.#zone.value.replace('_', '/')
   }
 
-  #updateZoneMapping(data: Partial<ZoneSettings>): void {
+  #updateZoneMapping(data: Partial<Classic.ZoneSettings>): void {
     const { value } = this.#zone
     this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
   }
@@ -1363,7 +1353,7 @@ class SettingsApp {
   }
 
   async #fetchBuildings(): Promise<void> {
-    const buildings = await homeyApiGet<BuildingZone[]>(
+    const buildings = await homeyApiGet<Classic.BuildingZone[]>(
       this.#homey,
       '/classic/buildings',
     )

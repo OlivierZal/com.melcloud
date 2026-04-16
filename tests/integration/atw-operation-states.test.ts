@@ -1,13 +1,10 @@
-import {
-  OperationModeStateHotWater,
-  OperationModeStateZone,
-} from '@olivierzal/melcloud-api'
 import { describe, expect, expectTypeOf, it } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 describe('atw operation state types', () => {
   describe('hot water operation mode state', () => {
     it('should have all expected states', () => {
-      expect(OperationModeStateHotWater).toStrictEqual({
+      expect(Classic.OperationModeStateHotWater).toStrictEqual({
         dhw: 'dhw',
         idle: 'idle',
         legionella: 'legionella',
@@ -16,7 +13,7 @@ describe('atw operation state types', () => {
     })
 
     it('should produce string literal values usable as Homey capability values', () => {
-      const states = Object.values(OperationModeStateHotWater)
+      const states = Object.values(Classic.OperationModeStateHotWater)
 
       for (const state of states) {
         expectTypeOf(state).toBeString()
@@ -28,7 +25,7 @@ describe('atw operation state types', () => {
 
   describe('zone operation mode state', () => {
     it('should have all expected states', () => {
-      expect(OperationModeStateZone).toStrictEqual({
+      expect(Classic.OperationModeStateZone).toStrictEqual({
         cooling: 'cooling',
         defrost: 'defrost',
         heating: 'heating',
@@ -38,7 +35,7 @@ describe('atw operation state types', () => {
     })
 
     it('should produce string literal values usable as Homey capability values', () => {
-      const states = Object.values(OperationModeStateZone)
+      const states = Object.values(Classic.OperationModeStateZone)
 
       for (const state of states) {
         expectTypeOf(state).toBeString()
@@ -50,7 +47,9 @@ describe('atw operation state types', () => {
 
   describe('hot water state transitions', () => {
     it('should cover all hot water operational states', () => {
-      const allStates = new Set(Object.values(OperationModeStateHotWater))
+      const allStates = new Set(
+        Object.values(Classic.OperationModeStateHotWater),
+      )
 
       expect(allStates).toContain('dhw')
       expect(allStates).toContain('idle')
@@ -62,7 +61,7 @@ describe('atw operation state types', () => {
 
   describe('zone state transitions', () => {
     it('should cover all zone operational states', () => {
-      const allStates = new Set(Object.values(OperationModeStateZone))
+      const allStates = new Set(Object.values(Classic.OperationModeStateZone))
 
       expect(allStates).toContain('cooling')
       expect(allStates).toContain('defrost')

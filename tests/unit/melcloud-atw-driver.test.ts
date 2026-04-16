@@ -1,8 +1,5 @@
-import {
-  type ListDeviceDataAtw,
-  ClassicDeviceType,
-} from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import {
   energyCapabilityTagMapping,
@@ -27,7 +24,7 @@ describe(ClassicMELCloudDriverAtw, () => {
     driver = new ClassicMELCloudDriverAtw()
   })
 
-  testDriverType(() => driver, ClassicDeviceType.Atw)
+  testDriverType(() => driver, Classic.DeviceType.Atw)
 
   testTagMappings(() => driver, {
     energyCapabilityTagMapping,
@@ -38,7 +35,7 @@ describe(ClassicMELCloudDriverAtw, () => {
 
   describe('required capabilities', () => {
     it('should return zone1 capabilities for basic device', () => {
-      const data = mock<ListDeviceDataAtw>({
+      const data = mock<Classic.ListDeviceDataAtw>({
         CanCool: false,
         HasZone2: false,
       })
@@ -52,7 +49,7 @@ describe(ClassicMELCloudDriverAtw, () => {
     })
 
     it('should include cool capabilities when CanCool is true', () => {
-      const data = mock<ListDeviceDataAtw>({
+      const data = mock<Classic.ListDeviceDataAtw>({
         CanCool: true,
         HasZone2: false,
       })
@@ -62,7 +59,7 @@ describe(ClassicMELCloudDriverAtw, () => {
     })
 
     it('should include zone2 capabilities when HasZone2 is true', () => {
-      const data = mock<ListDeviceDataAtw>({
+      const data = mock<Classic.ListDeviceDataAtw>({
         CanCool: false,
         HasZone2: true,
       })
@@ -75,7 +72,7 @@ describe(ClassicMELCloudDriverAtw, () => {
     })
 
     it('should include zone2 cool capabilities when both CanCool and HasZone2 are true', () => {
-      const data = mock<ListDeviceDataAtw>({
+      const data = mock<Classic.ListDeviceDataAtw>({
         CanCool: true,
         HasZone2: true,
       })

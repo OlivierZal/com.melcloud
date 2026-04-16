@@ -1,4 +1,4 @@
-import type { BuildingZone, ClassicDeviceType } from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
@@ -78,11 +78,11 @@ class WidgetApp {
   }
 
   async #initBuildings(): Promise<void> {
-    const buildings = await homeyApiGet<BuildingZone[]>(
+    const buildings = await homeyApiGet<Classic.BuildingZone[]>(
       this.#homey,
       `/classic/buildings?${new URLSearchParams({
         type: '0',
-      } satisfies { type: `${ClassicDeviceType}` })}`,
+      } satisfies { type: `${Classic.DeviceType}` })}`,
     )
     if (buildings.length > 0) {
       const { animations: isAnimations, default_zone: defaultZone } =

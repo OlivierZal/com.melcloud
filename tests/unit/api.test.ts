@@ -1,11 +1,4 @@
-import type {
-  ErrorLogQuery,
-  FrostProtectionData,
-  FrostProtectionQuery,
-  HolidayModeData,
-  HolidayModeQuery,
-  LoginCredentials,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -33,8 +26,9 @@ const mockApp = {
   authenticateHome: vi.fn<() => Promise<boolean>>(),
   classicApi: { isAuthenticated: mockIsAuthenticated },
   getClassicErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
-  getClassicFrostProtection: vi.fn<() => Promise<FrostProtectionData>>(),
-  getClassicHolidayMode: vi.fn<() => Promise<HolidayModeData>>(),
+  getClassicFrostProtection:
+    vi.fn<() => Promise<Classic.FrostProtectionData>>(),
+  getClassicHolidayMode: vi.fn<() => Promise<Classic.HolidayModeData>>(),
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
   updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
@@ -53,7 +47,7 @@ describe('api', () => {
 
   describe('building retrieval', () => {
     it('should delegate to getClassicBuildings', () => {
-      const buildings = [{ id: 1, name: 'Building 1' }]
+      const buildings = [{ id: 1, name: 'ClassicBuilding 1' }]
       mockGetBuildings.mockReturnValue(buildings)
 
       const result = api.getClassicBuildings()
@@ -90,7 +84,7 @@ describe('api', () => {
   describe('error retrieval', () => {
     it('should delegate to app.getClassicErrorLog with query', async () => {
       const errorLog = mock<FormattedErrorLog>()
-      const query = mock<ErrorLogQuery>()
+      const query = mock<Classic.ErrorLogQuery>()
       mockApp.getClassicErrorLog.mockResolvedValue(errorLog)
 
       const result = await api.getClassicErrorLog({ homey, query })
@@ -102,7 +96,7 @@ describe('api', () => {
 
   describe('frost protection settings retrieval', () => {
     it('should delegate to app.getClassicFrostProtection with params', async () => {
-      const frostProtection = mock<FrostProtectionData>()
+      const frostProtection = mock<Classic.FrostProtectionData>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
       mockApp.getClassicFrostProtection.mockResolvedValue(frostProtection)
 
@@ -115,7 +109,7 @@ describe('api', () => {
 
   describe('holiday mode settings retrieval', () => {
     it('should delegate to app.getClassicHolidayMode with params', async () => {
-      const holidayMode = mock<HolidayModeData>()
+      const holidayMode = mock<Classic.HolidayModeData>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
       mockApp.getClassicHolidayMode.mockResolvedValue(holidayMode)
 
@@ -148,7 +142,7 @@ describe('api', () => {
   describe('home authentication', () => {
     it('should delegate to app.authenticateHome with body', async () => {
       mockApp.authenticateHome.mockResolvedValue(true)
-      const body = mock<LoginCredentials>()
+      const body = mock<Classic.LoginCredentials>()
 
       const isLoggedIn = await api.authenticateHome({ body, homey })
 
@@ -178,7 +172,7 @@ describe('api', () => {
 
   describe('authentication', () => {
     it('should delegate to app.authenticateClassic with body', async () => {
-      const credentials = mock<LoginCredentials>({
+      const credentials = mock<Classic.LoginCredentials>({
         password: 'pass',
         username: 'user',
       })
@@ -194,7 +188,7 @@ describe('api', () => {
     })
 
     it('should return false on failed login', async () => {
-      const credentials = mock<LoginCredentials>()
+      const credentials = mock<Classic.LoginCredentials>()
       mockApp.authenticateClassic.mockResolvedValue(false)
 
       const isLoggedIn = await api.authenticateClassic({
@@ -242,7 +236,7 @@ describe('api', () => {
 
   describe('frost protection settings update', () => {
     it('should delegate to app.updateClassicFrostProtection', async () => {
-      const body = mock<FrostProtectionQuery>()
+      const body = mock<Classic.FrostProtectionQuery>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
       mockApp.updateClassicFrostProtection.mockResolvedValue()
 
@@ -257,7 +251,7 @@ describe('api', () => {
 
   describe('holiday mode settings update', () => {
     it('should delegate to app.updateClassicHolidayMode', async () => {
-      const body = mock<HolidayModeQuery>()
+      const body = mock<Classic.HolidayModeQuery>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
       mockApp.updateClassicHolidayMode.mockResolvedValue()
 

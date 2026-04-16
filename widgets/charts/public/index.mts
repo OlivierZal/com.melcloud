@@ -1,8 +1,8 @@
 import type {
-  DeviceZone,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type ApexCharts from 'apexcharts'
 
 import type {
@@ -68,7 +68,7 @@ const getStyle = (property: string): string => {
 }
 
 const normalizeSeriesName = (name: string): string =>
-  name.replace('Temperature', '')
+  name.replace('ClassicTemperature', '')
 
 // ── Shared chart config ──
 
@@ -236,7 +236,10 @@ class ChartWidget {
   }
 
   public async init(): Promise<void> {
-    await Promise.all([setDocumentLanguage(this.#homey), this.#fetchDevices()])
+    await Promise.all([
+      setDocumentLanguage(this.#homey),
+      this.#classicFetchDevices(),
+    ])
     this.#homey.ready({ height: document.body.scrollHeight })
   }
 
@@ -249,13 +252,37 @@ class ChartWidget {
     })
   }
 
-  #applyDefaultZone(defaultZone: DeviceZone | null): void {
+  #applyDefaultZone(defaultZone: Classic.DeviceZone | null): void {
     if (defaultZone) {
       const { id, model } = defaultZone
       const value = getZoneId(id, model)
       if (document.querySelector(`#zones option[value="${value}"]`)) {
         this.#zone.value = value
       }
+    }
+  }
+
+  async #classicFetchDevices(): Promise<void> {
+    const {
+      chart,
+      days,
+      default_zone: defaultZone,
+      height,
+    } = this.#homey.getSettings()
+    const typeQuery =
+      chart === 'hourly_temperatures' ?
+        `?${new URLSearchParams({ type: String(ClassicDeviceType.Atw) })}`
+      : ''
+    const devices = await homeyApiGet<Classic.DeviceZone[]>(
+      this.#homey,
+      `/classic/devices${typeQuery}`,
+    )
+    if (devices.length > 0) {
+      const config: DrawConfig = { chart, days, height: Number(height) }
+      this.#addEventListeners(config)
+      this.#populateDeviceOptions(devices)
+      this.#applyDefaultZone(defaultZone)
+      await this.#draw(config)
     }
   }
 
@@ -308,31 +335,7 @@ class ChartWidget {
     return newOptions
   }
 
-  async #fetchDevices(): Promise<void> {
-    const {
-      chart,
-      days,
-      default_zone: defaultZone,
-      height,
-    } = this.#homey.getSettings()
-    const typeQuery =
-      chart === 'hourly_temperatures' ?
-        `?${new URLSearchParams({ type: String(ClassicDeviceType.Atw) })}`
-      : ''
-    const devices = await homeyApiGet<DeviceZone[]>(
-      this.#homey,
-      `/classic/devices${typeQuery}`,
-    )
-    if (devices.length > 0) {
-      const config: DrawConfig = { chart, days, height: Number(height) }
-      this.#addEventListeners(config)
-      this.#populateDeviceOptions(devices)
-      this.#applyDefaultZone(defaultZone)
-      await this.#draw(config)
-    }
-  }
-
-  #populateDeviceOptions(zones: DeviceZone[]): void {
+  #populateDeviceOptions(zones: Classic.DeviceZone[]): void {
     for (const { id, model, name } of zones) {
       createOption(this.#zone, { id: getZoneId(id, model), label: name })
     }

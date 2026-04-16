@@ -1,7 +1,5 @@
-import {
-  type ListDeviceDataAta,
-  EntityNotFoundError,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
@@ -295,7 +293,7 @@ describe(ClassicMELCloudDevice, () => {
 
   describe('capability value emission', () => {
     it('should emit realtime event', async () => {
-      const data = mock<ListDeviceDataAta>({
+      const data = mock<Classic.ListDeviceDataAta>({
         Power: true,
         RoomTemperature: 21,
       })
@@ -459,7 +457,7 @@ describe(ClassicMELCloudDevice, () => {
       vi.spyOn(customDevice, 'hasCapability').mockReturnValue(true)
       await customDevice.ensureDevice()
       await customDevice.exposedSetCapabilityValues(
-        mock<ListDeviceDataAta>({ Power: true, RoomTemperature: 10 }),
+        mock<Classic.ListDeviceDataAta>({ Power: true, RoomTemperature: 10 }),
       )
 
       expect(customDevice.setCapabilityValue).toHaveBeenCalledWith(

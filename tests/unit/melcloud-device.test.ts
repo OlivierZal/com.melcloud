@@ -1,11 +1,5 @@
-import {
-  type ListDeviceDataAta,
-  FanSpeed,
-  Horizontal,
-  OperationMode,
-  Vertical,
-} from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import { ThermostatModeAta } from '../../types/ata.mts'
 import {
@@ -50,12 +44,12 @@ describe(ClassicMELCloudDeviceAta, () => {
 
   describe('device-to-capability conversions', () => {
     it.each([
-      ['alarm_generic.silent', FanSpeed.silent, true],
-      ['alarm_generic.silent', FanSpeed.auto, false],
-      ['fan_speed', FanSpeed.silent, FanSpeed.auto],
-      ['fan_speed', FanSpeed.fast, FanSpeed.fast],
-      ['horizontal', Horizontal.center, 'center'],
-      ['vertical', Vertical.auto, 'auto'],
+      ['alarm_generic.silent', Classic.FanSpeed.silent, true],
+      ['alarm_generic.silent', Classic.FanSpeed.auto, false],
+      ['fan_speed', Classic.FanSpeed.silent, Classic.FanSpeed.auto],
+      ['fan_speed', Classic.FanSpeed.fast, Classic.FanSpeed.fast],
+      ['horizontal', Classic.Horizontal.center, 'center'],
+      ['vertical', Classic.Vertical.auto, 'auto'],
     ])('%s(%s) should return %s', (key, input, expected) => {
       const {
         deviceToCapability: { [key]: converter },
@@ -68,27 +62,29 @@ describe(ClassicMELCloudDeviceAta, () => {
       const {
         deviceToCapability: { thermostat_mode: converter },
       } = device
-      const data = mock<ListDeviceDataAta>({ Power: true })
+      const data = mock<Classic.ListDeviceDataAta>({ Power: true })
 
-      expect(converter?.(OperationMode.heat, data)).toBe('heat')
+      expect(converter?.(Classic.OperationMode.heat, data)).toBe('heat')
     })
 
     it('should return off for thermostat_mode when Power is off', () => {
       const {
         deviceToCapability: { thermostat_mode: converter },
       } = device
-      const data = mock<ListDeviceDataAta>({ Power: false })
+      const data = mock<Classic.ListDeviceDataAta>({ Power: false })
 
-      expect(converter?.(OperationMode.heat, data)).toBe(ThermostatModeAta.off)
+      expect(converter?.(Classic.OperationMode.heat, data)).toBe(
+        ThermostatModeAta.off,
+      )
     })
   })
 
   testCapabilityToDeviceConverters(
     () => device as object,
     [
-      ['horizontal', 'center', Horizontal.center],
-      ['thermostat_mode', 'heat', OperationMode.heat],
-      ['vertical', 'middle', Vertical.middle],
+      ['horizontal', 'center', Classic.Horizontal.center],
+      ['thermostat_mode', 'heat', Classic.OperationMode.heat],
+      ['vertical', 'middle', Classic.Vertical.middle],
     ],
   )
 })

@@ -1,8 +1,4 @@
-import type {
-  BuildingZone,
-  ClassicDeviceType,
-  GroupState,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 
 import type { DriverCapabilitiesOptions } from '../../types/settings.mts'
@@ -19,7 +15,7 @@ const api = {
     homey: { app },
   }: {
     homey: Homey
-  }): [keyof GroupState, DriverCapabilitiesOptions][] {
+  }): [keyof Classic.GroupState, DriverCapabilitiesOptions][] {
     return app.getClassicAtaCapabilities()
   },
   async getClassicAtaState({
@@ -30,7 +26,7 @@ const api = {
     homey: Homey
     params: ZoneData
     query: GetAtaOptions
-  }): Promise<GroupAtaStates | GroupState> {
+  }): Promise<Classic.GroupState | GroupAtaStates> {
     return mode === 'detailed' ?
         app.getClassicAtaDetailedStates({ ...params, status })
       : app.getClassicAtaState(params)
@@ -38,8 +34,8 @@ const api = {
   getClassicBuildings({
     query: { type },
   }: {
-    query: { type?: `${ClassicDeviceType}` }
-  }): BuildingZone[] {
+    query: { type?: `${Classic.DeviceType}` }
+  }): Classic.BuildingZone[] {
     return getClassicBuildings({
       type: type ? toDeviceType(type) : undefined,
     })
@@ -52,7 +48,7 @@ const api = {
     homey: { app },
     params,
   }: {
-    body: GroupState
+    body: Classic.GroupState
     homey: Homey
     params: ZoneData
   }): Promise<void> {

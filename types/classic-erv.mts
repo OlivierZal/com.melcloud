@@ -1,10 +1,4 @@
-import type {
-  ClassicDeviceType,
-  FanSpeed,
-  GetDeviceData,
-  ListDeviceDataErv,
-  UpdateDeviceDataErv,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {
   BaseGetCapabilities,
@@ -31,22 +25,22 @@ export interface ListCapabilities extends BaseListCapabilities {
 }
 
 export interface SetCapabilities extends BaseSetCapabilities {
-  readonly fan_speed: FanSpeed
+  readonly fan_speed: Classic.FanSpeed
   readonly thermostat_mode: keyof typeof ThermostatModeErv
 }
 
 export const setCapabilityTagMapping: Record<
   keyof SetCapabilities,
-  keyof UpdateDeviceDataErv
+  keyof Classic.UpdateDeviceDataErv
 > = {
   fan_speed: 'SetFanSpeed',
   onoff: 'Power',
-  thermostat_mode: 'VentilationMode',
+  thermostat_mode: 'ClassicVentilationMode',
 }
 
 export const getCapabilityTagMapping: Record<
   keyof GetCapabilities,
-  keyof GetDeviceData<typeof ClassicDeviceType.Erv>
+  keyof Classic.GetDeviceData<typeof Classic.DeviceType.Erv>
 > = {
   measure_co2: 'RoomCO2Level',
   measure_temperature: 'RoomTemperature',
@@ -55,7 +49,7 @@ export const getCapabilityTagMapping: Record<
 
 export const listCapabilityTagMapping: Record<
   keyof ListCapabilities,
-  keyof ListDeviceDataErv
+  keyof Classic.ListDeviceDataErv
 > = {
   measure_pm25: 'PM25Level',
   measure_signal_strength: 'WifiSignalStrength',

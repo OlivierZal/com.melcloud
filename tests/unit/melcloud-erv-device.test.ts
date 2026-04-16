@@ -1,8 +1,5 @@
-import {
-  type ListDeviceDataErv,
-  VentilationMode,
-} from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import { ThermostatModeErv } from '../../types/erv.mts'
 import {
@@ -35,17 +32,17 @@ describe(ClassicMELCloudDeviceErv, () => {
 
   describe('device-to-capability conversions', () => {
     it.each([
-      [VentilationMode.auto, true, 'auto'],
-      [VentilationMode.auto, false, ThermostatModeErv.off],
-      [VentilationMode.recovery, true, 'recovery'],
-      [VentilationMode.bypass, true, 'bypass'],
+      [Classic.VentilationMode.auto, true, 'auto'],
+      [Classic.VentilationMode.auto, false, ThermostatModeErv.off],
+      [Classic.VentilationMode.recovery, true, 'recovery'],
+      [Classic.VentilationMode.bypass, true, 'bypass'],
     ])(
       'thermostat_mode(%s, Power: %s) should return %s',
       (input, isPoweredOn, expected) => {
         const {
           deviceToCapability: { thermostat_mode: converter },
         } = device
-        const data = mock<ListDeviceDataErv>({ Power: isPoweredOn })
+        const data = mock<Classic.ListDeviceDataErv>({ Power: isPoweredOn })
 
         expect(converter?.(input, data)).toBe(expected)
       },
@@ -55,9 +52,9 @@ describe(ClassicMELCloudDeviceErv, () => {
   testCapabilityToDeviceConverters(
     () => device as object,
     [
-      ['thermostat_mode', 'auto', VentilationMode.auto],
-      ['thermostat_mode', 'recovery', VentilationMode.recovery],
-      ['thermostat_mode', 'bypass', VentilationMode.bypass],
+      ['thermostat_mode', 'auto', Classic.VentilationMode.auto],
+      ['thermostat_mode', 'recovery', Classic.VentilationMode.recovery],
+      ['thermostat_mode', 'bypass', Classic.VentilationMode.bypass],
     ],
   )
 })

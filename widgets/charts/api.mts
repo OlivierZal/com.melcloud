@@ -1,9 +1,8 @@
 import type {
-  ClassicDeviceType,
-  DeviceZone,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import type { HourNumbers } from 'luxon'
 
@@ -15,8 +14,8 @@ const api = {
   getClassicDevices({
     query: { type },
   }: {
-    query: { type?: `${ClassicDeviceType}` }
-  }): DeviceZone[] {
+    query: { type?: `${Classic.DeviceType}` }
+  }): Classic.DeviceZone[] {
     return getClassicZones({
       type: type ? toDeviceType(type) : undefined,
     }).filter((zone) => zone.model === 'devices')

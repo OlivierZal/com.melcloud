@@ -1,7 +1,4 @@
-import {
-  type ListDeviceData,
-  ClassicDeviceType,
-} from '@olivierzal/melcloud-api'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { Capabilities } from '../../types/capabilities.mts'
 import {
@@ -14,7 +11,7 @@ import {
 import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
 export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
-  typeof ClassicDeviceType.Atw
+  typeof Classic.DeviceType.Atw
 > {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMapping
 
@@ -26,10 +23,10 @@ export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
 
   public readonly setCapabilityTagMapping = setCapabilityTagMapping
 
-  public readonly type = ClassicDeviceType.Atw
+  public readonly type = Classic.DeviceType.Atw
 
   readonly #zone1Capabilities: (keyof Capabilities<
-    typeof ClassicDeviceType.Atw
+    typeof Classic.DeviceType.Atw
   >)[] = [
     'onoff',
     'hot_water_mode',
@@ -51,11 +48,11 @@ export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
   ]
 
   readonly #zone1CoolCapabilities: (keyof Capabilities<
-    typeof ClassicDeviceType.Atw
+    typeof Classic.DeviceType.Atw
   >)[] = ['target_temperature.flow_cool']
 
   readonly #zone2Capabilities: (keyof Capabilities<
-    typeof ClassicDeviceType.Atw
+    typeof Classic.DeviceType.Atw
   >)[] = [
     'measure_temperature.zone2',
     'target_temperature.zone2',
@@ -65,18 +62,18 @@ export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
   ]
 
   readonly #zone2CoolCapabilities: (keyof Capabilities<
-    typeof ClassicDeviceType.Atw
+    typeof Classic.DeviceType.Atw
   >)[] = ['target_temperature.flow_cool_zone2']
 
   public override getRequiredCapabilities(
-    data?: ListDeviceData<typeof ClassicDeviceType.Atw>,
+    data?: Classic.ListDeviceData<typeof Classic.DeviceType.Atw>,
   ): string[] {
     /* v8 ignore next -- data is always provided by callers */
-    const { CanCool: canCool, HasZone2: hasZone2 } = data ?? {}
+    const { CanCool: canCool, HasZone2: hasClassicZone2 } = data ?? {}
     return [
       ...this.#zone1Capabilities,
       ...(canCool === true ? this.#zone1CoolCapabilities : []),
-      ...(hasZone2 === true ?
+      ...(hasClassicZone2 === true ?
         [
           ...this.#zone2Capabilities,
           ...(canCool === true ? this.#zone2CoolCapabilities : []),

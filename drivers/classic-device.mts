@@ -1,9 +1,5 @@
-import {
-  type ClassicDeviceType,
-  type DeviceFacade,
-  type ListDeviceData,
-  EntityNotFoundError,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 
 import type {
   Capabilities,
@@ -21,7 +17,7 @@ import { BaseMELCloudDevice } from './base-device.mts'
 import { type EnergyReportConfig, EnergyReport } from './base-report.mts'
 
 export abstract class ClassicMELCloudDevice<
-  T extends ClassicDeviceType,
+  T extends Classic.DeviceType,
 > extends BaseMELCloudDevice {
   declare public readonly driver: ClassicMELCloudDriver<T>
 
@@ -74,18 +70,18 @@ export abstract class ClassicMELCloudDevice<
     string
   > | null
 
-  protected get facade(): DeviceFacade<T> | undefined {
+  protected get facade(): Classic.DeviceFacade<T> | undefined {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from generic base FacadeWithSetValues
-    return this.cachedFacade as DeviceFacade<T> | undefined
+    return this.cachedFacade as Classic.DeviceFacade<T> | undefined
   }
 
-  get #data(): ListDeviceData<T> | undefined {
+  get #data(): Classic.ListDeviceData<T> | undefined {
     return this.facade?.data
   }
 
-  public override async ensureDevice(): Promise<DeviceFacade<T> | null> {
+  public override async ensureDevice(): Promise<Classic.DeviceFacade<T> | null> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from base FacadeWithSetValues after super call
-    return (await super.ensureDevice()) as DeviceFacade<T> | null
+    return (await super.ensureDevice()) as Classic.DeviceFacade<T> | null
   }
 
   public override async syncFromDevice(): Promise<void> {
@@ -107,7 +103,7 @@ export abstract class ClassicMELCloudDevice<
     return new EnergyReport(this, config)
   }
 
-  protected override getFacade(): DeviceFacade<T> {
+  protected override getFacade(): Classic.DeviceFacade<T> {
     return this.homey.app.getClassicFacade('devices', this.id)
   }
 
@@ -116,7 +112,9 @@ export abstract class ClassicMELCloudDevice<
     return this.#data ? this.driver.getRequiredCapabilities(this.#data) : []
   }
 
-  protected async setCapabilityValues(data: ListDeviceData<T>): Promise<void> {
+  protected async setCapabilityValues(
+    data: Classic.ListDeviceData<T>,
+  ): Promise<void> {
     this.homey.api.realtime('deviceupdate', null)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing shared [string, string][] to typed entries
     const entries = this
@@ -135,15 +133,15 @@ export abstract class ClassicMELCloudDevice<
 
   #convertFromDevice<TKey extends keyof Capabilities<T>>(
     capability: TKey,
-    value: ListDeviceData<T>[keyof ListDeviceData<T>],
-    data?: ListDeviceData<T>,
+    value: Classic.ListDeviceData<T>[keyof Classic.ListDeviceData<T>],
+    data?: Classic.ListDeviceData<T>,
   ): Capabilities<T>[TKey] {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- converter output narrowed to specific capability type
     return (this.deviceToCapability[capability]?.(value, data) ??
       value) as Capabilities<T>[TKey]
   }
 
-  async #getDeviceData(): Promise<ListDeviceData<T> | null> {
+  async #getDeviceData(): Promise<Classic.ListDeviceData<T> | null> {
     try {
       if (this.#data) {
         return this.#data

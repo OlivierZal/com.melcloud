@@ -1,7 +1,4 @@
-import type {
-  ClassicDeviceType,
-  ListDeviceDataAta,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type {
@@ -13,7 +10,7 @@ import type {
 import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import { createInstance } from './create-test-instance.ts'
 
-type TestDeviceType = typeof ClassicDeviceType.Ata
+type TestDeviceType = typeof Classic.DeviceType.Ata
 
 export type { TestDeviceType }
 export class TestDevice extends ClassicMELCloudDevice<TestDeviceType> {
@@ -42,7 +39,7 @@ export class TestDevice extends ClassicMELCloudDevice<TestDeviceType> {
   }
 
   public async exposedSetCapabilityValues(
-    data: ListDeviceDataAta,
+    data: Classic.ListDeviceDataAta,
   ): Promise<void> {
     await this.setCapabilityValues(data)
   }

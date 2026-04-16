@@ -1,4 +1,4 @@
-import type { BuildingZone, GroupState } from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -6,7 +6,7 @@ import type { DriverCapabilitiesOptions } from '../../types/settings.mts'
 import type { GroupAtaStates, ZoneData } from '../../types/widgets.mts'
 import { mock } from '../helpers.js'
 
-const mockGetBuildings = vi.fn<() => BuildingZone[]>()
+const mockGetBuildings = vi.fn<() => Classic.BuildingZone[]>()
 
 vi.mock(
   import('../../lib/classic-facade-manager.mts'),
@@ -20,9 +20,9 @@ const { default: api } = await import('../../widgets/ata-group-setting/api.mts')
 
 const mockApp = {
   getClassicAtaCapabilities:
-    vi.fn<() => [keyof GroupState, DriverCapabilitiesOptions][]>(),
+    vi.fn<() => [keyof Classic.GroupState, DriverCapabilitiesOptions][]>(),
   getClassicAtaDetailedStates: vi.fn<() => Promise<GroupAtaStates>>(),
-  getClassicAtaState: vi.fn<() => Promise<GroupState>>(),
+  getClassicAtaState: vi.fn<() => Promise<Classic.GroupState>>(),
   updateClassicAtaState: vi.fn<() => Promise<void>>(),
 }
 
@@ -38,7 +38,7 @@ describe('ata-group-setting api', () => {
   describe('ata capability retrieval', () => {
     it('should delegate to app.getClassicAtaCapabilities', () => {
       const capabilities =
-        mock<[keyof GroupState, DriverCapabilitiesOptions][]>()
+        mock<[keyof Classic.GroupState, DriverCapabilitiesOptions][]>()
       mockApp.getClassicAtaCapabilities.mockReturnValue(capabilities)
 
       const result = api.getClassicAtaCapabilities({ homey })
@@ -69,7 +69,7 @@ describe('ata-group-setting api', () => {
     })
 
     it('should call getClassicAtaState when mode is not detailed', async () => {
-      const values = mock<GroupState>()
+      const values = mock<Classic.GroupState>()
       mockApp.getClassicAtaState.mockResolvedValue(values)
 
       const result = await api.getClassicAtaState({
@@ -85,7 +85,7 @@ describe('ata-group-setting api', () => {
 
   describe('building retrieval', () => {
     it('should delegate to getClassicBuildings without type', () => {
-      const buildings = mock<BuildingZone[]>()
+      const buildings = mock<Classic.BuildingZone[]>()
       mockGetBuildings.mockReturnValue(buildings)
 
       const result = api.getClassicBuildings({ query: { type: undefined } })
@@ -95,7 +95,7 @@ describe('ata-group-setting api', () => {
     })
 
     it('should pass numeric type filter', () => {
-      const buildings = mock<BuildingZone[]>()
+      const buildings = mock<Classic.BuildingZone[]>()
       mockGetBuildings.mockReturnValue(buildings)
 
       const result = api.getClassicBuildings({ query: { type: '0' } })
@@ -118,7 +118,7 @@ describe('ata-group-setting api', () => {
 
   describe('ata value update', () => {
     it('should delegate to app.updateClassicAtaState', async () => {
-      const body = mock<GroupState>()
+      const body = mock<Classic.GroupState>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
       mockApp.updateClassicAtaState.mockResolvedValue()
 

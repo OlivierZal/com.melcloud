@@ -1,12 +1,6 @@
-import {
-  type HomeDeviceCapabilities,
-  type ListDeviceDataAta,
-  type ListDeviceDataAtw,
-  type ListDeviceDataErv,
-  OperationModeStateHotWater,
-  OperationModeStateZone,
-} from '@olivierzal/melcloud-api'
+import type * as Home from '@olivierzal/melcloud-api/home'
 import { describe, expect, it } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import {
   fanSpeedValues,
@@ -21,7 +15,7 @@ import { mock } from '../helpers.ts'
 
 describe(getCapabilitiesOptionsAtaErv, () => {
   it('should return fan_speed with min 0 when HasAutomaticFanSpeed is true', () => {
-    const data = mock<ListDeviceDataAta>({
+    const data = mock<Classic.ListDeviceDataAta>({
       HasAutomaticFanSpeed: true,
       NumberOfFanSpeeds: 5,
     })
@@ -33,7 +27,7 @@ describe(getCapabilitiesOptionsAtaErv, () => {
   })
 
   it('should return fan_speed with min 1 when HasAutomaticFanSpeed is false', () => {
-    const data = mock<ListDeviceDataAta>({
+    const data = mock<Classic.ListDeviceDataAta>({
       HasAutomaticFanSpeed: false,
       NumberOfFanSpeeds: 3,
     })
@@ -45,7 +39,7 @@ describe(getCapabilitiesOptionsAtaErv, () => {
   })
 
   it('should work with ERV device data', () => {
-    const data = mock<ListDeviceDataErv>({
+    const data = mock<Classic.ListDeviceDataErv>({
       HasAutomaticFanSpeed: true,
       NumberOfFanSpeeds: 4,
     })
@@ -59,7 +53,7 @@ describe(getCapabilitiesOptionsAtaErv, () => {
 
 describe(homeGetCapabilitiesOptions, () => {
   it('should return fan_speed options from Home device capabilities', () => {
-    const capabilities = mock<HomeDeviceCapabilities>({
+    const capabilities = mock<Home.DeviceCapabilities>({
       hasAutomaticFanSpeed: true,
       numberOfFanSpeeds: 4,
     })
@@ -71,7 +65,7 @@ describe(homeGetCapabilitiesOptions, () => {
   })
 
   it('should return min 1 when hasAutomaticFanSpeed is false', () => {
-    const capabilities = mock<HomeDeviceCapabilities>({
+    const capabilities = mock<Home.DeviceCapabilities>({
       hasAutomaticFanSpeed: false,
       numberOfFanSpeeds: 5,
     })
@@ -118,7 +112,7 @@ describe('fan speed values', () => {
 
 describe(getCapabilitiesOptionsAtw, () => {
   it('should include only non-cool values when CanCool is false', () => {
-    const data = mock<ListDeviceDataAtw>({
+    const data = mock<Classic.ListDeviceDataAtw>({
       CanCool: false,
       HasZone2: false,
     })
@@ -130,7 +124,7 @@ describe(getCapabilitiesOptionsAtw, () => {
   })
 
   it('should include cool values when CanCool is true', () => {
-    const data = mock<ListDeviceDataAtw>({
+    const data = mock<Classic.ListDeviceDataAtw>({
       CanCool: true,
       HasZone2: false,
     })
@@ -148,7 +142,7 @@ describe(getCapabilitiesOptionsAtw, () => {
   })
 
   it('should include zone2 when HasZone2 is true', () => {
-    const data = mock<ListDeviceDataAtw>({
+    const data = mock<Classic.ListDeviceDataAtw>({
       CanCool: false,
       HasZone2: true,
     })
@@ -159,7 +153,7 @@ describe(getCapabilitiesOptionsAtw, () => {
   })
 
   it('should include zone2 with cool values when both CanCool and HasZone2 are true', () => {
-    const data = mock<ListDeviceDataAtw>({
+    const data = mock<Classic.ListDeviceDataAtw>({
       CanCool: true,
       HasZone2: true,
     })
@@ -176,7 +170,7 @@ describe(getCapabilitiesOptionsAtw, () => {
   })
 
   it('should apply addSuffixToTitle to cool mode titles', () => {
-    const data = mock<ListDeviceDataAtw>({
+    const data = mock<Classic.ListDeviceDataAtw>({
       CanCool: true,
       HasZone2: false,
     })
@@ -203,7 +197,7 @@ describe('hot water mode options', () => {
 
 describe('hot water operation state options', () => {
   it('should have the correct values', () => {
-    expect(OperationModeStateHotWater).toStrictEqual({
+    expect(Classic.OperationModeStateHotWater).toStrictEqual({
       dhw: 'dhw',
       idle: 'idle',
       legionella: 'legionella',
@@ -214,7 +208,7 @@ describe('hot water operation state options', () => {
 
 describe('zone operation state options', () => {
   it('should have the correct values', () => {
-    expect(OperationModeStateZone).toStrictEqual({
+    expect(Classic.OperationModeStateZone).toStrictEqual({
       cooling: 'cooling',
       defrost: 'defrost',
       heating: 'heating',

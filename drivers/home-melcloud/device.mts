@@ -1,20 +1,17 @@
+import type * as Home from '@olivierzal/melcloud-api/home'
 import {
-  type FanSpeed,
-  type HomeDeviceAtaFacade,
   fanSpeedFromClassic,
   fanSpeedToClassic,
-  Horizontal,
   horizontalFromClassic,
   horizontalToClassic,
-  OperationMode,
   operationModeFromClassic,
   operationModeToClassic,
-  Vertical,
   verticalFromClassic,
   verticalToClassic,
 } from '@olivierzal/melcloud-api'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { DeviceFacade } from '../../types/device.mts'
+import type { ClassicDeviceFacade } from '../../types/device.mts'
 import type {
   HomeCapabilitiesAta,
   HomeConvertFromDevice,
@@ -39,13 +36,13 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
   protected readonly capabilityToDevice: Partial<
     Record<keyof HomeSetCapabilitiesAta, HomeConvertToDevice>
   > = {
-    fan_speed: (value: FanSpeed) => fanSpeedFromClassic[value],
-    horizontal: (value: keyof typeof Horizontal) =>
-      horizontalFromClassic[Horizontal[value]],
-    thermostat_mode: (value: keyof typeof OperationMode) =>
-      operationModeFromClassic[OperationMode[value]],
-    vertical: (value: keyof typeof Vertical) =>
-      verticalFromClassic[Vertical[value]],
+    fan_speed: (value: Classic.FanSpeed) => fanSpeedFromClassic[value],
+    horizontal: (value: keyof typeof Classic.Horizontal) =>
+      horizontalFromClassic[Classic.Horizontal[value]],
+    thermostat_mode: (value: keyof typeof Classic.OperationMode) =>
+      operationModeFromClassic[Classic.OperationMode[value]],
+    vertical: (value: keyof typeof Classic.Vertical) =>
+      verticalFromClassic[Classic.Vertical[value]],
   }
 
   protected readonly deviceToCapability: Record<
@@ -97,15 +94,15 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
   /* v8 ignore stop */
 
   /* v8 ignore next -- tested via TestHomeDevice which provides its own implementation */
-  protected override getFacade(): HomeDeviceAtaFacade {
+  protected override getFacade(): Home.DeviceAtaFacade {
     return this.homey.app.getHomeFacade(this.id)
   }
 
-  async #setCapabilityValues(device: DeviceFacade): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- converters accept DeviceFacade at runtime; concrete HomeConvertFromDevice type is narrower for bivariance
+  async #setCapabilityValues(device: ClassicDeviceFacade): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- converters accept ClassicDeviceFacade at runtime; concrete HomeConvertFromDevice type is narrower for bivariance
     const converters = Object.entries(this.deviceToCapability) as [
       string,
-      (device: DeviceFacade) => unknown,
+      (device: ClassicDeviceFacade) => unknown,
     ][]
     await Promise.all(
       converters.map(async ([capability, convert]) => {

@@ -1,26 +1,24 @@
+import type * as Home from '@olivierzal/melcloud-api/home'
 import {
-  type HomeDeviceAtaFacade,
-  FanSpeed,
   fanSpeedFromClassic,
-  Horizontal,
   horizontalFromClassic,
-  Vertical,
   verticalFromClassic,
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import { ThermostatModeAta } from '../../types/ata.mts'
 import { testThermostatMode } from '../device-descriptors.ts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
-vi.mock(import('@olivierzal/melcloud-api'), async (importOriginal) => {
+vi.mock(import('@olivierzal/melcloud-api/home'), async (importOriginal) => {
   const actual =
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- typeof import() required by vitest importOriginal generic
-    await importOriginal<typeof import('@olivierzal/melcloud-api')>()
+    await importOriginal<typeof import('@olivierzal/melcloud-api/home')>()
   return {
     ...actual,
-    HomeDeviceAtaFacade: vi.fn(),
+    DeviceAtaFacade: vi.fn(),
   }
 })
 
@@ -31,8 +29,8 @@ vi.mock('homey', async () => {
 })
 
 const mockFacade = (
-  overrides: Partial<HomeDeviceAtaFacade>,
-): HomeDeviceAtaFacade => overrides as HomeDeviceAtaFacade
+  overrides: Partial<Home.DeviceAtaFacade>,
+): Home.DeviceAtaFacade => overrides as Home.DeviceAtaFacade
 
 describe(HomeMELCloudDeviceAta, () => {
   let device: any
@@ -69,10 +67,10 @@ describe(HomeMELCloudDeviceAta, () => {
       } = device
 
       expect(converter?.(mockFacade({ setFanSpeed: 'Auto' }))).toBe(
-        FanSpeed.auto,
+        Classic.FanSpeed.auto,
       )
       expect(converter?.(mockFacade({ setFanSpeed: 'Three' }))).toBe(
-        FanSpeed.moderate,
+        Classic.FanSpeed.moderate,
       )
     })
 
@@ -150,7 +148,9 @@ describe(HomeMELCloudDeviceAta, () => {
         capabilityToDevice: { horizontal: converter },
       } = device
       const {
-        [Horizontal['center' as keyof typeof Horizontal] as Horizontal]: mapped,
+        [Classic.Horizontal[
+          'center' as keyof typeof Classic.Horizontal
+        ] as Classic.Horizontal]: mapped,
       } = horizontalFromClassic
 
       expect(converter?.('center')).toBe(mapped)
@@ -161,7 +161,9 @@ describe(HomeMELCloudDeviceAta, () => {
         capabilityToDevice: { vertical: converter },
       } = device
       const {
-        [Vertical['auto' as keyof typeof Vertical] as Vertical]: mapped,
+        [Classic.Vertical[
+          'auto' as keyof typeof Classic.Vertical
+        ] as Classic.Vertical]: mapped,
       } = verticalFromClassic
 
       expect(converter?.('auto')).toBe(mapped)

@@ -1,30 +1,25 @@
-import type {
-  BuildingZone,
-  ClassicDeviceType,
-  ClassicFacadeManager,
-  Zone,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 
-const state: { facadeManager?: ClassicFacadeManager } = {}
+const state: { facadeManager?: Classic.FacadeManager } = {}
 
-const getClassicFacadeManager = (): ClassicFacadeManager => {
+const getClassicFacadeManager = (): Classic.FacadeManager => {
   const { facadeManager } = state
   if (!facadeManager) {
-    throw new Error('FacadeManager has not been initialized')
+    throw new Error('Classic.FacadeManager has not been initialized')
   }
   return facadeManager
 }
 
-export const setClassicFacadeManager = (value: ClassicFacadeManager): void => {
+export const setClassicFacadeManager = (value: Classic.FacadeManager): void => {
   state.facadeManager = value
 }
 
 export const getClassicBuildings = ({
   type,
-}: { type?: ClassicDeviceType } = {}): BuildingZone[] =>
+}: { type?: Classic.DeviceType } = {}): Classic.BuildingZone[] =>
   getClassicFacadeManager().getBuildings({ type })
 
 export const getClassicZones = ({
   type,
-}: { type?: ClassicDeviceType } = {}): Zone[] =>
+}: { type?: Classic.DeviceType } = {}): Classic.Zone[] =>
   getClassicFacadeManager().getZones({ type })

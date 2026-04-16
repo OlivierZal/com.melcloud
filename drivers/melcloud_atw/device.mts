@@ -1,12 +1,6 @@
-import {
-  type ClassicDeviceType,
-  type ListDeviceData,
-  type OperationModeState,
-  hasZone2,
-  isAtwFacade,
-  OperationModeZone,
-} from '@olivierzal/melcloud-api'
+import { hasClassicZone2, isClassicAtwFacade } from '@olivierzal/melcloud-api'
 import { DateTime } from 'luxon'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {
   ConvertFromDevice,
@@ -25,38 +19,38 @@ import {
 import { ClassicMELCloudDevice } from '../classic-device.mts'
 
 const convertFromDeviceMeasurePower: ConvertFromDevice<
-  typeof ClassicDeviceType.Atw
+  typeof Classic.DeviceType.Atw
 > = (value: number) => value * KILOWATT_TO_WATT
 
 const convertFromDeviceOperationZone: ConvertFromDevice<
-  typeof ClassicDeviceType.Atw
-> = (value: OperationModeZone) => operationModeZoneFromDevice[value]
+  typeof Classic.DeviceType.Atw
+> = (value: Classic.OperationModeZone) => operationModeZoneFromDevice[value]
 
 export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
-  typeof ClassicDeviceType.Atw
+  typeof Classic.DeviceType.Atw
 > {
   protected readonly capabilityToDevice: Partial<
     Record<
-      keyof SetCapabilities<typeof ClassicDeviceType.Atw>,
-      ConvertToDevice<typeof ClassicDeviceType.Atw>
+      keyof SetCapabilities<typeof Classic.DeviceType.Atw>,
+      ConvertToDevice<typeof Classic.DeviceType.Atw>
     >
   > = {
     hot_water_mode: (value: keyof typeof HotWaterMode) =>
       HotWaterMode[value] === HotWaterMode.forced,
-    thermostat_mode: (value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value],
-    'thermostat_mode.zone2': (value: keyof typeof OperationModeZone) =>
-      OperationModeZone[value],
+    thermostat_mode: (value: keyof typeof Classic.OperationModeZone) =>
+      Classic.OperationModeZone[value],
+    'thermostat_mode.zone2': (value: keyof typeof Classic.OperationModeZone) =>
+      Classic.OperationModeZone[value],
   }
 
   protected readonly deviceToCapability: Partial<
     Record<
-      keyof OperationalCapabilities<typeof ClassicDeviceType.Atw>,
-      ConvertFromDevice<typeof ClassicDeviceType.Atw>
+      keyof OperationalCapabilities<typeof Classic.DeviceType.Atw>,
+      ConvertFromDevice<typeof Classic.DeviceType.Atw>
     >
   > = {
     'alarm_generic.defrost': Boolean as ConvertFromDevice<
-      typeof ClassicDeviceType.Atw
+      typeof Classic.DeviceType.Atw
     >,
     measure_power: convertFromDeviceMeasurePower,
     'measure_power.produced': convertFromDeviceMeasurePower,
@@ -86,7 +80,7 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
         month: 'short',
         weekday: 'short',
       }),
-    operational_state: (value: OperationModeState) =>
+    operational_state: (value: Classic.OperationModeState) =>
       operationModeStateFromDevice[value],
   }
 
@@ -109,7 +103,7 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
   protected readonly thermostatMode = null
 
   protected override async setCapabilityValues(
-    data: ListDeviceData<typeof ClassicDeviceType.Atw>,
+    data: Classic.ListDeviceData<typeof Classic.DeviceType.Atw>,
   ): Promise<void> {
     await super.setCapabilityValues(data)
     await this.#setOperationModeStates()
@@ -117,14 +111,14 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
 
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
-  ): ConvertFromDevice<typeof ClassicDeviceType.Atw> {
+  ): ConvertFromDevice<typeof Classic.DeviceType.Atw> {
     // Fall back to the minimum allowed value in case of undefined or null
     return (value: number) => value || this.getCapabilityOptions(capability).min
   }
 
   async #setOperationModeStates(): Promise<void> {
     const { facade } = this
-    if (!facade || !isAtwFacade(facade)) {
+    if (!facade || !isClassicAtwFacade(facade)) {
       return
     }
     await this.setCapabilityValue(
@@ -135,7 +129,10 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
       'operational_state.zone1',
       facade.zone1.operationalState,
     )
-    if (this.hasCapability('operational_state.zone2') && hasZone2(facade)) {
+    if (
+      this.hasCapability('operational_state.zone2') &&
+      hasClassicZone2(facade)
+    ) {
       await this.setCapabilityValue(
         'operational_state.zone2',
         facade.zone2.operationalState,

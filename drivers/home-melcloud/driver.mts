@@ -1,4 +1,4 @@
-import { type HomeAPI, HomeDeviceType } from '@olivierzal/melcloud-api'
+import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { HomeMELCloudDevice } from '../../types/home.mts'
 import { homeGetCapabilitiesOptions } from '../../types/ata-erv.mts'
@@ -13,9 +13,9 @@ export default class HomeMELCloudDriverAta extends BaseMELCloudDriver {
   public override readonly setCapabilityTagMapping =
     homeSetCapabilityTagMappingAta
 
-  public override readonly type = HomeDeviceType.Ata
+  public override readonly type = Home.DeviceType.Ata
 
-  protected override get api(): HomeAPI {
+  protected override get api(): Home.API {
     return this.homey.app.homeApi
   }
 

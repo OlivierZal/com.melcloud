@@ -3,7 +3,7 @@ import { type DurationLike, DateTime, Duration } from 'luxon'
 
 import type { CapabilityConverter } from '../types/capabilities.mts'
 import type {
-  DeviceFacade,
+  ClassicDeviceFacade,
   EnergyReportMode,
   EnergyReportOperation,
 } from '../types/device.mts'
@@ -55,7 +55,7 @@ export abstract class BaseMELCloudDevice extends Device {
     return this.getData().id
   }
 
-  protected get cachedFacade(): DeviceFacade | undefined {
+  protected get cachedFacade(): ClassicDeviceFacade | undefined {
     return this.#deviceFacade
   }
 
@@ -71,7 +71,7 @@ export abstract class BaseMELCloudDevice extends Device {
     })
   }
 
-  #deviceFacade?: DeviceFacade
+  #deviceFacade?: ClassicDeviceFacade
 
   #getCapabilityTagMapping: Record<string, string> = {}
 
@@ -130,7 +130,7 @@ export abstract class BaseMELCloudDevice extends Device {
     config: EnergyReportConfig,
   ): EnergyReportOperation
 
-  protected abstract getFacade(): DeviceFacade
+  protected abstract getFacade(): ClassicDeviceFacade
 
   public abstract syncFromDevice(): Promise<void>
 
@@ -157,7 +157,7 @@ export abstract class BaseMELCloudDevice extends Device {
   }
   /* v8 ignore stop */
 
-  public async ensureDevice(): Promise<DeviceFacade | null> {
+  public async ensureDevice(): Promise<ClassicDeviceFacade | null> {
     try {
       if (!this.#deviceFacade) {
         this.#deviceFacade = this.getFacade()

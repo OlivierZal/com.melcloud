@@ -1,11 +1,11 @@
-import type { GroupState } from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { GetAtaOptions, GroupAtaStates } from '../../../types/widgets.mts'
 import {
-  FanSpeed,
-  heatModes,
-  OPERATION_MODE_MIXED,
-  OperationMode,
+  CLASSIC_OPERATION_MODE_MIXED,
+  ClassicFanSpeed,
+  ClassicOperationMode,
+  classicHeatModes,
 } from './constants.mts'
 import { getSelect } from './dom.mts'
 import { type Homey, homeyApiGet } from './homey-api.mts'
@@ -61,8 +61,8 @@ const generateDelay = (delay: number, speed: number): number =>
   (Math.random() * delay) /
   (SPEED_FACTOR_MIN *
     (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
-      ((speed - FanSpeed.very_slow) /
-        (FanSpeed.very_fast - FanSpeed.very_slow)) || 1)
+      ((speed - ClassicFanSpeed.very_slow) /
+        (ClassicFanSpeed.very_fast - ClassicFanSpeed.very_slow)) || 1)
 
 const getZoneValue = (): string => getZonePath(getSelect('zones').value)
 
@@ -196,18 +196,19 @@ export class AnimationController {
     number,
     (speed: number) => Promise<void> | void
   > = {
-    [OPERATION_MODE_MIXED]: async (speed) => this.#runMixedAnimation(speed),
-    [OperationMode.auto]: (speed) => {
+    [CLASSIC_OPERATION_MODE_MIXED]: async (speed) =>
+      this.#runMixedAnimation(speed),
+    [ClassicOperationMode.auto]: (speed) => {
       this.#runFireAnimation(speed)
       this.#runSnowAnimation(speed)
     },
-    [OperationMode.cool]: (speed) => {
+    [ClassicOperationMode.cool]: (speed) => {
       this.#runSnowAnimation(speed)
     },
-    [OperationMode.dry]: (speed) => {
+    [ClassicOperationMode.dry]: (speed) => {
       this.#runSunAnimation(speed)
     },
-    [OperationMode.fan]: (speed) => {
+    [ClassicOperationMode.fan]: (speed) => {
       this.#generateRecurring(
         (fanSpeed) => {
           this.#createLeaf(fanSpeed)
@@ -216,7 +217,7 @@ export class AnimationController {
         speed,
       )
     },
-    [OperationMode.heat]: (speed) => {
+    [ClassicOperationMode.heat]: (speed) => {
       this.#runFireAnimation(speed)
     },
   }
@@ -253,14 +254,14 @@ export class AnimationController {
   }
 
   public async applyAnimation(
-    state: GroupState,
+    state: Classic.GroupState,
     isAnimations: boolean,
   ): Promise<void> {
     if (isAnimations) {
       const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
 
       const isSomethingOn = isOn !== false
-      const newSpeed = Number(speed) || FanSpeed.moderate
+      const newSpeed = Number(speed) || ClassicFanSpeed.moderate
       const newMode = Number(mode ?? null)
 
       await this.#reset({ isSomethingOn, mode: newMode })
@@ -379,7 +380,7 @@ export class AnimationController {
         () => {
           this.#createSmoke(flame, speed)
         },
-        generateDelay(AnimationDelay.smoke, FanSpeed.very_slow),
+        generateDelay(AnimationDelay.smoke, ClassicFanSpeed.very_slow),
       )
     }
   }
@@ -576,9 +577,9 @@ export class AnimationController {
       const modes = await this.#getModes()
       if (
         isSomethingOn &&
-        (heatModes.has(mode) ||
-          (mode === OPERATION_MODE_MIXED &&
-            modes.some((currentMode) => heatModes.has(currentMode))))
+        (classicHeatModes.has(mode) ||
+          (mode === CLASSIC_OPERATION_MODE_MIXED &&
+            modes.some((currentMode) => classicHeatModes.has(currentMode))))
       ) {
         if (this.#smokeAnimationFrameId !== null) {
           cancelAnimationFrame(this.#smokeAnimationFrameId)
@@ -595,7 +596,7 @@ export class AnimationController {
         () => {
           flame.remove()
         },
-        generateDelay(AnimationDelay.flame, FanSpeed.very_slow),
+        generateDelay(AnimationDelay.flame, ClassicFanSpeed.very_slow),
       )
     }
   }
@@ -608,9 +609,9 @@ export class AnimationController {
     if (resetParams?.isSomethingOn === true) {
       const modes = await this.#getModes()
       const isDryActive =
-        resetParams.mode === OperationMode.dry ||
-        (resetParams.mode === OPERATION_MODE_MIXED &&
-          modes.includes(OperationMode.dry))
+        resetParams.mode === ClassicOperationMode.dry ||
+        (resetParams.mode === CLASSIC_OPERATION_MODE_MIXED &&
+          modes.includes(ClassicOperationMode.dry))
       if (isDryActive) {
         return
       }
@@ -631,16 +632,22 @@ export class AnimationController {
 
   async #runMixedAnimation(speed: number): Promise<void> {
     const modes = new Set(await this.#getModes())
-    if (modes.has(OperationMode.auto) || modes.has(OperationMode.cool)) {
+    if (
+      modes.has(ClassicOperationMode.auto) ||
+      modes.has(ClassicOperationMode.cool)
+    ) {
       this.#runSnowAnimation(speed)
     }
-    if (modes.has(OperationMode.auto) || modes.has(OperationMode.heat)) {
+    if (
+      modes.has(ClassicOperationMode.auto) ||
+      modes.has(ClassicOperationMode.heat)
+    ) {
       this.#runFireAnimation(speed)
     }
-    if (modes.has(OperationMode.dry)) {
+    if (modes.has(ClassicOperationMode.dry)) {
       this.#runSunAnimation(speed)
     }
-    if (modes.has(OperationMode.fan)) {
+    if (modes.has(ClassicOperationMode.fan)) {
       this.#generateRecurring(
         (leafSpeed) => {
           this.#createLeaf(leafSpeed)

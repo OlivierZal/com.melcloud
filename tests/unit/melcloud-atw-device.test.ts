@@ -1,12 +1,5 @@
-import {
-  type ListDeviceDataAtw,
-  ClassicDeviceType,
-  OperationModeState,
-  OperationModeStateHotWater,
-  OperationModeStateZone,
-  OperationModeZone,
-} from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type {
@@ -24,7 +17,7 @@ import { mock } from '../helpers.ts'
 import ClassicMELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
-type AtwType = typeof ClassicDeviceType.Atw
+type AtwType = typeof Classic.DeviceType.Atw
 
 const K_MULTIPLIER = 1000
 
@@ -62,20 +55,20 @@ const mockDriver = mock<ClassicMELCloudDriver<AtwType>>({
 const mockAtwFacade = (
   target: any,
   overrides: {
-    hotWater?: { operationalState: OperationModeStateHotWater }
-    zone1?: { operationalState: OperationModeStateZone }
-    zone2?: { operationalState: OperationModeStateZone }
+    hotWater?: { operationalState: Classic.OperationModeStateHotWater }
+    zone1?: { operationalState: Classic.OperationModeStateZone }
+    zone2?: { operationalState: Classic.OperationModeStateZone }
   },
 ): void => {
   Object.defineProperty(target, 'facade', {
     configurable: true,
     value: {
       hotWater: overrides.hotWater ?? {
-        operationalState: OperationModeStateHotWater.idle,
+        operationalState: Classic.OperationModeStateHotWater.idle,
       },
-      type: ClassicDeviceType.Atw,
+      type: Classic.DeviceType.Atw,
       zone1: overrides.zone1 ?? {
-        operationalState: OperationModeStateZone.idle,
+        operationalState: Classic.OperationModeStateZone.idle,
       },
       ...('zone2' in overrides && { zone2: overrides.zone2 }),
     },
@@ -85,9 +78,9 @@ const mockAtwFacade = (
 const callSetCapabilityValues = async (target: any): Promise<void> =>
   (
     target as unknown as {
-      setCapabilityValues: (data: ListDeviceDataAtw) => Promise<void>
+      setCapabilityValues: (data: Classic.ListDeviceDataAtw) => Promise<void>
     }
-  ).setCapabilityValues(mock<ListDeviceDataAtw>({}))
+  ).setCapabilityValues(mock<Classic.ListDeviceDataAtw>({}))
 
 describe(ClassicMELCloudDeviceAtw, () => {
   let device: any
@@ -128,11 +121,11 @@ describe(ClassicMELCloudDeviceAtw, () => {
       ['alarm_generic.defrost', 0, false],
       ['measure_power', 2.5, 2.5 * K_MULTIPLIER],
       ['measure_power.produced', 1.5, 1.5 * K_MULTIPLIER],
-      ['thermostat_mode', OperationModeZone.room, 'room'],
-      ['thermostat_mode.zone2', OperationModeZone.flow, 'flow'],
+      ['thermostat_mode', Classic.OperationModeZone.room, 'room'],
+      ['thermostat_mode.zone2', Classic.OperationModeZone.flow, 'flow'],
       ['hot_water_mode', true, HotWaterMode.forced],
       ['hot_water_mode', false, HotWaterMode.auto],
-      ['operational_state', OperationModeState.heating, 'heating'],
+      ['operational_state', Classic.OperationModeState.heating, 'heating'],
       ['target_temperature.flow_heat', 0, 10],
       ['target_temperature.flow_heat', 35, 35],
     ])('%s(%s) should return %s', (key, input, expected) => {
@@ -159,8 +152,8 @@ describe(ClassicMELCloudDeviceAtw, () => {
     it.each([
       ['hot_water_mode', 'forced', true],
       ['hot_water_mode', 'auto', false],
-      ['thermostat_mode', 'room', OperationModeZone.room],
-      ['thermostat_mode.zone2', 'flow', OperationModeZone.flow],
+      ['thermostat_mode', 'room', Classic.OperationModeZone.room],
+      ['thermostat_mode.zone2', 'flow', Classic.OperationModeZone.flow],
     ])('%s(%s) should return %s', (key, input, expected) => {
       const {
         capabilityToDevice: { [key]: converter },
@@ -172,11 +165,11 @@ describe(ClassicMELCloudDeviceAtw, () => {
 
   describe('operation mode state mapping', () => {
     it.each([
-      ['hot_water', 'hotWater', OperationModeStateHotWater.dhw],
-      ['hot_water', 'hotWater', OperationModeStateHotWater.prohibited],
-      ['zone1', 'zone1', OperationModeStateZone.prohibited],
-      ['zone1', 'zone1', OperationModeStateZone.idle],
-      ['zone2', 'zone2', OperationModeStateZone.heating],
+      ['hot_water', 'hotWater', Classic.OperationModeStateHotWater.dhw],
+      ['hot_water', 'hotWater', Classic.OperationModeStateHotWater.prohibited],
+      ['zone1', 'zone1', Classic.OperationModeStateZone.prohibited],
+      ['zone1', 'zone1', Classic.OperationModeStateZone.idle],
+      ['zone2', 'zone2', Classic.OperationModeStateZone.heating],
     ] as const)(
       'should set operational_state.%s from facade %s state %s',
       async (capability, zone, state) => {
@@ -195,7 +188,7 @@ describe(ClassicMELCloudDeviceAtw, () => {
         (cap: string) => cap !== 'operational_state.zone2',
       )
       mockAtwFacade(device, {
-        zone2: { operationalState: OperationModeStateZone.idle },
+        zone2: { operationalState: Classic.OperationModeStateZone.idle },
       })
       await callSetCapabilityValues(device)
 

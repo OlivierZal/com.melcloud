@@ -1,14 +1,4 @@
-import {
-  type ClassicDeviceType,
-  type EnergyDataAtw,
-  type GetDeviceData,
-  type ListDeviceDataAtw,
-  type OperationModeStateHotWater,
-  type OperationModeStateZone,
-  type UpdateDeviceDataAtw,
-  OperationModeState,
-  OperationModeZone,
-} from '@olivierzal/melcloud-api'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import { thermostatMode } from '../files.mts'
 import {
@@ -22,21 +12,27 @@ import {
 } from './bases.mts'
 
 export const operationModeStateFromDevice = {
-  [OperationModeState.cooling]: 'cooling',
-  [OperationModeState.defrost]: 'defrost',
-  [OperationModeState.dhw]: 'dhw',
-  [OperationModeState.heating]: 'heating',
-  [OperationModeState.idle]: 'idle',
-  [OperationModeState.legionella]: 'legionella',
-} as const satisfies Record<OperationModeState, keyof typeof OperationModeState>
+  [Classic.OperationModeState.cooling]: 'cooling',
+  [Classic.OperationModeState.defrost]: 'defrost',
+  [Classic.OperationModeState.dhw]: 'dhw',
+  [Classic.OperationModeState.heating]: 'heating',
+  [Classic.OperationModeState.idle]: 'idle',
+  [Classic.OperationModeState.legionella]: 'legionella',
+} as const satisfies Record<
+  Classic.OperationModeState,
+  keyof typeof Classic.OperationModeState
+>
 
 export const operationModeZoneFromDevice = {
-  [OperationModeZone.curve]: 'curve',
-  [OperationModeZone.flow]: 'flow',
-  [OperationModeZone.flow_cool]: 'flow_cool',
-  [OperationModeZone.room]: 'room',
-  [OperationModeZone.room_cool]: 'room_cool',
-} as const satisfies Record<OperationModeZone, keyof typeof OperationModeZone>
+  [Classic.OperationModeZone.curve]: 'curve',
+  [Classic.OperationModeZone.flow]: 'flow',
+  [Classic.OperationModeZone.flow_cool]: 'flow_cool',
+  [Classic.OperationModeZone.room]: 'room',
+  [Classic.OperationModeZone.room_cool]: 'room_cool',
+} as const satisfies Record<
+  Classic.OperationModeZone,
+  keyof typeof Classic.OperationModeZone
+>
 
 const addSuffixToTitle = (
   title: LocalizedStrings,
@@ -108,7 +104,7 @@ const createCoolObject = ({
 }: {
   id: 'flow' | 'room'
   title: LocalizedStrings
-}): CapabilitiesOptionsValues<keyof typeof OperationModeZone> => ({
+}): CapabilitiesOptionsValues<keyof typeof Classic.OperationModeZone> => ({
   id: `${id}_${COOL_SUFFIX}`,
   title: addSuffixToTitle(title, {
     ar: '- تبريد',
@@ -130,7 +126,7 @@ const createCoolObject = ({
 const thermostatModeTitleAtw = addSuffixToTitle(thermostatMode.title, {
   ar: '- المنطقة 2',
   da: '- zone 2',
-  de: '- Zone 2',
+  de: '- ClassicZone 2',
   en: '- zone 2',
   es: '- zona 2',
   fr: '- zone 2',
@@ -153,15 +149,15 @@ const thermostatModeValuesAtw = [
 
 export const getCapabilitiesOptions = ({
   CanCool: canCool,
-  HasZone2: hasZone2,
-}: ListDeviceDataAtw): Partial<CapabilitiesOptions> => {
+  HasZone2: hasClassicZone2,
+}: Classic.ListDeviceDataAtw): Partial<CapabilitiesOptions> => {
   const values =
     canCool ?
       thermostatModeValuesAtw
     : thermostatModeValuesAtw.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
   return {
     thermostat_mode: { values },
-    ...(hasZone2 && {
+    ...(hasClassicZone2 && {
       'thermostat_mode.zone2': { title: thermostatModeTitleAtw, values },
     }),
   }
@@ -178,9 +174,9 @@ export interface Capabilities
     GetCapabilities,
     ListCapabilities,
     SetCapabilities {
-  readonly 'operational_state.hot_water': OperationModeStateHotWater
-  readonly 'operational_state.zone1': OperationModeStateZone
-  readonly 'operational_state.zone2': OperationModeStateZone
+  readonly 'operational_state.hot_water': Classic.OperationModeStateHotWater
+  readonly 'operational_state.zone1': Classic.OperationModeStateZone
+  readonly 'operational_state.zone2': Classic.OperationModeStateZone
 }
 
 export interface EnergyCapabilities {
@@ -214,7 +210,7 @@ export interface GetCapabilities extends BaseGetCapabilities {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
-  readonly operational_state: keyof typeof OperationModeState
+  readonly operational_state: keyof typeof Classic.OperationModeState
 }
 
 export type HotWaterMode = (typeof HotWaterMode)[keyof typeof HotWaterMode]
@@ -248,8 +244,8 @@ export interface SetCapabilities
   readonly target_temperature: number
   readonly 'target_temperature.tank_water': number
   readonly 'target_temperature.zone2': number
-  readonly thermostat_mode: keyof typeof OperationModeZone
-  readonly 'thermostat_mode.zone2': keyof typeof OperationModeZone
+  readonly thermostat_mode: keyof typeof Classic.OperationModeZone
+  readonly 'thermostat_mode.zone2': keyof typeof Classic.OperationModeZone
 }
 
 export interface TargetTemperatureFlowCapabilities {
@@ -261,7 +257,7 @@ export interface TargetTemperatureFlowCapabilities {
 
 export const setCapabilityTagMapping: Record<
   keyof SetCapabilities,
-  keyof UpdateDeviceDataAtw
+  keyof Classic.UpdateDeviceDataAtw
 > = {
   hot_water_mode: 'ForcedHotWaterMode',
   onoff: 'Power',
@@ -278,7 +274,7 @@ export const setCapabilityTagMapping: Record<
 
 export const getCapabilityTagMapping: Record<
   keyof GetCapabilities,
-  keyof GetDeviceData<typeof ClassicDeviceType.Atw>
+  keyof Classic.GetDeviceData<typeof Classic.DeviceType.Atw>
 > = {
   measure_temperature: 'RoomTemperatureZone1',
   'measure_temperature.outdoor': 'OutdoorTemperature',
@@ -289,7 +285,7 @@ export const getCapabilityTagMapping: Record<
 
 export const listCapabilityTagMapping: Record<
   keyof ListCapabilities,
-  keyof ListDeviceDataAtw
+  keyof Classic.ListDeviceDataAtw
 > = {
   'alarm_generic.booster_heater1': 'BoosterHeater1Status',
   'alarm_generic.booster_heater2': 'BoosterHeater2Status',
@@ -316,7 +312,7 @@ export const listCapabilityTagMapping: Record<
 
 export const energyCapabilityTagMapping: Record<
   keyof EnergyCapabilities,
-  readonly (keyof EnergyDataAtw)[]
+  readonly (keyof Classic.EnergyDataAtw)[]
 > = {
   meter_power: [
     'TotalCoolingConsumed',
@@ -386,13 +382,13 @@ export interface CapabilitiesOptions {
   readonly 'target_temperature.flow_heat_zone2': RangeOptions
   readonly thermostat_mode: {
     readonly values: readonly CapabilitiesOptionsValues<
-      keyof typeof OperationModeZone
+      keyof typeof Classic.OperationModeZone
     >[]
   }
   readonly 'thermostat_mode.zone2': {
     readonly title: LocalizedStrings
     readonly values: readonly {
-      readonly id: keyof typeof OperationModeZone
+      readonly id: keyof typeof Classic.OperationModeZone
       readonly title: LocalizedStrings
     }[]
   }

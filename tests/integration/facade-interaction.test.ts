@@ -1,10 +1,5 @@
-import {
-  ClassicDeviceType,
-  Horizontal,
-  OperationMode,
-  Vertical,
-} from '@olivierzal/melcloud-api'
 import { describe, expect, it } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import {
   horizontalFromDevice,
@@ -14,34 +9,34 @@ import {
 
 describe('facade interaction patterns', () => {
   describe('reverse mapping with as-const enums', () => {
-    it('should resolve ClassicDeviceType values', () => {
-      expect(ClassicDeviceType.Ata).toBe(ClassicDeviceType.Ata)
-      expect(ClassicDeviceType.Atw).toBe(ClassicDeviceType.Atw)
-      expect(ClassicDeviceType.Erv).toBe(ClassicDeviceType.Erv)
+    it('should resolve Classic.DeviceType values', () => {
+      expect(Classic.DeviceType.Ata).toBe(Classic.DeviceType.Ata)
+      expect(Classic.DeviceType.Atw).toBe(Classic.DeviceType.Atw)
+      expect(Classic.DeviceType.Erv).toBe(Classic.DeviceType.Erv)
     })
 
-    it('should reverse-map Horizontal values', () => {
-      expect(horizontalFromDevice[Horizontal.auto]).toBe('auto')
-      expect(horizontalFromDevice[Horizontal.center]).toBe('center')
-      expect(horizontalFromDevice[Horizontal.swing]).toBe('swing')
+    it('should reverse-map Classic.Horizontal values', () => {
+      expect(horizontalFromDevice[Classic.Horizontal.auto]).toBe('auto')
+      expect(horizontalFromDevice[Classic.Horizontal.center]).toBe('center')
+      expect(horizontalFromDevice[Classic.Horizontal.swing]).toBe('swing')
     })
 
-    it('should reverse-map Vertical values', () => {
-      expect(verticalFromDevice[Vertical.auto]).toBe('auto')
-      expect(verticalFromDevice[Vertical.upwards]).toBe('upwards')
-      expect(verticalFromDevice[Vertical.swing]).toBe('swing')
+    it('should reverse-map Classic.Vertical values', () => {
+      expect(verticalFromDevice[Classic.Vertical.auto]).toBe('auto')
+      expect(verticalFromDevice[Classic.Vertical.upwards]).toBe('upwards')
+      expect(verticalFromDevice[Classic.Vertical.swing]).toBe('swing')
     })
 
-    it('should reverse-map OperationMode values', () => {
-      expect(operationModeFromDevice[OperationMode.auto]).toBe('auto')
-      expect(operationModeFromDevice[OperationMode.cool]).toBe('cool')
-      expect(operationModeFromDevice[OperationMode.heat]).toBe('heat')
+    it('should reverse-map Classic.OperationMode values', () => {
+      expect(operationModeFromDevice[Classic.OperationMode.auto]).toBe('auto')
+      expect(operationModeFromDevice[Classic.OperationMode.cool]).toBe('cool')
+      expect(operationModeFromDevice[Classic.OperationMode.heat]).toBe('heat')
     })
 
     it('should forward-map from key to value', () => {
-      expect(Horizontal.auto).toBe(Horizontal.auto)
-      expect(OperationMode.cool).toBe(OperationMode.cool)
-      expect(Vertical.swing).toBe(Vertical.swing)
+      expect(Classic.Horizontal.auto).toBe(Classic.Horizontal.auto)
+      expect(Classic.OperationMode.cool).toBe(Classic.OperationMode.cool)
+      expect(Classic.Vertical.swing).toBe(Classic.Vertical.swing)
     })
   })
 })

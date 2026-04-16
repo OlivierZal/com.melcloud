@@ -1,4 +1,4 @@
-import type { HomeDevice } from '@olivierzal/melcloud-api'
+import type * as Home from '@olivierzal/melcloud-api/home'
 import type PairSession from 'homey/lib/PairSession'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -99,11 +99,11 @@ describe(BaseMELCloudDriver, () => {
   describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
       const devices = [
-        mock<HomeDevice>({
+        mock<Home.Device>({
           id: 'device-1',
           name: 'Living Room',
         }),
-        mock<HomeDevice>({
+        mock<Home.Device>({
           id: 'device-2',
           name: 'Guest Room',
         }),

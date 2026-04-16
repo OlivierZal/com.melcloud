@@ -1,4 +1,5 @@
-import type { DeviceType, LoginCredentials } from '@olivierzal/melcloud-api'
+import type { DeviceType } from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type PairSession from 'homey/lib/PairSession'
 
 import type { AuthAPI } from '../types/device.mts'
@@ -56,7 +57,7 @@ export abstract class BaseMELCloudDriver extends Driver {
   }
 
   #registerLoginHandler(session: PairSession): void {
-    session.setHandler('login', async (data: LoginCredentials) =>
+    session.setHandler('login', async (data: Classic.LoginCredentials) =>
       this.api.authenticate(data),
     )
   }

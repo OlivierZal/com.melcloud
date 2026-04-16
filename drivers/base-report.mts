@@ -1,4 +1,4 @@
-import type { ClassicDeviceType, EnergyData } from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/Homey'
 import {
   type DateObjectUnits,
@@ -20,9 +20,9 @@ import { typedEntries } from '../lib/typed-object.mts'
 import type { ClassicMELCloudDevice } from './classic-device.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 
-const sumTags = <T extends ClassicDeviceType>(
-  data: EnergyData<T>,
-  tags: readonly (keyof EnergyData<T>)[],
+const sumTags = <T extends Classic.DeviceType>(
+  data: Classic.EnergyData<T>,
+  tags: readonly (keyof Classic.EnergyData<T>)[],
 ): number =>
   tags.reduce((accumulator, tag) => accumulator + Number(data[tag]), 0)
 
@@ -34,7 +34,7 @@ export interface EnergyReportConfig {
   readonly values: DateObjectUnits
 }
 
-export class EnergyReport<T extends ClassicDeviceType> {
+export class EnergyReport<T extends Classic.DeviceType> {
   readonly #config: EnergyReportConfig
 
   readonly #device: ClassicMELCloudDevice<T>
@@ -56,7 +56,7 @@ export class EnergyReport<T extends ClassicDeviceType> {
     ) as unknown as Partial<EnergyCapabilityTagMapping<T>>
     return typedEntries<
       string & keyof EnergyCapabilities<T>,
-      readonly (keyof EnergyData<T>)[]
+      readonly (keyof Classic.EnergyData<T>)[]
     >(cleaned).filter(
       ([capability]) =>
         isTotalEnergyKey(capability) === (this.#config.mode === 'total'),
@@ -93,7 +93,7 @@ export class EnergyReport<T extends ClassicDeviceType> {
    * Falls back to divisor of 1 to avoid division by zero when no energy consumed
    */
   #calculateCopValue(
-    data: EnergyData<T>,
+    data: Classic.EnergyData<T>,
     capability: string & keyof EnergyCapabilities<T>,
   ): number {
     const {
@@ -106,8 +106,8 @@ export class EnergyReport<T extends ClassicDeviceType> {
   }
 
   #calculateEnergyValue(
-    data: EnergyData<T>,
-    tags: readonly (keyof EnergyData<T>)[],
+    data: Classic.EnergyData<T>,
+    tags: readonly (keyof Classic.EnergyData<T>)[],
   ): number {
     return sumTags(data, tags) / this.#linkedDeviceCount
   }
@@ -117,8 +117,8 @@ export class EnergyReport<T extends ClassicDeviceType> {
    * Multiply by KILOWATT_TO_WATT to convert from kW to W
    */
   #calculatePowerValue(
-    data: EnergyData<T>,
-    tags: readonly (keyof EnergyData<T>)[],
+    data: Classic.EnergyData<T>,
+    tags: readonly (keyof Classic.EnergyData<T>)[],
     hour: HourNumbers,
   ): number {
     let total = 0
@@ -175,7 +175,7 @@ export class EnergyReport<T extends ClassicDeviceType> {
     )
   }
 
-  async #set(data: EnergyData<T>, hour: HourNumbers): Promise<void> {
+  async #set(data: Classic.EnergyData<T>, hour: HourNumbers): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
       ;({ length: this.#linkedDeviceCount } =
         data.UsageDisclaimerPercentages.split(','))
@@ -184,7 +184,7 @@ export class EnergyReport<T extends ClassicDeviceType> {
       this.#energyCapabilityTagEntries.map(
         async ([capability, tags]: [
           string & keyof EnergyCapabilities<T>,
-          readonly (keyof EnergyData<T>)[],
+          readonly (keyof Classic.EnergyData<T>)[],
         ]) => {
           if (capability.includes('cop')) {
             await this.#device.setCapabilityValue(

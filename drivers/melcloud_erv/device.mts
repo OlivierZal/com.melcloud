@@ -1,8 +1,4 @@
-import {
-  type ClassicDeviceType,
-  type ListDeviceData,
-  VentilationMode,
-} from '@olivierzal/melcloud-api'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {
   ConvertFromDevice,
@@ -17,27 +13,27 @@ import {
 import { ClassicMELCloudDevice } from '../classic-device.mts'
 
 export default class ClassicMELCloudDeviceErv extends ClassicMELCloudDevice<
-  typeof ClassicDeviceType.Erv
+  typeof Classic.DeviceType.Erv
 > {
   protected readonly capabilityToDevice: Partial<
     Record<
-      keyof SetCapabilities<typeof ClassicDeviceType.Erv>,
-      ConvertToDevice<typeof ClassicDeviceType.Erv>
+      keyof SetCapabilities<typeof Classic.DeviceType.Erv>,
+      ConvertToDevice<typeof Classic.DeviceType.Erv>
     >
   > = {
-    thermostat_mode: (value: keyof typeof VentilationMode) =>
-      VentilationMode[value],
+    thermostat_mode: (value: keyof typeof Classic.VentilationMode) =>
+      Classic.VentilationMode[value],
   }
 
   protected readonly deviceToCapability: Partial<
     Record<
-      keyof OperationalCapabilities<typeof ClassicDeviceType.Erv>,
-      ConvertFromDevice<typeof ClassicDeviceType.Erv>
+      keyof OperationalCapabilities<typeof Classic.DeviceType.Erv>,
+      ConvertFromDevice<typeof Classic.DeviceType.Erv>
     >
   > = {
     thermostat_mode: (
-      value: VentilationMode,
-      data: ListDeviceData<typeof ClassicDeviceType.Erv>,
+      value: Classic.VentilationMode,
+      data: Classic.ListDeviceData<typeof Classic.DeviceType.Erv>,
     ) =>
       data.Power ? ventilationModeFromDevice[value] : ThermostatModeErv.off,
   }

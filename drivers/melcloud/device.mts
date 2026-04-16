@@ -1,11 +1,4 @@
-import {
-  type ClassicDeviceType,
-  type ListDeviceData,
-  FanSpeed,
-  Horizontal,
-  OperationMode,
-  Vertical,
-} from '@olivierzal/melcloud-api'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {
   ConvertFromDevice,
@@ -23,35 +16,37 @@ import {
 import { ClassicMELCloudDevice } from '../classic-device.mts'
 
 export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
-  typeof ClassicDeviceType.Ata
+  typeof Classic.DeviceType.Ata
 > {
   protected readonly capabilityToDevice: Partial<
     Record<
-      keyof SetCapabilities<typeof ClassicDeviceType.Ata>,
-      ConvertToDevice<typeof ClassicDeviceType.Ata>
+      keyof SetCapabilities<typeof Classic.DeviceType.Ata>,
+      ConvertToDevice<typeof Classic.DeviceType.Ata>
     >
   > = {
-    horizontal: (value: keyof typeof Horizontal) => Horizontal[value],
-    thermostat_mode: (value: keyof typeof OperationMode) =>
-      OperationMode[value],
-    vertical: (value: keyof typeof Vertical) => Vertical[value],
+    horizontal: (value: keyof typeof Classic.Horizontal) =>
+      Classic.Horizontal[value],
+    thermostat_mode: (value: keyof typeof Classic.OperationMode) =>
+      Classic.OperationMode[value],
+    vertical: (value: keyof typeof Classic.Vertical) => Classic.Vertical[value],
   }
 
   protected readonly deviceToCapability: Partial<
     Record<
-      keyof OperationalCapabilities<typeof ClassicDeviceType.Ata>,
-      ConvertFromDevice<typeof ClassicDeviceType.Ata>
+      keyof OperationalCapabilities<typeof Classic.DeviceType.Ata>,
+      ConvertFromDevice<typeof Classic.DeviceType.Ata>
     >
   > = {
-    'alarm_generic.silent': (value: FanSpeed) => value === FanSpeed.silent,
-    fan_speed: (value: FanSpeed) =>
-      value === FanSpeed.silent ? FanSpeed.auto : value,
-    horizontal: (value: Horizontal) => horizontalFromDevice[value],
+    'alarm_generic.silent': (value: Classic.FanSpeed) =>
+      value === Classic.FanSpeed.silent,
+    fan_speed: (value: Classic.FanSpeed) =>
+      value === Classic.FanSpeed.silent ? Classic.FanSpeed.auto : value,
+    horizontal: (value: Classic.Horizontal) => horizontalFromDevice[value],
     thermostat_mode: (
-      value: OperationMode,
-      data: ListDeviceData<typeof ClassicDeviceType.Ata>,
+      value: Classic.OperationMode,
+      data: Classic.ListDeviceData<typeof Classic.DeviceType.Ata>,
     ) => (data.Power ? operationModeFromDevice[value] : ThermostatModeAta.off),
-    vertical: (value: Vertical) => verticalFromDevice[value],
+    vertical: (value: Classic.Vertical) => verticalFromDevice[value],
   }
 
   protected readonly energyReportRegular: EnergyReportConfig = {

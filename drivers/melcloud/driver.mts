@@ -1,4 +1,4 @@
-import { ClassicDeviceType } from '@olivierzal/melcloud-api'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import { getCapabilitiesOptionsAtaErv } from '../../types/ata-erv.mts'
 import {
@@ -10,7 +10,7 @@ import {
 import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
 export default class ClassicMELCloudDriverAta extends ClassicMELCloudDriver<
-  typeof ClassicDeviceType.Ata
+  typeof Classic.DeviceType.Ata
 > {
   public readonly energyCapabilityTagMapping = energyCapabilityTagMapping
 
@@ -22,7 +22,7 @@ export default class ClassicMELCloudDriverAta extends ClassicMELCloudDriver<
 
   public readonly setCapabilityTagMapping = setCapabilityTagMapping
 
-  public readonly type = ClassicDeviceType.Ata
+  public readonly type = Classic.DeviceType.Ata
 
   public override getRequiredCapabilities(): string[] {
     return Object.keys({

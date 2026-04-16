@@ -1,17 +1,11 @@
-import type {
-  DeviceZone,
-  FanSpeed,
-  Horizontal,
-  OperationMode,
-  Vertical,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { HourNumbers } from 'luxon'
 
 import type { BaseSettings } from './bases.mts'
 
 export interface AtaGroupSettingWidgetSettings extends BaseSettings {
   readonly animations: boolean
-  readonly default_zone: DeviceZone | null
+  readonly default_zone: Classic.DeviceZone | null
 }
 
 export interface ChartsWidgetSettings extends BaseSettings {
@@ -21,7 +15,7 @@ export interface ChartsWidgetSettings extends BaseSettings {
     | 'signal'
     | 'temperatures'
   readonly days: number
-  readonly default_zone: DeviceZone | null
+  readonly default_zone: Classic.DeviceZone | null
   readonly height: `${number}`
 }
 
@@ -35,13 +29,13 @@ export interface GetAtaOptions {
 }
 
 export interface GroupAtaStates {
-  readonly FanSpeed: Exclude<FanSpeed, typeof FanSpeed.silent>[]
-  readonly OperationMode: OperationMode[]
+  readonly FanSpeed: Exclude<Classic.FanSpeed, typeof Classic.FanSpeed.silent>[]
+  readonly OperationMode: Classic.OperationMode[]
   readonly Power: boolean[]
   readonly SetTemperature: number[]
-  readonly VaneHorizontalDirection: Horizontal[]
+  readonly VaneHorizontalDirection: Classic.Horizontal[]
   readonly VaneHorizontalSwing: boolean[]
-  readonly VaneVerticalDirection: Vertical[]
+  readonly VaneVerticalDirection: Classic.Vertical[]
   readonly VaneVerticalSwing: boolean[]
 }
 

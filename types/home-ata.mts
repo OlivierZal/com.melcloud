@@ -1,7 +1,4 @@
-import type {
-  HomeAtaValues,
-  HomeDeviceAtaFacade,
-} from '@olivierzal/melcloud-api'
+import type * as Home from '@olivierzal/melcloud-api/home'
 
 import type { ThermostatModeAta } from './ata.mts'
 import type {
@@ -33,7 +30,7 @@ export interface HomeSetCapabilitiesAta extends BaseSetCapabilities {
 export type HomeConvertFromDevice = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
   bivariant(
-    facade: HomeDeviceAtaFacade,
+    facade: Home.DeviceAtaFacade,
   ):
     | HomeCapabilitiesAta[keyof HomeSetCapabilitiesAta]
     | HomeCapabilitiesAta[
@@ -49,12 +46,12 @@ export type HomeConvertToDevice = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
   bivariant(
     value: HomeSetCapabilitiesAta[keyof HomeSetCapabilitiesAta],
-  ): HomeAtaValues[keyof HomeAtaValues]
+  ): Home.AtaValues[keyof Home.AtaValues]
 }['bivariant']
 
 export const homeSetCapabilityTagMappingAta: Record<
   keyof HomeSetCapabilitiesAta,
-  keyof HomeAtaValues
+  keyof Home.AtaValues
 > = {
   fan_speed: 'setFanSpeed',
   horizontal: 'vaneHorizontalDirection',

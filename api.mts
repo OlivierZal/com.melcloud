@@ -1,12 +1,4 @@
-import type {
-  BuildingZone,
-  ErrorLogQuery,
-  FrostProtectionData,
-  FrostProtectionQuery,
-  HolidayModeData,
-  HolidayModeQuery,
-  LoginCredentials,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 
 import type {
@@ -23,7 +15,7 @@ const api = {
     body,
     homey: { app },
   }: {
-    body: LoginCredentials
+    body: Classic.LoginCredentials
     homey: Homey
   }): Promise<boolean> {
     return app.authenticateClassic(body)
@@ -32,12 +24,12 @@ const api = {
     body,
     homey: { app },
   }: {
-    body: LoginCredentials
+    body: Classic.LoginCredentials
     homey: Homey
   }): Promise<boolean> {
     return app.authenticateHome(body)
   },
-  getClassicBuildings(): BuildingZone[] {
+  getClassicBuildings(): Classic.BuildingZone[] {
     return getClassicBuildings()
   },
   async getClassicErrorLog({
@@ -45,7 +37,7 @@ const api = {
     query,
   }: {
     homey: Homey
-    query: ErrorLogQuery
+    query: Classic.ErrorLogQuery
   }): Promise<FormattedErrorLog> {
     return app.getClassicErrorLog(query)
   },
@@ -55,7 +47,7 @@ const api = {
   }: {
     homey: Homey
     params: ZoneData
-  }): Promise<FrostProtectionData> {
+  }): Promise<Classic.FrostProtectionData> {
     return app.getClassicFrostProtection(params)
   },
   async getClassicHolidayMode({
@@ -64,7 +56,7 @@ const api = {
   }: {
     homey: Homey
     params: ZoneData
-  }): Promise<HolidayModeData> {
+  }): Promise<Classic.HolidayModeData> {
     return app.getClassicHolidayMode(params)
   },
   getDeviceSettings({ homey: { app } }: { homey: Homey }): DeviceSettings {
@@ -88,7 +80,7 @@ const api = {
     homey: { app },
     params,
   }: {
-    body: FrostProtectionQuery
+    body: Classic.FrostProtectionQuery
     homey: Homey
     params: ZoneData
   }): Promise<void> {
@@ -99,7 +91,7 @@ const api = {
     homey: { app },
     params,
   }: {
-    body: HolidayModeQuery
+    body: Classic.HolidayModeQuery
     homey: Homey
     params: ZoneData
   }): Promise<void> {

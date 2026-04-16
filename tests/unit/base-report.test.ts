@@ -1,4 +1,4 @@
-import type { ClassicDeviceType, EnergyDataAta } from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { DateTime, Settings } from 'luxon'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -12,7 +12,7 @@ import {
 } from '../../drivers/base-report.mts'
 import { getMockCallArg, mock } from '../helpers.ts'
 
-type TestDeviceType = typeof ClassicDeviceType.Ata
+type TestDeviceType = typeof Classic.DeviceType.Ata
 
 const FAKE_NOW_MILLIS = DateTime.fromISO('2026-03-18T12:00:00.000').toMillis()
 
@@ -195,7 +195,7 @@ describe(EnergyReport, () => {
   describe('energy value calculations', () => {
     it('should set power values using hourly data', async () => {
       mockEnergyFetch(
-        mock<EnergyDataAta>({
+        mock<Classic.EnergyDataAta>({
           Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 100],
           Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50],
         }),
@@ -214,7 +214,7 @@ describe(EnergyReport, () => {
         meter_power: ['TotalAutoConsumed', 'TotalCoolingConsumed'],
       })
       mockEnergyFetch(
-        mock<EnergyDataAta>({
+        mock<Classic.EnergyDataAta>({
           TotalAutoConsumed: 100,
           TotalCoolingConsumed: 50,
         }),
@@ -228,7 +228,7 @@ describe(EnergyReport, () => {
     it('should use zero fallback when hourly array element is undefined', async () => {
       const sparseArray: (number | undefined)[] = []
       mockEnergyFetch(
-        mock<EnergyDataAta>({
+        mock<Classic.EnergyDataAta>({
           Auto: sparseArray,
           Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
         }),
@@ -241,7 +241,7 @@ describe(EnergyReport, () => {
 
     it('should handle non-array tag data by skipping power calculation', async () => {
       mockEnergyFetch(
-        mock<EnergyDataAta>({
+        mock<Classic.EnergyDataAta>({
           Auto: 100,
           Cooling: 50,
         }),
@@ -254,7 +254,7 @@ describe(EnergyReport, () => {
 
     it('should handle UsageDisclaimerPercentages for linked device count', async () => {
       mockEnergyFetch(
-        mock<EnergyDataAta>({
+        mock<Classic.EnergyDataAta>({
           Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 100],
           Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50],
           UsageDisclaimerPercentages: '50,50',
@@ -273,7 +273,7 @@ describe(EnergyReport, () => {
         meter_power: ['TotalAutoConsumed', 'TotalCoolingConsumed'],
       })
       mockEnergyFetch(
-        mock<EnergyDataAta>({
+        mock<Classic.EnergyDataAta>({
           TotalAutoConsumed: 100,
           TotalCoolingConsumed: 50,
         }),
@@ -297,7 +297,7 @@ describe(EnergyReport, () => {
         meter_power: ['TotalAutoConsumed'],
       })
       const getEnergyMockLocal = mockEnergyFetch(
-        mock<EnergyDataAta>({
+        mock<Classic.EnergyDataAta>({
           TotalAutoConsumed: 100,
         }),
       )
@@ -375,7 +375,7 @@ describe(EnergyReport, () => {
         'meter_power.daily': ['TotalAutoConsumed', 'TotalCoolingConsumed'],
       })
       mockEnergyFetch(
-        mock<EnergyDataAta>({
+        mock<Classic.EnergyDataAta>({
           TotalAutoConsumed: 100,
           TotalCoolingConsumed: 50,
           UsageDisclaimerPercentages: '50,50',

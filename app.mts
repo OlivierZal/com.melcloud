@@ -1,39 +1,14 @@
-import {
-  type BuildingFacade,
-  type ClassicDevice,
-  type ClassicRegistry,
-  type DeviceFacade,
-  type DeviceType,
-  type ErrorLogQuery,
-  type Facade,
-  type FrostProtectionData,
-  type FrostProtectionQuery,
-  type GroupState,
-  type HolidayModeData,
-  type HolidayModeQuery,
-  type HomeDevice,
-  type HomeDeviceAtaFacade,
-  type HomeRegistry,
-  type ListDeviceDataAta,
-  type Logger,
-  type LoginCredentials,
-  type ReportChartLineOptions,
-  type ReportChartPieOptions,
-  type SettingManager,
-  type SyncCallback,
-  type ZoneFacade,
-  ClassicAPI,
-  ClassicDeviceType,
-  ClassicFacadeManager,
-  FanSpeed,
-  HomeAPI,
-  HomeDeviceType,
-  HomeFacadeManager,
-  Horizontal,
-  OperationMode,
-  Vertical,
+import type {
+  DeviceType,
+  Logger,
+  ReportChartLineOptions,
+  ReportChartPieOptions,
+  SettingManager,
+  SyncCallback,
 } from '@olivierzal/melcloud-api'
 import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
+import * as Classic from '@olivierzal/melcloud-api/classic'
+import * as Home from '@olivierzal/melcloud-api/home'
 
 import type {
   LoginSetting,
@@ -70,10 +45,10 @@ import { fanSpeedValues } from './types/ata-erv.mts'
 const NOTIFICATION_DELAY_MS = 10_000
 
 const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
-  [ClassicDeviceType.Ata]: 'melcloud',
-  [ClassicDeviceType.Atw]: 'melcloud_atw',
-  [ClassicDeviceType.Erv]: 'melcloud_erv',
-  [HomeDeviceType.Ata]: 'home-melcloud',
+  [Classic.DeviceType.Ata]: 'melcloud',
+  [Classic.DeviceType.Atw]: 'melcloud_atw',
+  [Classic.DeviceType.Erv]: 'melcloud_erv',
+  [Home.DeviceType.Ata]: 'home-melcloud',
 }
 
 const createDateRange = (days: number): { from: string; to: string } => {
@@ -171,27 +146,27 @@ const getLocalizedCapabilitiesOptions = (
 export default class MELCloudApp extends App {
   declare public readonly homey: Homey.Homey
 
-  public get classicApi(): ClassicAPI {
+  public get classicApi(): Classic.API {
     return this.#classicApi
   }
 
-  public get homeApi(): HomeAPI {
+  public get homeApi(): Home.API {
     return this.#homeApi
   }
 
-  #classicApi!: ClassicAPI
+  #classicApi!: Classic.API
 
-  #facadeManager!: ClassicFacadeManager
+  #facadeManager!: Classic.FacadeManager
 
-  #homeApi!: HomeAPI
+  #homeApi!: Home.API
 
-  #homeFacadeManager!: HomeFacadeManager
+  #homeFacadeManager!: Home.FacadeManager
 
-  get #classicRegistry(): ClassicRegistry {
+  get #classicRegistry(): Classic.Registry {
     return this.#classicApi.registry
   }
 
-  get #homeRegistry(): HomeRegistry {
+  get #homeRegistry(): Home.Registry {
     return this.#homeApi.registry
   }
 
@@ -212,16 +187,20 @@ export default class MELCloudApp extends App {
     await Promise.resolve()
   }
 
-  public async authenticateClassic(data: LoginCredentials): Promise<boolean> {
+  public async authenticateClassic(
+    data: Classic.LoginCredentials,
+  ): Promise<boolean> {
     return this.#classicApi.authenticate(data)
   }
 
-  public async authenticateHome(data: LoginCredentials): Promise<boolean> {
+  public async authenticateHome(
+    data: Classic.LoginCredentials,
+  ): Promise<boolean> {
     return this.#homeApi.authenticate(data)
   }
 
   public getClassicAtaCapabilities(): [
-    keyof GroupState & keyof ListDeviceDataAta,
+    keyof Classic.GroupState & keyof Classic.ListDeviceDataAta,
     DriverCapabilitiesOptions,
   ][] {
     return this.#getAtaCapabilityConfigs().map(
@@ -230,7 +209,7 @@ export default class MELCloudApp extends App {
         key,
         options,
       }): [
-        keyof GroupState & keyof ListDeviceDataAta,
+        keyof Classic.GroupState & keyof Classic.ListDeviceDataAta,
         DriverCapabilitiesOptions,
       ] => [
         key,
@@ -252,14 +231,14 @@ export default class MELCloudApp extends App {
     if (devices.length === 0) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic GroupState to typed GroupAtaStates
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic Classic.GroupState to typed GroupAtaStates
     return typedFromEntries(
       this.getClassicAtaCapabilities().map(([key]) => [
         key,
         devices
-          .filter((device) => device.type === ClassicDeviceType.Ata)
+          .filter((device) => device.type === Classic.DeviceType.Ata)
           // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic DeviceModel data to ATA-specific type
-          .map(({ data }) => data as ListDeviceDataAta)
+          .map(({ data }) => data as Classic.ListDeviceDataAta)
           .filter((data) => status !== 'on' || data.Power)
           .map((data) => data[key]),
       ]),
@@ -269,12 +248,12 @@ export default class MELCloudApp extends App {
   public async getClassicAtaState({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<GroupState> {
+  }: ZoneData): Promise<Classic.GroupState> {
     return this.getClassicFacade(zoneType, zoneId).getGroup()
   }
 
   public async getClassicErrorLog(
-    query: ErrorLogQuery,
+    query: Classic.ErrorLogQuery,
   ): Promise<FormattedErrorLog> {
     const { errors, fromDate, ...rest } =
       await this.#classicApi.getErrorLog(query)
@@ -291,18 +270,18 @@ export default class MELCloudApp extends App {
     }
   }
 
-  public getClassicFacade<T extends ClassicDeviceType>(
+  public getClassicFacade<T extends Classic.DeviceType>(
     zoneType: 'devices',
     id: number | string,
-  ): DeviceFacade<T>
+  ): Classic.DeviceFacade<T>
   public getClassicFacade(
     zoneType: 'areas' | 'buildings' | 'floors',
     id: number | string,
-  ): BuildingFacade | ZoneFacade
+  ): Classic.BuildingFacade | Classic.ZoneFacade
   public getClassicFacade(
     zoneType: 'areas' | 'buildings' | 'devices' | 'floors',
     id: number | string,
-  ): Facade {
+  ): Classic.Facade {
     const instance = this.#classicRegistry[zoneType].getById(Number(id))
     if (!instance) {
       throw new Error(
@@ -317,14 +296,14 @@ export default class MELCloudApp extends App {
   public async getClassicFrostProtection({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<FrostProtectionData> {
+  }: ZoneData): Promise<Classic.FrostProtectionData> {
     return this.getClassicFacade(zoneType, zoneId).getFrostProtection()
   }
 
   public async getClassicHolidayMode({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<HolidayModeData> {
+  }: ZoneData): Promise<Classic.HolidayModeData> {
     return this.getClassicFacade(zoneType, zoneId).getHolidayMode()
   }
 
@@ -393,9 +372,9 @@ export default class MELCloudApp extends App {
     return deviceSettings
   }
 
-  public getDevicesByType<T extends ClassicDeviceType>(
+  public getDevicesByType<T extends Classic.DeviceType>(
     type: T,
-  ): ClassicDevice<T>[] {
+  ): Classic.Device<T>[] {
     return this.#classicRegistry.getDevicesByType(type)
   }
 
@@ -411,11 +390,11 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public getHomeDevicesByType(type: HomeDeviceType): HomeDevice[] {
+  public getHomeDevicesByType(type: Home.DeviceType): Home.Device[] {
     return this.#homeRegistry.getByType(type)
   }
 
-  public getHomeFacade(deviceId: string): HomeDeviceAtaFacade {
+  public getHomeFacade(deviceId: string): Home.DeviceAtaFacade {
     const model = this.#homeRegistry.getById(deviceId)
     if (!model) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
@@ -427,7 +406,7 @@ export default class MELCloudApp extends App {
     state,
     zoneId,
     zoneType,
-  }: ZoneData & { state: GroupState }): Promise<void> {
+  }: ZoneData & { state: Classic.GroupState }): Promise<void> {
     const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
       zoneId,
@@ -439,7 +418,7 @@ export default class MELCloudApp extends App {
     settings,
     zoneId,
     zoneType,
-  }: ZoneData & { settings: FrostProtectionQuery }): Promise<void> {
+  }: ZoneData & { settings: Classic.FrostProtectionQuery }): Promise<void> {
     const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
       zoneId,
@@ -451,7 +430,7 @@ export default class MELCloudApp extends App {
     settings,
     zoneId,
     zoneType,
-  }: ZoneData & { settings: HolidayModeQuery }): Promise<void> {
+  }: ZoneData & { settings: Classic.HolidayModeQuery }): Promise<void> {
     const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
       zoneId,
@@ -487,7 +466,7 @@ export default class MELCloudApp extends App {
   }
 
   readonly #onSync: SyncCallback = async ({ ids, type } = {}) => {
-    await this.#syncDevices({
+    await this.#classicSyncDevices({
       driverId: type === undefined ? undefined : DRIVER_IDS_BY_TYPE[type],
       ids,
     })
@@ -569,8 +548,21 @@ export default class MELCloudApp extends App {
    * ATA capability configuration. `enumType` maps Homey's string capability IDs
    * to MELCloud's numeric enum values for localization
    */
+  async #classicSyncDevices(
+    filter: { driverId?: string; ids?: (number | string)[] } = {},
+  ): Promise<void> {
+    const results = await Promise.allSettled(
+      this.#getDevices(filter).map(async (device) => device.syncFromDevice()),
+    )
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        this.error('Device sync failed:', result.reason)
+      }
+    }
+  }
+
   #getAtaCapabilityConfigs(): {
-    key: keyof GroupState & keyof ListDeviceDataAta
+    key: keyof Classic.GroupState & keyof Classic.ListDeviceDataAta
     options: ManifestDriverCapabilitiesOptions
     enumType?: Record<string, number | string>
   }[] {
@@ -578,22 +570,22 @@ export default class MELCloudApp extends App {
       { key: 'Power', options: power },
       { key: 'SetTemperature', options: setTemperature },
       {
-        enumType: FanSpeed,
+        enumType: Classic.FanSpeed,
         key: 'FanSpeed',
         options: { ...fanSpeed, type: 'enum', values: fanSpeedValues },
       },
       {
-        enumType: Vertical,
+        enumType: Classic.Vertical,
         key: 'VaneVerticalDirection',
         options: vertical,
       },
       {
-        enumType: Horizontal,
+        enumType: Classic.Horizontal,
         key: 'VaneHorizontalDirection',
         options: horizontal,
       },
       {
-        enumType: OperationMode,
+        enumType: Classic.OperationMode,
         key: 'OperationMode',
         options: {
           ...thermostatMode,
@@ -628,13 +620,13 @@ export default class MELCloudApp extends App {
     language: string
     timezone: string
   }): Promise<void> {
-    this.#classicApi = await ClassicAPI.create({
+    this.#classicApi = await Classic.API.create({
       ...config,
       logger: this.#createLogger(),
       onSync: this.#onSync,
       settingManager: this.#createSettingManager(),
     })
-    this.#facadeManager = new ClassicFacadeManager(
+    this.#facadeManager = new Classic.FacadeManager(
       this.#classicApi,
       this.#classicRegistry,
     )
@@ -642,12 +634,12 @@ export default class MELCloudApp extends App {
   }
 
   async #initHomeApi(): Promise<void> {
-    this.#homeApi = await HomeAPI.create({
+    this.#homeApi = await Home.API.create({
       logger: this.#createLogger(),
       onSync: this.#onSync,
       settingManager: this.#createSettingManager('home'),
     })
-    this.#homeFacadeManager = new HomeFacadeManager(this.#homeApi)
+    this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
     await this.#homeApi.list()
   }
 
@@ -656,7 +648,7 @@ export default class MELCloudApp extends App {
       .getWidget('ata-group-setting')
       .registerSettingAutocompleteListener('default_zone', (query) =>
         this.#facadeManager
-          .getZones({ type: ClassicDeviceType.Ata })
+          .getZones({ type: Classic.DeviceType.Ata })
           .filter(({ model }) => model !== 'devices')
           .filter(({ name }) =>
             name.toLowerCase().includes(query.toLowerCase()),
@@ -672,18 +664,5 @@ export default class MELCloudApp extends App {
             name.toLowerCase().includes(query.toLowerCase()),
           ),
       )
-  }
-
-  async #syncDevices(
-    filter: { driverId?: string; ids?: (number | string)[] } = {},
-  ): Promise<void> {
-    const results = await Promise.allSettled(
-      this.#getDevices(filter).map(async (device) => device.syncFromDevice()),
-    )
-    for (const result of results) {
-      if (result.status === 'rejected') {
-        this.error('Device sync failed:', result.reason)
-      }
-    }
   }
 }

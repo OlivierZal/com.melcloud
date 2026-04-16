@@ -1,13 +1,4 @@
-import type {
-  ClassicDeviceType,
-  EnergyDataAta,
-  FanSpeed,
-  GetDeviceData,
-  Horizontal,
-  ListDeviceDataAta,
-  UpdateDeviceDataAta,
-  Vertical,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { ThermostatModeAta } from './ata.mts'
 import type {
@@ -58,16 +49,16 @@ export interface ListCapabilities extends BaseListCapabilities {
 }
 
 export interface SetCapabilities extends BaseSetCapabilities {
-  readonly fan_speed: FanSpeed
-  readonly horizontal: keyof typeof Horizontal
+  readonly fan_speed: Classic.FanSpeed
+  readonly horizontal: keyof typeof Classic.Horizontal
   readonly target_temperature: number
   readonly thermostat_mode: keyof typeof ThermostatModeAta
-  readonly vertical: keyof typeof Vertical
+  readonly vertical: keyof typeof Classic.Vertical
 }
 
 export const setCapabilityTagMapping: Record<
   keyof SetCapabilities,
-  keyof UpdateDeviceDataAta
+  keyof Classic.UpdateDeviceDataAta
 > = {
   fan_speed: 'SetFanSpeed',
   horizontal: 'VaneHorizontal',
@@ -79,7 +70,7 @@ export const setCapabilityTagMapping: Record<
 
 export const getCapabilityTagMapping: Record<
   keyof GetCapabilities,
-  keyof GetDeviceData<typeof ClassicDeviceType.Ata>
+  keyof Classic.GetDeviceData<typeof Classic.DeviceType.Ata>
 > = {
   'alarm_generic.silent': 'SetFanSpeed',
   measure_temperature: 'RoomTemperature',
@@ -87,7 +78,7 @@ export const getCapabilityTagMapping: Record<
 
 export const listCapabilityTagMapping: Record<
   'fan_speed' | 'horizontal' | 'vertical' | keyof ListCapabilities,
-  keyof ListDeviceDataAta
+  keyof Classic.ListDeviceDataAta
 > = {
   'alarm_generic.silent': 'FanSpeed',
   fan_speed: 'FanSpeed',
@@ -100,7 +91,7 @@ export const listCapabilityTagMapping: Record<
 
 export const energyCapabilityTagMapping: Record<
   keyof EnergyCapabilities,
-  readonly (keyof EnergyDataAta)[]
+  readonly (keyof Classic.EnergyDataAta)[]
 > = {
   measure_power: ['Auto', 'Cooling', 'Dry', 'Fan', 'Heating', 'Other'],
   'measure_power.auto': ['Auto'],

@@ -15,7 +15,7 @@ export const HomeDeviceType = {
   Atw: 'airToWater',
 }
 /** Fan speed levels for ATA and ERV devices. */
-export const FanSpeed = {
+export const ClassicFanSpeed = {
   auto: 0,
   fast: 4,
   moderate: 3,
@@ -25,14 +25,14 @@ export const FanSpeed = {
   very_slow: 1,
 }
 /** Effective flags value indicating no specific fields were changed; all data should be included. */
-export const FLAG_UNCHANGED = 0x0
+export const CLASSIC_FLAG_UNCHANGED = 0x0
 /**
  * Synthetic operation mode for buildings with devices in different modes.
  * Not a real API value — used at the application layer for mixed-state display.
  */
-export const OPERATION_MODE_MIXED = 0
-/** Horizontal vane positions for ATA devices. */
-export const Horizontal = {
+export const CLASSIC_OPERATION_MODE_MIXED = 0
+/** ClassicHorizontal vane positions for ATA devices. */
+export const ClassicHorizontal = {
   auto: 0,
   center: 3,
   center_left: 2,
@@ -43,7 +43,7 @@ export const Horizontal = {
   wide: 8,
 }
 /** Report axis label formatting types. */
-export const LabelType = {
+export const ClassicLabelType = {
   day_of_week: 4,
   month: 2,
   month_of_year: 3,
@@ -51,7 +51,7 @@ export const LabelType = {
   time: 0,
 }
 /** MELCloud supported language codes. */
-export const Language = {
+export const ClassicLanguage = {
   bg: 1,
   cs: 2,
   da: 3,
@@ -81,7 +81,7 @@ export const Language = {
   uk: 20,
 }
 /** ATA device operation modes. */
-export const OperationMode = {
+export const ClassicOperationMode = {
   auto: 8,
   cool: 3,
   dry: 2,
@@ -89,14 +89,17 @@ export const OperationMode = {
   heat: 1,
 }
 /** Pre-built sets of ATA operation modes that support cooling or heating. */
-export const coolModes = new Set([
-  OperationMode.auto,
-  OperationMode.cool,
-  OperationMode.dry,
+export const classicCoolModes = new Set([
+  ClassicOperationMode.auto,
+  ClassicOperationMode.cool,
+  ClassicOperationMode.dry,
 ])
-export const heatModes = new Set([OperationMode.auto, OperationMode.heat])
+export const classicHeatModes = new Set([
+  ClassicOperationMode.auto,
+  ClassicOperationMode.heat,
+])
 /** ATW device real-time operation state. */
-export const OperationModeState = {
+export const ClassicOperationModeState = {
   cooling: 3,
   defrost: 5,
   dhw: 1,
@@ -105,14 +108,14 @@ export const OperationModeState = {
   legionella: 6,
 }
 /** ATW hot water derived operational state. */
-export const OperationModeStateHotWater = {
+export const ClassicOperationModeStateHotWater = {
   dhw: 'dhw',
   idle: 'idle',
   legionella: 'legionella',
   prohibited: 'prohibited',
 }
 /** ATW zone derived operational state. */
-export const OperationModeStateZone = {
+export const ClassicOperationModeStateZone = {
   cooling: 'cooling',
   defrost: 'defrost',
   heating: 'heating',
@@ -120,8 +123,8 @@ export const OperationModeStateZone = {
   prohibited: 'prohibited',
 }
 /** ATW zone operation modes controlling temperature regulation strategy. */
-export const OperationModeZone = {
-  /** Temperature curve-based regulation. */
+export const ClassicOperationModeZone = {
+  /** ClassicTemperature curve-based regulation. */
   curve: 2,
   /** Fixed flow temperature. */
   flow: 1,
@@ -133,19 +136,19 @@ export const OperationModeZone = {
   room_cool: 3,
 }
 /** ATA set-temperature limits (universal across all ATA models). */
-export const Temperature = {
+export const ClassicTemperature = {
   cooling_min: 16,
   max: 31,
   min: 10,
 }
 /** ERV ventilation modes. */
-export const VentilationMode = {
+export const ClassicVentilationMode = {
   auto: 2,
   bypass: 1,
   recovery: 0,
 }
-/** Vertical vane positions for ATA devices. */
-export const Vertical = {
+/** ClassicVertical vane positions for ATA devices. */
+export const ClassicVertical = {
   auto: 0,
   downwards: 5,
   mid_high: 2,

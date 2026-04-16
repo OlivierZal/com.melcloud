@@ -38,7 +38,12 @@ describe('charts api', () => {
   describe('device retrieval', () => {
     it('should return only device zones without type filter', () => {
       const zones = [
-        { id: 1, level: 0, model: 'buildings' as const, name: 'Building 1' },
+        {
+          id: 1,
+          level: 0,
+          model: 'buildings' as const,
+          name: 'ClassicBuilding 1',
+        },
         { id: 2, level: 1, model: 'devices' as const, name: 'Device 1' },
         { id: 3, level: 1, model: 'devices' as const, name: 'Device 2' },
       ]
@@ -75,7 +80,12 @@ describe('charts api', () => {
 
     it('should return empty array when no device zones exist', () => {
       const zones = [
-        { id: 1, level: 0, model: 'buildings' as const, name: 'Building 1' },
+        {
+          id: 1,
+          level: 0,
+          model: 'buildings' as const,
+          name: 'ClassicBuilding 1',
+        },
       ]
       mockGetClassicZones.mockReturnValue(zones)
 

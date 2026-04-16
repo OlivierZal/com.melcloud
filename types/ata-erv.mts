@@ -1,9 +1,5 @@
-import type {
-  FanSpeed,
-  HomeDeviceCapabilities,
-  ListDeviceDataAta,
-  ListDeviceDataErv,
-} from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
+import type * as Home from '@olivierzal/melcloud-api/home'
 
 import type { CapabilitiesOptionsAtaErv } from './capabilities.mts'
 import {
@@ -27,13 +23,15 @@ const getFanSpeedOptions = (
 export const getCapabilitiesOptionsAtaErv = ({
   HasAutomaticFanSpeed: hasAutomaticFanSpeed,
   NumberOfFanSpeeds: numberOfFanSpeeds,
-}: ListDeviceDataAta | ListDeviceDataErv): Partial<CapabilitiesOptionsAtaErv> =>
+}:
+  | Classic.ListDeviceDataAta
+  | Classic.ListDeviceDataErv): Partial<CapabilitiesOptionsAtaErv> =>
   getFanSpeedOptions(hasAutomaticFanSpeed, numberOfFanSpeeds)
 
 export const homeGetCapabilitiesOptions = ({
   hasAutomaticFanSpeed,
   numberOfFanSpeeds,
-}: HomeDeviceCapabilities): Partial<CapabilitiesOptionsAtaErv> =>
+}: Home.DeviceCapabilities): Partial<CapabilitiesOptionsAtaErv> =>
   getFanSpeedOptions(hasAutomaticFanSpeed, numberOfFanSpeeds)
 
 const addPrefixToTitle = (
@@ -123,7 +121,7 @@ const createVeryObject = ({
 }: {
   id: 'fast' | 'slow'
   title: LocalizedStrings
-}): CapabilitiesOptionsValues<keyof typeof FanSpeed> => ({
+}): CapabilitiesOptionsValues<keyof typeof Classic.FanSpeed> => ({
   id: `very_${id}`,
   title: addPrefixToTitle(title, {
     ar: 'جداً',

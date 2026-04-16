@@ -1,7 +1,4 @@
-import type {
-  HomeAtaValues,
-  HomeDeviceAtaFacade,
-} from '@olivierzal/melcloud-api'
+import type * as Home from '@olivierzal/melcloud-api/home'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
@@ -35,7 +32,7 @@ const {
 
 let isFacadePoweredOn = true
 
-const createMockFacade = (): HomeDeviceAtaFacade =>
+const createMockFacade = (): Home.DeviceAtaFacade =>
   ({
     capabilities: {
       hasAutomaticFanSpeed: true,
@@ -54,7 +51,7 @@ const createMockFacade = (): HomeDeviceAtaFacade =>
     get setTemperature(): number {
       return 22
     },
-  }) as unknown as HomeDeviceAtaFacade
+  }) as unknown as Home.DeviceAtaFacade
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', () => {
@@ -244,7 +241,7 @@ describe(BaseMELCloudDevice, () => {
       const customDevice = createTestHomeDevice()
       Object.defineProperty(customDevice, 'deviceToCapability', {
         value: {
-          measure_temperature: (facade: HomeDeviceAtaFacade): number =>
+          measure_temperature: (facade: Home.DeviceAtaFacade): number =>
             facade.roomTemperature * 2,
         },
       })
@@ -270,7 +267,7 @@ describe(BaseMELCloudDevice, () => {
       const customDevice = createTestHomeDevice()
       Object.defineProperty(customDevice, 'capabilityToDevice', {
         value: {
-          fan_speed: (): HomeAtaValues[keyof HomeAtaValues] => 'Auto',
+          fan_speed: (): Home.AtaValues[keyof Home.AtaValues] => 'Auto',
         },
         writable: true,
       })

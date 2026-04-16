@@ -1,8 +1,5 @@
-import {
-  type ListDeviceDataErv,
-  ClassicDeviceType,
-} from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import {
   energyCapabilityTagMapping,
@@ -44,7 +41,7 @@ describe(ClassicMELCloudDriverErv, () => {
     driver = new ClassicMELCloudDriverErv()
   })
 
-  testDriverType(() => driver, ClassicDeviceType.Erv)
+  testDriverType(() => driver, Classic.DeviceType.Erv)
 
   testTagMappings(() => driver, {
     energyCapabilityTagMapping,
@@ -61,7 +58,7 @@ describe(ClassicMELCloudDriverErv, () => {
 
   describe('required capabilities', () => {
     it('should include base capabilities without measure sensors', () => {
-      const data = mock<ListDeviceDataErv>({
+      const data = mock<Classic.ListDeviceDataErv>({
         HasCO2Sensor: false,
         HasPM25Sensor: false,
       })
@@ -75,7 +72,7 @@ describe(ClassicMELCloudDriverErv, () => {
     })
 
     it('should include measure_co2 when HasCO2Sensor is true', () => {
-      const data = mock<ListDeviceDataErv>({
+      const data = mock<Classic.ListDeviceDataErv>({
         HasCO2Sensor: true,
         HasPM25Sensor: false,
       })
@@ -85,7 +82,7 @@ describe(ClassicMELCloudDriverErv, () => {
     })
 
     it('should include measure_pm25 when HasPM25Sensor is true', () => {
-      const data = mock<ListDeviceDataErv>({
+      const data = mock<Classic.ListDeviceDataErv>({
         HasCO2Sensor: false,
         HasPM25Sensor: true,
       })
@@ -95,7 +92,7 @@ describe(ClassicMELCloudDriverErv, () => {
     })
 
     it('should include both sensors when both are available', () => {
-      const data = mock<ListDeviceDataErv>({
+      const data = mock<Classic.ListDeviceDataErv>({
         HasCO2Sensor: true,
         HasPM25Sensor: true,
       })

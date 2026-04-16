@@ -1,8 +1,5 @@
-import {
-  type ClassicFacadeManager,
-  ClassicDeviceType,
-} from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import {
   getClassicBuildings,
@@ -19,12 +16,12 @@ const mockBuildings = [
     id: 10,
     level: 0,
     model: 'buildings' as const,
-    name: 'Building 1',
+    name: 'ClassicBuilding 1',
   },
 ]
 
 const mockZones = [
-  { id: 10, level: 0, model: 'buildings' as const, name: 'Building 1' },
+  { id: 10, level: 0, model: 'buildings' as const, name: 'ClassicBuilding 1' },
   { id: 1, level: 1, model: 'devices' as const, name: 'Device 1' },
 ]
 
@@ -35,22 +32,22 @@ const mockFacadeManager = {
 }
 
 describe('classic-facade-manager', () => {
-  describe('when FacadeManager is not initialized', () => {
+  describe('when Classic.FacadeManager is not initialized', () => {
     it('should throw an error', async () => {
       vi.resetModules()
       const { getClassicBuildings: uninitializedGetBuildings } =
         await import('../../lib/classic-facade-manager.mts')
 
       expect(() => uninitializedGetBuildings()).toThrow(
-        'FacadeManager has not been initialized',
+        'Classic.FacadeManager has not been initialized',
       )
     })
   })
 
-  describe('when FacadeManager is initialized', () => {
+  describe('when Classic.FacadeManager is initialized', () => {
     beforeEach(() => {
       setClassicFacadeManager(
-        mock<ClassicFacadeManager>({
+        mock<Classic.FacadeManager>({
           get: mockFacadeManager.get,
           getBuildings: mockFacadeManager.getBuildings,
           getZones: mockFacadeManager.getZones,
@@ -70,10 +67,10 @@ describe('classic-facade-manager', () => {
       })
 
       it('should pass type filter', () => {
-        getClassicBuildings({ type: ClassicDeviceType.Ata })
+        getClassicBuildings({ type: Classic.DeviceType.Ata })
 
         expect(mockFacadeManager.getBuildings).toHaveBeenCalledWith({
-          type: ClassicDeviceType.Ata,
+          type: Classic.DeviceType.Ata,
         })
       })
     })
@@ -87,10 +84,10 @@ describe('classic-facade-manager', () => {
       })
 
       it('should pass type filter', () => {
-        getClassicZones({ type: ClassicDeviceType.Atw })
+        getClassicZones({ type: Classic.DeviceType.Atw })
 
         expect(mockFacadeManager.getZones).toHaveBeenCalledWith({
-          type: ClassicDeviceType.Atw,
+          type: Classic.DeviceType.Atw,
         })
       })
     })

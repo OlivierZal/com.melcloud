@@ -1,11 +1,11 @@
-import type { GroupState, Zone } from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {
   DriverCapabilitiesOptions,
   Settings,
   ValueOf,
 } from '../../../types/settings.mts'
-import { coolModes, Temperature } from './constants.mts'
+import { ClassicTemperature, classicCoolModes } from './constants.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
@@ -111,9 +111,9 @@ const createSelect = (
 const getCoolingAdjustedMin = (id: string, min: string): string =>
   (
     id === 'SetTemperature' &&
-    coolModes.has(Number(getSelect('OperationMode').value))
+    classicCoolModes.has(Number(getSelect('OperationMode').value))
   ) ?
-    String(Temperature.cooling_min)
+    String(ClassicTemperature.cooling_min)
   : min
 
 const clampNumericInput = ({
@@ -148,7 +148,7 @@ const parseFormValue = (element: HTMLValueElement): ValueOf<Settings> => {
   return null
 }
 
-const getSubzones = (zone: Zone): Zone[] => [
+const getSubzones = (zone: Classic.Zone): Classic.Zone[] => [
   ...('areas' in zone ? zone.areas : []),
   ...('floors' in zone ? zone.floors : []),
 ]
@@ -156,17 +156,18 @@ const getSubzones = (zone: Zone): Zone[] => [
 // ── AtaValueManager class ──
 
 export class AtaValueManager {
-  #ataCapabilities: [keyof GroupState, DriverCapabilitiesOptions][] = []
+  #ataCapabilities: [keyof Classic.GroupState, DriverCapabilitiesOptions][] = []
 
   readonly #ataValues: HTMLDivElement
 
-  #defaultAtaValues: Partial<Record<keyof GroupState, null>> = {}
+  #defaultAtaValues: Partial<Record<keyof Classic.GroupState, null>> = {}
 
   readonly #homey: Homey
 
   readonly #zone: HTMLSelectElement
 
-  readonly #zoneMapping: Partial<Record<string, Partial<GroupState>>> = {}
+  readonly #zoneMapping: Partial<Record<string, Partial<Classic.GroupState>>> =
+    {}
 
   public constructor(
     homey: Homey,
@@ -178,7 +179,7 @@ export class AtaValueManager {
     this.#zone = zoneElement
   }
 
-  public applyDefaultZone(defaultZone: Zone | null): void {
+  public applyDefaultZone(defaultZone: Classic.Zone | null): void {
     if (defaultZone) {
       const { id, model } = defaultZone
       const value = getZoneId(id, model)
@@ -203,15 +204,15 @@ export class AtaValueManager {
 
   public async fetchCapabilities(): Promise<void> {
     this.#ataCapabilities = await homeyApiGet<
-      [keyof GroupState, DriverCapabilitiesOptions][]
+      [keyof Classic.GroupState, DriverCapabilitiesOptions][]
     >(this.#homey, '/classic/capabilities/ata')
     this.#defaultAtaValues = Object.fromEntries(
       this.#ataCapabilities.map(([ataKey]) => [ataKey, null]),
     )
   }
 
-  public async fetchValues(): Promise<GroupState> {
-    const values = await homeyApiGet<GroupState>(
+  public async fetchValues(): Promise<Classic.GroupState> {
+    const values = await homeyApiGet<Classic.GroupState>(
       this.#homey,
       `/classic/zones/${this.#getZoneValue()}/ata`,
     )
@@ -220,7 +221,7 @@ export class AtaValueManager {
     return values
   }
 
-  public async populateZoneOptions(zones: Zone[] = []): Promise<void> {
+  public async populateZoneOptions(zones: Classic.Zone[] = []): Promise<void> {
     if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
@@ -240,12 +241,12 @@ export class AtaValueManager {
       await homeyApiPut(
         this.#homey,
         `/classic/zones/${this.#getZoneValue()}/ata`,
-        body satisfies GroupState,
+        body satisfies Classic.GroupState,
       )
     }
   }
 
-  #buildAtaValuesBody(): GroupState {
+  #buildAtaValuesBody(): Classic.GroupState {
     return Object.fromEntries(
       // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
       Array.from(
@@ -278,8 +279,8 @@ export class AtaValueManager {
     if (type === 'number') {
       return createInput({
         id,
-        max: id === 'SetTemperature' ? Temperature.max : undefined,
-        min: id === 'SetTemperature' ? Temperature.min : undefined,
+        max: id === 'SetTemperature' ? ClassicTemperature.max : undefined,
+        min: id === 'SetTemperature' ? ClassicTemperature.min : undefined,
         type,
       })
     }
@@ -290,7 +291,7 @@ export class AtaValueManager {
     return getZonePath(this.#zone.value)
   }
 
-  #isGroupAtaState(value: string): value is keyof GroupState {
+  #isGroupAtaState(value: string): value is keyof Classic.GroupState {
     return value in this.#defaultAtaValues
   }
 
@@ -300,7 +301,7 @@ export class AtaValueManager {
     }
   }
 
-  #updateAtaValue(id: keyof GroupState): void {
+  #updateAtaValue(id: keyof Classic.GroupState): void {
     const ataValue = document.querySelector(`#${id}`)
     if (
       ataValue &&
@@ -312,7 +313,7 @@ export class AtaValueManager {
     }
   }
 
-  #updateZoneMapping(data: Partial<GroupState>): void {
+  #updateZoneMapping(data: Partial<Classic.GroupState>): void {
     const { value } = this.#zone
     this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
   }
