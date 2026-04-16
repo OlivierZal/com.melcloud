@@ -105,7 +105,7 @@ describe(ClassicMELCloudDriver, () => {
         showView: showViewMock,
       })
       vi.spyOn(driver.homey.app, 'getDevicesByType').mockReturnValue([
-        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- partial mock data cannot satisfy the full Device<T> generic type
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- partial mock data cannot satisfy the full ClassicDevice<T> generic type
         { data: { Power: true }, id: 1, name: 'Device 1' } as never,
       ])
       await driver.onPair(session)

@@ -1,7 +1,7 @@
 import {
   type BuildingFacade,
+  type ClassicDevice,
   type ClassicRegistry,
-  type Device,
   type DeviceFacade,
   type DeviceType,
   type ErrorLogQuery,
@@ -393,7 +393,9 @@ export default class MELCloudApp extends App {
     return deviceSettings
   }
 
-  public getDevicesByType<T extends ClassicDeviceType>(type: T): Device<T>[] {
+  public getDevicesByType<T extends ClassicDeviceType>(
+    type: T,
+  ): ClassicDevice<T>[] {
     return this.#classicRegistry.getDevicesByType(type)
   }
 
