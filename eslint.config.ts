@@ -122,6 +122,12 @@ const config = defineConfig([
           fixMixedExportsWithInlineTypeSpecifier: true,
         },
       ],
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          fixStyle: 'inline-type-imports',
+        },
+      ],
       '@typescript-eslint/member-ordering': 'off',
       '@typescript-eslint/naming-convention': [
         'error',
