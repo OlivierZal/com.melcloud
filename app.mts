@@ -541,6 +541,17 @@ export default class MELCloudApp extends App {
     }
   }
 
+  /*
+   * SDK v3 runs `App#onInit` before any `Driver#onInit`, so `onSync`
+   * callbacks fired by the MELCloud API clients during `#initClassicApi`
+   * / `#initHomeApi` find no ready drivers. Awaiting driver readiness
+   * would deadlock: drivers can't init until `App#onInit` returns, which
+   * awaits these API-client constructors. `getDrivers()` only exposes
+   * drivers whose `onInit` has completed, so unready drivers are filtered
+   * out naturally — an initial sync silently becomes a no-op. Each device
+   * runs its own initial sync via `ensureDevice()` in `Device#onInit`,
+   * and post-init `onSync` calls find every driver ready.
+   */
   #getDrivers(driverId?: string): MELCloudDriver[] {
     const drivers = Object.values(this.homey.drivers.getDrivers())
     return driverId === undefined ? drivers : (
@@ -673,32 +684,11 @@ export default class MELCloudApp extends App {
       )
   }
 
-  async #syncDevices({
-    driverId,
-    ids,
-  }: { driverId?: string; ids?: (number | string)[] } = {}): Promise<void> {
-    const requestedDriverIds =
-      driverId === undefined ?
-        this.homey.manifest.drivers.map(({ id }) => id)
-      : [driverId]
-    const readyDriverIds = Object.keys(this.homey.drivers.getDrivers())
-    /*
-     * SDK v3 runs `App#onInit` before any `Driver#onInit`, so `onSync`
-     * callbacks fired by the MELCloud API clients during `#initClassicApi`
-     * / `#initHomeApi` find no ready drivers. Awaiting driver readiness
-     * here would deadlock: drivers can't init until `App#onInit` returns,
-     * which awaits these API-client constructors. Skip silently — each
-     * device runs its own initial sync via `ensureDevice()` in
-     * `Device#onInit`. `getDrivers()` only exposes drivers whose `onInit`
-     * has completed, so presence in the registry attests readiness.
-     */
-    if (!requestedDriverIds.every((id) => readyDriverIds.includes(id))) {
-      return
-    }
+  async #syncDevices(
+    filter: { driverId?: string; ids?: (number | string)[] } = {},
+  ): Promise<void> {
     const results = await Promise.allSettled(
-      this.#getDevices({ driverId, ids }).map(async (device) =>
-        device.syncFromDevice(),
-      ),
+      this.#getDevices(filter).map(async (device) => device.syncFromDevice()),
     )
     for (const result of results) {
       if (result.status === 'rejected') {
