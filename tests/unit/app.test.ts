@@ -245,6 +245,41 @@ const createMockDriver = (
   ready: vi.fn<() => Promise<void>>().mockResolvedValue(),
 })
 
+const setupDriver = (
+  devices: ClassicMELCloudDevice[],
+  id = 'melcloud',
+): void => {
+  mockGetDrivers.mockReturnValue({ [id]: createMockDriver(devices, id) })
+}
+
+const createClassicDevice = (
+  overrides: Partial<ClassicMELCloudDevice> = {},
+): ClassicMELCloudDevice =>
+  mock<ClassicMELCloudDevice>({
+    driver: { id: 'melcloud' },
+    getSettings: vi.fn().mockReturnValue({}),
+    ...overrides,
+  })
+
+const setupWidgetListeners = (): {
+  mockRegisterAta: ReturnType<typeof vi.fn>
+  mockRegisterCharts: ReturnType<typeof vi.fn>
+} => {
+  const mockRegisterAta = vi.fn()
+  const mockRegisterCharts = vi.fn()
+  mockGetWidget.mockImplementation((widgetId: string) =>
+    widgetId === 'ata-group-setting' ?
+      { registerSettingAutocompleteListener: mockRegisterAta }
+    : { registerSettingAutocompleteListener: mockRegisterCharts },
+  )
+  return { mockRegisterAta, mockRegisterCharts }
+}
+
+const mockUpdateResult = (
+  attributeErrors: Record<string, string[]> | null,
+): ReturnType<typeof vi.fn> =>
+  vi.fn().mockResolvedValue({ AttributeErrors: attributeErrors })
+
 const getSyncCallbackFrom = (
   mockCreateFunction: ReturnType<typeof vi.fn>,
 ): SyncCallback =>
@@ -492,16 +527,14 @@ describe('melCloudApp', () => {
 
   describe('device settings retrieval', () => {
     it('should aggregate device settings', async () => {
-      const mockDevice1 = mock<ClassicMELCloudDevice>({
-        driver: { id: 'melcloud' },
-        getSettings: vi.fn().mockReturnValue({ always_on: true }),
-      })
-      const mockDevice2 = mock<ClassicMELCloudDevice>({
-        driver: { id: 'melcloud' },
-        getSettings: vi.fn().mockReturnValue({ always_on: true }),
-      })
-      const mockDriver = createMockDriver([mockDevice1, mockDevice2])
-      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      setupDriver([
+        createClassicDevice({
+          getSettings: vi.fn().mockReturnValue({ always_on: true }),
+        }),
+        createClassicDevice({
+          getSettings: vi.fn().mockReturnValue({ always_on: true }),
+        }),
+      ])
       await app.onInit()
 
       const deviceSettings = app.getDeviceSettings()
@@ -510,16 +543,14 @@ describe('melCloudApp', () => {
     })
 
     it('should set to null when settings differ between devices', async () => {
-      const mockDevice1 = mock<ClassicMELCloudDevice>({
-        driver: { id: 'melcloud' },
-        getSettings: vi.fn().mockReturnValue({ always_on: true }),
-      })
-      const mockDevice2 = mock<ClassicMELCloudDevice>({
-        driver: { id: 'melcloud' },
-        getSettings: vi.fn().mockReturnValue({ always_on: false }),
-      })
-      const mockDriver = createMockDriver([mockDevice1, mockDevice2])
-      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      setupDriver([
+        createClassicDevice({
+          getSettings: vi.fn().mockReturnValue({ always_on: true }),
+        }),
+        createClassicDevice({
+          getSettings: vi.fn().mockReturnValue({ always_on: false }),
+        }),
+      ])
       await app.onInit()
 
       const deviceSettings = app.getDeviceSettings()
@@ -863,10 +894,12 @@ describe('melCloudApp', () => {
 
   describe('ata value update', () => {
     it('should set group values and not throw on success', async () => {
-      const mockFacade = mock<Classic.BuildingFacade>({
-        updateGroupState: vi.fn().mockResolvedValue({ AttributeErrors: null }),
-      })
-      await initWithFacade(app, mockFacade)
+      await initWithFacade(
+        app,
+        mock<Classic.BuildingFacade>({
+          updateGroupState: mockUpdateResult(null),
+        }),
+      )
 
       await expect(
         app.updateClassicAtaState({
@@ -878,12 +911,12 @@ describe('melCloudApp', () => {
     })
 
     it('should throw on attribute errors', async () => {
-      const mockFacade = mock<Classic.BuildingFacade>({
-        updateGroupState: vi.fn().mockResolvedValue({
-          AttributeErrors: { temp: ['Invalid value'] },
+      await initWithFacade(
+        app,
+        mock<Classic.BuildingFacade>({
+          updateGroupState: mockUpdateResult({ temp: ['Invalid value'] }),
         }),
-      })
-      await initWithFacade(app, mockFacade)
+      )
 
       await expect(
         app.updateClassicAtaState({
@@ -899,15 +932,14 @@ describe('melCloudApp', () => {
     it('should update changed settings on matching devices', async () => {
       const mockSetSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
       const mockOnSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
-      const mockDevice = mock<ClassicMELCloudDevice>({
-        driver: { id: 'melcloud' },
-        getSetting: vi.fn().mockReturnValue(false),
-        getSettings: vi.fn().mockReturnValue({ always_on: true }),
-        onSettings: mockOnSettings,
-        setSettings: mockSetSettings,
-      })
-      const mockDriver = createMockDriver([mockDevice])
-      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      setupDriver([
+        createClassicDevice({
+          getSetting: vi.fn().mockReturnValue(false),
+          getSettings: vi.fn().mockReturnValue({ always_on: true }),
+          onSettings: mockOnSettings,
+          setSettings: mockSetSettings,
+        }),
+      ])
       await app.onInit()
 
       const settings = mock<Settings>({ always_on: true })
@@ -919,14 +951,13 @@ describe('melCloudApp', () => {
 
     it('should skip devices with no changed keys', async () => {
       const mockSetSettings = vi.fn()
-      const mockDevice = mock<ClassicMELCloudDevice>({
-        driver: { id: 'melcloud' },
-        getSetting: vi.fn().mockReturnValue(true),
-        getSettings: vi.fn().mockReturnValue({ always_on: true }),
-        setSettings: mockSetSettings,
-      })
-      const mockDriver = createMockDriver([mockDevice])
-      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      setupDriver([
+        createClassicDevice({
+          getSetting: vi.fn().mockReturnValue(true),
+          getSettings: vi.fn().mockReturnValue({ always_on: true }),
+          setSettings: mockSetSettings,
+        }),
+      ])
       await app.onInit()
 
       const settings = mock<Settings>({ always_on: true })
@@ -936,8 +967,7 @@ describe('melCloudApp', () => {
     })
 
     it('should filter by driverId when provided', async () => {
-      const mockDevice = mock<ClassicMELCloudDevice>({
-        driver: { id: 'melcloud' },
+      const mockDevice = createClassicDevice({
         getSetting: vi.fn().mockReturnValue(false),
         getSettings: vi.fn().mockReturnValue({ always_on: true }),
         onSettings: vi.fn<() => Promise<void>>().mockResolvedValue(),
@@ -950,11 +980,9 @@ describe('melCloudApp', () => {
         onSettings: vi.fn<() => Promise<void>>().mockResolvedValue(),
         setSettings: vi.fn<() => Promise<void>>().mockResolvedValue(),
       })
-      const mockDriver = createMockDriver([mockDevice])
-      const otherDriver = createMockDriver([otherDevice], 'melcloud_atw')
       mockGetDrivers.mockReturnValue({
-        melcloud: mockDriver,
-        melcloud_atw: otherDriver,
+        melcloud: createMockDriver([mockDevice]),
+        melcloud_atw: createMockDriver([otherDevice], 'melcloud_atw'),
       })
       await app.onInit()
 
@@ -968,12 +996,12 @@ describe('melCloudApp', () => {
 
   describe('frost protection settings update', () => {
     it('should delegate to facade and not throw on success', async () => {
-      const mockFacade = mock<Classic.ZoneFacade>({
-        updateFrostProtection: vi
-          .fn()
-          .mockResolvedValue({ AttributeErrors: null }),
-      })
-      await initWithFacade(app, mockFacade)
+      await initWithFacade(
+        app,
+        mock<Classic.ZoneFacade>({
+          updateFrostProtection: mockUpdateResult(null),
+        }),
+      )
 
       await expect(
         app.updateClassicFrostProtection({
@@ -985,12 +1013,12 @@ describe('melCloudApp', () => {
     })
 
     it('should throw on attribute errors', async () => {
-      const mockFacade = mock<Classic.ZoneFacade>({
-        updateFrostProtection: vi.fn().mockResolvedValue({
-          AttributeErrors: { min: ['Too low'] },
+      await initWithFacade(
+        app,
+        mock<Classic.ZoneFacade>({
+          updateFrostProtection: mockUpdateResult({ min: ['Too low'] }),
         }),
-      })
-      await initWithFacade(app, mockFacade)
+      )
 
       await expect(
         app.updateClassicFrostProtection({
@@ -1004,10 +1032,10 @@ describe('melCloudApp', () => {
 
   describe('holiday mode settings update', () => {
     it('should delegate to facade and not throw on success', async () => {
-      const mockFacade = mock<Classic.ZoneFacade>({
-        updateHolidayMode: vi.fn().mockResolvedValue({ AttributeErrors: null }),
-      })
-      await initWithFacade(app, mockFacade)
+      await initWithFacade(
+        app,
+        mock<Classic.ZoneFacade>({ updateHolidayMode: mockUpdateResult(null) }),
+      )
 
       await expect(
         app.updateClassicHolidayMode({
@@ -1020,9 +1048,7 @@ describe('melCloudApp', () => {
 
     it('should throw on attribute errors', async () => {
       const mockFacade = mock<Classic.ZoneFacade>({
-        updateHolidayMode: vi.fn().mockResolvedValue({
-          AttributeErrors: { date: ['Invalid date'] },
-        }),
+        updateHolidayMode: mockUpdateResult({ date: ['Invalid date'] }),
       })
       await initWithFacade(app, mockFacade)
 
@@ -1120,18 +1146,10 @@ describe('melCloudApp', () => {
 
   describe('device filtering by ids', () => {
     it('should filter devices by ids', async () => {
-      const mockDevice1 = mock<ClassicMELCloudDevice>({
-        driver: { id: 'melcloud' },
-        getSettings: vi.fn().mockReturnValue({}),
-        id: 1,
-      })
-      const mockDevice2 = mock<ClassicMELCloudDevice>({
-        driver: { id: 'melcloud' },
-        getSettings: vi.fn().mockReturnValue({}),
-        id: 2,
-      })
-      const mockDriver = createMockDriver([mockDevice1, mockDevice2])
-      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      setupDriver([
+        createClassicDevice({ id: 1 }),
+        createClassicDevice({ id: 2 }),
+      ])
       await app.onInit()
 
       const deviceSettings = app.getDeviceSettings()
@@ -1142,16 +1160,9 @@ describe('melCloudApp', () => {
 
   describe('widget listener query filtering', () => {
     it('should filter zones by query for ata-group-setting widget', async () => {
-      const mockRegisterAta = vi.fn()
-      const mockRegisterCharts = vi.fn()
-      mockGetWidget.mockImplementation((widgetId: string) => {
-        if (widgetId === 'ata-group-setting') {
-          return { registerSettingAutocompleteListener: mockRegisterAta }
-        }
-        return { registerSettingAutocompleteListener: mockRegisterCharts }
-      })
+      const { mockRegisterAta } = setupWidgetListeners()
       mockFacadeManagerGetZones.mockReturnValue([
-        { model: 'buildings', name: 'ClassicBuilding 1' },
+        { model: 'buildings', name: 'Building 1' },
         { model: 'buildings', name: 'Office' },
         { model: 'devices', name: 'Device 1' },
       ])
@@ -1164,22 +1175,13 @@ describe('melCloudApp', () => {
       )
       const result = ataCallback('build')
 
-      expect(result).toStrictEqual([
-        { model: 'buildings', name: 'ClassicBuilding 1' },
-      ])
+      expect(result).toStrictEqual([{ model: 'buildings', name: 'Building 1' }])
     })
 
     it('should filter zones by query for charts widget', async () => {
-      const mockRegisterAta = vi.fn()
-      const mockRegisterCharts = vi.fn()
-      mockGetWidget.mockImplementation((widgetId: string) => {
-        if (widgetId === 'ata-group-setting') {
-          return { registerSettingAutocompleteListener: mockRegisterAta }
-        }
-        return { registerSettingAutocompleteListener: mockRegisterCharts }
-      })
+      const { mockRegisterCharts } = setupWidgetListeners()
       mockFacadeManagerGetZones.mockReturnValue([
-        { model: 'buildings', name: 'ClassicBuilding 1' },
+        { model: 'buildings', name: 'Building 1' },
         { model: 'devices', name: 'Device 1' },
         { model: 'devices', name: 'Device 2' },
       ])
@@ -1199,8 +1201,7 @@ describe('melCloudApp', () => {
   describe('device synchronization via onSync callback', () => {
     it('should sync devices from onSync callback', async () => {
       const { device, syncFromDevice } = createSyncDevice(1)
-      const mockDriver = createMockDriver([device])
-      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      setupDriver([device])
       await app.onInit()
 
       await getSyncCallback()({ type: Classic.DeviceType.Ata })
@@ -1211,8 +1212,7 @@ describe('melCloudApp', () => {
     it('should sync devices with ids filter', async () => {
       const { device: device1, syncFromDevice } = createSyncDevice(1)
       const { device: device2 } = createSyncDevice(2)
-      const mockDriver = createMockDriver([device1, device2])
-      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      setupDriver([device1, device2])
       await app.onInit()
 
       await getSyncCallback()({ ids: [1], type: Classic.DeviceType.Ata })
@@ -1222,8 +1222,7 @@ describe('melCloudApp', () => {
 
     it('should sync all devices when no type specified', async () => {
       const { device, syncFromDevice } = createSyncDevice(1)
-      const mockDriver = createMockDriver([device])
-      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      setupDriver([device])
       await app.onInit()
 
       await getSyncCallback()()
@@ -1241,8 +1240,7 @@ describe('melCloudApp', () => {
         1,
         vi.fn<() => Promise<void>>().mockRejectedValue(new Error('sync error')),
       )
-      const mockDriver = createMockDriver([device])
-      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      setupDriver([device])
       await app.onInit()
 
       await getSyncCallback()()
@@ -1265,8 +1263,7 @@ describe('melCloudApp', () => {
       )
       const { device: healthyDevice, syncFromDevice: healthySync } =
         createSyncDevice(2)
-      const mockDriver = createMockDriver([failingDevice, healthyDevice])
-      mockGetDrivers.mockReturnValue({ melcloud: mockDriver })
+      setupDriver([failingDevice, healthyDevice])
       await app.onInit()
 
       await getSyncCallback()()
@@ -1282,11 +1279,10 @@ describe('melCloudApp', () => {
   describe('home device synchronization via onSync callback', () => {
     it('should sync home devices from onSync callback', async () => {
       const syncMock = vi.fn<() => Promise<void>>().mockResolvedValue()
-      const mockDriver = createMockDriver(
+      setupDriver(
         [mock<ClassicMELCloudDevice>({ syncFromDevice: syncMock })],
         'home-melcloud',
       )
-      mockGetDrivers.mockReturnValue({ 'home-melcloud': mockDriver })
       mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
@@ -1298,7 +1294,7 @@ describe('melCloudApp', () => {
     it('should filter home devices by string UUID ids', async () => {
       const syncTarget = vi.fn<() => Promise<void>>().mockResolvedValue()
       const syncOther = vi.fn<() => Promise<void>>().mockResolvedValue()
-      const mockDriver = createMockDriver(
+      setupDriver(
         [
           mock<ClassicMELCloudDevice>({
             id: 'e9f997d3-d537-4628-aeed-ad638fad6515',
@@ -1311,7 +1307,6 @@ describe('melCloudApp', () => {
         ],
         'home-melcloud',
       )
-      mockGetDrivers.mockReturnValue({ 'home-melcloud': mockDriver })
       mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
