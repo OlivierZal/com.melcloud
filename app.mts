@@ -676,7 +676,10 @@ export default class MELCloudApp extends App {
   async #syncDevices(
     filter: { driverId?: string; ids?: (number | string)[] } = {},
   ): Promise<void> {
-    const declaredDriverIds = this.homey.manifest.drivers.map(({ id }) => id)
+    const requestedDriverIds =
+      filter.driverId === undefined ?
+        this.homey.manifest.drivers.map(({ id }) => id)
+      : [filter.driverId]
     const readyDriverIds = Object.keys(this.homey.drivers.getDrivers())
     /*
      * SDK v3 runs `App#onInit` before any `Driver#onInit`, so `onSync`
@@ -685,10 +688,10 @@ export default class MELCloudApp extends App {
      * here would deadlock: drivers can't init until `App#onInit` returns,
      * which awaits these API-client constructors. Skip silently — each
      * device runs its own initial sync via `ensureDevice()` in
-     * `Device#onInit`. Post-init `onSync` calls always find every driver
-     * ready and sync normally.
+     * `Device#onInit`. Post-init `onSync` calls always find the requested
+     * drivers ready and sync normally.
      */
-    if (!declaredDriverIds.every((id) => readyDriverIds.includes(id))) {
+    if (!requestedDriverIds.every((id) => readyDriverIds.includes(id))) {
       return
     }
     const results = await Promise.allSettled(

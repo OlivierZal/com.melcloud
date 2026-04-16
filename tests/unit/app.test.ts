@@ -1302,10 +1302,7 @@ describe('melCloudApp', () => {
         [mock<ClassicMELCloudDevice>({ syncFromDevice: syncMock })],
         'home-melcloud',
       )
-      mockGetDrivers.mockReturnValue({
-        'home-melcloud': mockDriver,
-        melcloud: createMockDriver([]),
-      })
+      mockGetDrivers.mockReturnValue({ 'home-melcloud': mockDriver })
       mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
@@ -1330,10 +1327,7 @@ describe('melCloudApp', () => {
         ],
         'home-melcloud',
       )
-      mockGetDrivers.mockReturnValue({
-        'home-melcloud': mockDriver,
-        melcloud: createMockDriver([]),
-      })
+      mockGetDrivers.mockReturnValue({ 'home-melcloud': mockDriver })
       mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
