@@ -17,10 +17,10 @@ import {
   type ListDeviceDataAta,
   type Logger,
   type LoginCredentials,
-  type OnSyncFunction,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
   type SettingManager,
+  type SyncCallback,
   type ZoneFacade,
   ClassicAPI,
   ClassicDeviceType,
@@ -484,7 +484,7 @@ export default class MELCloudApp extends App {
     )
   }
 
-  readonly #onSync: OnSyncFunction = async ({ ids, type } = {}) => {
+  readonly #onSync: SyncCallback = async ({ ids, type } = {}) => {
     await this.#syncDevices({
       driverId: type === undefined ? undefined : DRIVER_IDS_BY_TYPE[type],
       ids,
