@@ -681,26 +681,20 @@ export default class MELCloudApp extends App {
       driverId === undefined ?
         this.homey.manifest.drivers.map(({ id }) => id)
       : [driverId]
-    const registry = this.homey.drivers.getDrivers()
-    const requestedDrivers: MELCloudDriver[] = []
-    for (const id of requestedDriverIds) {
-      const driver = registry[id]
-      /*
-       * SDK v3 runs `App#onInit` before any `Driver#onInit`, so `onSync`
-       * callbacks fired by the MELCloud API clients during `#initClassicApi`
-       * / `#initHomeApi` find no ready drivers. Awaiting driver readiness
-       * here would deadlock: drivers can't init until `App#onInit` returns,
-       * which awaits these API-client constructors. Skip silently — each
-       * device runs its own initial sync via `ensureDevice()` in
-       * `Device#onInit`. Post-init `onSync` calls always find the requested
-       * drivers registered, then `.ready()` confirms their `onInit` has run.
-       */
-      if (driver === undefined) {
-        return
-      }
-      requestedDrivers.push(driver)
+    const readyDriverIds = Object.keys(this.homey.drivers.getDrivers())
+    /*
+     * SDK v3 runs `App#onInit` before any `Driver#onInit`, so `onSync`
+     * callbacks fired by the MELCloud API clients during `#initClassicApi`
+     * / `#initHomeApi` find no ready drivers. Awaiting driver readiness
+     * here would deadlock: drivers can't init until `App#onInit` returns,
+     * which awaits these API-client constructors. Skip silently — each
+     * device runs its own initial sync via `ensureDevice()` in
+     * `Device#onInit`. `getDrivers()` only exposes drivers whose `onInit`
+     * has completed, so presence in the registry attests readiness.
+     */
+    if (!requestedDriverIds.every((id) => readyDriverIds.includes(id))) {
+      return
     }
-    await Promise.all(requestedDrivers.map(async (driver) => driver.ready()))
     const results = await Promise.allSettled(
       this.#getDevices({ driverId, ids }).map(async (device) =>
         device.syncFromDevice(),
