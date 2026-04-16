@@ -116,6 +116,12 @@ const config = defineConfig([
           objectLiteralTypeAssertions: 'never',
         },
       ],
+      '@typescript-eslint/consistent-type-exports': [
+        'error',
+        {
+          fixMixedExportsWithInlineTypeSpecifier: true,
+        },
+      ],
       '@typescript-eslint/member-ordering': 'off',
       '@typescript-eslint/naming-convention': [
         'error',
