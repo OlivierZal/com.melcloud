@@ -35,7 +35,7 @@ export const setCapabilityTagMapping: Record<
 > = {
   fan_speed: 'SetFanSpeed',
   onoff: 'Power',
-  thermostat_mode: 'ClassicVentilationMode',
+  thermostat_mode: 'VentilationMode',
 }
 
 export const getCapabilityTagMapping: Record<
