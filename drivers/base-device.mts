@@ -145,12 +145,14 @@ export abstract class BaseMELCloudDevice extends Device {
   public cleanMapping<TMapping extends Readonly<Record<string, unknown>>>(
     capabilityTagMapping: TMapping,
   ): Partial<TMapping> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Object.fromEntries widens generic keys; filtered entries retain source value types
-    return Object.fromEntries(
-      Object.entries(capabilityTagMapping).filter(([capability]) =>
-        this.hasCapability(capability),
-      ),
-    ) as Partial<TMapping>
+    const result: Partial<TMapping> = {}
+    for (const capability in capabilityTagMapping) {
+      if (this.hasCapability(capability)) {
+        const { [capability]: tag } = capabilityTagMapping
+        result[capability] = tag
+      }
+    }
+    return result
   }
 
   public async ensureDevice(): Promise<ClassicDeviceFacade | null> {
@@ -253,13 +255,14 @@ export abstract class BaseMELCloudDevice extends Device {
   ): Record<string, unknown> {
     this.log('Requested data:', values)
     const tagMapping = this.#setCapabilityTagMapping
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Object.fromEntries returns { [k: string]: any }
-    return Object.fromEntries(
-      Object.entries(values).map(([capability, value]) => [
-        tagMapping[capability],
-        this.capabilityToDevice[capability]?.(value) ?? value,
-      ]),
-    ) as Record<string, unknown>
+    const result: Record<string, unknown> = {}
+    for (const [capability, value] of Object.entries(values)) {
+      const { [capability]: tag } = tagMapping
+      if (tag !== undefined) {
+        result[tag] = this.capabilityToDevice[capability]?.(value) ?? value
+      }
+    }
+    return result
   }
 
   protected async scheduleEnergyReports(): Promise<void> {
