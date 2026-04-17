@@ -30,18 +30,17 @@ export default class ClassicMELCloudDriverErv extends ClassicMELCloudDriver<
 
   public readonly type = Classic.DeviceType.Erv
 
-  public getRequiredCapabilities({
-    HasCO2Sensor: hasCO2Sensor,
-    HasPM25Sensor: hasPM25Sensor,
-  }: Readonly<
-    Classic.ListDeviceData<typeof Classic.DeviceType.Erv>
-  >): string[] {
+  public override getRequiredCapabilities(
+    data?: Readonly<Classic.ListDeviceData<typeof Classic.DeviceType.Erv>>,
+  ): string[] {
+    const { HasCO2Sensor: hasCO2Sensor, HasPM25Sensor: hasPM25Sensor } =
+      data ?? {}
     return [
       ...this.manifest.capabilities.filter(
         (capability) => !measureCapabilities.has(capability),
       ),
-      ...(hasCO2Sensor ? ['measure_co2'] : []),
-      ...(hasPM25Sensor ? ['measure_pm25'] : []),
+      ...(hasCO2Sensor === true ? ['measure_co2'] : []),
+      ...(hasPM25Sensor === true ? ['measure_pm25'] : []),
     ]
   }
 }
