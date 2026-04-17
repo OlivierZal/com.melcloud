@@ -88,8 +88,6 @@ const config = defineConfig([
       perfectionist,
     },
     rules: {
-      '@stylistic/line-comment-position': 'error',
-      '@stylistic/multiline-comment-style': 'error',
       '@stylistic/quotes': [
         'error',
         'single',
@@ -305,25 +303,19 @@ const config = defineConfig([
       ],
       '@typescript-eslint/prefer-readonly-parameter-types': 'off',
       '@typescript-eslint/return-await': ['error', 'in-try-catch'],
+      '@typescript-eslint/switch-exhaustiveness-check': [
+        'error',
+        {
+          allowDefaultCaseForExhaustiveSwitch: false,
+          requireDefaultForNonUnion: true,
+        },
+      ],
       '@typescript-eslint/typedef': 'off',
       camelcase: 'off',
-      'capitalized-comments': [
-        'error',
-        'always',
-        {
-          block: {
-            ignorePattern: String.raw`v8\s`,
-          },
-        },
-      ],
+      'capitalized-comments': 'off',
       curly: 'error',
+      'default-case': 'off',
       'import-x/first': 'error',
-      'import-x/max-dependencies': [
-        'error',
-        {
-          ignoreTypeImports: true,
-        },
-      ],
       'import-x/newline-after-import': 'error',
       'import-x/no-absolute-path': 'error',
       'import-x/no-anonymous-default-export': 'error',
@@ -625,7 +617,7 @@ const config = defineConfig([
         newlinesBetween: 0,
         newlinesInside: 0,
         order: 'asc',
-        partitionByComment: true,
+        partitionByComment: false,
         partitionByNewLine: false,
         type: 'custom',
       },
@@ -673,7 +665,6 @@ const config = defineConfig([
     files: ['**/*.config.{ts,js}'],
     rules: {
       '@typescript-eslint/naming-convention': 'off',
-      'import-x/max-dependencies': 'off',
       'import-x/no-default-export': 'off',
       'import-x/prefer-default-export': [
         'error',
@@ -775,10 +766,10 @@ const config = defineConfig([
       'max-lines-per-function': 'off',
       'max-statements': 'off',
       'vitest/max-expects': 'off',
+      'vitest/no-disabled-tests': 'error',
       'vitest/no-hooks': 'off',
       'vitest/prefer-expect-assertions': 'off',
       'vitest/require-hook': 'off',
-      'vitest/require-mock-type-parameters': 'off',
     },
     settings: {
       vitest: {
