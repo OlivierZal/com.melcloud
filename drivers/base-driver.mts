@@ -28,13 +28,21 @@ export abstract class BaseMELCloudDriver extends Driver {
 
   public abstract readonly type: DeviceType
 
-  public readonly energyCapabilityTagMapping: Record<string, unknown> = {}
+  public readonly energyCapabilityTagMapping: Readonly<
+    Record<string, readonly string[]>
+  > = {}
 
-  public readonly getCapabilityTagMapping: Record<string, unknown> = {}
+  public readonly getCapabilityTagMapping: Readonly<Record<string, string>> = {}
 
-  public readonly listCapabilityTagMapping: Record<string, unknown> = {}
+  public readonly listCapabilityTagMapping: Readonly<Record<string, string>> =
+    {}
 
-  public readonly setCapabilityTagMapping: Record<string, unknown> = {}
+  public readonly setCapabilityTagMapping: Readonly<Record<string, string>> = {}
+
+  public override async onInit(): Promise<void> {
+    this.#registerFlowListeners()
+    await Promise.resolve()
+  }
 
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
@@ -56,11 +64,10 @@ export abstract class BaseMELCloudDriver extends Driver {
     await Promise.resolve()
   }
 
-  #registerLoginHandler(session: PairSession): void {
-    session.setHandler('login', async (data: Classic.LoginCredentials) =>
-      this.api.authenticate(data),
-    )
-  }
+  protected abstract getDeviceModels(): {
+    id: number | string
+    name: string
+  }[]
 
   /* v8 ignore start -- default implementation; always overridden by classic or test mock */
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic default; overridden by subclasses that use this
@@ -71,16 +78,6 @@ export abstract class BaseMELCloudDriver extends Driver {
     return {}
   }
   /* v8 ignore stop */
-
-  public override async onInit(): Promise<void> {
-    this.#registerFlowListeners()
-    await Promise.resolve()
-  }
-
-  protected abstract getDeviceModels(): {
-    id: number | string
-    name: string
-  }[]
 
   public getRequiredCapabilities(): string[] {
     return [...this.manifest.capabilities]
@@ -146,5 +143,11 @@ export abstract class BaseMELCloudDriver extends Driver {
         })
       }
     }
+  }
+
+  #registerLoginHandler(session: PairSession): void {
+    session.setHandler('login', async (data: Classic.LoginCredentials) =>
+      this.api.authenticate(data),
+    )
   }
 }

@@ -68,19 +68,23 @@ export abstract class BaseMELCloudDevice extends Device {
       ...this.#setCapabilityTagMapping,
       ...this.#getCapabilityTagMapping,
       ...this.#listCapabilityTagMapping,
-    })
+    }).filter(
+      (entry): entry is [string, string] => entry[1] !== undefined,
+    )
   }
 
   #deviceFacade?: ClassicDeviceFacade
 
-  #getCapabilityTagMapping: Record<string, string> = {}
+  #getCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
+
+  #listCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
 
   readonly #reports: {
     regular?: EnergyReportOperation
     total?: EnergyReportOperation
   } = {}
 
-  #setCapabilityTagMapping: Record<string, string> = {}
+  #setCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
 
   public override async onInit(): Promise<void> {
     this.capabilityToDevice = {
@@ -140,22 +144,16 @@ export abstract class BaseMELCloudDevice extends Device {
     }
   }
 
-  public cleanMapping(
-    capabilityTagMapping: Record<string, unknown>,
-  ): Record<string, string> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- driver tag mappings are Record<string, string> at runtime; unknown comes from BaseMELCloudDriver's broad type
+  public cleanMapping<TMapping extends Readonly<Record<string, unknown>>>(
+    capabilityTagMapping: TMapping,
+  ): Partial<TMapping> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Object.fromEntries widens generic keys; filtered entries retain source value types
     return Object.fromEntries(
       Object.entries(capabilityTagMapping).filter(([capability]) =>
         this.hasCapability(capability),
       ),
-    ) as Record<string, string>
+    ) as Partial<TMapping>
   }
-
-  /* v8 ignore start -- trivial override: prepends device name to all error logs */
-  public override error(...args: unknown[]): void {
-    super.error(this.getName(), '-', ...args)
-  }
-  /* v8 ignore stop */
 
   public async ensureDevice(): Promise<ClassicDeviceFacade | null> {
     try {
@@ -170,13 +168,17 @@ export abstract class BaseMELCloudDevice extends Device {
     }
   }
 
+  /* v8 ignore start -- trivial override: prepends device name to all error logs */
+  public override error(...args: unknown[]): void {
+    super.error(this.getName(), '-', ...args)
+  }
+  /* v8 ignore stop */
+
   /* v8 ignore start -- trivial override: prepends device name to all logs */
   public override log(...args: unknown[]): void {
     super.log(this.getName(), '-', ...args)
   }
   /* v8 ignore stop */
-
-  #listCapabilityTagMapping: Record<string, string> = {}
 
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {

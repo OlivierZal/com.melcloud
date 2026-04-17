@@ -83,12 +83,12 @@ export type EnergyCapabilityTagMapping<T extends Classic.DeviceType> = Record<
 
 export type GetCapabilityTagMapping<T extends Classic.DeviceType> = Record<
   keyof GetCapabilities<T>,
-  keyof Classic.GetDeviceData<T>
+  string & keyof Classic.GetDeviceData<T>
 >
 
 export type ListCapabilityTagMapping<T extends Classic.DeviceType> = Record<
   keyof ListCapabilities<T>,
-  keyof Classic.ListDeviceData<T>
+  string & keyof Classic.ListDeviceData<T>
 >
 
 export type OperationalCapabilities<T extends Classic.DeviceType> =
@@ -107,5 +107,5 @@ export type SetCapabilities<T extends Classic.DeviceType> =
 
 export type SetCapabilityTagMapping<T extends Classic.DeviceType> = Record<
   keyof SetCapabilities<T>,
-  keyof Classic.UpdateDeviceData<T>
+  string & keyof Classic.UpdateDeviceData<T>
 >

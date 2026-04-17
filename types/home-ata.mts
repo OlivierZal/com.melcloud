@@ -11,18 +11,6 @@ export type HomeCapabilitiesAta = HomeGetCapabilitiesAta &
   HomeListCapabilitiesAta &
   HomeSetCapabilitiesAta
 
-export type HomeGetCapabilitiesAta = BaseGetCapabilities
-
-export type HomeListCapabilitiesAta = BaseListCapabilities
-
-export interface HomeSetCapabilitiesAta extends BaseSetCapabilities {
-  readonly fan_speed: number
-  readonly horizontal: string
-  readonly target_temperature: number
-  readonly thermostat_mode: keyof typeof ThermostatModeAta
-  readonly vertical: string
-}
-
 /*
  * Uses method signature syntax (bivariant) to allow converter functions
  * to accept narrower parameter types from the facade getters.
@@ -48,6 +36,18 @@ export type HomeConvertToDevice = {
     value: HomeSetCapabilitiesAta[keyof HomeSetCapabilitiesAta],
   ): Home.AtaValues[keyof Home.AtaValues]
 }['bivariant']
+
+export type HomeGetCapabilitiesAta = BaseGetCapabilities
+
+export type HomeListCapabilitiesAta = BaseListCapabilities
+
+export interface HomeSetCapabilitiesAta extends BaseSetCapabilities {
+  readonly fan_speed: number
+  readonly horizontal: string
+  readonly target_temperature: number
+  readonly thermostat_mode: keyof typeof ThermostatModeAta
+  readonly vertical: string
+}
 
 export const homeSetCapabilityTagMappingAta: Record<
   keyof HomeSetCapabilitiesAta,
