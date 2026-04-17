@@ -68,19 +68,21 @@ export abstract class BaseMELCloudDevice extends Device {
       ...this.#setCapabilityTagMapping,
       ...this.#getCapabilityTagMapping,
       ...this.#listCapabilityTagMapping,
-    })
+    }).filter((entry): entry is [string, string] => entry[1] !== undefined)
   }
 
   #deviceFacade?: ClassicDeviceFacade
 
-  #getCapabilityTagMapping: Record<string, string> = {}
+  #getCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
+
+  #listCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
 
   readonly #reports: {
     regular?: EnergyReportOperation
     total?: EnergyReportOperation
   } = {}
 
-  #setCapabilityTagMapping: Record<string, string> = {}
+  #setCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
 
   public override async onInit(): Promise<void> {
     this.capabilityToDevice = {
@@ -140,22 +142,18 @@ export abstract class BaseMELCloudDevice extends Device {
     }
   }
 
-  public cleanMapping(
-    capabilityTagMapping: Record<string, unknown>,
-  ): Record<string, string> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- driver tag mappings are Record<string, string> at runtime; unknown comes from BaseMELCloudDriver's broad type
-    return Object.fromEntries(
-      Object.entries(capabilityTagMapping).filter(([capability]) =>
-        this.hasCapability(capability),
-      ),
-    ) as Record<string, string>
+  public cleanMapping<TMapping extends Readonly<Record<string, unknown>>>(
+    capabilityTagMapping: TMapping,
+  ): Partial<TMapping> {
+    const result: Partial<TMapping> = {}
+    for (const capability in capabilityTagMapping) {
+      if (this.hasCapability(capability)) {
+        const { [capability]: tag } = capabilityTagMapping
+        result[capability] = tag
+      }
+    }
+    return result
   }
-
-  /* v8 ignore start -- trivial override: prepends device name to all error logs */
-  public override error(...args: unknown[]): void {
-    super.error(this.getName(), '-', ...args)
-  }
-  /* v8 ignore stop */
 
   public async ensureDevice(): Promise<ClassicDeviceFacade | null> {
     try {
@@ -170,13 +168,17 @@ export abstract class BaseMELCloudDevice extends Device {
     }
   }
 
+  /* v8 ignore start -- trivial override: prepends device name to all error logs */
+  public override error(...args: unknown[]): void {
+    super.error(this.getName(), '-', ...args)
+  }
+  /* v8 ignore stop */
+
   /* v8 ignore start -- trivial override: prepends device name to all logs */
   public override log(...args: unknown[]): void {
     super.log(this.getName(), '-', ...args)
   }
   /* v8 ignore stop */
-
-  #listCapabilityTagMapping: Record<string, string> = {}
 
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
@@ -253,13 +255,14 @@ export abstract class BaseMELCloudDevice extends Device {
   ): Record<string, unknown> {
     this.log('Requested data:', values)
     const tagMapping = this.#setCapabilityTagMapping
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Object.fromEntries returns { [k: string]: any }
-    return Object.fromEntries(
-      Object.entries(values).map(([capability, value]) => [
-        tagMapping[capability],
-        this.capabilityToDevice[capability]?.(value) ?? value,
-      ]),
-    ) as Record<string, unknown>
+    const result: Record<string, unknown> = {}
+    for (const [capability, value] of Object.entries(values)) {
+      const { [capability]: tag } = tagMapping
+      if (tag !== undefined) {
+        result[tag] = this.capabilityToDevice[capability]?.(value) ?? value
+      }
+    }
+    return result
   }
 
   protected async scheduleEnergyReports(): Promise<void> {

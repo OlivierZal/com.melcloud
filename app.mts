@@ -472,6 +472,23 @@ export default class MELCloudApp extends App {
     })
   }
 
+  /*
+   * Sync matching classic devices by pulling their latest state from MELCloud.
+   * Per-device sync failures are logged without aborting the full sync run.
+   */
+  async #classicSyncDevices(
+    filter: { driverId?: string; ids?: (number | string)[] } = {},
+  ): Promise<void> {
+    const results = await Promise.allSettled(
+      this.#getDevices(filter).map(async (device) => device.syncFromDevice()),
+    )
+    for (const result of results) {
+      if (result.status === 'rejected') {
+        this.error('Device sync failed:', result.reason)
+      }
+    }
+  }
+
   #createLogger(): Logger {
     return {
       error: (...args: unknown[]): void => {
@@ -523,41 +540,6 @@ export default class MELCloudApp extends App {
       set: (key: string, value: string): void => {
         this.homey.settings.set(prefixKey(key), value)
       },
-    }
-  }
-
-  /*
-   * SDK v3 runs `App#onInit` before any `Driver#onInit`, so `onSync`
-   * callbacks fired by the MELCloud API clients during `#initClassicApi`
-   * / `#initHomeApi` find no ready drivers. Awaiting driver readiness
-   * would deadlock: drivers can't init until `App#onInit` returns, which
-   * awaits these API-client constructors. `getDrivers()` only exposes
-   * drivers whose `onInit` has completed, so unready drivers are filtered
-   * out naturally — an initial sync silently becomes a no-op. Each device
-   * runs its own initial sync via `ensureDevice()` in `Device#onInit`,
-   * and post-init `onSync` calls find every driver ready.
-   */
-  #getDrivers(driverId?: string): MELCloudDriver[] {
-    const drivers = Object.values(this.homey.drivers.getDrivers())
-    return driverId === undefined ? drivers : (
-        drivers.filter((driver) => driver.id === driverId)
-      )
-  }
-
-  /*
-   * ATA capability configuration. `enumType` maps Homey's string capability IDs
-   * to MELCloud's numeric enum values for localization
-   */
-  async #classicSyncDevices(
-    filter: { driverId?: string; ids?: (number | string)[] } = {},
-  ): Promise<void> {
-    const results = await Promise.allSettled(
-      this.#getDevices(filter).map(async (device) => device.syncFromDevice()),
-    )
-    for (const result of results) {
-      if (result.status === 'rejected') {
-        this.error('Device sync failed:', result.reason)
-      }
     }
   }
 
@@ -614,6 +596,24 @@ export default class MELCloudApp extends App {
           devices.filter(({ id }) => stringIds.includes(String(id)))
         : devices
     })
+  }
+
+  /*
+   * SDK v3 runs `App#onInit` before any `Driver#onInit`, so `onSync`
+   * callbacks fired by the MELCloud API clients during `#initClassicApi`
+   * / `#initHomeApi` find no ready drivers. Awaiting driver readiness
+   * would deadlock: drivers can't init until `App#onInit` returns, which
+   * awaits these API-client constructors. `getDrivers()` only exposes
+   * drivers whose `onInit` has completed, so unready drivers are filtered
+   * out naturally — an initial sync silently becomes a no-op. Each device
+   * runs its own initial sync via `ensureDevice()` in `Device#onInit`,
+   * and post-init `onSync` calls find every driver ready.
+   */
+  #getDrivers(driverId?: string): MELCloudDriver[] {
+    const drivers = Object.values(this.homey.drivers.getDrivers())
+    return driverId === undefined ? drivers : (
+        drivers.filter((driver) => driver.id === driverId)
+      )
   }
 
   async #initClassicApi(config: {

@@ -54,81 +54,56 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
   }) as unknown as Home.DeviceAtaFacade
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
-vi.mock('homey', () => {
-  class MockDevice {
-    public driver = {
-      energyCapabilityTagMapping: {},
-      getCapabilityTagMapping: {},
-      listCapabilityTagMapping: {},
-      manifest: {
-        capabilities: [
-          'measure_temperature',
-          'onoff',
-          'target_temperature',
-          'thermostat_mode',
-        ],
-      },
-      setCapabilityTagMapping: {
-        fan_speed: 'setFanSpeed',
-        horizontal: 'vaneHorizontalDirection',
-        onoff: 'power',
-        target_temperature: 'setTemperature',
-        thermostat_mode: 'operationMode',
-        vertical: 'vaneVerticalDirection',
-      },
-      getCapabilitiesOptions: (): Record<string, unknown> => ({}),
-      getRequiredCapabilities: (): string[] =>
-        this.driver.manifest.capabilities,
-    }
-
-    public error = vi.fn()
-
-    public getCapabilities = vi.fn().mockReturnValue([])
-
-    public getCapabilityOptions = vi.fn()
-
-    public getCapabilityValue = vi.fn()
-
-    public getData = vi.fn().mockReturnValue({ id: 'device-1' })
-
-    public getSetting = getSettingMock
-
-    public getSettings = vi.fn().mockReturnValue({})
-
-    public hasCapability = vi.fn().mockReturnValue(true)
-
-    public homey = {
-      api: { realtime: realtimeMock },
-      app: {
-        getHomeFacade: getHomeFacadeMock,
-      },
-      clearInterval: vi.fn(),
-      clearTimeout: vi.fn(),
-      setInterval: vi.fn(),
-      setTimeout: vi.fn(),
-    }
-
-    public log = vi.fn()
-
-    public registerMultipleCapabilityListener =
-      registerMultipleCapabilityListenerMock
-
-    public setCapabilityOptions = vi.fn()
-
-    public setCapabilityValue = vi.fn()
-
-    public setSettings = vi.fn()
-
-    public triggerCapabilityListener = vi.fn()
-
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in BaseMELCloudDevice
-    public async setWarning(...args: unknown[]): Promise<void> {
-      superSetWarningMock(...args)
-      await Promise.resolve()
-    }
+vi.mock('homey', async () => {
+  const { createMockDeviceClass } = await import('../helpers.ts')
+  return {
+    default: {
+      Device: createMockDeviceClass({
+        overrides: {
+          driver: {
+            energyCapabilityTagMapping: {},
+            getCapabilityTagMapping: {},
+            listCapabilityTagMapping: {},
+            manifest: {
+              capabilities: [
+                'measure_temperature',
+                'onoff',
+                'target_temperature',
+                'thermostat_mode',
+              ],
+            },
+            setCapabilityTagMapping: {
+              fan_speed: 'setFanSpeed',
+              horizontal: 'vaneHorizontalDirection',
+              onoff: 'power',
+              target_temperature: 'setTemperature',
+              thermostat_mode: 'operationMode',
+              vertical: 'vaneVerticalDirection',
+            },
+            getCapabilitiesOptions: (): Record<string, unknown> => ({}),
+            getRequiredCapabilities(this: {
+              manifest: { capabilities: string[] }
+            }): string[] {
+              return this.manifest.capabilities
+            },
+          },
+          getData: vi.fn().mockReturnValue({ id: 'device-1' }),
+          getSetting: getSettingMock,
+          homey: {
+            api: { realtime: realtimeMock },
+            app: { getHomeFacade: getHomeFacadeMock },
+            clearInterval: vi.fn(),
+            clearTimeout: vi.fn(),
+            setInterval: vi.fn(),
+            setTimeout: vi.fn(),
+          },
+          registerMultipleCapabilityListener:
+            registerMultipleCapabilityListenerMock,
+        },
+        superMocks: { setWarning: superSetWarningMock },
+      }),
+    },
   }
-
-  return { default: { Device: MockDevice } }
 })
 
 const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(

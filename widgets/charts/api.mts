@@ -4,11 +4,13 @@ import type {
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
-import type { HourNumbers } from 'luxon'
 
 import type { DaysQuery, HourQuery } from '../../types/widgets.mts'
 import { getClassicZones } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
+import { toHourNumbers, toNonNegativeInt } from '../../lib/validation.mts'
+
+const DAYS_MAX = 366
 
 const api = {
   getClassicDevices({
@@ -31,8 +33,7 @@ const api = {
   }): Promise<ReportChartLineOptions> {
     return app.getClassicHourlyTemperatures({
       deviceId,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Number to HourNumbers (0-23)
-      hour: hour === undefined ? undefined : (Number(hour) as HourNumbers),
+      hour: hour === undefined ? undefined : toHourNumbers(hour, 'hour'),
     })
   },
   async getClassicOperationModes({
@@ -44,7 +45,10 @@ const api = {
     params: { deviceId: string }
     query: DaysQuery
   }): Promise<ReportChartPieOptions> {
-    return app.getClassicOperationModes({ days: Number(days), deviceId })
+    return app.getClassicOperationModes({
+      days: toNonNegativeInt(days, { field: 'days', max: DAYS_MAX }),
+      deviceId,
+    })
   },
   async getClassicSignal({
     homey: { app },
@@ -57,8 +61,7 @@ const api = {
   }): Promise<ReportChartLineOptions> {
     return app.getClassicSignal({
       deviceId,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing Number to HourNumbers (0-23)
-      hour: hour === undefined ? undefined : (Number(hour) as HourNumbers),
+      hour: hour === undefined ? undefined : toHourNumbers(hour, 'hour'),
     })
   },
   async getClassicTemperatures({
@@ -70,7 +73,10 @@ const api = {
     params: { deviceId: string }
     query: DaysQuery
   }): Promise<ReportChartLineOptions> {
-    return app.getClassicTemperatures({ days: Number(days), deviceId })
+    return app.getClassicTemperatures({
+      days: toNonNegativeInt(days, { field: 'days', max: DAYS_MAX }),
+      deviceId,
+    })
   },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()

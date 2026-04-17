@@ -20,24 +20,48 @@ export const createMockDriverClass = (
   overrides?: Record<string, unknown>,
 ): new () => MockDriverInstance => {
   class MockDriver implements MockDriverInstance {
-    public getDevices = vi.fn().mockReturnValue([])
+    public getDevices = vi.fn<() => readonly unknown[]>().mockReturnValue([])
 
     public homey = {
       app: {
-        api: { authenticate: vi.fn() },
-        getDevicesByType: vi.fn().mockReturnValue([]),
+        api: { authenticate: vi.fn<(data: unknown) => Promise<boolean>>() },
+        getDevicesByType: vi
+          .fn<(type: number) => readonly unknown[]>()
+          .mockReturnValue([]),
       },
       flow: {
-        getActionCard: vi.fn().mockReturnValue({
-          registerRunListener: vi.fn(),
-        }),
-        getConditionCard: vi.fn().mockReturnValue({
-          registerRunListener: vi.fn(),
-        }),
+        getActionCard: vi
+          .fn<
+            (id: string) => {
+              registerRunListener: (
+                listener: (args: Record<string, unknown>) => unknown,
+              ) => void
+            }
+          >()
+          .mockReturnValue({
+            registerRunListener:
+              vi.fn<
+                (listener: (args: Record<string, unknown>) => unknown) => void
+              >(),
+          }),
+        getConditionCard: vi
+          .fn<
+            (id: string) => {
+              registerRunListener: (
+                listener: (args: Record<string, unknown>) => unknown,
+              ) => void
+            }
+          >()
+          .mockReturnValue({
+            registerRunListener:
+              vi.fn<
+                (listener: (args: Record<string, unknown>) => unknown) => void
+              >(),
+          }),
       },
     }
 
-    public log = vi.fn()
+    public log = vi.fn<(...args: readonly unknown[]) => void>()
 
     public manifest = { capabilities: [] }
 

@@ -6,10 +6,21 @@ export interface Homey<
   readonly getSettings: () => TSettings
 }
 
-export const fireAndForget = (promise: Promise<unknown>): void => {
-  promise.catch(() => {
-    // Intentional no-op
-  })
+const defaultOnError = (error: unknown): void => {
+  // eslint-disable-next-line no-console -- intentional fallback: surfaces otherwise-swallowed rejections in widget dev tools
+  console.error(error)
+}
+
+/**
+ * Runs an async operation that shouldn't block. Rejections go to `onError`
+ * (default: console.error). Pass a homey.alert handler for user-visible
+ * failures, or a no-op when a miss is acceptable.
+ */
+export const fireAndForget = (
+  promise: Promise<unknown>,
+  onError: (error: unknown) => void = defaultOnError,
+): void => {
+  promise.catch(onError)
 }
 
 export const homeyApiGet = async <T,>(

@@ -83,10 +83,16 @@ const getZoneName = (name: string, level: number): string =>
 
 // ── Helpers ──
 
-const fireAndForget = (promise: Promise<unknown>): void => {
-  promise.catch(() => {
-    // Intentional no-op
-  })
+const defaultOnError = (error: unknown): void => {
+  // eslint-disable-next-line no-console -- intentional fallback: surfaces otherwise-swallowed rejections in settings dev tools
+  console.error(error)
+}
+
+const fireAndForget = (
+  promise: Promise<unknown>,
+  onError: (error: unknown) => void = defaultOnError,
+): void => {
+  promise.catch(onError)
 }
 
 const getErrorMessage = (error: unknown): string => {
@@ -465,139 +471,6 @@ class AuthManager {
 }
 
 // ── ErrorLogManager ──
-
-class ErrorLogManager {
-  #errorCount = 0
-
-  readonly #errorCountLabel: HTMLLabelElement
-
-  readonly #errorLog: HTMLDivElement
-
-  #errorLogTBody: HTMLTableSectionElement | null = null
-
-  #from = ''
-
-  readonly #homey: Homey
-
-  readonly #periodLabel: HTMLLabelElement
-
-  readonly #seeButton: HTMLButtonElement
-
-  readonly #sinceInput: HTMLInputElement
-
-  #to = ''
-
-  public constructor(homey: Homey) {
-    this.#homey = homey
-    this.#errorLog = getDiv('error_log')
-    this.#errorCountLabel = getLabel('error_count')
-    this.#periodLabel = getLabel('period')
-    this.#sinceInput = getInput('since')
-    this.#seeButton = getButton('see')
-  }
-
-  public addEventListeners(): void {
-    this.#sinceInput.addEventListener('change', () => {
-      if (
-        this.#to &&
-        this.#sinceInput.value &&
-        Date.parse(this.#sinceInput.value) > Date.parse(this.#to)
-      ) {
-        this.#sinceInput.value = this.#to
-        fireAndForget(
-          this.#homey.alert(
-            this.#homey.__('settings.errorLog.error', { from: this.#from }),
-          ),
-        )
-      }
-    })
-    this.#seeButton.addEventListener('click', () => {
-      fireAndForget(this.fetchErrorLog())
-    })
-  }
-
-  public disable(): void {
-    disableButton(this.#seeButton.id)
-  }
-
-  /** @alerts Displays fetch errors to the user. */
-  public async fetchErrorLog(): Promise<void> {
-    await withDisablingButton(this.#seeButton.id, async () => {
-      try {
-        const data = await homeyApiGet<FormattedErrorLog>(
-          this.#homey,
-          `/classic/logs/errors?${new URLSearchParams({
-            from: this.#sinceInput.value,
-            limit: '29',
-            offset: '0',
-            to: this.#to,
-          } satisfies Classic.ErrorLogQuery)}`,
-        )
-        this.#updateErrorLogElements(data)
-        this.#appendErrorLogRows(data.errors)
-      } catch (error) {
-        await this.#homey.alert(getErrorMessage(error))
-      }
-    })
-  }
-
-  #appendErrorLogRows(errors: readonly FormattedErrorDetails[]): void {
-    for (const error of errors) {
-      this.#errorLogTBody ??= this.#createErrorLogTable(Object.keys(error))
-      const row = this.#errorLogTBody.insertRow()
-      for (const value of Object.values(error)) {
-        const cell = row.insertCell()
-        cell.textContent = String(value)
-      }
-    }
-  }
-
-  #createErrorLogTable(keys: string[]): HTMLTableSectionElement {
-    const table = document.createElement('table')
-    table.classList.add('bordered')
-    const thead = table.createTHead()
-    const row = thead.insertRow()
-    for (const key of keys) {
-      const th = document.createElement('th')
-      th.textContent = this.#homey.__(`settings.errorLog.columns.${key}`)
-      row.append(th)
-    }
-    this.#errorLog.append(table)
-    return table.createTBody()
-  }
-
-  #getErrorCountText(count: number): string {
-    if (count < PLURAL_THRESHOLD) {
-      return this.#homey.__(`settings.errorLog.errorCount.${String(count)}`)
-    }
-    if (
-      numberEndsWithTwoThreeFour.has(count % Modulo.base10) &&
-      !pluralExceptions.has(count % Modulo.base100)
-    ) {
-      return this.#homey.__('settings.errorLog.errorCount.234')
-    }
-    return this.#homey.__('settings.errorLog.errorCount.plural')
-  }
-
-  #updateErrorLogElements({
-    errors,
-    fromDateHuman,
-    nextFromDate,
-    nextToDate,
-  }: FormattedErrorLog): void {
-    this.#errorCount += errors.length
-    this.#from = fromDateHuman
-    this.#to = nextToDate
-    this.#errorCountLabel.textContent = `${String(this.#errorCount)} ${this.#getErrorCountText(this.#errorCount)}`
-    this.#periodLabel.textContent = this.#homey.__('settings.errorLog.period', {
-      from: this.#from,
-    })
-    this.#sinceInput.value = nextFromDate
-  }
-}
-
-// ── DeviceSettingsManager ──
-
 class DeviceSettingsManager {
   public get deviceSettings(): Partial<DeviceSettings> {
     return this.#deviceSettings
@@ -969,8 +842,138 @@ class DeviceSettingsManager {
   }
 }
 
-// ── ZoneSettingsManager ──
+// ── ErrorLogManager ──
+class ErrorLogManager {
+  #errorCount = 0
 
+  readonly #errorCountLabel: HTMLLabelElement
+
+  readonly #errorLog: HTMLDivElement
+
+  #errorLogTBody: HTMLTableSectionElement | null = null
+
+  #from = ''
+
+  readonly #homey: Homey
+
+  readonly #periodLabel: HTMLLabelElement
+
+  readonly #seeButton: HTMLButtonElement
+
+  readonly #sinceInput: HTMLInputElement
+
+  #to = ''
+
+  public constructor(homey: Homey) {
+    this.#homey = homey
+    this.#errorLog = getDiv('error_log')
+    this.#errorCountLabel = getLabel('error_count')
+    this.#periodLabel = getLabel('period')
+    this.#sinceInput = getInput('since')
+    this.#seeButton = getButton('see')
+  }
+
+  public addEventListeners(): void {
+    this.#sinceInput.addEventListener('change', () => {
+      if (
+        this.#to &&
+        this.#sinceInput.value &&
+        Date.parse(this.#sinceInput.value) > Date.parse(this.#to)
+      ) {
+        this.#sinceInput.value = this.#to
+        fireAndForget(
+          this.#homey.alert(
+            this.#homey.__('settings.errorLog.error', { from: this.#from }),
+          ),
+        )
+      }
+    })
+    this.#seeButton.addEventListener('click', () => {
+      fireAndForget(this.fetchErrorLog())
+    })
+  }
+
+  public disable(): void {
+    disableButton(this.#seeButton.id)
+  }
+
+  /** @alerts Displays fetch errors to the user. */
+  public async fetchErrorLog(): Promise<void> {
+    await withDisablingButton(this.#seeButton.id, async () => {
+      try {
+        const data = await homeyApiGet<FormattedErrorLog>(
+          this.#homey,
+          `/classic/logs/errors?${new URLSearchParams({
+            from: this.#sinceInput.value,
+            limit: '29',
+            offset: '0',
+            to: this.#to,
+          } satisfies Classic.ErrorLogQuery)}`,
+        )
+        this.#updateErrorLogElements(data)
+        this.#appendErrorLogRows(data.errors)
+      } catch (error) {
+        await this.#homey.alert(getErrorMessage(error))
+      }
+    })
+  }
+
+  #appendErrorLogRows(errors: readonly FormattedErrorDetails[]): void {
+    for (const error of errors) {
+      this.#errorLogTBody ??= this.#createErrorLogTable(Object.keys(error))
+      const row = this.#errorLogTBody.insertRow()
+      for (const value of Object.values(error)) {
+        const cell = row.insertCell()
+        cell.textContent = String(value)
+      }
+    }
+  }
+
+  #createErrorLogTable(keys: string[]): HTMLTableSectionElement {
+    const table = document.createElement('table')
+    table.classList.add('bordered')
+    const thead = table.createTHead()
+    const row = thead.insertRow()
+    for (const key of keys) {
+      const th = document.createElement('th')
+      th.textContent = this.#homey.__(`settings.errorLog.columns.${key}`)
+      row.append(th)
+    }
+    this.#errorLog.append(table)
+    return table.createTBody()
+  }
+
+  #getErrorCountText(count: number): string {
+    if (count < PLURAL_THRESHOLD) {
+      return this.#homey.__(`settings.errorLog.errorCount.${String(count)}`)
+    }
+    if (
+      numberEndsWithTwoThreeFour.has(count % Modulo.base10) &&
+      !pluralExceptions.has(count % Modulo.base100)
+    ) {
+      return this.#homey.__('settings.errorLog.errorCount.234')
+    }
+    return this.#homey.__('settings.errorLog.errorCount.plural')
+  }
+
+  #updateErrorLogElements({
+    errors,
+    fromDateHuman,
+    nextFromDate,
+    nextToDate,
+  }: FormattedErrorLog): void {
+    this.#errorCount += errors.length
+    this.#from = fromDateHuman
+    this.#to = nextToDate
+    this.#errorCountLabel.textContent = `${String(this.#errorCount)} ${this.#getErrorCountText(this.#errorCount)}`
+    this.#periodLabel.textContent = this.#homey.__('settings.errorLog.period', {
+      from: this.#from,
+    })
+    this.#sinceInput.value = nextFromDate
+  }
+}
+
+// ── ZoneSettingsManager ──
 class ZoneSettingsManager {
   readonly #frostProtectionEnabled: HTMLSelectElement
 
@@ -1010,22 +1013,6 @@ class ZoneSettingsManager {
   }
 
   /** @silent Falls back to default values on error. */
-  public async fetchFrostProtectionData(): Promise<void> {
-    await withDisablingButtonPair('frost_protection', async () => {
-      try {
-        const data = await homeyApiGet<Classic.FrostProtectionData>(
-          this.#homey,
-          `/classic/zones/${this.#getZonePath()}/settings/frost-protection`,
-        )
-        this.#updateZoneMapping(data)
-        this.displayFrostProtectionData()
-      } catch {
-        // Non-critical: UI falls back to default values
-      }
-    })
-  }
-
-  /** @silent Falls back to default values on error. */
   public displayFrostProtectionData(): void {
     const { [this.#zone.value]: data } = this.#zoneMapping
     if (data) {
@@ -1052,6 +1039,22 @@ class ZoneSettingsManager {
       this.#holidayModeStartDate.value = isEnabled ? (startDate ?? '') : ''
       this.#holidayModeEndDate.value = isEnabled ? (endDate ?? '') : ''
     }
+  }
+
+  /** @silent Falls back to default values on error. */
+  public async fetchFrostProtectionData(): Promise<void> {
+    await withDisablingButtonPair('frost_protection', async () => {
+      try {
+        const data = await homeyApiGet<Classic.FrostProtectionData>(
+          this.#homey,
+          `/classic/zones/${this.#getZonePath()}/settings/frost-protection`,
+        )
+        this.#updateZoneMapping(data)
+        this.displayFrostProtectionData()
+      } catch {
+        // Non-critical: UI falls back to default values
+      }
+    })
   }
 
   public async fetchHolidayModeData(): Promise<void> {
@@ -1259,7 +1262,6 @@ class ZoneSettingsManager {
 }
 
 // ── SettingsApp ──
-
 class SettingsApp {
   readonly #authManager: AuthManager
 

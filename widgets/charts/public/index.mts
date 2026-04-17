@@ -218,7 +218,6 @@ interface DrawConfig {
 }
 
 // ── ChartWidget class ──
-
 class ChartWidget {
   #chart: ApexCharts | null = null
 

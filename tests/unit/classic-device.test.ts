@@ -56,69 +56,34 @@ const mockDeviceData = {
 }
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
-vi.mock('homey', () => {
-  class MockDevice {
-    public driver = {}
-
-    public error = vi.fn()
-
-    public getCapabilities = vi.fn().mockReturnValue([])
-
-    public getCapabilityOptions = vi.fn()
-
-    public getCapabilityValue = vi.fn()
-
-    public getData = vi.fn().mockReturnValue({ id: 1 })
-
-    public getSetting = getSettingMock
-
-    public getSettings = vi.fn().mockReturnValue({})
-
-    public hasCapability = vi.fn().mockReturnValue(true)
-
-    public homey = {
-      __: vi.fn().mockImplementation((key: string) => key),
-      api: { realtime: realtimeMock },
-      app: { getClassicFacade: getFacadeMock },
-      clearInterval: vi.fn(),
-      clearTimeout: vi.fn(),
-      setInterval: vi.fn(),
-      setTimeout: vi.fn(),
-    }
-
-    public log = vi.fn()
-
-    public registerMultipleCapabilityListener =
-      registerMultipleCapabilityListenerMock
-
-    public setCapabilityOptions = vi.fn()
-
-    public setCapabilityValue = vi.fn()
-
-    public setSettings = vi.fn()
-
-    public triggerCapabilityListener = triggerCapabilityListenerMock
-
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.addCapability() resolution in BaseMELCloudDevice
-    public async addCapability(...args: unknown[]): Promise<void> {
-      superAddCapabilityMock(...args)
-      await Promise.resolve()
-    }
-
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.removeCapability() resolution in BaseMELCloudDevice
-    public async removeCapability(...args: unknown[]): Promise<void> {
-      superRemoveCapabilityMock(...args)
-      await Promise.resolve()
-    }
-
-    // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- Prototype method required for super.setWarning() resolution in BaseMELCloudDevice
-    public async setWarning(...args: unknown[]): Promise<void> {
-      superSetWarningMock(...args)
-      await Promise.resolve()
-    }
+vi.mock('homey', async () => {
+  const { createMockDeviceClass } = await import('../helpers.ts')
+  return {
+    default: {
+      Device: createMockDeviceClass({
+        overrides: {
+          getSetting: getSettingMock,
+          homey: {
+            __: vi.fn().mockImplementation((key: string) => key),
+            api: { realtime: realtimeMock },
+            app: { getClassicFacade: getFacadeMock },
+            clearInterval: vi.fn(),
+            clearTimeout: vi.fn(),
+            setInterval: vi.fn(),
+            setTimeout: vi.fn(),
+          },
+          registerMultipleCapabilityListener:
+            registerMultipleCapabilityListenerMock,
+          triggerCapabilityListener: triggerCapabilityListenerMock,
+        },
+        superMocks: {
+          addCapability: superAddCapabilityMock,
+          removeCapability: superRemoveCapabilityMock,
+          setWarning: superSetWarningMock,
+        },
+      }),
+    },
   }
-
-  return { default: { Device: MockDevice } }
 })
 
 const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(

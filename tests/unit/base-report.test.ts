@@ -1,6 +1,13 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-import { DateTime, Settings } from 'luxon'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 
 import type { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
@@ -14,7 +21,7 @@ import { getMockCallArg, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
 
-const FAKE_NOW_MILLIS = DateTime.fromISO('2026-03-18T12:00:00.000').toMillis()
+const FAKE_NOW = new Date('2026-03-18T12:00:00.000')
 
 const setCapabilityValueMock = vi.fn()
 const ensureDeviceMock = vi.fn()
@@ -110,7 +117,11 @@ const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
 
 describe(EnergyReport, () => {
   beforeAll(() => {
-    Settings.now = (): number => FAKE_NOW_MILLIS
+    vi.useFakeTimers({ now: FAKE_NOW, toFake: ['Date'] })
+  })
+
+  afterAll(() => {
+    vi.useRealTimers()
   })
 
   beforeEach(() => {

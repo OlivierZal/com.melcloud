@@ -11,7 +11,6 @@ import type {
   Capabilities,
   EnergyCapabilities,
   EnergyCapabilityTagEntry,
-  EnergyCapabilityTagMapping,
 } from '../types/capabilities.mts'
 import type { EnergyReportMode } from '../types/device.mts'
 import { KILOWATT_TO_WATT } from '../lib/constants.mts'
@@ -50,10 +49,9 @@ export class EnergyReport<T extends Classic.DeviceType> {
   private readonly driver: ClassicMELCloudDriver<T>
 
   get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- cleanMapping returns Record<string, string>; energy mapping has typed keys/values at runtime
     const cleaned = this.#device.cleanMapping(
       this.driver.energyCapabilityTagMapping,
-    ) as unknown as Partial<EnergyCapabilityTagMapping<T>>
+    )
     return typedEntries<
       string & keyof EnergyCapabilities<T>,
       readonly (keyof Classic.EnergyData<T>)[]
