@@ -150,7 +150,7 @@ const thermostatModeValuesAtw = [
 export const getCapabilitiesOptions = ({
   CanCool: canCool,
   HasZone2: hasClassicZone2,
-}: Classic.ListDeviceDataAtw): Partial<CapabilitiesOptions> => {
+}: Readonly<Classic.ListDeviceDataAtw>): Partial<CapabilitiesOptions> => {
   const values =
     canCool ?
       thermostatModeValuesAtw

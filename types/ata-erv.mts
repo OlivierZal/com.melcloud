@@ -23,9 +23,9 @@ const getFanSpeedOptions = (
 export const getCapabilitiesOptionsAtaErv = ({
   HasAutomaticFanSpeed: hasAutomaticFanSpeed,
   NumberOfFanSpeeds: numberOfFanSpeeds,
-}:
-  | Classic.ListDeviceDataAta
-  | Classic.ListDeviceDataErv): Partial<CapabilitiesOptionsAtaErv> =>
+}: Readonly<
+  Classic.ListDeviceDataAta | Classic.ListDeviceDataErv
+>): Partial<CapabilitiesOptionsAtaErv> =>
   getFanSpeedOptions(hasAutomaticFanSpeed, numberOfFanSpeeds)
 
 export const homeGetCapabilitiesOptions = ({

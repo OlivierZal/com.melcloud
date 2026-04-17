@@ -103,7 +103,7 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
   protected readonly thermostatMode = null
 
   protected override async setCapabilityValues(
-    data: Classic.ListDeviceData<typeof Classic.DeviceType.Atw>,
+    data: Readonly<Classic.ListDeviceData<typeof Classic.DeviceType.Atw>>,
   ): Promise<void> {
     await super.setCapabilityValues(data)
     await this.#setOperationModeStates()

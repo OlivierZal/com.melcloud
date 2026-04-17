@@ -75,7 +75,7 @@ export abstract class ClassicMELCloudDevice<
     return this.cachedFacade as Classic.DeviceFacade<T> | undefined
   }
 
-  get #data(): Classic.ListDeviceData<T> | undefined {
+  get #data(): Readonly<Classic.ListDeviceData<T>> | undefined {
     return this.facade?.data
   }
 
@@ -113,7 +113,7 @@ export abstract class ClassicMELCloudDevice<
   }
 
   protected async setCapabilityValues(
-    data: Classic.ListDeviceData<T>,
+    data: Readonly<Classic.ListDeviceData<T>>,
   ): Promise<void> {
     this.homey.api.realtime('deviceupdate', null)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing shared [string, string][] to typed entries
@@ -134,14 +134,14 @@ export abstract class ClassicMELCloudDevice<
   #convertFromDevice<TKey extends keyof Capabilities<T>>(
     capability: TKey,
     value: Classic.ListDeviceData<T>[keyof Classic.ListDeviceData<T>],
-    data?: Classic.ListDeviceData<T>,
+    data?: Readonly<Classic.ListDeviceData<T>>,
   ): Capabilities<T>[TKey] {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- converter output narrowed to specific capability type
     return (this.deviceToCapability[capability]?.(value, data) ??
       value) as Capabilities<T>[TKey]
   }
 
-  async #getDeviceData(): Promise<Classic.ListDeviceData<T> | null> {
+  async #getDeviceData(): Promise<Readonly<Classic.ListDeviceData<T>> | null> {
     try {
       if (this.#data) {
         return this.#data
