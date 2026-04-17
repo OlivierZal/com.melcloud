@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest'
 
-import { toHourNumbers, toPositiveInt } from '../../lib/validation.mts'
+import { toHourNumbers, toNonNegativeInt } from '../../lib/validation.mts'
 
-describe(toPositiveInt, () => {
+describe(toNonNegativeInt, () => {
   it.each([
     [0, 0],
     [23, 23],
     ['7', 7],
     ['0', 0],
   ])('accepts %s and returns %d', (input, expected) => {
-    expect(toPositiveInt(input)).toBe(expected)
+    expect(toNonNegativeInt(input)).toBe(expected)
   })
 
   it('enforces the optional max', () => {
-    expect(toPositiveInt(10, { max: 10 })).toBe(10)
-    expect(() => toPositiveInt(11, { field: 'days', max: 10 })).toThrow(
+    expect(toNonNegativeInt(10, { max: 10 })).toBe(10)
+    expect(() => toNonNegativeInt(11, { field: 'days', max: 10 })).toThrow(
       /days: expected value ≤ 10/u,
     )
   })
@@ -26,20 +26,20 @@ describe(toPositiveInt, () => {
     [Number.NaN, /non-negative integer/u],
     [Number.POSITIVE_INFINITY, /non-negative integer/u],
   ])('rejects %p', (input, pattern) => {
-    expect(() => toPositiveInt(input)).toThrow(pattern)
+    expect(() => toNonNegativeInt(input)).toThrow(pattern)
   })
 
   it('rejects non-numeric types', () => {
-    expect(() => toPositiveInt(null)).toThrow(
+    expect(() => toNonNegativeInt(null)).toThrow(
       /expected number or numeric string/u,
     )
-    expect(() => toPositiveInt({ field: 'x' })).toThrow(
+    expect(() => toNonNegativeInt({ field: 'x' })).toThrow(
       /expected number or numeric string/u,
     )
   })
 
   it('includes the field name in error messages when provided', () => {
-    expect(() => toPositiveInt('bad', { field: 'days' })).toThrow(/^days: /u)
+    expect(() => toNonNegativeInt('bad', { field: 'days' })).toThrow(/^days: /u)
   })
 })
 

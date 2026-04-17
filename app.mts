@@ -473,8 +473,8 @@ export default class MELCloudApp extends App {
   }
 
   /*
-   * ATA capability configuration. `enumType` maps Homey's string capability IDs
-   * to MELCloud's numeric enum values for localization
+   * Sync matching classic devices by pulling their latest state from MELCloud.
+   * Per-device sync failures are logged without aborting the full sync run.
    */
   async #classicSyncDevices(
     filter: { driverId?: string; ids?: (number | string)[] } = {},

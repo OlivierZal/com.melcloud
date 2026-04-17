@@ -8,7 +8,7 @@ import type { Homey } from 'homey/lib/Homey'
 import type { DaysQuery, HourQuery } from '../../types/widgets.mts'
 import { getClassicZones } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
-import { toHourNumbers, toPositiveInt } from '../../lib/validation.mts'
+import { toHourNumbers, toNonNegativeInt } from '../../lib/validation.mts'
 
 const DAYS_MAX = 366
 
@@ -46,7 +46,7 @@ const api = {
     query: DaysQuery
   }): Promise<ReportChartPieOptions> {
     return app.getClassicOperationModes({
-      days: toPositiveInt(days, { field: 'days', max: DAYS_MAX }),
+      days: toNonNegativeInt(days, { field: 'days', max: DAYS_MAX }),
       deviceId,
     })
   },
@@ -74,7 +74,7 @@ const api = {
     query: DaysQuery
   }): Promise<ReportChartLineOptions> {
     return app.getClassicTemperatures({
-      days: toPositiveInt(days, { field: 'days', max: DAYS_MAX }),
+      days: toNonNegativeInt(days, { field: 'days', max: DAYS_MAX }),
       deviceId,
     })
   },

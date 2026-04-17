@@ -842,7 +842,7 @@ class DeviceSettingsManager {
   }
 }
 
-// ── DeviceSettingsManager ──
+// ── ErrorLogManager ──
 class ErrorLogManager {
   #errorCount = 0
 
