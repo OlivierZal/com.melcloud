@@ -34,9 +34,11 @@ vi.mock('homey', async () => {
   return {
     default: {
       Device: createMockDeviceClass({
-        getCapabilityOptions: getCapabilityOptionsMock,
-        hasCapability: hasCapabilityMock,
-        setCapabilityValue: setCapabilityValueMock,
+        overrides: {
+          getCapabilityOptions: getCapabilityOptionsMock,
+          hasCapability: hasCapabilityMock,
+          setCapabilityValue: setCapabilityValueMock,
+        },
       }),
     },
   }
