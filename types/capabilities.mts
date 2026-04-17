@@ -49,7 +49,7 @@ export type ConvertFromDevice<T extends Classic.DeviceType> = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
   bivariant(
     value: Classic.ListDeviceData<T>[keyof Classic.ListDeviceData<T>],
-    data?: Classic.ListDeviceData<T>,
+    data?: Readonly<Classic.ListDeviceData<T>>,
   ): OperationalCapabilities<T>[keyof OperationalCapabilities<T>]
 }['bivariant']
 

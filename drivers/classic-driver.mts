@@ -20,7 +20,7 @@ export abstract class ClassicMELCloudDriver<
   public abstract override readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
 
   public abstract override readonly getCapabilitiesOptions: (
-    data: Classic.ListDeviceData<T>,
+    data: Readonly<Classic.ListDeviceData<T>>,
   ) => Partial<CapabilitiesOptions<T>>
 
   public abstract override readonly getCapabilityTagMapping: GetCapabilityTagMapping<T>
@@ -47,11 +47,11 @@ export abstract class ClassicMELCloudDriver<
   }
 
   public abstract override getRequiredCapabilities(
-    data?: Classic.ListDeviceData<T>,
+    data?: Readonly<Classic.ListDeviceData<T>>,
   ): string[]
 
   protected override getDeviceModels(): {
-    data: Classic.ListDeviceData<T>
+    data: Readonly<Classic.ListDeviceData<T>>
     id: number
     name: string
   }[] {
@@ -63,7 +63,7 @@ export abstract class ClassicMELCloudDriver<
     id,
     name,
   }: {
-    data: Classic.ListDeviceData<T>
+    data: Readonly<Classic.ListDeviceData<T>>
     id: number
     name: string
   }): DeviceDetails<T> {
