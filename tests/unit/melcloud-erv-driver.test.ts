@@ -101,5 +101,12 @@ describe(ClassicMELCloudDriverErv, () => {
       expect(capabilities).toContain('measure_co2')
       expect(capabilities).toContain('measure_pm25')
     })
+
+    it('should exclude measure sensors when called without data', () => {
+      const capabilities = driver.getRequiredCapabilities()
+
+      expect(capabilities).not.toContain('measure_co2')
+      expect(capabilities).not.toContain('measure_pm25')
+    })
   })
 })
