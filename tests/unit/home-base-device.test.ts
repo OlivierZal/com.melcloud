@@ -81,9 +81,9 @@ vi.mock('homey', async () => {
               vertical: 'vaneVerticalDirection',
             },
             getCapabilitiesOptions: (): Record<string, unknown> => ({}),
-            getRequiredCapabilities(
-              this: { manifest: { capabilities: string[] } },
-            ): string[] {
+            getRequiredCapabilities(this: {
+              manifest: { capabilities: string[] }
+            }): string[] {
               return this.manifest.capabilities
             },
           },

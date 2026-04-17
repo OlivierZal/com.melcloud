@@ -27,7 +27,9 @@ export const createMockDeviceClass = (
 
     public error = vi.fn<(...args: readonly unknown[]) => void>()
 
-    public getCapabilities = vi.fn<() => readonly string[]>().mockReturnValue([])
+    public getCapabilities = vi
+      .fn<() => readonly string[]>()
+      .mockReturnValue([])
 
     public getCapabilityOptions =
       vi.fn<(capability: string) => Record<string, unknown>>()
@@ -44,8 +46,9 @@ export const createMockDeviceClass = (
       .fn<() => Record<string, unknown>>()
       .mockReturnValue({})
 
-    public hasCapability =
-      vi.fn<(capability: string) => boolean>().mockReturnValue(true)
+    public hasCapability = vi
+      .fn<(capability: string) => boolean>()
+      .mockReturnValue(true)
 
     public homey = {
       __: vi.fn<(key: string) => string>(),
@@ -55,8 +58,7 @@ export const createMockDeviceClass = (
       clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
       setInterval:
         vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
-      setTimeout:
-        vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
+      setTimeout: vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
     }
 
     public log = vi.fn<(...args: readonly unknown[]) => void>()

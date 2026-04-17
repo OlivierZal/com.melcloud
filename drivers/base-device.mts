@@ -68,9 +68,7 @@ export abstract class BaseMELCloudDevice extends Device {
       ...this.#setCapabilityTagMapping,
       ...this.#getCapabilityTagMapping,
       ...this.#listCapabilityTagMapping,
-    }).filter(
-      (entry): entry is [string, string] => entry[1] !== undefined,
-    )
+    }).filter((entry): entry is [string, string] => entry[1] !== undefined)
   }
 
   #deviceFacade?: ClassicDeviceFacade

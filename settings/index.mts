@@ -83,10 +83,16 @@ const getZoneName = (name: string, level: number): string =>
 
 // ── Helpers ──
 
-const fireAndForget = (promise: Promise<unknown>): void => {
-  promise.catch(() => {
-    // Intentional no-op
-  })
+const defaultOnError = (error: unknown): void => {
+  // eslint-disable-next-line no-console -- intentional fallback: surfaces otherwise-swallowed rejections in settings dev tools
+  console.error(error)
+}
+
+const fireAndForget = (
+  promise: Promise<unknown>,
+  onError: (error: unknown) => void = defaultOnError,
+): void => {
+  promise.catch(onError)
 }
 
 const getErrorMessage = (error: unknown): string => {

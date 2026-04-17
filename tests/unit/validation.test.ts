@@ -39,9 +39,7 @@ describe(toPositiveInt, () => {
   })
 
   it('includes the field name in error messages when provided', () => {
-    expect(() => toPositiveInt('bad', { field: 'days' })).toThrow(
-      /^days: /u,
-    )
+    expect(() => toPositiveInt('bad', { field: 'days' })).toThrow(/^days: /u)
   })
 })
 
