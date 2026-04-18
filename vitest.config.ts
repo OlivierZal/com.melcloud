@@ -25,6 +25,7 @@ export default defineConfig({
     },
     projects: [
       {
+        oxc: false,
         test: {
           include: ['tests/unit/*device*.test.ts'],
           name: 'device',
@@ -32,6 +33,7 @@ export default defineConfig({
         },
       },
       {
+        oxc: false,
         test: {
           exclude: ['tests/unit/*device*.test.ts'],
           include: ['tests/**/*.test.ts'],
