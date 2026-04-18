@@ -433,14 +433,11 @@ class AuthManager {
     }
     await withDisablingButton(this.#authenticateButton.id, async () => {
       try {
-        const isLoggedIn = await homeyApiPost<boolean>(
-          this.#homey,
-          '/classic/sessions',
-          { password, username } satisfies Classic.LoginCredentials,
-        )
-        await (isLoggedIn ?
-          this.#loadPostLoginCallback()
-        : this.#homey.alert(this.#homey.__('settings.authenticate.failure')))
+        await homeyApiPost(this.#homey, '/classic/sessions', {
+          password,
+          username,
+        } satisfies Classic.LoginCredentials)
+        await this.#loadPostLoginCallback()
       } catch (error) {
         await this.#homey.alert(getErrorMessage(error))
       }

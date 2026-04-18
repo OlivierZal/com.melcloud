@@ -189,14 +189,12 @@ export default class MELCloudApp extends App {
 
   public async authenticateClassic(
     data: Classic.LoginCredentials,
-  ): Promise<boolean> {
-    return this.#classicApi.authenticate(data)
+  ): Promise<void> {
+    await this.#classicApi.authenticate(data)
   }
 
-  public async authenticateHome(
-    data: Classic.LoginCredentials,
-  ): Promise<boolean> {
-    return this.#homeApi.authenticate(data)
+  public async authenticateHome(data: Classic.LoginCredentials): Promise<void> {
+    await this.#homeApi.authenticate(data)
   }
 
   public getClassicAtaCapabilities(): [

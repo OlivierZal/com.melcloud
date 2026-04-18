@@ -146,8 +146,9 @@ export abstract class BaseMELCloudDriver extends Driver {
   }
 
   #registerLoginHandler(session: PairSession): void {
-    session.setHandler('login', async (data: Classic.LoginCredentials) =>
-      this.api.authenticate(data),
-    )
+    session.setHandler('login', async (data: Classic.LoginCredentials) => {
+      await this.api.authenticate(data)
+      return true
+    })
   }
 }

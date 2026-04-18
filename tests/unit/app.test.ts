@@ -68,7 +68,7 @@ vi.mock('../../files.mts', async (importOriginal) => {
 })
 
 const mockApiInstance = {
-  authenticate: vi.fn<() => Promise<boolean>>(),
+  authenticate: vi.fn<() => Promise<void>>(),
   clearSync: vi.fn(),
   getErrorLog: vi.fn<() => Promise<Classic.ErrorLog>>(),
   registry: {
@@ -86,7 +86,7 @@ const mockHomeRegistry = {
 }
 
 const mockHomeApiInstance = {
-  authenticate: vi.fn<() => Promise<boolean>>(),
+  authenticate: vi.fn<() => Promise<void>>(),
   clearSync: vi.fn(),
   list: vi.fn(),
   registry: mockHomeRegistry,
@@ -824,17 +824,26 @@ describe('melCloudApp', () => {
     })
 
     it('should delegate to api authenticate', async () => {
-      mockApiInstance.authenticate.mockResolvedValue(true)
+      mockApiInstance.authenticate.mockResolvedValue()
       await app.onInit()
 
       const credentials = mock<Classic.LoginCredentials>({
         password: 'pass',
         username: 'user',
       })
-      const isAuthenticated = await app.authenticateClassic(credentials)
+      await app.authenticateClassic(credentials)
 
-      expect(isAuthenticated).toBe(true)
       expect(mockApiInstance.authenticate).toHaveBeenCalledWith(credentials)
+    })
+
+    it('should propagate authenticate errors', async () => {
+      const error = new Error('invalid credentials')
+      mockApiInstance.authenticate.mockRejectedValue(error)
+      await app.onInit()
+
+      await expect(
+        app.authenticateClassic(mock<Classic.LoginCredentials>()),
+      ).rejects.toThrow(error)
     })
   })
 
@@ -846,13 +855,13 @@ describe('melCloudApp', () => {
     })
 
     it('should delegate authenticateHome to homeApi authenticate', async () => {
-      mockHomeApiInstance.authenticate.mockResolvedValue(true)
+      mockHomeApiInstance.authenticate.mockResolvedValue()
       await app.onInit()
+      const credentials = mock<Classic.LoginCredentials>()
 
-      const isLoggedIn =
-        await app.authenticateHome(mock<Classic.LoginCredentials>())
+      await app.authenticateHome(credentials)
 
-      expect(isLoggedIn).toBe(true)
+      expect(mockHomeApiInstance.authenticate).toHaveBeenCalledWith(credentials)
     })
 
     it('should create home setting manager with camelCase key prefixing', async () => {

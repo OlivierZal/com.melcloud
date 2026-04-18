@@ -12,7 +12,6 @@ export const getMockCallArg = <T>(
   argIndex: number,
 ): T => {
   const arg = mockFunction.mock.calls.at(callIndex)?.at(argIndex)
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- Runtime guard: arg is unknown (not T | undefined) so TypeScript sees assertDefined as unnecessary, but the runtime check is needed
   assertDefined(arg)
   return arg as T
 }

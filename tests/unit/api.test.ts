@@ -22,8 +22,8 @@ const { default: api } = await import('../../api.mts')
 const mockIsAuthenticated = vi.fn<() => boolean>()
 
 const mockApp = {
-  authenticateClassic: vi.fn<() => Promise<boolean>>(),
-  authenticateHome: vi.fn<() => Promise<boolean>>(),
+  authenticateClassic: vi.fn<() => Promise<void>>(),
+  authenticateHome: vi.fn<() => Promise<void>>(),
   classicApi: { isAuthenticated: mockIsAuthenticated },
   getClassicErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
   getClassicFrostProtection:
@@ -141,13 +141,21 @@ describe('api', () => {
 
   describe('home authentication', () => {
     it('should delegate to app.authenticateHome with body', async () => {
-      mockApp.authenticateHome.mockResolvedValue(true)
+      mockApp.authenticateHome.mockResolvedValue()
       const body = mock<Classic.LoginCredentials>()
 
-      const isLoggedIn = await api.authenticateHome({ body, homey })
+      await api.authenticateHome({ body, homey })
 
-      expect(isLoggedIn).toBe(true)
       expect(mockApp.authenticateHome).toHaveBeenCalledWith(body)
+    })
+
+    it('should propagate errors from app.authenticateHome', async () => {
+      const error = new Error('invalid credentials')
+      mockApp.authenticateHome.mockRejectedValue(error)
+
+      await expect(
+        api.authenticateHome({ body: mock<Classic.LoginCredentials>(), homey }),
+      ).rejects.toThrow(error)
     })
   })
 
@@ -176,27 +184,23 @@ describe('api', () => {
         password: 'pass',
         username: 'user',
       })
-      mockApp.authenticateClassic.mockResolvedValue(true)
+      mockApp.authenticateClassic.mockResolvedValue()
 
-      const isLoggedIn = await api.authenticateClassic({
-        body: credentials,
-        homey,
-      })
+      await api.authenticateClassic({ body: credentials, homey })
 
-      expect(isLoggedIn).toBe(true)
       expect(mockApp.authenticateClassic).toHaveBeenCalledWith(credentials)
     })
 
-    it('should return false on failed login', async () => {
-      const credentials = mock<Classic.LoginCredentials>()
-      mockApp.authenticateClassic.mockResolvedValue(false)
+    it('should propagate errors from app.authenticateClassic', async () => {
+      const error = new Error('invalid credentials')
+      mockApp.authenticateClassic.mockRejectedValue(error)
 
-      const isLoggedIn = await api.authenticateClassic({
-        body: credentials,
-        homey,
-      })
-
-      expect(isLoggedIn).toBe(false)
+      await expect(
+        api.authenticateClassic({
+          body: mock<Classic.LoginCredentials>(),
+          homey,
+        }),
+      ).rejects.toThrow(error)
     })
   })
 

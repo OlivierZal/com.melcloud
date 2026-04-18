@@ -35,7 +35,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^32.0.1",
+    "@olivierzal/melcloud-api": "^33.0.0",
     "homey-lib": "^2.49.1",
     "luxon": "^3.7.2"
   },

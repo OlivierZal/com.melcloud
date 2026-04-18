@@ -3,7 +3,7 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { CapabilitiesOptions } from './capabilities.mts'
 
 export interface AuthAPI {
-  readonly authenticate: (data?: Classic.LoginCredentials) => Promise<boolean>
+  readonly authenticate: (data?: Classic.LoginCredentials) => Promise<void>
   readonly isAuthenticated: () => boolean
 }
 

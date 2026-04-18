@@ -17,7 +17,7 @@ const api = {
   }: {
     body: Classic.LoginCredentials
     homey: Homey
-  }): Promise<boolean> {
+  }): Promise<void> {
     return app.authenticateClassic(body)
   },
   async authenticateHome({
@@ -26,7 +26,7 @@ const api = {
   }: {
     body: Classic.LoginCredentials
     homey: Homey
-  }): Promise<boolean> {
+  }): Promise<void> {
     return app.authenticateHome(body)
   },
   getClassicBuildings(): Classic.BuildingZone[] {
