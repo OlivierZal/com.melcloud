@@ -286,5 +286,20 @@
     "pl": "Naprawiono uwierzytelnianie dla API MELCloud Home.",
     "ru": "Исправлена аутентификация для API MELCloud Home.",
     "sv": "Autentisering för MELCloud Home API har åtgärdats."
+  },
+  "44.0.2": {
+    "ar": "إصلاح مشكلات التعطل.",
+    "da": "Rettet nedbrudsproblemer.",
+    "de": "Absturzprobleme behoben.",
+    "en": "Fixed crash issues.",
+    "es": "Corregidos problemas de bloqueo.",
+    "fr": "Correction des problèmes de plantage.",
+    "it": "Corretti i problemi di arresto anomalo.",
+    "ko": "충돌 문제 수정.",
+    "nl": "Crashproblemen opgelost.",
+    "no": "Rettet krasjproblemer.",
+    "pl": "Naprawiono problemy z awariami.",
+    "ru": "Исправлены проблемы со сбоями.",
+    "sv": "Kraschproblem har åtgärdats."
   }
 }
