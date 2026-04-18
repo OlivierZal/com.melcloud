@@ -425,10 +425,9 @@ class AuthManager {
   public async login(): Promise<void> {
     const username = this.#usernameInput?.value ?? ''
     const password = this.#passwordInput?.value ?? ''
+    const failureMessage = this.#homey.__('settings.authenticate.failure')
     if (!username || !password) {
-      fireAndForget(
-        this.#homey.alert(this.#homey.__('settings.authenticate.failure')),
-      )
+      fireAndForget(this.#homey.alert(failureMessage))
       return
     }
     await withDisablingButton(this.#authenticateButton.id, async () => {
@@ -438,8 +437,8 @@ class AuthManager {
           username,
         } satisfies Classic.LoginCredentials)
         await this.#loadPostLoginCallback()
-      } catch (error) {
-        await this.#homey.alert(this.#homey.__('settings.authenticate.failure'))
+      } catch {
+        await this.#homey.alert(failureMessage)
       }
     })
   }
