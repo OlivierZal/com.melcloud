@@ -1,18 +1,4 @@
 import { defineConfig } from 'vitest/config'
-import swc from 'unplugin-swc'
-
-const swcPlugin = swc.vite({
-  jsc: {
-    parser: {
-      decorators: true,
-      syntax: 'typescript',
-    },
-    target: 'es2024',
-    transform: {
-      decoratorVersion: '2022-03',
-    },
-  },
-})
 
 export default defineConfig({
   test: {
@@ -39,8 +25,6 @@ export default defineConfig({
     },
     projects: [
       {
-        oxc: false,
-        plugins: [swcPlugin],
         test: {
           include: ['tests/unit/*device*.test.ts'],
           name: 'device',
@@ -48,8 +32,6 @@ export default defineConfig({
         },
       },
       {
-        oxc: false,
-        plugins: [swcPlugin],
         test: {
           exclude: ['tests/unit/*device*.test.ts'],
           include: ['tests/**/*.test.ts'],
