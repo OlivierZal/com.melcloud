@@ -168,17 +168,17 @@ export abstract class BaseMELCloudDevice extends Device {
     }
   }
 
-  /* v8 ignore start -- @preserve, trivial override: prepends device name to all error logs */
+  /* v8 ignore start -- trivial override: prepends device name to all error logs */
   public override error(...args: unknown[]): void {
     super.error(this.getName(), '-', ...args)
   }
-  /* v8 ignore stop -- @preserve */
+  /* v8 ignore stop */
 
-  /* v8 ignore start -- @preserve, trivial override: prepends device name to all logs */
+  /* v8 ignore start -- trivial override: prepends device name to all logs */
   public override log(...args: unknown[]): void {
     super.log(this.getName(), '-', ...args)
   }
-  /* v8 ignore stop -- @preserve */
+  /* v8 ignore stop */
 
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
@@ -221,7 +221,7 @@ export abstract class BaseMELCloudDevice extends Device {
     for (const [capability, options] of Object.entries(
       this.driver.getCapabilitiesOptions(data),
     )) {
-      /* v8 ignore next -- @preserve, options is always defined in practice; Partial type is defensive */
+      /* v8 ignore next -- options is always defined in practice; Partial type is defensive */
       if (options !== undefined) {
         // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
         await this.setCapabilityOptions(
@@ -433,7 +433,7 @@ export abstract class BaseMELCloudDevice extends Device {
       }),
     )
     for (const result of results) {
-      /* v8 ignore next -- @preserve, defensive: report.start() rejection is not reachable in unit tests */
+      /* v8 ignore next -- defensive: report.start() rejection is not reachable in unit tests */
       if (result.status === 'rejected') {
         this.error('Energy report update failed:', result.reason)
       }

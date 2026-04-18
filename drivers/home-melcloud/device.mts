@@ -79,21 +79,21 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
   }
 
   protected override async applyCapabilitiesOptions(): Promise<void> {
-    /* v8 ignore next -- @preserve, cachedFacade is always set before init() calls applyCapabilitiesOptions */
+    /* v8 ignore next -- cachedFacade is always set before init() calls applyCapabilitiesOptions */
     if (!this.cachedFacade || !('capabilities' in this.cachedFacade)) {
       return
     }
     await super.applyCapabilitiesOptions(this.cachedFacade.capabilities)
   }
 
-  /* v8 ignore start -- @preserve, never called: energyReportRegular/Total are null */
+  /* v8 ignore start -- never called: energyReportRegular/Total are null */
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- required override of abstract method; Home devices do not support energy reports
   protected override createEnergyReport(): never {
     throw new Error('Energy reports are not supported for Home devices')
   }
-  /* v8 ignore stop -- @preserve */
+  /* v8 ignore stop */
 
-  /* v8 ignore next -- @preserve, tested via TestHomeDevice which provides its own implementation */
+  /* v8 ignore next -- tested via TestHomeDevice which provides its own implementation */
   protected override getFacade(): Home.DeviceAtaFacade {
     return this.homey.app.getHomeFacade(this.id)
   }
@@ -106,7 +106,7 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
     ][]
     await Promise.all(
       converters.map(async ([capability, convert]) => {
-        /* v8 ignore next -- @preserve, hasCapability always true in tests */
+        /* v8 ignore next -- hasCapability always true in tests */
         if (this.hasCapability(capability)) {
           await this.setCapabilityValue(capability, convert(device))
         }
