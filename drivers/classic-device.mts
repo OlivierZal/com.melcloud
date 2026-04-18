@@ -86,7 +86,7 @@ export abstract class ClassicMELCloudDevice<
 
   public override async syncFromDevice(): Promise<void> {
     const data = await this.#getDeviceData()
-    /* v8 ignore next -- @preserve -- defensive guard: data is guaranteed after ensureDevice */
+    /* v8 ignore next -- @preserve, defensive guard: data is guaranteed after ensureDevice */
     if (!data) {
       return
     }
@@ -108,7 +108,7 @@ export abstract class ClassicMELCloudDevice<
   }
 
   protected override getRequiredCapabilities(): string[] {
-    /* v8 ignore next -- @preserve -- defensive guard: facade is set after init */
+    /* v8 ignore next -- @preserve, defensive guard: facade is set after init */
     return this.#data ? this.driver.getRequiredCapabilities(this.#data) : []
   }
 
