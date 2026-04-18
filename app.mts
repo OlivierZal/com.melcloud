@@ -187,16 +187,6 @@ export default class MELCloudApp extends App {
     await Promise.resolve()
   }
 
-  public async authenticateClassic(
-    data: Classic.LoginCredentials,
-  ): Promise<void> {
-    await this.#classicApi.authenticate(data)
-  }
-
-  public async authenticateHome(data: Classic.LoginCredentials): Promise<void> {
-    await this.#homeApi.authenticate(data)
-  }
-
   public getClassicAtaCapabilities(): [
     keyof Classic.GroupState & keyof Classic.ListDeviceDataAta,
     DriverCapabilitiesOptions,

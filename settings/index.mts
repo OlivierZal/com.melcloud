@@ -439,7 +439,7 @@ class AuthManager {
         } satisfies Classic.LoginCredentials)
         await this.#loadPostLoginCallback()
       } catch (error) {
-        await this.#homey.alert(getErrorMessage(error))
+        await this.#homey.alert(this.#homey.__('settings.authenticate.failure'))
       }
     })
   }

@@ -11,23 +11,14 @@ import type { ZoneData } from './types/widgets.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 
 const api = {
-  async authenticateClassic({
+  async classicAuthenticate({
     body,
     homey: { app },
   }: {
     body: Classic.LoginCredentials
     homey: Homey
   }): Promise<void> {
-    return app.authenticateClassic(body)
-  },
-  async authenticateHome({
-    body,
-    homey: { app },
-  }: {
-    body: Classic.LoginCredentials
-    homey: Homey
-  }): Promise<void> {
-    return app.authenticateHome(body)
+    return app.classicApi.authenticate(body)
   },
   getClassicBuildings(): Classic.BuildingZone[] {
     return getClassicBuildings()
@@ -71,6 +62,15 @@ const api = {
   },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {
     return i18n.getLanguage()
+  },
+  async homeAuthenticate({
+    body,
+    homey: { app },
+  }: {
+    body: Classic.LoginCredentials
+    homey: Homey
+  }): Promise<void> {
+    return app.homeApi.authenticate(body)
   },
   isClassicAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
     return app.classicApi.isAuthenticated()

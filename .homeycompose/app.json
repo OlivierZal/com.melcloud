@@ -1,12 +1,8 @@
 {
   "api": {
-    "authenticateClassic": {
+    "classicAuthenticate": {
       "method": "POST",
       "path": "/classic/sessions"
-    },
-    "authenticateHome": {
-      "method": "POST",
-      "path": "/home/sessions"
     },
     "getClassicBuildings": {
       "method": "GET",
@@ -35,6 +31,10 @@
     "getLanguage": {
       "method": "GET",
       "path": "/language"
+    },
+    "homeAuthenticate": {
+      "method": "POST",
+      "path": "/home/sessions"
     },
     "isClassicAuthenticated": {
       "method": "GET",

@@ -1,4 +1,5 @@
 import type PairSession from 'homey/lib/PairSession'
+import { AuthenticationError } from '@olivierzal/melcloud-api'
 import { describe, expect, it, vi } from 'vitest'
 
 import { mock } from './helpers.ts'
@@ -185,6 +186,31 @@ export const testPairing = (
         password: 'pass',
         username: 'user',
       })
+    })
+
+    it('should return false when authenticate throws AuthenticationError', async () => {
+      authenticateMock.mockRejectedValue(
+        new AuthenticationError('invalid credentials'),
+      )
+      const { reference, session } = createLoginSession(showViewMock)
+      await getDriver().onPair(session)
+      const result = await reference.loginHandler({
+        password: 'wrong',
+        username: 'user',
+      })
+
+      expect(result).toBe(false)
+    })
+
+    it('should rethrow non-authentication errors from the login handler', async () => {
+      const error = new Error('network down')
+      authenticateMock.mockRejectedValue(error)
+      const { reference, session } = createLoginSession(showViewMock)
+      await getDriver().onPair(session)
+
+      await expect(
+        reference.loginHandler({ password: 'pass', username: 'user' }),
+      ).rejects.toThrow(error)
     })
   })
 }

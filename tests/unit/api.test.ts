@@ -20,17 +20,21 @@ vi.mock(import('../../lib/classic-facade-manager.mts'), () => ({
 const { default: api } = await import('../../api.mts')
 
 const mockIsAuthenticated = vi.fn<() => boolean>()
+const mockClassicAuthenticate = vi.fn<() => Promise<void>>()
+const mockHomeAuthenticate = vi.fn<() => Promise<void>>()
 
 const mockApp = {
-  authenticateClassic: vi.fn<() => Promise<void>>(),
-  authenticateHome: vi.fn<() => Promise<void>>(),
-  classicApi: { isAuthenticated: mockIsAuthenticated },
+  classicApi: {
+    authenticate: mockClassicAuthenticate,
+    isAuthenticated: mockIsAuthenticated,
+  },
   getClassicErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
   getClassicFrostProtection:
     vi.fn<() => Promise<Classic.FrostProtectionData>>(),
   getClassicHolidayMode: vi.fn<() => Promise<Classic.HolidayModeData>>(),
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
+  homeApi: { authenticate: mockHomeAuthenticate },
   updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
   updateClassicHolidayMode: vi.fn<() => Promise<void>>(),
   updateDeviceSettings: vi.fn<() => Promise<void>>(),
@@ -140,21 +144,21 @@ describe('api', () => {
   })
 
   describe('home authentication', () => {
-    it('should delegate to app.authenticateHome with body', async () => {
-      mockApp.authenticateHome.mockResolvedValue()
+    it('should delegate to app.homeApi.authenticate with body', async () => {
+      mockHomeAuthenticate.mockResolvedValue()
       const body = mock<Classic.LoginCredentials>()
 
-      await api.authenticateHome({ body, homey })
+      await api.homeAuthenticate({ body, homey })
 
-      expect(mockApp.authenticateHome).toHaveBeenCalledWith(body)
+      expect(mockHomeAuthenticate).toHaveBeenCalledWith(body)
     })
 
-    it('should propagate errors from app.authenticateHome', async () => {
+    it('should propagate errors from app.homeApi.authenticate', async () => {
       const error = new Error('invalid credentials')
-      mockApp.authenticateHome.mockRejectedValue(error)
+      mockHomeAuthenticate.mockRejectedValue(error)
 
       await expect(
-        api.authenticateHome({ body: mock<Classic.LoginCredentials>(), homey }),
+        api.homeAuthenticate({ body: mock<Classic.LoginCredentials>(), homey }),
       ).rejects.toThrow(error)
     })
   })
@@ -179,24 +183,24 @@ describe('api', () => {
   })
 
   describe('authentication', () => {
-    it('should delegate to app.authenticateClassic with body', async () => {
+    it('should delegate to app.classicApi.authenticate with body', async () => {
       const credentials = mock<Classic.LoginCredentials>({
         password: 'pass',
         username: 'user',
       })
-      mockApp.authenticateClassic.mockResolvedValue()
+      mockClassicAuthenticate.mockResolvedValue()
 
-      await api.authenticateClassic({ body: credentials, homey })
+      await api.classicAuthenticate({ body: credentials, homey })
 
-      expect(mockApp.authenticateClassic).toHaveBeenCalledWith(credentials)
+      expect(mockClassicAuthenticate).toHaveBeenCalledWith(credentials)
     })
 
-    it('should propagate errors from app.authenticateClassic', async () => {
+    it('should propagate errors from app.classicApi.authenticate', async () => {
       const error = new Error('invalid credentials')
-      mockApp.authenticateClassic.mockRejectedValue(error)
+      mockClassicAuthenticate.mockRejectedValue(error)
 
       await expect(
-        api.authenticateClassic({
+        api.classicAuthenticate({
           body: mock<Classic.LoginCredentials>(),
           homey,
         }),

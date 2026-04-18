@@ -831,7 +831,7 @@ describe('melCloudApp', () => {
         password: 'pass',
         username: 'user',
       })
-      await app.authenticateClassic(credentials)
+      await app.classicApi.authenticate(credentials)
 
       expect(mockApiInstance.authenticate).toHaveBeenCalledWith(credentials)
     })
@@ -842,7 +842,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       await expect(
-        app.authenticateClassic(mock<Classic.LoginCredentials>()),
+        app.classicApi.authenticate(mock<Classic.LoginCredentials>()),
       ).rejects.toThrow(error)
     })
   })
@@ -854,12 +854,12 @@ describe('melCloudApp', () => {
       expect(app.homeApi).toBe(mockHomeApiInstance)
     })
 
-    it('should delegate authenticateHome to homeApi authenticate', async () => {
+    it('should delegate homeAuthenticate to homeApi authenticate', async () => {
       mockHomeApiInstance.authenticate.mockResolvedValue()
       await app.onInit()
       const credentials = mock<Classic.LoginCredentials>()
 
-      await app.authenticateHome(credentials)
+      await app.homeApi.authenticate(credentials)
 
       expect(mockHomeApiInstance.authenticate).toHaveBeenCalledWith(credentials)
     })
