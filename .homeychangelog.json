@@ -301,5 +301,20 @@
     "pl": "Naprawiono problemy z awariami.",
     "ru": "Исправлены проблемы со сбоями.",
     "sv": "Kraschproblem har åtgärdats."
+  },
+  "44.0.3": {
+    "ar": "إصلاح إقران MELCloud Home الذي لا يعرض أي أجهزة عند الإعداد الأول.",
+    "da": "Rettet MELCloud Home-parring, der ikke viste enheder ved første opsætning.",
+    "de": "MELCloud Home-Kopplung behoben, bei der bei der ersten Einrichtung keine Geräte angezeigt wurden.",
+    "en": "Fixed MELCloud Home pairing showing no devices on first setup.",
+    "es": "Corregido el emparejamiento de MELCloud Home que no mostraba dispositivos en la primera configuración.",
+    "fr": "Correction de l'appairage MELCloud Home qui n'affichait aucun appareil lors de la première configuration.",
+    "it": "Corretto l'accoppiamento MELCloud Home che non mostrava dispositivi alla prima configurazione.",
+    "ko": "첫 설정 시 기기가 표시되지 않던 MELCloud Home 페어링 문제 수정.",
+    "nl": "Opgelost dat MELCloud Home-koppeling bij de eerste installatie geen apparaten toonde.",
+    "no": "Rettet MELCloud Home-paring som ikke viste enheter ved første oppsett.",
+    "pl": "Naprawiono parowanie MELCloud Home, które nie pokazywało urządzeń przy pierwszej konfiguracji.",
+    "ru": "Исправлено сопряжение MELCloud Home, не отображавшее устройства при первой настройке.",
+    "sv": "Åtgärdat MELCloud Home-parning som inte visade några enheter vid första installationen."
   }
 }
