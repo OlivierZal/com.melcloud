@@ -68,7 +68,7 @@ export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
   public override getRequiredCapabilities(
     data?: Readonly<Classic.ListDeviceData<typeof Classic.DeviceType.Atw>>,
   ): string[] {
-    /* v8 ignore next -- data is always provided by callers */
+    /* v8 ignore next -- @preserve -- data is always provided by callers */
     const { CanCool: canCool, HasZone2: hasClassicZone2 } = data ?? {}
     return [
       ...this.#zone1Capabilities,
