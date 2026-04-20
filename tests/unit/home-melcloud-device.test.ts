@@ -12,15 +12,14 @@ import { testThermostatMode } from '../device-descriptors.ts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
-vi.mock(import('@olivierzal/melcloud-api/home'), async (importOriginal) => {
-  const actual =
+// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock class is not assignable to typeof DeviceAtaFacade (lacks prototype members)
+vi.mock('@olivierzal/melcloud-api/home', async (importOriginal) => ({
+  ...(await importOriginal<
     // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- typeof import() required by vitest importOriginal generic
-    await importOriginal<typeof import('@olivierzal/melcloud-api/home')>()
-  return {
-    ...actual,
-    DeviceAtaFacade: vi.fn(),
-  }
-})
+    typeof import('@olivierzal/melcloud-api/home')
+  >()),
+  DeviceAtaFacade: vi.fn<new (...args: unknown[]) => unknown>(),
+}))
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', async () => {

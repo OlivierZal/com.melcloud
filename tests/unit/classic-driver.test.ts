@@ -22,17 +22,19 @@ const {
   setHandlerMock,
   showViewMock,
 } = vi.hoisted(() => ({
-  authenticateMock: vi.fn(),
-  isAuthenticatedMock: vi.fn().mockReturnValue(false),
-  registerRunListenerMock: vi.fn(),
-  setHandlerMock: vi.fn(),
-  showViewMock: vi.fn(),
+  authenticateMock: vi.fn<(data: unknown) => Promise<boolean>>(),
+  isAuthenticatedMock: vi.fn<() => boolean>().mockReturnValue(false),
+  registerRunListenerMock:
+    vi.fn<(listener: (args: Record<string, unknown>) => unknown) => void>(),
+  setHandlerMock:
+    vi.fn<(event: string, handler: (...args: unknown[]) => unknown) => void>(),
+  showViewMock: vi.fn<(view: string) => Promise<void>>(),
 }))
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
 vi.mock('homey', () => {
   class MockDriver {
-    public getDevices = vi.fn().mockReturnValue([])
+    public getDevices = vi.fn<() => readonly unknown[]>().mockReturnValue([])
 
     public homey = {
       app: {
@@ -40,19 +42,33 @@ vi.mock('homey', () => {
           authenticate: authenticateMock,
           isAuthenticated: isAuthenticatedMock,
         },
-        getDevicesByType: vi.fn().mockReturnValue([]),
+        getDevicesByType: vi
+          .fn<(type: number) => readonly unknown[]>()
+          .mockReturnValue([]),
       },
       flow: {
-        getActionCard: vi.fn().mockReturnValue({
-          registerRunListener: registerRunListenerMock,
-        }),
-        getConditionCard: vi.fn().mockReturnValue({
-          registerRunListener: registerRunListenerMock,
-        }),
+        getActionCard: vi
+          .fn<
+            (id: string) => {
+              registerRunListener: typeof registerRunListenerMock
+            }
+          >()
+          .mockReturnValue({
+            registerRunListener: registerRunListenerMock,
+          }),
+        getConditionCard: vi
+          .fn<
+            (id: string) => {
+              registerRunListener: typeof registerRunListenerMock
+            }
+          >()
+          .mockReturnValue({
+            registerRunListener: registerRunListenerMock,
+          }),
       },
     }
 
-    public log = vi.fn()
+    public log = vi.fn<(...args: readonly unknown[]) => void>()
 
     public manifest = {
       capabilities: ['onoff', 'thermostat_mode', 'measure_temperature'],
@@ -91,10 +107,12 @@ describe(ClassicMELCloudDriver, () => {
 
   describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
-      const listHandler = vi.fn()
+      const listHandler = vi.fn<(...args: unknown[]) => unknown>()
       const session = mock<PairSession>({
         setHandler: vi
-          .fn()
+          .fn<
+            (event: string, handler: (...args: unknown[]) => unknown) => void
+          >()
           .mockImplementation(
             (event: string, handler: (...args: unknown[]) => unknown) => {
               if (event === 'list_devices') {
@@ -211,7 +229,11 @@ describe(ClassicMELCloudDriver, () => {
       const { onoff_condition: onoffListener } = conditionListeners
       assertDefined(onoffListener)
       const result = onoffListener({
-        device: { getCapabilityValue: vi.fn().mockReturnValue(true) },
+        device: {
+          getCapabilityValue: vi
+            .fn<(capability: string) => unknown>()
+            .mockReturnValue(true),
+        },
         onoff: true,
       })
 
@@ -241,12 +263,20 @@ describe(ClassicMELCloudDriver, () => {
       assertDefined(thermostatListener)
 
       const resultTrue = thermostatListener({
-        device: { getCapabilityValue: vi.fn().mockReturnValue('heat') },
+        device: {
+          getCapabilityValue: vi
+            .fn<(capability: string) => unknown>()
+            .mockReturnValue('heat'),
+        },
         thermostat_mode: 'heat',
       })
 
       const resultFalse = thermostatListener({
-        device: { getCapabilityValue: vi.fn().mockReturnValue('cool') },
+        device: {
+          getCapabilityValue: vi
+            .fn<(capability: string) => unknown>()
+            .mockReturnValue('cool'),
+        },
         thermostat_mode: 'heat',
       })
 

@@ -744,6 +744,7 @@ const config = defineConfig([
       'vitest/prefer-expect-assertions': 'off',
       'vitest/prefer-hooks-in-order': 'error',
       'vitest/require-hook': 'off',
+      'vitest/require-mock-type-parameters': 'error',
     },
     settings: {
       vitest: {

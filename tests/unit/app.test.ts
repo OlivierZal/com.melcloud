@@ -69,37 +69,41 @@ vi.mock('../../files.mts', async (importOriginal) => {
 
 const mockApiInstance = {
   authenticate: vi.fn<() => Promise<void>>(),
-  clearSync: vi.fn(),
+  clearSync: vi.fn<() => void>(),
   getErrorLog: vi.fn<() => Promise<Classic.ErrorLog>>(),
   registry: {
-    areas: { getById: vi.fn() },
-    buildings: { getById: vi.fn() },
-    devices: { getById: vi.fn() },
-    floors: { getById: vi.fn() },
-    getDevicesByType: vi.fn().mockReturnValue([]),
+    areas: { getById: vi.fn<(id: number) => unknown>() },
+    buildings: { getById: vi.fn<(id: number) => unknown>() },
+    devices: { getById: vi.fn<(id: number) => unknown>() },
+    floors: { getById: vi.fn<(id: number) => unknown>() },
+    getDevicesByType: vi
+      .fn<(type: Classic.DeviceType) => unknown[]>()
+      .mockReturnValue([]),
   },
 }
 
 const mockHomeRegistry = {
-  getById: vi.fn(),
-  getByType: vi.fn(),
+  getById: vi.fn<(id: string) => unknown>(),
+  getByType: vi.fn<(type: Home.DeviceType) => unknown[]>(),
 }
 
 const mockHomeApiInstance = {
   authenticate: vi.fn<() => Promise<void>>(),
-  clearSync: vi.fn(),
-  list: vi.fn(),
+  clearSync: vi.fn<() => void>(),
+  list: vi.fn<() => Promise<unknown[]>>(),
   registry: mockHomeRegistry,
 }
 
-const mockFacadeManagerGet = vi.fn()
-const mockFacadeManagerGetZones = vi.fn().mockReturnValue([])
+const mockFacadeManagerGet = vi.fn<(instance: unknown) => unknown>()
+const mockFacadeManagerGetZones = vi
+  .fn<(options?: { type?: Classic.DeviceType }) => unknown[]>()
+  .mockReturnValue([])
 
 const { mockCreate, mockFacadeManagerConstructor, mockHomeCreate } = vi.hoisted(
   () => ({
-    mockCreate: vi.fn(),
-    mockFacadeManagerConstructor: vi.fn(),
-    mockHomeCreate: vi.fn(),
+    mockCreate: vi.fn<(options: unknown) => Promise<unknown>>(),
+    mockFacadeManagerConstructor: vi.fn<(...args: unknown[]) => unknown>(),
+    mockHomeCreate: vi.fn<(options: unknown) => Promise<unknown>>(),
   }),
 )
 
@@ -125,14 +129,24 @@ const { default: MelCloudApp } = await import('../../app.mts')
 const mockGetLanguage = vi.fn<() => string>().mockReturnValue('en')
 const mockGetTimezone = vi.fn<() => string>().mockReturnValue('Europe/Paris')
 const mockSettingsGet = vi.fn<(key: string) => string | null>()
-const mockSettingsSet = vi.fn()
-const mockSetTimeout = vi.fn()
+const mockSettingsSet = vi.fn<(key: string, value: string) => void>()
+const mockSetTimeout =
+  vi.fn<(callback: () => Promise<void> | void, ms: number) => void>()
 const mockCreateNotification = vi.fn<() => Promise<void>>()
-const mockWidgetRegister = vi.fn()
-const mockGetWidget = vi.fn().mockReturnValue({
-  registerSettingAutocompleteListener: mockWidgetRegister,
-})
-const mockGetDrivers = vi.fn().mockReturnValue({})
+const mockWidgetRegister =
+  vi.fn<(id: string, listener: (query: string) => unknown) => void>()
+const mockGetWidget = vi
+  .fn<
+    (id: string) => {
+      registerSettingAutocompleteListener: typeof mockWidgetRegister
+    }
+  >()
+  .mockReturnValue({
+    registerSettingAutocompleteListener: mockWidgetRegister,
+  })
+const mockGetDrivers = vi
+  .fn<() => Record<string, unknown>>()
+  .mockReturnValue({})
 const mockTranslate = vi
   .fn<(key: string) => string>()
   .mockImplementation((key: string) => key)
@@ -225,7 +239,7 @@ const initWithDeviceFacade = async (
 ): Promise<void> => {
   mockFacadeManagerGet.mockReturnValue(
     mock({
-      [method]: vi.fn().mockResolvedValue(mockData),
+      [method]: vi.fn<() => Promise<unknown>>().mockResolvedValue(mockData),
     }),
   )
   mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
@@ -240,7 +254,7 @@ const createMockDriver = (
   id: string
   ready: ReturnType<typeof vi.fn>
 } => ({
-  getDevices: vi.fn().mockReturnValue(devices),
+  getDevices: vi.fn<() => ClassicMELCloudDevice[]>().mockReturnValue(devices),
   id,
   ready: vi.fn<() => Promise<void>>().mockResolvedValue(),
 })
@@ -257,7 +271,7 @@ const createClassicDevice = (
 ): ClassicMELCloudDevice =>
   mock<ClassicMELCloudDevice>({
     driver: { id: 'melcloud' },
-    getSettings: vi.fn().mockReturnValue({}),
+    getSettings: vi.fn<() => Record<string, unknown>>().mockReturnValue({}),
     ...overrides,
   })
 
@@ -265,8 +279,10 @@ const setupWidgetListeners = (): {
   mockRegisterAta: ReturnType<typeof vi.fn>
   mockRegisterCharts: ReturnType<typeof vi.fn>
 } => {
-  const mockRegisterAta = vi.fn()
-  const mockRegisterCharts = vi.fn()
+  const mockRegisterAta =
+    vi.fn<(id: string, listener: (query: string) => unknown) => void>()
+  const mockRegisterCharts =
+    vi.fn<(id: string, listener: (query: string) => unknown) => void>()
   mockGetWidget.mockImplementation((widgetId: string) =>
     widgetId === 'ata-group-setting' ?
       { registerSettingAutocompleteListener: mockRegisterAta }
@@ -278,7 +294,9 @@ const setupWidgetListeners = (): {
 const mockUpdateResult = (
   attributeErrors: Record<string, string[]> | null,
 ): ReturnType<typeof vi.fn> =>
-  vi.fn().mockResolvedValue({ AttributeErrors: attributeErrors })
+  vi
+    .fn<() => Promise<{ AttributeErrors: Record<string, string[]> | null }>>()
+    .mockResolvedValue({ AttributeErrors: attributeErrors })
 
 const getSyncCallbackFrom = (
   mockCreateFunction: ReturnType<typeof vi.fn>,
@@ -303,7 +321,7 @@ const createSyncDevice = (
 } => ({
   device: mock<ClassicMELCloudDevice>({
     driver: { id: 'melcloud' },
-    getSettings: vi.fn().mockReturnValue({}),
+    getSettings: vi.fn<() => Record<string, unknown>>().mockReturnValue({}),
     id,
     syncFromDevice,
   }),
@@ -349,8 +367,8 @@ describe('melCloudApp', () => {
     })
 
     it('should pass logger callbacks that delegate to app.log and app.error', async () => {
-      const logMock = vi.fn()
-      const errorMock = vi.fn()
+      const logMock = vi.fn<(...args: unknown[]) => void>()
+      const errorMock = vi.fn<(...args: unknown[]) => void>()
       Object.defineProperty(app, 'log', { configurable: true, value: logMock })
       Object.defineProperty(app, 'error', {
         configurable: true,
@@ -533,10 +551,14 @@ describe('melCloudApp', () => {
     it('should aggregate device settings', async () => {
       setupDriver([
         createClassicDevice({
-          getSettings: vi.fn().mockReturnValue({ always_on: true }),
+          getSettings: vi
+            .fn<() => Record<string, unknown>>()
+            .mockReturnValue({ always_on: true }),
         }),
         createClassicDevice({
-          getSettings: vi.fn().mockReturnValue({ always_on: true }),
+          getSettings: vi
+            .fn<() => Record<string, unknown>>()
+            .mockReturnValue({ always_on: true }),
         }),
       ])
       await app.onInit()
@@ -549,10 +571,14 @@ describe('melCloudApp', () => {
     it('should set to null when settings differ between devices', async () => {
       setupDriver([
         createClassicDevice({
-          getSettings: vi.fn().mockReturnValue({ always_on: true }),
+          getSettings: vi
+            .fn<() => Record<string, unknown>>()
+            .mockReturnValue({ always_on: true }),
         }),
         createClassicDevice({
-          getSettings: vi.fn().mockReturnValue({ always_on: false }),
+          getSettings: vi
+            .fn<() => Record<string, unknown>>()
+            .mockReturnValue({ always_on: false }),
         }),
       ])
       await app.onInit()
@@ -947,8 +973,12 @@ describe('melCloudApp', () => {
       const mockOnSettings = vi.fn<() => Promise<void>>().mockResolvedValue()
       setupDriver([
         createClassicDevice({
-          getSetting: vi.fn().mockReturnValue(false),
-          getSettings: vi.fn().mockReturnValue({ always_on: true }),
+          getSetting: vi
+            .fn<ClassicMELCloudDevice['getSetting']>()
+            .mockReturnValue(false as never),
+          getSettings: vi
+            .fn<() => Record<string, unknown>>()
+            .mockReturnValue({ always_on: true }),
           onSettings: mockOnSettings,
           setSettings: mockSetSettings,
         }),
@@ -963,11 +993,15 @@ describe('melCloudApp', () => {
     })
 
     it('should skip devices with no changed keys', async () => {
-      const mockSetSettings = vi.fn()
+      const mockSetSettings = vi.fn<() => Promise<void>>()
       setupDriver([
         createClassicDevice({
-          getSetting: vi.fn().mockReturnValue(true),
-          getSettings: vi.fn().mockReturnValue({ always_on: true }),
+          getSetting: vi
+            .fn<ClassicMELCloudDevice['getSetting']>()
+            .mockReturnValue(true as never),
+          getSettings: vi
+            .fn<() => Record<string, unknown>>()
+            .mockReturnValue({ always_on: true }),
           setSettings: mockSetSettings,
         }),
       ])
@@ -981,15 +1015,23 @@ describe('melCloudApp', () => {
 
     it('should filter by driverId when provided', async () => {
       const mockDevice = createClassicDevice({
-        getSetting: vi.fn().mockReturnValue(false),
-        getSettings: vi.fn().mockReturnValue({ always_on: true }),
+        getSetting: vi
+          .fn<ClassicMELCloudDevice['getSetting']>()
+          .mockReturnValue(false as never),
+        getSettings: vi
+          .fn<() => Record<string, unknown>>()
+          .mockReturnValue({ always_on: true }),
         onSettings: vi.fn<() => Promise<void>>().mockResolvedValue(),
         setSettings: vi.fn<() => Promise<void>>().mockResolvedValue(),
       })
       const otherDevice = mock<ClassicMELCloudDevice>({
         driver: { id: 'melcloud_atw' },
-        getSetting: vi.fn().mockReturnValue(false),
-        getSettings: vi.fn().mockReturnValue({ always_on: true }),
+        getSetting: vi
+          .fn<ClassicMELCloudDevice['getSetting']>()
+          .mockReturnValue(false as never),
+        getSettings: vi
+          .fn<() => Record<string, unknown>>()
+          .mockReturnValue({ always_on: true }),
         onSettings: vi.fn<() => Promise<void>>().mockResolvedValue(),
         setSettings: vi.fn<() => Promise<void>>().mockResolvedValue(),
       })
@@ -1244,7 +1286,7 @@ describe('melCloudApp', () => {
     })
 
     it('should log error when device sync fails', async () => {
-      const errorSpy = vi.fn()
+      const errorSpy = vi.fn<(...args: unknown[]) => void>()
       Object.defineProperty(app, 'error', {
         configurable: true,
         value: errorSpy,
@@ -1265,7 +1307,7 @@ describe('melCloudApp', () => {
     })
 
     it('should continue syncing other devices when one fails', async () => {
-      const errorSpy = vi.fn()
+      const errorSpy = vi.fn<(...args: unknown[]) => void>()
       Object.defineProperty(app, 'error', {
         configurable: true,
         value: errorSpy,

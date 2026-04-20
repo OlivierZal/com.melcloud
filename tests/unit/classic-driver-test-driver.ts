@@ -21,7 +21,9 @@ export class TestDriver extends ClassicMELCloudDriver<TestDriverType> {
     measure_power: ['Auto', 'Cooling'],
   })
 
-  public readonly getCapabilitiesOptions = vi.fn().mockReturnValue({})
+  public readonly getCapabilitiesOptions = vi
+    .fn<() => Partial<Record<string, unknown>>>()
+    .mockReturnValue({})
 
   public readonly getCapabilityTagMapping = mock<
     GetCapabilityTagMapping<TestDriverType>

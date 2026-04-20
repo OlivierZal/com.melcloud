@@ -23,15 +23,33 @@ type TestDeviceType = typeof Classic.DeviceType.Ata
 
 const FAKE_NOW = new Date('2026-03-18T12:00:00.000')
 
-const setCapabilityValueMock = vi.fn()
-const ensureDeviceMock = vi.fn()
-const cleanMappingMock = vi.fn()
-const clearTimeoutMock = vi.fn()
-const clearIntervalMock = vi.fn()
-const setTimeoutMock = vi.fn().mockReturnValue(1)
-const setIntervalMock = vi.fn().mockReturnValue(2)
-const logMock = vi.fn()
-const errorMock = vi.fn()
+const setCapabilityValueMock =
+  vi.fn<(capability: string, value: unknown) => Promise<void>>()
+const ensureDeviceMock = vi.fn<() => Promise<unknown>>()
+const cleanMappingMock = vi.fn<(mapping: unknown) => Record<string, unknown>>()
+const clearTimeoutMock = vi.fn<(timeout: NodeJS.Timeout | null) => void>()
+const clearIntervalMock =
+  vi.fn<(interval: NodeJS.Timeout | undefined) => void>()
+const setTimeoutMock = vi
+  .fn<
+    (
+      callback: () => Promise<void>,
+      interval: unknown,
+      actionType: string,
+    ) => number
+  >()
+  .mockReturnValue(1)
+const setIntervalMock = vi
+  .fn<
+    (
+      callback: () => Promise<void>,
+      interval: unknown,
+      actionType: string,
+    ) => number
+  >()
+  .mockReturnValue(2)
+const logMock = vi.fn<(...args: unknown[]) => void>()
+const errorMock = vi.fn<(...args: unknown[]) => void>()
 
 const regularConfig = {
   duration: { hours: 1 },
@@ -78,7 +96,9 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
 })
 
 const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
-  const getEnergyMock = vi.fn().mockResolvedValue(energyData)
+  const getEnergyMock = vi
+    .fn<(query?: unknown) => Promise<unknown>>()
+    .mockResolvedValue(energyData)
   ensureDeviceMock.mockResolvedValue({ data: {}, getEnergy: getEnergyMock })
   return getEnergyMock
 }
@@ -99,9 +119,11 @@ const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
     producedTagMapping: copProduced,
   })
   return mock<ClassicMELCloudDevice<TestDeviceType>>({
-    cleanMapping: vi.fn().mockReturnValue({
-      'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
-    }),
+    cleanMapping: vi
+      .fn<(mapping: unknown) => Record<string, unknown>>()
+      .mockReturnValue({
+        'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
+      }),
     driver: copDriver,
     ensureDevice: ensureDeviceMock,
     homey: mock<Homey.Homey>({
@@ -158,7 +180,9 @@ describe(EnergyReport, () => {
       const energyError = new Error('fetch failed')
       ensureDeviceMock.mockResolvedValue({
         data: {},
-        getEnergy: vi.fn().mockRejectedValue(energyError),
+        getEnergy: vi
+          .fn<(query?: unknown) => Promise<unknown>>()
+          .mockRejectedValue(energyError),
       })
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()

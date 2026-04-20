@@ -2,12 +2,14 @@ import type {
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
+import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { mock } from '../helpers.js'
 
-const mockGetClassicZones = vi.fn()
+const mockGetClassicZones =
+  vi.fn<(options?: { type?: Classic.DeviceType }) => Classic.Zone[]>()
 
 vi.mock(
   import('../../lib/classic-facade-manager.mts'),
@@ -46,7 +48,7 @@ describe('charts api', () => {
         },
         { id: 2, level: 1, model: 'devices' as const, name: 'Device 1' },
         { id: 3, level: 1, model: 'devices' as const, name: 'Device 2' },
-      ]
+      ] as unknown as Classic.Zone[]
       mockGetClassicZones.mockReturnValue(zones)
 
       const result = api.getClassicDevices({ query: { type: undefined } })
@@ -61,7 +63,7 @@ describe('charts api', () => {
     it('should pass numeric type filter', () => {
       const zones = [
         { id: 2, level: 1, model: 'devices' as const, name: 'Device 1' },
-      ]
+      ] as unknown as Classic.Zone[]
       mockGetClassicZones.mockReturnValue(zones)
 
       const result = api.getClassicDevices({ query: { type: '0' } })
@@ -86,7 +88,7 @@ describe('charts api', () => {
           model: 'buildings' as const,
           name: 'ClassicBuilding 1',
         },
-      ]
+      ] as unknown as Classic.Zone[]
       mockGetClassicZones.mockReturnValue(zones)
 
       const result = api.getClassicDevices({ query: { type: undefined } })

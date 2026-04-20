@@ -11,7 +11,8 @@ import type {
 import type { ZoneData } from '../../types/widgets.mts'
 import { mock } from '../helpers.js'
 
-const mockGetBuildings = vi.fn()
+const mockGetBuildings =
+  vi.fn<(options?: { type?: Classic.DeviceType }) => Classic.BuildingZone[]>()
 
 vi.mock(import('../../lib/classic-facade-manager.mts'), () => ({
   getClassicBuildings: mockGetBuildings,
@@ -51,7 +52,9 @@ describe('api', () => {
 
   describe('building retrieval', () => {
     it('should delegate to getClassicBuildings', () => {
-      const buildings = [{ id: 1, name: 'ClassicBuilding 1' }]
+      const buildings = [
+        { id: 1, name: 'ClassicBuilding 1' },
+      ] as unknown as Classic.BuildingZone[]
       mockGetBuildings.mockReturnValue(buildings)
 
       const result = api.getClassicBuildings()

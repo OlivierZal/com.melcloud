@@ -23,9 +23,14 @@ const K_MULTIPLIER = 1000
 
 const { getCapabilityOptionsMock, hasCapabilityMock, setCapabilityValueMock } =
   vi.hoisted(() => ({
-    getCapabilityOptionsMock: vi.fn().mockReturnValue({ min: 10 }),
-    hasCapabilityMock: vi.fn().mockReturnValue(true),
-    setCapabilityValueMock: vi.fn(),
+    getCapabilityOptionsMock: vi
+      .fn<(capability: string) => Record<string, unknown>>()
+      .mockReturnValue({ min: 10 }),
+    hasCapabilityMock: vi
+      .fn<(capability: string) => boolean>()
+      .mockReturnValue(true),
+    setCapabilityValueMock:
+      vi.fn<(capability: string, value: unknown) => Promise<void>>(),
   }))
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
@@ -46,9 +51,11 @@ vi.mock('homey', async () => {
 
 const mockDriver = mock<ClassicMELCloudDriver<AtwType>>({
   energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<AtwType>>({}),
-  getCapabilitiesOptions: vi.fn().mockReturnValue({}),
+  getCapabilitiesOptions: vi
+    .fn<(data?: unknown) => Record<string, unknown>>()
+    .mockReturnValue({}),
   getCapabilityTagMapping: mock<GetCapabilityTagMapping<AtwType>>({}),
-  getRequiredCapabilities: vi.fn().mockReturnValue([]),
+  getRequiredCapabilities: vi.fn<() => string[]>().mockReturnValue([]),
   listCapabilityTagMapping: mock<ListCapabilityTagMapping<AtwType>>({}),
   manifest: mock({ capabilities: [], id: 'melcloud_atw' }),
   setCapabilityTagMapping: mock<SetCapabilityTagMapping<AtwType>>({}),

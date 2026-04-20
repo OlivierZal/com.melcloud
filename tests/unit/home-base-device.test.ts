@@ -22,12 +22,19 @@ const {
   setValuesMock,
   superSetWarningMock,
 } = vi.hoisted(() => ({
-  getHomeFacadeMock: vi.fn(),
-  getSettingMock: vi.fn(),
-  realtimeMock: vi.fn(),
-  registerMultipleCapabilityListenerMock: vi.fn(),
-  setValuesMock: vi.fn(),
-  superSetWarningMock: vi.fn(),
+  getHomeFacadeMock: vi.fn<(id: string) => unknown>(),
+  getSettingMock: vi.fn<(key: string) => unknown>(),
+  realtimeMock: vi.fn<(event: string, data: unknown) => void>(),
+  registerMultipleCapabilityListenerMock:
+    vi.fn<
+      (
+        capabilities: string[],
+        listener: (values: Record<string, unknown>) => Promise<void>,
+        debounce: number,
+      ) => void
+    >(),
+  setValuesMock: vi.fn<(values: Record<string, unknown>) => Promise<boolean>>(),
+  superSetWarningMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
 }))
 
 let isFacadePoweredOn = true
@@ -87,15 +94,19 @@ vi.mock('homey', async () => {
               return this.manifest.capabilities
             },
           },
-          getData: vi.fn().mockReturnValue({ id: 'device-1' }),
+          getData: vi
+            .fn<() => { id: string }>()
+            .mockReturnValue({ id: 'device-1' }),
           getSetting: getSettingMock,
           homey: {
             api: { realtime: realtimeMock },
             app: { getHomeFacade: getHomeFacadeMock },
-            clearInterval: vi.fn(),
-            clearTimeout: vi.fn(),
-            setInterval: vi.fn(),
-            setTimeout: vi.fn(),
+            clearInterval: vi.fn<(timer: NodeJS.Timeout | undefined) => void>(),
+            clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
+            setInterval:
+              vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
+            setTimeout:
+              vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
           },
           registerMultipleCapabilityListener:
             registerMultipleCapabilityListenerMock,

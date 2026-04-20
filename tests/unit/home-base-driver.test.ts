@@ -19,11 +19,13 @@ const {
   setHandlerMock,
   showViewMock,
 } = vi.hoisted(() => ({
-  authenticateMock: vi.fn(),
-  getHomeDevicesByTypeMock: vi.fn(),
-  isAuthenticatedMock: vi.fn(),
-  setHandlerMock: vi.fn(),
-  showViewMock: vi.fn(),
+  authenticateMock: vi.fn<(data: unknown) => Promise<boolean>>(),
+  getHomeDevicesByTypeMock:
+    vi.fn<(type: Home.DeviceType) => readonly unknown[]>(),
+  isAuthenticatedMock: vi.fn<() => boolean>(),
+  setHandlerMock:
+    vi.fn<(event: string, handler: (...args: unknown[]) => unknown) => void>(),
+  showViewMock: vi.fn<(view: string) => Promise<void>>(),
 }))
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
@@ -38,16 +40,38 @@ vi.mock('homey', () => {
         },
       },
       flow: {
-        getActionCard: vi.fn().mockReturnValue({
-          registerRunListener: vi.fn(),
-        }),
-        getConditionCard: vi.fn().mockReturnValue({
-          registerRunListener: vi.fn(),
-        }),
+        getActionCard: vi
+          .fn<
+            (id: string) => {
+              registerRunListener: (
+                listener: (args: Record<string, unknown>) => unknown,
+              ) => void
+            }
+          >()
+          .mockReturnValue({
+            registerRunListener:
+              vi.fn<
+                (listener: (args: Record<string, unknown>) => unknown) => void
+              >(),
+          }),
+        getConditionCard: vi
+          .fn<
+            (id: string) => {
+              registerRunListener: (
+                listener: (args: Record<string, unknown>) => unknown,
+              ) => void
+            }
+          >()
+          .mockReturnValue({
+            registerRunListener:
+              vi.fn<
+                (listener: (args: Record<string, unknown>) => unknown) => void
+              >(),
+          }),
       },
     }
 
-    public log = vi.fn()
+    public log = vi.fn<(...args: readonly unknown[]) => void>()
 
     public manifest = {
       capabilities: [
@@ -110,10 +134,12 @@ describe(BaseMELCloudDriver, () => {
       ]
       getHomeDevicesByTypeMock.mockReturnValue(devices)
 
-      const listHandler = vi.fn()
+      const listHandler = vi.fn<(...args: unknown[]) => unknown>()
       const session = mock<PairSession>({
         setHandler: vi
-          .fn()
+          .fn<
+            (event: string, handler: (...args: unknown[]) => unknown) => void
+          >()
           .mockImplementation(
             (event: string, handler: (...args: unknown[]) => unknown) => {
               if (event === 'list_devices') {
@@ -141,10 +167,12 @@ describe(BaseMELCloudDriver, () => {
     it('should return empty array when getHomeDevicesByType returns empty', async () => {
       getHomeDevicesByTypeMock.mockReturnValue([])
 
-      const listHandler = vi.fn()
+      const listHandler = vi.fn<(...args: unknown[]) => unknown>()
       const session = mock<PairSession>({
         setHandler: vi
-          .fn()
+          .fn<
+            (event: string, handler: (...args: unknown[]) => unknown) => void
+          >()
           .mockImplementation(
             (event: string, handler: (...args: unknown[]) => unknown) => {
               if (event === 'list_devices') {

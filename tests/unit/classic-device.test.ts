@@ -38,15 +38,23 @@ const {
   superSetWarningMock,
   triggerCapabilityListenerMock,
 } = vi.hoisted(() => ({
-  getFacadeMock: vi.fn(),
-  getSettingMock: vi.fn(),
-  realtimeMock: vi.fn(),
-  registerMultipleCapabilityListenerMock: vi.fn(),
-  setValuesMock: vi.fn(),
-  superAddCapabilityMock: vi.fn(),
-  superRemoveCapabilityMock: vi.fn(),
-  superSetWarningMock: vi.fn(),
-  triggerCapabilityListenerMock: vi.fn(),
+  getFacadeMock: vi.fn<(kind: string, id: number) => unknown>(),
+  getSettingMock: vi.fn<(key: string) => unknown>(),
+  realtimeMock: vi.fn<(event: string, data: unknown) => void>(),
+  registerMultipleCapabilityListenerMock:
+    vi.fn<
+      (
+        capabilities: readonly string[],
+        listener: (values: Record<string, unknown>) => Promise<void>,
+        delay?: number,
+      ) => void
+    >(),
+  setValuesMock: vi.fn<(data: Record<string, unknown>) => Promise<unknown>>(),
+  superAddCapabilityMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
+  superRemoveCapabilityMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
+  superSetWarningMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
+  triggerCapabilityListenerMock:
+    vi.fn<(capability: string, value: unknown) => Promise<void>>(),
 }))
 
 const mockDeviceData = {
@@ -64,13 +72,17 @@ vi.mock('homey', async () => {
         overrides: {
           getSetting: getSettingMock,
           homey: {
-            __: vi.fn().mockImplementation((key: string) => key),
+            __: vi
+              .fn<(key: string) => string>()
+              .mockImplementation((key: string) => key),
             api: { realtime: realtimeMock },
             app: { getClassicFacade: getFacadeMock },
-            clearInterval: vi.fn(),
-            clearTimeout: vi.fn(),
-            setInterval: vi.fn(),
-            setTimeout: vi.fn(),
+            clearInterval: vi.fn<(timer: NodeJS.Timeout | undefined) => void>(),
+            clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
+            setInterval:
+              vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
+            setTimeout:
+              vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
           },
           registerMultipleCapabilityListener:
             registerMultipleCapabilityListenerMock,
@@ -94,12 +106,14 @@ const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
   energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<TestDeviceType>>(
     {},
   ),
-  getCapabilitiesOptions: vi.fn().mockReturnValue({}),
+  getCapabilitiesOptions: vi
+    .fn<() => Record<string, unknown>>()
+    .mockReturnValue({}),
   getCapabilityTagMapping: mock<GetCapabilityTagMapping<TestDeviceType>>({
     measure_temperature: 'RoomTemperature',
   }),
   getRequiredCapabilities: vi
-    .fn()
+    .fn<() => string[]>()
     .mockReturnValue(['onoff', 'measure_temperature']),
   listCapabilityTagMapping: mock<ListCapabilityTagMapping<TestDeviceType>>({}),
   manifest: mock({
@@ -114,7 +128,7 @@ const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
 const mockFacade = (data: Record<string, unknown> = mockDeviceData): void => {
   getFacadeMock.mockReturnValue({
     data,
-    getEnergy: vi.fn(),
+    getEnergy: vi.fn<(query?: unknown) => Promise<unknown>>(),
     updateValues: setValuesMock,
   })
 }
@@ -464,9 +478,11 @@ describe(ClassicMELCloudDevice, () => {
 
   describe('capability options setup', () => {
     it('should set capability options from driver', async () => {
-      const getCapabilitiesOptionsMock = vi.fn().mockReturnValue({
-        measure_temperature: { units: '°C' },
-      })
+      const getCapabilitiesOptionsMock = vi
+        .fn<() => Record<string, unknown>>()
+        .mockReturnValue({
+          measure_temperature: { units: '°C' },
+        })
       const driverWithOptions = Object.create(mockDriver) as typeof mockDriver
       Object.assign(driverWithOptions, {
         getCapabilitiesOptions: getCapabilitiesOptionsMock,

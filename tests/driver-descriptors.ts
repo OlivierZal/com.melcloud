@@ -77,7 +77,7 @@ const createShowViewSession = (
 ): PairSession =>
   mock<PairSession>({
     setHandler: vi
-      .fn()
+      .fn<(event: string, handler: (...args: unknown[]) => unknown) => void>()
       .mockImplementation(
         (event: string, handler: (...args: unknown[]) => unknown) => {
           if (event === 'showView') {
@@ -99,7 +99,9 @@ const createLoginSession = (
   }
   const session = mock<PairSession>({
     setHandler: vi
-      .fn()
+      .fn<
+        (event: string, handler: (data: unknown) => Promise<unknown>) => void
+      >()
       .mockImplementation(
         (event: string, handler: (data: unknown) => Promise<unknown>) => {
           if (event === 'login') {

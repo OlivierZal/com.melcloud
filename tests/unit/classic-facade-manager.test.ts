@@ -26,9 +26,13 @@ const mockZones = [
 ]
 
 const mockFacadeManager = {
-  get: vi.fn().mockReturnValue(null),
-  getBuildings: vi.fn().mockReturnValue(mockBuildings),
-  getZones: vi.fn().mockReturnValue(mockZones),
+  get: vi.fn<(instance: unknown) => unknown>().mockReturnValue(null),
+  getBuildings: vi
+    .fn<(options?: { type?: Classic.DeviceType }) => unknown[]>()
+    .mockReturnValue(mockBuildings),
+  getZones: vi
+    .fn<(options?: { type?: Classic.DeviceType }) => unknown[]>()
+    .mockReturnValue(mockZones),
 }
 
 describe('classic-facade-manager', () => {
