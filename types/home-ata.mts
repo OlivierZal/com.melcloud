@@ -11,12 +11,12 @@ export type HomeCapabilitiesAta = HomeGetCapabilitiesAta &
   HomeListCapabilitiesAta &
   HomeSetCapabilitiesAta
 
-/*
- * Uses method signature syntax (bivariant) to allow converter functions
- * to accept narrower parameter types from the facade getters.
+/**
+ * Converter from a Home ATA device facade to the corresponding Homey
+ * capability value.
  */
 export type HomeConvertFromDevice = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow the return to a specific capability type
   bivariant(
     facade: Home.DeviceAtaFacade,
   ):
@@ -26,12 +26,12 @@ export type HomeConvertFromDevice = {
         | keyof HomeListCapabilitiesAta]
 }['bivariant']
 
-/*
- * Uses method signature syntax (bivariant) to allow converter functions
- * to accept narrower parameter types from capability values.
+/**
+ * Converter from a Homey capability value to the corresponding Home ATA
+ * device value.
  */
 export type HomeConvertToDevice = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to a specific member of the HomeSetCapabilitiesAta value union
   bivariant(
     value: HomeSetCapabilitiesAta[keyof HomeSetCapabilitiesAta],
   ): Home.AtaValues[keyof Home.AtaValues]

@@ -28,14 +28,14 @@
     "homey:publish": "npx homey app publish",
     "homey:start": "npx homey app run --remote",
     "homey:validate": "npx homey app validate --level=publish",
-    "lint": "NODE_OPTIONS=--max-old-space-size=8192 eslint .",
+    "lint": "node --max-old-space-size=8192 ./node_modules/eslint/bin/eslint.js .",
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run",
     "test:coverage": "npm test -- --coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^33.0.1",
+    "@olivierzal/melcloud-api": "^34.0.0",
     "homey-lib": "^2.49.1",
     "luxon": "^3.7.2"
   },

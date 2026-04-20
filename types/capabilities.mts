@@ -31,35 +31,30 @@ export interface CapabilitiesOptionsAtaErv {
   readonly fan_speed: RangeOptions
 }
 
-/*
- * Uses method signature syntax (bivariant) so that concrete converter
- * implementations can accept narrower parameter types without type errors.
- */
+/** Base converter type for capability/device value transforms. */
 export type CapabilityConverter = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters accept narrower param types
   bivariant(value: unknown, data?: unknown): unknown
 }['bivariant']
 
-/*
- * Uses method signature syntax (bivariant) to allow converter functions
- * to accept narrower parameter types (e.g., ClassicFanSpeed instead of the full
- * Classic.ListDeviceData value union).
+/**
+ * Converter from a classic device data value to the corresponding Homey
+ * capability value, parameterized by device type.
  */
 export type ConvertFromDevice<T extends Classic.DeviceType> = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to a specific member of the Classic.ListDeviceData value union (e.g., ClassicFanSpeed)
   bivariant(
     value: Classic.ListDeviceData<T>[keyof Classic.ListDeviceData<T>],
     data?: Readonly<Classic.ListDeviceData<T>>,
   ): OperationalCapabilities<T>[keyof OperationalCapabilities<T>]
 }['bivariant']
 
-/*
- * Uses method signature syntax (bivariant) to allow converter functions
- * to accept narrower parameter types (e.g., ClassicFanSpeed instead of the full
- * Classic.UpdateDeviceData value union).
+/**
+ * Converter from a Homey capability value to the corresponding classic device
+ * data value, parameterized by device type.
  */
 export type ConvertToDevice<T extends Classic.DeviceType> = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax required for bivariant type checking
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to a specific member of the Classic.UpdateDeviceData value union
   bivariant(
     value: SetCapabilities<T>[keyof SetCapabilities<T>],
   ): Classic.UpdateDeviceData<T>[keyof Classic.UpdateDeviceData<T>]

@@ -460,10 +460,8 @@ export default class MELCloudApp extends App {
     })
   }
 
-  /*
-   * Sync matching classic devices by pulling their latest state from MELCloud.
-   * Per-device sync failures are logged without aborting the full sync run.
-   */
+  // Sync matching classic devices by pulling their latest state from MELCloud.
+  // Per-device sync failures are logged without aborting the full sync run.
   async #classicSyncDevices(
     filter: { driverId?: string; ids?: (number | string)[] } = {},
   ): Promise<void> {
@@ -586,17 +584,15 @@ export default class MELCloudApp extends App {
     })
   }
 
-  /*
-   * SDK v3 runs `App#onInit` before any `Driver#onInit`, so `onSync`
-   * callbacks fired by the MELCloud API clients during `#initClassicApi`
-   * / `#initHomeApi` find no ready drivers. Awaiting driver readiness
-   * would deadlock: drivers can't init until `App#onInit` returns, which
-   * awaits these API-client constructors. `getDrivers()` only exposes
-   * drivers whose `onInit` has completed, so unready drivers are filtered
-   * out naturally — an initial sync silently becomes a no-op. Each device
-   * runs its own initial sync via `ensureDevice()` in `Device#onInit`,
-   * and post-init `onSync` calls find every driver ready.
-   */
+  // SDK v3 runs `App#onInit` before any `Driver#onInit`, so `onSync`
+  // callbacks fired by the MELCloud API clients during `#initClassicApi`
+  // / `#initHomeApi` find no ready drivers. Awaiting driver readiness
+  // would deadlock: drivers can't init until `App#onInit` returns, which
+  // awaits these API-client constructors. `getDrivers()` only exposes
+  // drivers whose `onInit` has completed, so unready drivers are filtered
+  // out naturally — an initial sync silently becomes a no-op. Each device
+  // runs its own initial sync via `ensureDevice()` in `Device#onInit`,
+  // and post-init `onSync` calls find every driver ready.
   #getDrivers(driverId?: string): MELCloudDriver[] {
     const drivers = Object.values(this.homey.drivers.getDrivers())
     return driverId === undefined ? drivers : (
@@ -610,8 +606,8 @@ export default class MELCloudApp extends App {
   }): Promise<void> {
     this.#classicApi = await Classic.API.create({
       ...config,
+      events: { onSyncComplete: this.#onSync },
       logger: this.#createLogger(),
-      onSync: this.#onSync,
       settingManager: this.#createSettingManager(),
     })
     this.#facadeManager = new Classic.FacadeManager(
@@ -623,8 +619,8 @@ export default class MELCloudApp extends App {
 
   async #initHomeApi(): Promise<void> {
     this.#homeApi = await Home.API.create({
+      events: { onSyncComplete: this.#onSync },
       logger: this.#createLogger(),
-      onSync: this.#onSync,
       settingManager: this.#createSettingManager('home'),
     })
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)

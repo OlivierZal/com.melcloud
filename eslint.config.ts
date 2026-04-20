@@ -88,6 +88,7 @@ const config = defineConfig([
       perfectionist,
     },
     rules: {
+      '@stylistic/multiline-comment-style': ['error', 'separate-lines'],
       '@stylistic/quotes': [
         'error',
         'single',
@@ -136,11 +137,9 @@ const config = defineConfig([
           selector: 'default',
           trailingUnderscore: 'forbid',
         },
-        /*
-         * ── Variables ────────────────────────────────────────
-         * PascalCase: `as const` enum-like objects.
-         * UPPER_CASE: scalar constants.
-         */
+        // ── Variables ────────────────────────────────────────
+        // PascalCase: `as const` enum-like objects.
+        // UPPER_CASE: scalar constants.
         {
           format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
           selector: 'variable',
@@ -151,20 +150,16 @@ const config = defineConfig([
           modifiers: ['destructured'],
           selector: 'variable',
         },
-        /*
-         * ── Booleans (variables, parameters, class properties) ──
-         * Semantic prefixes make intent obvious at the call site.
-         */
+        // ── Booleans (variables, parameters, class properties) ──
+        // Semantic prefixes make intent obvious at the call site.
         {
           format: ['PascalCase'],
           prefix: ['is', 'has', 'can', 'should'],
           selector: ['variable', 'parameter', 'classProperty'],
           types: ['boolean'],
         },
-        /*
-         * ── Parameters ───────────────────────────────────────
-         * Leading underscore for intentionally unused params.
-         */
+        // ── Parameters ───────────────────────────────────────
+        // Leading underscore for intentionally unused params.
         {
           format: ['camelCase'],
           leadingUnderscore: 'allow',
@@ -193,10 +188,8 @@ const config = defineConfig([
             'typeMethod',
           ],
         },
-        /*
-         * ── Homey-specific ──────────────────────────────────
-         * Capability handlers use snake_case.
-         */
+        // ── Homey-specific ──────────────────────────────────
+        // Capability handlers use snake_case.
         {
           format: null,
           modifiers: ['requiresQuotes'],
@@ -213,10 +206,8 @@ const config = defineConfig([
           format: null,
           selector: 'objectLiteralProperty',
         },
-        /*
-         * ── Properties ───────────────────────────────────────
-         * Permissive: DTOs, API contracts, and serialization use mixed conventions.
-         */
+        // ── Properties ───────────────────────────────────────
+        // Permissive: DTOs, API contracts, and serialization use mixed conventions.
         {
           format: ['camelCase', 'PascalCase', 'snake_case', 'UPPER_CASE'],
           selector: ['objectLiteralProperty', 'typeProperty'],
@@ -242,10 +233,8 @@ const config = defineConfig([
           format: ['PascalCase'],
           selector: 'typeLike',
         },
-        /*
-         * ── Type parameters (generics) ───────────────────────
-         * T-prefix: T, TKey, TValue, TResult — universal TS convention.
-         */
+        // ── Type parameters (generics) ───────────────────────
+        // T-prefix: T, TKey, TValue, TResult — universal TS convention.
         {
           format: ['PascalCase'],
           prefix: ['T'],
@@ -403,7 +392,6 @@ const config = defineConfig([
           groups: [
             // ── Signatures ────────────────────────────────────────
             'index-signature',
-
             // ── Static fields ─────────────────────────────────────
             'static-decorated-property',
             'static-property',
@@ -418,7 +406,6 @@ const config = defineConfig([
             'private-static-accessor-property',
             ['private-static-get-method', 'private-static-set-method'],
             'static-block',
-
             // ── Instance fields ───────────────────────────────────
             'declare-property',
             'abstract-property',
@@ -436,10 +423,8 @@ const config = defineConfig([
             'private-property',
             'private-accessor-property',
             ['private-get-method', 'private-set-method'],
-
             // ── Constructor ───────────────────────────────────────
             'constructor',
-
             // ── Homey lifecycle hooks ─────────────────────────────
             'homey-lifecycle-init',
             'homey-lifecycle-pair',
@@ -447,7 +432,6 @@ const config = defineConfig([
             'homey-lifecycle-settings',
             'homey-lifecycle-deleted',
             'homey-lifecycle-uninit',
-
             // ── Static methods ────────────────────────────────────
             'static-decorated-method',
             'static-function-property',
@@ -458,7 +442,6 @@ const config = defineConfig([
             'private-static-decorated-method',
             'private-static-function-property',
             'private-static-method',
-
             // ── Instance methods ──────────────────────────────────
             'abstract-method',
             'decorated-method',
@@ -470,7 +453,7 @@ const config = defineConfig([
             'private-decorated-method',
             'private-function-property',
             'private-method',
-
+            // ── Unknown (catch-all) ───────────────────────────────
             'unknown',
           ],
           newlinesBetween: 1,
@@ -594,18 +577,7 @@ const config = defineConfig([
           ignoreUsedVariables: true,
         },
       ],
-      'unicorn/prevent-abbreviations': [
-        'error',
-        {
-          replacements: {
-            arg: false,
-            args: false,
-            param: false,
-            params: false,
-            utils: false,
-          },
-        },
-      ],
+      'unicorn/prevent-abbreviations': 'off',
     },
     settings: {
       perfectionist: {

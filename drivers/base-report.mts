@@ -86,10 +86,8 @@ export class EnergyReport<T extends Classic.DeviceType> {
     this.#device.log(`${this.#config.mode} energy report has been cancelled`)
   }
 
-  /*
-   * COP (Coefficient of Performance) = produced energy / consumed energy.
-   * Falls back to divisor of 1 to avoid division by zero when no energy consumed
-   */
+  // COP (Coefficient of Performance) = produced energy / consumed energy.
+  // Falls back to divisor of 1 to avoid division by zero when no energy consumed
   #calculateCopValue(
     data: Classic.EnergyData<T>,
     capability: string & keyof EnergyCapabilities<T>,
@@ -110,10 +108,8 @@ export class EnergyReport<T extends Classic.DeviceType> {
     return sumTags(data, tags) / this.#linkedDeviceCount
   }
 
-  /*
-   * Power values are stored as 24-element arrays (one per hour).
-   * Multiply by KILOWATT_TO_WATT to convert from kW to W
-   */
+  // Power values are stored as 24-element arrays (one per hour).
+  // Multiply by KILOWATT_TO_WATT to convert from kW to W
   #calculatePowerValue(
     data: Classic.EnergyData<T>,
     tags: readonly (keyof Classic.EnergyData<T>)[],

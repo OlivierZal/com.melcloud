@@ -283,7 +283,11 @@ const mockUpdateResult = (
 const getSyncCallbackFrom = (
   mockCreateFunction: ReturnType<typeof vi.fn>,
 ): SyncCallback =>
-  getMockCallArg<{ onSync: SyncCallback }>(mockCreateFunction, 0, 0).onSync
+  getMockCallArg<{ events: { onSyncComplete: SyncCallback } }>(
+    mockCreateFunction,
+    0,
+    0,
+  ).events.onSyncComplete
 
 const getSyncCallback = (): SyncCallback => getSyncCallbackFrom(mockCreate)
 

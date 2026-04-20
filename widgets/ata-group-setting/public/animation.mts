@@ -52,11 +52,9 @@ const AnimationGap = {
 const LEAF_OSCILLATION_FACTOR = 5
 const ANIMATION_KEYFRAME_COUNT = 101
 
-/*
- * Calculates a randomized delay with exponential speed scaling. Higher speed
- * values produce shorter delays via exponential interpolation between
- * factorMin and factorMax
- */
+// Calculates a randomized delay with exponential speed scaling. Higher speed
+// values produce shorter delays via exponential interpolation between
+// factorMin and factorMax
 const generateDelay = (delay: number, speed: number): number =>
   (Math.random() * delay) /
   (SPEED_FACTOR_MIN *
@@ -89,10 +87,8 @@ const createAnimationMapping = (): Record<
   }
 }
 
-/*
- * Generates a parametric leaf animation: the leaf follows a curved path
- * with a circular loop segment and sine-wave oscillation
- */
+// Generates a parametric leaf animation: the leaf follows a curved path
+// with a circular loop segment and sine-wave oscillation
 const generateLeafAnimation = (
   leaf: HTMLDivElement,
   speed: number,

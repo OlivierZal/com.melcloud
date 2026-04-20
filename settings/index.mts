@@ -146,10 +146,8 @@ const Modulo = {
   base100: 100,
 } as const
 
-/*
- * Slavic plural rules: numbers ending in 2/3/4 use a special plural
- * form, except 12-14 which use the regular plural
- */
+// Slavic plural rules: numbers ending in 2/3/4 use a special plural
+// form, except 12-14 which use the regular plural
 /* eslint-disable @typescript-eslint/no-magic-numbers -- Slavic grammar constants */
 const PLURAL_THRESHOLD = 2
 const numberEndsWithTwoThreeFour = new Set([2, 3, 4])
