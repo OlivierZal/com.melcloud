@@ -120,15 +120,15 @@ describe(EnergyReport, () => {
     vi.useFakeTimers({ now: FAKE_NOW, toFake: ['Date'] })
   })
 
-  afterAll(() => {
-    vi.useRealTimers()
-  })
-
   beforeEach(() => {
     vi.clearAllMocks()
     cleanMappingMock.mockReturnValue({
       measure_power: ['Auto', 'Cooling'],
     })
+  })
+
+  afterAll(() => {
+    vi.useRealTimers()
   })
 
   describe('scheduling and data fetching', () => {

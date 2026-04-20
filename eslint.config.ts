@@ -742,6 +742,7 @@ const config = defineConfig([
       'vitest/no-disabled-tests': 'error',
       'vitest/no-hooks': 'off',
       'vitest/prefer-expect-assertions': 'off',
+      'vitest/prefer-hooks-in-order': 'error',
       'vitest/require-hook': 'off',
     },
     settings: {
