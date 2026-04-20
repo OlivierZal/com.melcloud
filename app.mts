@@ -1,12 +1,13 @@
 import type {
   DeviceType,
+  Hour,
   Logger,
   ReportChartLineOptions,
   ReportChartPieOptions,
   SettingManager,
   SyncCallback,
 } from '@olivierzal/melcloud-api'
-import { type HourNumbers, DateTime, Settings as LuxonSettings } from 'luxon'
+import { DateTime, Settings as LuxonSettings } from 'luxon'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
@@ -245,16 +246,31 @@ export default class MELCloudApp extends App {
   ): Promise<FormattedErrorLog> {
     const { errors, fromDate, ...rest } =
       await this.#classicApi.getErrorLog(query)
+    const locale = this.homey.i18n.getLanguage()
+    const timeZone = this.homey.clock.getTimezone()
+    // Reused across all entries instead of rebuilding a DateTime + formatter per call.
+    const dateTimeMedFormat = new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      month: 'short',
+      timeZone,
+      year: 'numeric',
+    })
+    const dateFullFormat = new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'long',
+      timeZone,
+      year: 'numeric',
+    })
     return {
       ...rest,
       errors: errors.map(({ date, deviceId, ...errorRest }) => ({
         ...errorRest,
-        date: DateTime.fromISO(date).toLocaleString(DateTime.DATETIME_MED),
+        date: dateTimeMedFormat.format(new Date(date)),
         device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
       })),
-      fromDateHuman: DateTime.fromISO(fromDate).toLocaleString(
-        DateTime.DATE_FULL,
-      ),
+      fromDateHuman: dateFullFormat.format(new Date(fromDate)),
     }
   }
 
@@ -300,7 +316,7 @@ export default class MELCloudApp extends App {
     hour,
   }: {
     deviceId: string
-    hour?: HourNumbers
+    hour?: Hour
   }): Promise<ReportChartLineOptions> {
     return this.getClassicFacade('devices', deviceId).getHourlyTemperatures(
       hour,
@@ -324,7 +340,7 @@ export default class MELCloudApp extends App {
     hour,
   }: {
     deviceId: string
-    hour?: HourNumbers
+    hour?: Hour
   }): Promise<ReportChartLineOptions> {
     return this.getClassicFacade('devices', deviceId).getSignalStrength(hour)
   }

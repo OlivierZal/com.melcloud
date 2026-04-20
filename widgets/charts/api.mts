@@ -8,7 +8,7 @@ import type { Homey } from 'homey/lib/Homey'
 import type { DaysQuery, HourQuery } from '../../types/widgets.mts'
 import { getClassicZones } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
-import { toHourNumbers, toNonNegativeInt } from '../../lib/validation.mts'
+import { toHour, toNonNegativeInt } from '../../lib/validation.mts'
 
 const DAYS_MAX = 366
 
@@ -33,7 +33,7 @@ const api = {
   }): Promise<ReportChartLineOptions> {
     return app.getClassicHourlyTemperatures({
       deviceId,
-      hour: hour === undefined ? undefined : toHourNumbers(hour, 'hour'),
+      hour: hour === undefined ? undefined : toHour(hour, 'hour'),
     })
   },
   async getClassicOperationModes({
@@ -61,7 +61,7 @@ const api = {
   }): Promise<ReportChartLineOptions> {
     return app.getClassicSignal({
       deviceId,
-      hour: hour === undefined ? undefined : toHourNumbers(hour, 'hour'),
+      hour: hour === undefined ? undefined : toHour(hour, 'hour'),
     })
   },
   async getClassicTemperatures({

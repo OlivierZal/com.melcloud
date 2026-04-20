@@ -1,4 +1,4 @@
-import type { HourNumbers } from 'luxon'
+import type { Hour } from '@olivierzal/melcloud-api'
 
 const HOUR_MIN = 0
 const HOUR_MAX = 23
@@ -40,13 +40,13 @@ export const toNonNegativeInt = (
 }
 
 /**
- * Parses `value` as a Luxon `HourNumbers` (0-23). Throws on out-of-range or
- * non-integer input.
+ * Parses `value` as an `Hour` (0-23). Throws on out-of-range or non-integer
+ * input.
  */
-export const toHourNumbers = (value: unknown, field?: string): HourNumbers => {
+export const toHour = (value: unknown, field?: string): Hour => {
   const parsed = toNonNegativeInt(value, { field, max: HOUR_MAX })
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing a [0..23] integer to HourNumbers (Luxon's 0-23 union)
-  return parsed as HourNumbers
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing a [0..23] integer to the Hour union
+  return parsed as Hour
 }
 
 export { HOUR_MAX, HOUR_MIN }

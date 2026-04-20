@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { toHourNumbers, toNonNegativeInt } from '../../lib/validation.mts'
+import { toHour, toNonNegativeInt } from '../../lib/validation.mts'
 
 describe(toNonNegativeInt, () => {
   it.each([
@@ -43,16 +43,16 @@ describe(toNonNegativeInt, () => {
   })
 })
 
-describe(toHourNumbers, () => {
+describe(toHour, () => {
   it.each([0, 12, 23])('accepts %d', (input) => {
-    expect(toHourNumbers(input)).toBe(input)
+    expect(toHour(input)).toBe(input)
   })
 
   it('accepts numeric strings', () => {
-    expect(toHourNumbers('5')).toBe(5)
+    expect(toHour('5')).toBe(5)
   })
 
   it.each([24, -1, 1.5, 'abc'])('rejects %p', (input) => {
-    expect(() => toHourNumbers(input, 'hour')).toThrow(/^hour: /u)
+    expect(() => toHour(input, 'hour')).toThrow(/^hour: /u)
   })
 })

@@ -1,5 +1,5 @@
+import type { Hour } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-import type { HourNumbers } from 'luxon'
 
 import type { BaseSettings } from './bases.mts'
 
@@ -40,7 +40,7 @@ export interface GroupAtaStates {
 }
 
 export interface HourQuery {
-  readonly hour?: `${HourNumbers}`
+  readonly hour?: `${Hour}`
 }
 
 export interface ZoneData {

@@ -88,12 +88,13 @@ export const ClassicOperationMode = {
   fan: 7,
   heat: 1,
 }
-/** Pre-built sets of ATA operation modes that support cooling or heating. */
+/** ATA operation modes that produce cooling output (auto, cool, dry). */
 export const classicCoolModes = new Set([
   ClassicOperationMode.auto,
   ClassicOperationMode.cool,
   ClassicOperationMode.dry,
 ])
+/** ATA operation modes that produce heating output (auto, heat). */
 export const classicHeatModes = new Set([
   ClassicOperationMode.auto,
   ClassicOperationMode.heat,
@@ -102,16 +103,21 @@ export const classicHeatModes = new Set([
 export const ClassicOperationModeState = {
   cooling: 3,
   defrost: 5,
+  /** Domestic hot water — the heat pump is currently heating the tank. */
   dhw: 1,
   heating: 2,
   idle: 0,
+  /** Legionella prevention cycle — a periodic high-temperature sanitisation of the hot water tank. */
   legionella: 6,
 }
 /** ATW hot water derived operational state. */
 export const ClassicOperationModeStateHotWater = {
+  /** Domestic hot water — the heat pump is currently heating the tank. */
   dhw: 'dhw',
   idle: 'idle',
+  /** Legionella prevention cycle — a periodic high-temperature sanitisation of the hot water tank. */
   legionella: 'legionella',
+  /** Hot water production is disabled (e.g. prohibit flag set or holiday mode active). */
   prohibited: 'prohibited',
 }
 /** ATW zone derived operational state. */
@@ -120,6 +126,7 @@ export const ClassicOperationModeStateZone = {
   defrost: 'defrost',
   heating: 'heating',
   idle: 'idle',
+  /** Zone regulation is disabled (e.g. prohibit flag set or holiday mode active). */
   prohibited: 'prohibited',
 }
 /** ATW zone operation modes controlling temperature regulation strategy. */
@@ -135,16 +142,21 @@ export const ClassicOperationModeZone = {
   /** Room thermostat regulation with cooling. */
   room_cool: 3,
 }
-/** ATA set-temperature limits (universal across all ATA models). */
+/** ATA set-temperature limits in °C (universal across all ATA models). */
 export const ClassicTemperature = {
+  /** Minimum target temperature when the device is in a cooling-capable mode. */
   cooling_min: 16,
+  /** Maximum target temperature across all modes. */
   max: 31,
+  /** Minimum target temperature in heating/auto/dry/fan modes. */
   min: 10,
 }
 /** ERV ventilation modes. */
 export const ClassicVentilationMode = {
   auto: 2,
+  /** Outside air flows straight through without passing the heat exchanger (free-cooling). */
   bypass: 1,
+  /** Outside air passes through the heat exchanger to recover energy from extract air. */
   recovery: 0,
 }
 /** ClassicVertical vane positions for ATA devices. */

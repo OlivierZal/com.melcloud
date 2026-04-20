@@ -1,11 +1,7 @@
+import type { Hour } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/Homey'
-import {
-  type DateObjectUnits,
-  type DurationLike,
-  type HourNumbers,
-  DateTime,
-} from 'luxon'
+import { type DateObjectUnits, type DurationLike, DateTime } from 'luxon'
 
 import type {
   Capabilities,
@@ -113,7 +109,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
   #calculatePowerValue(
     data: Classic.EnergyData<T>,
     tags: readonly (keyof Classic.EnergyData<T>)[],
-    hour: HourNumbers,
+    hour: Hour,
   ): number {
     let total = 0
     for (const tag of tags) {
@@ -124,6 +120,13 @@ export class EnergyReport<T extends Classic.DeviceType> {
     }
 
     return total / this.#linkedDeviceCount
+  }
+
+  #computeNextFireDelay(): DurationLike {
+    return DateTime.now()
+      .plus(this.#config.duration)
+      .set(this.#config.values)
+      .diffNow()
   }
 
   async #get(): Promise<void> {
@@ -161,15 +164,12 @@ export class EnergyReport<T extends Classic.DeviceType> {
           actionType,
         )
       },
-      DateTime.now()
-        .plus(this.#config.duration)
-        .set(this.#config.values)
-        .diffNow(),
+      this.#computeNextFireDelay(),
       actionType,
     )
   }
 
-  async #set(data: Classic.EnergyData<T>, hour: HourNumbers): Promise<void> {
+  async #set(data: Classic.EnergyData<T>, hour: Hour): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
       ;({ length: this.#linkedDeviceCount } =
         data.UsageDisclaimerPercentages.split(','))
