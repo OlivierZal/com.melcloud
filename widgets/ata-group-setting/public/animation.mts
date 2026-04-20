@@ -15,7 +15,7 @@ import { getZonePath } from './zones.mts'
 
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
-export interface ResetParams {
+interface ResetParams {
   readonly isSomethingOn: boolean
   readonly mode: number
 }
