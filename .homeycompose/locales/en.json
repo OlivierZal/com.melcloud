@@ -24,10 +24,10 @@
     "devicesAta": {
       "autoAdjust": "Auto-adjust air conditioning temperature",
       "configure": "Configure",
-      "legend": "Air-to-air device settings"
+      "legend": "Air-to-air device settings (Classic)"
     },
     "devicesAtw": {
-      "legend": "Air-to-water device settings"
+      "legend": "Air-to-water device settings (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -42,7 +42,7 @@
         "234": "errors",
         "plural": "errors"
       },
-      "legend": "Error history",
+      "legend": "Error history (Classic)",
       "period": "Since __from__:",
       "see": "See all errors",
       "since": "since"
@@ -64,7 +64,7 @@
     "title": "MELCloud settings",
     "update": "Update",
     "zones": {
-      "legend": "Zone settings"
+      "legend": "Zone settings (Classic)"
     }
   },
   "warnings": {

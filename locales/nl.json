@@ -25,10 +25,10 @@
     "devicesAta": {
       "autoAdjust": "Auto-afstellen airco-temperatuur",
       "configure": "Configureren",
-      "legend": "Lucht-lucht apparaatinstellingen"
+      "legend": "Lucht-lucht apparaatinstellingen (Classic)"
     },
     "devicesAtw": {
-      "legend": "Lucht-water apparaatinstellingen"
+      "legend": "Lucht-water apparaatinstellingen (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -43,7 +43,7 @@
         "234": "fouten",
         "plural": "fouten"
       },
-      "legend": "Foutenoverzicht",
+      "legend": "Foutenoverzicht (Classic)",
       "period": "Sinds __from__:",
       "see": "Bekijk alle fouten",
       "since": "sinds"
@@ -64,7 +64,7 @@
     "success": "Update geslaagd.",
     "title": "MELCloud-instellingen",
     "zones": {
-      "legend": "Zonesinstellingen",
+      "legend": "Zonesinstellingen (Classic)",
       "update": "Updaten"
     },
     "update": "Updaten"

@@ -25,10 +25,10 @@
     "devicesAta": {
       "autoAdjust": "Autojustera luftkonditioneringstemperaturen",
       "configure": "Konfigurera",
-      "legend": "Luft-til-luft enhetsinställningar"
+      "legend": "Luft-til-luft enhetsinställningar (Classic)"
     },
     "devicesAtw": {
-      "legend": "Luft-til-vatten enhetsinställningar"
+      "legend": "Luft-til-vatten enhetsinställningar (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -43,7 +43,7 @@
         "234": "fel",
         "plural": "fel"
       },
-      "legend": "Felhistorik",
+      "legend": "Felhistorik (Classic)",
       "period": "Sedan __from__:",
       "see": "Se alla fel",
       "since": "sedan"
@@ -64,7 +64,7 @@
     "success": "Uppdatering lyckades.",
     "title": "MELCloud-inställningar",
     "zones": {
-      "legend": "Zonsinställningar",
+      "legend": "Zonsinställningar (Classic)",
       "update": "Uppdatera"
     },
     "update": "Uppdatera"

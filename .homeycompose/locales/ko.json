@@ -24,10 +24,10 @@
     "devicesAta": {
       "autoAdjust": "에어컨 온도 자동 조절",
       "configure": "구성",
-      "legend": "공기 대 공기 기기 설정"
+      "legend": "공기 대 공기 기기 설정 (Classic)"
     },
     "devicesAtw": {
-      "legend": "공기 대 물 기기 설정"
+      "legend": "공기 대 물 기기 설정 (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -42,7 +42,7 @@
         "234": "개 오류",
         "plural": "개 오류"
       },
-      "legend": "오류 기록",
+      "legend": "오류 기록 (Classic)",
       "period": "__from__ 이후:",
       "see": "모든 오류 보기",
       "since": "이후"
@@ -64,7 +64,7 @@
     "title": "MELCloud 설정",
     "update": "업데이트",
     "zones": {
-      "legend": "구역 설정"
+      "legend": "구역 설정 (Classic)"
     }
   },
   "warnings": {

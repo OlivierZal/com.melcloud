@@ -1,13 +1,11 @@
+import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 
-import type {
-  DeviceSettings,
-  DriverSetting,
-  FormattedErrorLog,
-  Settings,
-} from './types/settings.mts'
-import type { ZoneData } from './types/widgets.mts'
+import type { DeviceSettings, Settings } from './types/device-settings.mts'
+import type { DriverSetting } from './types/driver-settings.mts'
+import type { FormattedErrorLog } from './types/error-log.mts'
+import type { ZoneData } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 
 const api = {
@@ -15,7 +13,7 @@ const api = {
     body,
     homey: { app },
   }: {
-    body: Classic.LoginCredentials
+    body: LoginCredentials
     homey: Homey
   }): Promise<void> {
     return app.classicApi.authenticate(body)
@@ -67,13 +65,16 @@ const api = {
     body,
     homey: { app },
   }: {
-    body: Classic.LoginCredentials
+    body: LoginCredentials
     homey: Homey
   }): Promise<void> {
     return app.homeApi.authenticate(body)
   },
   isClassicAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
     return app.classicApi.isAuthenticated()
+  },
+  isHomeAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
+    return app.homeApi.isAuthenticated()
   },
   async updateClassicFrostProtection({
     body,

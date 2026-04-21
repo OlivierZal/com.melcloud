@@ -1,6 +1,7 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { GetAtaOptions, GroupAtaStates } from '../../../types/widgets.mts'
+import type { GroupAtaStates } from '../../../types/classic-ata.mts'
+import type { GetAtaOptions } from '../../../types/widgets.mts'
 import {
   CLASSIC_OPERATION_MODE_MIXED,
   ClassicFanSpeed,

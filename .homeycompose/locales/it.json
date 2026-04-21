@@ -24,10 +24,10 @@
     "devicesAta": {
       "autoAdjust": "Regolazione automatica della temperatura del condizionatore",
       "configure": "Configura",
-      "legend": "Impostazioni dispositivo aria-aria"
+      "legend": "Impostazioni dispositivo aria-aria (Classic)"
     },
     "devicesAtw": {
-      "legend": "Impostazioni dispositivo aria-acqua"
+      "legend": "Impostazioni dispositivo aria-acqua (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -42,7 +42,7 @@
         "234": "errori",
         "plural": "errori"
       },
-      "legend": "Cronologia errori",
+      "legend": "Cronologia errori (Classic)",
       "period": "Dal __from__:",
       "see": "Visualizza tutti gli errori",
       "since": "dal"
@@ -64,7 +64,7 @@
     "title": "Impostazioni MELCloud",
     "update": "Aggiorna",
     "zones": {
-      "legend": "Impostazioni zona"
+      "legend": "Impostazioni zona (Classic)"
     }
   },
   "warnings": {

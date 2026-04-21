@@ -25,10 +25,10 @@
     "devicesAta": {
       "autoAdjust": "Auto-ajuster la température de la climatisation",
       "configure": "Configurer",
-      "legend": "Paramètres des appareils air-air"
+      "legend": "Paramètres des appareils air-air (Classic)"
     },
     "devicesAtw": {
-      "legend": "Paramètres des appareils air-eau"
+      "legend": "Paramètres des appareils air-eau (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -43,7 +43,7 @@
         "234": "erreurs",
         "plural": "erreurs"
       },
-      "legend": "Historique des erreurs",
+      "legend": "Historique des erreurs (Classic)",
       "period": "Depuis le __from__ :",
       "see": "Voir les erreurs",
       "since": "depuis le"
@@ -64,7 +64,7 @@
     "success": "La mise à jour a réussi.",
     "title": "Paramètres de MELCloud",
     "zones": {
-      "legend": "Paramètres des zones",
+      "legend": "Paramètres des zones (Classic)",
       "update": "Mettre à jour"
     },
     "update": "Mettre à jour"

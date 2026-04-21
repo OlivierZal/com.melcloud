@@ -25,10 +25,10 @@
     "devicesAta": {
       "autoAdjust": "Autoajustar la temperatura del enfriamiento",
       "configure": "Configurar",
-      "legend": "Configuración de los dispositivos aire-aire"
+      "legend": "Configuración de los dispositivos aire-aire (Classic)"
     },
     "devicesAtw": {
-      "legend": "Configuración de los dispositivos aire-agua"
+      "legend": "Configuración de los dispositivos aire-agua (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -43,7 +43,7 @@
         "234": "errores",
         "plural": "errores"
       },
-      "legend": "Historial de errores",
+      "legend": "Historial de errores (Classic)",
       "period": "Desde __from__:",
       "see": "Ver los errores",
       "since": "desde el"
@@ -64,7 +64,7 @@
     "success": "La actualización fue exitosa.",
     "title": "Configuración de MELCloud",
     "zones": {
-      "legend": "Configuración de las zonas",
+      "legend": "Configuración de las zonas (Classic)",
       "update": "Actualizar"
     },
     "update": "Actualizar"

@@ -24,10 +24,10 @@
     "devicesAta": {
       "autoAdjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
-      "legend": "Luft-til-luft enhetsinnstillinger"
+      "legend": "Luft-til-luft enhetsinnstillinger (Classic)"
     },
     "devicesAtw": {
-      "legend": "Luft-til-vann enhetsinnstillinger"
+      "legend": "Luft-til-vann enhetsinnstillinger (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -42,7 +42,7 @@
         "234": "feil",
         "plural": "feil"
       },
-      "legend": "Feilhistorikk",
+      "legend": "Feilhistorikk (Classic)",
       "period": "Siden __from__:",
       "see": "Se alle feil",
       "since": "siden"
@@ -64,7 +64,7 @@
     "title": "MELCloud-innstillinger",
     "update": "Oppdater",
     "zones": {
-      "legend": "Sonesinnstillinger"
+      "legend": "Sonesinnstillinger (Classic)"
     }
   },
   "warnings": {

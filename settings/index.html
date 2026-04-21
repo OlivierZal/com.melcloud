@@ -17,10 +17,20 @@
                 data-i18n="settings.title"
             ></h1>
         </header>
-        <!-- Shown before authentication -->
-        <div id="authenticating" hidden>
+        <!-- Shown when at least one API is unauthenticated -->
+        <div id="authentication" hidden>
             <fieldset class="homey-form-fieldset">
                 <legend class="homey-form-legend" data-i18n="settings.authenticate.legend"></legend>
+                <div class="homey-form-group">
+                    <select
+                        id="api"
+                        class="homey-form-select"
+                        aria-label="API"
+                    >
+                        <option value="classic">Classic</option>
+                        <option value="home">Home</option>
+                    </select>
+                </div>
                 <div id="login"></div>
                 <div class="homey-form-group">
                     <button
@@ -33,9 +43,9 @@
                 </div>
             </fieldset>
         </div>
-        <!-- Shown after authentication — hidden by default to prevent flash -->
-        <div id="authenticated" hidden>
-            <fieldset class="homey-form-fieldset">
+        <!-- Shown when at least one API is authenticated — hidden by default to prevent flash -->
+        <div id="content" hidden>
+            <fieldset class="homey-form-fieldset classic-only">
                 <legend class="homey-form-legend" data-i18n="settings.errorLog.legend"></legend>
                 <div class="homey-form-group container">
                     <button
@@ -156,7 +166,7 @@
                     </div>
                 </fieldset>
             </div>
-            <fieldset class="homey-form-fieldset">
+            <fieldset class="homey-form-fieldset classic-only">
                 <legend class="homey-form-legend" data-i18n="settings.zones.legend"></legend>
                 <div class="homey-form-group">
                     <select

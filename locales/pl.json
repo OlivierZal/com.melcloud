@@ -25,10 +25,10 @@
     "devicesAta": {
       "autoAdjust": "Automatyczna regulacja temperatury klimatyzacji",
       "configure": "Konfiguruj",
-      "legend": "Ustawienia urządzenia powietrze-powietrze"
+      "legend": "Ustawienia urządzenia powietrze-powietrze (Classic)"
     },
     "devicesAtw": {
-      "legend": "Ustawienia urządzenia powietrze-woda"
+      "legend": "Ustawienia urządzenia powietrze-woda (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -43,7 +43,7 @@
         "234": "błędy",
         "plural": "błędów"
       },
-      "legend": "Historia błędów",
+      "legend": "Historia błędów (Classic)",
       "period": "Od __from__:",
       "see": "Pokaż wszystkie błędy",
       "since": "od"
@@ -64,7 +64,7 @@
     "success": "Aktualizacja powiodła się.",
     "title": "Ustawienia MELCloud",
     "zones": {
-      "legend": "Ustawienia strefy",
+      "legend": "Ustawienia strefy (Classic)",
       "update": "Aktualizuj"
     },
     "update": "Aktualizuj"

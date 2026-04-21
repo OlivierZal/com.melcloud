@@ -11,24 +11,22 @@ import { DateTime, Settings as LuxonSettings } from 'luxon'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
+import type { Api } from './types/api.mts'
+import type { GroupAtaStates } from './types/classic-ata.mts'
+import type { DeviceSettings, Settings } from './types/device-settings.mts'
+import type {
+  DriverCapabilitiesOptions,
+  DriverSetting,
+} from './types/driver-settings.mts'
+import type { FormattedErrorLog } from './types/error-log.mts'
 import type {
   LoginSetting,
   ManifestDriver,
   ManifestDriverCapabilitiesOptions,
 } from './types/manifest.mts'
 import type { MELCloudDevice, MELCloudDriver } from './types/melcloud.mts'
-import type {
-  DeviceSettings,
-  DriverCapabilitiesOptions,
-  DriverSetting,
-  FormattedErrorLog,
-  Settings,
-} from './types/settings.mts'
-import type {
-  GetAtaOptions,
-  GroupAtaStates,
-  ZoneData,
-} from './types/widgets.mts'
+import type { GetAtaOptions } from './types/widgets.mts'
+import type { ZoneData } from './types/zone.mts'
 import {
   changelog,
   fanSpeed,
@@ -530,10 +528,12 @@ export default class MELCloudApp extends App {
     }, NOTIFICATION_DELAY_MS)
   }
 
-  #createSettingManager(prefix = ''): SettingManager {
+  #createSettingManager(api: Api = 'classic'): SettingManager {
+    // Classic owns the unprefixed keys (legacy); Home is namespaced to
+    // avoid collisions (e.g. `username` → `homeUsername`).
     const prefixKey = (key: string): string =>
-      prefix === '' ? key : (
-        `${prefix}${key.charAt(0).toUpperCase()}${key.slice(1)}`
+      api === 'classic' ? key : (
+        `${api}${key.charAt(0).toUpperCase()}${key.slice(1)}`
       )
     return {
       get: (key: string): string | null | undefined =>

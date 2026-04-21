@@ -1,23 +1,31 @@
+import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
 
+import type { Api } from '../types/api.mts'
+import type { HomeySettings } from '../types/app-settings.mts'
 import type {
   DeviceSetting,
   DeviceSettings,
+  Settings,
+} from '../types/device-settings.mts'
+import type {
   DriverSetting,
+  LoginDriverSetting,
+} from '../types/driver-settings.mts'
+import type {
   FormattedErrorDetails,
   FormattedErrorLog,
-  HomeySettings,
-  LoginDriverSetting,
-  Settings,
-  ValueOf,
-} from '../types/settings.mts'
+} from '../types/error-log.mts'
 
 // ── Shared DOM helpers ──
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
-const booleanStrings: string[] = ['false', 'true'] satisfies `${boolean}`[]
+const booleanStrings: readonly string[] = [
+  'false',
+  'true',
+] satisfies readonly `${boolean}`[]
 
 const getElement = <T extends HTMLElement>(
   id: string,
@@ -159,12 +167,19 @@ const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
+/** Currently the only Home driver; expand to a readonly array if more are added. */
+const HOME_DRIVER_ID = 'home-melcloud'
+
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
 
   public constructor(homey: Homey) {
     super(homey.__('settings.devices.none'))
   }
+}
+
+class NoClassicDeviceError extends NoDeviceError {
+  public override name = 'NoClassicDeviceError'
 }
 
 const disableButton = (id: string, isDisabled = true): void => {
@@ -198,6 +213,14 @@ const withDisablingButtonPair = async (
 
 const hide = (element: HTMLDivElement, isHidden = true): void => {
   element.hidden = isHidden
+}
+
+const toggleClassicOnlySections = (isVisible: boolean): void => {
+  for (const fieldset of document.querySelectorAll<HTMLFieldSetElement>(
+    '.classic-only',
+  )) {
+    fieldset.hidden = !isVisible
+  }
 }
 
 const addTextToCheckbox = (
@@ -369,15 +392,20 @@ const getSubzones = (zone: Classic.Zone): Classic.Zone[] => [
 // ── AuthManager ──
 
 class AuthManager {
+  readonly #apiSelect: HTMLSelectElement
+
   readonly #authenticateButton: HTMLButtonElement
 
-  readonly #authenticatedSection: HTMLDivElement
+  readonly #authenticationSection: HTMLDivElement
 
-  readonly #authenticatingSection: HTMLDivElement
+  #credentialsByApi: Record<Api, Partial<LoginCredentials>> = {
+    classic: {},
+    home: {},
+  }
 
   readonly #homey: Homey
 
-  readonly #loadPostLoginCallback: () => Promise<void>
+  readonly #loadPostLoginCallback: (api: Api) => Promise<void>
 
   readonly #loginSection: HTMLDivElement
 
@@ -385,16 +413,26 @@ class AuthManager {
 
   #usernameInput: HTMLInputElement | null = null
 
-  public constructor(homey: Homey, loadPostLoginCallback: () => Promise<void>) {
+  get #currentApi(): Api {
+    return this.#apiSelect.value === 'home' ? 'home' : 'classic'
+  }
+
+  public constructor(
+    homey: Homey,
+    loadPostLoginCallback: (api: Api) => Promise<void>,
+  ) {
     this.#homey = homey
     this.#loadPostLoginCallback = loadPostLoginCallback
+    this.#apiSelect = getSelect('api')
     this.#authenticateButton = getButton('authenticate')
-    this.#authenticatedSection = getDiv('authenticated')
-    this.#authenticatingSection = getDiv('authenticating')
+    this.#authenticationSection = getDiv('authentication')
     this.#loginSection = getDiv('login')
   }
 
   public addEventListeners(): void {
+    this.#apiSelect.addEventListener('change', () => {
+      this.#syncInputsFromCredentials()
+    })
     this.#authenticateButton.addEventListener('click', () => {
       fireAndForget(this.login())
     })
@@ -402,25 +440,27 @@ class AuthManager {
 
   public createCredentialFields(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
-    {
-      password,
-      username,
-    }: { password?: string | null; username?: string | null },
+    credentials: Record<Api, Partial<LoginCredentials>>,
   ): void {
+    this.#credentialsByApi = credentials
     this.#usernameInput = this.#createCredentialInput(
       'username',
       driverSettings,
-      username,
     )
     this.#passwordInput = this.#createCredentialInput(
       'password',
       driverSettings,
-      password,
     )
+    this.#syncInputsFromCredentials()
+  }
+
+  public hideAuthenticationSection(isHidden: boolean): void {
+    hide(this.#authenticationSection, isHidden)
   }
 
   /** @alerts Displays authentication errors to the user. */
   public async login(): Promise<void> {
+    const api = this.#currentApi
     const username = this.#usernameInput?.value ?? ''
     const password = this.#passwordInput?.value ?? ''
     const failureMessage = this.#homey.__('settings.authenticate.failure')
@@ -430,41 +470,73 @@ class AuthManager {
     }
     await withDisablingButton(this.#authenticateButton.id, async () => {
       try {
-        await homeyApiPost(this.#homey, '/classic/sessions', {
+        await homeyApiPost(this.#homey, `/${api}/sessions`, {
           password,
           username,
-        } satisfies Classic.LoginCredentials)
-        await this.#loadPostLoginCallback()
+        } satisfies LoginCredentials)
+        this.#credentialsByApi[api] = { password, username }
+        await this.#loadPostLoginCallback(api)
       } catch {
         await this.#homey.alert(failureMessage)
       }
     })
   }
 
-  public showLogin(isRequired = true): void {
-    hide(this.#authenticatedSection, isRequired)
-    hide(this.#authenticatingSection, !isRequired)
+  public setAvailableApis(apis: readonly Api[]): void {
+    const allowed = new Set<string>(apis)
+    const firstAllowed = this.#updateOptionVisibility(allowed)
+    // Browser keeps the current selection even if that option is now hidden —
+    // advance to the first visible one so submission targets the right API.
+    // Note: programmatic `.value` assignment does not fire `change`, so
+    // `#syncInputsFromCredentials` below covers what the listener would miss.
+    if (!allowed.has(this.#apiSelect.value) && firstAllowed !== '') {
+      this.#apiSelect.value = firstAllowed
+    }
+    this.#syncInputsFromCredentials()
   }
 
   #createCredentialInput(
-    credentialKey: keyof Classic.LoginCredentials,
+    credentialKey: keyof LoginCredentials,
     driverSettings: Partial<Record<string, DriverSetting[]>>,
-    value?: string | null,
   ): HTMLInputElement | null {
     const loginSetting = driverSettings['login']?.find(
       (setting): setting is LoginDriverSetting => setting.id === credentialKey,
     )
     if (loginSetting) {
       const { id, placeholder, title, type } = loginSetting
-      const formControl = createInput({ id, placeholder, type, value })
+      const formControl = createInput({ id, placeholder, type })
       appendFormControl(this.#loginSection, { formControl, title })
       return formControl
     }
     return null
   }
+
+  #syncInputsFromCredentials(): void {
+    const {
+      [this.#currentApi]: { password, username },
+    } = this.#credentialsByApi
+    if (this.#usernameInput) {
+      this.#usernameInput.value = username ?? ''
+    }
+    if (this.#passwordInput) {
+      this.#passwordInput.value = password ?? ''
+    }
+  }
+
+  #updateOptionVisibility(allowed: ReadonlySet<string>): string {
+    let firstAllowed = ''
+    for (const option of this.#apiSelect.options) {
+      const isAllowed = allowed.has(option.value)
+      option.hidden = !isAllowed
+      if (isAllowed && firstAllowed === '') {
+        ;({ value: firstAllowed } = option)
+      }
+    }
+    return firstAllowed
+  }
 }
 
-// ── ErrorLogManager ──
+// ── DeviceSettingsManager ──
 class DeviceSettingsManager {
   public get deviceSettings(): Partial<DeviceSettings> {
     return this.#deviceSettings
@@ -698,7 +770,7 @@ class DeviceSettingsManager {
     }
   }
 
-  #parseFormValue(element: HTMLValueElement): ValueOf<Settings> {
+  #parseFormValue(element: HTMLValueElement): Settings[keyof Settings] {
     if (element.value) {
       if (element.type === 'checkbox') {
         return element.indeterminate ? null : element.checked
@@ -739,7 +811,7 @@ class DeviceSettingsManager {
 
   #shouldUpdate(
     id: string,
-    value: ValueOf<Settings>,
+    value: Settings[keyof Settings],
     driverId?: string,
   ): boolean {
     if (value === null) {
@@ -1259,6 +1331,10 @@ class ZoneSettingsManager {
 class SettingsApp {
   readonly #authManager: AuthManager
 
+  #authState: Record<Api, boolean> = { classic: false, home: false }
+
+  readonly #contentSection: HTMLDivElement
+
   readonly #deviceSettingsManager: DeviceSettingsManager
 
   readonly #errorLogManager: ErrorLogManager
@@ -1269,11 +1345,12 @@ class SettingsApp {
 
   public constructor(homey: Homey) {
     this.#homey = homey
+    this.#contentSection = getDiv('content')
     this.#deviceSettingsManager = new DeviceSettingsManager(homey)
     this.#zoneSettingsManager = new ZoneSettingsManager(homey)
     this.#errorLogManager = new ErrorLogManager(homey)
-    this.#authManager = new AuthManager(homey, async () =>
-      this.#loadBuildings('login'),
+    this.#authManager = new AuthManager(homey, async (api) =>
+      this.#onLogin(api),
     )
   }
 
@@ -1302,24 +1379,22 @@ class SettingsApp {
   }
 
   public async init(): Promise<void> {
-    const [{ password, username }, isAuthenticated] = await Promise.all([
-      SettingsApp.#fetchHomeySettings(this.#homey),
-      homeyApiGet<boolean>(this.#homey, '/classic/sessions'),
-      SettingsApp.#setDocumentLanguage(this.#homey),
-      this.#deviceSettingsManager.fetchDeviceSettings(),
-    ])
-    const driverSettings =
-      await this.#deviceSettingsManager.fetchDriverSettings()
-    this.#authManager.createCredentialFields(driverSettings, {
-      password,
-      username,
-    })
-    this.#addEventListeners()
-    if (isAuthenticated) {
-      await this.#loadBuildings('init')
-    } else {
-      this.#authManager.showLogin()
+    const [settings, isClassicAuthenticated, isHomeAuthenticated] =
+      await Promise.all([
+        SettingsApp.#fetchHomeySettings(this.#homey),
+        homeyApiGet<boolean>(this.#homey, '/classic/sessions'),
+        homeyApiGet<boolean>(this.#homey, '/home/sessions'),
+        SettingsApp.#setDocumentLanguage(this.#homey),
+        this.#deviceSettingsManager.fetchDeviceSettings(),
+      ])
+    this.#authState = {
+      classic: isClassicAuthenticated,
+      home: isHomeAuthenticated,
     }
+    await this.#initCredentialFields(settings)
+    this.#addEventListeners()
+    await this.#validateInitialAuthStates()
+    this.#refreshVisibility()
     this.#homey.ready()
   }
 
@@ -1334,27 +1409,35 @@ class SettingsApp {
     })
   }
 
-  #disableSettingButtons(): void {
+  #disableClassicButtons(): void {
     this.#errorLogManager.disable()
-    for (const id of ['frost_protection', 'holiday_mode', 'settings_common']) {
+    for (const id of ['frost_protection', 'holiday_mode']) {
       disableButton(`apply_${id}`)
       disableButton(`refresh_${id}`)
     }
-    for (const driverId of Object.keys(
-      this.#deviceSettingsManager.deviceSettings,
-    )) {
-      disableButton(`apply_settings_${driverId}`)
-      disableButton(`refresh_settings_${driverId}`)
+  }
+
+  #disableCommonButtonsIfNoDevices(): void {
+    if (Object.keys(this.#deviceSettingsManager.deviceSettings).length === 0) {
+      disableButton('apply_settings_common')
+      disableButton('refresh_settings_common')
     }
   }
 
-  async #fetchBuildings(): Promise<void> {
+  #disableForError(error: NoDeviceError): void {
+    if (error instanceof NoClassicDeviceError) {
+      this.#disableClassicButtons()
+    }
+    this.#disableCommonButtonsIfNoDevices()
+  }
+
+  async #fetchClassicBuildings(): Promise<void> {
     const buildings = await homeyApiGet<Classic.BuildingZone[]>(
       this.#homey,
       '/classic/buildings',
     )
     if (buildings.length === 0) {
-      throw new NoDeviceError(this.#homey)
+      throw new NoClassicDeviceError(this.#homey)
     }
     await this.#zoneSettingsManager.populateZoneOptions(buildings)
     await Promise.all([
@@ -1363,24 +1446,94 @@ class SettingsApp {
     ])
   }
 
-  async #loadBuildings(source: 'init' | 'login'): Promise<void> {
+  #getUnauthenticatedApis(): Api[] {
+    const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
+      this.#authState
+    const apis: Api[] = []
+    if (!isClassicAuthenticated) {
+      apis.push('classic')
+    }
+    if (!isHomeAuthenticated) {
+      apis.push('home')
+    }
+    return apis
+  }
+
+  #hasHomeDevices(): boolean {
+    return HOME_DRIVER_ID in this.#deviceSettingsManager.deviceSettings
+  }
+
+  async #initCredentialFields({
+    homePassword,
+    homeUsername,
+    password,
+    username,
+  }: HomeySettings): Promise<void> {
+    const driverSettings =
+      await this.#deviceSettingsManager.fetchDriverSettings()
+    // Homey Settings may return `null` for a cleared key; coerce to
+    // `undefined` to match `Partial<LoginCredentials>`.
+    this.#authManager.createCredentialFields(driverSettings, {
+      classic: {
+        password: password ?? undefined,
+        username: username ?? undefined,
+      },
+      home: {
+        password: homePassword ?? undefined,
+        username: homeUsername ?? undefined,
+      },
+    })
+  }
+
+  /** @alerts Displays post-login errors to the user. */
+  async #onLogin(api: Api): Promise<void> {
+    this.#authState[api] = true
     try {
-      await this.#fetchBuildings()
-      this.#authManager.showLogin(false)
-    } catch (error) {
-      if (source === 'init') {
-        // Session expired or no devices: fall back to login
-        this.#authManager.showLogin()
-        return
+      if (api === 'classic') {
+        await this.#fetchClassicBuildings()
+      } else if (!this.#hasHomeDevices()) {
+        throw new NoDeviceError(this.#homey)
       }
-      // Post-login: always hide login form
-      this.#authManager.showLogin(false)
+    } catch (error) {
       if (error instanceof NoDeviceError) {
-        this.#disableSettingButtons()
+        this.#disableForError(error)
       }
       await this.#homey.alert(
         error instanceof NoDeviceError ? error.message : getErrorMessage(error),
       )
+    }
+    this.#refreshVisibility()
+  }
+
+  #refreshVisibility(): void {
+    const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
+      this.#authState
+    this.#authManager.hideAuthenticationSection(
+      isClassicAuthenticated && isHomeAuthenticated,
+    )
+    hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
+    toggleClassicOnlySections(isClassicAuthenticated)
+    this.#authManager.setAvailableApis(this.#getUnauthenticatedApis())
+  }
+
+  async #validateInitialAuthStates(): Promise<void> {
+    if (this.#authState.classic) {
+      await this.#validateInitialClassicAuth()
+    }
+    if (this.#authState.home && !this.#hasHomeDevices()) {
+      this.#disableForError(new NoDeviceError(this.#homey))
+    }
+  }
+
+  async #validateInitialClassicAuth(): Promise<void> {
+    try {
+      await this.#fetchClassicBuildings()
+    } catch (error) {
+      if (error instanceof NoClassicDeviceError) {
+        this.#disableForError(error)
+      } else {
+        this.#authState.classic = false
+      }
     }
   }
 }

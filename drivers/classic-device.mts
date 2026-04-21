@@ -10,8 +10,8 @@ import type {
   OperationalCapabilityTagEntry,
   SetCapabilities,
 } from '../types/capabilities.mts'
+import type { Settings } from '../types/device-settings.mts'
 import type { DeviceDetails } from '../types/device.mts'
-import type { Settings } from '../types/settings.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
 import { type EnergyReportConfig, EnergyReport } from './base-report.mts'

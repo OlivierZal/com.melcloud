@@ -1,10 +1,7 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type {
-  DriverCapabilitiesOptions,
-  Settings,
-  ValueOf,
-} from '../../../types/settings.mts'
+import type { Settings } from '../../../types/device-settings.mts'
+import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import { ClassicTemperature, classicCoolModes } from './constants.mts'
 import {
   type HTMLValueElement,
@@ -131,7 +128,9 @@ const clampNumericInput = ({
   return Math.min(Math.max(numberValue, newMin), newMax)
 }
 
-const parseFormValue = (element: HTMLValueElement): ValueOf<Settings> => {
+const parseFormValue = (
+  element: HTMLValueElement,
+): Settings[keyof Settings] => {
   if (element.value) {
     if (element.type === 'checkbox') {
       return element.indeterminate ? null : element.checked

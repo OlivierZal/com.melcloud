@@ -69,6 +69,14 @@ input[type='datetime-local']:focus {
   pointer-events: none;
 }
 
+/* Ensure `hidden` works on fieldsets: the UA `[hidden] { display: none }`
+   rule ties in specificity (0,1,0) with `.homey-form-fieldset`'s explicit
+   `display`, and the latter wins by source order. Bump specificity to
+   (0,1,1) with a tag selector so the `hidden` attribute is authoritative. */
+fieldset[hidden] {
+  display: none;
+}
+
 /* Two-column grid for button pairs */
 .container {
   display: grid;

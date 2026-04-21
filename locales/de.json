@@ -25,10 +25,10 @@
     "devicesAta": {
       "autoAdjust": "Klimaanlagen-Temperatur automatisch anpassen",
       "configure": "Konfigurieren",
-      "legend": "Luft-Luft-Geräteeinstellungen"
+      "legend": "Luft-Luft-Geräteeinstellungen (Classic)"
     },
     "devicesAtw": {
-      "legend": "Luft-Wasser-Geräteeinstellungen"
+      "legend": "Luft-Wasser-Geräteeinstellungen (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -43,7 +43,7 @@
         "234": "Fehler",
         "plural": "Fehler"
       },
-      "legend": "Fehlerprotokoll",
+      "legend": "Fehlerprotokoll (Classic)",
       "period": "Seit __from__:",
       "see": "Alle Fehler anzeigen",
       "since": "seit"
@@ -64,7 +64,7 @@
     "success": "Aktualisierung erfolgreich.",
     "title": "MELCloud-Einstellungen",
     "zones": {
-      "legend": "Zoneneinstellungen",
+      "legend": "Zoneneinstellungen (Classic)",
       "update": "Aktualisieren"
     },
     "update": "Aktualisieren"
