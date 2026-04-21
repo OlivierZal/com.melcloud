@@ -42,7 +42,7 @@
         "234": "fejl",
         "plural": "fejl"
       },
-      "legend": "Fejlhistorik",
+      "legend": "Fejlhistorik (Classic)",
       "period": "Siden __from__:",
       "see": "Se alle fejl",
       "since": "siden den"
@@ -64,7 +64,7 @@
     "title": "MELCloud-indstillinger",
     "update": "Opdater",
     "zones": {
-      "legend": "Zonesindstillinger"
+      "legend": "Zonesindstillinger (Classic)"
     }
   },
   "warnings": {

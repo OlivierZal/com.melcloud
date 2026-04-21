@@ -42,7 +42,7 @@
         "234": "fel",
         "plural": "fel"
       },
-      "legend": "Felhistorik",
+      "legend": "Felhistorik (Classic)",
       "period": "Sedan __from__:",
       "see": "Se alla fel",
       "since": "sedan"
@@ -64,7 +64,7 @@
     "title": "MELCloud-inställningar",
     "update": "Uppdatera",
     "zones": {
-      "legend": "Zonsinställningar"
+      "legend": "Zonsinställningar (Classic)"
     }
   },
   "warnings": {

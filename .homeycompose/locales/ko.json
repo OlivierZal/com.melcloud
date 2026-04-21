@@ -42,7 +42,7 @@
         "234": "개 오류",
         "plural": "개 오류"
       },
-      "legend": "오류 기록",
+      "legend": "오류 기록 (Classic)",
       "period": "__from__ 이후:",
       "see": "모든 오류 보기",
       "since": "이후"
@@ -64,7 +64,7 @@
     "title": "MELCloud 설정",
     "update": "업데이트",
     "zones": {
-      "legend": "구역 설정"
+      "legend": "구역 설정 (Classic)"
     }
   },
   "warnings": {

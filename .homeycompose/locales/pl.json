@@ -42,7 +42,7 @@
         "234": "błędy",
         "plural": "błędów"
       },
-      "legend": "Historia błędów",
+      "legend": "Historia błędów (Classic)",
       "period": "Od __from__:",
       "see": "Pokaż wszystkie błędy",
       "since": "od"
@@ -64,7 +64,7 @@
     "title": "Ustawienia MELCloud",
     "update": "Aktualizuj",
     "zones": {
-      "legend": "Ustawienia strefy"
+      "legend": "Ustawienia strefy (Classic)"
     }
   },
   "warnings": {

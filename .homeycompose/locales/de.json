@@ -42,7 +42,7 @@
         "234": "Fehler",
         "plural": "Fehler"
       },
-      "legend": "Fehlerprotokoll",
+      "legend": "Fehlerprotokoll (Classic)",
       "period": "Seit __from__:",
       "see": "Alle Fehler anzeigen",
       "since": "seit"
@@ -64,7 +64,7 @@
     "title": "MELCloud-Einstellungen",
     "update": "Aktualisieren",
     "zones": {
-      "legend": "Zoneneinstellungen"
+      "legend": "Zoneneinstellungen (Classic)"
     }
   },
   "warnings": {

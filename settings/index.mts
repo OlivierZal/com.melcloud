@@ -224,10 +224,12 @@ const disableHomeButtons = (): void => {
 }
 
 const toggleClassicOnlySections = (isVisible: boolean): void => {
+  // `[hidden]` is `display: none` via UA stylesheet, which `homey-form-fieldset`
+  // overrides with an explicit `display` — use inline `style.display` instead.
   for (const fieldset of document.querySelectorAll<HTMLFieldSetElement>(
     '.classic-only',
   )) {
-    fieldset.hidden = !isVisible
+    fieldset.style.display = isVisible ? '' : 'none'
   }
 }
 

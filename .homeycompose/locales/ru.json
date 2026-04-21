@@ -42,7 +42,7 @@
         "234": "ошибки",
         "plural": "ошибок"
       },
-      "legend": "Журнал ошибок",
+      "legend": "Журнал ошибок (Classic)",
       "period": "С __from__:",
       "see": "Показать все ошибки",
       "since": "с"
@@ -64,7 +64,7 @@
     "title": "Настройки MELCloud",
     "update": "Обновить",
     "zones": {
-      "legend": "Настройки зоны"
+      "legend": "Настройки зоны (Classic)"
     }
   },
   "warnings": {

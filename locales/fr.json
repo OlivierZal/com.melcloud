@@ -43,7 +43,7 @@
         "234": "erreurs",
         "plural": "erreurs"
       },
-      "legend": "Historique des erreurs",
+      "legend": "Historique des erreurs (Classic)",
       "period": "Depuis le __from__ :",
       "see": "Voir les erreurs",
       "since": "depuis le"
@@ -64,7 +64,7 @@
     "success": "La mise à jour a réussi.",
     "title": "Paramètres de MELCloud",
     "zones": {
-      "legend": "Paramètres des zones",
+      "legend": "Paramètres des zones (Classic)",
       "update": "Mettre à jour"
     },
     "update": "Mettre à jour"

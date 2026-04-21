@@ -42,7 +42,7 @@
         "234": "fouten",
         "plural": "fouten"
       },
-      "legend": "Foutenoverzicht",
+      "legend": "Foutenoverzicht (Classic)",
       "period": "Sinds __from__:",
       "see": "Bekijk alle fouten",
       "since": "sinds"
@@ -64,7 +64,7 @@
     "title": "MELCloud-instellingen",
     "update": "Updaten",
     "zones": {
-      "legend": "Zonesinstellingen"
+      "legend": "Zonesinstellingen (Classic)"
     }
   },
   "warnings": {
