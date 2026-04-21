@@ -1,8 +1,6 @@
 {
   "errors": {
     "deviceNotFound": "Nie znaleziono urządzenia.",
-    "rateLimit": "Zbyt wiele żądań. Spróbuj ponownie o __time__.",
-    "rateLimitUnknown": "Zbyt wiele żądań. Spróbuj ponownie później.",
     "zoneNotFound": "Nie znaleziono strefy."
   },
   "settings": {

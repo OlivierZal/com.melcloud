@@ -1,8 +1,6 @@
 {
   "errors": {
     "deviceNotFound": "Appareil introuvable.",
-    "rateLimit": "Trop de requêtes. Veuillez réessayer à __time__.",
-    "rateLimitUnknown": "Trop de requêtes. Veuillez réessayer plus tard.",
     "zoneNotFound": "Zone introuvable."
   },
   "settings": {

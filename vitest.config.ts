@@ -23,6 +23,7 @@ export default defineConfig({
         'drivers/index.mts',
         'files.mts',
         'settings/**/*.mts',
+        'types/api.mts',
         'types/app-settings.mts',
         'types/capabilities.mts',
         'types/driver-settings.mts',

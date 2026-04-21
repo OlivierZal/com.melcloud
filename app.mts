@@ -1,18 +1,17 @@
-import {
-  type DeviceType,
-  type Hour,
-  type Logger,
-  type LoginCredentials,
-  type ReportChartLineOptions,
-  type ReportChartPieOptions,
-  type SettingManager,
-  type SyncCallback,
-  RateLimitError,
+import type {
+  DeviceType,
+  Hour,
+  Logger,
+  ReportChartLineOptions,
+  ReportChartPieOptions,
+  SettingManager,
+  SyncCallback,
 } from '@olivierzal/melcloud-api'
 import { DateTime, Settings as LuxonSettings } from 'luxon'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
+import type { Api } from './types/api.mts'
 import type { DeviceSettings, Settings } from './types/app-settings.mts'
 import type { GroupAtaStates } from './types/classic-ata.mts'
 import type {
@@ -187,14 +186,6 @@ export default class MELCloudApp extends App {
     await Promise.resolve()
   }
 
-  public async classicAuthenticate(
-    credentials: LoginCredentials,
-  ): Promise<void> {
-    return this.#withRateLimitHandling(async () =>
-      this.#classicApi.authenticate(credentials),
-    )
-  }
-
   public getClassicAtaCapabilities(): [
     keyof Classic.GroupState & keyof Classic.ListDeviceDataAta,
     DriverCapabilitiesOptions,
@@ -245,17 +236,14 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData): Promise<Classic.GroupState> {
-    return this.#withRateLimitHandling(async () =>
-      this.getClassicFacade(zoneType, zoneId).getGroup(),
-    )
+    return this.getClassicFacade(zoneType, zoneId).getGroup()
   }
 
   public async getClassicErrorLog(
     query: Classic.ErrorLogQuery,
   ): Promise<FormattedErrorLog> {
-    const { errors, fromDate, ...rest } = await this.#withRateLimitHandling(
-      async () => this.#classicApi.getErrorLog(query),
-    )
+    const { errors, fromDate, ...rest } =
+      await this.#classicApi.getErrorLog(query)
     const locale = this.homey.i18n.getLanguage()
     const timeZone = this.homey.clock.getTimezone()
     // Reused across all entries instead of rebuilding a DateTime + formatter per call.
@@ -311,18 +299,14 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData): Promise<Classic.FrostProtectionData> {
-    return this.#withRateLimitHandling(async () =>
-      this.getClassicFacade(zoneType, zoneId).getFrostProtection(),
-    )
+    return this.getClassicFacade(zoneType, zoneId).getFrostProtection()
   }
 
   public async getClassicHolidayMode({
     zoneId,
     zoneType,
   }: ZoneData): Promise<Classic.HolidayModeData> {
-    return this.#withRateLimitHandling(async () =>
-      this.getClassicFacade(zoneType, zoneId).getHolidayMode(),
-    )
+    return this.getClassicFacade(zoneType, zoneId).getHolidayMode()
   }
 
   public async getClassicHourlyTemperatures({
@@ -332,8 +316,8 @@ export default class MELCloudApp extends App {
     deviceId: string
     hour?: Hour
   }): Promise<ReportChartLineOptions> {
-    return this.#withRateLimitHandling(async () =>
-      this.getClassicFacade('devices', deviceId).getHourlyTemperatures(hour),
+    return this.getClassicFacade('devices', deviceId).getHourlyTemperatures(
+      hour,
     )
   }
 
@@ -344,10 +328,8 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
-    return this.#withRateLimitHandling(async () =>
-      this.getClassicFacade('devices', deviceId).getOperationModes(
-        createDateRange(days),
-      ),
+    return this.getClassicFacade('devices', deviceId).getOperationModes(
+      createDateRange(days),
     )
   }
 
@@ -358,9 +340,7 @@ export default class MELCloudApp extends App {
     deviceId: string
     hour?: Hour
   }): Promise<ReportChartLineOptions> {
-    return this.#withRateLimitHandling(async () =>
-      this.getClassicFacade('devices', deviceId).getSignalStrength(hour),
-    )
+    return this.getClassicFacade('devices', deviceId).getSignalStrength(hour)
   }
 
   public async getClassicTemperatures({
@@ -370,10 +350,8 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    return this.#withRateLimitHandling(async () =>
-      this.getClassicFacade('devices', deviceId).getTemperatures(
-        createDateRange(days),
-      ),
+    return this.getClassicFacade('devices', deviceId).getTemperatures(
+      createDateRange(days),
     )
   }
 
@@ -426,20 +404,15 @@ export default class MELCloudApp extends App {
     return this.#homeFacadeManager.get(model)
   }
 
-  public async homeAuthenticate(credentials: LoginCredentials): Promise<void> {
-    return this.#withRateLimitHandling(async () =>
-      this.#homeApi.authenticate(credentials),
-    )
-  }
-
   public async updateClassicAtaState({
     state,
     zoneId,
     zoneType,
   }: ZoneData & { state: Classic.GroupState }): Promise<void> {
-    const { AttributeErrors } = await this.#withRateLimitHandling(async () =>
-      this.getClassicFacade(zoneType, zoneId).updateGroupState(state),
-    )
+    const { AttributeErrors } = await this.getClassicFacade(
+      zoneType,
+      zoneId,
+    ).updateGroupState(state)
     throwOnErrors(AttributeErrors)
   }
 
@@ -448,9 +421,10 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { settings: Classic.FrostProtectionQuery }): Promise<void> {
-    const { AttributeErrors } = await this.#withRateLimitHandling(async () =>
-      this.getClassicFacade(zoneType, zoneId).updateFrostProtection(settings),
-    )
+    const { AttributeErrors } = await this.getClassicFacade(
+      zoneType,
+      zoneId,
+    ).updateFrostProtection(settings)
     throwOnErrors(AttributeErrors)
   }
 
@@ -459,9 +433,10 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData & { settings: Classic.HolidayModeQuery }): Promise<void> {
-    const { AttributeErrors } = await this.#withRateLimitHandling(async () =>
-      this.getClassicFacade(zoneType, zoneId).updateHolidayMode(settings),
-    )
+    const { AttributeErrors } = await this.getClassicFacade(
+      zoneType,
+      zoneId,
+    ).updateHolidayMode(settings)
     throwOnErrors(AttributeErrors)
   }
 
@@ -553,7 +528,7 @@ export default class MELCloudApp extends App {
     }, NOTIFICATION_DELAY_MS)
   }
 
-  #createSettingManager(api: 'classic' | 'home' = 'classic'): SettingManager {
+  #createSettingManager(api: Api = 'classic'): SettingManager {
     // Classic owns the unprefixed keys (legacy); Home is namespaced to
     // avoid collisions (e.g. `username` → `homeUsername`).
     const prefixKey = (key: string): string =>
@@ -689,23 +664,5 @@ export default class MELCloudApp extends App {
             name.toLowerCase().includes(query.toLowerCase()),
           ),
       )
-  }
-
-  async #withRateLimitHandling<T>(fn: () => Promise<T>): Promise<T> {
-    try {
-      return await fn()
-    } catch (error) {
-      if (error instanceof RateLimitError) {
-        throw new Error(
-          error.unblockAt === null ?
-            this.homey.__('errors.rateLimitUnknown')
-          : this.homey.__('errors.rateLimit', {
-              time: error.unblockAt.toFormat('HH:mm'),
-            }),
-          { cause: error },
-        )
-      }
-      throw error
-    }
   }
 }

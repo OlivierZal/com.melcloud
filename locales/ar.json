@@ -1,9 +1,7 @@
 {
   "errors": {
     "deviceNotFound": "لم يتم العثور على الجهاز.",
-    "zoneNotFound": "لم يتم العثور على المنطقة.",
-    "rateLimit": "طلبات كثيرة جداً. يرجى المحاولة مرة أخرى في __time__.",
-    "rateLimitUnknown": "طلبات كثيرة جداً. يرجى المحاولة مرة أخرى لاحقاً."
+    "zoneNotFound": "لم يتم العثور على المنطقة."
   },
   "settings": {
     "authenticate": {

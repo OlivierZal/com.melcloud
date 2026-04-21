@@ -2,6 +2,7 @@ import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
 
+import type { Api } from '../types/api.mts'
 import type {
   DeviceSetting,
   DeviceSettings,
@@ -162,8 +163,6 @@ const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
-
-type Api = 'classic' | 'home'
 
 interface Credentials {
   readonly password?: string | null

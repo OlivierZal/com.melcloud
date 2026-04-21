@@ -16,7 +16,7 @@ const api = {
     body: LoginCredentials
     homey: Homey
   }): Promise<void> {
-    return app.classicAuthenticate(body)
+    return app.classicApi.authenticate(body)
   },
   getClassicBuildings(): Classic.BuildingZone[] {
     return getClassicBuildings()
@@ -68,7 +68,7 @@ const api = {
     body: LoginCredentials
     homey: Homey
   }): Promise<void> {
-    return app.homeAuthenticate(body)
+    return app.homeApi.authenticate(body)
   },
   isClassicAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
     return app.classicApi.isAuthenticated()

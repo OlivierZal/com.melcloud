@@ -24,16 +24,20 @@ const mockClassicAuthenticate = vi.fn<() => Promise<void>>()
 const mockHomeAuthenticate = vi.fn<() => Promise<void>>()
 
 const mockApp = {
-  classicApi: { isAuthenticated: mockIsAuthenticated },
-  classicAuthenticate: mockClassicAuthenticate,
+  classicApi: {
+    authenticate: mockClassicAuthenticate,
+    isAuthenticated: mockIsAuthenticated,
+  },
   getClassicErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
   getClassicFrostProtection:
     vi.fn<() => Promise<Classic.FrostProtectionData>>(),
   getClassicHolidayMode: vi.fn<() => Promise<Classic.HolidayModeData>>(),
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
-  homeApi: { isAuthenticated: mockIsHomeAuthenticated },
-  homeAuthenticate: mockHomeAuthenticate,
+  homeApi: {
+    authenticate: mockHomeAuthenticate,
+    isAuthenticated: mockIsHomeAuthenticated,
+  },
   updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
   updateClassicHolidayMode: vi.fn<() => Promise<void>>(),
   updateDeviceSettings: vi.fn<() => Promise<void>>(),

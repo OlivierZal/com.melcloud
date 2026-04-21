@@ -1,9 +1,7 @@
 {
   "errors": {
     "deviceNotFound": "Dispositivo no encontrado.",
-    "zoneNotFound": "Zona no encontrada.",
-    "rateLimit": "Demasiadas solicitudes. Por favor, inténtelo de nuevo a las __time__.",
-    "rateLimitUnknown": "Demasiadas solicitudes. Por favor, inténtelo de nuevo más tarde."
+    "zoneNotFound": "Zona no encontrada."
   },
   "settings": {
     "authenticate": {

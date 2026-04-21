@@ -1,8 +1,6 @@
 {
   "errors": {
     "deviceNotFound": "Dispositivo non trovato.",
-    "rateLimit": "Troppe richieste. Riprova alle __time__.",
-    "rateLimitUnknown": "Troppe richieste. Riprova più tardi.",
     "zoneNotFound": "Zona non trovata."
   },
   "settings": {
