@@ -165,7 +165,11 @@ const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
 type Api = 'classic' | 'home'
 
-const API_LABELS: Record<Api, string> = { classic: 'Classic', home: 'Home' }
+interface Credentials {
+  readonly password?: string | null
+  readonly username?: string | null
+}
+
 const HOME_DRIVER_ID = 'home-melcloud'
 const CLASSIC_DRIVER_IDS = ['melcloud', 'melcloud_atw', 'melcloud_erv'] as const
 
@@ -218,18 +222,11 @@ const hide = (element: HTMLDivElement, isHidden = true): void => {
   element.hidden = isHidden
 }
 
-const disableHomeButtons = (): void => {
-  disableButton(`apply_settings_${HOME_DRIVER_ID}`)
-  disableButton(`refresh_settings_${HOME_DRIVER_ID}`)
-}
-
 const toggleClassicOnlySections = (isVisible: boolean): void => {
-  // `[hidden]` is `display: none` via UA stylesheet, which `homey-form-fieldset`
-  // overrides with an explicit `display` — use inline `style.display` instead.
   for (const fieldset of document.querySelectorAll<HTMLFieldSetElement>(
     '.classic-only',
   )) {
-    fieldset.style.display = isVisible ? '' : 'none'
+    fieldset.hidden = !isVisible
   }
 }
 
@@ -408,10 +405,7 @@ class AuthManager {
 
   readonly #authenticationSection: HTMLDivElement
 
-  #credentialsByApi: Record<
-    Api,
-    { password: string | null; username: string | null }
-  > = {
+  #credentialsByApi: Record<Api, Credentials> = {
     classic: { password: null, username: null },
     home: { password: null, username: null },
   }
@@ -453,21 +447,9 @@ class AuthManager {
 
   public createCredentialFields(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
-    credentials: Record<
-      Api,
-      { password?: string | null; username?: string | null }
-    >,
+    credentials: Record<Api, Credentials>,
   ): void {
-    this.#credentialsByApi = {
-      classic: {
-        password: credentials.classic.password ?? null,
-        username: credentials.classic.username ?? null,
-      },
-      home: {
-        password: credentials.home.password ?? null,
-        username: credentials.home.username ?? null,
-      },
-    }
+    this.#credentialsByApi = credentials
     this.#usernameInput = this.#createCredentialInput(
       'username',
       driverSettings,
@@ -508,9 +490,12 @@ class AuthManager {
   }
 
   public setAvailableApis(apis: readonly Api[]): void {
-    this.#apiSelect.replaceChildren()
-    for (const api of apis) {
-      this.#apiSelect.append(new Option(API_LABELS[api], api))
+    const allowed = new Set<string>(apis)
+    const firstAllowed = this.#updateOptionVisibility(allowed)
+    // Browser keeps the current selection even if that option is now hidden;
+    // advance to the first visible one so submission targets the right API.
+    if (!allowed.has(this.#apiSelect.value) && firstAllowed !== '') {
+      this.#apiSelect.value = firstAllowed
     }
     this.#syncInputsFromCredentials()
   }
@@ -542,9 +527,21 @@ class AuthManager {
       this.#passwordInput.value = password ?? ''
     }
   }
+
+  #updateOptionVisibility(allowed: ReadonlySet<string>): string {
+    let firstAllowed = ''
+    for (const option of this.#apiSelect.options) {
+      const isAllowed = allowed.has(option.value)
+      option.hidden = !isAllowed
+      if (isAllowed && firstAllowed === '') {
+        ;({ value: firstAllowed } = option)
+      }
+    }
+    return firstAllowed
+  }
 }
 
-// ── ErrorLogManager ──
+// ── DeviceSettingsManager ──
 class DeviceSettingsManager {
   public get deviceSettings(): Partial<DeviceSettings> {
     return this.#deviceSettings
@@ -1443,7 +1440,8 @@ class SettingsApp {
       this.#disableClassicButtons()
     }
     if (error instanceof NoHomeDeviceError) {
-      disableHomeButtons()
+      disableButton(`apply_settings_${HOME_DRIVER_ID}`)
+      disableButton(`refresh_settings_${HOME_DRIVER_ID}`)
     }
     this.#disableCommonButtonsIfNoDevices()
   }
