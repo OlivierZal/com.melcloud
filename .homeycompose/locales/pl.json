@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Zaloguj się",
       "failure": "Uwierzytelnianie nie powiodło się.",
-      "legend": "Dane logowania",
-      "emptyFields": "Wymagana nazwa użytkownika i hasło."
+      "legend": "Dane logowania"
     },
     "boolean": {
       "false": "Nie",
@@ -20,11 +19,7 @@
         "nothing": "Brak zmian do zastosowania."
       },
       "legend": "Ustawienia urządzenia",
-      "none": "Dodaj urządzenie, aby odblokować wszystkie ustawienia aplikacji!",
-      "noneFor": {
-        "classic": "Nie znaleziono urządzenia Classic. Dodaj jedno, aby odblokować ustawienia specyficzne dla Classic.",
-        "home": "Nie znaleziono urządzenia Home. Dodaj jedno, aby odblokować ustawienia specyficzne dla Home."
-      }
+      "none": "Dodaj urządzenie, aby odblokować wszystkie ustawienia aplikacji!"
     },
     "devicesAta": {
       "autoAdjust": "Automatyczna regulacja temperatury klimatyzacji",

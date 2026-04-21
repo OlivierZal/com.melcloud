@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "로그인",
       "failure": "인증에 실패했습니다.",
-      "legend": "로그인 정보",
-      "emptyFields": "사용자 이름과 비밀번호가 필요합니다."
+      "legend": "로그인 정보"
     },
     "boolean": {
       "false": "아니요",
@@ -21,10 +20,6 @@
       "apply": {
         "button": "모든 기기에 적용",
         "nothing": "적용할 변경 사항이 없습니다."
-      },
-      "noneFor": {
-        "classic": "Classic 장치를 찾을 수 없습니다. Classic 전용 설정을 사용하려면 장치를 추가하세요.",
-        "home": "Home 장치를 찾을 수 없습니다. Home 전용 설정을 사용하려면 장치를 추가하세요."
       }
     },
     "devicesAta": {

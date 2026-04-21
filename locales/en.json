@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Log in",
       "failure": "Authentication failed.",
-      "legend": "Credentials",
-      "emptyFields": "Username and password are required."
+      "legend": "Credentials"
     },
     "boolean": {
       "false": "No",
@@ -21,10 +20,6 @@
       "apply": {
         "button": "Apply to all devices",
         "nothing": "No change to apply."
-      },
-      "noneFor": {
-        "classic": "No Classic device found. Add one to unlock Classic-specific settings.",
-        "home": "No Home device found. Add one to unlock Home-specific settings."
       }
     },
     "devicesAta": {

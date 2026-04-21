@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Log ind",
       "failure": "Godkendelse mislykkedes.",
-      "legend": "Brugernavn og adgangskode",
-      "emptyFields": "Brugernavn og adgangskode er påkrævede."
+      "legend": "Brugernavn og adgangskode"
     },
     "boolean": {
       "false": "Nej",
@@ -21,10 +20,6 @@
       "apply": {
         "button": "Anvend på alle enheder",
         "nothing": "Ingen ændringer at anvende."
-      },
-      "noneFor": {
-        "classic": "Ingen Classic-enhed fundet. Tilføj en for at aktivere Classic-specifikke indstillinger.",
-        "home": "Ingen Home-enhed fundet. Tilføj en for at aktivere Home-specifikke indstillinger."
       }
     },
     "devicesAta": {

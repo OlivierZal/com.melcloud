@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Inloggen",
       "failure": "Authenticatie mislukt.",
-      "legend": "Referenties",
-      "emptyFields": "Gebruikersnaam en wachtwoord zijn vereist."
+      "legend": "Referenties"
     },
     "boolean": {
       "false": "Nee",
@@ -20,11 +19,7 @@
         "nothing": "Geen wijziging om toe te passen."
       },
       "legend": "Apparaatinstellingen",
-      "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!",
-      "noneFor": {
-        "classic": "Geen Classic-apparaat gevonden. Voeg er een toe om Classic-specifieke instellingen te activeren.",
-        "home": "Geen Home-apparaat gevonden. Voeg er een toe om Home-specifieke instellingen te activeren."
-      }
+      "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!"
     },
     "devicesAta": {
       "autoAdjust": "Auto-afstellen airco-temperatuur",

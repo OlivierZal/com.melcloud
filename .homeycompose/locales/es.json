@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Iniciar sesión",
       "failure": "La autenticación falló.",
-      "legend": "Credenciales",
-      "emptyFields": "Nombre de usuario y contraseña son obligatorios."
+      "legend": "Credenciales"
     },
     "boolean": {
       "false": "No",
@@ -20,11 +19,7 @@
         "nothing": "No hay cambios que aplicar."
       },
       "legend": "Configuración de los dispositivos",
-      "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!",
-      "noneFor": {
-        "classic": "No se encontró ningún dispositivo Classic. Agregue uno para habilitar la configuración específica de Classic.",
-        "home": "No se encontró ningún dispositivo Home. Agregue uno para habilitar la configuración específica de Home."
-      }
+      "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!"
     },
     "devicesAta": {
       "autoAdjust": "Autoajustar la temperatura del enfriamiento",

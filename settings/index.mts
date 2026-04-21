@@ -172,13 +172,7 @@ class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
 
   public constructor(homey: Homey, api: Api | null = null) {
-    super(
-      homey.__(
-        api === null ?
-          'settings.devices.none'
-        : `settings.devices.noneFor.${api}`,
-      ),
-    )
+    super(homey.__('settings.devices.none'))
     this.api = api
   }
 }
@@ -464,10 +458,9 @@ class AuthManager {
     const api = this.#currentApi
     const username = this.#usernameInput?.value ?? ''
     const password = this.#passwordInput?.value ?? ''
+    const failureMessage = this.#homey.__('settings.authenticate.failure')
     if (!username || !password) {
-      fireAndForget(
-        this.#homey.alert(this.#homey.__('settings.authenticate.emptyFields')),
-      )
+      fireAndForget(this.#homey.alert(failureMessage))
       return
     }
     await withDisablingButton(this.#authenticateButton.id, async () => {
@@ -479,7 +472,7 @@ class AuthManager {
         this.#credentialsByApi[api] = { password, username }
         await this.#loadPostLoginCallback(api)
       } catch {
-        await this.#homey.alert(this.#homey.__('settings.authenticate.failure'))
+        await this.#homey.alert(failureMessage)
       }
     })
   }
@@ -1465,19 +1458,24 @@ class SettingsApp {
     return HOME_DRIVER_ID in this.#deviceSettingsManager.deviceSettings
   }
 
-  async #initCredentialFields(settings: HomeySettings): Promise<void> {
+  async #initCredentialFields({
+    homePassword,
+    homeUsername,
+    password,
+    username,
+  }: HomeySettings): Promise<void> {
     const driverSettings =
       await this.#deviceSettingsManager.fetchDriverSettings()
     // Homey Settings may return `null` for a cleared key; coerce to
     // `undefined` to match `Partial<LoginCredentials>`.
     this.#authManager.createCredentialFields(driverSettings, {
       classic: {
-        password: settings.password ?? undefined,
-        username: settings.username ?? undefined,
+        password: password ?? undefined,
+        username: username ?? undefined,
       },
       home: {
-        password: settings.homePassword ?? undefined,
-        username: settings.homeUsername ?? undefined,
+        password: homePassword ?? undefined,
+        username: homeUsername ?? undefined,
       },
     })
   }

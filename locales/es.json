@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Iniciar sesión",
       "failure": "La autenticación falló.",
-      "legend": "Credenciales",
-      "emptyFields": "Nombre de usuario y contraseña son obligatorios."
+      "legend": "Credenciales"
     },
     "boolean": {
       "false": "No",
@@ -21,10 +20,6 @@
       "apply": {
         "button": "Aplicar a todos los dispositivos",
         "nothing": "No hay cambios que aplicar."
-      },
-      "noneFor": {
-        "classic": "No se encontró ningún dispositivo Classic. Agregue uno para habilitar la configuración específica de Classic.",
-        "home": "No se encontró ningún dispositivo Home. Agregue uno para habilitar la configuración específica de Home."
       }
     },
     "devicesAta": {

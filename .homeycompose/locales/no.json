@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Logg inn",
       "failure": "Autentisering mislyktes.",
-      "legend": "Innloggingsinformasjon",
-      "emptyFields": "Brukernavn og passord er påkrevd."
+      "legend": "Innloggingsinformasjon"
     },
     "boolean": {
       "false": "Nei",
@@ -20,11 +19,7 @@
         "nothing": "Ingen endring å bruke."
       },
       "legend": "Enhetsinnstillinger",
-      "none": "Legg til en enhet for å låse opp alle appinnstillingene!",
-      "noneFor": {
-        "classic": "Ingen Classic-enhet funnet. Legg til en for å aktivere Classic-spesifikke innstillinger.",
-        "home": "Ingen Home-enhet funnet. Legg til en for å aktivere Home-spesifikke innstillinger."
-      }
+      "none": "Legg til en enhet for å låse opp alle appinnstillingene!"
     },
     "devicesAta": {
       "autoAdjust": "Autojuster aircondition-temperaturen",

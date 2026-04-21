@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Se connecter",
       "failure": "L'authentification a échoué.",
-      "legend": "Identifiants",
-      "emptyFields": "Nom d'utilisateur et mot de passe requis."
+      "legend": "Identifiants"
     },
     "boolean": {
       "false": "Non",
@@ -21,10 +20,6 @@
       "apply": {
         "button": "Appliquer à tous les appareils",
         "nothing": "Aucun changement à appliquer."
-      },
-      "noneFor": {
-        "classic": "Aucun appareil Classic trouvé. Ajoutez-en un pour activer les paramètres spécifiques à Classic.",
-        "home": "Aucun appareil Home trouvé. Ajoutez-en un pour activer les paramètres spécifiques à Home."
       }
     },
     "devicesAta": {

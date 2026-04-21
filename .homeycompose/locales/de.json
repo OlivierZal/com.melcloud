@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Anmelden",
       "failure": "Authentifizierung fehlgeschlagen.",
-      "legend": "Anmeldedaten",
-      "emptyFields": "Benutzername und Passwort sind erforderlich."
+      "legend": "Anmeldedaten"
     },
     "boolean": {
       "false": "Nein",
@@ -20,11 +19,7 @@
         "nothing": "Keine Änderung zum Anwenden."
       },
       "legend": "Geräteeinstellungen",
-      "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!",
-      "noneFor": {
-        "classic": "Kein Classic-Gerät gefunden. Fügen Sie eines hinzu, um Classic-spezifische Einstellungen zu aktivieren.",
-        "home": "Kein Home-Gerät gefunden. Fügen Sie eines hinzu, um Home-spezifische Einstellungen zu aktivieren."
-      }
+      "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!"
     },
     "devicesAta": {
       "autoAdjust": "Klimaanlagen-Temperatur automatisch anpassen",

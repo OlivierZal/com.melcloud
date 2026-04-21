@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Accedi",
       "failure": "Autenticazione fallita.",
-      "legend": "Credenziali",
-      "emptyFields": "Nome utente e password sono richiesti."
+      "legend": "Credenziali"
     },
     "boolean": {
       "false": "No",
@@ -21,10 +20,6 @@
       "apply": {
         "button": "Applica a tutti i dispositivi",
         "nothing": "Nessuna modifica da applicare."
-      },
-      "noneFor": {
-        "classic": "Nessun dispositivo Classic trovato. Aggiungine uno per abilitare le impostazioni specifiche di Classic.",
-        "home": "Nessun dispositivo Home trovato. Aggiungine uno per abilitare le impostazioni specifiche di Home."
       }
     },
     "devicesAta": {

@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Log in",
       "failure": "Authentication failed.",
-      "legend": "Credentials",
-      "emptyFields": "Username and password are required."
+      "legend": "Credentials"
     },
     "boolean": {
       "false": "No",
@@ -20,11 +19,7 @@
         "nothing": "No change to apply."
       },
       "legend": "Device settings",
-      "none": "Add a device to unlock all the app's settings!",
-      "noneFor": {
-        "classic": "No Classic device found. Add one to unlock Classic-specific settings.",
-        "home": "No Home device found. Add one to unlock Home-specific settings."
-      }
+      "none": "Add a device to unlock all the app's settings!"
     },
     "devicesAta": {
       "autoAdjust": "Auto-adjust air conditioning temperature",

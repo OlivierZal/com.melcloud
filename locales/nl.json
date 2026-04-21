@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Inloggen",
       "failure": "Authenticatie mislukt.",
-      "legend": "Referenties",
-      "emptyFields": "Gebruikersnaam en wachtwoord zijn vereist."
+      "legend": "Referenties"
     },
     "boolean": {
       "false": "Nee",
@@ -21,10 +20,6 @@
       "apply": {
         "button": "Toepassen op alle apparaten",
         "nothing": "Geen wijziging om toe te passen."
-      },
-      "noneFor": {
-        "classic": "Geen Classic-apparaat gevonden. Voeg er een toe om Classic-specifieke instellingen te activeren.",
-        "home": "Geen Home-apparaat gevonden. Voeg er een toe om Home-specifieke instellingen te activeren."
       }
     },
     "devicesAta": {

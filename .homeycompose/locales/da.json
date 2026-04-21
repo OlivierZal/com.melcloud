@@ -7,8 +7,7 @@
     "authenticate": {
       "button": "Log ind",
       "failure": "Godkendelse mislykkedes.",
-      "legend": "Brugernavn og adgangskode",
-      "emptyFields": "Brugernavn og adgangskode er påkrævede."
+      "legend": "Brugernavn og adgangskode"
     },
     "boolean": {
       "false": "Nej",
@@ -20,11 +19,7 @@
         "nothing": "Ingen ændringer at anvende."
       },
       "legend": "Enhedsindstillinger",
-      "none": "Tilføj en enhed for at låse alle appens indstillinger op!",
-      "noneFor": {
-        "classic": "Ingen Classic-enhed fundet. Tilføj en for at aktivere Classic-specifikke indstillinger.",
-        "home": "Ingen Home-enhed fundet. Tilføj en for at aktivere Home-specifikke indstillinger."
-      }
+      "none": "Tilføj en enhed for at låse alle appens indstillinger op!"
     },
     "devicesAta": {
       "autoAdjust": "Autojuster aircondition-temperaturen",
