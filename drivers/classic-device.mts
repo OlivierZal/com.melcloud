@@ -1,7 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 
-import type { Settings } from '../types/app-settings.mts'
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -11,6 +10,7 @@ import type {
   OperationalCapabilityTagEntry,
   SetCapabilities,
 } from '../types/capabilities.mts'
+import type { Settings } from '../types/device-settings.mts'
 import type { DeviceDetails } from '../types/device.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'

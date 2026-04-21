@@ -1,6 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { Settings } from '../../../types/app-settings.mts'
+import type { Settings } from '../../../types/device-settings.mts'
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import { ClassicTemperature, classicCoolModes } from './constants.mts'
 import {

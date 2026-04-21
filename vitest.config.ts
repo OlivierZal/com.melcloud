@@ -17,21 +17,7 @@ const swcPlugin = swc.vite({
 export default defineConfig({
   test: {
     coverage: {
-      exclude: [
-        '**/index.mts',
-        '**/public/**/*.mts',
-        'drivers/index.mts',
-        'files.mts',
-        'settings/**/*.mts',
-        'types/api.mts',
-        'types/app-settings.mts',
-        'types/capabilities.mts',
-        'types/driver-settings.mts',
-        'types/error-log.mts',
-        'types/manifest.mts',
-        'types/widgets.mts',
-        'types/zone.mts',
-      ],
+      exclude: ['**/public/**/*.mts', 'settings/**/*.mts'],
       include: ['**/*.mts'],
       reporter: ['text', 'lcov'],
       thresholds: {

@@ -10,8 +10,8 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type * as FilesModule from '../../files.mts'
-import type { Settings } from '../../types/app-settings.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
+import type { Settings } from '../../types/device-settings.mts'
 import type { ManifestDriver } from '../../types/manifest.mts'
 import { getMockCallArg, mock } from '../helpers.js'
 

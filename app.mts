@@ -12,8 +12,8 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { Api } from './types/api.mts'
-import type { DeviceSettings, Settings } from './types/app-settings.mts'
 import type { GroupAtaStates } from './types/classic-ata.mts'
+import type { DeviceSettings, Settings } from './types/device-settings.mts'
 import type {
   DriverCapabilitiesOptions,
   DriverSetting,

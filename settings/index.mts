@@ -3,12 +3,12 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
 
 import type { Api } from '../types/api.mts'
+import type { HomeySettings } from '../types/app-settings.mts'
 import type {
   DeviceSetting,
   DeviceSettings,
-  HomeySettings,
   Settings,
-} from '../types/app-settings.mts'
+} from '../types/device-settings.mts'
 import type {
   DriverSetting,
   LoginDriverSetting,

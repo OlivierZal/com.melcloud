@@ -3,7 +3,7 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { DeviceSettings, Settings } from '../../types/app-settings.mts'
+import type { DeviceSettings, Settings } from '../../types/device-settings.mts'
 import type { DriverSetting } from '../../types/driver-settings.mts'
 import type { FormattedErrorLog } from '../../types/error-log.mts'
 import type { ZoneData } from '../../types/zone.mts'
