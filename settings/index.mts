@@ -22,7 +22,10 @@ import type {
 
 type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
-const booleanStrings: string[] = ['false', 'true'] satisfies `${boolean}`[]
+const booleanStrings: readonly string[] = [
+  'false',
+  'true',
+] satisfies readonly `${boolean}`[]
 
 const getElement = <T extends HTMLElement>(
   id: string,
@@ -164,17 +167,19 @@ const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
+/** Currently the only Home driver; expand to a readonly array if more are added. */
 const HOME_DRIVER_ID = 'home-melcloud'
 
 class NoDeviceError extends Error {
-  public readonly api: Api | null
-
   public override name = 'NoDeviceError'
 
-  public constructor(homey: Homey, api: Api | null = null) {
+  public constructor(homey: Homey) {
     super(homey.__('settings.devices.none'))
-    this.api = api
   }
+}
+
+class NoClassicDeviceError extends NoDeviceError {
+  public override name = 'NoClassicDeviceError'
 }
 
 const disableButton = (id: string, isDisabled = true): void => {
@@ -1420,7 +1425,7 @@ class SettingsApp {
   }
 
   #disableForError(error: NoDeviceError): void {
-    if (error.api === 'classic') {
+    if (error instanceof NoClassicDeviceError) {
       this.#disableClassicButtons()
     }
     this.#disableCommonButtonsIfNoDevices()
@@ -1432,7 +1437,7 @@ class SettingsApp {
       '/classic/buildings',
     )
     if (buildings.length === 0) {
-      throw new NoDeviceError(this.#homey, 'classic')
+      throw new NoClassicDeviceError(this.#homey)
     }
     await this.#zoneSettingsManager.populateZoneOptions(buildings)
     await Promise.all([
@@ -1487,7 +1492,7 @@ class SettingsApp {
       if (api === 'classic') {
         await this.#fetchClassicBuildings()
       } else if (!this.#hasHomeDevices()) {
-        throw new NoDeviceError(this.#homey, 'home')
+        throw new NoDeviceError(this.#homey)
       }
     } catch (error) {
       if (error instanceof NoDeviceError) {
@@ -1516,7 +1521,7 @@ class SettingsApp {
       await this.#validateInitialClassicAuth()
     }
     if (this.#authState.home && !this.#hasHomeDevices()) {
-      this.#disableForError(new NoDeviceError(this.#homey, 'home'))
+      this.#disableForError(new NoDeviceError(this.#homey))
     }
   }
 
@@ -1524,7 +1529,7 @@ class SettingsApp {
     try {
       await this.#fetchClassicBuildings()
     } catch (error) {
-      if (error instanceof NoDeviceError && error.api === 'classic') {
+      if (error instanceof NoClassicDeviceError) {
         this.#disableForError(error)
       } else {
         this.#authState.classic = false
