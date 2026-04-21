@@ -1,9 +1,9 @@
 {
   "errors": {
     "deviceNotFound": "Apparaat niet gevonden.",
-    "zoneNotFound": "Zone niet gevonden.",
     "rateLimit": "Te veel verzoeken. Probeer het opnieuw om __time__.",
-    "rateLimitUnknown": "Te veel verzoeken. Probeer het later opnieuw."
+    "rateLimitUnknown": "Te veel verzoeken. Probeer het later opnieuw.",
+    "zoneNotFound": "Zone niet gevonden."
   },
   "settings": {
     "authenticate": {
