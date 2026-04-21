@@ -24,10 +24,10 @@
     "devicesAta": {
       "autoAdjust": "Regolazione automatica della temperatura del condizionatore",
       "configure": "Configura",
-      "legend": "Impostazioni dispositivo aria-aria"
+      "legend": "Impostazioni dispositivo aria-aria (Classic)"
     },
     "devicesAtw": {
-      "legend": "Impostazioni dispositivo aria-acqua"
+      "legend": "Impostazioni dispositivo aria-acqua (Classic)"
     },
     "errorLog": {
       "columns": {

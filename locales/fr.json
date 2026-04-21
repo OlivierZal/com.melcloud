@@ -25,10 +25,10 @@
     "devicesAta": {
       "autoAdjust": "Auto-ajuster la température de la climatisation",
       "configure": "Configurer",
-      "legend": "Paramètres des appareils air-air"
+      "legend": "Paramètres des appareils air-air (Classic)"
     },
     "devicesAtw": {
-      "legend": "Paramètres des appareils air-eau"
+      "legend": "Paramètres des appareils air-eau (Classic)"
     },
     "errorLog": {
       "columns": {

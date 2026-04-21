@@ -25,10 +25,10 @@
     "devicesAta": {
       "autoAdjust": "Auto-adjust air conditioning temperature",
       "configure": "Configure",
-      "legend": "Air-to-air device settings"
+      "legend": "Air-to-air device settings (Classic)"
     },
     "devicesAtw": {
-      "legend": "Air-to-water device settings"
+      "legend": "Air-to-water device settings (Classic)"
     },
     "errorLog": {
       "columns": {

@@ -171,7 +171,6 @@ interface Credentials {
 }
 
 const HOME_DRIVER_ID = 'home-melcloud'
-const CLASSIC_DRIVER_IDS = ['melcloud', 'melcloud_atw', 'melcloud_erv'] as const
 
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
@@ -183,10 +182,6 @@ class NoDeviceError extends Error {
 
 class NoClassicDeviceError extends NoDeviceError {
   public override name = 'NoClassicDeviceError'
-}
-
-class NoHomeDeviceError extends NoDeviceError {
-  public override name = 'NoHomeDeviceError'
 }
 
 const disableButton = (id: string, isDisabled = true): void => {
@@ -1420,12 +1415,6 @@ class SettingsApp {
       disableButton(`apply_${id}`)
       disableButton(`refresh_${id}`)
     }
-    for (const driverId of CLASSIC_DRIVER_IDS) {
-      if (driverId in this.#deviceSettingsManager.deviceSettings) {
-        disableButton(`apply_settings_${driverId}`)
-        disableButton(`refresh_settings_${driverId}`)
-      }
-    }
   }
 
   #disableCommonButtonsIfNoDevices(): void {
@@ -1438,10 +1427,6 @@ class SettingsApp {
   #disableForError(error: NoDeviceError): void {
     if (error instanceof NoClassicDeviceError) {
       this.#disableClassicButtons()
-    }
-    if (error instanceof NoHomeDeviceError) {
-      disableButton(`apply_settings_${HOME_DRIVER_ID}`)
-      disableButton(`refresh_settings_${HOME_DRIVER_ID}`)
     }
     this.#disableCommonButtonsIfNoDevices()
   }
@@ -1497,7 +1482,7 @@ class SettingsApp {
       if (api === 'classic') {
         await this.#fetchClassicBuildings()
       } else if (!this.#hasHomeDevices()) {
-        throw new NoHomeDeviceError(this.#homey)
+        throw new NoDeviceError(this.#homey)
       }
     } catch (error) {
       if (error instanceof NoDeviceError) {
@@ -1526,7 +1511,7 @@ class SettingsApp {
       await this.#validateInitialClassicAuth()
     }
     if (this.#authState.home && !this.#hasHomeDevices()) {
-      this.#disableForError(new NoHomeDeviceError(this.#homey))
+      this.#disableForError(new NoDeviceError(this.#homey))
     }
   }
 

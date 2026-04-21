@@ -25,10 +25,10 @@
     "devicesAta": {
       "autoAdjust": "Automatyczna regulacja temperatury klimatyzacji",
       "configure": "Konfiguruj",
-      "legend": "Ustawienia urządzenia powietrze-powietrze"
+      "legend": "Ustawienia urządzenia powietrze-powietrze (Classic)"
     },
     "devicesAtw": {
-      "legend": "Ustawienia urządzenia powietrze-woda"
+      "legend": "Ustawienia urządzenia powietrze-woda (Classic)"
     },
     "errorLog": {
       "columns": {

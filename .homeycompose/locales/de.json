@@ -24,10 +24,10 @@
     "devicesAta": {
       "autoAdjust": "Klimaanlagen-Temperatur automatisch anpassen",
       "configure": "Konfigurieren",
-      "legend": "Luft-Luft-Geräteeinstellungen"
+      "legend": "Luft-Luft-Geräteeinstellungen (Classic)"
     },
     "devicesAtw": {
-      "legend": "Luft-Wasser-Geräteeinstellungen"
+      "legend": "Luft-Wasser-Geräteeinstellungen (Classic)"
     },
     "errorLog": {
       "columns": {
