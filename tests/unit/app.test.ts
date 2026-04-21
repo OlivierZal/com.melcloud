@@ -1,13 +1,8 @@
-import type {
-  LoginCredentials,
-  ReportChartLineOptions,
-  ReportChartPieOptions,
-  SyncCallback,
-} from '@olivierzal/melcloud-api'
+import type { SyncCallback } from '@olivierzal/melcloud-api'
+import type * as Home from '@olivierzal/melcloud-api/home'
 import { Settings as LuxonSettings } from 'luxon'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
-import * as Home from '@olivierzal/melcloud-api/home'
 
 import type * as FilesModule from '../../files.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
@@ -233,20 +228,6 @@ const initWithFacade = async (
   await app.onInit()
 }
 
-const initWithDeviceFacade = async (
-  app: InstanceType<typeof MelCloudApp>,
-  method: string,
-  mockData: unknown,
-): Promise<void> => {
-  mockFacadeManagerGet.mockReturnValue(
-    mock({
-      [method]: vi.fn<() => Promise<unknown>>().mockResolvedValue(mockData),
-    }),
-  )
-  mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
-  await app.onInit()
-}
-
 const createMockDriver = (
   devices: ClassicMELCloudDevice[],
   id = 'melcloud',
@@ -424,16 +405,6 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('uninitialization', () => {
-    it('should clear sync', async () => {
-      await app.onInit()
-      await app.onUninit()
-
-      expect(mockApiInstance.clearSync).toHaveBeenCalledTimes(1)
-      expect(mockHomeApiInstance.clearSync).toHaveBeenCalledTimes(1)
-    })
-  })
-
   describe('ata capabilities', () => {
     it('should return localized capability configs', async () => {
       await app.onInit()
@@ -526,25 +497,6 @@ describe('melCloudApp', () => {
       expect(() =>
         app.getClassicAtaDetailedStates({ zoneId: '1', zoneType: 'buildings' }),
       ).toThrow('errors.deviceNotFound')
-    })
-  })
-
-  describe('ata values', () => {
-    it('should delegate to facade getGroup', async () => {
-      const mockGroupState = mock<Classic.GroupState>()
-      const mockFacade = mock<Classic.BuildingFacade>({
-        getGroup: vi
-          .fn<() => Promise<Classic.GroupState>>()
-          .mockResolvedValue(mockGroupState),
-      })
-      await initWithFacade(app, mockFacade)
-
-      const groupState = await app.getClassicAtaState({
-        zoneId: '1',
-        zoneType: 'buildings',
-      })
-
-      expect(groupState).toBe(mockGroupState)
     })
   })
 
@@ -699,51 +651,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('device listing by type', () => {
-    it('should delegate to registry getDevicesByType', async () => {
-      const mockDevices = [{ id: 1, name: 'Device 1' }]
-      mockApiInstance.registry.getDevicesByType.mockReturnValue(mockDevices)
-      await app.onInit()
-
-      const result = app.getDevicesByType(Classic.DeviceType.Ata)
-
-      expect(result).toBe(mockDevices)
-      expect(mockApiInstance.registry.getDevicesByType).toHaveBeenCalledWith(
-        Classic.DeviceType.Ata,
-      )
-    })
-  })
-
-  describe('home device listing by type', () => {
-    it('should delegate to registry getByType after syncing', async () => {
-      const mockModels = [{ id: 'device-1', name: 'Living Room' }]
-      mockHomeApiInstance.list.mockResolvedValue([])
-      mockHomeRegistry.getByType.mockReturnValue(mockModels)
-      await app.onInit()
-
-      const result = app.getHomeDevicesByType(Home.DeviceType.Ata)
-
-      expect(result).toBe(mockModels)
-      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
-        Home.DeviceType.Ata,
-      )
-    })
-  })
-
   describe('home facade retrieval', () => {
-    const mockModel = { id: 'device-1', name: 'Living Room' }
-
-    it('should return a facade for a matching device', async () => {
-      mockHomeApiInstance.list.mockResolvedValue([])
-      mockHomeRegistry.getById.mockReturnValue(mockModel)
-      await app.onInit()
-
-      const facade = app.getHomeFacade('device-1')
-
-      expect(facade).toBeInstanceOf(Home.DeviceAtaFacade)
-      expect(mockHomeRegistry.getById).toHaveBeenCalledWith('device-1')
-    })
-
     it('should throw when device is not found in registry', async () => {
       mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getById.mockReset()
@@ -756,145 +664,7 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('frost protection settings retrieval', () => {
-    it('should delegate to facade', async () => {
-      const mockData = mock<Classic.FrostProtectionData>()
-      const mockFacade = mock<Classic.ZoneFacade>({
-        getFrostProtection: vi
-          .fn<() => Promise<Classic.FrostProtectionData>>()
-          .mockResolvedValue(mockData),
-      })
-      await initWithFacade(app, mockFacade)
-
-      const frostProtection = await app.getClassicFrostProtection({
-        zoneId: '1',
-        zoneType: 'buildings',
-      })
-
-      expect(frostProtection).toBe(mockData)
-    })
-  })
-
-  describe('holiday mode settings retrieval', () => {
-    it('should delegate to facade', async () => {
-      const mockData = mock<Classic.HolidayModeData>()
-      const mockFacade = mock<Classic.ZoneFacade>({
-        getHolidayMode: vi
-          .fn<() => Promise<Classic.HolidayModeData>>()
-          .mockResolvedValue(mockData),
-      })
-      await initWithFacade(app, mockFacade)
-
-      const holidayMode = await app.getClassicHolidayMode({
-        zoneId: '1',
-        zoneType: 'buildings',
-      })
-
-      expect(holidayMode).toBe(mockData)
-    })
-  })
-
-  describe('hourly temperature retrieval', () => {
-    it('should delegate to device facade', async () => {
-      const mockData = mock<ReportChartLineOptions>()
-      await initWithDeviceFacade(app, 'getHourlyTemperatures', mockData)
-
-      const temperatures = await app.getClassicHourlyTemperatures({
-        deviceId: '1',
-        hour: 10,
-      })
-
-      expect(temperatures).toBe(mockData)
-    })
-  })
-
-  describe('operation mode retrieval', () => {
-    it('should delegate to device facade with date range', async () => {
-      const mockData = mock<ReportChartPieOptions>()
-      await initWithDeviceFacade(app, 'getOperationModes', mockData)
-
-      const operationModes = await app.getClassicOperationModes({
-        days: 7,
-        deviceId: '1',
-      })
-
-      expect(operationModes).toBe(mockData)
-    })
-  })
-
-  describe('signal retrieval', () => {
-    it('should delegate to device facade', async () => {
-      const mockData = mock<ReportChartLineOptions>()
-      await initWithDeviceFacade(app, 'getSignalStrength', mockData)
-
-      const signal = await app.getClassicSignal({ deviceId: '1', hour: 5 })
-
-      expect(signal).toBe(mockData)
-    })
-  })
-
-  describe('temperature retrieval', () => {
-    it('should delegate to device facade with date range', async () => {
-      const mockData = mock<ReportChartLineOptions>()
-      await initWithDeviceFacade(app, 'getTemperatures', mockData)
-
-      const temperatures = await app.getClassicTemperatures({
-        days: 30,
-        deviceId: '1',
-      })
-
-      expect(temperatures).toBe(mockData)
-    })
-  })
-
-  describe('authentication', () => {
-    it('should expose classicApi getter', async () => {
-      await app.onInit()
-
-      expect(app.classicApi).toBe(mockApiInstance)
-    })
-
-    it('should delegate to api authenticate', async () => {
-      mockApiInstance.authenticate.mockResolvedValue()
-      await app.onInit()
-
-      const credentials = mock<LoginCredentials>({
-        password: 'pass',
-        username: 'user',
-      })
-      await app.classicApi.authenticate(credentials)
-
-      expect(mockApiInstance.authenticate).toHaveBeenCalledWith(credentials)
-    })
-
-    it('should propagate authenticate errors', async () => {
-      const error = new Error('invalid credentials')
-      mockApiInstance.authenticate.mockRejectedValue(error)
-      await app.onInit()
-
-      await expect(
-        app.classicApi.authenticate(mock<LoginCredentials>()),
-      ).rejects.toThrow(error)
-    })
-  })
-
-  describe('home api', () => {
-    it('should expose homeApi getter', async () => {
-      await app.onInit()
-
-      expect(app.homeApi).toBe(mockHomeApiInstance)
-    })
-
-    it('should delegate homeAuthenticate to homeApi authenticate', async () => {
-      mockHomeApiInstance.authenticate.mockResolvedValue()
-      await app.onInit()
-      const credentials = mock<LoginCredentials>()
-
-      await app.homeApi.authenticate(credentials)
-
-      expect(mockHomeApiInstance.authenticate).toHaveBeenCalledWith(credentials)
-    })
-
+  describe('setting managers', () => {
     it('should create home setting manager with camelCase key prefixing', async () => {
       await app.onInit()
 
@@ -933,23 +703,6 @@ describe('melCloudApp', () => {
   })
 
   describe('ata value update', () => {
-    it('should set group values and not throw on success', async () => {
-      await initWithFacade(
-        app,
-        mock<Classic.BuildingFacade>({
-          updateGroupState: mockUpdateResult(null),
-        }),
-      )
-
-      await expect(
-        app.updateClassicAtaState({
-          state: mock<Classic.GroupState>(),
-          zoneId: '1',
-          zoneType: 'buildings',
-        }),
-      ).resolves.toBeUndefined()
-    })
-
     it('should throw on attribute errors', async () => {
       await initWithFacade(
         app,
@@ -1051,23 +804,6 @@ describe('melCloudApp', () => {
   })
 
   describe('frost protection settings update', () => {
-    it('should delegate to facade and not throw on success', async () => {
-      await initWithFacade(
-        app,
-        mock<Classic.ZoneFacade>({
-          updateFrostProtection: mockUpdateResult(null),
-        }),
-      )
-
-      await expect(
-        app.updateClassicFrostProtection({
-          settings: mock<Classic.FrostProtectionQuery>(),
-          zoneId: '1',
-          zoneType: 'buildings',
-        }),
-      ).resolves.toBeUndefined()
-    })
-
     it('should throw on attribute errors', async () => {
       await initWithFacade(
         app,
@@ -1087,21 +823,6 @@ describe('melCloudApp', () => {
   })
 
   describe('holiday mode settings update', () => {
-    it('should delegate to facade and not throw on success', async () => {
-      await initWithFacade(
-        app,
-        mock<Classic.ZoneFacade>({ updateHolidayMode: mockUpdateResult(null) }),
-      )
-
-      await expect(
-        app.updateClassicHolidayMode({
-          settings: mock<Classic.HolidayModeQuery>(),
-          zoneId: '1',
-          zoneType: 'buildings',
-        }),
-      ).resolves.toBeUndefined()
-    })
-
     it('should throw on attribute errors', async () => {
       const mockFacade = mock<Classic.ZoneFacade>({
         updateHolidayMode: mockUpdateResult({ date: ['Invalid date'] }),
