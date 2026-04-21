@@ -553,10 +553,12 @@ export default class MELCloudApp extends App {
     }, NOTIFICATION_DELAY_MS)
   }
 
-  #createSettingManager(prefix = ''): SettingManager {
+  #createSettingManager(api: 'classic' | 'home' = 'classic'): SettingManager {
+    // Classic owns the unprefixed keys (legacy); Home is namespaced to
+    // avoid collisions (e.g. `username` → `homeUsername`).
     const prefixKey = (key: string): string =>
-      prefix === '' ? key : (
-        `${prefix}${key.charAt(0).toUpperCase()}${key.slice(1)}`
+      api === 'classic' ? key : (
+        `${api}${key.charAt(0).toUpperCase()}${key.slice(1)}`
       )
     return {
       get: (key: string): string | null | undefined =>
