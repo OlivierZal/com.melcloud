@@ -5,7 +5,7 @@ import {
   AuthenticationError,
 } from '@olivierzal/melcloud-api'
 
-import type { AuthAPI } from '../types/device.mts'
+import type { AuthAPI } from '../types/api.mts'
 import type { ManifestDriver } from '../types/manifest.mts'
 import { type Homey, Driver } from '../lib/homey.mts'
 

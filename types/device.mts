@@ -1,12 +1,6 @@
-import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { CapabilitiesOptions } from './capabilities.mts'
-
-export interface AuthAPI {
-  readonly authenticate: (credentials: LoginCredentials) => Promise<void>
-  readonly isAuthenticated: () => boolean
-}
 
 export interface ClassicDeviceFacade {
   readonly updateValues: (data: Record<string, unknown>) => Promise<unknown>
