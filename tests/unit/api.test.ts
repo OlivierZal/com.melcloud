@@ -1,14 +1,12 @@
+import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type {
-  DeviceSettings,
-  DriverSetting,
-  FormattedErrorLog,
-  Settings,
-} from '../../types/settings.mts'
-import type { ZoneData } from '../../types/widgets.mts'
+import type { DeviceSettings, Settings } from '../../types/app-settings.mts'
+import type { DriverSetting } from '../../types/driver-settings.mts'
+import type { FormattedErrorLog } from '../../types/error-log.mts'
+import type { ZoneData } from '../../types/zone.mts'
 import { mock } from '../helpers.js'
 
 const mockGetBuildings =
@@ -21,6 +19,7 @@ vi.mock(import('../../lib/classic-facade-manager.mts'), () => ({
 const { default: api } = await import('../../api.mts')
 
 const mockIsAuthenticated = vi.fn<() => boolean>()
+const mockIsHomeAuthenticated = vi.fn<() => boolean>()
 const mockClassicAuthenticate = vi.fn<() => Promise<void>>()
 const mockHomeAuthenticate = vi.fn<() => Promise<void>>()
 
@@ -35,7 +34,10 @@ const mockApp = {
   getClassicHolidayMode: vi.fn<() => Promise<Classic.HolidayModeData>>(),
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
-  homeApi: { authenticate: mockHomeAuthenticate },
+  homeApi: {
+    authenticate: mockHomeAuthenticate,
+    isAuthenticated: mockIsHomeAuthenticated,
+  },
   updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
   updateClassicHolidayMode: vi.fn<() => Promise<void>>(),
   updateDeviceSettings: vi.fn<() => Promise<void>>(),
@@ -149,7 +151,7 @@ describe('api', () => {
   describe('home authentication', () => {
     it('should delegate to app.homeApi.authenticate with body', async () => {
       mockHomeAuthenticate.mockResolvedValue()
-      const body = mock<Classic.LoginCredentials>()
+      const body = mock<LoginCredentials>()
 
       await api.homeAuthenticate({ body, homey })
 
@@ -161,7 +163,7 @@ describe('api', () => {
       mockHomeAuthenticate.mockRejectedValue(error)
 
       await expect(
-        api.homeAuthenticate({ body: mock<Classic.LoginCredentials>(), homey }),
+        api.homeAuthenticate({ body: mock<LoginCredentials>(), homey }),
       ).rejects.toThrow(error)
     })
   })
@@ -185,9 +187,28 @@ describe('api', () => {
     })
   })
 
+  describe('home session retrieval', () => {
+    it('should delegate to app.homeApi.isAuthenticated', () => {
+      mockIsHomeAuthenticated.mockReturnValue(true)
+
+      const isAuthenticated = api.isHomeAuthenticated({ homey })
+
+      expect(isAuthenticated).toBe(true)
+      expect(mockIsHomeAuthenticated).toHaveBeenCalledTimes(1)
+    })
+
+    it('should return false when not authenticated', () => {
+      mockIsHomeAuthenticated.mockReturnValue(false)
+
+      const isAuthenticated = api.isHomeAuthenticated({ homey })
+
+      expect(isAuthenticated).toBe(false)
+    })
+  })
+
   describe('authentication', () => {
     it('should delegate to app.classicApi.authenticate with body', async () => {
-      const credentials = mock<Classic.LoginCredentials>({
+      const credentials = mock<LoginCredentials>({
         password: 'pass',
         username: 'user',
       })
@@ -204,7 +225,7 @@ describe('api', () => {
 
       await expect(
         api.classicAuthenticate({
-          body: mock<Classic.LoginCredentials>(),
+          body: mock<LoginCredentials>(),
           homey,
         }),
       ).rejects.toThrow(error)

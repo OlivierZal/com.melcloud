@@ -2,8 +2,9 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { DriverCapabilitiesOptions } from '../../types/settings.mts'
-import type { GroupAtaStates, ZoneData } from '../../types/widgets.mts'
+import type { GroupAtaStates } from '../../types/classic-ata.mts'
+import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
+import type { ZoneData } from '../../types/zone.mts'
 import { mock } from '../helpers.js'
 
 const mockGetBuildings = vi.fn<() => Classic.BuildingZone[]>()

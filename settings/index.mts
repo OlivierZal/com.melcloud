@@ -1,17 +1,21 @@
+import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
 
 import type {
   DeviceSetting,
   DeviceSettings,
+  HomeySettings,
+  Settings,
+} from '../types/app-settings.mts'
+import type {
   DriverSetting,
+  LoginDriverSetting,
+} from '../types/driver-settings.mts'
+import type {
   FormattedErrorDetails,
   FormattedErrorLog,
-  HomeySettings,
-  LoginDriverSetting,
-  Settings,
-  ValueOf,
-} from '../types/settings.mts'
+} from '../types/error-log.mts'
 
 // ── Shared DOM helpers ──
 
@@ -159,12 +163,26 @@ const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
+type Api = 'classic' | 'home'
+
+const API_LABELS: Record<Api, string> = { classic: 'Classic', home: 'Home' }
+const HOME_DRIVER_ID = 'home-melcloud'
+const CLASSIC_DRIVER_IDS = ['melcloud', 'melcloud_atw', 'melcloud_erv'] as const
+
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
 
   public constructor(homey: Homey) {
     super(homey.__('settings.devices.none'))
   }
+}
+
+class NoClassicDeviceError extends NoDeviceError {
+  public override name = 'NoClassicDeviceError'
+}
+
+class NoHomeDeviceError extends NoDeviceError {
+  public override name = 'NoHomeDeviceError'
 }
 
 const disableButton = (id: string, isDisabled = true): void => {
@@ -198,6 +216,19 @@ const withDisablingButtonPair = async (
 
 const hide = (element: HTMLDivElement, isHidden = true): void => {
   element.hidden = isHidden
+}
+
+const disableHomeButtons = (): void => {
+  disableButton(`apply_settings_${HOME_DRIVER_ID}`)
+  disableButton(`refresh_settings_${HOME_DRIVER_ID}`)
+}
+
+const toggleClassicOnlySections = (isVisible: boolean): void => {
+  for (const fieldset of document.querySelectorAll<HTMLFieldSetElement>(
+    '.classic-only',
+  )) {
+    fieldset.hidden = !isVisible
+  }
 }
 
 const addTextToCheckbox = (
@@ -369,15 +400,23 @@ const getSubzones = (zone: Classic.Zone): Classic.Zone[] => [
 // ── AuthManager ──
 
 class AuthManager {
+  readonly #apiSelect: HTMLSelectElement
+
   readonly #authenticateButton: HTMLButtonElement
 
-  readonly #authenticatedSection: HTMLDivElement
+  readonly #authenticationSection: HTMLDivElement
 
-  readonly #authenticatingSection: HTMLDivElement
+  #credentialsByApi: Record<
+    Api,
+    { password: string | null; username: string | null }
+  > = {
+    classic: { password: null, username: null },
+    home: { password: null, username: null },
+  }
 
   readonly #homey: Homey
 
-  readonly #loadPostLoginCallback: () => Promise<void>
+  readonly #loadPostLoginCallback: (api: Api) => Promise<void>
 
   readonly #loginSection: HTMLDivElement
 
@@ -385,16 +424,26 @@ class AuthManager {
 
   #usernameInput: HTMLInputElement | null = null
 
-  public constructor(homey: Homey, loadPostLoginCallback: () => Promise<void>) {
+  get #currentApi(): Api {
+    return this.#apiSelect.value === 'home' ? 'home' : 'classic'
+  }
+
+  public constructor(
+    homey: Homey,
+    loadPostLoginCallback: (api: Api) => Promise<void>,
+  ) {
     this.#homey = homey
     this.#loadPostLoginCallback = loadPostLoginCallback
+    this.#apiSelect = getSelect('api')
     this.#authenticateButton = getButton('authenticate')
-    this.#authenticatedSection = getDiv('authenticated')
-    this.#authenticatingSection = getDiv('authenticating')
+    this.#authenticationSection = getDiv('authentication')
     this.#loginSection = getDiv('login')
   }
 
   public addEventListeners(): void {
+    this.#apiSelect.addEventListener('change', () => {
+      this.#syncInputsFromCredentials()
+    })
     this.#authenticateButton.addEventListener('click', () => {
       fireAndForget(this.login())
     })
@@ -402,25 +451,39 @@ class AuthManager {
 
   public createCredentialFields(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
-    {
-      password,
-      username,
-    }: { password?: string | null; username?: string | null },
+    credentials: Record<
+      Api,
+      { password?: string | null; username?: string | null }
+    >,
   ): void {
+    this.#credentialsByApi = {
+      classic: {
+        password: credentials.classic.password ?? null,
+        username: credentials.classic.username ?? null,
+      },
+      home: {
+        password: credentials.home.password ?? null,
+        username: credentials.home.username ?? null,
+      },
+    }
     this.#usernameInput = this.#createCredentialInput(
       'username',
       driverSettings,
-      username,
     )
     this.#passwordInput = this.#createCredentialInput(
       'password',
       driverSettings,
-      password,
     )
+    this.#syncInputsFromCredentials()
+  }
+
+  public hideAuthenticationSection(isHidden: boolean): void {
+    hide(this.#authenticationSection, isHidden)
   }
 
   /** @alerts Displays authentication errors to the user. */
   public async login(): Promise<void> {
+    const api = this.#currentApi
     const username = this.#usernameInput?.value ?? ''
     const password = this.#passwordInput?.value ?? ''
     const failureMessage = this.#homey.__('settings.authenticate.failure')
@@ -430,37 +493,52 @@ class AuthManager {
     }
     await withDisablingButton(this.#authenticateButton.id, async () => {
       try {
-        await homeyApiPost(this.#homey, '/classic/sessions', {
+        await homeyApiPost(this.#homey, `/${api}/sessions`, {
           password,
           username,
-        } satisfies Classic.LoginCredentials)
-        await this.#loadPostLoginCallback()
+        } satisfies LoginCredentials)
+        this.#credentialsByApi[api] = { password, username }
+        await this.#loadPostLoginCallback(api)
       } catch {
         await this.#homey.alert(failureMessage)
       }
     })
   }
 
-  public showLogin(isRequired = true): void {
-    hide(this.#authenticatedSection, isRequired)
-    hide(this.#authenticatingSection, !isRequired)
+  public setAvailableApis(apis: readonly Api[]): void {
+    this.#apiSelect.replaceChildren()
+    for (const api of apis) {
+      this.#apiSelect.append(new Option(API_LABELS[api], api))
+    }
+    this.#syncInputsFromCredentials()
   }
 
   #createCredentialInput(
-    credentialKey: keyof Classic.LoginCredentials,
+    credentialKey: keyof LoginCredentials,
     driverSettings: Partial<Record<string, DriverSetting[]>>,
-    value?: string | null,
   ): HTMLInputElement | null {
     const loginSetting = driverSettings['login']?.find(
       (setting): setting is LoginDriverSetting => setting.id === credentialKey,
     )
     if (loginSetting) {
       const { id, placeholder, title, type } = loginSetting
-      const formControl = createInput({ id, placeholder, type, value })
+      const formControl = createInput({ id, placeholder, type })
       appendFormControl(this.#loginSection, { formControl, title })
       return formControl
     }
     return null
+  }
+
+  #syncInputsFromCredentials(): void {
+    const {
+      [this.#currentApi]: { password, username },
+    } = this.#credentialsByApi
+    if (this.#usernameInput) {
+      this.#usernameInput.value = username ?? ''
+    }
+    if (this.#passwordInput) {
+      this.#passwordInput.value = password ?? ''
+    }
   }
 }
 
@@ -698,7 +776,7 @@ class DeviceSettingsManager {
     }
   }
 
-  #parseFormValue(element: HTMLValueElement): ValueOf<Settings> {
+  #parseFormValue(element: HTMLValueElement): Settings[keyof Settings] {
     if (element.value) {
       if (element.type === 'checkbox') {
         return element.indeterminate ? null : element.checked
@@ -739,7 +817,7 @@ class DeviceSettingsManager {
 
   #shouldUpdate(
     id: string,
-    value: ValueOf<Settings>,
+    value: Settings[keyof Settings],
     driverId?: string,
   ): boolean {
     if (value === null) {
@@ -1259,6 +1337,10 @@ class ZoneSettingsManager {
 class SettingsApp {
   readonly #authManager: AuthManager
 
+  #authState: Record<Api, boolean> = { classic: false, home: false }
+
+  readonly #contentSection: HTMLDivElement
+
   readonly #deviceSettingsManager: DeviceSettingsManager
 
   readonly #errorLogManager: ErrorLogManager
@@ -1269,11 +1351,12 @@ class SettingsApp {
 
   public constructor(homey: Homey) {
     this.#homey = homey
+    this.#contentSection = getDiv('content')
     this.#deviceSettingsManager = new DeviceSettingsManager(homey)
     this.#zoneSettingsManager = new ZoneSettingsManager(homey)
     this.#errorLogManager = new ErrorLogManager(homey)
-    this.#authManager = new AuthManager(homey, async () =>
-      this.#loadBuildings('login'),
+    this.#authManager = new AuthManager(homey, async (api) =>
+      this.#onLogin(api),
     )
   }
 
@@ -1302,24 +1385,22 @@ class SettingsApp {
   }
 
   public async init(): Promise<void> {
-    const [{ password, username }, isAuthenticated] = await Promise.all([
-      SettingsApp.#fetchHomeySettings(this.#homey),
-      homeyApiGet<boolean>(this.#homey, '/classic/sessions'),
-      SettingsApp.#setDocumentLanguage(this.#homey),
-      this.#deviceSettingsManager.fetchDeviceSettings(),
-    ])
-    const driverSettings =
-      await this.#deviceSettingsManager.fetchDriverSettings()
-    this.#authManager.createCredentialFields(driverSettings, {
-      password,
-      username,
-    })
-    this.#addEventListeners()
-    if (isAuthenticated) {
-      await this.#loadBuildings('init')
-    } else {
-      this.#authManager.showLogin()
+    const [settings, isClassicAuthenticated, isHomeAuthenticated] =
+      await Promise.all([
+        SettingsApp.#fetchHomeySettings(this.#homey),
+        homeyApiGet<boolean>(this.#homey, '/classic/sessions'),
+        homeyApiGet<boolean>(this.#homey, '/home/sessions'),
+        SettingsApp.#setDocumentLanguage(this.#homey),
+        this.#deviceSettingsManager.fetchDeviceSettings(),
+      ])
+    this.#authState = {
+      classic: isClassicAuthenticated,
+      home: isHomeAuthenticated,
     }
+    await this.#initCredentialFields(settings)
+    this.#addEventListeners()
+    await this.#validateInitialAuthStates()
+    this.#refreshVisibility()
     this.#homey.ready()
   }
 
@@ -1334,27 +1415,44 @@ class SettingsApp {
     })
   }
 
-  #disableSettingButtons(): void {
+  #disableClassicButtons(): void {
     this.#errorLogManager.disable()
-    for (const id of ['frost_protection', 'holiday_mode', 'settings_common']) {
+    for (const id of ['frost_protection', 'holiday_mode']) {
       disableButton(`apply_${id}`)
       disableButton(`refresh_${id}`)
     }
-    for (const driverId of Object.keys(
-      this.#deviceSettingsManager.deviceSettings,
-    )) {
-      disableButton(`apply_settings_${driverId}`)
-      disableButton(`refresh_settings_${driverId}`)
+    for (const driverId of CLASSIC_DRIVER_IDS) {
+      if (driverId in this.#deviceSettingsManager.deviceSettings) {
+        disableButton(`apply_settings_${driverId}`)
+        disableButton(`refresh_settings_${driverId}`)
+      }
     }
   }
 
-  async #fetchBuildings(): Promise<void> {
+  #disableCommonButtonsIfNoDevices(): void {
+    if (Object.keys(this.#deviceSettingsManager.deviceSettings).length === 0) {
+      disableButton('apply_settings_common')
+      disableButton('refresh_settings_common')
+    }
+  }
+
+  #disableForError(error: NoDeviceError): void {
+    if (error instanceof NoClassicDeviceError) {
+      this.#disableClassicButtons()
+    }
+    if (error instanceof NoHomeDeviceError) {
+      disableHomeButtons()
+    }
+    this.#disableCommonButtonsIfNoDevices()
+  }
+
+  async #fetchClassicBuildings(): Promise<void> {
     const buildings = await homeyApiGet<Classic.BuildingZone[]>(
       this.#homey,
       '/classic/buildings',
     )
     if (buildings.length === 0) {
-      throw new NoDeviceError(this.#homey)
+      throw new NoClassicDeviceError(this.#homey)
     }
     await this.#zoneSettingsManager.populateZoneOptions(buildings)
     await Promise.all([
@@ -1363,24 +1461,84 @@ class SettingsApp {
     ])
   }
 
-  async #loadBuildings(source: 'init' | 'login'): Promise<void> {
+  #getUnauthenticatedApis(): Api[] {
+    const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
+      this.#authState
+    const apis: Api[] = []
+    if (!isClassicAuthenticated) {
+      apis.push('classic')
+    }
+    if (!isHomeAuthenticated) {
+      apis.push('home')
+    }
+    return apis
+  }
+
+  #hasHomeDevices(): boolean {
+    return HOME_DRIVER_ID in this.#deviceSettingsManager.deviceSettings
+  }
+
+  async #initCredentialFields(settings: HomeySettings): Promise<void> {
+    const driverSettings =
+      await this.#deviceSettingsManager.fetchDriverSettings()
+    this.#authManager.createCredentialFields(driverSettings, {
+      classic: { password: settings.password, username: settings.username },
+      home: {
+        password: settings.homePassword,
+        username: settings.homeUsername,
+      },
+    })
+  }
+
+  /** @alerts Displays post-login errors to the user. */
+  async #onLogin(api: Api): Promise<void> {
+    this.#authState[api] = true
     try {
-      await this.#fetchBuildings()
-      this.#authManager.showLogin(false)
-    } catch (error) {
-      if (source === 'init') {
-        // Session expired or no devices: fall back to login
-        this.#authManager.showLogin()
-        return
+      if (api === 'classic') {
+        await this.#fetchClassicBuildings()
+      } else if (!this.#hasHomeDevices()) {
+        throw new NoHomeDeviceError(this.#homey)
       }
-      // Post-login: always hide login form
-      this.#authManager.showLogin(false)
+    } catch (error) {
       if (error instanceof NoDeviceError) {
-        this.#disableSettingButtons()
+        this.#disableForError(error)
       }
       await this.#homey.alert(
         error instanceof NoDeviceError ? error.message : getErrorMessage(error),
       )
+    }
+    this.#refreshVisibility()
+  }
+
+  #refreshVisibility(): void {
+    const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
+      this.#authState
+    this.#authManager.hideAuthenticationSection(
+      isClassicAuthenticated && isHomeAuthenticated,
+    )
+    hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
+    toggleClassicOnlySections(isClassicAuthenticated)
+    this.#authManager.setAvailableApis(this.#getUnauthenticatedApis())
+  }
+
+  async #validateInitialAuthStates(): Promise<void> {
+    if (this.#authState.classic) {
+      await this.#validateInitialClassicAuth()
+    }
+    if (this.#authState.home && !this.#hasHomeDevices()) {
+      this.#disableForError(new NoHomeDeviceError(this.#homey))
+    }
+  }
+
+  async #validateInitialClassicAuth(): Promise<void> {
+    try {
+      await this.#fetchClassicBuildings()
+    } catch (error) {
+      if (error instanceof NoClassicDeviceError) {
+        this.#disableForError(error)
+      } else {
+        this.#authState.classic = false
+      }
     }
   }
 }

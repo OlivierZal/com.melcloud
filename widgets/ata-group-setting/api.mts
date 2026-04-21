@@ -1,12 +1,10 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 
-import type { DriverCapabilitiesOptions } from '../../types/settings.mts'
-import type {
-  GetAtaOptions,
-  GroupAtaStates,
-  ZoneData,
-} from '../../types/widgets.mts'
+import type { GroupAtaStates } from '../../types/classic-ata.mts'
+import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
+import type { GetAtaOptions } from '../../types/widgets.mts'
+import type { ZoneData } from '../../types/zone.mts'
 import { getClassicBuildings } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
 

@@ -1,6 +1,7 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 
+import type { Settings } from '../types/app-settings.mts'
 import type {
   Capabilities,
   CapabilitiesOptions,
@@ -11,7 +12,6 @@ import type {
   SetCapabilities,
 } from '../types/capabilities.mts'
 import type { DeviceDetails } from '../types/device.mts'
-import type { Settings } from '../types/settings.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
 import { type EnergyReportConfig, EnergyReport } from './base-report.mts'

@@ -28,22 +28,6 @@ export interface GetAtaOptions {
   readonly status?: 'on'
 }
 
-export interface GroupAtaStates {
-  readonly FanSpeed: Exclude<Classic.FanSpeed, typeof Classic.FanSpeed.silent>[]
-  readonly OperationMode: Classic.OperationMode[]
-  readonly Power: boolean[]
-  readonly SetTemperature: number[]
-  readonly VaneHorizontalDirection: Classic.Horizontal[]
-  readonly VaneHorizontalSwing: boolean[]
-  readonly VaneVerticalDirection: Classic.Vertical[]
-  readonly VaneVerticalSwing: boolean[]
-}
-
 export interface HourQuery {
   readonly hour?: `${Hour}`
-}
-
-export interface ZoneData {
-  readonly zoneId: string
-  readonly zoneType: 'areas' | 'buildings' | 'floors'
 }

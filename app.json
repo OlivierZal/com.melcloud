@@ -41,6 +41,10 @@
       "method": "GET",
       "path": "/classic/sessions"
     },
+    "isHomeAuthenticated": {
+      "method": "GET",
+      "path": "/home/sessions"
+    },
     "updateClassicFrostProtection": {
       "method": "PUT",
       "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"

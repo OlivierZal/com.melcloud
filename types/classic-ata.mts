@@ -42,6 +42,17 @@ export interface GetCapabilities extends BaseGetCapabilities {
   readonly 'alarm_generic.silent': boolean
 }
 
+export interface GroupAtaStates {
+  readonly FanSpeed: Exclude<Classic.FanSpeed, typeof Classic.FanSpeed.silent>[]
+  readonly OperationMode: Classic.OperationMode[]
+  readonly Power: boolean[]
+  readonly SetTemperature: number[]
+  readonly VaneHorizontalDirection: Classic.Horizontal[]
+  readonly VaneHorizontalSwing: boolean[]
+  readonly VaneVerticalDirection: Classic.Vertical[]
+  readonly VaneVerticalSwing: boolean[]
+}
+
 export interface ListCapabilities extends BaseListCapabilities {
   readonly 'alarm_generic.silent': boolean
   readonly 'fan_speed.state': number

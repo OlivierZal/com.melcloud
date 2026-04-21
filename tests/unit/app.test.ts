@@ -1,4 +1,5 @@
 import type {
+  LoginCredentials,
   ReportChartLineOptions,
   ReportChartPieOptions,
   SyncCallback,
@@ -9,9 +10,9 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type * as FilesModule from '../../files.mts'
+import type { Settings } from '../../types/app-settings.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
 import type { ManifestDriver } from '../../types/manifest.mts'
-import type { Settings } from '../../types/settings.mts'
 import { getMockCallArg, mock } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()
@@ -857,7 +858,7 @@ describe('melCloudApp', () => {
       mockApiInstance.authenticate.mockResolvedValue()
       await app.onInit()
 
-      const credentials = mock<Classic.LoginCredentials>({
+      const credentials = mock<LoginCredentials>({
         password: 'pass',
         username: 'user',
       })
@@ -872,7 +873,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       await expect(
-        app.classicApi.authenticate(mock<Classic.LoginCredentials>()),
+        app.classicApi.authenticate(mock<LoginCredentials>()),
       ).rejects.toThrow(error)
     })
   })
@@ -887,7 +888,7 @@ describe('melCloudApp', () => {
     it('should delegate homeAuthenticate to homeApi authenticate', async () => {
       mockHomeApiInstance.authenticate.mockResolvedValue()
       await app.onInit()
-      const credentials = mock<Classic.LoginCredentials>()
+      const credentials = mock<LoginCredentials>()
 
       await app.homeApi.authenticate(credentials)
 
