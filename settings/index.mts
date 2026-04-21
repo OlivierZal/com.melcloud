@@ -172,15 +172,20 @@ interface Credentials {
 const HOME_DRIVER_ID = 'home-melcloud'
 
 class NoDeviceError extends Error {
+  public readonly api: Api | null
+
   public override name = 'NoDeviceError'
 
-  public constructor(homey: Homey) {
-    super(homey.__('settings.devices.none'))
+  public constructor(homey: Homey, api: Api | null = null) {
+    super(
+      homey.__(
+        api === null ?
+          'settings.devices.none'
+        : `settings.devices.noneFor.${api}`,
+      ),
+    )
+    this.api = api
   }
-}
-
-class NoClassicDeviceError extends NoDeviceError {
-  public override name = 'NoClassicDeviceError'
 }
 
 const disableButton = (id: string, isDisabled = true): void => {
@@ -464,9 +469,10 @@ class AuthManager {
     const api = this.#currentApi
     const username = this.#usernameInput?.value ?? ''
     const password = this.#passwordInput?.value ?? ''
-    const failureMessage = this.#homey.__('settings.authenticate.failure')
     if (!username || !password) {
-      fireAndForget(this.#homey.alert(failureMessage))
+      fireAndForget(
+        this.#homey.alert(this.#homey.__('settings.authenticate.emptyFields')),
+      )
       return
     }
     await withDisablingButton(this.#authenticateButton.id, async () => {
@@ -478,7 +484,7 @@ class AuthManager {
         this.#credentialsByApi[api] = { password, username }
         await this.#loadPostLoginCallback(api)
       } catch {
-        await this.#homey.alert(failureMessage)
+        await this.#homey.alert(this.#homey.__('settings.authenticate.failure'))
       }
     })
   }
@@ -486,8 +492,10 @@ class AuthManager {
   public setAvailableApis(apis: readonly Api[]): void {
     const allowed = new Set<string>(apis)
     const firstAllowed = this.#updateOptionVisibility(allowed)
-    // Browser keeps the current selection even if that option is now hidden;
+    // Browser keeps the current selection even if that option is now hidden —
     // advance to the first visible one so submission targets the right API.
+    // Note: programmatic `.value` assignment does not fire `change`, so
+    // `#syncInputsFromCredentials` below covers what the listener would miss.
     if (!allowed.has(this.#apiSelect.value) && firstAllowed !== '') {
       this.#apiSelect.value = firstAllowed
     }
@@ -1424,7 +1432,7 @@ class SettingsApp {
   }
 
   #disableForError(error: NoDeviceError): void {
-    if (error instanceof NoClassicDeviceError) {
+    if (error.api === 'classic') {
       this.#disableClassicButtons()
     }
     this.#disableCommonButtonsIfNoDevices()
@@ -1436,7 +1444,7 @@ class SettingsApp {
       '/classic/buildings',
     )
     if (buildings.length === 0) {
-      throw new NoClassicDeviceError(this.#homey)
+      throw new NoDeviceError(this.#homey, 'classic')
     }
     await this.#zoneSettingsManager.populateZoneOptions(buildings)
     await Promise.all([
@@ -1481,7 +1489,7 @@ class SettingsApp {
       if (api === 'classic') {
         await this.#fetchClassicBuildings()
       } else if (!this.#hasHomeDevices()) {
-        throw new NoDeviceError(this.#homey)
+        throw new NoDeviceError(this.#homey, 'home')
       }
     } catch (error) {
       if (error instanceof NoDeviceError) {
@@ -1510,7 +1518,7 @@ class SettingsApp {
       await this.#validateInitialClassicAuth()
     }
     if (this.#authState.home && !this.#hasHomeDevices()) {
-      this.#disableForError(new NoDeviceError(this.#homey))
+      this.#disableForError(new NoDeviceError(this.#homey, 'home'))
     }
   }
 
@@ -1518,7 +1526,7 @@ class SettingsApp {
     try {
       await this.#fetchClassicBuildings()
     } catch (error) {
-      if (error instanceof NoClassicDeviceError) {
+      if (error instanceof NoDeviceError && error.api === 'classic') {
         this.#disableForError(error)
       } else {
         this.#authState.classic = false

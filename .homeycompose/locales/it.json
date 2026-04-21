@@ -7,7 +7,8 @@
     "authenticate": {
       "button": "Accedi",
       "failure": "Autenticazione fallita.",
-      "legend": "Credenziali"
+      "legend": "Credenziali",
+      "emptyFields": "Nome utente e password sono richiesti."
     },
     "boolean": {
       "false": "No",
@@ -19,7 +20,11 @@
         "nothing": "Nessuna modifica da applicare."
       },
       "legend": "Impostazioni dispositivo",
-      "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!"
+      "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!",
+      "noneFor": {
+        "classic": "Nessun dispositivo Classic trovato. Aggiungine uno per abilitare le impostazioni specifiche di Classic.",
+        "home": "Nessun dispositivo Home trovato. Aggiungine uno per abilitare le impostazioni specifiche di Home."
+      }
     },
     "devicesAta": {
       "autoAdjust": "Regolazione automatica della temperatura del condizionatore",

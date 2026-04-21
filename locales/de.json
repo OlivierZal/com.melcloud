@@ -7,7 +7,8 @@
     "authenticate": {
       "button": "Anmelden",
       "failure": "Authentifizierung fehlgeschlagen.",
-      "legend": "Anmeldedaten"
+      "legend": "Anmeldedaten",
+      "emptyFields": "Benutzername und Passwort sind erforderlich."
     },
     "boolean": {
       "false": "Nein",
@@ -20,6 +21,10 @@
       "apply": {
         "button": "Auf alle Geräte anwenden",
         "nothing": "Keine Änderung zum Anwenden."
+      },
+      "noneFor": {
+        "classic": "Kein Classic-Gerät gefunden. Fügen Sie eines hinzu, um Classic-spezifische Einstellungen zu aktivieren.",
+        "home": "Kein Home-Gerät gefunden. Fügen Sie eines hinzu, um Home-spezifische Einstellungen zu aktivieren."
       }
     },
     "devicesAta": {

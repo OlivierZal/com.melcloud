@@ -7,7 +7,8 @@
     "authenticate": {
       "button": "Logg inn",
       "failure": "Autentisering mislyktes.",
-      "legend": "Innloggingsinformasjon"
+      "legend": "Innloggingsinformasjon",
+      "emptyFields": "Brukernavn og passord er påkrevd."
     },
     "boolean": {
       "false": "Nei",
@@ -20,6 +21,10 @@
       "apply": {
         "button": "Bruk på alle enheter",
         "nothing": "Ingen endring å bruke."
+      },
+      "noneFor": {
+        "classic": "Ingen Classic-enhet funnet. Legg til en for å aktivere Classic-spesifikke innstillinger.",
+        "home": "Ingen Home-enhet funnet. Legg til en for å aktivere Home-spesifikke innstillinger."
       }
     },
     "devicesAta": {

@@ -7,7 +7,8 @@
     "authenticate": {
       "button": "Zaloguj się",
       "failure": "Uwierzytelnianie nie powiodło się.",
-      "legend": "Dane logowania"
+      "legend": "Dane logowania",
+      "emptyFields": "Wymagana nazwa użytkownika i hasło."
     },
     "boolean": {
       "false": "Nie",
@@ -20,6 +21,10 @@
       "apply": {
         "button": "Zastosuj do wszystkich urządzeń",
         "nothing": "Brak zmian do zastosowania."
+      },
+      "noneFor": {
+        "classic": "Nie znaleziono urządzenia Classic. Dodaj jedno, aby odblokować ustawienia specyficzne dla Classic.",
+        "home": "Nie znaleziono urządzenia Home. Dodaj jedno, aby odblokować ustawienia specyficzne dla Home."
       }
     },
     "devicesAta": {
