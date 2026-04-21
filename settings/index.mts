@@ -164,11 +164,6 @@ const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
-interface Credentials {
-  readonly password?: string | null
-  readonly username?: string | null
-}
-
 const HOME_DRIVER_ID = 'home-melcloud'
 
 class NoDeviceError extends Error {
@@ -404,9 +399,9 @@ class AuthManager {
 
   readonly #authenticationSection: HTMLDivElement
 
-  #credentialsByApi: Record<Api, Credentials> = {
-    classic: { password: null, username: null },
-    home: { password: null, username: null },
+  #credentialsByApi: Record<Api, Partial<LoginCredentials>> = {
+    classic: {},
+    home: {},
   }
 
   readonly #homey: Homey
@@ -446,7 +441,7 @@ class AuthManager {
 
   public createCredentialFields(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
-    credentials: Record<Api, Credentials>,
+    credentials: Record<Api, Partial<LoginCredentials>>,
   ): void {
     this.#credentialsByApi = credentials
     this.#usernameInput = this.#createCredentialInput(
@@ -1473,11 +1468,16 @@ class SettingsApp {
   async #initCredentialFields(settings: HomeySettings): Promise<void> {
     const driverSettings =
       await this.#deviceSettingsManager.fetchDriverSettings()
+    // Homey Settings may return `null` for a cleared key; coerce to
+    // `undefined` to match `Partial<LoginCredentials>`.
     this.#authManager.createCredentialFields(driverSettings, {
-      classic: { password: settings.password, username: settings.username },
+      classic: {
+        password: settings.password ?? undefined,
+        username: settings.username ?? undefined,
+      },
       home: {
-        password: settings.homePassword,
-        username: settings.homeUsername,
+        password: settings.homePassword ?? undefined,
+        username: settings.homeUsername ?? undefined,
       },
     })
   }
