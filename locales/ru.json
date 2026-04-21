@@ -2,7 +2,8 @@
   "errors": {
     "deviceNotFound": "Устройство не найдено.",
     "zoneNotFound": "Зона не найдена.",
-    "rateLimit": "Слишком много запросов. Попробуйте снова в __time__."
+    "rateLimit": "Слишком много запросов. Попробуйте снова в __time__.",
+    "rateLimitUnknown": "Слишком много запросов. Попробуйте позже."
   },
   "settings": {
     "authenticate": {

@@ -1,10 +1,11 @@
-import type {
-  LoginCredentials,
-  ReportChartLineOptions,
-  ReportChartPieOptions,
-  SyncCallback,
+import {
+  type LoginCredentials,
+  type ReportChartLineOptions,
+  type ReportChartPieOptions,
+  type SyncCallback,
+  RateLimitError,
 } from '@olivierzal/melcloud-api'
-import { Settings as LuxonSettings } from 'luxon'
+import { DateTime, Settings as LuxonSettings } from 'luxon'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
@@ -854,7 +855,7 @@ describe('melCloudApp', () => {
       expect(app.classicApi).toBe(mockApiInstance)
     })
 
-    it('should delegate to api authenticate', async () => {
+    it('should delegate classicAuthenticate to classicApi.authenticate', async () => {
       mockApiInstance.authenticate.mockResolvedValue()
       await app.onInit()
 
@@ -862,19 +863,55 @@ describe('melCloudApp', () => {
         password: 'pass',
         username: 'user',
       })
-      await app.classicApi.authenticate(credentials)
+      await app.classicAuthenticate(credentials)
 
       expect(mockApiInstance.authenticate).toHaveBeenCalledWith(credentials)
     })
 
-    it('should propagate authenticate errors', async () => {
+    it('should propagate non-RateLimitError authenticate errors as-is', async () => {
       const error = new Error('invalid credentials')
       mockApiInstance.authenticate.mockRejectedValue(error)
       await app.onInit()
 
       await expect(
-        app.classicApi.authenticate(mock<LoginCredentials>()),
+        app.classicAuthenticate(mock<LoginCredentials>()),
       ).rejects.toThrow(error)
+    })
+
+    it('should localize RateLimitError using errors.rateLimit with unblock time', async () => {
+      const unblockAt = DateTime.fromObject(
+        { hour: 14, minute: 30 },
+        { zone: 'Europe/Paris' },
+      )
+      mockApiInstance.authenticate.mockRejectedValue(
+        new RateLimitError('API requests are on hold', {
+          retryAfter: null,
+          unblockAt,
+        }),
+      )
+      await app.onInit()
+
+      await expect(
+        app.classicAuthenticate(mock<LoginCredentials>()),
+      ).rejects.toThrow('errors.rateLimit')
+      expect(mockTranslate).toHaveBeenCalledWith('errors.rateLimit', {
+        time: '14:30',
+      })
+    })
+
+    it('should fall back to errors.rateLimitUnknown when unblockAt is null', async () => {
+      mockApiInstance.authenticate.mockRejectedValue(
+        new RateLimitError('API requests are on hold', {
+          retryAfter: null,
+          unblockAt: null,
+        }),
+      )
+      await app.onInit()
+
+      await expect(
+        app.classicAuthenticate(mock<LoginCredentials>()),
+      ).rejects.toThrow('errors.rateLimitUnknown')
+      expect(mockTranslate).toHaveBeenCalledWith('errors.rateLimitUnknown')
     })
   })
 
@@ -885,12 +922,12 @@ describe('melCloudApp', () => {
       expect(app.homeApi).toBe(mockHomeApiInstance)
     })
 
-    it('should delegate homeAuthenticate to homeApi authenticate', async () => {
+    it('should delegate homeAuthenticate to homeApi.authenticate', async () => {
       mockHomeApiInstance.authenticate.mockResolvedValue()
       await app.onInit()
       const credentials = mock<LoginCredentials>()
 
-      await app.homeApi.authenticate(credentials)
+      await app.homeAuthenticate(credentials)
 
       expect(mockHomeApiInstance.authenticate).toHaveBeenCalledWith(credentials)
     })

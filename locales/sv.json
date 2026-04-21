@@ -2,7 +2,8 @@
   "errors": {
     "deviceNotFound": "Enhet ej hittad.",
     "zoneNotFound": "Zon ej hittad.",
-    "rateLimit": "För många förfrågningar. Försök igen kl. __time__."
+    "rateLimit": "För många förfrågningar. Försök igen kl. __time__.",
+    "rateLimitUnknown": "För många förfrågningar. Försök igen senare."
   },
   "settings": {
     "authenticate": {

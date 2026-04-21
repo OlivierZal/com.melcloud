@@ -695,11 +695,13 @@ export default class MELCloudApp extends App {
     try {
       return await fn()
     } catch (error) {
-      if (error instanceof RateLimitError && error.unblockAt !== null) {
+      if (error instanceof RateLimitError) {
         throw new Error(
-          this.homey.__('errors.rateLimit', {
-            time: error.unblockAt.toFormat('HH:mm'),
-          }),
+          error.unblockAt === null ?
+            this.homey.__('errors.rateLimitUnknown')
+          : this.homey.__('errors.rateLimit', {
+              time: error.unblockAt.toFormat('HH:mm'),
+            }),
           { cause: error },
         )
       }
