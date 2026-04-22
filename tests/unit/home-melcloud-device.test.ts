@@ -9,6 +9,7 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import { ThermostatModeAta } from '../../types/ata.mts'
 import { testThermostatMode } from '../device-descriptors.ts'
+import { getMockCallArg } from '../helpers.ts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -194,6 +195,154 @@ describe(HomeMELCloudDeviceAta, () => {
       expect(converter?.('auto')).toBe('Automatic')
       expect(converter?.('dry')).toBe('Dry')
       expect(converter?.('fan')).toBe('Fan')
+    })
+  })
+
+  describe('daily energy report', () => {
+    const getEnergyMock =
+      vi.fn<(params: unknown) => Promise<Record<string, unknown>>>()
+
+    beforeEach(() => {
+      getEnergyMock.mockReset()
+      vi.spyOn(device, 'ensureDevice').mockResolvedValue({})
+      vi.spyOn(device, 'getFacade').mockReturnValue({
+        getEnergy: getEnergyMock,
+      })
+    })
+
+    it('should skip scheduling when meter_power.daily capability is missing', async () => {
+      vi.spyOn(device, 'hasCapability').mockReturnValue(false)
+      await device.scheduleEnergyReports()
+
+      expect(getEnergyMock).not.toHaveBeenCalled()
+      expect(device.homey.setTimeout).not.toHaveBeenCalled()
+    })
+
+    it('should fetch and set meter_power.daily from summed bucket values', async () => {
+      getEnergyMock.mockResolvedValue({
+        ok: true,
+        value: { measureData: [{ values: [{ time: 't', value: '12.5' }] }] },
+      })
+      await device.scheduleEnergyReports()
+
+      expect(getEnergyMock).toHaveBeenCalledWith(
+        expect.objectContaining({ interval: 'Day' }),
+      )
+      expect(device.setCapabilityValue).toHaveBeenCalledWith(
+        'meter_power.daily',
+        12.5,
+      )
+      expect(device.homey.setTimeout).toHaveBeenCalledWith(
+        expect.any(Function),
+        expect.any(Number),
+      )
+    })
+
+    it('should set 0 when measureData is empty', async () => {
+      getEnergyMock.mockResolvedValue({
+        ok: true,
+        value: { measureData: [] },
+      })
+      await device.scheduleEnergyReports()
+
+      expect(device.setCapabilityValue).toHaveBeenCalledWith(
+        'meter_power.daily',
+        0,
+      )
+    })
+
+    it('should log error and skip capability update when API returns an error result', async () => {
+      getEnergyMock.mockResolvedValue({ error: 'boom', ok: false })
+      await device.scheduleEnergyReports()
+
+      expect(device.error).toHaveBeenCalledWith(
+        'Home daily energy fetch failed:',
+        'boom',
+      )
+      expect(device.setCapabilityValue).not.toHaveBeenCalled()
+    })
+
+    it('should catch thrown errors from getEnergy', async () => {
+      const boom = new Error('network down')
+      getEnergyMock.mockRejectedValue(boom)
+      await device.scheduleEnergyReports()
+
+      expect(device.error).toHaveBeenCalledWith(
+        'Home daily energy fetch error:',
+        boom,
+      )
+      expect(device.setCapabilityValue).not.toHaveBeenCalled()
+    })
+
+    it('should return early when ensureDevice returns null', async () => {
+      vi.spyOn(device, 'ensureDevice').mockResolvedValue(null)
+      await device.scheduleEnergyReports()
+
+      expect(getEnergyMock).not.toHaveBeenCalled()
+    })
+
+    it('should run fetcher and register hourly interval on timeout fire', async () => {
+      getEnergyMock.mockResolvedValue({
+        ok: true,
+        value: { measureData: [{ values: [{ time: 't', value: '1' }] }] },
+      })
+      await device.scheduleEnergyReports()
+      device.setCapabilityValue.mockClear()
+      getEnergyMock.mockClear()
+      await getMockCallArg<() => Promise<void>>(
+        device.homey.setTimeout as { mock: { calls: unknown[][] } },
+        0,
+        0,
+      )()
+      getEnergyMock.mockClear()
+      await getMockCallArg<() => Promise<void>>(
+        device.homey.setInterval as { mock: { calls: unknown[][] } },
+        0,
+        0,
+      )()
+
+      expect(getEnergyMock).toHaveBeenCalledWith(
+        expect.objectContaining({ interval: 'Day' }),
+      )
+    })
+
+    it('should be idempotent: second schedule call does not reschedule', async () => {
+      getEnergyMock.mockResolvedValue({
+        ok: true,
+        value: { measureData: [] },
+      })
+      device.homey.setTimeout.mockReturnValue(789 as unknown as NodeJS.Timeout)
+      await device.scheduleEnergyReports()
+      const firstCallCount = Number(device.homey.setTimeout.mock.calls.length)
+      await device.scheduleEnergyReports()
+
+      expect(device.homey.setTimeout).toHaveBeenCalledTimes(firstCallCount)
+    })
+
+    it('should be safe to cleanupDevice before any schedule', () => {
+      device.cleanupDevice()
+
+      expect(device.homey.clearTimeout).not.toHaveBeenCalled()
+      expect(device.homey.clearInterval).not.toHaveBeenCalled()
+    })
+
+    it('should clear timers in cleanupDevice', async () => {
+      getEnergyMock.mockResolvedValue({
+        ok: true,
+        value: { measureData: [] },
+      })
+      device.homey.setTimeout.mockReturnValue(123 as unknown as NodeJS.Timeout)
+      await device.scheduleEnergyReports()
+      device.homey.setInterval.mockReturnValue(456 as unknown as NodeJS.Timeout)
+      await getMockCallArg<() => Promise<void>>(
+        device.homey.setTimeout as { mock: { calls: unknown[][] } },
+        0,
+        0,
+      )()
+      device.cleanupDevice()
+
+      expect(device.homey.clearTimeout).toHaveBeenCalledWith(123)
+      expect(device.homey.clearInterval).toHaveBeenCalledWith(456)
     })
   })
 })
