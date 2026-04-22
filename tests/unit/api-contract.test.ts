@@ -19,7 +19,7 @@ const readApiKeys = (relativePath: string): string[] => {
   const url = new URL(relativePath, import.meta.url)
   const raw = readFileSync(fileURLToPath(url), 'utf8')
   const parsed = JSON.parse(raw) as { api?: Record<string, unknown> }
-  return Object.keys(parsed.api ?? {}).toSorted()
+  return Object.keys(parsed.api ?? {}).toSorted((left, right) => left.localeCompare(right))
 }
 
 // Handler config is authoritative in `.homeycompose/app.json` and each
@@ -36,9 +36,9 @@ describe('api contract', () => {
   ])(
     'every %s endpoint declared in config has a matching handler',
     (_name, configPath, handlers) => {
-      expect(Object.keys(handlers).toSorted()).toStrictEqual(
-        readApiKeys(configPath),
-      )
+      expect(
+        Object.keys(handlers).toSorted((left, right) => left.localeCompare(right)),
+      ).toStrictEqual(readApiKeys(configPath))
     },
   )
 })
