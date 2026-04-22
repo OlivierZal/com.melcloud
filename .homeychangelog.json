@@ -316,5 +316,20 @@
     "pl": "Naprawiono parowanie MELCloud Home, które nie pokazywało urządzeń przy pierwszej konfiguracji.",
     "ru": "Исправлено сопряжение MELCloud Home, не отображавшее устройства при первой настройке.",
     "sv": "Åtgärdat MELCloud Home-parning som inte visade några enheter vid första installationen."
+  },
+  "44.1.0": {
+    "ar": "المصادقة على واجهة برمجة تطبيقات MELCloud Home مباشرة من صفحة الإعدادات، بشكل مستقل عن حساب Classic.",
+    "da": "Log ind på MELCloud Home-API'en direkte fra indstillingssiden, uafhængigt af Classic-kontoen.",
+    "de": "Bei der MELCloud Home-API direkt von der Einstellungsseite anmelden, unabhängig vom Classic-Konto.",
+    "en": "Sign in to the MELCloud Home API directly from the settings page, independently from the Classic account.",
+    "es": "Inicie sesión en la API de MELCloud Home directamente desde la página de configuración, de forma independiente a la cuenta Classic.",
+    "fr": "Connexion à l'API MELCloud Home directement depuis la page des paramètres, indépendamment du compte Classic.",
+    "it": "Accedi all'API MELCloud Home direttamente dalla pagina delle impostazioni, indipendentemente dall'account Classic.",
+    "ko": "Classic 계정과 독립적으로 설정 페이지에서 MELCloud Home API에 직접 로그인.",
+    "nl": "Meld aan bij de MELCloud Home API rechtstreeks vanaf de instellingenpagina, onafhankelijk van het Classic-account.",
+    "no": "Logg på MELCloud Home-API-en direkte fra innstillingssiden, uavhengig av Classic-kontoen.",
+    "pl": "Logowanie do API MELCloud Home bezpośrednio ze strony ustawień, niezależnie od konta Classic.",
+    "ru": "Вход в API MELCloud Home прямо со страницы настроек, независимо от учётной записи Classic.",
+    "sv": "Logga in på MELCloud Home-API:et direkt från inställningssidan, oberoende av Classic-kontot."
   }
 }
