@@ -73,7 +73,7 @@
     "tailwind-csstree": "^0.3.1",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.3",
-    "typescript-eslint": "8.58",
+    "typescript-eslint": "8.59",
     "unplugin-swc": "^1.5.9",
     "vitest": "^4.1.2"
   },
