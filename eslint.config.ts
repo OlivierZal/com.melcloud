@@ -297,6 +297,7 @@ const config = defineConfig([
         'error',
         {
           allowDefaultCaseForExhaustiveSwitch: false,
+          considerDefaultExhaustiveForUnions: false,
           requireDefaultForNonUnion: true,
         },
       ],

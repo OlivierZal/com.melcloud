@@ -976,7 +976,7 @@ describe('melCloudApp', () => {
         createClassicDevice({
           getSetting: vi
             .fn<ClassicMELCloudDevice['getSetting']>()
-            .mockReturnValue(false as never),
+            .mockReturnValue(false),
           getSettings: vi
             .fn<() => Record<string, unknown>>()
             .mockReturnValue({ always_on: true }),
@@ -999,7 +999,7 @@ describe('melCloudApp', () => {
         createClassicDevice({
           getSetting: vi
             .fn<ClassicMELCloudDevice['getSetting']>()
-            .mockReturnValue(true as never),
+            .mockReturnValue(true),
           getSettings: vi
             .fn<() => Record<string, unknown>>()
             .mockReturnValue({ always_on: true }),
@@ -1018,7 +1018,7 @@ describe('melCloudApp', () => {
       const mockDevice = createClassicDevice({
         getSetting: vi
           .fn<ClassicMELCloudDevice['getSetting']>()
-          .mockReturnValue(false as never),
+          .mockReturnValue(false),
         getSettings: vi
           .fn<() => Record<string, unknown>>()
           .mockReturnValue({ always_on: true }),
@@ -1029,7 +1029,7 @@ describe('melCloudApp', () => {
         driver: { id: 'melcloud_atw' },
         getSetting: vi
           .fn<ClassicMELCloudDevice['getSetting']>()
-          .mockReturnValue(false as never),
+          .mockReturnValue(false),
         getSettings: vi
           .fn<() => Record<string, unknown>>()
           .mockReturnValue({ always_on: true }),

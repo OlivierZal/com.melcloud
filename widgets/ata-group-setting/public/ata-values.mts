@@ -2,7 +2,11 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { Settings } from '../../../types/device-settings.mts'
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
-import { ClassicTemperature, classicCoolModes } from './constants.mts'
+import {
+  type ClassicOperationMode,
+  ClassicTemperature,
+  classicCoolModes,
+} from './constants.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
@@ -108,7 +112,10 @@ const createSelect = (
 const getCoolingAdjustedMin = (id: string, min: string): string =>
   (
     id === 'SetTemperature' &&
-    classicCoolModes.has(Number(getSelect('OperationMode').value))
+    classicCoolModes.has(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- DOM <select> value is one of ClassicOperationMode values by markup contract
+      Number(getSelect('OperationMode').value) as ClassicOperationMode,
+    )
   ) ?
     String(ClassicTemperature.cooling_min)
   : min

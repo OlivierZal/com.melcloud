@@ -10,20 +10,25 @@ import {
 } from '../../types/classic-atw.mts'
 import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
-export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<
-  typeof Classic.DeviceType.Atw
-> {
-  public readonly energyCapabilityTagMapping = energyCapabilityTagMapping
+type AtwType = typeof Classic.DeviceType.Atw
 
-  public readonly getCapabilitiesOptions = getCapabilitiesOptions
+export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<AtwType> {
+  public readonly energyCapabilityTagMapping: typeof energyCapabilityTagMapping =
+    energyCapabilityTagMapping
 
-  public readonly getCapabilityTagMapping = getCapabilityTagMapping
+  public readonly getCapabilitiesOptions: typeof getCapabilitiesOptions =
+    getCapabilitiesOptions
 
-  public readonly listCapabilityTagMapping = listCapabilityTagMapping
+  public readonly getCapabilityTagMapping: typeof getCapabilityTagMapping =
+    getCapabilityTagMapping
 
-  public readonly setCapabilityTagMapping = setCapabilityTagMapping
+  public readonly listCapabilityTagMapping: typeof listCapabilityTagMapping =
+    listCapabilityTagMapping
 
-  public readonly type = Classic.DeviceType.Atw
+  public readonly setCapabilityTagMapping: typeof setCapabilityTagMapping =
+    setCapabilityTagMapping
+
+  public readonly type: AtwType = Classic.DeviceType.Atw
 
   readonly #zone1Capabilities: (keyof Capabilities<
     typeof Classic.DeviceType.Atw

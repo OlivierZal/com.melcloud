@@ -18,7 +18,7 @@
     "build": "npm run build:assets && tsc --project tsconfig.build.json",
     "build:assets": "npm run build:clean && npm run build:css && npm run build:public",
     "build:clean": "for d in widgets/*/public; do rm -f \"$d\"/{constants,dom,zones,homey-api}.mts \"$d\"/styles/dist.css; done",
-    "build:constants": "for d in widgets/*/public; do grep -v sourceMappingURL node_modules/@olivierzal/melcloud-api/dist/constants.js > \"$d/constants.mts\"; done && npm run format:fix",
+    "build:constants": "for d in widgets/*/public; do cp node_modules/@olivierzal/melcloud-api/src/constants.ts \"$d/constants.mts\"; done && npm run format:fix",
     "build:css": "for d in widgets/*/public; do npx @tailwindcss/cli -i app.css -o \"$d/styles/dist.css\"; done",
     "build:public": "for d in widgets/*/public; do cp public/*.mts \"$d/\"; done && npm run build:constants",
     "format": "prettier . --check",
@@ -35,7 +35,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^37.0.0",
+    "@olivierzal/melcloud-api": "^37.1.0",
     "homey-lib": "^2.49.1",
     "luxon": "^3.7.2"
   },

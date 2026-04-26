@@ -8,12 +8,14 @@ import { BaseMELCloudDriver } from '../base-driver.mts'
 export default class HomeMELCloudDriverAta extends BaseMELCloudDriver {
   declare public readonly getDevices: () => HomeMELCloudDevice[]
 
-  public override readonly getCapabilitiesOptions = homeGetCapabilitiesOptions
+  public override readonly getCapabilitiesOptions: typeof homeGetCapabilitiesOptions =
+    homeGetCapabilitiesOptions
 
-  public override readonly setCapabilityTagMapping =
+  public override readonly setCapabilityTagMapping: typeof homeSetCapabilityTagMappingAta =
     homeSetCapabilityTagMappingAta
 
-  public override readonly type = Home.DeviceType.Ata
+  public override readonly type: typeof Home.DeviceType.Ata =
+    Home.DeviceType.Ata
 
   protected override get api(): Home.API {
     return this.homey.app.homeApi

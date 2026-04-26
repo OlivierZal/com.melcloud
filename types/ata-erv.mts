@@ -140,7 +140,9 @@ const createVeryObject = ({
   }),
 })
 
-export const fanSpeedValues = [
+export const fanSpeedValues: readonly CapabilitiesOptionsValues<
+  keyof typeof Classic.FanSpeed
+>[] = [
   auto,
   createVeryObject(fast),
   fast,

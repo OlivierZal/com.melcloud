@@ -12,7 +12,10 @@ export const ThermostatModeAta = {
 export type ThermostatModeAta =
   (typeof ThermostatModeAta)[keyof typeof ThermostatModeAta]
 
-export const horizontalFromDevice = {
+export const horizontalFromDevice: Record<
+  Classic.Horizontal,
+  keyof typeof Classic.Horizontal
+> = {
   [Classic.Horizontal.auto]: 'auto',
   [Classic.Horizontal.center]: 'center',
   [Classic.Horizontal.center_left]: 'center_left',
@@ -21,20 +24,23 @@ export const horizontalFromDevice = {
   [Classic.Horizontal.rightwards]: 'rightwards',
   [Classic.Horizontal.swing]: 'swing',
   [Classic.Horizontal.wide]: 'wide',
-} as const satisfies Record<Classic.Horizontal, keyof typeof Classic.Horizontal>
+}
 
-export const operationModeFromDevice = {
+export const operationModeFromDevice: Record<
+  Classic.OperationMode,
+  keyof typeof Classic.OperationMode
+> = {
   [Classic.OperationMode.auto]: 'auto',
   [Classic.OperationMode.cool]: 'cool',
   [Classic.OperationMode.dry]: 'dry',
   [Classic.OperationMode.fan]: 'fan',
   [Classic.OperationMode.heat]: 'heat',
-} as const satisfies Record<
-  Classic.OperationMode,
-  keyof typeof Classic.OperationMode
->
+}
 
-export const verticalFromDevice = {
+export const verticalFromDevice: Record<
+  Classic.Vertical,
+  keyof typeof Classic.Vertical
+> = {
   [Classic.Vertical.auto]: 'auto',
   [Classic.Vertical.downwards]: 'downwards',
   [Classic.Vertical.mid_high]: 'mid_high',
@@ -42,4 +48,4 @@ export const verticalFromDevice = {
   [Classic.Vertical.middle]: 'middle',
   [Classic.Vertical.swing]: 'swing',
   [Classic.Vertical.upwards]: 'upwards',
-} as const satisfies Record<Classic.Vertical, keyof typeof Classic.Vertical>
+}

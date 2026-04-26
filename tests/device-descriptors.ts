@@ -307,9 +307,7 @@ export const testPostUpdateSync = (
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
       const syncCallback = getMockCallArg<() => Promise<void>>(
-        device.homey.setTimeout as unknown as {
-          mock: { calls: unknown[][] }
-        },
+        device.homey.setTimeout,
         0,
         0,
       )

@@ -2,7 +2,11 @@
   "compilerOptions": {
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
+    "declaration": true,
+    "erasableSyntaxOnly": true,
+    "isolatedDeclarations": true,
     "lib": ["DOM", "ESNext"],
+    "libReplacement": false,
     "module": "preserve",
     "noEmit": true,
     "noFallthroughCasesInSwitch": true,

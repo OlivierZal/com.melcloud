@@ -9,20 +9,25 @@ import {
 } from '../../types/classic-ata.mts'
 import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
-export default class ClassicMELCloudDriverAta extends ClassicMELCloudDriver<
-  typeof Classic.DeviceType.Ata
-> {
-  public readonly energyCapabilityTagMapping = energyCapabilityTagMapping
+type AtaType = typeof Classic.DeviceType.Ata
 
-  public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtaErv
+export default class ClassicMELCloudDriverAta extends ClassicMELCloudDriver<AtaType> {
+  public readonly energyCapabilityTagMapping: typeof energyCapabilityTagMapping =
+    energyCapabilityTagMapping
 
-  public readonly getCapabilityTagMapping = getCapabilityTagMapping
+  public readonly getCapabilitiesOptions: typeof getCapabilitiesOptionsAtaErv =
+    getCapabilitiesOptionsAtaErv
 
-  public readonly listCapabilityTagMapping = listCapabilityTagMapping
+  public readonly getCapabilityTagMapping: typeof getCapabilityTagMapping =
+    getCapabilityTagMapping
 
-  public readonly setCapabilityTagMapping = setCapabilityTagMapping
+  public readonly listCapabilityTagMapping: typeof listCapabilityTagMapping =
+    listCapabilityTagMapping
 
-  public readonly type = Classic.DeviceType.Ata
+  public readonly setCapabilityTagMapping: typeof setCapabilityTagMapping =
+    setCapabilityTagMapping
+
+  public readonly type: AtaType = Classic.DeviceType.Ata
 
   public override getRequiredCapabilities(): string[] {
     return Object.keys({
