@@ -114,7 +114,7 @@ export const testThermostatMode = (
 ): void => {
   describe('thermostat mode configuration', () => {
     it('should match expected thermostat mode', () => {
-      expect((getDevice() as Record<string, unknown>)['thermostatMode']).toBe(
+      expect((getDevice() as Record<string, unknown>).thermostatMode).toBe(
         expected,
       )
     })

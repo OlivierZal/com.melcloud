@@ -566,7 +566,7 @@ describe('melCloudApp', () => {
 
       const deviceSettings = app.getDeviceSettings()
 
-      expect(deviceSettings['melcloud']?.['always_on']).toBe(true)
+      expect(deviceSettings.melcloud?.always_on).toBe(true)
     })
 
     it('should set to null when settings differ between devices', async () => {
@@ -586,7 +586,7 @@ describe('melCloudApp', () => {
 
       const deviceSettings = app.getDeviceSettings()
 
-      expect(deviceSettings['melcloud']?.['always_on']).toBeNull()
+      expect(deviceSettings.melcloud?.always_on).toBeNull()
     })
   })
 
@@ -597,7 +597,7 @@ describe('melCloudApp', () => {
       const driverSettings = app.getDriverSettings()
 
       expect(driverSettings).toBeDefined()
-      expect(driverSettings['group1']).toBeInstanceOf(Array)
+      expect(driverSettings.group1).toBeInstanceOf(Array)
     })
 
     it('should use language-specific labels', async () => {

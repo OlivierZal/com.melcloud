@@ -314,10 +314,10 @@ export abstract class BaseMELCloudDevice extends Device {
           'thermostat_mode' in values &&
           this.#isThermostatModeSupportingOff()
         ) {
-          const isOn = values['thermostat_mode'] !== 'off'
-          values['onoff'] = isOn
+          const isOn = values.thermostat_mode !== 'off'
+          values.onoff = isOn
           if (!isOn) {
-            delete values['thermostat_mode']
+            delete values.thermostat_mode
           }
         }
         await this.sendUpdate(values)
@@ -403,10 +403,7 @@ export abstract class BaseMELCloudDevice extends Device {
       await this.#syncOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }
-    if (
-      changedKeys.includes('always_on') &&
-      newSettings['always_on'] === true
-    ) {
+    if (changedKeys.includes('always_on') && newSettings.always_on === true) {
       await this.triggerCapabilityListener('onoff', true)
       return
     }

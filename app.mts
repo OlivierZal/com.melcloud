@@ -575,9 +575,9 @@ export default class MELCloudApp extends App {
           ...thermostatMode,
           values: this.homey.manifest.drivers
             .find(({ id }) => id === 'melcloud')
-            ?.capabilitiesOptions?.[
-              'thermostat_mode'
-            ]?.values?.filter(({ id }) => id !== 'off'),
+            ?.capabilitiesOptions?.thermostat_mode?.values?.filter(
+              ({ id }) => id !== 'off',
+            ),
         },
       },
     ]
