@@ -4,6 +4,6 @@
     "rootDir": ".",
     "sourceMap": true
   },
-  "exclude": ["tests"],
+  "exclude": ["*.config.ts", "tests"],
   "extends": "./tsconfig.json"
 }

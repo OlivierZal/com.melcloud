@@ -20,5 +20,5 @@
     "types": ["node", "luxon"],
     "verbatimModuleSyntax": true
   },
-  "exclude": ["*.config.ts", "eslint-utils"]
+  "exclude": ["*.config.ts"]
 }
