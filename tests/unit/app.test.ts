@@ -566,7 +566,7 @@ describe('melCloudApp', () => {
 
       const deviceSettings = app.getDeviceSettings()
 
-      expect(deviceSettings['melcloud']?.['always_on']).toBe(true)
+      expect(deviceSettings.melcloud?.always_on).toBe(true)
     })
 
     it('should set to null when settings differ between devices', async () => {
@@ -586,7 +586,7 @@ describe('melCloudApp', () => {
 
       const deviceSettings = app.getDeviceSettings()
 
-      expect(deviceSettings['melcloud']?.['always_on']).toBeNull()
+      expect(deviceSettings.melcloud?.always_on).toBeNull()
     })
   })
 
@@ -597,7 +597,7 @@ describe('melCloudApp', () => {
       const driverSettings = app.getDriverSettings()
 
       expect(driverSettings).toBeDefined()
-      expect(driverSettings['group1']).toBeInstanceOf(Array)
+      expect(driverSettings.group1).toBeInstanceOf(Array)
     })
 
     it('should use language-specific labels', async () => {
@@ -976,7 +976,7 @@ describe('melCloudApp', () => {
         createClassicDevice({
           getSetting: vi
             .fn<ClassicMELCloudDevice['getSetting']>()
-            .mockReturnValue(false as never),
+            .mockReturnValue(false),
           getSettings: vi
             .fn<() => Record<string, unknown>>()
             .mockReturnValue({ always_on: true }),
@@ -999,7 +999,7 @@ describe('melCloudApp', () => {
         createClassicDevice({
           getSetting: vi
             .fn<ClassicMELCloudDevice['getSetting']>()
-            .mockReturnValue(true as never),
+            .mockReturnValue(true),
           getSettings: vi
             .fn<() => Record<string, unknown>>()
             .mockReturnValue({ always_on: true }),
@@ -1018,7 +1018,7 @@ describe('melCloudApp', () => {
       const mockDevice = createClassicDevice({
         getSetting: vi
           .fn<ClassicMELCloudDevice['getSetting']>()
-          .mockReturnValue(false as never),
+          .mockReturnValue(false),
         getSettings: vi
           .fn<() => Record<string, unknown>>()
           .mockReturnValue({ always_on: true }),
@@ -1029,7 +1029,7 @@ describe('melCloudApp', () => {
         driver: { id: 'melcloud_atw' },
         getSetting: vi
           .fn<ClassicMELCloudDevice['getSetting']>()
-          .mockReturnValue(false as never),
+          .mockReturnValue(false),
         getSettings: vi
           .fn<() => Record<string, unknown>>()
           .mockReturnValue({ always_on: true }),

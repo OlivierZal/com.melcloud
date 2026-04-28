@@ -11,28 +11,28 @@ import {
   localizeWithAffix,
 } from './bases.mts'
 
-export const operationModeStateFromDevice = {
+export const operationModeStateFromDevice: Record<
+  Classic.OperationModeState,
+  keyof typeof Classic.OperationModeState
+> = {
   [Classic.OperationModeState.cooling]: 'cooling',
   [Classic.OperationModeState.defrost]: 'defrost',
   [Classic.OperationModeState.dhw]: 'dhw',
   [Classic.OperationModeState.heating]: 'heating',
   [Classic.OperationModeState.idle]: 'idle',
   [Classic.OperationModeState.legionella]: 'legionella',
-} as const satisfies Record<
-  Classic.OperationModeState,
-  keyof typeof Classic.OperationModeState
->
+}
 
-export const operationModeZoneFromDevice = {
+export const operationModeZoneFromDevice: Record<
+  Classic.OperationModeZone,
+  keyof typeof Classic.OperationModeZone
+> = {
   [Classic.OperationModeZone.curve]: 'curve',
   [Classic.OperationModeZone.flow]: 'flow',
   [Classic.OperationModeZone.flow_cool]: 'flow_cool',
   [Classic.OperationModeZone.room]: 'room',
   [Classic.OperationModeZone.room_cool]: 'room_cool',
-} as const satisfies Record<
-  Classic.OperationModeZone,
-  keyof typeof Classic.OperationModeZone
->
+}
 
 const addSuffixToTitle = (
   title: LocalizedStrings,

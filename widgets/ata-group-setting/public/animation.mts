@@ -574,9 +574,13 @@ export class AnimationController {
       const modes = await this.#getModes()
       if (
         isSomethingOn &&
-        (classicHeatModes.has(mode) ||
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- runtime mode is a ClassicOperationMode value or MIXED (0)
+        (classicHeatModes.has(mode as ClassicOperationMode) ||
           (mode === CLASSIC_OPERATION_MODE_MIXED &&
-            modes.some((currentMode) => classicHeatModes.has(currentMode))))
+            modes.some((currentMode) =>
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- API contract: detailed states return ClassicOperationMode values
+              classicHeatModes.has(currentMode as ClassicOperationMode),
+            )))
       ) {
         if (this.#smokeAnimationFrameId !== null) {
           cancelAnimationFrame(this.#smokeAnimationFrameId)

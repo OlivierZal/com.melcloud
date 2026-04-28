@@ -18,7 +18,7 @@
     "build": "npm run build:assets && tsc --project tsconfig.build.json",
     "build:assets": "npm run build:clean && npm run build:css && npm run build:public",
     "build:clean": "for d in widgets/*/public; do rm -f \"$d\"/{constants,dom,zones,homey-api}.mts \"$d\"/styles/dist.css; done",
-    "build:constants": "for d in widgets/*/public; do grep -v sourceMappingURL node_modules/@olivierzal/melcloud-api/dist/constants.js > \"$d/constants.mts\"; done && npm run format:fix",
+    "build:constants": "for d in widgets/*/public; do cp node_modules/@olivierzal/melcloud-api/src/constants.ts \"$d/constants.mts\"; done && npm run format:fix",
     "build:css": "for d in widgets/*/public; do npx @tailwindcss/cli -i app.css -o \"$d/styles/dist.css\"; done",
     "build:public": "for d in widgets/*/public; do cp public/*.mts \"$d/\"; done && npm run build:constants",
     "format": "prettier . --check",
@@ -35,9 +35,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^37.0.0",
-    "homey-lib": "^2.49.1",
-    "luxon": "^3.7.2"
+    "@olivierzal/melcloud-api": "^37.1.0",
+    "homey-lib": "^2.50.0",
+    "luxon": "^3.7.2",
+    "source-map-support": "^0.5.21"
   },
   "devDependencies": {
     "@eslint/css": "^1.1.0",
@@ -47,12 +48,12 @@
     "@html-eslint/eslint-plugin": "^0.59.0",
     "@html-eslint/parser": "^0.59.0",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@swc/core": "^1.15.26",
-    "@tailwindcss/cli": "^4.2.2",
+    "@swc/core": "^1.15.30",
+    "@tailwindcss/cli": "^4.2.4",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.6.0",
-    "@vitest/coverage-v8": "^4.1.4",
+    "@vitest/coverage-v8": "^4.1.5",
     "@vitest/eslint-plugin": "^1.6.16",
     "apexcharts": "^5.10.6",
     "daisyui": "^5.5.19",
@@ -73,7 +74,7 @@
     "tailwind-csstree": "^0.3.1",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.3",
-    "typescript-eslint": "8.58",
+    "typescript-eslint": "8.59",
     "unplugin-swc": "^1.5.9",
     "vitest": "^4.1.2"
   },

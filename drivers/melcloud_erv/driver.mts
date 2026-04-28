@@ -15,20 +15,25 @@ const measureCapabilities = new Set([
   'measure_signal_strength',
 ])
 
-export default class ClassicMELCloudDriverErv extends ClassicMELCloudDriver<
-  typeof Classic.DeviceType.Erv
-> {
-  public readonly energyCapabilityTagMapping = energyCapabilityTagMapping
+type ErvType = typeof Classic.DeviceType.Erv
 
-  public readonly getCapabilitiesOptions = getCapabilitiesOptionsAtaErv
+export default class ClassicMELCloudDriverErv extends ClassicMELCloudDriver<ErvType> {
+  public readonly energyCapabilityTagMapping: typeof energyCapabilityTagMapping =
+    energyCapabilityTagMapping
 
-  public readonly getCapabilityTagMapping = getCapabilityTagMapping
+  public readonly getCapabilitiesOptions: typeof getCapabilitiesOptionsAtaErv =
+    getCapabilitiesOptionsAtaErv
 
-  public readonly listCapabilityTagMapping = listCapabilityTagMapping
+  public readonly getCapabilityTagMapping: typeof getCapabilityTagMapping =
+    getCapabilityTagMapping
 
-  public readonly setCapabilityTagMapping = setCapabilityTagMapping
+  public readonly listCapabilityTagMapping: typeof listCapabilityTagMapping =
+    listCapabilityTagMapping
 
-  public readonly type = Classic.DeviceType.Erv
+  public readonly setCapabilityTagMapping: typeof setCapabilityTagMapping =
+    setCapabilityTagMapping
+
+  public readonly type: ErvType = Classic.DeviceType.Erv
 
   public override getRequiredCapabilities(
     data?: Readonly<Classic.ListDeviceData<typeof Classic.DeviceType.Erv>>,

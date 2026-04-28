@@ -309,7 +309,7 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  testPostUpdateSync(() => device as object, getCapabilityListenerCallback)
+  testPostUpdateSync(() => device, getCapabilityListenerCallback)
 
   testThermostatModeOff(createTestHomeDevice, getCapabilityListenerCallback, {
     expectedValues: {
@@ -324,11 +324,10 @@ describe(BaseMELCloudDevice, () => {
     setValuesMock,
   })
 
-  testSetValuesErrorHandling(
-    () => device as object,
-    getCapabilityListenerCallback,
-    { setValuesMock, superSetWarningMock },
-  )
+  testSetValuesErrorHandling(() => device, getCapabilityListenerCallback, {
+    setValuesMock,
+    superSetWarningMock,
+  })
 
   describe('facade access', () => {
     it('should expose facade via protected getter after sync', async () => {

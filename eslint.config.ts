@@ -74,7 +74,7 @@ const config = defineConfig([
       ecmaVersion: 'latest',
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.js', '*.config.ts', 'eslint-utils/*.ts'],
+          allowDefaultProject: ['*.js', '*.config.ts'],
         },
         warnOnUnsupportedTypeScriptVersion: false,
       },
@@ -297,6 +297,7 @@ const config = defineConfig([
         'error',
         {
           allowDefaultCaseForExhaustiveSwitch: false,
+          considerDefaultExhaustiveForUnions: false,
           requireDefaultForNonUnion: true,
         },
       ],
@@ -323,7 +324,12 @@ const config = defineConfig([
       'import-x/no-named-default': 'error',
       'import-x/no-relative-packages': 'error',
       'import-x/no-self-import': 'error',
-      'import-x/no-unassigned-import': 'error',
+      'import-x/no-unassigned-import': [
+        'error',
+        {
+          allow: ['source-map-support/register.js'],
+        },
+      ],
       'import-x/no-unused-modules': [
         'error',
         {
@@ -645,12 +651,6 @@ const config = defineConfig([
           target: 'any',
         },
       ],
-    },
-  },
-  {
-    files: ['eslint-utils/**'],
-    rules: {
-      '@typescript-eslint/naming-convention': 'off',
     },
   },
   {

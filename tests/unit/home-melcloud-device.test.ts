@@ -147,9 +147,8 @@ describe(HomeMELCloudDeviceAta, () => {
         capabilityToDevice: { horizontal: converter },
       } = device
       const {
-        [Classic.Horizontal[
-          'center' as keyof typeof Classic.Horizontal
-        ] as Classic.Horizontal]: mapped,
+        [Classic.Horizontal['center' as keyof typeof Classic.Horizontal]]:
+          mapped,
       } = horizontalFromClassic
 
       expect(converter?.('center')).toBe(mapped)
@@ -160,9 +159,7 @@ describe(HomeMELCloudDeviceAta, () => {
         capabilityToDevice: { vertical: converter },
       } = device
       const {
-        [Classic.Vertical[
-          'auto' as keyof typeof Classic.Vertical
-        ] as Classic.Vertical]: mapped,
+        [Classic.Vertical['auto' as keyof typeof Classic.Vertical]]: mapped,
       } = verticalFromClassic
 
       expect(converter?.('auto')).toBe(mapped)

@@ -65,5 +65,6 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   }
 
-  protected readonly thermostatMode = ThermostatModeAta
+  protected readonly thermostatMode: typeof ThermostatModeAta =
+    ThermostatModeAta
 }

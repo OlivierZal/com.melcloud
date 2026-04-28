@@ -114,7 +114,7 @@ export const testThermostatMode = (
 ): void => {
   describe('thermostat mode configuration', () => {
     it('should match expected thermostat mode', () => {
-      expect((getDevice() as Record<string, unknown>)['thermostatMode']).toBe(
+      expect((getDevice() as Record<string, unknown>).thermostatMode).toBe(
         expected,
       )
     })
@@ -307,9 +307,7 @@ export const testPostUpdateSync = (
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
       const syncCallback = getMockCallArg<() => Promise<void>>(
-        device.homey.setTimeout as unknown as {
-          mock: { calls: unknown[][] }
-        },
+        device.homey.setTimeout,
         0,
         0,
       )

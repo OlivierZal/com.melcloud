@@ -315,8 +315,8 @@ const createCheckbox = (id: string, driverId: string): HTMLInputElement => {
   checkbox.classList.add('homey-form-checkbox-input')
   checkbox.type = 'checkbox'
   checkbox.id = `${id}_${driverId}`
-  checkbox.dataset['settingId'] = id
-  checkbox.dataset['driverId'] = driverId
+  checkbox.dataset.settingId = id
+  checkbox.dataset.driverId = driverId
   return checkbox
 }
 
@@ -499,7 +499,7 @@ class AuthManager {
     credentialKey: keyof LoginCredentials,
     driverSettings: Partial<Record<string, DriverSetting[]>>,
   ): HTMLInputElement | null {
-    const loginSetting = driverSettings['login']?.find(
+    const loginSetting = driverSettings.login?.find(
       (setting): setting is LoginDriverSetting => setting.id === credentialKey,
     )
     if (loginSetting) {
@@ -680,7 +680,7 @@ class DeviceSettingsManager {
   #createCommonSettingControls(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
   ): void {
-    for (const { id, title, type, values } of driverSettings['options'] ?? []) {
+    for (const { id, title, type, values } of driverSettings.options ?? []) {
       if (
         !this.#settingsCommon.querySelector(
           `select[data-setting-id="${id}"]`,
@@ -688,8 +688,8 @@ class DeviceSettingsManager {
         commonElementTypes.has(type)
       ) {
         const formControl = createSelect(this.#homey, id, values)
-        formControl.dataset['settingId'] = id
-        formControl.dataset['driverId'] = 'common'
+        formControl.dataset.settingId = id
+        formControl.dataset.driverId = 'common'
         appendFormControl(this.#settingsCommon, { formControl, title })
         this.#updateCommonSetting(formControl)
       }

@@ -2,22 +2,23 @@
   "compilerOptions": {
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
+    "declaration": true,
+    "erasableSyntaxOnly": true,
+    "isolatedDeclarations": true,
     "lib": ["DOM", "ESNext"],
+    "libReplacement": false,
     "module": "preserve",
-    "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "outDir": ".homeybuild",
     "rewriteRelativeImportExtensions": true,
     "skipLibCheck": true,
+    "sourceMap": true,
     "target": "es2025",
     "types": ["node", "luxon"],
     "verbatimModuleSyntax": true
   },
-  "exclude": ["*.config.ts", "eslint-utils"]
+  "exclude": ["*.config.ts"]
 }

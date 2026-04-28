@@ -10,11 +10,11 @@ export const ThermostatModeErv = {
 export type ThermostatModeErv =
   (typeof ThermostatModeErv)[keyof typeof ThermostatModeErv]
 
-export const ventilationModeFromDevice = {
+export const ventilationModeFromDevice: Record<
+  Classic.VentilationMode,
+  keyof typeof Classic.VentilationMode
+> = {
   [Classic.VentilationMode.auto]: 'auto',
   [Classic.VentilationMode.bypass]: 'bypass',
   [Classic.VentilationMode.recovery]: 'recovery',
-} as const satisfies Record<
-  Classic.VentilationMode,
-  keyof typeof Classic.VentilationMode
->
+}

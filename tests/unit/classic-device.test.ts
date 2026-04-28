@@ -173,11 +173,11 @@ describe(ClassicMELCloudDevice, () => {
     })
   })
 
-  testOnoffConverter(() => device as object, getSettingMock)
+  testOnoffConverter(() => device, getSettingMock)
 
-  testDeletion(() => device as object)
+  testDeletion(() => device)
 
-  testUninitialisation(() => device as object)
+  testUninitialisation(() => device)
 
   describe('adding capabilities', () => {
     it('should add capability if not already present', async () => {
@@ -211,7 +211,7 @@ describe(ClassicMELCloudDevice, () => {
     })
   })
 
-  testWarningManagement(() => device as object, superSetWarningMock)
+  testWarningManagement(() => device, superSetWarningMock)
 
   describe('mapping cleanup', () => {
     it('should filter mapping to only capabilities the device has', () => {
@@ -415,13 +415,12 @@ describe(ClassicMELCloudDevice, () => {
     { facadeMock: getFacadeMock, setValuesMock },
   )
 
-  testPostUpdateSync(() => device as object, getCapabilityListenerCallback)
+  testPostUpdateSync(() => device, getCapabilityListenerCallback)
 
-  testSetValuesErrorHandling(
-    () => device as object,
-    getCapabilityListenerCallback,
-    { setValuesMock, superSetWarningMock },
-  )
+  testSetValuesErrorHandling(() => device, getCapabilityListenerCallback, {
+    setValuesMock,
+    superSetWarningMock,
+  })
 
   describe('capability value conversion', () => {
     it('should use deviceToCapability converter when present', async () => {

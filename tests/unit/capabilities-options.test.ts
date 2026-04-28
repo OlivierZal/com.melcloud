@@ -99,14 +99,14 @@ describe('fan speed values', () => {
     const veryFast = fanSpeedValues.find(({ id }) => id === 'very_fast')
 
     expect(veryFast?.title.en).toBe('Very fast')
-    expect(veryFast?.title['fr']).toBe('Très rapide')
+    expect(veryFast?.title.fr).toBe('Très rapide')
   })
 
   it('should have addPrefixToTitle applied to very_slow', () => {
     const verySlow = fanSpeedValues.find(({ id }) => id === 'very_slow')
 
     expect(verySlow?.title.en).toBe('Very slow')
-    expect(verySlow?.title['fr']).toBe('Très lent')
+    expect(verySlow?.title.fr).toBe('Très lent')
   })
 })
 
@@ -180,9 +180,7 @@ describe(getCapabilitiesOptionsAtw, () => {
     )
 
     expect(roomCool?.title.en).toBe('Indoor temperature - cooling')
-    expect(roomCool?.title['fr']).toBe(
-      'Température intérieure - refroidissement',
-    )
+    expect(roomCool?.title.fr).toBe('Température intérieure - refroidissement')
   })
 })
 

@@ -49,9 +49,7 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
       ConvertFromDevice<typeof Classic.DeviceType.Atw>
     >
   > = {
-    'alarm_generic.defrost': Boolean as ConvertFromDevice<
-      typeof Classic.DeviceType.Atw
-    >,
+    'alarm_generic.defrost': Boolean,
     measure_power: convertFromDeviceMeasurePower,
     'measure_power.produced': convertFromDeviceMeasurePower,
     'target_temperature.flow_cool':
