@@ -304,6 +304,7 @@ export const testPostUpdateSync = (
       }
       await device.onInit()
       device.setCapabilityValue.mockClear()
+      device.homey.setTimeout.mockClear()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
       const syncCallback = getMockCallArg<() => Promise<void>>(

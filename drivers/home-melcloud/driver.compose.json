@@ -8,9 +8,27 @@
     "fan_speed",
     "vertical",
     "horizontal",
-    "measure_signal_strength"
+    "measure_signal_strength",
+    "meter_power.daily"
   ],
   "capabilitiesOptions": {
+    "meter_power.daily": {
+      "title": {
+        "ar": "الطاقة اليومية",
+        "da": "Daglig energi",
+        "de": "Tägliche Energie",
+        "en": "Daily energy",
+        "es": "Energía diaria",
+        "fr": "Énergie quotidienne",
+        "it": "Energia giornaliera",
+        "ko": "일일 에너지",
+        "nl": "Dagelijkse energie",
+        "no": "Daglig energi",
+        "pl": "Energia dzienna",
+        "ru": "Энергия за день",
+        "sv": "Daglig energi"
+      }
+    },
     "target_temperature": {
       "max": 31,
       "min": 10
