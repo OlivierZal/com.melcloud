@@ -1,3 +1,5 @@
+import 'source-map-support/register.js'
+
 import type {
   DeviceType,
   Hour,

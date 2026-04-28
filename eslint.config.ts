@@ -324,7 +324,12 @@ const config = defineConfig([
       'import-x/no-named-default': 'error',
       'import-x/no-relative-packages': 'error',
       'import-x/no-self-import': 'error',
-      'import-x/no-unassigned-import': 'error',
+      'import-x/no-unassigned-import': [
+        'error',
+        {
+          allow: ['source-map-support/register.js'],
+        },
+      ],
       'import-x/no-unused-modules': [
         'error',
         {
