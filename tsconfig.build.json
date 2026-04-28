@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "noEmit": false,
     "rootDir": "."
   },
   "exclude": ["*.config.ts", "tests"],

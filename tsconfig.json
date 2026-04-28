@@ -8,7 +8,6 @@
     "lib": ["DOM", "ESNext"],
     "libReplacement": false,
     "module": "preserve",
-    "noEmit": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
