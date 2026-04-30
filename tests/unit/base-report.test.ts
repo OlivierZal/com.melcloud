@@ -1,4 +1,5 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { err, ok } from '@olivierzal/melcloud-api'
 import {
   afterAll,
   beforeAll,
@@ -98,7 +99,7 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
 const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   const getEnergyMock = vi
     .fn<(query?: unknown) => Promise<unknown>>()
-    .mockResolvedValue(energyData)
+    .mockResolvedValue(ok(energyData))
   ensureDeviceMock.mockResolvedValue({ data: {}, getEnergy: getEnergyMock })
   return getEnergyMock
 }
@@ -177,19 +178,18 @@ describe(EnergyReport, () => {
     })
 
     it('should log error when getEnergy fails', async () => {
-      const energyError = new Error('fetch failed')
       ensureDeviceMock.mockResolvedValue({
         data: {},
         getEnergy: vi
           .fn<(query?: unknown) => Promise<unknown>>()
-          .mockRejectedValue(energyError),
+          .mockResolvedValue(err({ kind: 'network' })),
       })
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
       expect(errorMock).toHaveBeenCalledWith(
         'Energy report fetch failed:',
-        energyError,
+        'network',
       )
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })

@@ -971,10 +971,10 @@ class ErrorLogManager {
           this.#homey,
           `/classic/logs/errors?${new URLSearchParams({
             from: this.#sinceInput.value,
-            limit: '29',
             offset: '0',
+            period: '29',
             to: this.#to,
-          } satisfies Classic.ErrorLogQuery)}`,
+          })}`,
         )
         this.#updateErrorLogElements(data)
         this.#appendErrorLogRows(data.errors)

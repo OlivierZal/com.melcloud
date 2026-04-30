@@ -91,15 +91,25 @@ describe('api', () => {
   })
 
   describe('error retrieval', () => {
-    it('should delegate to app.getClassicErrorLog with query', async () => {
+    it('should parse numeric query params before delegating to app.getClassicErrorLog', async () => {
       const errorLog = mock<FormattedErrorLog>()
-      const query = mock<Classic.ErrorLogQuery>()
+      const query = {
+        from: '2026-01-01',
+        offset: '2',
+        period: '7',
+        to: '2026-01-31',
+      }
       mockApp.getClassicErrorLog.mockResolvedValue(errorLog)
 
       const result = await api.getClassicErrorLog({ homey, query })
 
       expect(result).toBe(errorLog)
-      expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith(query)
+      expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith({
+        from: '2026-01-01',
+        offset: 2,
+        period: 7,
+        to: '2026-01-31',
+      })
     })
   })
 

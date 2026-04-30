@@ -8,6 +8,9 @@ import type { FormattedErrorLog } from './types/error-log.mts'
 import type { ZoneData } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 
+const toNumber = (value: string | undefined): number | undefined =>
+  value === undefined ? undefined : Number(value)
+
 const api = {
   async classicAuthenticate({
     body,
@@ -23,12 +26,17 @@ const api = {
   },
   async getClassicErrorLog({
     homey: { app },
-    query,
+    query: { from, offset, period, to },
   }: {
     homey: Homey
-    query: Classic.ErrorLogQuery
+    query: { from?: string; offset?: string; period?: string; to?: string }
   }): Promise<FormattedErrorLog> {
-    return app.getClassicErrorLog(query)
+    return app.getClassicErrorLog({
+      from,
+      offset: toNumber(offset),
+      period: toNumber(period),
+      to,
+    })
   },
   async getClassicFrostProtection({
     homey: { app },
