@@ -1,6 +1,3 @@
-concurrency:
-  cancel-in-progress: true
-  group: claude-review-${{ github.event.pull_request.number }}
 jobs:
   review:
     if: |
