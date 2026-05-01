@@ -5,7 +5,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { DeviceSettings, Settings } from '../../types/device-settings.mts'
 import type { DriverSetting } from '../../types/driver-settings.mts'
-import type { FormattedErrorLog } from '../../types/error-log.mts'
+import type {
+  ClassicErrorLogQueryParams,
+  FormattedErrorLog,
+} from '../../types/error-log.mts'
 import type { ZoneData } from '../../types/zone.mts'
 import { mock } from '../helpers.js'
 
@@ -93,12 +96,12 @@ describe('api', () => {
   describe('error retrieval', () => {
     it('should parse numeric query params before delegating to app.getClassicErrorLog', async () => {
       const errorLog = mock<FormattedErrorLog>()
-      const query = {
+      const query = mock<ClassicErrorLogQueryParams>({
         from: '2026-01-01',
         offset: '2',
         period: '7',
         to: '2026-01-31',
-      }
+      })
       mockApp.getClassicErrorLog.mockResolvedValue(errorLog)
 
       const result = await api.getClassicErrorLog({ homey, query })
@@ -116,7 +119,10 @@ describe('api', () => {
       const errorLog = mock<FormattedErrorLog>()
       mockApp.getClassicErrorLog.mockResolvedValue(errorLog)
 
-      await api.getClassicErrorLog({ homey, query: {} })
+      await api.getClassicErrorLog({
+        homey,
+        query: mock<Partial<ClassicErrorLogQueryParams>>(),
+      })
 
       expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith({
         from: undefined,

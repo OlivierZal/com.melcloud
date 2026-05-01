@@ -178,18 +178,19 @@ describe(EnergyReport, () => {
     })
 
     it('should log error when getEnergy fails', async () => {
+      const energyError = { kind: 'network' as const }
       ensureDeviceMock.mockResolvedValue({
         data: {},
         getEnergy: vi
           .fn<(query?: unknown) => Promise<unknown>>()
-          .mockResolvedValue(err({ kind: 'network' })),
+          .mockResolvedValue(err(energyError)),
       })
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
       expect(errorMock).toHaveBeenCalledWith(
         'Energy report fetch failed:',
-        'network',
+        energyError,
       )
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })

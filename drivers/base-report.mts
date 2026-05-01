@@ -145,7 +145,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
       to,
     })
     if (!result.ok) {
-      this.#device.error('Energy report fetch failed:', result.error.kind)
+      this.#device.error('Energy report fetch failed:', result.error)
       return null
     }
     return { data: result.value, hour: toDateTime.hour }
