@@ -14,6 +14,7 @@ import type {
   LoginDriverSetting,
 } from '../types/driver-settings.mts'
 import type {
+  ClassicErrorLogQueryParams,
   FormattedErrorDetails,
   FormattedErrorLog,
 } from '../types/error-log.mts'
@@ -974,12 +975,7 @@ class ErrorLogManager {
             offset: '0',
             period: '29',
             to: this.#to,
-          } satisfies {
-            from: string
-            offset: string
-            period: string
-            to: string
-          })}`,
+          } satisfies ClassicErrorLogQueryParams)}`,
         )
         this.#updateErrorLogElements(data)
         this.#appendErrorLogRows(data.errors)

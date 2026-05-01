@@ -4,7 +4,10 @@ import type { Homey } from 'homey/lib/Homey'
 
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
 import type { DriverSetting } from './types/driver-settings.mts'
-import type { FormattedErrorLog } from './types/error-log.mts'
+import type {
+  ClassicErrorLogQueryParams,
+  FormattedErrorLog,
+} from './types/error-log.mts'
 import type { ZoneData } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 
@@ -29,7 +32,7 @@ const api = {
     query: { from, offset, period, to },
   }: {
     homey: Homey
-    query: { from?: string; offset?: string; period?: string; to?: string }
+    query: Partial<ClassicErrorLogQueryParams>
   }): Promise<FormattedErrorLog> {
     return app.getClassicErrorLog({
       from,
