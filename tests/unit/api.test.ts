@@ -5,7 +5,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { DeviceSettings, Settings } from '../../types/device-settings.mts'
 import type { DriverSetting } from '../../types/driver-settings.mts'
-import type { FormattedErrorLog } from '../../types/error-log.mts'
+import type {
+  ClassicErrorLogQueryParams,
+  FormattedErrorLog,
+} from '../../types/error-log.mts'
 import type { ZoneData } from '../../types/zone.mts'
 import { mock } from '../helpers.js'
 
@@ -91,15 +94,74 @@ describe('api', () => {
   })
 
   describe('error retrieval', () => {
-    it('should delegate to app.getClassicErrorLog with query', async () => {
+    it('should parse numeric query params before delegating to app.getClassicErrorLog', async () => {
       const errorLog = mock<FormattedErrorLog>()
-      const query = mock<Classic.ErrorLogQuery>()
+      const query = mock<ClassicErrorLogQueryParams>({
+        from: '2026-01-01',
+        offset: '2',
+        period: '7',
+        to: '2026-01-31',
+      })
       mockApp.getClassicErrorLog.mockResolvedValue(errorLog)
 
       const result = await api.getClassicErrorLog({ homey, query })
 
       expect(result).toBe(errorLog)
-      expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith(query)
+      expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith({
+        from: '2026-01-01',
+        offset: 2,
+        period: 7,
+        to: '2026-01-31',
+      })
+    })
+
+    it('should pass undefined for missing numeric query params', async () => {
+      const errorLog = mock<FormattedErrorLog>()
+      mockApp.getClassicErrorLog.mockResolvedValue(errorLog)
+
+      await api.getClassicErrorLog({
+        homey,
+        query: mock<Partial<ClassicErrorLogQueryParams>>(),
+      })
+
+      expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith({
+        from: undefined,
+        offset: undefined,
+        period: undefined,
+        to: undefined,
+      })
+    })
+
+    it('should throw on empty string numeric query param', async () => {
+      await expect(
+        api.getClassicErrorLog({
+          homey,
+          query: mock<Partial<ClassicErrorLogQueryParams>>({ offset: '' }),
+        }),
+      ).rejects.toThrow('Invalid numeric query param: ""')
+      expect(mockApp.getClassicErrorLog).not.toHaveBeenCalled()
+    })
+
+    it('should throw on non-numeric query param', async () => {
+      await expect(
+        api.getClassicErrorLog({
+          homey,
+          query: mock<Partial<ClassicErrorLogQueryParams>>({ period: 'abc' }),
+        }),
+      ).rejects.toThrow('Invalid numeric query param: "abc"')
+      expect(mockApp.getClassicErrorLog).not.toHaveBeenCalled()
+    })
+
+    it('should throw on infinite query param', async () => {
+      await expect(
+        api.getClassicErrorLog({
+          homey,
+          query: mock<Partial<ClassicErrorLogQueryParams>>({
+            period: 'Infinity',
+          }),
+        }),
+      ).rejects.toThrow('Invalid numeric query param: "Infinity"')
+      expect(mockApp.getClassicErrorLog).not.toHaveBeenCalled()
     })
   })
 

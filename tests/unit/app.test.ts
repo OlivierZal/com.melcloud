@@ -1,8 +1,10 @@
-import type {
-  LoginCredentials,
-  ReportChartLineOptions,
-  ReportChartPieOptions,
-  SyncCallback,
+import {
+  type LoginCredentials,
+  type ReportChartLineOptions,
+  type ReportChartPieOptions,
+  type Result,
+  type SyncCallback,
+  ok,
 } from '@olivierzal/melcloud-api'
 import { Settings as LuxonSettings } from 'luxon'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -71,7 +73,7 @@ vi.mock('../../files.mts', async (importOriginal) => {
 const mockApiInstance = {
   authenticate: vi.fn<() => Promise<void>>(),
   clearSync: vi.fn<() => void>(),
-  getErrorLog: vi.fn<() => Promise<Classic.ErrorLog>>(),
+  getErrorLog: vi.fn<() => Promise<Result<Classic.ErrorLog>>>(),
   registry: {
     areas: { getById: vi.fn<(id: number) => unknown>() },
     buildings: { getById: vi.fn<(id: number) => unknown>() },
@@ -240,7 +242,9 @@ const initWithDeviceFacade = async (
 ): Promise<void> => {
   mockFacadeManagerGet.mockReturnValue(
     mock({
-      [method]: vi.fn<() => Promise<unknown>>().mockResolvedValue(mockData),
+      [method]: vi
+        .fn<() => Promise<Result<unknown>>>()
+        .mockResolvedValue(ok(mockData)),
     }),
   )
   mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
@@ -534,8 +538,8 @@ describe('melCloudApp', () => {
       const mockGroupState = mock<Classic.GroupState>()
       const mockFacade = mock<Classic.BuildingFacade>({
         getGroup: vi
-          .fn<() => Promise<Classic.GroupState>>()
-          .mockResolvedValue(mockGroupState),
+          .fn<() => Promise<Result<Classic.GroupState>>>()
+          .mockResolvedValue(ok(mockGroupState)),
       })
       await initWithFacade(app, mockFacade)
 
@@ -615,14 +619,16 @@ describe('melCloudApp', () => {
   describe('error retrieval', () => {
     it('should format dates and resolve device names from api error log', async () => {
       const deviceName = 'Living Room'
-      mockApiInstance.getErrorLog.mockResolvedValue({
-        errors: [
-          { date: '2026-03-28T14:30:00.000Z', deviceId: 42, error: 'test' },
-        ],
-        fromDate: '2026-03-01',
-        nextFromDate: '2026-03-15',
-        nextToDate: '2026-03-31',
-      })
+      mockApiInstance.getErrorLog.mockResolvedValue(
+        ok({
+          errors: [
+            { date: '2026-03-28T14:30:00.000Z', deviceId: 42, error: 'test' },
+          ],
+          fromDate: '2026-03-01',
+          nextFromDate: '2026-03-15',
+          nextToDate: '2026-03-31',
+        }),
+      )
       mockApiInstance.registry.devices.getById.mockReturnValue({
         name: deviceName,
       })
@@ -647,14 +653,16 @@ describe('melCloudApp', () => {
     })
 
     it('should fall back to empty device name when device is not in registry', async () => {
-      mockApiInstance.getErrorLog.mockResolvedValue({
-        errors: [
-          { date: '2026-03-28T14:30:00.000Z', deviceId: 999, error: 'test' },
-        ],
-        fromDate: '2026-03-01',
-        nextFromDate: '2026-03-15',
-        nextToDate: '2026-03-31',
-      })
+      mockApiInstance.getErrorLog.mockResolvedValue(
+        ok({
+          errors: [
+            { date: '2026-03-28T14:30:00.000Z', deviceId: 999, error: 'test' },
+          ],
+          fromDate: '2026-03-01',
+          nextFromDate: '2026-03-15',
+          nextToDate: '2026-03-31',
+        }),
+      )
       mockApiInstance.registry.devices.getById.mockReset()
       await app.onInit()
 
@@ -761,8 +769,8 @@ describe('melCloudApp', () => {
       const mockData = mock<Classic.FrostProtectionData>()
       const mockFacade = mock<Classic.ZoneFacade>({
         getFrostProtection: vi
-          .fn<() => Promise<Classic.FrostProtectionData>>()
-          .mockResolvedValue(mockData),
+          .fn<() => Promise<Result<Classic.FrostProtectionData>>>()
+          .mockResolvedValue(ok(mockData)),
       })
       await initWithFacade(app, mockFacade)
 
@@ -780,8 +788,8 @@ describe('melCloudApp', () => {
       const mockData = mock<Classic.HolidayModeData>()
       const mockFacade = mock<Classic.ZoneFacade>({
         getHolidayMode: vi
-          .fn<() => Promise<Classic.HolidayModeData>>()
-          .mockResolvedValue(mockData),
+          .fn<() => Promise<Result<Classic.HolidayModeData>>>()
+          .mockResolvedValue(ok(mockData)),
       })
       await initWithFacade(app, mockFacade)
 

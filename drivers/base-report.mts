@@ -12,6 +12,7 @@ import type { EnergyReportMode } from '../types/device.mts'
 import { KILOWATT_TO_WATT } from '../lib/constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { typedEntries } from '../lib/typed-object.mts'
+import { unwrapResult } from '../lib/unwrap-result.mts'
 import type { ClassicMELCloudDevice } from './classic-device.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 
@@ -134,17 +135,17 @@ export class EnergyReport<T extends Classic.DeviceType> {
     if (!device) {
       return
     }
+    // Fetch energy data from the previous period (offset by config.minus)
+    const toDateTime = DateTime.now().minus(this.#config.minus)
+    const to = toDateTime.toISODate()
     try {
-      // Fetch energy data from the previous period (offset by config.minus)
-      const toDateTime = DateTime.now().minus(this.#config.minus)
-      const to = toDateTime.toISODate()
-      await this.#set(
+      const data = unwrapResult(
         await device.getEnergy({
           from: this.#config.mode === 'total' ? undefined : to,
           to,
         }),
-        toDateTime.hour,
       )
+      await this.#set(data, toDateTime.hour)
     } catch (error) {
       this.#device.error('Energy report fetch failed:', error)
     }

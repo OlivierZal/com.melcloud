@@ -41,6 +41,7 @@ import {
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { typedFromEntries } from './lib/typed-object.mts'
+import { unwrapResult } from './lib/unwrap-result.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 
 const NOTIFICATION_DELAY_MS = 10_000
@@ -238,14 +239,17 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData): Promise<Classic.GroupState> {
-    return this.getClassicFacade(zoneType, zoneId).getGroup()
+    return unwrapResult(
+      await this.getClassicFacade(zoneType, zoneId).getGroup(),
+    )
   }
 
   public async getClassicErrorLog(
     query: Classic.ErrorLogQuery,
   ): Promise<FormattedErrorLog> {
-    const { errors, fromDate, ...rest } =
-      await this.#classicApi.getErrorLog(query)
+    const { errors, fromDate, ...rest } = unwrapResult(
+      await this.#classicApi.getErrorLog(query),
+    )
     const locale = this.homey.i18n.getLanguage()
     const timeZone = this.homey.clock.getTimezone()
     // Reused across all entries instead of rebuilding a DateTime + formatter per call.
@@ -301,14 +305,18 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: ZoneData): Promise<Classic.FrostProtectionData> {
-    return this.getClassicFacade(zoneType, zoneId).getFrostProtection()
+    return unwrapResult(
+      await this.getClassicFacade(zoneType, zoneId).getFrostProtection(),
+    )
   }
 
   public async getClassicHolidayMode({
     zoneId,
     zoneType,
   }: ZoneData): Promise<Classic.HolidayModeData> {
-    return this.getClassicFacade(zoneType, zoneId).getHolidayMode()
+    return unwrapResult(
+      await this.getClassicFacade(zoneType, zoneId).getHolidayMode(),
+    )
   }
 
   public async getClassicHourlyTemperatures({
@@ -318,8 +326,10 @@ export default class MELCloudApp extends App {
     deviceId: string
     hour?: Hour
   }): Promise<ReportChartLineOptions> {
-    return this.getClassicFacade('devices', deviceId).getHourlyTemperatures(
-      hour,
+    return unwrapResult(
+      await this.getClassicFacade('devices', deviceId).getHourlyTemperatures(
+        hour,
+      ),
     )
   }
 
@@ -330,8 +340,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
-    return this.getClassicFacade('devices', deviceId).getOperationModes(
-      createDateRange(days),
+    return unwrapResult(
+      await this.getClassicFacade('devices', deviceId).getOperationModes(
+        createDateRange(days),
+      ),
     )
   }
 
@@ -342,7 +354,9 @@ export default class MELCloudApp extends App {
     deviceId: string
     hour?: Hour
   }): Promise<ReportChartLineOptions> {
-    return this.getClassicFacade('devices', deviceId).getSignalStrength(hour)
+    return unwrapResult(
+      await this.getClassicFacade('devices', deviceId).getSignalStrength(hour),
+    )
   }
 
   public async getClassicTemperatures({
@@ -352,8 +366,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    return this.getClassicFacade('devices', deviceId).getTemperatures(
-      createDateRange(days),
+    return unwrapResult(
+      await this.getClassicFacade('devices', deviceId).getTemperatures(
+        createDateRange(days),
+      ),
     )
   }
 

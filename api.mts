@@ -4,9 +4,23 @@ import type { Homey } from 'homey/lib/Homey'
 
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
 import type { DriverSetting } from './types/driver-settings.mts'
-import type { FormattedErrorLog } from './types/error-log.mts'
+import type {
+  ClassicErrorLogQueryParams,
+  FormattedErrorLog,
+} from './types/error-log.mts'
 import type { ZoneData } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
+
+const toNumber = (value: string | undefined): number | undefined => {
+  if (value === undefined) {
+    return undefined
+  }
+  const parsed = Number(value)
+  if (value === '' || !Number.isFinite(parsed)) {
+    throw new Error(`Invalid numeric query param: ${JSON.stringify(value)}`)
+  }
+  return parsed
+}
 
 const api = {
   async classicAuthenticate({
@@ -23,12 +37,17 @@ const api = {
   },
   async getClassicErrorLog({
     homey: { app },
-    query,
+    query: { from, offset, period, to },
   }: {
     homey: Homey
-    query: Classic.ErrorLogQuery
+    query: Partial<ClassicErrorLogQueryParams>
   }): Promise<FormattedErrorLog> {
-    return app.getClassicErrorLog(query)
+    return app.getClassicErrorLog({
+      from,
+      offset: toNumber(offset),
+      period: toNumber(period),
+      to,
+    })
   },
   async getClassicFrostProtection({
     homey: { app },

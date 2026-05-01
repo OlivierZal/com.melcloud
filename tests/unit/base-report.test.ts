@@ -1,4 +1,5 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { err, ok } from '@olivierzal/melcloud-api'
 import {
   afterAll,
   beforeAll,
@@ -98,7 +99,7 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
 const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   const getEnergyMock = vi
     .fn<(query?: unknown) => Promise<unknown>>()
-    .mockResolvedValue(energyData)
+    .mockResolvedValue(ok(energyData))
   ensureDeviceMock.mockResolvedValue({ data: {}, getEnergy: getEnergyMock })
   return getEnergyMock
 }
@@ -176,20 +177,40 @@ describe(EnergyReport, () => {
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
-    it('should log error when getEnergy fails', async () => {
-      const energyError = new Error('fetch failed')
+    it('should log wrapped error when getEnergy fails', async () => {
+      const energyError = { kind: 'network' as const }
       ensureDeviceMock.mockResolvedValue({
         data: {},
         getEnergy: vi
           .fn<(query?: unknown) => Promise<unknown>>()
-          .mockRejectedValue(energyError),
+          .mockResolvedValue(err(energyError)),
       })
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
       expect(errorMock).toHaveBeenCalledWith(
         'Energy report fetch failed:',
-        energyError,
+        expect.objectContaining({
+          cause: energyError,
+          message: 'MELCloud request failed: network',
+        }),
+      )
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('should log error and still schedule when setCapabilityValue throws', async () => {
+      const capabilityError = new Error('capability rejected')
+      setCapabilityValueMock.mockRejectedValueOnce(capabilityError)
+      mockEnergyFetch({
+        Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
+      })
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      expect(errorMock).toHaveBeenCalledWith(
+        'Energy report fetch failed:',
+        capabilityError,
       )
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
