@@ -131,6 +131,26 @@ describe('api', () => {
         to: undefined,
       })
     })
+
+    it('should throw on empty string numeric query param', async () => {
+      await expect(
+        api.getClassicErrorLog({
+          homey,
+          query: mock<Partial<ClassicErrorLogQueryParams>>({ offset: '' }),
+        }),
+      ).rejects.toThrow('Invalid numeric query param: ""')
+      expect(mockApp.getClassicErrorLog).not.toHaveBeenCalled()
+    })
+
+    it('should throw on non-numeric query param', async () => {
+      await expect(
+        api.getClassicErrorLog({
+          homey,
+          query: mock<Partial<ClassicErrorLogQueryParams>>({ period: 'abc' }),
+        }),
+      ).rejects.toThrow('Invalid numeric query param: "abc"')
+      expect(mockApp.getClassicErrorLog).not.toHaveBeenCalled()
+    })
   })
 
   describe('frost protection settings retrieval', () => {

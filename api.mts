@@ -11,8 +11,16 @@ import type {
 import type { ZoneData } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 
-const toNumber = (value: string | undefined): number | undefined =>
-  value === undefined ? undefined : Number(value)
+const toNumber = (value: string | undefined): number | undefined => {
+  if (value === undefined) {
+    return undefined
+  }
+  const parsed = Number(value)
+  if (value === '' || Number.isNaN(parsed)) {
+    throw new Error(`Invalid numeric query param: ${JSON.stringify(value)}`)
+  }
+  return parsed
+}
 
 const api = {
   async classicAuthenticate({
