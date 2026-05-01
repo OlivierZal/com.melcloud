@@ -16,7 +16,7 @@ const toNumber = (value: string | undefined): number | undefined => {
     return undefined
   }
   const parsed = Number(value)
-  if (value === '' || Number.isNaN(parsed)) {
+  if (value === '' || !Number.isFinite(parsed)) {
     throw new Error(`Invalid numeric query param: ${JSON.stringify(value)}`)
   }
   return parsed

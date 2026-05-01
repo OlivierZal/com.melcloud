@@ -151,6 +151,18 @@ describe('api', () => {
       ).rejects.toThrow('Invalid numeric query param: "abc"')
       expect(mockApp.getClassicErrorLog).not.toHaveBeenCalled()
     })
+
+    it('should throw on infinite query param', async () => {
+      await expect(
+        api.getClassicErrorLog({
+          homey,
+          query: mock<Partial<ClassicErrorLogQueryParams>>({
+            period: 'Infinity',
+          }),
+        }),
+      ).rejects.toThrow('Invalid numeric query param: "Infinity"')
+      expect(mockApp.getClassicErrorLog).not.toHaveBeenCalled()
+    })
   })
 
   describe('frost protection settings retrieval', () => {
