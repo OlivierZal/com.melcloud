@@ -177,7 +177,7 @@ describe(EnergyReport, () => {
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
-    it('should log error when getEnergy fails', async () => {
+    it('should log wrapped error when getEnergy fails', async () => {
       const energyError = { kind: 'network' as const }
       ensureDeviceMock.mockResolvedValue({
         data: {},
@@ -190,7 +190,10 @@ describe(EnergyReport, () => {
 
       expect(errorMock).toHaveBeenCalledWith(
         'Energy report fetch failed:',
-        energyError,
+        expect.objectContaining({
+          cause: energyError,
+          message: 'MELCloud request failed: network',
+        }),
       )
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })

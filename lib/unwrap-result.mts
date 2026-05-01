@@ -2,9 +2,8 @@ import type { Result } from '@olivierzal/melcloud-api'
 
 export const unwrapResult = <T,>(result: Result<T>): T => {
   if (!result.ok) {
-    throw new Error(`MELCloud request failed: ${result.error.kind}`, {
-      cause: result.error,
-    })
+    const { error } = result
+    throw new Error(`MELCloud request failed: ${error.kind}`, { cause: error })
   }
   return result.value
 }
