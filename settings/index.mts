@@ -974,7 +974,7 @@ class ErrorLogManager {
             offset: '0',
             period: '29',
             to: this.#to,
-          })}`,
+          } satisfies { from: string; offset: string; period: string; to: string })}`,
         )
         this.#updateErrorLogElements(data)
         this.#appendErrorLogRows(data.errors)
