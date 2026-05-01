@@ -129,10 +129,13 @@ export class EnergyReport<T extends Classic.DeviceType> {
       .diffNow()
   }
 
-  async #get(): Promise<void> {
+  async #fetchEnergy(): Promise<{
+    data: Classic.EnergyData<T>
+    hour: Hour
+  } | null> {
     const device = await this.#device.ensureDevice()
     if (!device) {
-      return
+      return null
     }
     // Fetch energy data from the previous period (offset by config.minus)
     const toDateTime = DateTime.now().minus(this.#config.minus)
@@ -143,10 +146,18 @@ export class EnergyReport<T extends Classic.DeviceType> {
     })
     if (!result.ok) {
       this.#device.error('Energy report fetch failed:', result.error.kind)
+      return null
+    }
+    return { data: result.value, hour: toDateTime.hour }
+  }
+
+  async #get(): Promise<void> {
+    const fetched = await this.#fetchEnergy()
+    if (!fetched) {
       return
     }
     try {
-      await this.#set(result.value, toDateTime.hour)
+      await this.#set(fetched.data, fetched.hour)
     } catch (error) {
       this.#device.error('Energy report fetch failed:', error)
     }

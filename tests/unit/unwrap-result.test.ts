@@ -11,13 +11,11 @@ describe(unwrapResult, () => {
   it('should throw with kind in message and original error as cause when result is err', () => {
     const error = { kind: 'network' as const }
 
-    try {
-      unwrapResult(err(error))
-      expect.fail('expected throw')
-    } catch (thrown) {
-      expect(thrown).toBeInstanceOf(Error)
-      expect((thrown as Error).message).toBe('MELCloud request failed: network')
-      expect((thrown as Error).cause).toBe(error)
-    }
+    expect(() => unwrapResult(err(error))).toThrow(
+      expect.objectContaining({
+        cause: error,
+        message: 'MELCloud request failed: network',
+      }),
+    )
   })
 })
