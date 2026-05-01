@@ -111,6 +111,20 @@ describe('api', () => {
         to: '2026-01-31',
       })
     })
+
+    it('should pass undefined for missing numeric query params', async () => {
+      const errorLog = mock<FormattedErrorLog>()
+      mockApp.getClassicErrorLog.mockResolvedValue(errorLog)
+
+      await api.getClassicErrorLog({ homey, query: {} })
+
+      expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith({
+        from: undefined,
+        offset: undefined,
+        period: undefined,
+        to: undefined,
+      })
+    })
   })
 
   describe('frost protection settings retrieval', () => {
