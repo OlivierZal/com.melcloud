@@ -145,7 +145,11 @@ export class EnergyReport<T extends Classic.DeviceType> {
       this.#device.error('Energy report fetch failed:', result.error.kind)
       return
     }
-    await this.#set(result.value, toDateTime.hour)
+    try {
+      await this.#set(result.value, toDateTime.hour)
+    } catch (error) {
+      this.#device.error('Energy report fetch failed:', error)
+    }
   }
 
   #schedule(): void {

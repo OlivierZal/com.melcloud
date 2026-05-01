@@ -194,6 +194,23 @@ describe(EnergyReport, () => {
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
+    it('should log error and still schedule when setCapabilityValue throws', async () => {
+      const capabilityError = new Error('capability rejected')
+      setCapabilityValueMock.mockRejectedValueOnce(capabilityError)
+      mockEnergyFetch({
+        Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
+      })
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      expect(errorMock).toHaveBeenCalledWith(
+        'Energy report fetch failed:',
+        capabilityError,
+      )
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
+    })
+
     it('should not schedule twice', async () => {
       mockEnergyFetch({
         Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
