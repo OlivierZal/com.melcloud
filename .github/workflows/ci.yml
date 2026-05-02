@@ -63,7 +63,7 @@ jobs:
         run: npm ci --ignore-scripts
       - run: npm test -- --coverage
       - if: matrix.node-version == 22
-        uses: SonarSource/sonarqube-scan-action@299e4b793aaa83bf2aba7c9c14bedbb485688ec4
+        uses: SonarSource/sonarqube-scan-action@59db25f34e16620e48ab4bb9e4a5dce155cb5432
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     strategy:
