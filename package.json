@@ -48,7 +48,7 @@
     "@html-eslint/eslint-plugin": "^0.59.0",
     "@html-eslint/parser": "^0.59.0",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@swc/core": "^1.15.30",
+    "@swc/core": "^1.15.32",
     "@tailwindcss/cli": "^4.2.4",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/luxon": "^3.7.1",
