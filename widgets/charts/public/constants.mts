@@ -1,4 +1,7 @@
-/** MELCloud Classic API device type identifiers. */
+/**
+ * MELCloud Classic API device type identifiers.
+ * @category Constants
+ */
 export const ClassicDeviceType = {
   /** Air-to-Air (ATA) heat pump. */
   Ata: 0,
@@ -10,7 +13,10 @@ export const ClassicDeviceType = {
 export type ClassicDeviceType =
   (typeof ClassicDeviceType)[keyof typeof ClassicDeviceType]
 
-/** MELCloud Home API device type identifiers, matching context response keys. */
+/**
+ * MELCloud Home API device type identifiers, matching context response keys.
+ * @category Constants
+ */
 export const HomeDeviceType = {
   /** Air-to-Air (ATA) heat pump. */
   Ata: 'airToAir',
@@ -18,13 +24,19 @@ export const HomeDeviceType = {
   Atw: 'airToWater',
 } as const
 
-/** Unified MELCloud device type: union of Classic and Home API device types. */
+/**
+ * Unified MELCloud device type: union of Classic and Home API device types.
+ * @category Constants
+ */
 export type DeviceType = ClassicDeviceType | HomeDeviceType
 
 export type HomeDeviceType =
   (typeof HomeDeviceType)[keyof typeof HomeDeviceType]
 
-/** Fan speed levels for ATA and ERV devices. */
+/**
+ * Fan speed levels for ATA and ERV devices.
+ * @category Constants
+ */
 export const ClassicFanSpeed = {
   auto: 0,
   fast: 4,
@@ -37,22 +49,32 @@ export const ClassicFanSpeed = {
 export type ClassicFanSpeed =
   (typeof ClassicFanSpeed)[keyof typeof ClassicFanSpeed]
 
-/** Fan speed values excluding `silent`, used in set/update commands. */
+/**
+ * Fan speed values excluding `silent`, used in set/update commands.
+ * @category Constants
+ */
 export type ClassicNonSilentFanSpeed = Exclude<
   ClassicFanSpeed,
   typeof ClassicFanSpeed.silent
 >
 
-/** Effective flags value indicating no specific fields were changed; all data should be included. */
+/**
+ * Effective flags value indicating no specific fields were changed; all data should be included.
+ * @category Constants
+ */
 export const CLASSIC_FLAG_UNCHANGED = 0x0
 
 /**
  * Synthetic operation mode for buildings with devices in different modes.
  * Not a real API value — used at the application layer for mixed-state display.
+ * @category Constants
  */
 export const CLASSIC_OPERATION_MODE_MIXED = 0
 
-/** ClassicHorizontal vane positions for ATA devices. */
+/**
+ * ClassicHorizontal vane positions for ATA devices.
+ * @category Constants
+ */
 export const ClassicHorizontal = {
   auto: 0,
   center: 3,
@@ -66,7 +88,10 @@ export const ClassicHorizontal = {
 export type ClassicHorizontal =
   (typeof ClassicHorizontal)[keyof typeof ClassicHorizontal]
 
-/** Report axis label formatting types. */
+/**
+ * Report axis label formatting types.
+ * @category Constants
+ */
 export const ClassicLabelType = {
   day_of_week: 4,
   month: 2,
@@ -77,7 +102,10 @@ export const ClassicLabelType = {
 export type ClassicLabelType =
   (typeof ClassicLabelType)[keyof typeof ClassicLabelType]
 
-/** MELCloud supported language codes. */
+/**
+ * MELCloud supported language codes.
+ * @category Constants
+ */
 export const ClassicLanguage = {
   bg: 1,
   cs: 2,
@@ -110,7 +138,10 @@ export const ClassicLanguage = {
 export type ClassicLanguage =
   (typeof ClassicLanguage)[keyof typeof ClassicLanguage]
 
-/** ATA device operation modes. */
+/**
+ * ATA device operation modes.
+ * @category Constants
+ */
 export const ClassicOperationMode = {
   auto: 8,
   cool: 3,
@@ -121,19 +152,28 @@ export const ClassicOperationMode = {
 export type ClassicOperationMode =
   (typeof ClassicOperationMode)[keyof typeof ClassicOperationMode]
 
-/** ATA operation modes that produce cooling output (auto, cool, dry). */
+/**
+ * ATA operation modes that produce cooling output (auto, cool, dry).
+ * @category Constants
+ */
 export const classicCoolModes: ReadonlySet<ClassicOperationMode> = new Set([
   ClassicOperationMode.auto,
   ClassicOperationMode.cool,
   ClassicOperationMode.dry,
 ])
-/** ATA operation modes that produce heating output (auto, heat). */
+/**
+ * ATA operation modes that produce heating output (auto, heat).
+ * @category Constants
+ */
 export const classicHeatModes: ReadonlySet<ClassicOperationMode> = new Set([
   ClassicOperationMode.auto,
   ClassicOperationMode.heat,
 ])
 
-/** ATW device real-time operation state. */
+/**
+ * ATW device real-time operation state.
+ * @category Constants
+ */
 export const ClassicOperationModeState = {
   cooling: 3,
   defrost: 5,
@@ -147,7 +187,10 @@ export const ClassicOperationModeState = {
 export type ClassicOperationModeState =
   (typeof ClassicOperationModeState)[keyof typeof ClassicOperationModeState]
 
-/** ATW hot water derived operational state. */
+/**
+ * ATW hot water derived operational state.
+ * @category Constants
+ */
 export const ClassicOperationModeStateHotWater = {
   /** Domestic hot water — the heat pump is currently heating the tank. */
   dhw: 'dhw',
@@ -160,7 +203,10 @@ export const ClassicOperationModeStateHotWater = {
 export type ClassicOperationModeStateHotWater =
   (typeof ClassicOperationModeStateHotWater)[keyof typeof ClassicOperationModeStateHotWater]
 
-/** ATW zone derived operational state. */
+/**
+ * ATW zone derived operational state.
+ * @category Constants
+ */
 export const ClassicOperationModeStateZone = {
   cooling: 'cooling',
   defrost: 'defrost',
@@ -172,7 +218,10 @@ export const ClassicOperationModeStateZone = {
 export type ClassicOperationModeStateZone =
   (typeof ClassicOperationModeStateZone)[keyof typeof ClassicOperationModeStateZone]
 
-/** ATW zone operation modes controlling temperature regulation strategy. */
+/**
+ * ATW zone operation modes controlling temperature regulation strategy.
+ * @category Constants
+ */
 export const ClassicOperationModeZone = {
   /** ClassicTemperature curve-based regulation. */
   curve: 2,
@@ -188,7 +237,10 @@ export const ClassicOperationModeZone = {
 export type ClassicOperationModeZone =
   (typeof ClassicOperationModeZone)[keyof typeof ClassicOperationModeZone]
 
-/** ATA set-temperature limits in °C (universal across all ATA models). */
+/**
+ * ATA set-temperature limits in °C (universal across all ATA models).
+ * @category Constants
+ */
 export const ClassicTemperature = {
   /** Minimum target temperature when the device is in a cooling-capable mode. */
   cooling_min: 16,
@@ -200,7 +252,10 @@ export const ClassicTemperature = {
 export type ClassicTemperature =
   (typeof ClassicTemperature)[keyof typeof ClassicTemperature]
 
-/** ERV ventilation modes. */
+/**
+ * ERV ventilation modes.
+ * @category Constants
+ */
 export const ClassicVentilationMode = {
   auto: 2,
   /** Outside air flows straight through without passing the heat exchanger (free-cooling). */
@@ -211,7 +266,10 @@ export const ClassicVentilationMode = {
 export type ClassicVentilationMode =
   (typeof ClassicVentilationMode)[keyof typeof ClassicVentilationMode]
 
-/** ClassicVertical vane positions for ATA devices. */
+/**
+ * ClassicVertical vane positions for ATA devices.
+ * @category Constants
+ */
 export const ClassicVertical = {
   auto: 0,
   downwards: 5,

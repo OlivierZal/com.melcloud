@@ -393,6 +393,8 @@ const getSubzones = (zone: Classic.Zone): Classic.Zone[] => [
 // ── AuthManager ──
 
 class AuthManager {
+  readonly #apiOptions: readonly HTMLOptionElement[]
+
   readonly #apiSelect: HTMLSelectElement
 
   readonly #authenticateButton: HTMLButtonElement
@@ -425,6 +427,10 @@ class AuthManager {
     this.#homey = homey
     this.#loadPostLoginCallback = loadPostLoginCallback
     this.#apiSelect = getSelect('api')
+    // Some webview runtimes ignore `hidden` on `<option>`, so unavailable
+    // APIs are detached from the DOM. Snapshot the original order to
+    // restore them.
+    this.#apiOptions = [...this.#apiSelect.options]
     this.#authenticateButton = getButton('authenticate')
     this.#authenticationSection = getDiv('authentication')
     this.#loginSection = getDiv('login')
@@ -486,10 +492,9 @@ class AuthManager {
   public setAvailableApis(apis: readonly Api[]): void {
     const allowed = new Set<string>(apis)
     const firstAllowed = this.#updateOptionVisibility(allowed)
-    // Browser keeps the current selection even if that option is now hidden —
-    // advance to the first visible one so submission targets the right API.
-    // Note: programmatic `.value` assignment does not fire `change`, so
-    // `#syncInputsFromCredentials` below covers what the listener would miss.
+    // Programmatic `.value` assignment does not fire `change`, so the
+    // `#syncInputsFromCredentials` call below covers what the listener
+    // would miss when we redirect to the first available API.
     if (!allowed.has(this.#apiSelect.value) && firstAllowed !== '') {
       this.#apiSelect.value = firstAllowed
     }
@@ -526,11 +531,13 @@ class AuthManager {
 
   #updateOptionVisibility(allowed: ReadonlySet<string>): string {
     let firstAllowed = ''
-    for (const option of this.#apiSelect.options) {
-      const isAllowed = allowed.has(option.value)
-      option.hidden = !isAllowed
-      if (isAllowed && firstAllowed === '') {
-        ;({ value: firstAllowed } = option)
+    this.#apiSelect.replaceChildren()
+    for (const option of this.#apiOptions) {
+      if (allowed.has(option.value)) {
+        this.#apiSelect.append(option)
+        if (firstAllowed === '') {
+          ;({ value: firstAllowed } = option)
+        }
       }
     }
     return firstAllowed
