@@ -1,9 +1,6 @@
-concurrency:
-  cancel-in-progress: true
-  group: validate-${{ github.ref }}
 jobs:
-  validate:
-    name: Validate app
+  audit:
+    name: Audit
     permissions:
       contents: read
       packages: read
@@ -15,20 +12,18 @@ jobs:
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           cache: npm
-          node-version: '22'
+          node-version: 22
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
       - env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm ci --ignore-scripts
-      - name: Validate app
-        uses: athombv/github-action-homey-app-validate@0f3b42c15d26aab79d7c48cde4d2805524da910e
-        with:
-          level: publish
+        run: npm audit --audit-level=high --omit=dev
     timeout-minutes: 15
-name: Validate
+name: Audit
 on:
-  pull_request: {}
   push:
     branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch: {}
 permissions: {}

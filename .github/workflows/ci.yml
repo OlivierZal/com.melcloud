@@ -2,24 +2,6 @@ concurrency:
   cancel-in-progress: true
   group: ci-${{ github.ref }}
 jobs:
-  audit:
-    name: Audit
-    permissions:
-      contents: read
-      packages: read
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
-        with:
-          cache: npm
-          node-version: 22
-          registry-url: https://npm.pkg.github.com
-          scope: '@olivierzal'
-      - env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm audit --audit-level=high --omit=dev
-    timeout-minutes: 15
   check:
     name: Check
     permissions:
@@ -28,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           cache: npm
@@ -51,6 +35,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
+          persist-credentials: false
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
           cache: npm
