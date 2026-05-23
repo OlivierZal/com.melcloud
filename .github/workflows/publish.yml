@@ -23,9 +23,9 @@ jobs:
           personal_access_token: ${{ secrets.HOMEY_PAT }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - env:
+      - name: URL
+        env:
           URL: ${{ steps.publish.outputs.url }}
-        name: URL
         run: echo "Manage your app at $URL" >> "$GITHUB_STEP_SUMMARY"
     timeout-minutes: 30
 name: Publish app on Homey
