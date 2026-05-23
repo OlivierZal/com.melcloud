@@ -1,3 +1,6 @@
+concurrency:
+  cancel-in-progress: false
+  group: update-version
 jobs:
   update-version:
     name: Update app version
@@ -23,6 +26,7 @@ jobs:
           git tag "v$VERSION"
           git push origin HEAD --tags
           gh release create "v$VERSION" -t "v$VERSION" --notes "" --generate-notes
+    timeout-minutes: 15
 name: Update app version
 on:
   workflow_dispatch:
