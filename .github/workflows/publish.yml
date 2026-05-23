@@ -3,13 +3,15 @@ concurrency:
   group: publish
 jobs:
   publish:
+    environment: homey
     name: Publish app on Homey
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
         with:
-          cache: npm
+          persist-credentials: false
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # zizmor: ignore[cache-poisoning]
+        with:
           node-version: '22'
           registry-url: https://npm.pkg.github.com
           scope: '@olivierzal'
@@ -22,7 +24,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: URL
-        run: echo "Manage your app at ${{ steps.publish.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+        env:
+          URL: ${{ steps.publish.outputs.url }}
+        run: echo "Manage your app at $URL" >> "$GITHUB_STEP_SUMMARY"
     timeout-minutes: 30
 name: Publish app on Homey
 on:
