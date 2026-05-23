@@ -53,7 +53,7 @@
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/luxon": "^3.7.1",
     "@types/node": "^25.9.1",
-    "@typescript/native-preview": "^7.0.0-dev.20260515.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260522.1",
     "@vitest/coverage-v8": "^4.1.7",
     "@vitest/eslint-plugin": "^1.6.17",
     "apexcharts": "^5.13.0",
