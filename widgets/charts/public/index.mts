@@ -123,7 +123,7 @@ const getChartLineOptions = (
     },
     xaxis: {
       ...axisStyle,
-      categories,
+      categories: [...categories],
       labels: { rotate: 0, style },
       tickAmount: 3,
     },
