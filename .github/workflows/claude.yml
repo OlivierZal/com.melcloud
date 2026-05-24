@@ -1,7 +1,7 @@
 jobs:
   claude:
     if: |
-      github.actor != 'dependabot[bot]' && (
+      !contains(fromJson('["Copilot","copilot-swe-agent[bot]","dependabot[bot]","github-actions[bot]"]'), github.actor) && (
         (github.event_name == 'issue_comment' &&
           contains(github.event.comment.body, '@claude') &&
           contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
