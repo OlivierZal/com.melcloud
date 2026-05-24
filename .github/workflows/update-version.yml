@@ -4,7 +4,9 @@ concurrency:
 jobs:
   update-version:
     name: Update app version
-    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # zizmor: ignore[artipacked]
       - id: update_app_version
@@ -44,5 +46,4 @@ on:
           - patch
         required: true
         type: choice
-permissions:
-  contents: write
+permissions: {}

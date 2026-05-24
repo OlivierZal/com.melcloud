@@ -1,5 +1,5 @@
 concurrency:
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
   group: validate-${{ github.ref }}
 jobs:
   validate:
@@ -7,20 +7,14 @@ jobs:
     permissions:
       contents: read
       packages: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+      - uses: ./.github/actions/setup-node-and-install
         with:
-          cache: npm
-          node-version: '22'
-          registry-url: https://npm.pkg.github.com
-          scope: '@olivierzal'
-      - env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm ci --ignore-scripts
+          npm-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Validate app
         uses: athombv/github-action-homey-app-validate@0f3b42c15d26aab79d7c48cde4d2805524da910e
         with:
