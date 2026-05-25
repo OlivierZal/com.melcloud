@@ -159,6 +159,10 @@ export default class MELCloudApp extends App {
     return this.#homeApi
   }
 
+  public get timezone(): string {
+    return this.homey.clock.getTimezone()
+  }
+
   #classicApi!: Classic.API
 
   #facadeManager!: Classic.FacadeManager
@@ -177,8 +181,11 @@ export default class MELCloudApp extends App {
 
   public override async onInit(): Promise<void> {
     const language = this.homey.i18n.getLanguage()
-    const timezone = this.homey.clock.getTimezone()
-    await this.#initClassicApi({ language, locale: language, timezone })
+    await this.#initClassicApi({
+      language,
+      locale: language,
+      timezone: this.timezone,
+    })
     await this.#initHomeApi()
     this.#createNotification(language)
     this.#registerWidgetListeners()
@@ -252,7 +259,7 @@ export default class MELCloudApp extends App {
       await this.#classicApi.getErrorLog(query),
     )
     const locale = this.homey.i18n.getLanguage()
-    const timeZone = this.homey.clock.getTimezone()
+    const { timezone: timeZone } = this
     // Reused across all entries instead of rebuilding a DateTime + formatter per call.
     const dateTimeMedFormat = new Intl.DateTimeFormat(locale, {
       day: 'numeric',
@@ -343,7 +350,7 @@ export default class MELCloudApp extends App {
   }): Promise<ReportChartPieOptions> {
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getOperationModes(
-        createDateRange(days, this.homey.clock.getTimezone()),
+        createDateRange(days, this.timezone),
       ),
     )
   }
@@ -369,7 +376,7 @@ export default class MELCloudApp extends App {
   }): Promise<ReportChartLineOptions> {
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getTemperatures(
-        createDateRange(days, this.homey.clock.getTimezone()),
+        createDateRange(days, this.timezone),
       ),
     )
   }
@@ -417,7 +424,10 @@ export default class MELCloudApp extends App {
 
   public getHomeFacade(deviceId: string): Home.DeviceAtaFacade {
     const model = this.#homeRegistry.getById(deviceId)
-    if (model?.isAta() !== true) {
+    if (model === undefined) {
+      throw new Error(this.homey.__('errors.deviceNotFound'))
+    }
+    if (!model.isAta()) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
     return this.#homeFacadeManager.get(model)
