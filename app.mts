@@ -40,6 +40,7 @@ import {
 } from './files.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { type Homey, App } from './lib/homey.mts'
+import { getTimeZone } from './lib/temporal.mts'
 import { typedFromEntries } from './lib/typed-object.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
@@ -180,7 +181,7 @@ export default class MELCloudApp extends App {
     await this.#initClassicApi({
       language,
       locale: language,
-      timezone: this.getTimeZone(),
+      timezone: getTimeZone(this.homey),
     })
     await this.#initHomeApi()
     this.#createNotification(language)
@@ -255,7 +256,7 @@ export default class MELCloudApp extends App {
       await this.#classicApi.getErrorLog(query),
     )
     const locale = this.homey.i18n.getLanguage()
-    const timeZone = this.getTimeZone()
+    const timeZone = getTimeZone(this.homey)
     // Reused across all entries instead of rebuilding a DateTime + formatter per call.
     const dateTimeMedFormat = new Intl.DateTimeFormat(locale, {
       day: 'numeric',
@@ -346,7 +347,7 @@ export default class MELCloudApp extends App {
   }): Promise<ReportChartPieOptions> {
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getOperationModes(
-        createDateRange(days, this.getTimeZone()),
+        createDateRange(days, getTimeZone(this.homey)),
       ),
     )
   }
@@ -372,7 +373,7 @@ export default class MELCloudApp extends App {
   }): Promise<ReportChartLineOptions> {
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getTemperatures(
-        createDateRange(days, this.getTimeZone()),
+        createDateRange(days, getTimeZone(this.homey)),
       ),
     )
   }
@@ -424,10 +425,6 @@ export default class MELCloudApp extends App {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
     return this.#homeFacadeManager.get(model)
-  }
-
-  public getTimeZone(): string {
-    return this.homey.clock.getTimezone()
   }
 
   public async updateClassicAtaState({

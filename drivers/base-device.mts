@@ -10,6 +10,7 @@ import type {
 import { getErrorMessage } from '../lib/get-error-message.mts'
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import { getLocale, getNow } from '../lib/temporal.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 
@@ -365,20 +366,17 @@ export abstract class BaseMELCloudDevice extends Device {
     { actionType, timerType, timerWords }: TimerOptions,
   ): NodeJS.Timeout {
     const duration = Temporal.Duration.from(interval)
-    const locale = this.homey.i18n.getLanguage()
-    const timezone = this.homey.clock.getTimezone()
+    const locale = getLocale(this.homey)
     this.log(
       capitalize(actionType),
       'will run',
       timerWords.timeSpecifier,
       duration.round({ largestUnit: 'days' }).toLocaleString(locale),
       timerWords.dateSpecifier,
-      Temporal.Now.zonedDateTimeISO(timezone)
-        .add(duration)
-        .toLocaleString(locale, {
-          dateStyle: 'full',
-          timeStyle: 'full',
-        }),
+      getNow(this.homey).add(duration).toLocaleString(locale, {
+        dateStyle: 'full',
+        timeStyle: 'full',
+      }),
     )
 
     return this.homey[timerType](

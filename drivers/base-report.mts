@@ -1,6 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/Homey'
-import { Temporal } from 'temporal-polyfill'
+import type { Temporal } from 'temporal-polyfill'
 
 import type {
   Capabilities,
@@ -10,6 +10,7 @@ import type {
 import type { EnergyReportMode } from '../types/device.mts'
 import { KILOWATT_TO_WATT } from '../lib/constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import { getNow } from '../lib/temporal.mts'
 import { typedEntries } from '../lib/typed-object.mts'
 import { unwrapResult } from '../lib/unwrap-result.mts'
 import type { ClassicMELCloudDevice } from './classic-device.mts'
@@ -123,7 +124,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
   }
 
   #computeNextFireDelay(): Temporal.Duration {
-    const now = Temporal.Now.zonedDateTimeISO(this.#homey.clock.getTimezone())
+    const now = getNow(this.#homey)
     return now.add(this.#config.duration).with(this.#config.values).since(now)
   }
 
@@ -133,9 +134,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
       return
     }
     // Fetch energy data from the previous period (offset by config.minus)
-    const toDateTime = Temporal.Now.zonedDateTimeISO(
-      this.#homey.clock.getTimezone(),
-    ).subtract(this.#config.minus)
+    const toDateTime = getNow(this.#homey).subtract(this.#config.minus)
     const to = toDateTime.toPlainDate().toString()
     try {
       const data = unwrapResult(
