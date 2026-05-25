@@ -5,17 +5,19 @@ jobs:
   publish:
     environment: homey
     name: Publish app on Homey
-    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # zizmor: ignore[cache-poisoning]
+      - uses: ./.github/actions/setup-node-and-install
         with:
-          node-version: '22'
-          registry-url: https://npm.pkg.github.com
-          scope: '@olivierzal'
-      - run: cp $NPM_CONFIG_USERCONFIG ${{ github.workspace }}/.npmrc
+          cache: none
+          install: 'false'
+      - run: cp "$NPM_CONFIG_USERCONFIG" "$GITHUB_WORKSPACE/.npmrc"
       - id: publish
         name: Publish
         uses: athombv/github-action-homey-app-publish@0642b483f1eb66fbceb0c91b73df35d45fd2f3db
@@ -33,6 +35,4 @@ on:
   release:
     types: [published]
   workflow_dispatch: {}
-permissions:
-  contents: read
-  packages: read
+permissions: {}

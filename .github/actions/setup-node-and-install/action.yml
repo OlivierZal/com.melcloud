@@ -1,0 +1,37 @@
+description: Set up Node.js for this @olivierzal-scoped GitHub Packages project and (optionally) install dependencies. Caller must run actions/checkout first — composite actions cannot reference local files before the repo is checked out.
+inputs:
+  cache:
+    default: npm
+    description: actions/setup-node cache mode. Set to 'none' to disable (release jobs where cache poisoning is a credential-exfiltration concern).
+    required: false
+  install:
+    default: 'true'
+    description: Whether to run `npm ci --ignore-scripts`. Set to 'false' for jobs that only need a Node/.npmrc setup (audit, publish).
+    required: false
+  node-version:
+    default: '22'
+    description: Node.js version to install. Defaults to the Homey runtime version.
+    required: false
+  npm-token:
+    description: Token forwarded as NODE_AUTH_TOKEN. Required when `install` is true (GitHub Packages requires auth even for read).
+    required: false
+name: Setup Node and install
+runs:
+  steps:
+    - if: inputs.install == 'true' && inputs.npm-token == ''
+      run: |
+        echo "::error::setup-node-and-install: 'npm-token' input is required when 'install' is 'true' (GitHub Packages auth)."
+        exit 1
+      shell: bash
+    - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+      with:
+        cache: ${{ inputs.cache == 'none' && '' || inputs.cache }}
+        node-version: ${{ inputs.node-version }}
+        registry-url: https://npm.pkg.github.com
+        scope: '@olivierzal'
+    - env:
+        NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
+      if: inputs.install == 'true'
+      run: npm ci --ignore-scripts
+      shell: bash
+  using: composite
