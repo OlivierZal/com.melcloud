@@ -757,6 +757,21 @@ describe('melCloudApp', () => {
       )
       expect(mockTranslate).toHaveBeenCalledWith('errors.deviceNotFound')
     })
+
+    it('should throw when device is found but is not ATA', async () => {
+      const atwModel = {
+        id: 'device-1',
+        name: 'Heat Pump',
+        isAta: (): boolean => false,
+      }
+      mockHomeApiInstance.list.mockResolvedValue([])
+      mockHomeRegistry.getById.mockReturnValue(atwModel)
+      await app.onInit()
+
+      expect(() => app.getHomeFacade('device-1')).toThrow(
+        'errors.deviceNotFound',
+      )
+    })
   })
 
   describe('frost protection settings retrieval', () => {

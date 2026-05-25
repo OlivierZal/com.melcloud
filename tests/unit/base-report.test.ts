@@ -22,9 +22,6 @@ import { getMockCallArg, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
 
-// Explicit offset so the same instant resolves identically regardless of
-// the host's local timezone (CI runs UTC; dev machines often run CET/CEST).
-// 12:00 Europe/Paris in mid-March (pre-DST) → 11:00 UTC.
 const FAKE_NOW = new Date('2026-03-18T12:00:00.000+01:00')
 
 const setCapabilityValueMock =
