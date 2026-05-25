@@ -1,4 +1,3 @@
-import type { Hour } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/Homey'
 import { Temporal } from 'temporal-polyfill'
@@ -110,7 +109,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
   #calculatePowerValue(
     data: Classic.EnergyData<T>,
     tags: readonly (keyof Classic.EnergyData<T>)[],
-    hour: Hour,
+    hour: number,
   ): number {
     let total = 0
     for (const tag of tags) {
@@ -145,8 +144,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
           to,
         }),
       )
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- ZonedDateTime.hour is structurally 0-23, matches the Hour literal union
-      await this.#set(data, toDateTime.hour as Hour)
+      await this.#set(data, toDateTime.hour)
     } catch (error) {
       this.#device.error('Energy report fetch failed:', error)
     }
@@ -171,7 +169,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
     )
   }
 
-  async #set(data: Classic.EnergyData<T>, hour: Hour): Promise<void> {
+  async #set(data: Classic.EnergyData<T>, hour: number): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
       ;({ length: this.#linkedDeviceCount } =
         data.UsageDisclaimerPercentages.split(','))

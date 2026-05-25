@@ -420,9 +420,6 @@ export default class MELCloudApp extends App {
 
   public getHomeFacade(deviceId: string): Home.DeviceAtaFacade {
     const model = this.#homeRegistry.getById(deviceId)
-    // `!model?.isAta()` would be flagged by strict-boolean-expressions
-    // (rule wants undefined-vs-false distinction explicit). `=== true` makes
-    // the intent unambiguous: throw on missing OR non-ATA.
     if (model?.isAta() !== true) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
