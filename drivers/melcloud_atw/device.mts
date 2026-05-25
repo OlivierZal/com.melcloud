@@ -1,5 +1,5 @@
 import { hasClassicZone2, isClassicAtwFacade } from '@olivierzal/melcloud-api'
-import { DateTime } from 'luxon'
+import { Temporal } from 'temporal-polyfill'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {
@@ -73,11 +73,14 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
     hot_water_mode: (isForced: boolean) =>
       isForced ? HotWaterMode.forced : HotWaterMode.auto,
     legionella: (value: string) =>
-      DateTime.fromISO(value).toLocaleString({
-        day: 'numeric',
-        month: 'short',
-        weekday: 'short',
-      }),
+      Temporal.PlainDate.from(value).toLocaleString(
+        this.homey.i18n.getLanguage(),
+        {
+          day: 'numeric',
+          month: 'short',
+          weekday: 'short',
+        },
+      ),
     operational_state: (value: Classic.OperationModeState) =>
       operationModeStateFromDevice[value],
   }

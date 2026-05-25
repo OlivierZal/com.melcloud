@@ -6,7 +6,6 @@ import {
   type SyncCallback,
   ok,
 } from '@olivierzal/melcloud-api'
-import { Settings as LuxonSettings } from 'luxon'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
@@ -352,6 +351,7 @@ describe('melCloudApp', () => {
       expect(mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
           language: 'en',
+          locale: 'en',
           timezone: 'Europe/Paris',
         }),
       )
@@ -392,15 +392,6 @@ describe('melCloudApp', () => {
 
       expect(logMock).toHaveBeenCalledWith('test log')
       expect(errorMock).toHaveBeenCalledWith('test error')
-    })
-
-    it('should set luxon defaults', async () => {
-      await app.onInit()
-
-      expect(LuxonSettings.defaultLocale).toBe('en')
-      expect(LuxonSettings.defaultZone).toStrictEqual(
-        expect.objectContaining({ zoneName: 'Europe/Paris' }),
-      )
     })
 
     it('should create notification when version differs', async () => {
@@ -739,7 +730,11 @@ describe('melCloudApp', () => {
   })
 
   describe('home facade retrieval', () => {
-    const mockModel = { id: 'device-1', name: 'Living Room' }
+    const mockModel = {
+      id: 'device-1',
+      name: 'Living Room',
+      isAta: (): boolean => true,
+    }
 
     it('should return a facade for a matching device', async () => {
       mockHomeApiInstance.list.mockResolvedValue([])

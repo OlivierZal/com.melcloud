@@ -89,6 +89,9 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   homey: mock<Homey.Homey>({
     clearInterval: clearIntervalMock,
     clearTimeout: clearTimeoutMock,
+    clock: mock<Homey.Homey['clock']>({
+      getTimezone: vi.fn<() => string>(() => 'Europe/Paris'),
+    }),
   }),
   log: logMock,
   setCapabilityValue: setCapabilityValueMock,
@@ -130,6 +133,9 @@ const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
     homey: mock<Homey.Homey>({
       clearInterval: clearIntervalMock,
       clearTimeout: clearTimeoutMock,
+      clock: mock<Homey.Homey['clock']>({
+        getTimezone: vi.fn<() => string>(() => 'Europe/Paris'),
+      }),
     }),
     log: logMock,
     setCapabilityValue: setCapabilityValueMock,

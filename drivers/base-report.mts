@@ -1,7 +1,7 @@
 import type { Hour } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/Homey'
-import { type DateObjectUnits, type DurationLike, DateTime } from 'luxon'
+import { Temporal } from 'temporal-polyfill'
 
 import type {
   Capabilities,
@@ -23,11 +23,11 @@ const sumTags = <T extends Classic.DeviceType>(
   tags.reduce((accumulator, tag) => accumulator + Number(data[tag]), 0)
 
 export interface EnergyReportConfig {
-  readonly duration: DurationLike
-  readonly interval: DurationLike
-  readonly minus: DurationLike
+  readonly duration: Temporal.DurationLike
+  readonly interval: Temporal.DurationLike
+  readonly minus: Temporal.DurationLike
   readonly mode: EnergyReportMode
-  readonly values: DateObjectUnits
+  readonly values: Temporal.PlainTimeLike
 }
 
 export class EnergyReport<T extends Classic.DeviceType> {
@@ -123,11 +123,9 @@ export class EnergyReport<T extends Classic.DeviceType> {
     return total / this.#linkedDeviceCount
   }
 
-  #computeNextFireDelay(): DurationLike {
-    return DateTime.now()
-      .plus(this.#config.duration)
-      .set(this.#config.values)
-      .diffNow()
+  #computeNextFireDelay(): Temporal.Duration {
+    const now = Temporal.Now.zonedDateTimeISO(this.#homey.clock.getTimezone())
+    return now.add(this.#config.duration).with(this.#config.values).since(now)
   }
 
   async #get(): Promise<void> {
@@ -136,8 +134,10 @@ export class EnergyReport<T extends Classic.DeviceType> {
       return
     }
     // Fetch energy data from the previous period (offset by config.minus)
-    const toDateTime = DateTime.now().minus(this.#config.minus)
-    const to = toDateTime.toISODate()
+    const toDateTime = Temporal.Now.zonedDateTimeISO(
+      this.#homey.clock.getTimezone(),
+    ).subtract(this.#config.minus)
+    const to = toDateTime.toPlainDate().toString()
     try {
       const data = unwrapResult(
         await device.getEnergy({
@@ -145,7 +145,8 @@ export class EnergyReport<T extends Classic.DeviceType> {
           to,
         }),
       )
-      await this.#set(data, toDateTime.hour)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- ZonedDateTime.hour is structurally 0-23, matches the Hour literal union
+      await this.#set(data, toDateTime.hour as Hour)
     } catch (error) {
       this.#device.error('Energy report fetch failed:', error)
     }

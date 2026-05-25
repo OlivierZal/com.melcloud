@@ -9,7 +9,7 @@ import type {
   SettingManager,
   SyncCallback,
 } from '@olivierzal/melcloud-api'
-import { DateTime, Settings as LuxonSettings } from 'luxon'
+import { Temporal } from 'temporal-polyfill'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
@@ -53,11 +53,14 @@ const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
   [Home.DeviceType.Ata]: 'home-melcloud',
 }
 
-const createDateRange = (days: number): { from: string; to: string } => {
-  const now = DateTime.now()
+const createDateRange = (
+  days: number,
+  timezone: string,
+): { from: string; to: string } => {
+  const now = Temporal.Now.plainDateTimeISO(timezone)
   return {
-    from: now.minus({ days }).toISO({ includeOffset: false }),
-    to: now.toISO({ includeOffset: false }),
+    from: now.subtract({ days }).toString(),
+    to: now.toString(),
   }
 }
 
@@ -175,9 +178,7 @@ export default class MELCloudApp extends App {
   public override async onInit(): Promise<void> {
     const language = this.homey.i18n.getLanguage()
     const timezone = this.homey.clock.getTimezone()
-    LuxonSettings.defaultLocale = language
-    LuxonSettings.defaultZone = timezone
-    await this.#initClassicApi({ language, timezone })
+    await this.#initClassicApi({ language, locale: language, timezone })
     await this.#initHomeApi()
     this.#createNotification(language)
     this.#registerWidgetListeners()
@@ -342,7 +343,7 @@ export default class MELCloudApp extends App {
   }): Promise<ReportChartPieOptions> {
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getOperationModes(
-        createDateRange(days),
+        createDateRange(days, this.homey.clock.getTimezone()),
       ),
     )
   }
@@ -368,7 +369,7 @@ export default class MELCloudApp extends App {
   }): Promise<ReportChartLineOptions> {
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getTemperatures(
-        createDateRange(days),
+        createDateRange(days, this.homey.clock.getTimezone()),
       ),
     )
   }
@@ -416,7 +417,7 @@ export default class MELCloudApp extends App {
 
   public getHomeFacade(deviceId: string): Home.DeviceAtaFacade {
     const model = this.#homeRegistry.getById(deviceId)
-    if (!model) {
+    if (model?.isAta() !== true) {
       throw new Error(this.homey.__('errors.deviceNotFound'))
     }
     return this.#homeFacadeManager.get(model)
@@ -636,6 +637,7 @@ export default class MELCloudApp extends App {
 
   async #initClassicApi(config: {
     language: string
+    locale: string
     timezone: string
   }): Promise<void> {
     this.#classicApi = await Classic.API.create({
