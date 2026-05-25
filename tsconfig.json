@@ -17,7 +17,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "target": "es2025",
-    "types": ["node", "luxon"],
+    "types": ["node"],
     "verbatimModuleSyntax": true
   },
   "exclude": ["*.config.ts"]

@@ -31,7 +31,7 @@ export const getCapabilitiesOptionsAtaErv = ({
 export const homeGetCapabilitiesOptions = ({
   hasAutomaticFanSpeed,
   numberOfFanSpeeds,
-}: Home.DeviceCapabilities): Partial<CapabilitiesOptionsAtaErv> =>
+}: Home.AtaDeviceCapabilities): Partial<CapabilitiesOptionsAtaErv> =>
   getFanSpeedOptions(hasAutomaticFanSpeed, numberOfFanSpeeds)
 
 const addPrefixToTitle = (

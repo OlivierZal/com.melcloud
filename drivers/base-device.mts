@@ -1,5 +1,5 @@
 import { NoChangesError } from '@olivierzal/melcloud-api'
-import { type DurationLike, DateTime, Duration } from 'luxon'
+import { Temporal } from 'temporal-polyfill'
 
 import type { CapabilityConverter } from '../types/capabilities.mts'
 import type {
@@ -10,6 +10,7 @@ import type {
 import { getErrorMessage } from '../lib/get-error-message.mts'
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import { getLocale, getNow } from '../lib/temporal.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 
@@ -188,7 +189,7 @@ export abstract class BaseMELCloudDevice extends Device {
 
   public setInterval(
     callback: () => Promise<void>,
-    interval: DurationLike,
+    interval: Temporal.DurationLike,
     actionType: string,
   ): NodeJS.Timeout {
     return this.#setTimer(callback, interval, {
@@ -200,7 +201,7 @@ export abstract class BaseMELCloudDevice extends Device {
 
   public setTimeout(
     callback: () => Promise<void>,
-    interval: DurationLike,
+    interval: Temporal.DurationLike,
     actionType: string,
   ): NodeJS.Timeout {
     return this.#setTimer(callback, interval, {
@@ -361,22 +362,27 @@ export abstract class BaseMELCloudDevice extends Device {
 
   #setTimer(
     callback: () => Promise<void>,
-    interval: DurationLike,
+    interval: Temporal.DurationLike,
     { actionType, timerType, timerWords }: TimerOptions,
   ): NodeJS.Timeout {
-    const duration = Duration.fromDurationLike(interval)
+    const duration = Temporal.Duration.from(interval)
+    const locale = getLocale(this.homey)
     this.log(
       capitalize(actionType),
       'will run',
       timerWords.timeSpecifier,
-      duration.rescale().toHuman(),
+      duration.round({ largestUnit: 'days' }).toLocaleString(locale),
       timerWords.dateSpecifier,
-      DateTime.now()
-        .plus(duration)
-        .toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS),
+      getNow(this.homey).add(duration).toLocaleString(locale, {
+        dateStyle: 'full',
+        timeStyle: 'full',
+      }),
     )
 
-    return this.homey[timerType](callback, duration.as('milliseconds'))
+    return this.homey[timerType](
+      callback,
+      duration.total({ unit: 'milliseconds' }),
+    )
   }
 
   async #syncOptionalCapabilities(

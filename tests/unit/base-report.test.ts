@@ -22,7 +22,7 @@ import { getMockCallArg, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
 
-const FAKE_NOW = new Date('2026-03-18T12:00:00.000')
+const FAKE_NOW = new Date('2026-03-18T12:00:00.000+01:00')
 
 const setCapabilityValueMock =
   vi.fn<(capability: string, value: unknown) => Promise<void>>()
@@ -89,6 +89,9 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   homey: mock<Homey.Homey>({
     clearInterval: clearIntervalMock,
     clearTimeout: clearTimeoutMock,
+    clock: mock<Homey.Homey['clock']>({
+      getTimezone: vi.fn<() => string>(() => 'Europe/Paris'),
+    }),
   }),
   log: logMock,
   setCapabilityValue: setCapabilityValueMock,
@@ -130,6 +133,9 @@ const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
     homey: mock<Homey.Homey>({
       clearInterval: clearIntervalMock,
       clearTimeout: clearTimeoutMock,
+      clock: mock<Homey.Homey['clock']>({
+        getTimezone: vi.fn<() => string>(() => 'Europe/Paris'),
+      }),
     }),
     log: logMock,
     setCapabilityValue: setCapabilityValueMock,

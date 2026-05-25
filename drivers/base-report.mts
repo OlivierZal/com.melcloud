@@ -1,7 +1,6 @@
-import type { Hour } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/Homey'
-import { type DateObjectUnits, type DurationLike, DateTime } from 'luxon'
+import type { Temporal } from 'temporal-polyfill'
 
 import type {
   Capabilities,
@@ -11,6 +10,7 @@ import type {
 import type { EnergyReportMode } from '../types/device.mts'
 import { KILOWATT_TO_WATT } from '../lib/constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import { getNow } from '../lib/temporal.mts'
 import { typedEntries } from '../lib/typed-object.mts'
 import { unwrapResult } from '../lib/unwrap-result.mts'
 import type { ClassicMELCloudDevice } from './classic-device.mts'
@@ -23,11 +23,11 @@ const sumTags = <T extends Classic.DeviceType>(
   tags.reduce((accumulator, tag) => accumulator + Number(data[tag]), 0)
 
 export interface EnergyReportConfig {
-  readonly duration: DurationLike
-  readonly interval: DurationLike
-  readonly minus: DurationLike
+  readonly duration: Temporal.DurationLike
+  readonly interval: Temporal.DurationLike
+  readonly minus: Temporal.DurationLike
   readonly mode: EnergyReportMode
-  readonly values: DateObjectUnits
+  readonly values: Temporal.PlainTimeLike
 }
 
 export class EnergyReport<T extends Classic.DeviceType> {
@@ -110,7 +110,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
   #calculatePowerValue(
     data: Classic.EnergyData<T>,
     tags: readonly (keyof Classic.EnergyData<T>)[],
-    hour: Hour,
+    hour: number,
   ): number {
     let total = 0
     for (const tag of tags) {
@@ -123,11 +123,9 @@ export class EnergyReport<T extends Classic.DeviceType> {
     return total / this.#linkedDeviceCount
   }
 
-  #computeNextFireDelay(): DurationLike {
-    return DateTime.now()
-      .plus(this.#config.duration)
-      .set(this.#config.values)
-      .diffNow()
+  #computeNextFireDelay(): Temporal.Duration {
+    const now = getNow(this.#homey)
+    return now.add(this.#config.duration).with(this.#config.values).since(now)
   }
 
   async #get(): Promise<void> {
@@ -136,8 +134,8 @@ export class EnergyReport<T extends Classic.DeviceType> {
       return
     }
     // Fetch energy data from the previous period (offset by config.minus)
-    const toDateTime = DateTime.now().minus(this.#config.minus)
-    const to = toDateTime.toISODate()
+    const toDateTime = getNow(this.#homey).subtract(this.#config.minus)
+    const to = toDateTime.toPlainDate().toString()
     try {
       const data = unwrapResult(
         await device.getEnergy({
@@ -170,7 +168,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
     )
   }
 
-  async #set(data: Classic.EnergyData<T>, hour: Hour): Promise<void> {
+  async #set(data: Classic.EnergyData<T>, hour: number): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
       ;({ length: this.#linkedDeviceCount } =
         data.UsageDisclaimerPercentages.split(','))

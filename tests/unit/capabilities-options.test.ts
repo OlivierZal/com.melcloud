@@ -53,7 +53,7 @@ describe(getCapabilitiesOptionsAtaErv, () => {
 
 describe(homeGetCapabilitiesOptions, () => {
   it('should return fan_speed options from Home device capabilities', () => {
-    const capabilities = mock<Home.DeviceCapabilities>({
+    const capabilities = mock<Home.AtaDeviceCapabilities>({
       hasAutomaticFanSpeed: true,
       numberOfFanSpeeds: 4,
     })
@@ -65,7 +65,7 @@ describe(homeGetCapabilitiesOptions, () => {
   })
 
   it('should return min 1 when hasAutomaticFanSpeed is false', () => {
-    const capabilities = mock<Home.DeviceCapabilities>({
+    const capabilities = mock<Home.AtaDeviceCapabilities>({
       hasAutomaticFanSpeed: false,
       numberOfFanSpeeds: 5,
     })

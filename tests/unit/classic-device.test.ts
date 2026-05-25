@@ -79,6 +79,8 @@ vi.mock('homey', async () => {
             app: { getClassicFacade: getFacadeMock },
             clearInterval: vi.fn<(timer: NodeJS.Timeout | undefined) => void>(),
             clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
+            clock: { getTimezone: vi.fn<() => string>(() => 'Europe/Paris') },
+            i18n: { getLanguage: vi.fn<() => string>(() => 'en') },
             setInterval:
               vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
             setTimeout:
