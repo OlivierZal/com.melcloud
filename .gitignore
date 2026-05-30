@@ -1,6 +1,7 @@
-node_modules/
 /.homeybuild/
 /.vscode/*
 !/.vscode/settings.json
 /coverage/
+dist.css
 /env.json
+node_modules/
