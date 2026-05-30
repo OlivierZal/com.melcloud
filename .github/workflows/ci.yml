@@ -46,6 +46,7 @@ jobs:
     timeout-minutes: 20
 name: CI
 on:
+  merge_group: {}
   pull_request: {}
   push:
     branches: [main]
