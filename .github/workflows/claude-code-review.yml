@@ -19,7 +19,7 @@ jobs:
         with:
           fetch-depth: 1
           persist-credentials: false
-      - uses: anthropics/claude-code-action@d5726de019ec4498aa667642bc3a80fca83aa102
+      - uses: anthropics/claude-code-action@51705da45eecce209d4700538bf8377d5b5fc695
         with:
           claude_args: --model opus
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
