@@ -30,6 +30,17 @@
   background: color-mix(in srgb, currentcolor 8%, transparent);
 }
 
+/* The zone select touches the top edge and value controls touch the right
+   edge of the widget card, so a default focus ring drawn around the element
+   spills outside the frame. Draw it inside instead. */
+.zone-select:focus,
+.ghost-button:focus,
+input:focus,
+select:focus {
+  outline: 2px solid var(--homey-text-color-blue);
+  outline-offset: -2px;
+}
+
 /* Value rows: <label> wrapping its form control */
 label {
   align-items: center;

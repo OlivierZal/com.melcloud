@@ -17,3 +17,11 @@
 .zone-select:hover {
   background: color-mix(in srgb, currentcolor 8%, transparent);
 }
+
+/* The zone select touches the top edge of the widget card, so a default
+   focus ring drawn around the element spills outside the frame. Draw it
+   inside instead. */
+.zone-select:focus {
+  outline: 2px solid var(--homey-text-color-blue);
+  outline-offset: -2px;
+}
