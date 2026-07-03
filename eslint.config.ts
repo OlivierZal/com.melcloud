@@ -4,7 +4,6 @@ import { jsdoc } from 'eslint-plugin-jsdoc'
 import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
 import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
 import { configs as ymlConfigs } from 'eslint-plugin-yml'
-import { tailwind4 } from 'tailwind-csstree'
 import { configs as tsConfigs } from 'typescript-eslint'
 import css from '@eslint/css'
 import js from '@eslint/js'
@@ -57,7 +56,13 @@ const typeLikeSortOptions = {
 
 const config = defineConfig([
   {
-    ignores: ['.homeybuild/', 'coverage/'],
+    ignores: [
+      '.homeybuild/',
+      'coverage/',
+      // esbuild outputs (see scripts/bundle.mjs), also gitignored
+      'settings/index.mjs',
+      'widgets/*/public/index.mjs',
+    ],
   },
   {
     extends: [
@@ -689,7 +694,6 @@ const config = defineConfig([
       html,
     },
     rules: {
-      'html/no-empty-headings': 'off',
       'html/require-open-graph-protocol': 'off',
       'html/use-baseline': [
         'error',
@@ -723,11 +727,7 @@ const config = defineConfig([
   {
     extends: [css.configs.recommended],
     files: ['**/*.css'],
-    ignores: ['**/dist.css'],
     language: 'css/css',
-    languageOptions: {
-      customSyntax: tailwind4,
-    },
     rules: {
       'css/no-invalid-properties': [
         'error',

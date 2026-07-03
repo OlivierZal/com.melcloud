@@ -7,6 +7,7 @@ import type { GetAtaOptions } from '../../types/widgets.mts'
 import type { ZoneData } from '../../types/zone.mts'
 import { getClassicBuildings } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
+import { toZoneData } from '../../lib/validation.mts'
 
 const api = {
   getClassicAtaCapabilities({
@@ -16,18 +17,25 @@ const api = {
   }): [keyof Classic.GroupState, DriverCapabilitiesOptions][] {
     return app.getClassicAtaCapabilities()
   },
-  async getClassicAtaState({
+  getClassicAtaDetailedStates({
     homey: { app },
     params,
-    query: { mode, status },
+    query: { status },
   }: {
     homey: Homey
     params: ZoneData
     query: GetAtaOptions
-  }): Promise<Classic.GroupState | GroupAtaStates> {
-    return mode === 'detailed' ?
-        app.getClassicAtaDetailedStates({ ...params, status })
-      : app.getClassicAtaState(params)
+  }): GroupAtaStates {
+    return app.getClassicAtaDetailedStates({ ...toZoneData(params), status })
+  },
+  async getClassicAtaState({
+    homey: { app },
+    params,
+  }: {
+    homey: Homey
+    params: ZoneData
+  }): Promise<Classic.GroupState> {
+    return app.getClassicAtaState(toZoneData(params))
   },
   getClassicBuildings({
     query: { type },
@@ -50,7 +58,7 @@ const api = {
     homey: Homey
     params: ZoneData
   }): Promise<void> {
-    return app.updateClassicAtaState({ state: body, ...params })
+    return app.updateClassicAtaState({ state: body, ...toZoneData(params) })
   },
 }
 

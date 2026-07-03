@@ -9,12 +9,6 @@ import {
 
 describe('facade interaction patterns', () => {
   describe('reverse mapping with as-const enums', () => {
-    it('should resolve Classic.DeviceType values', () => {
-      expect(Classic.DeviceType.Ata).toBe(Classic.DeviceType.Ata)
-      expect(Classic.DeviceType.Atw).toBe(Classic.DeviceType.Atw)
-      expect(Classic.DeviceType.Erv).toBe(Classic.DeviceType.Erv)
-    })
-
     it('should reverse-map Classic.Horizontal values', () => {
       expect(horizontalFromDevice[Classic.Horizontal.auto]).toBe('auto')
       expect(horizontalFromDevice[Classic.Horizontal.center]).toBe('center')
@@ -31,12 +25,6 @@ describe('facade interaction patterns', () => {
       expect(operationModeFromDevice[Classic.OperationMode.auto]).toBe('auto')
       expect(operationModeFromDevice[Classic.OperationMode.cool]).toBe('cool')
       expect(operationModeFromDevice[Classic.OperationMode.heat]).toBe('heat')
-    })
-
-    it('should forward-map from key to value', () => {
-      expect(Classic.Horizontal.auto).toBe(Classic.Horizontal.auto)
-      expect(Classic.OperationMode.cool).toBe(Classic.OperationMode.cool)
-      expect(Classic.Vertical.swing).toBe(Classic.Vertical.swing)
     })
   })
 })

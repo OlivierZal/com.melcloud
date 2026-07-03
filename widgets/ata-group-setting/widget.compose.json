@@ -4,6 +4,10 @@
       "method": "GET",
       "path": "/classic/capabilities/ata"
     },
+    "getClassicAtaDetailedStates": {
+      "method": "GET",
+      "path": "/classic/zones/:zoneType/:zoneId/ata/details"
+    },
     "getClassicAtaState": {
       "method": "GET",
       "path": "/classic/zones/:zoneType/:zoneId/ata"

@@ -71,5 +71,8 @@
   },
   "warnings": {
     "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control."
+  },
+  "widgets": {
+    "zones": "Zonas"
   }
 }

@@ -1,6 +1,8 @@
 *.html
-**/dist.css
 /.homeycompose/app.json
 /app.json
 /locales/
 /README.md
+/settings/index.mjs
+/widgets/*/public/index.mjs
+/.claude/

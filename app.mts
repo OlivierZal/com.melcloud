@@ -28,7 +28,7 @@ import type {
 } from './types/manifest.mts'
 import type { MELCloudDevice, MELCloudDriver } from './types/melcloud.mts'
 import type { GetAtaOptions } from './types/widgets.mts'
-import type { ZoneData } from './types/zone.mts'
+import type { DeviceOrZoneData, ZoneData } from './types/zone.mts'
 import {
   changelog,
   fanSpeed,
@@ -39,6 +39,7 @@ import {
   vertical,
 } from './files.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
+import { NotFoundError } from './lib/errors.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { typedFromEntries } from './lib/typed-object.mts'
@@ -221,10 +222,10 @@ export default class MELCloudApp extends App {
     status,
     zoneId,
     zoneType,
-  }: ZoneData & { status?: GetAtaOptions['status'] }): GroupAtaStates {
+  }: GetAtaOptions & ZoneData): GroupAtaStates {
     const { devices } = this.getClassicFacade(zoneType, zoneId)
     if (devices.length === 0) {
-      throw new Error(this.homey.__('errors.deviceNotFound'))
+      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic Classic.GroupState to typed GroupAtaStates
     return typedFromEntries(
@@ -288,16 +289,20 @@ export default class MELCloudApp extends App {
     id: number | string,
   ): Classic.DeviceFacade<T>
   public getClassicFacade(
-    zoneType: 'areas' | 'buildings' | 'floors',
+    zoneType: ZoneData['zoneType'],
     id: number | string,
   ): Classic.BuildingFacade | Classic.ZoneFacade
   public getClassicFacade(
-    zoneType: 'areas' | 'buildings' | 'devices' | 'floors',
+    zoneType: DeviceOrZoneData['zoneType'],
+    id: number | string,
+  ): Classic.Facade
+  public getClassicFacade(
+    zoneType: DeviceOrZoneData['zoneType'],
     id: number | string,
   ): Classic.Facade {
     const instance = this.#classicRegistry[zoneType].getById(Number(id))
     if (!instance) {
-      throw new Error(
+      throw new NotFoundError(
         this.homey.__(
           `errors.${zoneType === 'devices' ? 'device' : 'zone'}NotFound`,
         ),
@@ -309,7 +314,7 @@ export default class MELCloudApp extends App {
   public async getClassicFrostProtection({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<Classic.FrostProtectionData> {
+  }: DeviceOrZoneData): Promise<Classic.FrostProtectionData> {
     return unwrapResult(
       await this.getClassicFacade(zoneType, zoneId).getFrostProtection(),
     )
@@ -318,7 +323,7 @@ export default class MELCloudApp extends App {
   public async getClassicHolidayMode({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<Classic.HolidayModeData> {
+  }: DeviceOrZoneData): Promise<Classic.HolidayModeData> {
     return unwrapResult(
       await this.getClassicFacade(zoneType, zoneId).getHolidayMode(),
     )
@@ -422,7 +427,7 @@ export default class MELCloudApp extends App {
   public getHomeFacade(deviceId: string): Home.DeviceAtaFacade {
     const model = this.#homeRegistry.getById(deviceId)
     if (model?.isAta() !== true) {
-      throw new Error(this.homey.__('errors.deviceNotFound'))
+      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
     }
     return this.#homeFacadeManager.get(model)
   }
@@ -443,7 +448,9 @@ export default class MELCloudApp extends App {
     settings,
     zoneId,
     zoneType,
-  }: ZoneData & { settings: Classic.FrostProtectionQuery }): Promise<void> {
+  }: DeviceOrZoneData & {
+    settings: Classic.FrostProtectionQuery
+  }): Promise<void> {
     const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
       zoneId,
@@ -455,7 +462,9 @@ export default class MELCloudApp extends App {
     settings,
     zoneId,
     zoneType,
-  }: ZoneData & { settings: Classic.HolidayModeQuery }): Promise<void> {
+  }: DeviceOrZoneData & {
+    settings: Classic.HolidayModeQuery
+  }): Promise<void> {
     const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
       zoneId,

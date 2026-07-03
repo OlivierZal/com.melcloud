@@ -9,18 +9,131 @@
   z-index: -1;
 }
 
+/* Zone selector — borderless "ghost" control on Homey design tokens.
+   `appearance: none` drops the native dropdown arrow, so the small
+   triangle chevron is redrawn with two currentcolor gradients (the
+   daisyUI technique). */
+.zone-select {
+  appearance: none;
+  background-color: transparent;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentcolor 50%),
+    linear-gradient(135deg, currentcolor 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) calc(50% + 1px),
+    calc(100% - 10px) calc(50% + 1px);
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  border: none;
+  border-radius: var(--homey-border-radius-small);
+  color: var(--homey-text-color);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--homey-font-size-default);
+  font-weight: var(--homey-font-weight-bold);
+  line-height: var(--homey-line-height-default);
+  margin-block-end: var(--homey-su-2);
+  padding: var(--homey-su-1);
+  padding-inline-end: 1.5rem;
+  text-align-last: center;
+}
+
+.zone-select:hover {
+  /* background-color (not the shorthand) so the chevron gradients survive */
+  background-color: color-mix(in srgb, currentcolor 8%, transparent);
+}
+
+/* The zone select touches the top edge and value controls touch the right
+   edge of the widget card, so a default focus ring drawn around the element
+   spills outside the frame. Draw it inside instead. */
+.zone-select:focus,
+.ghost-button:focus,
+input:focus,
+select:focus {
+  outline: 2px solid var(--homey-text-color-blue);
+  outline-offset: -2px;
+}
+
+/* Value rows: <label> wrapping its form control */
 label {
+  align-items: center;
+  color: var(--homey-text-color);
   display: flex;
+  font-size: var(--homey-font-size-default);
+  font-weight: var(--homey-font-weight-regular);
   inline-size: 100%;
   justify-content: space-between;
+  line-height: var(--homey-line-height-default);
+}
+
+input,
+select:not(.zone-select) {
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  border-radius: var(--homey-border-radius-small);
+  color: var(--homey-text-color-light);
+  font-family: inherit;
+  font-size: var(--homey-font-size-default);
+  font-weight: var(--homey-font-weight-regular);
+  line-height: var(--homey-line-height-default);
+  padding: var(--homey-su-1);
 }
 
 input {
-  padding-inline-end: 2.5rem;
+  /* Matches the selects' chevron padding so the value column stays aligned */
+  padding-inline-end: 1.5rem;
   text-align: end;
 }
 
-select:not(#zones) {
-  padding-inline-end: 2.5rem;
+/* Value selects carry the same chevron as the zone selector */
+select:not(.zone-select) {
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentcolor 50%),
+    linear-gradient(135deg, currentcolor 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) calc(50% + 1px),
+    calc(100% - 10px) calc(50% + 1px);
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  padding-inline-end: 1.5rem;
   text-align-last: end;
+}
+
+/* Action buttons — text-colored ghost buttons */
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  margin-block-start: var(--homey-su-2);
+}
+
+.ghost-button {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: var(--homey-border-radius-small);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--homey-font-size-default);
+  font-weight: var(--homey-font-weight-medium);
+  inline-size: 50%;
+  line-height: var(--homey-line-height-default);
+  padding: var(--homey-su-2);
+}
+
+.ghost-button:hover {
+  background: color-mix(in srgb, currentcolor 8%, transparent);
+}
+
+.ghost-button:disabled {
+  cursor: default;
+  opacity: 50%;
+}
+
+.ghost-button.accent {
+  color: var(--homey-text-color-blue);
+}
+
+.ghost-button.danger {
+  color: var(--homey-text-color-danger);
 }

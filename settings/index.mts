@@ -18,77 +18,19 @@ import type {
   FormattedErrorDetails,
   FormattedErrorLog,
 } from '../types/error-log.mts'
-
-// ── Shared DOM helpers ──
-
-type HTMLValueElement = HTMLInputElement | HTMLSelectElement
-
-const booleanStrings: readonly string[] = [
-  'false',
-  'true',
-] satisfies readonly `${boolean}`[]
-
-const getElement = <T extends HTMLElement>(
-  id: string,
-  elementConstructor: new () => T,
-  elementType: string,
-): T => {
-  const element = document.querySelector(`#${id}`)
-  if (element === null) {
-    throw new TypeError(`Element with id \`${id}\` not found`)
-  }
-  if (!(element instanceof elementConstructor)) {
-    throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
-  }
-  return element
-}
-
-const getButton = (id: string): HTMLButtonElement =>
-  getElement(id, HTMLButtonElement, 'button')
-
-const getDiv = (id: string): HTMLDivElement =>
-  getElement(id, HTMLDivElement, 'div')
-
-const getInput = (id: string): HTMLInputElement =>
-  getElement(id, HTMLInputElement, 'input')
-
-const getLabel = (id: string): HTMLLabelElement =>
-  getElement(id, HTMLLabelElement, 'label')
-
-const getSelect = (id: string): HTMLSelectElement =>
-  getElement(id, HTMLSelectElement, 'select')
-
-const createOption = (
-  select: HTMLSelectElement,
-  { id, label }: { id: string; label: string },
-): void => {
-  if (!select.querySelector(`option[value="${id}"]`)) {
-    select.append(new Option(label, id))
-  }
-}
-
-const configureNumericInput = (
-  input: HTMLInputElement,
-  { max, min }: { max?: number; min?: number },
-): void => {
-  if (input.type === 'number') {
-    input.setAttribute('inputmode', 'numeric')
-    if (min !== undefined) {
-      input.min = String(min)
-    }
-    if (max !== undefined) {
-      input.max = String(max)
-    }
-  }
-}
-
-// ── Shared zone helpers ──
-
-const getZoneId = (id: number, model: string): string =>
-  `${model}_${String(id)}`
-
-const getZoneName = (name: string, level: number): string =>
-  `${'···'.repeat(level)} ${name}`
+import {
+  type HTMLValueElement,
+  booleanStrings,
+  configureNumericInput,
+  createOption,
+  getButton,
+  getDiv,
+  getInput,
+  getSelect,
+  getSpan,
+  translateAriaLabels,
+} from '../public/dom.mts'
+import { getZoneId, getZoneName } from '../public/zones.mts'
 
 // ── Helpers ──
 
@@ -183,13 +125,12 @@ class NoClassicDeviceError extends NoDeviceError {
   public override name = 'NoClassicDeviceError'
 }
 
+// Native `disabled` (not a CSS class): it also blocks keyboard activation
+// during in-flight actions and is announced by screen readers. getButton
+// throws on a missing/mistyped id so a renamed button fails fast instead
+// of silently reintroducing double submission.
 const disableButton = (id: string, isDisabled = true): void => {
-  const element = document.querySelector(`#${id}`)
-  if (isDisabled) {
-    element?.classList.add('is-disabled')
-    return
-  }
-  element?.classList.remove('is-disabled')
+  getButton(id).disabled = isDisabled
 }
 
 const withDisablingButton = async (
@@ -197,8 +138,11 @@ const withDisablingButton = async (
   action: () => Promise<void>,
 ): Promise<void> => {
   disableButton(id)
-  await action()
-  disableButton(id, false)
+  try {
+    await action()
+  } finally {
+    disableButton(id, false)
+  }
 }
 
 const withDisablingButtonPair = async (
@@ -207,9 +151,12 @@ const withDisablingButtonPair = async (
 ): Promise<void> => {
   disableButton(`apply_${id}`)
   disableButton(`refresh_${id}`)
-  await action()
-  disableButton(`apply_${id}`, false)
-  disableButton(`refresh_${id}`, false)
+  try {
+    await action()
+  } finally {
+    disableButton(`apply_${id}`, false)
+    disableButton(`refresh_${id}`, false)
+  }
 }
 
 const hide = (element: HTMLDivElement, isHidden = true): void => {
@@ -920,7 +867,7 @@ class DeviceSettingsManager {
 class ErrorLogManager {
   #errorCount = 0
 
-  readonly #errorCountLabel: HTMLLabelElement
+  readonly #errorCountLabel: HTMLSpanElement
 
   readonly #errorLog: HTMLDivElement
 
@@ -930,7 +877,7 @@ class ErrorLogManager {
 
   readonly #homey: Homey
 
-  readonly #periodLabel: HTMLLabelElement
+  readonly #periodLabel: HTMLSpanElement
 
   readonly #seeButton: HTMLButtonElement
 
@@ -941,8 +888,8 @@ class ErrorLogManager {
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#errorLog = getDiv('error_log')
-    this.#errorCountLabel = getLabel('error_count')
-    this.#periodLabel = getLabel('period')
+    this.#errorCountLabel = getSpan('error_count')
+    this.#periodLabel = getSpan('period')
     this.#sinceInput = getInput('since')
     this.#seeButton = getButton('see')
   }
@@ -996,8 +943,11 @@ class ErrorLogManager {
     for (const error of errors) {
       this.#errorLogTBody ??= this.#createErrorLogTable(Object.keys(error))
       const row = this.#errorLogTBody.insertRow()
-      for (const value of Object.values(error)) {
+      for (const [key, value] of Object.entries(error)) {
         const cell = row.insertCell()
+        // Column semantics carried by a class (not source order) so CSS does
+        // not silently break if columns are reordered.
+        cell.classList.add(`cell-${key}`)
         cell.textContent = String(value)
       }
     }
@@ -1547,6 +1497,7 @@ class SettingsApp {
 }
 
 const onHomeyReady = async (homey: Homey): Promise<void> => {
+  translateAriaLabels((key) => homey.__(key))
   const app = new SettingsApp(homey)
   await app.init()
 }

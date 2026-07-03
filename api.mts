@@ -8,8 +8,9 @@ import type {
   ClassicErrorLogQueryParams,
   FormattedErrorLog,
 } from './types/error-log.mts'
-import type { ZoneData } from './types/zone.mts'
+import type { DeviceOrZoneData } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
+import { toDeviceOrZoneData } from './lib/validation.mts'
 
 const toNumber = (value: string | undefined): number | undefined => {
   if (value === undefined) {
@@ -54,18 +55,18 @@ const api = {
     params,
   }: {
     homey: Homey
-    params: ZoneData
+    params: DeviceOrZoneData
   }): Promise<Classic.FrostProtectionData> {
-    return app.getClassicFrostProtection(params)
+    return app.getClassicFrostProtection(toDeviceOrZoneData(params))
   },
   async getClassicHolidayMode({
     homey: { app },
     params,
   }: {
     homey: Homey
-    params: ZoneData
+    params: DeviceOrZoneData
   }): Promise<Classic.HolidayModeData> {
-    return app.getClassicHolidayMode(params)
+    return app.getClassicHolidayMode(toDeviceOrZoneData(params))
   },
   getDeviceSettings({ homey: { app } }: { homey: Homey }): DeviceSettings {
     return app.getDeviceSettings()
@@ -92,7 +93,20 @@ const api = {
   isClassicAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
     return app.classicApi.isAuthenticated()
   },
-  isHomeAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
+  // Home authentication is only "restored" once a /context fetch has
+  // succeeded. That boot-time fetch can fail transiently (e.g. the box
+  // network is not ready right after an app restart) even though the
+  // stored tokens are valid, which made the settings page show the Home
+  // login form at open. Retry the context fetch lazily here so the check
+  // self-heals; `list()` swallows its own failures.
+  async isHomeAuthenticated({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): Promise<boolean> {
+    if (!app.homeApi.isAuthenticated()) {
+      await app.homeApi.list()
+    }
     return app.homeApi.isAuthenticated()
   },
   async updateClassicFrostProtection({
@@ -102,9 +116,12 @@ const api = {
   }: {
     body: Classic.FrostProtectionQuery
     homey: Homey
-    params: ZoneData
+    params: DeviceOrZoneData
   }): Promise<void> {
-    return app.updateClassicFrostProtection({ settings: body, ...params })
+    return app.updateClassicFrostProtection({
+      settings: body,
+      ...toDeviceOrZoneData(params),
+    })
   },
   async updateClassicHolidayMode({
     body,
@@ -113,9 +130,12 @@ const api = {
   }: {
     body: Classic.HolidayModeQuery
     homey: Homey
-    params: ZoneData
+    params: DeviceOrZoneData
   }): Promise<void> {
-    return app.updateClassicHolidayMode({ settings: body, ...params })
+    return app.updateClassicHolidayMode({
+      settings: body,
+      ...toDeviceOrZoneData(params),
+    })
   },
   async updateDeviceSettings({
     body,

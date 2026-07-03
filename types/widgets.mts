@@ -10,10 +10,7 @@ export interface AtaGroupSettingWidgetSettings extends BaseSettings {
 
 export interface ChartsWidgetSettings extends BaseSettings {
   readonly chart:
-    | 'hourly_temperatures'
-    | 'operation_modes'
-    | 'signal'
-    | 'temperatures'
+    'hourly_temperatures' | 'operation_modes' | 'signal' | 'temperatures'
   readonly days: number
   readonly default_zone: Classic.DeviceZone | null
   readonly height: `${number}`
@@ -24,7 +21,6 @@ export interface DaysQuery {
 }
 
 export interface GetAtaOptions {
-  readonly mode?: 'detailed'
   readonly status?: 'on'
 }
 

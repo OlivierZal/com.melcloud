@@ -26,12 +26,12 @@
   vertical-align: middle;
 }
 
-.bordered td:first-child,
-.bordered td:nth-child(2) {
+.bordered .cell-date,
+.bordered .cell-device {
   color: var(--homey-color-highlight);
 }
 
-.bordered td:last-child {
+.bordered .cell-error {
   color: var(--homey-color-text-danger);
 }
 
@@ -62,11 +62,6 @@ input[type='datetime-local']:focus {
   border-color: var(--homey-color-highlight);
   border-width: 2px;
   padding: calc(var(--homey-su-1) - 1px);
-}
-
-/* Disabled state for form groups */
-.is-disabled {
-  pointer-events: none;
 }
 
 /* Ensure `hidden` works on fieldsets: the UA `[hidden] { display: none }`

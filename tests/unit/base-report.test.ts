@@ -351,6 +351,28 @@ describe(EnergyReport, () => {
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 150)
     })
+
+    it('should count non-finite tag values as 0 instead of propagating NaN', async () => {
+      cleanMappingMock.mockReturnValue({
+        meter_power: ['TotalAutoConsumed', 'TotalCoolingConsumed'],
+      })
+      mockEnergyFetch(
+        mock<Classic.EnergyDataAta>({
+          TotalAutoConsumed: 100,
+          TotalCoolingConsumed: undefined as unknown as number,
+        }),
+      )
+      const report = new EnergyReport(mockDevice, {
+        duration: { hours: 1 },
+        interval: { hours: 1 },
+        minus: { hours: 1 },
+        mode: 'total',
+        values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+      })
+      await report.start()
+
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 100)
+    })
   })
 
   describe('total mode', () => {

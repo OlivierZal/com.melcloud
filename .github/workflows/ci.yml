@@ -20,6 +20,11 @@ jobs:
       - run: npm run format
     timeout-minutes: 15
   test:
+    # Coverage (with its 100% thresholds) and the Sonar upload only run on
+    # the Node 22 leg — the Homey runtime version. The `latest` leg is
+    # non-blocking so a brand-new Node release cannot red the pipeline
+    # without any repo change.
+    continue-on-error: ${{ matrix.node-version == 'latest' }}
     name: Test (Node ${{ matrix.node-version }})
     permissions:
       contents: read
@@ -34,7 +39,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           npm-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: npm test -- --coverage
+      - if: matrix.node-version == 22
+        run: npm test -- --coverage
+      - if: matrix.node-version != 22
+        run: npm test
       - if: matrix.node-version == 22 && (github.event_name == 'push' || (github.event.pull_request.user.login != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository))
         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e
         env:

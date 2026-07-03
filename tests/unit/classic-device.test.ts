@@ -10,6 +10,7 @@ import type {
   SetCapabilityTagMapping,
 } from '../../types/capabilities.mts'
 import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
+import { NotFoundError } from '../../lib/errors.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testDeletion,
@@ -253,13 +254,30 @@ describe(ClassicMELCloudDevice, () => {
       expect(getFacadeMock).toHaveBeenCalledTimes(1)
     })
 
-    it('should set warning and return null on error', async () => {
+    it('should set warning and return null on expected lookup error', async () => {
       getFacadeMock.mockImplementation(() => {
-        throw new Error('Not found')
+        throw new NotFoundError('Not found')
       })
       const result = await device.ensureDevice()
 
       expect(result).toBeNull()
+      expect(superSetWarningMock).toHaveBeenCalledWith('Not found')
+    })
+
+    it('should log and return null without warning on unexpected error', async () => {
+      getFacadeMock.mockImplementation(() => {
+        throw new TypeError('programming error')
+      })
+      const result = await device.ensureDevice()
+
+      expect(result).toBeNull()
+      expect(superSetWarningMock).not.toHaveBeenCalledWith('programming error')
+      expect(
+        (device as unknown as { error: ReturnType<typeof vi.fn> }).error,
+      ).toHaveBeenCalledWith(
+        'Unexpected error while ensuring device:',
+        expect.any(TypeError),
+      )
     })
   })
 
@@ -553,7 +571,7 @@ describe(ClassicMELCloudDevice, () => {
   describe('synchronization when device is unavailable', () => {
     it('should not throw when ensureDevice returns null', async () => {
       getFacadeMock.mockImplementation(() => {
-        throw new Error('Not found')
+        throw new NotFoundError('Not found')
       })
       await device.ensureDevice()
       await device.syncFromDevice()

@@ -13,14 +13,13 @@
         <header class="homey-header">
             <h1
                 class="homey-title"
-                aria-label="Settings"
                 data-i18n="settings.title"
-            ></h1>
+            >MELCloud settings</h1>
         </header>
         <!-- Shown when at least one API is unauthenticated -->
         <div id="authentication" hidden>
             <fieldset class="homey-form-fieldset">
-                <legend class="homey-form-legend" data-i18n="settings.authenticate.legend"></legend>
+                <legend class="homey-form-legend" data-i18n="settings.authenticate.legend">Credentials</legend>
                 <div class="homey-form-group">
                     <select
                         id="api"
@@ -37,31 +36,28 @@
                         id="authenticate"
                         type="button"
                         class="homey-button-primary-full"
-                        aria-label="Authenticate"
                         data-i18n="settings.authenticate.button"
-                    ></button>
+                    >Log in</button>
                 </div>
             </fieldset>
         </div>
         <!-- Shown when at least one API is authenticated — hidden by default to prevent flash -->
         <div id="content" hidden>
             <fieldset class="homey-form-fieldset classic-only">
-                <legend class="homey-form-legend" data-i18n="settings.errorLog.legend"></legend>
+                <legend class="homey-form-legend" data-i18n="settings.errorLog.legend">Error history (Classic)</legend>
                 <div class="homey-form-group container">
                     <button
                         id="see"
                         type="button"
                         class="homey-button-secondary-shadow"
-                        aria-label="See"
                         data-i18n="settings.errorLog.see"
-                    ></button>
+                    >See all errors</button>
                     <div class="container-inline-end">
                         <label
                             class="homey-form-label unset-margin"
-                            aria-label="Since"
                             data-i18n="settings.errorLog.since"
                             for="since"
-                        ></label>
+                        >since</label>
                         <input
                             id="since"
                             type="date"
@@ -70,59 +66,54 @@
                 </div>
                 <div id="error_log" class="homey-form-group">
                     <div class="container-inline-end">
-                        <label
+                        <span
                             id="period"
                             class="homey-form-label unset-margin bolded"
-                            aria-label="Period"
-                        ></label>
-                        <label
+                        ></span>
+                        <span
                             id="error_count"
                             class="homey-form-label unset-margin"
-                            aria-label="Error count"
-                        ></label>
+                            aria-live="polite"
+                        ></span>
                     </div>
                 </div>
             </fieldset>
             <fieldset class="homey-form-fieldset">
-                <legend class="homey-form-legend" data-i18n="settings.devices.legend"></legend>
+                <legend class="homey-form-legend" data-i18n="settings.devices.legend">Device settings</legend>
                 <div id="settings_common"></div>
                 <div class="homey-form-group container">
                     <button
                         id="refresh_settings_common"
                         type="button"
                         class="homey-button-secondary-shadow"
-                        aria-label="Refresh"
                         data-i18n="settings.refresh"
-                    ></button>
+                    >Refresh</button>
                     <button
                         id="apply_settings_common"
                         type="button"
                         class="homey-button-danger-shadow"
-                        aria-label="Update"
                         data-i18n="settings.update"
-                    ></button>
+                    >Update</button>
                 </div>
             </fieldset>
             <!-- Shown when air-to-air devices exist -->
             <div id="has_devices_melcloud" hidden>
                 <fieldset class="homey-form-fieldset">
-                    <legend class="homey-form-legend" data-i18n="settings.devicesAta.legend"></legend>
+                    <legend class="homey-form-legend" data-i18n="settings.devicesAta.legend">Air-to-air device settings (Classic)</legend>
                     <div class="homey-form-group">
                         <label
                             class="homey-form-label"
-                            aria-label="Auto-adjust"
                             data-i18n="settings.devicesAta.autoAdjust"
                             for="auto_adjust"
-                        ></label>
+                        >Auto-adjust air conditioning temperature</label>
                     </div>
                     <div class="homey-form-group">
                         <button
                             id="auto_adjust"
                             type="button"
                             class="homey-button-secondary-shadow-full"
-                            aria-label="Auto-adjust"
                             data-i18n="settings.devicesAta.configure"
-                        ></button>
+                        >Configure</button>
                     </div>
                     <div id="settings_melcloud" class="homey-form-group"></div>
                     <div class="homey-form-group container">
@@ -130,78 +121,71 @@
                             id="refresh_settings_melcloud"
                             type="button"
                             class="homey-button-secondary-shadow"
-                            aria-label="Refresh"
                             data-i18n="settings.refresh"
-                        ></button>
+                        >Refresh</button>
                         <button
                             id="apply_settings_melcloud"
                             type="button"
                             class="homey-button-danger-shadow"
-                            aria-label="Update"
                             data-i18n="settings.update"
-                        ></button>
+                        >Update</button>
                     </div>
                 </fieldset>
             </div>
             <!-- Shown when air-to-water devices exist -->
             <div id="has_devices_melcloud_atw" hidden>
                 <fieldset class="homey-form-fieldset">
-                    <legend class="homey-form-legend" data-i18n="settings.devicesAtw.legend"></legend>
+                    <legend class="homey-form-legend" data-i18n="settings.devicesAtw.legend">Air-to-water device settings (Classic)</legend>
                     <div id="settings_melcloud_atw" class="homey-form-group"></div>
                     <div class="homey-form-group container">
                         <button
                             id="refresh_settings_melcloud_atw"
                             type="button"
                             class="homey-button-secondary-shadow"
-                            aria-label="Refresh"
                             data-i18n="settings.refresh"
-                        ></button>
+                        >Refresh</button>
                         <button
                             id="apply_settings_melcloud_atw"
                             type="button"
                             class="homey-button-danger-shadow"
-                            aria-label="Update"
                             data-i18n="settings.update"
-                        ></button>
+                        >Update</button>
                     </div>
                 </fieldset>
             </div>
             <fieldset class="homey-form-fieldset classic-only">
-                <legend class="homey-form-legend" data-i18n="settings.zones.legend"></legend>
+                <legend class="homey-form-legend" data-i18n="settings.zones.legend">Zone settings (Classic)</legend>
                 <div class="homey-form-group">
                     <select
                         id="zones"
                         class="homey-form-select"
                         aria-label="Zones"
+                        data-i18n-aria-label="widgets.zones"
                     ></select>
                 </div>
                 <div class="homey-form-group">
                     <label
                         class="homey-form-label"
-                        aria-label="Enabled"
                         data-i18n="settings.holidayMode.enabled"
                         for="enabled_holiday_mode"
-                    ></label>
+                    >Enable holiday mode</label>
                     <select id="enabled_holiday_mode" class="homey-form-select">
                         <option
-                            aria-label="No"
                             data-i18n="settings.boolean.false"
                             value="false"
-                        ></option>
+                        >No</option>
                         <option
-                            aria-label="Yes"
                             data-i18n="settings.boolean.true"
                             value="true"
-                        ></option>
+                        >Yes</option>
                     </select>
                 </div>
                 <div class="homey-form-group">
                     <label
                         class="homey-form-label"
-                        aria-label="Start date"
                         data-i18n="settings.holidayMode.startDate"
                         for="start_date"
-                    ></label>
+                    >Start date</label>
                     <input
                         id="start_date"
                         type="datetime-local"
@@ -210,10 +194,9 @@
                 <div class="homey-form-group">
                     <label
                         class="homey-form-label"
-                        aria-label="End date"
                         data-i18n="settings.holidayMode.endDate"
                         for="end_date"
-                    ></label>
+                    >End date</label>
                     <input
                         id="end_date"
                         type="datetime-local"
@@ -224,44 +207,38 @@
                         id="refresh_holiday_mode"
                         type="button"
                         class="homey-button-secondary-shadow"
-                        aria-label="Refresh"
                         data-i18n="settings.refresh"
-                    ></button>
+                    >Refresh</button>
                     <button
                         id="apply_holiday_mode"
                         type="button"
                         class="homey-button-danger-shadow"
-                        aria-label="Update"
                         data-i18n="settings.update"
-                    ></button>
+                    >Update</button>
                 </div>
                 <div class="homey-form-group">
                     <label
                         class="homey-form-label"
-                        aria-label="Enabled"
                         data-i18n="settings.frostProtection.enabled"
                         for="enabled_frost_protection"
-                    ></label>
+                    >Enable frost protection</label>
                     <select id="enabled_frost_protection" class="homey-form-select">
                         <option
-                            aria-label="No"
                             data-i18n="settings.boolean.false"
                             value="false"
-                        ></option>
+                        >No</option>
                         <option
-                            aria-label="Yes"
                             data-i18n="settings.boolean.true"
                             value="true"
-                        ></option>
+                        >Yes</option>
                     </select>
                 </div>
                 <div class="homey-form-group">
                     <label
                         class="homey-form-label"
-                        aria-label="Minimum temperature"
                         data-i18n="settings.frostProtection.min"
                         for="min"
-                    ></label>
+                    >Minimum temperature</label>
                     <input
                         id="min"
                         type="number"
@@ -272,10 +249,9 @@
                 <div class="homey-form-group">
                     <label
                         class="homey-form-label"
-                        aria-label="Maximum temperature"
                         data-i18n="settings.frostProtection.max"
                         for="max"
-                    ></label>
+                    >Maximum temperature</label>
                     <input
                         id="max"
                         type="number"
@@ -288,16 +264,14 @@
                         id="refresh_frost_protection"
                         type="button"
                         class="homey-button-secondary-shadow"
-                        aria-label="Refresh"
                         data-i18n="settings.refresh"
-                    ></button>
+                    >Refresh</button>
                     <button
                         id="apply_frost_protection"
                         type="button"
                         class="homey-button-danger-shadow"
-                        aria-label="Update"
                         data-i18n="settings.update"
-                    ></button>
+                    >Update</button>
                 </div>
             </fieldset>
         </div>

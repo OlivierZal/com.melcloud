@@ -1,18 +1,18 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-
-import type { GroupAtaStates } from '../../../types/classic-ata.mts'
-import type { GetAtaOptions } from '../../../types/widgets.mts'
 import {
   CLASSIC_OPERATION_MODE_MIXED,
   ClassicFanSpeed,
   ClassicOperationMode,
   classicHeatModes,
-} from './constants.mts'
-import { getSelect } from './dom.mts'
-import { type Homey, homeyApiGet } from './homey-api.mts'
+} from '@olivierzal/melcloud-api/constants'
+
+import type { GroupAtaStates } from '../../../types/classic-ata.mts'
+import type { GetAtaOptions } from '../../../types/widgets.mts'
+import { getSelect } from '../../../public/dom.mts'
+import { type Homey, homeyApiGet } from '../../../public/homey-api.mts'
+import { getZonePath } from '../../../public/zones.mts'
 import { SmokeParticle, SmokeThreshold } from './smoke-particle.mts'
 import { generateStyleNumber, generateStyleString } from './style-helpers.mts'
-import { getZonePath } from './zones.mts'
 
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
@@ -537,8 +537,7 @@ export class AnimationController {
   async #getModes(): Promise<number[]> {
     const detailedAtaStates = await homeyApiGet<GroupAtaStates>(
       this.#homey,
-      `/classic/zones/${getZoneValue()}/ata?${new URLSearchParams({
-        mode: 'detailed',
+      `/classic/zones/${getZoneValue()}/ata/details?${new URLSearchParams({
         status: 'on',
       } satisfies Required<GetAtaOptions>)}`,
     )
