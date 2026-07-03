@@ -287,6 +287,9 @@ class ChartWidget {
     }
   }
 
+  // Never rejects: `init()` awaits the first draw, so a transient failure
+  // must neither block `homey.ready()` nor stop the auto-refresh loop —
+  // the timer rearmed in `finally` retries it.
   async #draw({ chart, days, height }: DrawConfig): Promise<void> {
     try {
       this.#options = await this.#fetchAndReconcileChart({
@@ -301,9 +304,10 @@ class ChartWidget {
         await this.#chart.render()
       }
       await this.#homey.setHeight(document.body.scrollHeight)
+    } catch (error) {
+      // eslint-disable-next-line no-console -- surfaces the failure in widget dev tools; the rearmed timer retries
+      console.error('Chart refresh failed:', error)
     } finally {
-      // Always rearm the refresh: a transient fetch failure must not stop
-      // the auto-refresh loop for good.
       this.#timeout = setTimeout(() => {
         fireAndForget(this.#draw({ chart, days, height }))
       }, getTimeout(chart))
