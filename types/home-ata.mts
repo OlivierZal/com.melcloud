@@ -22,8 +22,7 @@ export type HomeConvertFromDevice = {
   ):
     | HomeCapabilitiesAta[keyof HomeSetCapabilitiesAta]
     | HomeCapabilitiesAta[
-        | keyof HomeGetCapabilitiesAta
-        | keyof HomeListCapabilitiesAta]
+        keyof HomeGetCapabilitiesAta | keyof HomeListCapabilitiesAta]
 }['bivariant']
 
 /**
