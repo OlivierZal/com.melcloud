@@ -580,7 +580,7 @@ const config = defineConfig([
       'unicorn/prefer-export-from': [
         'error',
         {
-          ignoreUsedVariables: true,
+          checkUsedVariables: false,
         },
       ],
       'unicorn/prevent-abbreviations': 'off',
