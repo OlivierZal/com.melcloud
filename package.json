@@ -51,7 +51,7 @@
     "@swc/core": "^1.15.43",
     "@tailwindcss/cli": "^4.3.1",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.1.0",
     "@typescript/native-preview": "^7.0.0-dev.20260626.1",
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/eslint-plugin": "^1.6.20",
