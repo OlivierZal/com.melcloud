@@ -39,6 +39,7 @@ import {
   vertical,
 } from './files.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
+import { NotFoundError } from './lib/errors.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { typedFromEntries } from './lib/typed-object.mts'
@@ -224,7 +225,7 @@ export default class MELCloudApp extends App {
   }: ZoneData & { status?: GetAtaOptions['status'] }): GroupAtaStates {
     const { devices } = this.getClassicFacade(zoneType, zoneId)
     if (devices.length === 0) {
-      throw new Error(this.homey.__('errors.deviceNotFound'))
+      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic Classic.GroupState to typed GroupAtaStates
     return typedFromEntries(
@@ -297,7 +298,7 @@ export default class MELCloudApp extends App {
   ): Classic.Facade {
     const instance = this.#classicRegistry[zoneType].getById(Number(id))
     if (!instance) {
-      throw new Error(
+      throw new NotFoundError(
         this.homey.__(
           `errors.${zoneType === 'devices' ? 'device' : 'zone'}NotFound`,
         ),
@@ -422,7 +423,7 @@ export default class MELCloudApp extends App {
   public getHomeFacade(deviceId: string): Home.DeviceAtaFacade {
     const model = this.#homeRegistry.getById(deviceId)
     if (model?.isAta() !== true) {
-      throw new Error(this.homey.__('errors.deviceNotFound'))
+      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
     }
     return this.#homeFacadeManager.get(model)
   }

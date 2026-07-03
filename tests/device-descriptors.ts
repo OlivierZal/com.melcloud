@@ -1,5 +1,5 @@
 import { NoChangesError } from '@olivierzal/melcloud-api'
-import { type vi, describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { getMockCallArg } from './helpers.ts'
 
@@ -141,8 +141,11 @@ export const testWarningManagement = (
         getDevice() as { setWarning: (error: unknown) => Promise<void> }
       ).setWarning(new Error('test error'))
 
-      expect(superSetWarningMock).toHaveBeenCalledWith('test error')
-      expect(superSetWarningMock).toHaveBeenCalledWith(null)
+      // Order matters: the message shows the transient toast, the trailing
+      // null clears the persistent bubble (intentional Homey idiom).
+      expect(superSetWarningMock).toHaveBeenNthCalledWith(1, 'test error')
+      expect(superSetWarningMock).toHaveBeenNthCalledWith(2, null)
+      expect(superSetWarningMock).toHaveBeenCalledTimes(2)
     })
 
     it('should call super.setWarning with null when null is provided', async () => {
@@ -289,6 +292,18 @@ export const testOnoffConverter = (
   })
 }
 
+interface PostUpdateSyncDevice {
+  error: ReturnType<typeof vi.fn>
+  homey: {
+    clearTimeout: ReturnType<typeof vi.fn>
+    setTimeout: ReturnType<typeof vi.fn>
+  }
+  setCapabilityValue: ReturnType<typeof vi.fn>
+  onDeleted: () => void
+  onInit: () => Promise<void>
+  syncFromDevice: () => Promise<void>
+}
+
 export const testPostUpdateSync = (
   getDevice: () => object,
   getCapabilityListenerCallback: () => (
@@ -297,11 +312,7 @@ export const testPostUpdateSync = (
 ): void => {
   describe('post-update sync', () => {
     it('should sync capabilities after sendUpdate', async () => {
-      const device = getDevice() as {
-        homey: { setTimeout: ReturnType<typeof vi.fn> }
-        setCapabilityValue: ReturnType<typeof vi.fn>
-        onInit: () => Promise<void>
-      }
+      const device = getDevice() as PostUpdateSyncDevice
       await device.onInit()
       device.setCapabilityValue.mockClear()
       const callback = getCapabilityListenerCallback()
@@ -316,6 +327,53 @@ export const testPostUpdateSync = (
       expect(device.setCapabilityValue).toHaveBeenCalledWith(
         expect.any(String),
         expect.anything(),
+      )
+    })
+
+    it('should cancel the pending sync when sendUpdate runs again', async () => {
+      const device = getDevice() as PostUpdateSyncDevice
+      await device.onInit()
+      device.homey.setTimeout.mockReturnValue('timer')
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+      device.homey.clearTimeout.mockClear()
+      await callback({ onoff: false })
+
+      expect(device.homey.clearTimeout).toHaveBeenCalledWith('timer')
+    })
+
+    it('should cancel the pending sync on deletion', async () => {
+      const device = getDevice() as PostUpdateSyncDevice
+      await device.onInit()
+      device.homey.setTimeout.mockReturnValue('timer')
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+      device.homey.clearTimeout.mockClear()
+      device.onDeleted()
+
+      expect(device.homey.clearTimeout).toHaveBeenCalledWith('timer')
+    })
+
+    it('should log instead of rejecting when the delayed sync fails', async () => {
+      const device = getDevice() as PostUpdateSyncDevice
+      await device.onInit()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+      const syncCallback = getMockCallArg<() => Promise<void>>(
+        device.homey.setTimeout,
+        0,
+        0,
+      )
+      const failure = new Error('sync failed')
+      vi.spyOn(
+        device as unknown as { syncFromDevice: () => Promise<void> },
+        'syncFromDevice',
+      ).mockRejectedValue(failure)
+
+      await expect(syncCallback()).resolves.toBeUndefined()
+      expect(device.error).toHaveBeenCalledWith(
+        'Post-update sync failed:',
+        failure,
       )
     })
   })

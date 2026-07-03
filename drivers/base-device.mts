@@ -1,4 +1,4 @@
-import { NoChangesError } from '@olivierzal/melcloud-api'
+import { isAPIError, NoChangesError } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 
 import type { CapabilityConverter } from '../types/capabilities.mts'
@@ -7,6 +7,7 @@ import type {
   EnergyReportMode,
   EnergyReportOperation,
 } from '../types/device.mts'
+import { NotFoundError } from '../lib/errors.mts'
 import { getErrorMessage } from '../lib/get-error-message.mts'
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
@@ -84,6 +85,8 @@ export abstract class BaseMELCloudDevice extends Device {
   } = {}
 
   #setCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
+
+  #syncTimeout: NodeJS.Timeout | null = null
 
   public override async onInit(): Promise<void> {
     this.capabilityToDevice = {
@@ -164,7 +167,14 @@ export abstract class BaseMELCloudDevice extends Device {
       }
       return this.#deviceFacade
     } catch (error) {
-      await this.setWarning(error)
+      // Expected failures (MELCloud API, entity lookup) surface as a
+      // user-visible warning; anything else is a programming error and is
+      // only logged, so real bugs are not masked as device warnings.
+      if (isAPIError(error) || error instanceof NotFoundError) {
+        await this.setWarning(error)
+      } else {
+        this.error('Unexpected error while ensuring device:', error)
+      }
       return null
     }
   }
@@ -211,6 +221,10 @@ export abstract class BaseMELCloudDevice extends Device {
     })
   }
 
+  // Homey keeps a warning bubble on the device tile until it is cleared:
+  // setting the message and clearing it right away shows the transient toast
+  // without permanently flagging the device. The immediate reset to `null`
+  // is intentional — do not "fix" it.
   public override async setWarning(error: unknown): Promise<void> {
     if (error !== null) {
       await super.setWarning(getErrorMessage(error))
@@ -235,6 +249,10 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   protected cleanupDevice(): void {
+    if (this.#syncTimeout !== null) {
+      this.homey.clearTimeout(this.#syncTimeout)
+      this.#syncTimeout = null
+    }
     this.#reports.regular?.unschedule()
     this.#reports.total?.unschedule()
   }
@@ -292,8 +310,7 @@ export abstract class BaseMELCloudDevice extends Device {
         }
       }
     }
-    // Delay sync to let Homey's optimistic UI update and debounce settle
-    this.homey.setTimeout(async () => this.syncFromDevice(), DEBOUNCE_DELAY)
+    this.#scheduleSyncFromDevice()
   }
 
   async #init(): Promise<void> {
@@ -325,6 +342,23 @@ export abstract class BaseMELCloudDevice extends Device {
       },
       DEBOUNCE_DELAY,
     )
+  }
+
+  // Delay sync to let Homey's optimistic UI update and debounce settle.
+  // The handle is kept so deletion cancels a pending sync, and failures are
+  // logged instead of becoming unhandled rejections.
+  #scheduleSyncFromDevice(): void {
+    if (this.#syncTimeout !== null) {
+      this.homey.clearTimeout(this.#syncTimeout)
+    }
+    this.#syncTimeout = this.homey.setTimeout(async () => {
+      this.#syncTimeout = null
+      try {
+        await this.syncFromDevice()
+      } catch (error) {
+        this.error('Post-update sync failed:', error)
+      }
+    }, DEBOUNCE_DELAY)
   }
 
   async #setCapabilities(): Promise<void> {

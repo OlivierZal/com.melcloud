@@ -52,11 +52,11 @@ const getDiv = (id: string): HTMLDivElement =>
 const getInput = (id: string): HTMLInputElement =>
   getElement(id, HTMLInputElement, 'input')
 
-const getLabel = (id: string): HTMLLabelElement =>
-  getElement(id, HTMLLabelElement, 'label')
-
 const getSelect = (id: string): HTMLSelectElement =>
   getElement(id, HTMLSelectElement, 'select')
+
+const getSpan = (id: string): HTMLSpanElement =>
+  getElement(id, HTMLSpanElement, 'span')
 
 const createOption = (
   select: HTMLSelectElement,
@@ -183,13 +183,13 @@ class NoClassicDeviceError extends NoDeviceError {
   public override name = 'NoClassicDeviceError'
 }
 
+// Native `disabled` (not a CSS class): it also blocks keyboard activation
+// during in-flight actions and is announced by screen readers.
 const disableButton = (id: string, isDisabled = true): void => {
-  const element = document.querySelector(`#${id}`)
-  if (isDisabled) {
-    element?.classList.add('is-disabled')
-    return
+  const element = document.querySelector<HTMLButtonElement>(`#${id}`)
+  if (element) {
+    element.disabled = isDisabled
   }
-  element?.classList.remove('is-disabled')
 }
 
 const withDisablingButton = async (
@@ -197,8 +197,11 @@ const withDisablingButton = async (
   action: () => Promise<void>,
 ): Promise<void> => {
   disableButton(id)
-  await action()
-  disableButton(id, false)
+  try {
+    await action()
+  } finally {
+    disableButton(id, false)
+  }
 }
 
 const withDisablingButtonPair = async (
@@ -207,9 +210,12 @@ const withDisablingButtonPair = async (
 ): Promise<void> => {
   disableButton(`apply_${id}`)
   disableButton(`refresh_${id}`)
-  await action()
-  disableButton(`apply_${id}`, false)
-  disableButton(`refresh_${id}`, false)
+  try {
+    await action()
+  } finally {
+    disableButton(`apply_${id}`, false)
+    disableButton(`refresh_${id}`, false)
+  }
 }
 
 const hide = (element: HTMLDivElement, isHidden = true): void => {
@@ -920,7 +926,7 @@ class DeviceSettingsManager {
 class ErrorLogManager {
   #errorCount = 0
 
-  readonly #errorCountLabel: HTMLLabelElement
+  readonly #errorCountLabel: HTMLSpanElement
 
   readonly #errorLog: HTMLDivElement
 
@@ -930,7 +936,7 @@ class ErrorLogManager {
 
   readonly #homey: Homey
 
-  readonly #periodLabel: HTMLLabelElement
+  readonly #periodLabel: HTMLSpanElement
 
   readonly #seeButton: HTMLButtonElement
 
@@ -941,8 +947,8 @@ class ErrorLogManager {
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#errorLog = getDiv('error_log')
-    this.#errorCountLabel = getLabel('error_count')
-    this.#periodLabel = getLabel('period')
+    this.#errorCountLabel = getSpan('error_count')
+    this.#periodLabel = getSpan('period')
     this.#sinceInput = getInput('since')
     this.#seeButton = getButton('see')
   }

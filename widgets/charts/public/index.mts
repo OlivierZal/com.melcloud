@@ -282,18 +282,27 @@ class ChartWidget {
   }
 
   async #draw({ chart, days, height }: DrawConfig): Promise<void> {
-    this.#options = await this.#fetchAndReconcileChart({ chart, days, height })
-    if (this.#chart) {
-      await this.#chart.updateOptions(this.#options)
-    } else {
-      // @ts-expect-error: imported by another script in `./index.html`
-      this.#chart = new ApexCharts(getDiv('chart'), this.#options)
-      await this.#chart.render()
+    try {
+      this.#options = await this.#fetchAndReconcileChart({
+        chart,
+        days,
+        height,
+      })
+      if (this.#chart) {
+        await this.#chart.updateOptions(this.#options)
+      } else {
+        // @ts-expect-error: imported by another script in `./index.html`
+        this.#chart = new ApexCharts(getDiv('chart'), this.#options)
+        await this.#chart.render()
+      }
+      await this.#homey.setHeight(document.body.scrollHeight)
+    } finally {
+      // Always rearm the refresh: a transient fetch failure must not stop
+      // the auto-refresh loop for good.
+      this.#timeout = setTimeout(() => {
+        fireAndForget(this.#draw({ chart, days, height }))
+      }, getTimeout(chart))
     }
-    await this.#homey.setHeight(document.body.scrollHeight)
-    this.#timeout = setTimeout(() => {
-      fireAndForget(this.#draw({ chart, days, height }))
-    }, getTimeout(chart))
   }
 
   async #fetchAndReconcileChart({

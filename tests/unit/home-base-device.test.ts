@@ -2,6 +2,7 @@ import type * as Home from '@olivierzal/melcloud-api/home'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
+import { NotFoundError } from '../../lib/errors.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testEnsureDeviceNull,
@@ -209,11 +210,11 @@ describe(BaseMELCloudDevice, () => {
 
     it('should set warning and return null when getHomeFacade throws', async () => {
       getHomeFacadeMock.mockImplementation(() => {
-        throw new Error('API error')
+        throw new NotFoundError('Device not found')
       })
       await device.syncFromDevice()
 
-      expect(superSetWarningMock).toHaveBeenCalledWith('API error')
+      expect(superSetWarningMock).toHaveBeenCalledWith('Device not found')
     })
 
     it('should skip capabilities the device does not have', async () => {

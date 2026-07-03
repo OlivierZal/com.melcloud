@@ -16,11 +16,21 @@ import { unwrapResult } from '../lib/unwrap-result.mts'
 import type { ClassicMELCloudDevice } from './classic-device.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 
+// Non-finite tag values (missing field, non-numeric payload) count as 0 so a
+// single bad tag cannot poison energy, power and COP capability values.
 const sumTags = <T extends Classic.DeviceType>(
   data: Classic.EnergyData<T>,
   tags: readonly (keyof Classic.EnergyData<T>)[],
-): number =>
-  tags.reduce((accumulator, tag) => accumulator + Number(data[tag]), 0)
+): number => {
+  let sum = 0
+  for (const tag of tags) {
+    const value = Number(data[tag])
+    if (Number.isFinite(value)) {
+      sum += value
+    }
+  }
+  return sum
+}
 
 export interface EnergyReportConfig {
   readonly duration: Temporal.DurationLike
