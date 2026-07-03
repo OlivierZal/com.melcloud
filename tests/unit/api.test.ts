@@ -23,6 +23,7 @@ const { default: api } = await import('../../api.mts')
 
 const mockIsAuthenticated = vi.fn<() => boolean>()
 const mockIsHomeAuthenticated = vi.fn<() => boolean>()
+const mockHomeList = vi.fn<() => Promise<unknown[]>>()
 const mockClassicAuthenticate = vi.fn<() => Promise<void>>()
 const mockHomeAuthenticate = vi.fn<() => Promise<void>>()
 
@@ -40,6 +41,7 @@ const mockApp = {
   homeApi: {
     authenticate: mockHomeAuthenticate,
     isAuthenticated: mockIsHomeAuthenticated,
+    list: mockHomeList,
   },
   updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
   updateClassicHolidayMode: vi.fn<() => Promise<void>>(),
@@ -250,21 +252,35 @@ describe('api', () => {
   })
 
   describe('home session retrieval', () => {
-    it('should delegate to app.homeApi.isAuthenticated', () => {
+    it('should not retry the context fetch when already authenticated', async () => {
       mockIsHomeAuthenticated.mockReturnValue(true)
 
-      const isAuthenticated = api.isHomeAuthenticated({ homey })
+      const isAuthenticated = await api.isHomeAuthenticated({ homey })
 
       expect(isAuthenticated).toBe(true)
-      expect(mockIsHomeAuthenticated).toHaveBeenCalledTimes(1)
+      expect(mockHomeList).not.toHaveBeenCalled()
     })
 
-    it('should return false when not authenticated', () => {
-      mockIsHomeAuthenticated.mockReturnValue(false)
+    it('should retry the context fetch once when the boot restore failed', async () => {
+      mockIsHomeAuthenticated
+        .mockReturnValueOnce(false)
+        .mockReturnValueOnce(true)
+      mockHomeList.mockResolvedValue([])
 
-      const isAuthenticated = api.isHomeAuthenticated({ homey })
+      const isAuthenticated = await api.isHomeAuthenticated({ homey })
+
+      expect(isAuthenticated).toBe(true)
+      expect(mockHomeList).toHaveBeenCalledTimes(1)
+    })
+
+    it('should return false when the retried context fetch does not restore the session', async () => {
+      mockIsHomeAuthenticated.mockReturnValue(false)
+      mockHomeList.mockResolvedValue([])
+
+      const isAuthenticated = await api.isHomeAuthenticated({ homey })
 
       expect(isAuthenticated).toBe(false)
+      expect(mockHomeList).toHaveBeenCalledTimes(1)
     })
   })
 

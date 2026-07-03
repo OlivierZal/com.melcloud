@@ -93,7 +93,20 @@ const api = {
   isClassicAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
     return app.classicApi.isAuthenticated()
   },
-  isHomeAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
+  // Home authentication is only "restored" once a /context fetch has
+  // succeeded. That boot-time fetch can fail transiently (e.g. the box
+  // network is not ready right after an app restart) even though the
+  // stored tokens are valid, which made the settings page show the Home
+  // login form at open. Retry the context fetch lazily here so the check
+  // self-heals; `list()` swallows its own failures.
+  async isHomeAuthenticated({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): Promise<boolean> {
+    if (!app.homeApi.isAuthenticated()) {
+      await app.homeApi.list()
+    }
     return app.homeApi.isAuthenticated()
   },
   async updateClassicFrostProtection({
