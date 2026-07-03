@@ -24,11 +24,11 @@ jobs:
       pull-requests: read
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           fetch-depth: 1
           persist-credentials: false
-      - uses: anthropics/claude-code-action@a92e7c70a4da9793dc164451d829089dc057a464
+      - uses: anthropics/claude-code-action@01872ccc02bf66740207fb338a783ce028216758
         with:
           additional_permissions: |
             actions: read
