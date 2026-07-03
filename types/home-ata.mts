@@ -20,9 +20,10 @@ export type HomeConvertFromDevice = {
   bivariant(
     facade: Home.DeviceAtaFacade,
   ):
-    | HomeCapabilitiesAta[
-        keyof HomeGetCapabilitiesAta | keyof HomeListCapabilitiesAta]
     | HomeCapabilitiesAta[keyof HomeSetCapabilitiesAta]
+    | HomeCapabilitiesAta[
+        | keyof HomeGetCapabilitiesAta
+        | keyof HomeListCapabilitiesAta]
 }['bivariant']
 
 /**
