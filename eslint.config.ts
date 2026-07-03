@@ -610,12 +610,6 @@ const config = defineConfig([
       'unicorn/prefer-continue': 'off',
       'unicorn/prefer-early-return': 'off',
       'unicorn/prefer-error-is-error': 'off',
-      'unicorn/prefer-export-from': [
-        'error',
-        {
-          checkUsedVariables: false,
-        },
-      ],
       'unicorn/prefer-global-number-constants': 'off',
       'unicorn/prefer-iterator-to-array': 'off',
       'unicorn/prefer-number-coercion': 'off',

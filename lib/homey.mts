@@ -6,4 +6,4 @@ export const Device: typeof Homey.Device = Homey.Device
 export const Driver: typeof Homey.Driver = Homey.Driver
 /* eslint-enable @typescript-eslint/prefer-destructuring */
 
-export type { Homey }
+export type { default as Homey } from 'homey'
