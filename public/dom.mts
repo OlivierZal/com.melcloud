@@ -32,9 +32,6 @@ export const getDiv = (id: string): HTMLDivElement =>
 export const getInput = (id: string): HTMLInputElement =>
   getElement(id, HTMLInputElement, 'input')
 
-export const getLabel = (id: string): HTMLLabelElement =>
-  getElement(id, HTMLLabelElement, 'label')
-
 export const getSelect = (id: string): HTMLSelectElement =>
   getElement(id, HTMLSelectElement, 'select')
 

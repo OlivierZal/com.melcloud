@@ -165,8 +165,12 @@ const getChartPieOptions = (
       .replace('PowerOff', 'Off')
       .replace('Power', 'Off')
       .replace('Prevention', '')
-    // Plain suffix strip — a `/(.+)Ventilation$/` regex would backtrack
-    return cleaned.endsWith('Ventilation') ?
+    // Plain suffix strip — a `/(.+)Ventilation$/` regex would backtrack.
+    // The length check preserves a label that is exactly 'Ventilation',
+    // matching the old regex which required at least one leading char.
+    return (
+        cleaned.length > 'Ventilation'.length && cleaned.endsWith('Ventilation')
+      ) ?
         cleaned.slice(0, -'Ventilation'.length)
       : cleaned
   }),
