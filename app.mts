@@ -222,7 +222,7 @@ export default class MELCloudApp extends App {
     status,
     zoneId,
     zoneType,
-  }: ZoneData & { status?: GetAtaOptions['status'] }): GroupAtaStates {
+  }: GetAtaOptions & ZoneData): GroupAtaStates {
     const { devices } = this.getClassicFacade(zoneType, zoneId)
     if (devices.length === 0) {
       throw new NotFoundError(this.homey.__('errors.deviceNotFound'))

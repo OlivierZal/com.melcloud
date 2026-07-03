@@ -156,8 +156,8 @@ const getChartPieOptions = (
   },
   // Clean up MELCloud operation mode labels for display
   // (e.g., 'CoolingMode' -> 'Cooling')
-  labels: labels.map((label) =>
-    label
+  labels: labels.map((label) => {
+    const cleaned = label
       .replace('Actual', '')
       .replace('FansStopped', 'Stop')
       .replace('Mode', '')
@@ -165,8 +165,11 @@ const getChartPieOptions = (
       .replace('PowerOff', 'Off')
       .replace('Power', 'Off')
       .replace('Prevention', '')
-      .replace(/(?<mode>.+)Ventilation$/u, '$<mode>'),
-  ),
+    // Plain suffix strip — a `/(.+)Ventilation$/` regex would backtrack
+    return cleaned.endsWith('Ventilation') ?
+        cleaned.slice(0, -'Ventilation'.length)
+      : cleaned
+  }),
   legend: getLegendConfig(),
   series,
   stroke: { show: false },

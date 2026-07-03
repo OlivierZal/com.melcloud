@@ -56,7 +56,13 @@ const typeLikeSortOptions = {
 
 const config = defineConfig([
   {
-    ignores: ['.homeybuild/', 'coverage/'],
+    ignores: [
+      '.homeybuild/',
+      'coverage/',
+      // esbuild outputs (see scripts/bundle.mjs), also gitignored
+      'settings/index.mjs',
+      'widgets/*/public/index.mjs',
+    ],
   },
   {
     extends: [
