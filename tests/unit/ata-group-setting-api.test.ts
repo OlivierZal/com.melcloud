@@ -22,7 +22,7 @@ const { default: api } = await import('../../widgets/ata-group-setting/api.mts')
 const mockApp = {
   getClassicAtaCapabilities:
     vi.fn<() => [keyof Classic.GroupState, DriverCapabilitiesOptions][]>(),
-  getClassicAtaDetailedStates: vi.fn<() => Promise<GroupAtaStates>>(),
+  getClassicAtaDetailedStates: vi.fn<() => GroupAtaStates>(),
   getClassicAtaState: vi.fn<() => Promise<Classic.GroupState>>(),
   updateClassicAtaState: vi.fn<() => Promise<void>>(),
 }
@@ -52,14 +52,14 @@ describe('ata-group-setting api', () => {
   describe('ata value retrieval', () => {
     const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
 
-    it('should call getClassicAtaDetailedStates when mode is detailed', async () => {
+    it('should delegate detailed states to their dedicated endpoint', () => {
       const detailedValues = mock<GroupAtaStates>()
-      mockApp.getClassicAtaDetailedStates.mockResolvedValue(detailedValues)
+      mockApp.getClassicAtaDetailedStates.mockReturnValue(detailedValues)
 
-      const result = await api.getClassicAtaState({
+      const result = api.getClassicAtaDetailedStates({
         homey,
         params,
-        query: { mode: 'detailed', status: 'on' },
+        query: { status: 'on' },
       })
 
       expect(result).toBe(detailedValues)
@@ -69,18 +69,24 @@ describe('ata-group-setting api', () => {
       })
     })
 
-    it('should call getClassicAtaState when mode is not detailed', async () => {
+    it('should delegate group state to app.getClassicAtaState', async () => {
       const values = mock<Classic.GroupState>()
       mockApp.getClassicAtaState.mockResolvedValue(values)
 
-      const result = await api.getClassicAtaState({
-        homey,
-        params,
-        query: { mode: undefined, status: undefined },
-      })
+      const result = await api.getClassicAtaState({ homey, params })
 
       expect(result).toBe(values)
       expect(mockApp.getClassicAtaState).toHaveBeenCalledWith(params)
+    })
+
+    it('should reject an invalid zone type from the URL', () => {
+      expect(() =>
+        api.getClassicAtaDetailedStates({
+          homey,
+          params: { zoneId: '1', zoneType: 'constructor' as 'buildings' },
+          query: {},
+        }),
+      ).toThrow(RangeError)
     })
   })
 

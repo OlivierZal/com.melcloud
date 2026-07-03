@@ -24,7 +24,6 @@ export interface DaysQuery {
 }
 
 export interface GetAtaOptions {
-  readonly mode?: 'detailed'
   readonly status?: 'on'
 }
 

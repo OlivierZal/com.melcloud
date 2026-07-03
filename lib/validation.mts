@@ -1,7 +1,15 @@
 import type { Hour } from '@olivierzal/melcloud-api'
 
+import type { ZoneData } from '../types/zone.mts'
+
 const HOUR_MIN = 0
 const HOUR_MAX = 23
+
+const zoneTypes = new Set<ZoneData['zoneType']>([
+  'areas',
+  'buildings',
+  'floors',
+])
 
 interface NonNegativeIntOptions {
   readonly field?: string
@@ -47,6 +55,18 @@ export const toHour = (value: unknown, field?: string): Hour => {
   const parsed = toNonNegativeInt(value, { field, max: HOUR_MAX })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing a [0..23] integer to the Hour union
   return parsed as Hour
+}
+
+/**
+ * Validates URL path params as `ZoneData`. `zoneType` comes straight from the
+ * request path and is later used to index the zone registry, so reject
+ * anything outside the known zone collections.
+ */
+export const toZoneData = ({ zoneId, zoneType }: ZoneData): ZoneData => {
+  if (!zoneTypes.has(zoneType)) {
+    throw new RangeError(`Invalid zone type: ${zoneType}`)
+  }
+  return { zoneId, zoneType }
 }
 
 export { HOUR_MAX, HOUR_MIN }

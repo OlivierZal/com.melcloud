@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { toHour, toNonNegativeInt } from '../../lib/validation.mts'
+import type { ZoneData } from '../../types/zone.mts'
+import { toHour, toNonNegativeInt, toZoneData } from '../../lib/validation.mts'
 
 describe(toNonNegativeInt, () => {
   it.each([
@@ -55,4 +56,28 @@ describe(toHour, () => {
   it.each([24, -1, 1.5, 'abc'])('rejects %p', (input) => {
     expect(() => toHour(input, 'hour')).toThrow(/^hour: /u)
   })
+})
+
+describe(toZoneData, () => {
+  it.each(['areas', 'buildings', 'floors'] as const)(
+    'accepts %s',
+    (zoneType) => {
+      expect(toZoneData({ zoneId: '1', zoneType })).toStrictEqual({
+        zoneId: '1',
+        zoneType,
+      })
+    },
+  )
+
+  it.each(['devices', 'constructor', ''])(
+    'rejects %p coming from the URL',
+    (zoneType) => {
+      expect(() =>
+        toZoneData({
+          zoneId: '1',
+          zoneType: zoneType as ZoneData['zoneType'],
+        }),
+      ).toThrow(/Invalid zone type/u)
+    },
+  )
 })
