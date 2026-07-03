@@ -42,16 +42,16 @@ Requirements: Node.js 22 (see `.nvmrc`) and the [Homey CLI](https://apps.develop
 ```bash title="Common commands"
 npm ci               # install dependencies
 npm test             # run the test suite (vitest)
-npm run typecheck    # type-check with tsgo (fast, pre-release compiler)
+npm run typecheck    # type-check with tsgo (fast, native compiler)
 npm run lint         # eslint (TS, HTML, CSS, JSON, YAML, Markdown)
-npm run build        # bundle browser entries (esbuild) + compile with tsc
+npm run build        # bundle browser entries (esbuild) + compile with tsgo
 npm run homey:start  # run the app on your Homey (remote)
 ```
 
 Architecture notes:
 
 - Browser code (both widgets' `public/` and the `settings/` page) is bundled by `scripts/bundle.mjs` into one self-contained `index.mjs` per entry; the outputs are gitignored and rebuilt by `npm run build`, which the Homey CLI runs automatically on validate/publish. Shared helpers live in `public/` and are imported directly by widgets and settings.
-- The production build compiles with stable `tsc`; `npm run typecheck` uses `tsgo` (the native TypeScript preview) for speed.
+- Both the build and `npm run typecheck` use `tsgo` (the native TypeScript compiler preview) for speed.
 - Test coverage is enforced at 100% for backend code; browser glue (`public/`, `settings/`, widget `public/`) is excluded from coverage, so the badge covers drivers, app and API layers only.
 
 ## Disclaimer
