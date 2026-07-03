@@ -27,7 +27,8 @@
 }
 
 .zone-select:hover {
-  background: color-mix(in srgb, currentcolor 8%, transparent);
+  /* background-color (not the shorthand) so the chevron gradients survive */
+  background-color: color-mix(in srgb, currentcolor 8%, transparent);
 }
 
 /* The zone select touches the top edge and value controls touch the right
@@ -67,14 +68,29 @@ select:not(.zone-select) {
   padding: var(--homey-su-1);
 }
 
-/* No extra inline-end padding: `appearance: none` removes the native
-   dropdown arrow the old 2.5rem gap used to reserve space for. */
 input {
+  /* Matches the selects' chevron padding so the value column stays aligned */
+  padding-inline-end: 1.5rem;
   text-align: end;
 }
 
 select:not(.zone-select) {
   text-align-last: end;
+}
+
+/* `appearance: none` also drops the native dropdown arrow — redraw the
+   small ▼ chevron (two currentcolor gradients, the daisyUI technique). */
+.zone-select,
+select:not(.zone-select) {
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentcolor 50%),
+    linear-gradient(135deg, currentcolor 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) calc(50% + 1px),
+    calc(100% - 10px) calc(50% + 1px);
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  padding-inline-end: 1.5rem;
 }
 
 /* Action buttons — text-colored ghost buttons */
