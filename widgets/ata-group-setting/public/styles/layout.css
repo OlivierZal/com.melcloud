@@ -9,10 +9,51 @@
   z-index: -1;
 }
 
+/* Zone selector — borderless "ghost" control on Homey design tokens */
+.zone-select {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: var(--homey-border-radius-small);
+  color: var(--homey-text-color);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--homey-font-size-default);
+  font-weight: var(--homey-font-weight-bold);
+  line-height: var(--homey-line-height-default);
+  margin-block-end: var(--homey-su-2);
+  padding: var(--homey-su-1);
+  text-align-last: center;
+}
+
+.zone-select:hover {
+  background: color-mix(in srgb, currentcolor 8%, transparent);
+}
+
+/* Value rows: <label> wrapping its form control */
 label {
+  align-items: center;
+  color: var(--homey-text-color);
   display: flex;
+  font-size: var(--homey-font-size-default);
+  font-weight: var(--homey-font-weight-regular);
   inline-size: 100%;
   justify-content: space-between;
+  line-height: var(--homey-line-height-default);
+}
+
+input,
+select:not(.zone-select) {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: var(--homey-border-radius-small);
+  color: var(--homey-text-color-light);
+  font-family: inherit;
+  font-size: var(--homey-font-size-default);
+  font-weight: var(--homey-font-weight-regular);
+  line-height: var(--homey-line-height-default);
+  padding: var(--homey-su-1);
 }
 
 input {
@@ -20,7 +61,45 @@ input {
   text-align: end;
 }
 
-select:not(#zones) {
+select:not(.zone-select) {
   padding-inline-end: 2.5rem;
   text-align-last: end;
+}
+
+/* Action buttons — text-colored ghost buttons */
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  margin-block-start: var(--homey-su-2);
+}
+
+.ghost-button {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: var(--homey-border-radius-small);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--homey-font-size-default);
+  font-weight: var(--homey-font-weight-medium);
+  inline-size: 50%;
+  line-height: var(--homey-line-height-default);
+  padding: var(--homey-su-2);
+}
+
+.ghost-button:hover {
+  background: color-mix(in srgb, currentcolor 8%, transparent);
+}
+
+.ghost-button:disabled {
+  cursor: default;
+  opacity: 50%;
+}
+
+.ghost-button.accent {
+  color: var(--homey-text-color-blue);
+}
+
+.ghost-button.danger {
+  color: var(--homey-text-color-danger);
 }

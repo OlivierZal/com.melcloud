@@ -3,21 +3,21 @@ import type {
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-import type ApexCharts from 'apexcharts'
+import { ClassicDeviceType } from '@olivierzal/melcloud-api/constants'
+import ApexCharts from 'apexcharts'
 
 import type {
   DaysQuery,
   ChartsWidgetSettings as HomeySettings,
 } from '../../../types/widgets.mts'
-import { ClassicDeviceType } from './constants.mts'
-import { createOption, getDiv, getSelect } from './dom.mts'
+import { createOption, getDiv, getSelect } from '../../../public/dom.mts'
 import {
   type Homey,
   fireAndForget,
   homeyApiGet,
   setDocumentLanguage,
-} from './homey-api.mts'
-import { getZoneId, getZonePath } from './zones.mts'
+} from '../../../public/homey-api.mts'
+import { getZoneId, getZonePath } from '../../../public/zones.mts'
 
 // Below --homey-font-size-small (14px) — intentional for compact chart labels
 const FONT_SIZE_VERY_SMALL = '12px'
@@ -291,7 +291,6 @@ class ChartWidget {
       if (this.#chart) {
         await this.#chart.updateOptions(this.#options)
       } else {
-        // @ts-expect-error: imported by another script in `./index.html`
         this.#chart = new ApexCharts(getDiv('chart'), this.#options)
         await this.#chart.render()
       }

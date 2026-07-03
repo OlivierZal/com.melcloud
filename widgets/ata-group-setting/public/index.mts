@@ -1,15 +1,20 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
-import { AnimationController, AnimationDelay } from './animation.mts'
-import { AtaValueManager } from './ata-values.mts'
-import { getButton, getCanvas, getDiv, getSelect } from './dom.mts'
+import {
+  getButton,
+  getCanvas,
+  getDiv,
+  getSelect,
+} from '../../../public/dom.mts'
 import {
   type Homey,
   fireAndForget,
   homeyApiGet,
   setDocumentLanguage,
-} from './homey-api.mts'
+} from '../../../public/homey-api.mts'
+import { AnimationController, AnimationDelay } from './animation.mts'
+import { AtaValueManager } from './ata-values.mts'
 
 // ── WidgetApp class ──
 

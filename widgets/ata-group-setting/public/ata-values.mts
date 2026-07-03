@@ -1,21 +1,25 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-
-import type { Settings } from '../../../types/device-settings.mts'
-import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import {
   type ClassicOperationMode,
   ClassicTemperature,
   classicCoolModes,
-} from './constants.mts'
+} from '@olivierzal/melcloud-api/constants'
+
+import type { Settings } from '../../../types/device-settings.mts'
+import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
   configureNumericInput,
   createOption,
   getSelect,
-} from './dom.mts'
-import { type Homey, homeyApiGet, homeyApiPut } from './homey-api.mts'
-import { getZoneId, getZoneName, getZonePath } from './zones.mts'
+} from '../../../public/dom.mts'
+import {
+  type Homey,
+  homeyApiGet,
+  homeyApiPut,
+} from '../../../public/homey-api.mts'
+import { getZoneId, getZoneName, getZonePath } from '../../../public/zones.mts'
 
 // ── DOM helpers ──
 
@@ -23,12 +27,13 @@ const elementTypes = new Set(['boolean', 'enum'])
 
 // ── DOM creation helpers ──
 
+// Labels, inputs and selects are styled by element selectors in
+// `styles/layout.css` (Homey design tokens) — no utility classes needed.
 const createLabel = (
   formControl: HTMLValueElement,
   text: string,
 ): HTMLLabelElement => {
   const label = document.createElement('label')
-  label.classList.add('label', 'text-default', 'text-color', 'font-normal')
   ;({ id: label.htmlFor } = formControl)
   label.textContent = text
   label.append(formControl)
@@ -63,13 +68,6 @@ const createInput = ({
   value?: string
 }): HTMLInputElement => {
   const input = document.createElement('input')
-  input.classList.add(
-    'input',
-    'input-ghost',
-    'text-default',
-    'text-light',
-    'font-normal',
-  )
   input.id = id
   input.value = value ?? ''
   input.type = type
@@ -86,13 +84,6 @@ const createSelect = (
   values?: readonly { id: string; label: string }[],
 ): HTMLSelectElement => {
   const select = document.createElement('select')
-  select.classList.add(
-    'select',
-    'select-ghost',
-    'text-default',
-    'text-light',
-    'font-normal',
-  )
   select.id = id
   for (const option of [
     { id: '', label: '' },

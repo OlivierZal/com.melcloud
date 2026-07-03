@@ -4,7 +4,6 @@ import { jsdoc } from 'eslint-plugin-jsdoc'
 import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
 import { Alphabet } from 'eslint-plugin-perfectionist/alphabet'
 import { configs as ymlConfigs } from 'eslint-plugin-yml'
-import { tailwind4 } from 'tailwind-csstree'
 import { configs as tsConfigs } from 'typescript-eslint'
 import css from '@eslint/css'
 import js from '@eslint/js'
@@ -686,11 +685,7 @@ const config = defineConfig([
   {
     extends: [css.configs.recommended],
     files: ['**/*.css'],
-    ignores: ['**/dist.css'],
     language: 'css/css',
-    languageOptions: {
-      customSyntax: tailwind4,
-    },
     rules: {
       'css/no-invalid-properties': [
         'error',

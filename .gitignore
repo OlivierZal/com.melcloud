@@ -2,6 +2,7 @@
 /.vscode/*
 !/.vscode/settings.json
 /coverage/
-dist.css
 /env.json
 node_modules/
+/settings/index.mjs
+/widgets/*/public/index.mjs

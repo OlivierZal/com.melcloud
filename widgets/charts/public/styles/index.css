@@ -1,0 +1,19 @@
+/* Zone selector — borderless "ghost" control on Homey design tokens */
+.zone-select {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: var(--homey-border-radius-small);
+  color: var(--homey-text-color);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--homey-font-size-default);
+  font-weight: var(--homey-font-weight-bold);
+  line-height: var(--homey-line-height-default);
+  padding: var(--homey-su-1);
+  text-align-last: center;
+}
+
+.zone-select:hover {
+  background: color-mix(in srgb, currentcolor 8%, transparent);
+}
