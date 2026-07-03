@@ -18,78 +18,19 @@ import type {
   FormattedErrorDetails,
   FormattedErrorLog,
 } from '../types/error-log.mts'
-import { translateAriaLabels } from '../public/dom.mts'
-
-// ── Shared DOM helpers ──
-
-type HTMLValueElement = HTMLInputElement | HTMLSelectElement
-
-const booleanStrings: readonly string[] = [
-  'false',
-  'true',
-] satisfies readonly `${boolean}`[]
-
-const getElement = <T extends HTMLElement>(
-  id: string,
-  elementConstructor: new () => T,
-  elementType: string,
-): T => {
-  const element = document.querySelector(`#${id}`)
-  if (element === null) {
-    throw new TypeError(`Element with id \`${id}\` not found`)
-  }
-  if (!(element instanceof elementConstructor)) {
-    throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
-  }
-  return element
-}
-
-const getButton = (id: string): HTMLButtonElement =>
-  getElement(id, HTMLButtonElement, 'button')
-
-const getDiv = (id: string): HTMLDivElement =>
-  getElement(id, HTMLDivElement, 'div')
-
-const getInput = (id: string): HTMLInputElement =>
-  getElement(id, HTMLInputElement, 'input')
-
-const getSelect = (id: string): HTMLSelectElement =>
-  getElement(id, HTMLSelectElement, 'select')
-
-const getSpan = (id: string): HTMLSpanElement =>
-  getElement(id, HTMLSpanElement, 'span')
-
-const createOption = (
-  select: HTMLSelectElement,
-  { id, label }: { id: string; label: string },
-): void => {
-  if (!select.querySelector(`option[value="${id}"]`)) {
-    select.append(new Option(label, id))
-  }
-}
-
-const configureNumericInput = (
-  input: HTMLInputElement,
-  { max, min }: { max?: number; min?: number },
-): void => {
-  if (input.type === 'number') {
-    input.setAttribute('inputmode', 'numeric')
-    if (min !== undefined) {
-      input.min = String(min)
-    }
-    if (max !== undefined) {
-      input.max = String(max)
-    }
-  }
-}
-
-// ── Shared zone helpers ──
-
-const getZoneId = (id: number, model: string): string =>
-  `${model}_${String(id)}`
-
-const getZoneName = (name: string, level: number): string =>
-  `${'···'.repeat(level)} ${name}`
+import {
+  type HTMLValueElement,
+  booleanStrings,
+  configureNumericInput,
+  createOption,
+  getButton,
+  getDiv,
+  getInput,
+  getSelect,
+  getSpan,
+  translateAriaLabels,
+} from '../public/dom.mts'
+import { getZoneId, getZoneName } from '../public/zones.mts'
 
 // ── Helpers ──
 

@@ -15,7 +15,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run build:assets && tsgo --project tsconfig.build.json",
+    "build": "npm run build:assets && tsc --project tsconfig.build.json",
     "build:assets": "node scripts/bundle.mjs",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",

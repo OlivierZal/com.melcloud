@@ -38,6 +38,9 @@ export const getLabel = (id: string): HTMLLabelElement =>
 export const getSelect = (id: string): HTMLSelectElement =>
   getElement(id, HTMLSelectElement, 'select')
 
+export const getSpan = (id: string): HTMLSpanElement =>
+  getElement(id, HTMLSpanElement, 'span')
+
 export const createOption = (
   select: HTMLSelectElement,
   { id, label }: { id: string; label: string },
