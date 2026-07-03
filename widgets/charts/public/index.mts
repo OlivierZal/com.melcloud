@@ -10,7 +10,12 @@ import type {
   DaysQuery,
   ChartsWidgetSettings as HomeySettings,
 } from '../../../types/widgets.mts'
-import { createOption, getDiv, getSelect } from '../../../public/dom.mts'
+import {
+  createOption,
+  getDiv,
+  getSelect,
+  translateAriaLabels,
+} from '../../../public/dom.mts'
 import {
   type Homey,
   fireAndForget,
@@ -231,6 +236,7 @@ class ChartWidget {
   }
 
   public async init(): Promise<void> {
+    translateAriaLabels((key) => this.#homey.__(key))
     await Promise.all([
       setDocumentLanguage(this.#homey),
       this.#classicFetchDevices(),

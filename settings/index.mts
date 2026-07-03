@@ -18,6 +18,7 @@ import type {
   FormattedErrorDetails,
   FormattedErrorLog,
 } from '../types/error-log.mts'
+import { translateAriaLabels } from '../public/dom.mts'
 
 // ── Shared DOM helpers ──
 
@@ -1002,8 +1003,11 @@ class ErrorLogManager {
     for (const error of errors) {
       this.#errorLogTBody ??= this.#createErrorLogTable(Object.keys(error))
       const row = this.#errorLogTBody.insertRow()
-      for (const value of Object.values(error)) {
+      for (const [key, value] of Object.entries(error)) {
         const cell = row.insertCell()
+        // Column semantics carried by a class (not source order) so CSS does
+        // not silently break if columns are reordered.
+        cell.classList.add(`cell-${key}`)
         cell.textContent = String(value)
       }
     }
@@ -1553,6 +1557,7 @@ class SettingsApp {
 }
 
 const onHomeyReady = async (homey: Homey): Promise<void> => {
+  translateAriaLabels((key) => homey.__(key))
   const app = new SettingsApp(homey)
   await app.init()
 }

@@ -71,5 +71,8 @@
   },
   "warnings": {
     "dashboard": "Forlad enheden og vend tilbage for at opdatere dit dashboard."
+  },
+  "widgets": {
+    "zones": "Zoner"
   }
 }

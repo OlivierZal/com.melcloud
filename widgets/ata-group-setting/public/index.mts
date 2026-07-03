@@ -6,6 +6,7 @@ import {
   getCanvas,
   getDiv,
   getSelect,
+  translateAriaLabels,
 } from '../../../public/dom.mts'
 import {
   type Homey,
@@ -44,6 +45,7 @@ class WidgetApp {
   }
 
   public async init(): Promise<void> {
+    translateAriaLabels((key) => this.#homey.__(key))
     await Promise.all([
       setDocumentLanguage(this.#homey),
       this.#ataValueManager.fetchCapabilities(),

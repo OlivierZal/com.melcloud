@@ -651,7 +651,6 @@ const config = defineConfig([
       html,
     },
     rules: {
-      'html/no-empty-headings': 'off',
       'html/require-open-graph-protocol': 'off',
       'html/use-baseline': [
         'error',

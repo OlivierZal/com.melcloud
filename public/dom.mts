@@ -47,6 +47,25 @@ export const createOption = (
   }
 }
 
+// The Homey runtime only translates `data-i18n` text content, not
+// attributes. Elements without visible text carry `data-i18n-aria-label`
+// instead of a hardcoded English `aria-label` (which would override the
+// translated accessible name).
+export const translateAriaLabels = (
+  translate: (key: string) => string,
+): void => {
+  for (const element of document.querySelectorAll<HTMLElement>(
+    '[data-i18n-aria-label]',
+  )) {
+    const {
+      dataset: { i18nAriaLabel },
+    } = element
+    if (i18nAriaLabel !== undefined && i18nAriaLabel !== '') {
+      element.ariaLabel = translate(i18nAriaLabel)
+    }
+  }
+}
+
 export const configureNumericInput = (
   input: HTMLInputElement,
   { max, min }: { max?: number; min?: number },

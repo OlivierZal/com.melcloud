@@ -26,12 +26,12 @@
   vertical-align: middle;
 }
 
-.bordered td:first-child,
-.bordered td:nth-child(2) {
+.bordered .cell-date,
+.bordered .cell-device {
   color: var(--homey-color-highlight);
 }
 
-.bordered td:last-child {
+.bordered .cell-error {
   color: var(--homey-color-text-danger);
 }
 

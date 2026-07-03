@@ -71,5 +71,8 @@
   },
   "warnings": {
     "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord."
+  },
+  "widgets": {
+    "zones": "Zones"
   }
 }
