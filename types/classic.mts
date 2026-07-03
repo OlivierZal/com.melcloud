@@ -8,11 +8,7 @@ import type {
 } from '../drivers/index.mts'
 
 export type ClassicMELCloudDevice =
-  | ClassicMELCloudDeviceAta
-  | ClassicMELCloudDeviceAtw
-  | ClassicMELCloudDeviceErv
+  ClassicMELCloudDeviceAta | ClassicMELCloudDeviceAtw | ClassicMELCloudDeviceErv
 
 export type ClassicMELCloudDriver =
-  | ClassicMELCloudDriverAta
-  | ClassicMELCloudDriverAtw
-  | ClassicMELCloudDriverErv
+  ClassicMELCloudDriverAta | ClassicMELCloudDriverAtw | ClassicMELCloudDriverErv
