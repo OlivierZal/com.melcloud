@@ -67,13 +67,13 @@ select:not(.zone-select) {
   padding: var(--homey-su-1);
 }
 
+/* No extra inline-end padding: `appearance: none` removes the native
+   dropdown arrow the old 2.5rem gap used to reserve space for. */
 input {
-  padding-inline-end: 2.5rem;
   text-align: end;
 }
 
 select:not(.zone-select) {
-  padding-inline-end: 2.5rem;
   text-align-last: end;
 }
 
