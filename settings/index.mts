@@ -126,12 +126,11 @@ class NoClassicDeviceError extends NoDeviceError {
 }
 
 // Native `disabled` (not a CSS class): it also blocks keyboard activation
-// during in-flight actions and is announced by screen readers.
+// during in-flight actions and is announced by screen readers. getButton
+// throws on a missing/mistyped id so a renamed button fails fast instead
+// of silently reintroducing double submission.
 const disableButton = (id: string, isDisabled = true): void => {
-  const element = document.querySelector<HTMLButtonElement>(`#${id}`)
-  if (element) {
-    element.disabled = isDisabled
-  }
+  getButton(id).disabled = isDisabled
 }
 
 const withDisablingButton = async (

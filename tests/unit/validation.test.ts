@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import type { ZoneData } from '../../types/zone.mts'
-import { toHour, toNonNegativeInt, toZoneData } from '../../lib/validation.mts'
+import type { DeviceOrZoneData, ZoneData } from '../../types/zone.mts'
+import {
+  toDeviceOrZoneData,
+  toHour,
+  toNonNegativeInt,
+  toZoneData,
+} from '../../lib/validation.mts'
 
 describe(toNonNegativeInt, () => {
   it.each([
@@ -80,4 +85,25 @@ describe(toZoneData, () => {
       ).toThrow(/Invalid zone type/u)
     },
   )
+})
+
+describe(toDeviceOrZoneData, () => {
+  it.each(['areas', 'buildings', 'devices', 'floors'] as const)(
+    'accepts %s (frost protection and holiday mode also target devices)',
+    (zoneType) => {
+      expect(toDeviceOrZoneData({ zoneId: '1', zoneType })).toStrictEqual({
+        zoneId: '1',
+        zoneType,
+      })
+    },
+  )
+
+  it.each(['constructor', ''])('rejects %p coming from the URL', (zoneType) => {
+    expect(() =>
+      toDeviceOrZoneData({
+        zoneId: '1',
+        zoneType: zoneType as DeviceOrZoneData['zoneType'],
+      }),
+    ).toThrow(/Invalid zone type/u)
+  })
 })

@@ -48,9 +48,10 @@ export const createOption = (
 }
 
 // The Homey runtime only translates `data-i18n` text content, not
-// attributes. Elements without visible text carry `data-i18n-aria-label`
-// instead of a hardcoded English `aria-label` (which would override the
-// translated accessible name).
+// attributes. Elements without visible text pair `data-i18n-aria-label`
+// (translated here at startup) with a static English `aria-label` that
+// serves as the pre-script default — mirroring the default-text-then-
+// translate pattern used for visible content.
 export const translateAriaLabels = (
   translate: (key: string) => string,
 ): void => {

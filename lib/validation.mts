@@ -1,6 +1,6 @@
 import type { Hour } from '@olivierzal/melcloud-api'
 
-import type { ZoneData } from '../types/zone.mts'
+import type { DeviceOrZoneData, ZoneData } from '../types/zone.mts'
 
 const HOUR_MIN = 0
 const HOUR_MAX = 23
@@ -9,6 +9,11 @@ const zoneTypes = new Set<ZoneData['zoneType']>([
   'areas',
   'buildings',
   'floors',
+])
+
+const deviceOrZoneTypes = new Set<DeviceOrZoneData['zoneType']>([
+  ...zoneTypes,
+  'devices',
 ])
 
 interface NonNegativeIntOptions {
@@ -64,6 +69,21 @@ export const toHour = (value: unknown, field?: string): Hour => {
  */
 export const toZoneData = ({ zoneId, zoneType }: ZoneData): ZoneData => {
   if (!zoneTypes.has(zoneType)) {
+    throw new RangeError(`Invalid zone type: ${zoneType}`)
+  }
+  return { zoneId, zoneType }
+}
+
+/**
+ * Same guard for endpoints that also accept a single device (frost
+ * protection and holiday mode — the settings page lists devices in its
+ * zone selector).
+ */
+export const toDeviceOrZoneData = ({
+  zoneId,
+  zoneType,
+}: DeviceOrZoneData): DeviceOrZoneData => {
+  if (!deviceOrZoneTypes.has(zoneType)) {
     throw new RangeError(`Invalid zone type: ${zoneType}`)
   }
   return { zoneId, zoneType }

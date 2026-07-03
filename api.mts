@@ -8,9 +8,9 @@ import type {
   ClassicErrorLogQueryParams,
   FormattedErrorLog,
 } from './types/error-log.mts'
-import type { ZoneData } from './types/zone.mts'
+import type { DeviceOrZoneData } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
-import { toZoneData } from './lib/validation.mts'
+import { toDeviceOrZoneData } from './lib/validation.mts'
 
 const toNumber = (value: string | undefined): number | undefined => {
   if (value === undefined) {
@@ -55,18 +55,18 @@ const api = {
     params,
   }: {
     homey: Homey
-    params: ZoneData
+    params: DeviceOrZoneData
   }): Promise<Classic.FrostProtectionData> {
-    return app.getClassicFrostProtection(toZoneData(params))
+    return app.getClassicFrostProtection(toDeviceOrZoneData(params))
   },
   async getClassicHolidayMode({
     homey: { app },
     params,
   }: {
     homey: Homey
-    params: ZoneData
+    params: DeviceOrZoneData
   }): Promise<Classic.HolidayModeData> {
-    return app.getClassicHolidayMode(toZoneData(params))
+    return app.getClassicHolidayMode(toDeviceOrZoneData(params))
   },
   getDeviceSettings({ homey: { app } }: { homey: Homey }): DeviceSettings {
     return app.getDeviceSettings()
@@ -103,11 +103,11 @@ const api = {
   }: {
     body: Classic.FrostProtectionQuery
     homey: Homey
-    params: ZoneData
+    params: DeviceOrZoneData
   }): Promise<void> {
     return app.updateClassicFrostProtection({
       settings: body,
-      ...toZoneData(params),
+      ...toDeviceOrZoneData(params),
     })
   },
   async updateClassicHolidayMode({
@@ -117,11 +117,11 @@ const api = {
   }: {
     body: Classic.HolidayModeQuery
     homey: Homey
-    params: ZoneData
+    params: DeviceOrZoneData
   }): Promise<void> {
     return app.updateClassicHolidayMode({
       settings: body,
-      ...toZoneData(params),
+      ...toDeviceOrZoneData(params),
     })
   },
   async updateDeviceSettings({

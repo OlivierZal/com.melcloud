@@ -118,7 +118,9 @@ const getChartLineOptions = (
     legend: { ...getLegendConfig(), ...fontStyle },
     series: series.map(({ data, name }) => {
       const seriesName = normalizeSeriesName(name)
-      return { data, hidden: hidden.has(seriesName), seriesName }
+      // ApexCharts reads `name` — anything else falls back to "series-N"
+      // in the legend and breaks hidden-series reconciliation.
+      return { data, hidden: hidden.has(seriesName), name: seriesName }
     }),
     stroke: { curve: 'smooth' },
     title: {

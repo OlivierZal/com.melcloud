@@ -28,7 +28,7 @@ import type {
 } from './types/manifest.mts'
 import type { MELCloudDevice, MELCloudDriver } from './types/melcloud.mts'
 import type { GetAtaOptions } from './types/widgets.mts'
-import type { ZoneData } from './types/zone.mts'
+import type { DeviceOrZoneData, ZoneData } from './types/zone.mts'
 import {
   changelog,
   fanSpeed,
@@ -289,11 +289,15 @@ export default class MELCloudApp extends App {
     id: number | string,
   ): Classic.DeviceFacade<T>
   public getClassicFacade(
-    zoneType: 'areas' | 'buildings' | 'floors',
+    zoneType: ZoneData['zoneType'],
     id: number | string,
   ): Classic.BuildingFacade | Classic.ZoneFacade
   public getClassicFacade(
-    zoneType: 'areas' | 'buildings' | 'devices' | 'floors',
+    zoneType: DeviceOrZoneData['zoneType'],
+    id: number | string,
+  ): Classic.Facade
+  public getClassicFacade(
+    zoneType: DeviceOrZoneData['zoneType'],
     id: number | string,
   ): Classic.Facade {
     const instance = this.#classicRegistry[zoneType].getById(Number(id))
@@ -310,7 +314,7 @@ export default class MELCloudApp extends App {
   public async getClassicFrostProtection({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<Classic.FrostProtectionData> {
+  }: DeviceOrZoneData): Promise<Classic.FrostProtectionData> {
     return unwrapResult(
       await this.getClassicFacade(zoneType, zoneId).getFrostProtection(),
     )
@@ -319,7 +323,7 @@ export default class MELCloudApp extends App {
   public async getClassicHolidayMode({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<Classic.HolidayModeData> {
+  }: DeviceOrZoneData): Promise<Classic.HolidayModeData> {
     return unwrapResult(
       await this.getClassicFacade(zoneType, zoneId).getHolidayMode(),
     )
@@ -444,7 +448,9 @@ export default class MELCloudApp extends App {
     settings,
     zoneId,
     zoneType,
-  }: ZoneData & { settings: Classic.FrostProtectionQuery }): Promise<void> {
+  }: DeviceOrZoneData & {
+    settings: Classic.FrostProtectionQuery
+  }): Promise<void> {
     const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
       zoneId,
@@ -456,7 +462,9 @@ export default class MELCloudApp extends App {
     settings,
     zoneId,
     zoneType,
-  }: ZoneData & { settings: Classic.HolidayModeQuery }): Promise<void> {
+  }: DeviceOrZoneData & {
+    settings: Classic.HolidayModeQuery
+  }): Promise<void> {
     const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
       zoneId,
