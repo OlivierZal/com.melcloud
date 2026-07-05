@@ -111,7 +111,9 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<typeof Classic.DeviceType.Atw> {
-    // Fall back to the minimum allowed value in case of undefined or null
+    // Fall back to the minimum allowed value when the device reports no
+    // usable temperature: zero, NaN, or nullish values that reach this
+    // bivariant converter despite the number type
     return (value: number) =>
       Number.isFinite(value) && value !== 0 ?
         value

@@ -116,28 +116,25 @@ const generateLeafAnimation = (
   const loopEnd = loopStart + loopDuration
   const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
   const animation = leaf.animate(
-    Array.from({ length: ANIMATION_KEYFRAME_COUNT })
-      .keys()
-      .map((index: number) => {
-        const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
-        const indexLoopRadius =
-          index >= loopStart && index < loopEnd ? loopRadius : 0
-        const oscillate =
-          indexLoopRadius > 0 ?
-            ` translate(${String((indexLoopRadius / LEAF_OSCILLATION_FACTOR) * Math.sin(angle * LEAF_OSCILLATION_FACTOR))}px, 0px)`
-          : ''
-        const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
-        const translateX = `${String(
-          index * LEAF_OSCILLATION_FACTOR + indexLoopRadius * Math.sin(angle),
-        )}px`
-        const translateY = `${String(
-          -(index * 2 - indexLoopRadius * Math.cos(angle)),
-        )}px`
-        return {
-          transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
-        }
-      })
-      .toArray(),
+    Array.from({ length: ANIMATION_KEYFRAME_COUNT }, (_element, index) => {
+      const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
+      const indexLoopRadius =
+        index >= loopStart && index < loopEnd ? loopRadius : 0
+      const oscillate =
+        indexLoopRadius > 0 ?
+          ` translate(${String((indexLoopRadius / LEAF_OSCILLATION_FACTOR) * Math.sin(angle * LEAF_OSCILLATION_FACTOR))}px, 0px)`
+        : ''
+      const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
+      const translateX = `${String(
+        index * LEAF_OSCILLATION_FACTOR + indexLoopRadius * Math.sin(angle),
+      )}px`
+      const translateY = `${String(
+        -(index * 2 - indexLoopRadius * Math.cos(angle)),
+      )}px`
+      return {
+        transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
+      }
+    }),
     {
       duration: generateStyleNumber({
         divisor: speed,
@@ -448,19 +445,16 @@ export class AnimationController {
 
   #generateFlameAnimation(flame: HTMLDivElement, speed: number): Animation {
     const animation = flame.animate(
-      Array.from({ length: ANIMATION_KEYFRAME_COUNT })
-        .keys()
-        .map(() => {
-          const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
-          const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
-          const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
-          const scaleY = generateStyleString({ gap: 0.4, min: 0.8 })
-          return {
-            filter: `brightness(${brightness})`,
-            transform: `scale(${scaleX}, ${scaleY}) rotate(${rotate})`,
-          }
-        })
-        .toArray(),
+      Array.from({ length: ANIMATION_KEYFRAME_COUNT }, () => {
+        const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
+        const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
+        const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
+        const scaleY = generateStyleString({ gap: 0.4, min: 0.8 })
+        return {
+          filter: `brightness(${brightness})`,
+          transform: `scale(${scaleX}, ${scaleY}) rotate(${rotate})`,
+        }
+      }),
       {
         duration: generateStyleNumber({
           divisor: speed,

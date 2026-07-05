@@ -177,6 +177,7 @@ export abstract class BaseMELCloudDevice extends Device {
   public override error(...args: unknown[]): void {
     super.error(this.getName(), '-', ...args)
   }
+  /* v8 ignore stop */
 
   /* v8 ignore start -- trivial override: prepends device name to all logs */
   public override log(...args: unknown[]): void {
@@ -189,7 +190,6 @@ export abstract class BaseMELCloudDevice extends Device {
       await super.removeCapability(capability)
     }
   }
-  /* v8 ignore stop */
 
   public setInterval(
     callback: () => Promise<void>,
