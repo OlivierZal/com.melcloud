@@ -720,14 +720,14 @@ class DeviceSettingsManager {
 
   #disableButtons(id: string, isDisabled = true): void {
     const isCommon = id.endsWith('common')
+    // Plain suffix swap — a regex would be lowered by the es2020 esbuild
+    // target to a runtime RegExp construction on every call.
+    const driverIdPrefix = id.slice(0, -'common'.length)
     for (const action of ['apply', 'refresh']) {
       disableButton(`${action}_${id}`, isDisabled)
       if (isCommon) {
         for (const driverId of Object.keys(this.#deviceSettings)) {
-          disableButton(
-            `${action}_${id.replace(/common$/v, () => driverId)}`,
-            isDisabled,
-          )
+          disableButton(`${action}_${driverIdPrefix}${driverId}`, isDisabled)
         }
       }
     }

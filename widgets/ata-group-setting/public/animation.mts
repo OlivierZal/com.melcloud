@@ -12,7 +12,11 @@ import { getSelect } from '../../../public/dom.mts'
 import { type Homey, homeyApiGet } from '../../../public/homey-api.mts'
 import { getZonePath } from '../../../public/zones.mts'
 import { SmokeParticle, SmokeThreshold } from './smoke-particle.mts'
-import { generateStyleNumber, generateStyleString } from './style-helpers.mts'
+import {
+  generateStyleNumber,
+  generateStyleString,
+  randomFraction,
+} from './style-helpers.mts'
 
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
@@ -63,7 +67,7 @@ const generateDelay = (delay: number, speed: number): number => {
       ((speed - ClassicFanSpeed.very_slow) /
         (ClassicFanSpeed.very_fast - ClassicFanSpeed.very_slow))
   return (
-    (Math.random() * delay) /
+    (randomFraction() * delay) /
     (Number.isNaN(speedFactor) || speedFactor === 0 ? 1 : speedFactor)
   )
 }
@@ -71,8 +75,10 @@ const generateDelay = (delay: number, speed: number): number => {
 const getZoneValue = (): string => getZonePath(getSelect('zones').value)
 
 // Converts a CSS pixel length (e.g. `12.5px`) into its numeric value.
-// Non-numeric values such as `auto` yield NaN, matching the previous
-// `Number.parseFloat` behavior
+// Non-numeric values such as `auto` yield NaN. Unlike Number.parseFloat,
+// an empty string coerces to 0 — no call site can produce one, since the
+// inline positions are written before being read and getComputedStyle
+// returns resolved values
 const parsePixelValue = (value: string): number =>
   Number(value.replace('px', ''))
 
