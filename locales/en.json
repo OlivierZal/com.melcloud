@@ -7,7 +7,8 @@
     "authenticate": {
       "button": "Log in",
       "failure": "Authentication failed.",
-      "legend": "Credentials"
+      "legend": "Credentials",
+      "unverified": "Signed in, but the session could not be verified — please try again."
     },
     "boolean": {
       "false": "No",
