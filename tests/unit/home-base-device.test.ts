@@ -40,6 +40,13 @@ const {
 
 const facadeState = { isPoweredOn: true }
 
+const requiredCapabilities = vi.hoisted(() => [
+  'measure_temperature',
+  'onoff',
+  'target_temperature',
+  'thermostat_mode',
+])
+
 const createMockFacade = (): Home.DeviceAtaFacade =>
   ({
     capabilities: {
@@ -73,12 +80,7 @@ vi.mock('homey', async () => {
             getCapabilityTagMapping: {},
             listCapabilityTagMapping: {},
             manifest: {
-              capabilities: [
-                'measure_temperature',
-                'onoff',
-                'target_temperature',
-                'thermostat_mode',
-              ],
+              capabilities: requiredCapabilities,
             },
             setCapabilityTagMapping: {
               fan_speed: 'setFanSpeed',
@@ -89,11 +91,7 @@ vi.mock('homey', async () => {
               vertical: 'vaneVerticalDirection',
             },
             getCapabilitiesOptions: (): Record<string, unknown> => ({}),
-            getRequiredCapabilities(this: {
-              manifest: { capabilities: string[] }
-            }): string[] {
-              return this.manifest.capabilities
-            },
+            getRequiredCapabilities: (): string[] => requiredCapabilities,
           },
           getData: vi
             .fn<() => { id: string }>()

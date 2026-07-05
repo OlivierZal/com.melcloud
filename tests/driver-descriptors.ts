@@ -31,8 +31,8 @@ export const testTagMappings = (
 
 export const testFlowListenerRegistration = (
   getDriver: () => object,
-  setCapability: string,
-  nonSetCapability: string,
+  settableCapability: string,
+  nonSettableCapability: string,
 ): void => {
   interface FlowDriver {
     homey: {
@@ -50,10 +50,10 @@ export const testFlowListenerRegistration = (
       await driver.onInit()
 
       expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
-        `${setCapability}_condition`,
+        `${settableCapability}_condition`,
       )
       expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
-        `${nonSetCapability}_condition`,
+        `${nonSettableCapability}_condition`,
       )
     })
 
@@ -62,10 +62,10 @@ export const testFlowListenerRegistration = (
       await driver.onInit()
 
       expect(driver.homey.flow.getActionCard).toHaveBeenCalledWith(
-        `${setCapability}_action`,
+        `${settableCapability}_action`,
       )
       expect(driver.homey.flow.getActionCard).not.toHaveBeenCalledWith(
-        `${nonSetCapability}_action`,
+        `${nonSettableCapability}_action`,
       )
     })
   })

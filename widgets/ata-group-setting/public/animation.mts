@@ -393,7 +393,7 @@ export class AnimationController {
   }
 
   #createSmoke(flame: HTMLDivElement, speed: number): void {
-    if (!(flame.isConnected && this.#canvasContext !== null)) {
+    if (!flame.isConnected || this.#canvasContext === null) {
       return
     }
 

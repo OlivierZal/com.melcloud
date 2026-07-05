@@ -665,9 +665,18 @@ const config = defineConfig([
       'unicorn/name-replacements': 'off',
       'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
       'unicorn/no-keyword-prefix': 'off',
-      'unicorn/no-non-function-verb-prefix': 'off',
+      'unicorn/no-non-function-verb-prefix': [
+        'error',
+        {
+          ignore: [
+            // Homey driver mappings named after MELCloud Get/Set tag groups.
+            '^(?:get|set)CapabilityTagMapping$',
+            // MELCloud device-data field names.
+            '^set(?:FanSpeed|Temperature)$',
+          ],
+        },
+      ],
       'unicorn/no-null': 'off',
-      'unicorn/no-this-outside-of-class': 'off',
       'unicorn/no-unreadable-new-expression': 'off',
       'unicorn/no-useless-switch-case': 'off',
       'unicorn/prefer-error-is-error': 'off',
