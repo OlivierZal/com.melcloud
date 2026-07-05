@@ -279,22 +279,24 @@ export class AnimationController {
     state: Classic.GroupState,
     isAnimations: boolean,
   ): Promise<void> {
-    if (isAnimations) {
-      const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
+    if (!isAnimations) {
+      return
+    }
 
-      const isSomethingOn = isOn !== false
-      const numberSpeed = Number(speed)
-      const newSpeed =
-        Number.isNaN(numberSpeed) || numberSpeed === 0 ?
-          ClassicFanSpeed.moderate
-        : numberSpeed
-      const newMode = Number(mode ?? null)
+    const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
 
-      await this.#reset({ isSomethingOn, mode: newMode })
+    const isSomethingOn = isOn !== false
+    const numberSpeed = Number(speed)
+    const newSpeed =
+      Number.isNaN(numberSpeed) || numberSpeed === 0 ?
+        ClassicFanSpeed.moderate
+      : numberSpeed
+    const newMode = Number(mode ?? null)
 
-      if (isSomethingOn && this.#hasModeAnimation(newMode)) {
-        await this.#animationRunners[newMode]?.(newSpeed)
-      }
+    await this.#reset({ isSomethingOn, mode: newMode })
+
+    if (isSomethingOn && this.#hasModeAnimation(newMode)) {
+      await this.#animationRunners[newMode]?.(newSpeed)
     }
   }
 
@@ -391,24 +393,29 @@ export class AnimationController {
   }
 
   #createSmoke(flame: HTMLDivElement, speed: number): void {
-    if (flame.isConnected && this.#canvasContext !== null) {
-      const { left, top, width } = flame.getBoundingClientRect()
-      for (let index = 0; index <= SmokeThreshold.iterations; index += 1) {
-        this.#smokeParticles.push(
-          new SmokeParticle(
-            this.#canvasContext,
-            left + width / 2,
-            top - parsePixelValue(getComputedStyle(flame).insetBlockEnd),
-          ),
-        )
-      }
-      setTimeout(
-        () => {
-          this.#createSmoke(flame, speed)
-        },
-        generateDelay(AnimationDelay.smoke, ClassicFanSpeed.very_slow),
+    if (!(flame.isConnected && this.#canvasContext !== null)) {
+      return
+    }
+
+    const { left, top, width } = flame.getBoundingClientRect()
+    const flameInsetBlockEnd = parsePixelValue(
+      getComputedStyle(flame).insetBlockEnd,
+    )
+    for (let index = 0; index <= SmokeThreshold.iterations; index += 1) {
+      this.#smokeParticles.push(
+        new SmokeParticle(
+          this.#canvasContext,
+          left + width / 2,
+          top - flameInsetBlockEnd,
+        ),
       )
     }
+    setTimeout(
+      () => {
+        this.#createSmoke(flame, speed)
+      },
+      generateDelay(AnimationDelay.smoke, ClassicFanSpeed.very_slow),
+    )
   }
 
   #createSnowflake(speed: number): void {
@@ -482,28 +489,25 @@ export class AnimationController {
   }
 
   #generateSmoke(speed: number): void {
-    if (this.#canvasContext !== null) {
-      this.#canvas.height = globalThis.innerHeight
-      this.#canvas.width = globalThis.innerWidth
-      this.#canvasContext.clearRect(
-        0,
-        0,
-        this.#canvas.width,
-        this.#canvas.height,
-      )
-      this.#smokeParticles = this.#smokeParticles.filter((particle) => {
-        particle.update(speed)
-        particle.draw()
-        return (
-          particle.size > SmokeThreshold.sizeMin &&
-          particle.opacity > SmokeThreshold.opacityMin &&
-          particle.positionY > SmokeThreshold.positionYMin
-        )
-      })
-      this.#smokeAnimationFrameId = requestAnimationFrame(() => {
-        this.#generateSmoke(speed)
-      })
+    if (this.#canvasContext === null) {
+      return
     }
+
+    this.#canvas.height = globalThis.innerHeight
+    this.#canvas.width = globalThis.innerWidth
+    this.#canvasContext.clearRect(0, 0, this.#canvas.width, this.#canvas.height)
+    this.#smokeParticles = this.#smokeParticles.filter((particle) => {
+      particle.update(speed)
+      particle.draw()
+      return (
+        particle.size > SmokeThreshold.sizeMin &&
+        particle.opacity > SmokeThreshold.opacityMin &&
+        particle.positionY > SmokeThreshold.positionYMin
+      )
+    })
+    this.#smokeAnimationFrameId = requestAnimationFrame(() => {
+      this.#generateSmoke(speed)
+    })
   }
 
   #generateSunEnterAnimation(sun: HTMLDivElement): Animation {

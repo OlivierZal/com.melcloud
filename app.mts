@@ -374,9 +374,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
+    const dateRange = createDateRange(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getOperationModes(
-        createDateRange(days, getTimeZone(this.homey)),
+        dateRange,
       ),
     )
   }
@@ -400,9 +401,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
+    const dateRange = createDateRange(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getTemperatures(
-        createDateRange(days, getTimeZone(this.homey)),
+        dateRange,
       ),
     )
   }

@@ -662,7 +662,6 @@ const config = defineConfig([
       // filename-case now also checks directory names, but melcloud_atw and
       // melcloud_erv are Homey driver ids that must match their folder names.
       'unicorn/filename-case': 'off',
-      'unicorn/max-nested-calls': 'off',
       'unicorn/name-replacements': 'off',
       'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
       'unicorn/no-keyword-prefix': 'off',
@@ -671,12 +670,9 @@ const config = defineConfig([
       'unicorn/no-this-outside-of-class': 'off',
       'unicorn/no-unreadable-new-expression': 'off',
       'unicorn/no-useless-switch-case': 'off',
-      'unicorn/prefer-await': 'off',
-      'unicorn/prefer-early-return': 'off',
       'unicorn/prefer-error-is-error': 'off',
       'unicorn/prefer-temporal': 'off',
       'unicorn/prevent-abbreviations': 'off',
-      'unicorn/try-complexity': 'off',
       'use-isnan': [
         'error',
         {
@@ -829,6 +825,12 @@ const config = defineConfig([
       '@typescript-eslint/unbound-method': 'off',
       'max-lines-per-function': 'off',
       'max-statements': 'off',
+      'unicorn/max-nested-calls': [
+        'error',
+        {
+          max: 4,
+        },
+      ],
       'vitest/max-expects': 'off',
       'vitest/no-disabled-tests': 'error',
       'vitest/no-hooks': 'off',

@@ -43,6 +43,7 @@ const fireAndForget = (
   promise: Promise<unknown>,
   onError: (error: unknown) => void = defaultOnError,
 ): void => {
+  // eslint-disable-next-line unicorn/prefer-await -- fire-and-forget: rejections route to onError without blocking the caller
   promise.catch(onError)
 }
 
@@ -216,10 +217,12 @@ const appendFormControl = (
   }: { formControl: HTMLValueElement | null; title: string },
   shouldWrapWithDiv = true,
 ): void => {
-  if (formControl !== null) {
-    const label = createLabel(formControl, title)
-    parent.append(shouldWrapWithDiv ? createDiv(label) : label)
+  if (formControl === null) {
+    return
   }
+
+  const label = createLabel(formControl, title)
+  parent.append(shouldWrapWithDiv ? createDiv(label) : label)
 }
 
 const createInput = ({
@@ -299,15 +302,14 @@ const parseNumericInput = (
     numberValue < Number(min) ||
     numberValue > Number(max)
   ) {
+    const label = document.querySelector<HTMLLabelElement>(
+      `label[for="${CSS.escape(id)}"]`,
+    )
     throw new Error(
       homey.__('settings.intError', {
         max,
         min,
-        name: homey.__(
-          document.querySelector<HTMLLabelElement>(
-            `label[for="${CSS.escape(id)}"]`,
-          )?.textContent ?? '',
-        ),
+        name: homey.__(label?.textContent ?? ''),
       }),
     )
   }
@@ -499,21 +501,20 @@ class DeviceSettingsManager {
   }
 
   public get flatDeviceSettings(): Partial<DeviceSetting> {
+    const settingValues = Object.values(this.#deviceSettings).flatMap(
+      (settings) =>
+        Object.entries(settings ?? {}).map(([id, values]) => ({
+          id,
+          values,
+        })),
+    )
     return Object.fromEntries(
-      Object.entries(
-        Object.groupBy(
-          Object.values(this.#deviceSettings).flatMap((settings) =>
-            Object.entries(settings ?? {}).map(([id, values]) => ({
-              id,
-              values,
-            })),
-          ),
-          ({ id }) => id,
-        ),
-      ).map(([id, groupedValues]) => {
-        const set = new Set(groupedValues?.map(({ values }) => values))
-        return [id, set.size === 1 ? set.values().next().value : null]
-      }),
+      Object.entries(Object.groupBy(settingValues, ({ id }) => id)).map(
+        ([id, groupedValues]) => {
+          const set = new Set(groupedValues?.map(({ values }) => values))
+          return [id, set.size === 1 ? set.values().next().value : null]
+        },
+      ),
     )
   }
 
@@ -901,18 +902,20 @@ class ErrorLogManager {
 
   public addEventListeners(): void {
     this.#sinceInput.addEventListener('change', () => {
-      if (
+      if (!(
         this.#to !== '' &&
         this.#sinceInput.value !== '' &&
         Date.parse(this.#sinceInput.value) > Date.parse(this.#to)
-      ) {
-        this.#sinceInput.value = this.#to
-        fireAndForget(
-          this.#homey.alert(
-            this.#homey.__('settings.errorLog.error', { from: this.#from }),
-          ),
-        )
+      )) {
+        return
       }
+
+      this.#sinceInput.value = this.#to
+      fireAndForget(
+        this.#homey.alert(
+          this.#homey.__('settings.errorLog.error', { from: this.#from }),
+        ),
+      )
     })
     this.#seeButton.addEventListener('click', () => {
       fireAndForget(this.fetchErrorLog())
@@ -1225,10 +1228,12 @@ class ZoneSettingsManager {
 
   #addHolidayModeEventListeners(): void {
     this.#holidayModeEnabled.addEventListener('change', () => {
-      if (this.#holidayModeEnabled.value === 'false') {
-        this.#holidayModeStartDate.value = ''
-        this.#holidayModeEndDate.value = ''
+      if (this.#holidayModeEnabled.value !== 'false') {
+        return
       }
+
+      this.#holidayModeStartDate.value = ''
+      this.#holidayModeEndDate.value = ''
     })
     this.#addDateChangeListener(
       this.#holidayModeStartDate,
@@ -1387,10 +1392,12 @@ class SettingsApp {
   }
 
   #disableCommonButtonsIfNoDevices(): void {
-    if (Object.keys(this.#deviceSettingsManager.deviceSettings).length === 0) {
-      disableButton('apply_settings_common')
-      disableButton('refresh_settings_common')
+    if (Object.keys(this.#deviceSettingsManager.deviceSettings).length > 0) {
+      return
     }
+
+    disableButton('apply_settings_common')
+    disableButton('refresh_settings_common')
   }
 
   #disableForError(error: NoDeviceError): void {
@@ -1398,6 +1405,14 @@ class SettingsApp {
       this.#disableClassicButtons()
     }
     this.#disableCommonButtonsIfNoDevices()
+  }
+
+  async #ensureDevicesForApi(api: Api): Promise<void> {
+    if (api === 'classic') {
+      await this.#fetchClassicBuildings()
+    } else if (!this.#hasHomeDevices()) {
+      throw new NoDeviceError(this.#homey)
+    }
   }
 
   async #fetchClassicBuildings(): Promise<void> {
@@ -1461,11 +1476,7 @@ class SettingsApp {
   async #onLogin(api: Api): Promise<void> {
     this.#authState[api] = true
     try {
-      if (api === 'classic') {
-        await this.#fetchClassicBuildings()
-      } else if (!this.#hasHomeDevices()) {
-        throw new NoDeviceError(this.#homey)
-      }
+      await this.#ensureDevicesForApi(api)
     } catch (error) {
       if (error instanceof NoDeviceError) {
         this.#disableForError(error)

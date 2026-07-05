@@ -177,16 +177,17 @@ export class AtaValueManager {
   }
 
   public applyDefaultZone(defaultZone: Classic.Zone | null): void {
-    if (defaultZone !== null) {
-      const { id, model } = defaultZone
-      const value = getZoneId(id, model)
-      if (
-        document.querySelector(
-          `#zones option[value="${CSS.escape(value)}"]`,
-        ) !== null
-      ) {
-        this.#zone.value = value
-      }
+    if (defaultZone === null) {
+      return
+    }
+
+    const { id, model } = defaultZone
+    const value = getZoneId(id, model)
+    if (
+      document.querySelector(`#zones option[value="${CSS.escape(value)}"]`) !==
+      null
+    ) {
+      this.#zone.value = value
     }
   }
 

@@ -159,11 +159,7 @@ export abstract class BaseMELCloudDevice extends Device {
 
   public async ensureDevice(): Promise<ClassicDeviceFacade | null> {
     try {
-      if (this.#deviceFacade === undefined) {
-        this.#deviceFacade = this.getFacade()
-        await this.#init()
-      }
-      return this.#deviceFacade
+      return await this.#ensureDeviceFacade()
     } catch (error) {
       // Expected failures (MELCloud API, entity lookup) surface as a
       // user-visible warning; anything else is a programming error and is
@@ -181,7 +177,6 @@ export abstract class BaseMELCloudDevice extends Device {
   public override error(...args: unknown[]): void {
     super.error(this.getName(), '-', ...args)
   }
-  /* v8 ignore stop */
 
   /* v8 ignore start -- trivial override: prepends device name to all logs */
   public override log(...args: unknown[]): void {
@@ -194,6 +189,7 @@ export abstract class BaseMELCloudDevice extends Device {
       await super.removeCapability(capability)
     }
   }
+  /* v8 ignore stop */
 
   public setInterval(
     callback: () => Promise<void>,
@@ -308,6 +304,14 @@ export abstract class BaseMELCloudDevice extends Device {
       }
     }
     this.#scheduleSyncFromDevice()
+  }
+
+  async #ensureDeviceFacade(): Promise<ClassicDeviceFacade> {
+    if (this.#deviceFacade === undefined) {
+      this.#deviceFacade = this.getFacade()
+      await this.#init()
+    }
+    return this.#deviceFacade
   }
 
   async #init(): Promise<void> {

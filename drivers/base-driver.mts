@@ -49,13 +49,15 @@ export abstract class BaseMELCloudDriver extends Driver {
 
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
-      if (view === 'loading') {
-        if (this.api.isAuthenticated()) {
-          await session.showView('list_devices')
-          return
-        }
-        await session.showView('login')
+      if (view !== 'loading') {
+        return
       }
+
+      if (this.api.isAuthenticated()) {
+        await session.showView('list_devices')
+        return
+      }
+      await session.showView('login')
     })
     this.#registerLoginHandler(session)
     session.setHandler('list_devices', async () => this.discoverDevices())

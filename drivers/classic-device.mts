@@ -145,11 +145,7 @@ export abstract class ClassicMELCloudDevice<
 
   async #getDeviceData(): Promise<Readonly<Classic.ListDeviceData<T>> | null> {
     try {
-      if (this.#data !== undefined) {
-        return this.#data
-      }
-      const device = await this.ensureDevice()
-      return device?.data ?? null
+      return await this.#resolveDeviceData()
     } catch (error) {
       if (!(error instanceof EntityNotFoundError)) {
         throw error
@@ -157,5 +153,15 @@ export abstract class ClassicMELCloudDevice<
       await this.setWarning(this.homey.__('errors.deviceNotFound'))
       return null
     }
+  }
+
+  async #resolveDeviceData(): Promise<Readonly<
+    Classic.ListDeviceData<T>
+  > | null> {
+    if (this.#data !== undefined) {
+      return this.#data
+    }
+    const device = await this.ensureDevice()
+    return device?.data ?? null
   }
 }

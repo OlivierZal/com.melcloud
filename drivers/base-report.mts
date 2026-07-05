@@ -145,14 +145,12 @@ export class EnergyReport<T extends Classic.DeviceType> {
     // Fetch energy data from the previous period (offset by config.minus)
     const toDateTime = getNow(this.#homey).subtract(this.#config.minus)
     const to = toDateTime.toPlainDate().toString()
+    const from = this.#config.mode === 'total' ? undefined : to
     try {
-      const data = unwrapResult(
-        await device.getEnergy({
-          from: this.#config.mode === 'total' ? undefined : to,
-          to,
-        }),
+      await this.#set(
+        unwrapResult(await device.getEnergy({ from, to })),
+        toDateTime.hour,
       )
-      await this.#set(data, toDateTime.hour)
     } catch (error) {
       this.#device.error('Energy report fetch failed:', error)
     }

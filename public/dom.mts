@@ -71,13 +71,15 @@ export const configureNumericInput = (
   input: HTMLInputElement,
   { max, min }: { max?: number; min?: number },
 ): void => {
-  if (input.type === 'number') {
-    input.setAttribute('inputmode', 'numeric')
-    if (min !== undefined) {
-      input.min = String(min)
-    }
-    if (max !== undefined) {
-      input.max = String(max)
-    }
+  if (input.type !== 'number') {
+    return
+  }
+
+  input.setAttribute('inputmode', 'numeric')
+  if (min !== undefined) {
+    input.min = String(min)
+  }
+  if (max !== undefined) {
+    input.max = String(max)
   }
 }

@@ -263,16 +263,17 @@ class ChartWidget {
   }
 
   #applyDefaultZone(defaultZone: Classic.DeviceZone | null): void {
-    if (defaultZone !== null) {
-      const { id, model } = defaultZone
-      const value = getZoneId(id, model)
-      if (
-        document.querySelector(
-          `#zones option[value="${CSS.escape(value)}"]`,
-        ) !== null
-      ) {
-        this.#zone.value = value
-      }
+    if (defaultZone === null) {
+      return
+    }
+
+    const { id, model } = defaultZone
+    const value = getZoneId(id, model)
+    if (
+      document.querySelector(`#zones option[value="${CSS.escape(value)}"]`) !==
+      null
+    ) {
+      this.#zone.value = value
     }
   }
 
@@ -310,12 +311,7 @@ class ChartWidget {
         days,
         height,
       })
-      if (this.#chart === null) {
-        this.#chart = new ApexCharts(getDiv('chart'), this.#options)
-        await this.#chart.render()
-      } else {
-        await this.#chart.updateOptions(this.#options)
-      }
+      await this.#renderOrUpdateChart()
       await this.#homey.setHeight(document.body.scrollHeight)
     } catch (error) {
       // eslint-disable-next-line no-console -- surfaces the failure in widget dev tools; the rearmed timer retries
@@ -363,6 +359,15 @@ class ChartWidget {
     for (const { id, model, name } of zones) {
       createOption(this.#zone, { id: getZoneId(id, model), label: name })
     }
+  }
+
+  async #renderOrUpdateChart(): Promise<void> {
+    if (this.#chart === null) {
+      this.#chart = new ApexCharts(getDiv('chart'), this.#options)
+      await this.#chart.render()
+      return
+    }
+    await this.#chart.updateOptions(this.#options)
   }
 }
 
