@@ -361,14 +361,39 @@ const config = defineConfig([
       'import-x/first': 'error',
       'import-x/newline-after-import': 'error',
       'import-x/no-absolute-path': 'error',
-      'import-x/no-anonymous-default-export': 'error',
+      'import-x/no-anonymous-default-export': [
+        'error',
+        {
+          allowCallExpression: false,
+        },
+      ],
       'import-x/no-cycle': 'error',
       'import-x/no-default-export': 'error',
       'import-x/no-deprecated': 'error',
-      'import-x/no-duplicates': 'error',
-      'import-x/no-dynamic-require': 'error',
+      'import-x/no-duplicates': [
+        'error',
+        {
+          'prefer-inline': true,
+        },
+      ],
+      'import-x/no-dynamic-require': [
+        'error',
+        {
+          esmodule: true,
+        },
+      ],
       'import-x/no-empty-named-blocks': 'error',
-      'import-x/no-extraneous-dependencies': 'error',
+      'import-x/no-extraneous-dependencies': [
+        'error',
+        {
+          bundledDependencies: false,
+          // Widget and settings sources are bundled by esbuild, so their
+          // imports may live in devDependencies.
+          devDependencies: ['*.config.ts', 'tests/**', 'widgets/**'],
+          optionalDependencies: false,
+          peerDependencies: false,
+        },
+      ],
       'import-x/no-import-module-exports': 'error',
       'import-x/no-mutable-exports': 'error',
       'import-x/no-named-as-default': 'error',
@@ -380,6 +405,12 @@ const config = defineConfig([
         'error',
         {
           allow: ['source-map-support/register.js'],
+        },
+      ],
+      'import-x/no-unresolved': [
+        'error',
+        {
+          caseSensitiveStrict: true,
         },
       ],
       'import-x/no-unused-modules': [
@@ -655,14 +686,15 @@ const config = defineConfig([
       ],
       'sort-imports': 'off',
       'sort-keys': 'off',
-      // Rules introduced by eslint-plugin-unicorn 65-69, kept off until the
-      // codebase is migrated incrementally (343 pre-existing violations).
+      // Autofix breaks `@param` names (`url` → `URL`).
       'unicorn/comment-content': 'off',
+      // Owned by `perfectionist/sort-classes`.
       'unicorn/consistent-class-member-order': 'off',
-      // filename-case now also checks directory names, but melcloud_atw and
+      // filename-case also checks directory names, but melcloud_atw and
       // melcloud_erv are Homey driver ids that must match their folder names.
       'unicorn/filename-case': 'off',
       'unicorn/name-replacements': 'off',
+      // Standard JSDoc/TSDoc formatting.
       'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
       'unicorn/no-keyword-prefix': 'off',
       'unicorn/no-non-function-verb-prefix': [
@@ -676,9 +708,11 @@ const config = defineConfig([
           ],
         },
       ],
+      // Homey SDK and MELCloud contracts use null.
       'unicorn/no-null': 'off',
       'unicorn/no-unreadable-new-expression': 'off',
       'unicorn/no-useless-switch-case': 'off',
+      // Requires Node.js 24.
       'unicorn/prefer-error-is-error': 'off',
       'use-isnan': [
         'error',
@@ -711,7 +745,20 @@ const config = defineConfig([
     },
   },
   {
-    ...jsdoc({ config: 'flat/recommended-typescript-error' }),
+    ...jsdoc({
+      config: 'flat/recommended-typescript-error',
+      rules: {
+        'jsdoc/check-template-names': 'error',
+        'jsdoc/informative-docs': 'error',
+        'jsdoc/no-bad-blocks': 'error',
+        'jsdoc/no-blank-block-descriptions': 'error',
+        'jsdoc/no-blank-blocks': 'error',
+        'jsdoc/require-description': 'error',
+        'jsdoc/require-hyphen-before-param-description': ['error', 'always'],
+        'jsdoc/require-throws': 'error',
+        'jsdoc/sort-tags': 'error',
+      },
+    }),
     files: ['**/api.mts'],
   },
   {
@@ -821,6 +868,37 @@ const config = defineConfig([
       'markdown/no-bare-urls': 'error',
       'markdown/no-duplicate-headings': 'error',
       'markdown/no-html': 'error',
+      'markdown/no-missing-atx-heading-space': [
+        'error',
+        {
+          checkClosedHeadings: true,
+        },
+      ],
+      'markdown/no-missing-label-refs': [
+        'error',
+        {
+          allowLabels: ['!CAUTION', '!IMPORTANT', '!NOTE', '!TIP', '!WARNING'],
+        },
+      ],
+      'markdown/no-missing-link-fragments': [
+        'error',
+        {
+          allowPattern: '',
+          ignoreCase: false,
+        },
+      ],
+      'markdown/no-space-in-emphasis': [
+        'error',
+        {
+          checkStrikethrough: true,
+        },
+      ],
+      'markdown/table-column-count': [
+        'error',
+        {
+          checkMissingCells: true,
+        },
+      ],
     },
   },
   {
@@ -841,10 +919,22 @@ const config = defineConfig([
       'vitest/max-expects': 'off',
       'vitest/no-disabled-tests': 'error',
       'vitest/no-hooks': 'off',
-      'vitest/prefer-expect-assertions': 'off',
+      'vitest/prefer-expect-assertions': [
+        'error',
+        {
+          onlyFunctionsWithExpectInCallback: true,
+          onlyFunctionsWithExpectInLoop: true,
+        },
+      ],
       'vitest/prefer-hooks-in-order': 'error',
       'vitest/require-hook': 'off',
-      'vitest/require-mock-type-parameters': 'error',
+      'vitest/require-mock-type-parameters': [
+        'error',
+        {
+          checkImportFunctions: true,
+        },
+      ],
+      'vitest/warn-todo': 'error',
     },
     settings: {
       vitest: {
@@ -910,6 +1000,11 @@ const config = defineConfig([
     extends: [packageJsonConfigs.recommended, packageJsonConfigs.stylistic],
     files: ['**/package.json'],
     rules: {
+      'package-json/require-author': 'error',
+      'package-json/require-bugs': 'error',
+      'package-json/require-engines': 'error',
+      // A Homey app is not a published library: no exports, files,
+      // keywords or types fields.
       'package-json/require-exports': 'off',
       'package-json/require-files': 'off',
     },
