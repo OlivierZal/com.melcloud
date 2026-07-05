@@ -159,7 +159,19 @@ const config = defineConfig([
         // Semantic prefixes make intent obvious at the call site.
         {
           format: ['PascalCase'],
-          prefix: ['is', 'has', 'can', 'should'],
+          prefix: [
+            'are',
+            'can',
+            'did',
+            'has',
+            'have',
+            'is',
+            'requires',
+            'should',
+            'was',
+            'were',
+            'will',
+          ],
           selector: ['variable', 'parameter', 'classProperty'],
           types: ['boolean'],
         },
@@ -288,12 +300,18 @@ const config = defineConfig([
       '@typescript-eslint/prefer-destructuring': [
         'error',
         {
-          array: true,
-          object: true,
+          AssignmentExpression: {
+            array: false,
+            object: false,
+          },
+          VariableDeclarator: {
+            array: true,
+            object: true,
+          },
         },
         {
           enforceForDeclarationWithTypeAnnotation: true,
-          enforceForRenamedProperties: true,
+          enforceForRenamedProperties: false,
         },
       ],
       '@typescript-eslint/prefer-readonly-parameter-types': 'off',
