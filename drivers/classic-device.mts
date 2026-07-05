@@ -87,7 +87,7 @@ export abstract class ClassicMELCloudDevice<
   public override async syncFromDevice(): Promise<void> {
     const data = await this.#getDeviceData()
     /* v8 ignore next -- defensive guard: data is guaranteed after ensureDevice */
-    if (!data) {
+    if (data === null) {
       return
     }
     await this.setCapabilityValues(data)
@@ -109,7 +109,9 @@ export abstract class ClassicMELCloudDevice<
 
   protected override getRequiredCapabilities(): string[] {
     /* v8 ignore next -- defensive guard: facade is set after init */
-    return this.#data ? this.driver.getRequiredCapabilities(this.#data) : []
+    return this.#data === undefined ?
+        []
+      : this.driver.getRequiredCapabilities(this.#data)
   }
 
   protected async setCapabilityValues(
@@ -121,7 +123,7 @@ export abstract class ClassicMELCloudDevice<
       .operationalCapabilityTagEntries as OperationalCapabilityTagEntry<T>[]
     await Promise.all(
       entries.map(async ([capability, tag]) => {
-        if (tag in data) {
+        if (Object.hasOwn(data, tag)) {
           await this.setCapabilityValue(
             capability,
             this.#convertFromDevice(capability, data[tag], data),
@@ -143,11 +145,7 @@ export abstract class ClassicMELCloudDevice<
 
   async #getDeviceData(): Promise<Readonly<Classic.ListDeviceData<T>> | null> {
     try {
-      if (this.#data) {
-        return this.#data
-      }
-      const device = await this.ensureDevice()
-      return device?.data ?? null
+      return await this.#resolveDeviceData()
     } catch (error) {
       if (!(error instanceof EntityNotFoundError)) {
         throw error
@@ -155,5 +153,15 @@ export abstract class ClassicMELCloudDevice<
       await this.setWarning(this.homey.__('errors.deviceNotFound'))
       return null
     }
+  }
+
+  async #resolveDeviceData(): Promise<Readonly<
+    Classic.ListDeviceData<T>
+  > | null> {
+    if (this.#data !== undefined) {
+      return this.#data
+    }
+    const device = await this.ensureDevice()
+    return device?.data ?? null
   }
 }

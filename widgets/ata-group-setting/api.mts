@@ -10,14 +10,13 @@ import { toDeviceType } from '../../lib/to-device-type.mts'
 import { toZoneData } from '../../lib/validation.mts'
 
 const api = {
-  getClassicAtaCapabilities({
+  getClassicAtaCapabilities: ({
     homey: { app },
   }: {
     homey: Homey
-  }): [keyof Classic.GroupState, DriverCapabilitiesOptions][] {
-    return app.getClassicAtaCapabilities()
-  },
-  getClassicAtaDetailedStates({
+  }): [keyof Classic.GroupState, DriverCapabilitiesOptions][] =>
+    app.getClassicAtaCapabilities(),
+  getClassicAtaDetailedStates: ({
     homey: { app },
     params,
     query: { status },
@@ -25,31 +24,26 @@ const api = {
     homey: Homey
     params: ZoneData
     query: GetAtaOptions
-  }): GroupAtaStates {
-    return app.getClassicAtaDetailedStates({ ...toZoneData(params), status })
-  },
-  async getClassicAtaState({
+  }): GroupAtaStates =>
+    app.getClassicAtaDetailedStates({ ...toZoneData(params), status }),
+  getClassicAtaState: async ({
     homey: { app },
     params,
   }: {
     homey: Homey
     params: ZoneData
-  }): Promise<Classic.GroupState> {
-    return app.getClassicAtaState(toZoneData(params))
-  },
-  getClassicBuildings({
+  }): Promise<Classic.GroupState> => app.getClassicAtaState(toZoneData(params)),
+  getClassicBuildings: ({
     query: { type },
   }: {
     query: { type?: `${Classic.DeviceType}` }
-  }): Classic.BuildingZone[] {
-    return getClassicBuildings({
-      type: type ? toDeviceType(type) : undefined,
-    })
-  },
-  getLanguage({ homey: { i18n } }: { homey: Homey }): string {
-    return i18n.getLanguage()
-  },
-  async updateClassicAtaState({
+  }): Classic.BuildingZone[] =>
+    getClassicBuildings({
+      type: type === undefined ? undefined : toDeviceType(type),
+    }),
+  getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
+    i18n.getLanguage(),
+  updateClassicAtaState: async ({
     body,
     homey: { app },
     params,
@@ -57,9 +51,8 @@ const api = {
     body: Classic.GroupState
     homey: Homey
     params: ZoneData
-  }): Promise<void> {
-    return app.updateClassicAtaState({ state: body, ...toZoneData(params) })
-  },
+  }): Promise<void> =>
+    app.updateClassicAtaState({ state: body, ...toZoneData(params) }),
 }
 
 export default api

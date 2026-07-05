@@ -149,23 +149,17 @@ export abstract class BaseMELCloudDevice extends Device {
   public cleanMapping<TMapping extends Readonly<Record<string, unknown>>>(
     capabilityTagMapping: TMapping,
   ): Partial<TMapping> {
-    const result: Partial<TMapping> = {}
-    for (const capability in capabilityTagMapping) {
-      if (this.hasCapability(capability)) {
-        const { [capability]: tag } = capabilityTagMapping
-        result[capability] = tag
-      }
-    }
-    return result
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- fromEntries widens the filtered entries to Record<string, unknown>
+    return Object.fromEntries(
+      Object.entries(capabilityTagMapping).filter(([capability]) =>
+        this.hasCapability(capability),
+      ),
+    ) as Partial<TMapping>
   }
 
   public async ensureDevice(): Promise<ClassicDeviceFacade | null> {
     try {
-      if (!this.#deviceFacade) {
-        this.#deviceFacade = this.getFacade()
-        await this.#init()
-      }
-      return this.#deviceFacade
+      return await this.#ensureDeviceFacade()
     } catch (error) {
       // Expected failures (MELCloud API, entity lookup) surface as a
       // user-visible warning; anything else is a programming error and is
@@ -233,9 +227,8 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   protected async applyCapabilitiesOptions(data?: unknown): Promise<void> {
-    for (const [capability, options] of Object.entries(
-      this.driver.getCapabilitiesOptions(data),
-    )) {
+    const capabilitiesOptions = this.driver.getCapabilitiesOptions(data)
+    for (const [capability, options] of Object.entries(capabilitiesOptions)) {
       /* v8 ignore next -- options is always defined in practice; Partial type is defensive */
       if (options !== undefined) {
         // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
@@ -262,7 +255,7 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   protected isEnergyCapability(setting: string): boolean {
-    return setting in this.driver.energyCapabilityTagMapping
+    return Object.hasOwn(this.driver.energyCapabilityTagMapping, setting)
   }
 
   protected isManifestCapability(capability: string): boolean {
@@ -276,7 +269,7 @@ export abstract class BaseMELCloudDevice extends Device {
     const tagMapping = this.#setCapabilityTagMapping
     const result: Record<string, unknown> = {}
     for (const [capability, value] of Object.entries(values)) {
-      const { [capability]: tag } = tagMapping
+      const tag = tagMapping[capability]
       if (tag !== undefined) {
         result[tag] = this.capabilityToDevice[capability]?.(value) ?? value
       }
@@ -285,11 +278,11 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   protected async scheduleEnergyReports(): Promise<void> {
-    if (this.energyReportRegular) {
+    if (this.energyReportRegular !== null) {
       this.#reports.regular = this.createEnergyReport(this.energyReportRegular)
       await this.#reports.regular.start()
     }
-    if (this.energyReportTotal) {
+    if (this.energyReportTotal !== null) {
       this.#reports.total = this.createEnergyReport(this.energyReportTotal)
       await this.#reports.total.start()
     }
@@ -297,7 +290,7 @@ export abstract class BaseMELCloudDevice extends Device {
 
   protected async sendUpdate(values: Record<string, unknown>): Promise<void> {
     const device = await this.ensureDevice()
-    if (!device) {
+    if (device === null) {
       return
     }
     const updateData = this.mapCapabilitiesToDeviceTags(values)
@@ -311,6 +304,14 @@ export abstract class BaseMELCloudDevice extends Device {
       }
     }
     this.#scheduleSyncFromDevice()
+  }
+
+  async #ensureDeviceFacade(): Promise<ClassicDeviceFacade> {
+    if (this.#deviceFacade === undefined) {
+      this.#deviceFacade = this.getFacade()
+      await this.#init()
+    }
+    return this.#deviceFacade
   }
 
   async #init(): Promise<void> {

@@ -73,7 +73,7 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
 
   public override async syncFromDevice(): Promise<void> {
     const device = await this.ensureDevice()
-    if (!device) {
+    if (device === null) {
       return
     }
     await this.#setCapabilityValues(device)
@@ -81,7 +81,10 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
 
   protected override async applyCapabilitiesOptions(): Promise<void> {
     /* v8 ignore next -- cachedFacade is always set before init() calls applyCapabilitiesOptions */
-    if (!this.cachedFacade || !('capabilities' in this.cachedFacade)) {
+    if (
+      this.cachedFacade === undefined ||
+      !('capabilities' in this.cachedFacade)
+    ) {
       return
     }
     await super.applyCapabilitiesOptions(this.cachedFacade.capabilities)

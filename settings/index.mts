@@ -1,6 +1,7 @@
 import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
+import { Temporal } from 'temporal-polyfill'
 
 import type { Api } from '../types/api.mts'
 import type { HomeySettings } from '../types/app-settings.mts'
@@ -43,6 +44,7 @@ const fireAndForget = (
   promise: Promise<unknown>,
   onError: (error: unknown) => void = defaultOnError,
 ): void => {
+  // eslint-disable-next-line unicorn/prefer-await -- fire-and-forget: rejections route to onError without blocking the caller
   promise.catch(onError)
 }
 
@@ -60,7 +62,7 @@ const createCallback =
     reject: (reason: Error) => void,
   ): ((error: Error | null, data: T) => void) =>
   (error, data) => {
-    if (error) {
+    if (error !== null) {
       reject(error)
       return
     }
@@ -116,8 +118,8 @@ const HOME_DRIVER_ID = 'home-melcloud'
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
 
-  public constructor(homey: Homey) {
-    super(homey.__('settings.devices.none'))
+  public constructor(homey: Homey, options?: ErrorOptions) {
+    super(homey.__('settings.devices.none'), options)
   }
 }
 
@@ -191,7 +193,7 @@ const createLabel = (
   const isCheckbox = formControl.type === 'checkbox'
   const label = document.createElement('label')
   label.classList.add(isCheckbox ? 'homey-form-checkbox' : 'homey-form-label')
-  ;({ id: label.htmlFor } = formControl)
+  label.htmlFor = formControl.id
   if (isCheckbox) {
     addTextToCheckbox(label, formControl, text)
     return label
@@ -216,10 +218,12 @@ const appendFormControl = (
   }: { formControl: HTMLValueElement | null; title: string },
   shouldWrapWithDiv = true,
 ): void => {
-  if (formControl) {
-    const label = createLabel(formControl, title)
-    parent.append(shouldWrapWithDiv ? createDiv(label) : label)
+  if (formControl === null) {
+    return
   }
+
+  const label = createLabel(formControl, title)
+  parent.append(shouldWrapWithDiv ? createDiv(label) : label)
 }
 
 const createInput = ({
@@ -299,14 +303,14 @@ const parseNumericInput = (
     numberValue < Number(min) ||
     numberValue > Number(max)
   ) {
+    const label = document.querySelector<HTMLLabelElement>(
+      `label[for="${CSS.escape(id)}"]`,
+    )
     throw new Error(
       homey.__('settings.intError', {
         max,
         min,
-        name: homey.__(
-          document.querySelector<HTMLLabelElement>(`label[for="${id}"]`)
-            ?.textContent ?? '',
-        ),
+        name: homey.__(label?.textContent ?? ''),
       }),
     )
   }
@@ -418,7 +422,7 @@ class AuthManager {
     const username = this.#usernameInput?.value ?? ''
     const password = this.#passwordInput?.value ?? ''
     const failureMessage = this.#homey.__('settings.authenticate.failure')
-    if (!username || !password) {
+    if (username === '' || password === '') {
       fireAndForget(this.#homey.alert(failureMessage))
       return
     }
@@ -455,7 +459,7 @@ class AuthManager {
     const loginSetting = driverSettings.login?.find(
       (setting): setting is LoginDriverSetting => setting.id === credentialKey,
     )
-    if (loginSetting) {
+    if (loginSetting !== undefined) {
       const { id, placeholder, title, type } = loginSetting
       const formControl = createInput({ id, placeholder, type })
       appendFormControl(this.#loginSection, { formControl, title })
@@ -465,13 +469,11 @@ class AuthManager {
   }
 
   #syncInputsFromCredentials(): void {
-    const {
-      [this.#currentApi]: { password, username },
-    } = this.#credentialsByApi
-    if (this.#usernameInput) {
+    const { password, username } = this.#credentialsByApi[this.#currentApi]
+    if (this.#usernameInput !== null) {
       this.#usernameInput.value = username ?? ''
     }
-    if (this.#passwordInput) {
+    if (this.#passwordInput !== null) {
       this.#passwordInput.value = password ?? ''
     }
   }
@@ -480,11 +482,13 @@ class AuthManager {
     let firstAllowed = ''
     this.#apiSelect.replaceChildren()
     for (const option of this.#apiOptions) {
-      if (allowed.has(option.value)) {
-        this.#apiSelect.append(option)
-        if (firstAllowed === '') {
-          ;({ value: firstAllowed } = option)
-        }
+      if (!allowed.has(option.value)) {
+        continue
+      }
+
+      this.#apiSelect.append(option)
+      if (firstAllowed === '') {
+        ;({ value: firstAllowed } = option)
       }
     }
     return firstAllowed
@@ -498,21 +502,20 @@ class DeviceSettingsManager {
   }
 
   public get flatDeviceSettings(): Partial<DeviceSetting> {
+    const settingValues = Object.values(this.#deviceSettings).flatMap(
+      (settings) =>
+        Object.entries(settings ?? {}).map(([id, values]) => ({
+          id,
+          values,
+        })),
+    )
     return Object.fromEntries(
-      Object.entries(
-        Object.groupBy(
-          Object.values(this.#deviceSettings).flatMap((settings) =>
-            Object.entries(settings ?? {}).map(([id, values]) => ({
-              id,
-              values,
-            })),
-          ),
-          ({ id }) => id,
-        ),
-      ).map(([id, groupedValues]) => {
-        const set = new Set(groupedValues?.map(({ values }) => values))
-        return [id, set.size === 1 ? set.values().next().value : null]
-      }),
+      Object.entries(Object.groupBy(settingValues, ({ id }) => id)).map(
+        ([id, groupedValues]) => {
+          const set = new Set(groupedValues?.map(({ values }) => values))
+          return [id, set.size === 1 ? set.values().next().value : null]
+        },
+      ),
     )
   }
 
@@ -627,7 +630,8 @@ class DeviceSettingsManager {
       }
     }
     if (errors.length > 0) {
-      throw new Error(errors.join('\n') || 'Unknown error')
+      const message = errors.join('\n')
+      throw new Error(message === '' ? 'Unknown error' : message)
     }
     return settings
   }
@@ -635,19 +639,21 @@ class DeviceSettingsManager {
   #createCommonSettingControls(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
   ): void {
-    for (const { id, title, type, values } of driverSettings.options ?? []) {
-      if (
-        !this.#settingsCommon.querySelector(
-          `select[data-setting-id="${id}"]`,
-        ) &&
-        commonElementTypes.has(type)
-      ) {
-        const formControl = createSelect(this.#homey, id, values)
-        formControl.dataset.settingId = id
-        formControl.dataset.driverId = 'common'
-        appendFormControl(this.#settingsCommon, { formControl, title })
-        this.#updateCommonSetting(formControl)
+    const options = driverSettings.options ?? []
+    for (const { id, title, type, values } of options) {
+      if (!(
+        this.#settingsCommon.querySelector(
+          `select[data-setting-id="${CSS.escape(id)}"]`,
+        ) === null && commonElementTypes.has(type)
+      )) {
+        continue
       }
+
+      const formControl = createSelect(this.#homey, id, values)
+      formControl.dataset.settingId = id
+      formControl.dataset.driverId = 'common'
+      appendFormControl(this.#settingsCommon, { formControl, title })
+      this.#updateCommonSetting(formControl)
     }
     this.#addSettingsEventListeners(
       // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
@@ -667,15 +673,17 @@ class DeviceSettingsManager {
       title,
       type,
     } of driverSetting) {
-      if (type === 'checkbox') {
-        if (groupLabel !== previousGroupLabel) {
-          previousGroupLabel = groupLabel
-          createLegend(fieldSet, groupLabel)
-        }
-        const formControl = createCheckbox(id, driverId)
-        appendFormControl(fieldSet, { formControl, title }, false)
-        this.#updateDriverSetting(formControl)
+      if (type !== 'checkbox') {
+        continue
       }
+
+      if (groupLabel !== previousGroupLabel) {
+        previousGroupLabel = groupLabel
+        createLegend(fieldSet, groupLabel)
+      }
+      const formControl = createCheckbox(id, driverId)
+      appendFormControl(fieldSet, { formControl, title }, false)
+      this.#updateDriverSetting(formControl)
     }
   }
 
@@ -683,10 +691,10 @@ class DeviceSettingsManager {
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     driverId: string,
   ): void {
-    const { [driverId]: driverSetting } = driverSettings
-    if (driverSetting) {
+    const driverSetting = driverSettings[driverId]
+    if (driverSetting !== undefined) {
       const settingsContainer = document.querySelector(`#settings_${driverId}`)
-      if (settingsContainer) {
+      if (settingsContainer !== null) {
         const fieldSet = document.createElement('fieldset')
         fieldSet.classList.add('homey-form-checkbox-set')
         this.#createDriverSettingControls(driverSetting, fieldSet)
@@ -712,21 +720,21 @@ class DeviceSettingsManager {
 
   #disableButtons(id: string, isDisabled = true): void {
     const isCommon = id.endsWith('common')
+    // Plain suffix swap — a regex would be lowered by the es2020 esbuild
+    // target to a runtime RegExp construction on every call.
+    const driverIdPrefix = id.slice(0, -'common'.length)
     for (const action of ['apply', 'refresh']) {
       disableButton(`${action}_${id}`, isDisabled)
       if (isCommon) {
         for (const driverId of Object.keys(this.#deviceSettings)) {
-          disableButton(
-            `${action}_${id.replace(/common$/u, driverId)}`,
-            isDisabled,
-          )
+          disableButton(`${action}_${driverIdPrefix}${driverId}`, isDisabled)
         }
       }
     }
   }
 
   #parseFormValue(element: HTMLValueElement): Settings[keyof Settings] {
-    if (element.value) {
+    if (element.value !== '') {
       if (element.type === 'checkbox') {
         return element.indeterminate ? null : element.checked
       }
@@ -772,10 +780,11 @@ class DeviceSettingsManager {
     if (value === null) {
       return false
     }
-    const { [id]: setting } =
+    const settings =
       driverId === undefined ?
         this.flatDeviceSettings
       : (this.#deviceSettings[driverId] ?? {})
+    const setting = settings[id]
     return setting === null || value !== setting
   }
 
@@ -816,9 +825,7 @@ class DeviceSettingsManager {
       dataset: { settingId },
     } = element
     if (settingId !== undefined) {
-      const {
-        flatDeviceSettings: { [settingId]: value },
-      } = this
+      const value = this.flatDeviceSettings[settingId]
       element.value =
         (
           typeof value === 'boolean' ||
@@ -896,18 +903,20 @@ class ErrorLogManager {
 
   public addEventListeners(): void {
     this.#sinceInput.addEventListener('change', () => {
-      if (
-        this.#to &&
-        this.#sinceInput.value &&
-        Date.parse(this.#sinceInput.value) > Date.parse(this.#to)
-      ) {
-        this.#sinceInput.value = this.#to
-        fireAndForget(
-          this.#homey.alert(
-            this.#homey.__('settings.errorLog.error', { from: this.#from }),
-          ),
-        )
+      if (!(
+        this.#to !== '' &&
+        this.#sinceInput.value !== '' &&
+        Temporal.PlainDate.compare(this.#sinceInput.value, this.#to) > 0
+      )) {
+        return
       }
+
+      this.#sinceInput.value = this.#to
+      fireAndForget(
+        this.#homey.alert(
+          this.#homey.__('settings.errorLog.error', { from: this.#from }),
+        ),
+      )
     })
     this.#seeButton.addEventListener('click', () => {
       fireAndForget(this.fetchErrorLog())
@@ -1038,8 +1047,8 @@ class ZoneSettingsManager {
 
   /** @silent Falls back to default values on error. */
   public displayFrostProtectionData(): void {
-    const { [this.#zone.value]: data } = this.#zoneMapping
-    if (data) {
+    const data = this.#zoneMapping[this.#zone.value]
+    if (data !== undefined) {
       const {
         FPEnabled: isEnabled,
         FPMaxTemperature: max,
@@ -1052,8 +1061,8 @@ class ZoneSettingsManager {
   }
 
   public displayHolidayModeData(): void {
-    const { [this.#zone.value]: data } = this.#zoneMapping
-    if (data) {
+    const data = this.#zoneMapping[this.#zone.value]
+    if (data !== undefined) {
       const {
         HMEnabled: isEnabled = false,
         HMEndDate: endDate,
@@ -1171,13 +1180,16 @@ class ZoneSettingsManager {
     otherElement: HTMLInputElement,
   ): void {
     primaryElement.addEventListener('change', () => {
-      if (primaryElement.value && this.#holidayModeEnabled.value === 'false') {
+      if (
+        primaryElement.value !== '' &&
+        this.#holidayModeEnabled.value === 'false'
+      ) {
         this.#holidayModeEnabled.value = 'true'
         return
       }
       if (
-        !primaryElement.value &&
-        !otherElement.value &&
+        primaryElement.value === '' &&
+        otherElement.value === '' &&
         this.#holidayModeEnabled.value === 'true'
       ) {
         this.#holidayModeEnabled.value = 'false'
@@ -1217,10 +1229,12 @@ class ZoneSettingsManager {
 
   #addHolidayModeEventListeners(): void {
     this.#holidayModeEnabled.addEventListener('change', () => {
-      if (this.#holidayModeEnabled.value === 'false') {
-        this.#holidayModeStartDate.value = ''
-        this.#holidayModeEndDate.value = ''
+      if (this.#holidayModeEnabled.value !== 'false') {
+        return
       }
+
+      this.#holidayModeStartDate.value = ''
+      this.#holidayModeEndDate.value = ''
     })
     this.#addDateChangeListener(
       this.#holidayModeStartDate,
@@ -1235,7 +1249,9 @@ class ZoneSettingsManager {
     })
     getButton('apply_holiday_mode').addEventListener('click', () => {
       const isEnabled = this.#holidayModeEnabled.value === 'true'
-      const endDate = this.#holidayModeEndDate.value || undefined
+      const { value: startDateValue } = this.#holidayModeStartDate
+      const { value: endDateValue } = this.#holidayModeEndDate
+      const endDate = endDateValue === '' ? undefined : endDateValue
       if (isEnabled && endDate === undefined) {
         fireAndForget(
           this.#homey.alert(
@@ -1246,7 +1262,7 @@ class ZoneSettingsManager {
       }
       fireAndForget(
         this.setHolidayModeData({
-          from: this.#holidayModeStartDate.value || undefined,
+          from: startDateValue === '' ? undefined : startDateValue,
           to: endDate,
         }),
       )
@@ -1267,7 +1283,8 @@ class ZoneSettingsManager {
       }
     })
     if (errors.length > 0 || min === null || max === null) {
-      throw new Error(errors.join('\n') || 'Unknown error')
+      const message = errors.join('\n')
+      throw new Error(message === '' ? 'Unknown error' : message)
     }
     if (max < min) {
       ;[min, max] = [max, min]
@@ -1315,7 +1332,7 @@ class SettingsApp {
   static async #fetchHomeySettings(homey: Homey): Promise<HomeySettings> {
     return new Promise((resolve) => {
       homey.get(async (error: Error | null, settings: HomeySettings) => {
-        if (error) {
+        if (error !== null) {
           await homey.alert(error.message)
           resolve({})
           return
@@ -1376,10 +1393,12 @@ class SettingsApp {
   }
 
   #disableCommonButtonsIfNoDevices(): void {
-    if (Object.keys(this.#deviceSettingsManager.deviceSettings).length === 0) {
-      disableButton('apply_settings_common')
-      disableButton('refresh_settings_common')
+    if (Object.keys(this.#deviceSettingsManager.deviceSettings).length > 0) {
+      return
     }
+
+    disableButton('apply_settings_common')
+    disableButton('refresh_settings_common')
   }
 
   #disableForError(error: NoDeviceError): void {
@@ -1387,6 +1406,14 @@ class SettingsApp {
       this.#disableClassicButtons()
     }
     this.#disableCommonButtonsIfNoDevices()
+  }
+
+  async #ensureDevicesForApi(api: Api): Promise<void> {
+    if (api === 'classic') {
+      await this.#fetchClassicBuildings()
+    } else if (!this.#hasHomeDevices()) {
+      throw new NoDeviceError(this.#homey)
+    }
   }
 
   async #fetchClassicBuildings(): Promise<void> {
@@ -1418,7 +1445,10 @@ class SettingsApp {
   }
 
   #hasHomeDevices(): boolean {
-    return HOME_DRIVER_ID in this.#deviceSettingsManager.deviceSettings
+    return Object.hasOwn(
+      this.#deviceSettingsManager.deviceSettings,
+      HOME_DRIVER_ID,
+    )
   }
 
   async #initCredentialFields({
@@ -1447,11 +1477,7 @@ class SettingsApp {
   async #onLogin(api: Api): Promise<void> {
     this.#authState[api] = true
     try {
-      if (api === 'classic') {
-        await this.#fetchClassicBuildings()
-      } else if (!this.#hasHomeDevices()) {
-        throw new NoDeviceError(this.#homey)
-      }
+      await this.#ensureDevicesForApi(api)
     } catch (error) {
       if (error instanceof NoDeviceError) {
         this.#disableForError(error)

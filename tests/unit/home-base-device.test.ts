@@ -38,7 +38,14 @@ const {
   superSetWarningMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
 }))
 
-let isFacadePoweredOn = true
+const facadeState = { isPoweredOn: true }
+
+const requiredCapabilities = vi.hoisted(() => [
+  'measure_temperature',
+  'onoff',
+  'target_temperature',
+  'thermostat_mode',
+])
 
 const createMockFacade = (): Home.DeviceAtaFacade =>
   ({
@@ -51,7 +58,7 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
       return 'Heat'
     },
     get power(): boolean {
-      return isFacadePoweredOn
+      return facadeState.isPoweredOn
     },
     get roomTemperature(): number {
       return 21
@@ -73,12 +80,7 @@ vi.mock('homey', async () => {
             getCapabilityTagMapping: {},
             listCapabilityTagMapping: {},
             manifest: {
-              capabilities: [
-                'measure_temperature',
-                'onoff',
-                'target_temperature',
-                'thermostat_mode',
-              ],
+              capabilities: requiredCapabilities,
             },
             setCapabilityTagMapping: {
               fan_speed: 'setFanSpeed',
@@ -89,11 +91,7 @@ vi.mock('homey', async () => {
               vertical: 'vaneVerticalDirection',
             },
             getCapabilitiesOptions: (): Record<string, unknown> => ({}),
-            getRequiredCapabilities(this: {
-              manifest: { capabilities: string[] }
-            }): string[] {
-              return this.manifest.capabilities
-            },
+            getRequiredCapabilities: (): string[] => requiredCapabilities,
           },
           getData: vi
             .fn<() => { id: string }>()
@@ -127,7 +125,7 @@ describe(BaseMELCloudDevice, () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    isFacadePoweredOn = true
+    facadeState.isPoweredOn = true
     getHomeFacadeMock.mockReturnValue(createMockFacade())
     setValuesMock.mockResolvedValue(true)
     device = createTestHomeDevice()
@@ -189,7 +187,7 @@ describe(BaseMELCloudDevice, () => {
     })
 
     it('should set thermostat_mode to off when power is off', async () => {
-      isFacadePoweredOn = false
+      facadeState.isPoweredOn = false
       getHomeFacadeMock.mockReturnValue(createMockFacade())
       await device.syncFromDevice()
 

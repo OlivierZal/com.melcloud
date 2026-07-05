@@ -138,9 +138,8 @@ describe(ClassicMELCloudDeviceAtw, () => {
       ['target_temperature.flow_heat', 0, 10],
       ['target_temperature.flow_heat', 35, 35],
     ])('%s(%s) should return %s', (key, input, expected) => {
-      const {
-        deviceToCapability: { [key]: converter },
-      } = device
+      const { deviceToCapability } = device
+      const converter = deviceToCapability[key]
 
       expect(converter?.(input)).toBe(expected)
     })
@@ -164,9 +163,8 @@ describe(ClassicMELCloudDeviceAtw, () => {
       ['thermostat_mode', 'room', Classic.OperationModeZone.room],
       ['thermostat_mode.zone2', 'flow', Classic.OperationModeZone.flow],
     ])('%s(%s) should return %s', (key, input, expected) => {
-      const {
-        capabilityToDevice: { [key]: converter },
-      } = device
+      const { capabilityToDevice } = device
+      const converter = capabilityToDevice[key]
 
       expect(converter?.(input)).toBe(expected)
     })

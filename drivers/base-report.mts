@@ -37,7 +37,7 @@ export interface EnergyReportConfig {
   readonly interval: Temporal.DurationLike
   readonly minus: Temporal.DurationLike
   readonly mode: EnergyReportMode
-  readonly values: Temporal.PlainTimeLike
+  readonly values: Temporal.TimeLikeObject
 }
 
 export class EnergyReport<T extends Classic.DeviceType> {
@@ -74,7 +74,8 @@ export class EnergyReport<T extends Classic.DeviceType> {
   ) {
     this.#device = device
     this.#config = config
-    ;({ driver: this.driver, homey: this.#homey } = this.#device)
+    this.driver = device.driver
+    this.#homey = device.homey
   }
 
   public async start(): Promise<void> {
@@ -99,13 +100,11 @@ export class EnergyReport<T extends Classic.DeviceType> {
     data: Classic.EnergyData<T>,
     capability: string & keyof EnergyCapabilities<T>,
   ): number {
-    const {
-      driver: {
-        consumedTagMapping: { [capability]: consumedTags = [] },
-        producedTagMapping: { [capability]: producedTags = [] },
-      },
-    } = this
-    return sumTags(data, producedTags) / (sumTags(data, consumedTags) || 1)
+    const { consumedTagMapping, producedTagMapping } = this.driver
+    const consumedTags = consumedTagMapping[capability] ?? []
+    const producedTags = producedTagMapping[capability] ?? []
+    const consumed = sumTags(data, consumedTags)
+    return sumTags(data, producedTags) / (consumed === 0 ? 1 : consumed)
   }
 
   #calculateEnergyValue(
@@ -124,7 +123,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
   ): number {
     let total = 0
     for (const tag of tags) {
-      const { [tag]: tagData } = data
+      const tagData = data[tag]
       if (Array.isArray(tagData)) {
         total += (tagData[hour] ?? 0) * KILOWATT_TO_WATT
       }
@@ -140,27 +139,25 @@ export class EnergyReport<T extends Classic.DeviceType> {
 
   async #get(): Promise<void> {
     const device = await this.#device.ensureDevice()
-    if (!device) {
+    if (device === null) {
       return
     }
     // Fetch energy data from the previous period (offset by config.minus)
     const toDateTime = getNow(this.#homey).subtract(this.#config.minus)
     const to = toDateTime.toPlainDate().toString()
+    const from = this.#config.mode === 'total' ? undefined : to
     try {
-      const data = unwrapResult(
-        await device.getEnergy({
-          from: this.#config.mode === 'total' ? undefined : to,
-          to,
-        }),
+      await this.#set(
+        unwrapResult(await device.getEnergy({ from, to })),
+        toDateTime.hour,
       )
-      await this.#set(data, toDateTime.hour)
     } catch (error) {
       this.#device.error('Energy report fetch failed:', error)
     }
   }
 
   #schedule(): void {
-    if (this.#reportTimeout) {
+    if (this.#reportTimeout !== null) {
       return
     }
     const actionType = `${this.#config.mode} energy report`
@@ -180,8 +177,8 @@ export class EnergyReport<T extends Classic.DeviceType> {
 
   async #set(data: Classic.EnergyData<T>, hour: number): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
-      ;({ length: this.#linkedDeviceCount } =
-        data.UsageDisclaimerPercentages.split(','))
+      this.#linkedDeviceCount =
+        data.UsageDisclaimerPercentages.split(',').length
     }
     await Promise.all(
       this.#energyCapabilityTagEntries.map(

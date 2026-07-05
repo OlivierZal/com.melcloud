@@ -91,10 +91,10 @@ export const createMockDeviceClass = (
       vi.fn<(capability: string, value: unknown) => Promise<void>>()
 
     public constructor() {
-      if (overrides) {
+      if (overrides !== undefined) {
         Object.assign(this, overrides)
       }
-      if (superMocks) {
+      if (superMocks !== undefined) {
         // Strip shadowing instance props so the prototype super-delegates win
         const instance = this as Record<string, unknown>
         for (const methodName of Object.keys(superMocks)) {
@@ -105,7 +105,7 @@ export const createMockDeviceClass = (
     }
   }
 
-  if (superMocks) {
+  if (superMocks !== undefined) {
     for (const [methodName, mockFunction] of Object.entries(superMocks)) {
       Object.defineProperty(MockDevice.prototype, methodName, {
         configurable: true,

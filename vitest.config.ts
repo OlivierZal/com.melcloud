@@ -14,7 +14,7 @@ const swcPlugin = swc.vite({
   },
 })
 
-export default defineConfig({
+const config = defineConfig({
   test: {
     coverage: {
       exclude: ['**/public/**/*.mts', 'settings/**/*.mts'],
@@ -49,3 +49,5 @@ export default defineConfig({
     ],
   },
 })
+
+export default config

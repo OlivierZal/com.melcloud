@@ -15,7 +15,11 @@ import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { Api } from './types/api.mts'
 import type { GroupAtaStates } from './types/classic-ata.mts'
-import type { DeviceSettings, Settings } from './types/device-settings.mts'
+import type {
+  DeviceSetting,
+  DeviceSettings,
+  Settings,
+} from './types/device-settings.mts'
 import type {
   DriverCapabilitiesOptions,
   DriverSetting,
@@ -74,8 +78,25 @@ const formatErrors = (errors: Record<string, readonly string[]>): string =>
 const throwOnErrors = (
   errors: Record<string, readonly string[]> | null,
 ): void => {
-  if (errors) {
+  if (errors !== null) {
     throw new Error(formatErrors(errors))
+  }
+}
+
+// Aggregates one device's settings into the per-driver map; a conflicting
+// value across devices marks the setting as indeterminate (`null`) and stops
+// processing the remaining settings of that device.
+const mergeDeviceSettings = (
+  driverSettings: DeviceSetting,
+  settings: Record<string, unknown>,
+): void => {
+  for (const [settingId, value] of Object.entries(settings)) {
+    if (!Object.hasOwn(driverSettings, settingId)) {
+      driverSettings[settingId] = value
+    } else if (driverSettings[settingId] !== value) {
+      driverSettings[settingId] = null
+      return
+    }
   }
 }
 
@@ -110,11 +131,11 @@ const getDriverLoginSetting = (
   language: string,
 ): DriverSetting[] => {
   const driverLoginSetting: Record<string, DriverSetting> = {}
-  for (const [option, label] of Object.entries(
+  const loginOptions =
     pair?.find(
       (pairSetting): pairSetting is LoginSetting => pairSetting.id === 'login',
-    )?.options ?? [],
-  )) {
+    )?.options ?? []
+  for (const [option, label] of Object.entries(loginOptions)) {
     const isPassword = option.startsWith('password')
     const key = isPassword ? 'password' : 'username'
     driverLoginSetting[key] ??= {
@@ -144,11 +165,25 @@ const getLocalizedCapabilitiesOptions = (
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
     /* v8 ignore next -- enumType mapping: resolves string enum to numeric value */
-    id: enumType && id in enumType ? String(enumType[id]) : id,
+    id:
+      enumType !== undefined && Object.hasOwn(enumType, id) ?
+        String(enumType[id])
+      : id,
     /* v8 ignore next -- language fallback to English */
     label: title[language] ?? title.en,
   })),
 })
+
+// MELCloud reports error timestamps either as UTC instants (Z or offset
+// suffix) or as wall-clock times in the building's timezone.
+const parseErrorDate = (date: string, timeZone: string): number => {
+  try {
+    return Temporal.Instant.from(date).epochMilliseconds
+  } catch {
+    return Temporal.PlainDateTime.from(date).toZonedDateTime(timeZone)
+      .epochMilliseconds
+  }
+}
 
 export default class MELCloudApp extends App {
   declare public readonly homey: Homey.Homey
@@ -277,10 +312,13 @@ export default class MELCloudApp extends App {
       ...rest,
       errors: errors.map(({ date, deviceId, ...errorRest }) => ({
         ...errorRest,
-        date: dateTimeMedFormat.format(new Date(date)),
+        date: dateTimeMedFormat.format(parseErrorDate(date, timeZone)),
         device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
       })),
-      fromDateHuman: dateFullFormat.format(new Date(fromDate)),
+      fromDateHuman: dateFullFormat.format(
+        Temporal.PlainDate.from(fromDate).toZonedDateTime(timeZone)
+          .epochMilliseconds,
+      ),
     }
   }
 
@@ -301,7 +339,7 @@ export default class MELCloudApp extends App {
     id: number | string,
   ): Classic.Facade {
     const instance = this.#classicRegistry[zoneType].getById(Number(id))
-    if (!instance) {
+    if (instance === undefined) {
       throw new NotFoundError(
         this.homey.__(
           `errors.${zoneType === 'devices' ? 'device' : 'zone'}NotFound`,
@@ -350,9 +388,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
+    const dateRange = createDateRange(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getOperationModes(
-        createDateRange(days, getTimeZone(this.homey)),
+        dateRange,
       ),
     )
   }
@@ -376,9 +415,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
+    const dateRange = createDateRange(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getTemperatures(
-        createDateRange(days, getTimeZone(this.homey)),
+        dateRange,
       ),
     )
   }
@@ -390,14 +430,7 @@ export default class MELCloudApp extends App {
         driver: { id: driverId },
       } = device
       deviceSettings[driverId] ??= {}
-      for (const [settingId, value] of Object.entries(device.getSettings())) {
-        if (!(settingId in deviceSettings[driverId])) {
-          deviceSettings[driverId][settingId] = value
-        } else if (deviceSettings[driverId][settingId] !== value) {
-          deviceSettings[driverId][settingId] = null
-          break
-        }
-      }
+      mergeDeviceSettings(deviceSettings[driverId], device.getSettings())
     }
     return deviceSettings
   }
@@ -542,11 +575,12 @@ export default class MELCloudApp extends App {
     if (settings.get('notifiedVersion') === version) {
       return
     }
-    const { [version]: versionChangelog = {} } = changelog as Record<
+    const changelogByVersion = changelog as Record<
       string,
       Record<string, string>
     >
-    const { [language]: excerpt } = versionChangelog
+    const versionChangelog = changelogByVersion[version] ?? {}
+    const excerpt = versionChangelog[language]
     if (excerpt === undefined) {
       return
     }
@@ -626,9 +660,9 @@ export default class MELCloudApp extends App {
     const stringIds = ids?.map(String)
     return drivers.flatMap((driver) => {
       const devices = driver.getDevices()
-      return stringIds ?
+      return stringIds === undefined ? devices : (
           devices.filter(({ id }) => stringIds.includes(String(id)))
-        : devices
+        )
     })
   }
 

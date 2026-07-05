@@ -4,7 +4,7 @@ const state: { facadeManager?: Classic.FacadeManager } = {}
 
 const getClassicFacadeManager = (): Classic.FacadeManager => {
   const { facadeManager } = state
-  if (!facadeManager) {
+  if (facadeManager === undefined) {
     throw new Error('Classic.FacadeManager has not been initialized')
   }
   return facadeManager

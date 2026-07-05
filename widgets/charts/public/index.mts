@@ -4,6 +4,7 @@ import type {
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { ClassicDeviceType } from '@olivierzal/melcloud-api/constants'
+import { Temporal } from 'temporal-polyfill'
 import ApexCharts from 'apexcharts'
 
 import type {
@@ -137,7 +138,7 @@ const getChartLineOptions = (
     yaxis: {
       ...axisStyle,
       labels: { style, formatter: (value) => value.toFixed(0) },
-      ...(unit === 'dBm' ? { max: 0, min: -100 } : undefined),
+      ...(unit === 'dBm' && { max: 0, min: -100 }),
     },
   }
 }
@@ -215,10 +216,15 @@ const getTimeout = (chart: HomeySettings['chart']): number => {
   if (hourlyCharts.has(chart)) {
     return NEXT_TIMEOUT
   }
-  const now = new Date()
-  const next = new Date(now)
-  next.setHours(next.getHours() + 1, AGGREGATION_DELAY_MINUTES, 0, 0)
-  return next.getTime() - now.getTime()
+  const now = Temporal.Now.zonedDateTimeISO()
+  const next = now.add({ hours: 1 }).with({
+    microsecond: 0,
+    millisecond: 0,
+    minute: AGGREGATION_DELAY_MINUTES,
+    nanosecond: 0,
+    second: 0,
+  })
+  return next.epochMilliseconds - now.epochMilliseconds
 }
 
 interface DrawConfig {
@@ -255,7 +261,7 @@ class ChartWidget {
 
   #addEventListeners(config: DrawConfig): void {
     this.#zone.addEventListener('change', () => {
-      if (this.#timeout) {
+      if (this.#timeout !== null) {
         clearTimeout(this.#timeout)
       }
       fireAndForget(this.#draw(config))
@@ -263,12 +269,17 @@ class ChartWidget {
   }
 
   #applyDefaultZone(defaultZone: Classic.DeviceZone | null): void {
-    if (defaultZone) {
-      const { id, model } = defaultZone
-      const value = getZoneId(id, model)
-      if (document.querySelector(`#zones option[value="${value}"]`)) {
-        this.#zone.value = value
-      }
+    if (defaultZone === null) {
+      return
+    }
+
+    const { id, model } = defaultZone
+    const value = getZoneId(id, model)
+    if (
+      document.querySelector(`#zones option[value="${CSS.escape(value)}"]`) !==
+      null
+    ) {
+      this.#zone.value = value
     }
   }
 
@@ -306,12 +317,7 @@ class ChartWidget {
         days,
         height,
       })
-      if (this.#chart) {
-        await this.#chart.updateOptions(this.#options)
-      } else {
-        this.#chart = new ApexCharts(getDiv('chart'), this.#options)
-        await this.#chart.render()
-      }
+      await this.#renderOrUpdateChart()
       await this.#homey.setHeight(document.body.scrollHeight)
     } catch (error) {
       // eslint-disable-next-line no-console -- surfaces the failure in widget dev tools; the rearmed timer retries
@@ -359,6 +365,15 @@ class ChartWidget {
     for (const { id, model, name } of zones) {
       createOption(this.#zone, { id: getZoneId(id, model), label: name })
     }
+  }
+
+  async #renderOrUpdateChart(): Promise<void> {
+    if (this.#chart === null) {
+      this.#chart = new ApexCharts(getDiv('chart'), this.#options)
+      await this.#chart.render()
+      return
+    }
+    await this.#chart.updateOptions(this.#options)
   }
 }
 

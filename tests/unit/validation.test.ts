@@ -21,31 +21,31 @@ describe(toNonNegativeInt, () => {
   it('enforces the optional max', () => {
     expect(toNonNegativeInt(10, { max: 10 })).toBe(10)
     expect(() => toNonNegativeInt(11, { field: 'days', max: 10 })).toThrow(
-      /days: expected value ≤ 10/u,
+      /days: expected value ≤ 10/v,
     )
   })
 
   it.each([
-    ['abc', /non-negative integer/u],
-    [-1, /non-negative integer/u],
-    [1.5, /non-negative integer/u],
-    [Number.NaN, /non-negative integer/u],
-    [Number.POSITIVE_INFINITY, /non-negative integer/u],
+    ['abc', /non-negative integer/v],
+    [-1, /non-negative integer/v],
+    [1.5, /non-negative integer/v],
+    [NaN, /non-negative integer/v],
+    [Infinity, /non-negative integer/v],
   ])('rejects %p', (input, pattern) => {
     expect(() => toNonNegativeInt(input)).toThrow(pattern)
   })
 
   it('rejects non-numeric types', () => {
     expect(() => toNonNegativeInt(null)).toThrow(
-      /expected number or numeric string/u,
+      /expected number or numeric string/v,
     )
     expect(() => toNonNegativeInt({ field: 'x' })).toThrow(
-      /expected number or numeric string/u,
+      /expected number or numeric string/v,
     )
   })
 
   it('includes the field name in error messages when provided', () => {
-    expect(() => toNonNegativeInt('bad', { field: 'days' })).toThrow(/^days: /u)
+    expect(() => toNonNegativeInt('bad', { field: 'days' })).toThrow(/^days: /v)
   })
 })
 
@@ -59,7 +59,7 @@ describe(toHour, () => {
   })
 
   it.each([24, -1, 1.5, 'abc'])('rejects %p', (input) => {
-    expect(() => toHour(input, 'hour')).toThrow(/^hour: /u)
+    expect(() => toHour(input, 'hour')).toThrow(/^hour: /v)
   })
 })
 
@@ -82,7 +82,7 @@ describe(toZoneData, () => {
           zoneId: '1',
           zoneType: zoneType as ZoneData['zoneType'],
         }),
-      ).toThrow(/Invalid zone type/u)
+      ).toThrow(/Invalid zone type/v)
     },
   )
 })
@@ -104,6 +104,6 @@ describe(toDeviceOrZoneData, () => {
         zoneId: '1',
         zoneType: zoneType as DeviceOrZoneData['zoneType'],
       }),
-    ).toThrow(/Invalid zone type/u)
+    ).toThrow(/Invalid zone type/v)
   })
 })

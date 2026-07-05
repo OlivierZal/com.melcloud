@@ -45,8 +45,7 @@ const typeSortOptions = {
 
 const typeLikeSortOptions = {
   groups: [
-    'required-index-signature',
-    'optional-index-signature',
+    'index-signature',
     'required-property',
     'optional-property',
     'required-method',
@@ -86,7 +85,8 @@ const config = defineConfig([
       sourceType: 'module',
     },
     linterOptions: {
-      reportUnusedDisableDirectives: true,
+      reportUnusedDisableDirectives: 'error',
+      reportUnusedInlineConfigs: 'error',
     },
     plugins: {
       '@stylistic': stylistic,
@@ -159,7 +159,19 @@ const config = defineConfig([
         // Semantic prefixes make intent obvious at the call site.
         {
           format: ['PascalCase'],
-          prefix: ['is', 'has', 'can', 'should'],
+          prefix: [
+            'are',
+            'can',
+            'did',
+            'has',
+            'have',
+            'is',
+            'requires',
+            'should',
+            'was',
+            'were',
+            'will',
+          ],
           selector: ['variable', 'parameter', 'classProperty'],
           types: ['boolean'],
         },
@@ -265,6 +277,14 @@ const config = defineConfig([
         },
       ],
       '@typescript-eslint/no-redeclare': 'off',
+      '@typescript-eslint/no-shadow': [
+        'error',
+        {
+          allow: ['Intl', 'Temporal'],
+          builtinGlobals: true,
+          hoist: 'all',
+        },
+      ],
       '@typescript-eslint/no-unnecessary-condition': [
         'error',
         {
@@ -285,19 +305,40 @@ const config = defineConfig([
           },
         },
       ],
+      '@typescript-eslint/only-throw-error': [
+        'error',
+        {
+          allowThrowingAny: false,
+          allowThrowingUnknown: false,
+        },
+      ],
       '@typescript-eslint/prefer-destructuring': [
         'error',
         {
-          array: true,
-          object: true,
+          AssignmentExpression: {
+            array: false,
+            object: false,
+          },
+          VariableDeclarator: {
+            array: true,
+            object: true,
+          },
         },
         {
           enforceForDeclarationWithTypeAnnotation: true,
-          enforceForRenamedProperties: true,
+          enforceForRenamedProperties: false,
         },
       ],
       '@typescript-eslint/prefer-readonly-parameter-types': 'off',
       '@typescript-eslint/return-await': ['error', 'in-try-catch'],
+      '@typescript-eslint/strict-boolean-expressions': [
+        'error',
+        {
+          allowNullableObject: false,
+          allowNumber: false,
+          allowString: false,
+        },
+      ],
       '@typescript-eslint/switch-exhaustiveness-check': [
         'error',
         {
@@ -307,6 +348,12 @@ const config = defineConfig([
         },
       ],
       '@typescript-eslint/typedef': 'off',
+      'array-callback-return': [
+        'error',
+        {
+          checkForEach: true,
+        },
+      ],
       camelcase: 'off',
       'capitalized-comments': 'off',
       curly: 'error',
@@ -314,14 +361,39 @@ const config = defineConfig([
       'import-x/first': 'error',
       'import-x/newline-after-import': 'error',
       'import-x/no-absolute-path': 'error',
-      'import-x/no-anonymous-default-export': 'error',
+      'import-x/no-anonymous-default-export': [
+        'error',
+        {
+          allowCallExpression: false,
+        },
+      ],
       'import-x/no-cycle': 'error',
       'import-x/no-default-export': 'error',
       'import-x/no-deprecated': 'error',
-      'import-x/no-duplicates': 'error',
-      'import-x/no-dynamic-require': 'error',
+      'import-x/no-duplicates': [
+        'error',
+        {
+          'prefer-inline': true,
+        },
+      ],
+      'import-x/no-dynamic-require': [
+        'error',
+        {
+          esmodule: true,
+        },
+      ],
       'import-x/no-empty-named-blocks': 'error',
-      'import-x/no-extraneous-dependencies': 'error',
+      'import-x/no-extraneous-dependencies': [
+        'error',
+        {
+          bundledDependencies: false,
+          // Widget and settings sources are bundled by esbuild, so their
+          // imports may live in devDependencies.
+          devDependencies: ['*.config.ts', 'tests/**', 'widgets/**'],
+          optionalDependencies: false,
+          peerDependencies: false,
+        },
+      ],
       'import-x/no-import-module-exports': 'error',
       'import-x/no-mutable-exports': 'error',
       'import-x/no-named-as-default': 'error',
@@ -333,6 +405,12 @@ const config = defineConfig([
         'error',
         {
           allow: ['source-map-support/register.js'],
+        },
+      ],
+      'import-x/no-unresolved': [
+        'error',
+        {
+          caseSensitiveStrict: true,
         },
       ],
       'import-x/no-unused-modules': [
@@ -353,6 +431,30 @@ const config = defineConfig([
         'error',
         {
           allowElseIf: false,
+        },
+      ],
+      'no-extra-boolean-cast': [
+        'error',
+        {
+          enforceForInnerExpressions: true,
+        },
+      ],
+      'no-fallthrough': [
+        'error',
+        {
+          reportUnusedFallthroughComment: true,
+        },
+      ],
+      'no-irregular-whitespace': [
+        'error',
+        {
+          skipStrings: false,
+        },
+      ],
+      'no-sequences': [
+        'error',
+        {
+          allowInParentheses: false,
         },
       ],
       'no-ternary': 'off',
@@ -482,10 +584,10 @@ const config = defineConfig([
         'error',
         {
           groups: [
-            'type-export',
-            'named-export',
-            'wildcard-export',
-            'value-export',
+            'named-type-export',
+            'wildcard-type-export',
+            'named-value-export',
+            'wildcard-value-export',
           ],
           newlinesBetween: 1,
         },
@@ -496,11 +598,11 @@ const config = defineConfig([
         'error',
         {
           groups: [
-            ...buildImportGroup('side-effect'),
+            'side-effect',
             {
               newlinesBetween: 1,
             },
-            ...buildImportGroup('side-effect-style'),
+            'side-effect-style',
             ...buildImportGroup('style'),
             {
               newlinesBetween: 1,
@@ -546,8 +648,7 @@ const config = defineConfig([
             ['export-interface', 'export-type'],
             'export-function',
             'export-class',
-            'export-default-enum',
-            ['export-default-interface', 'export-default-type'],
+            'export-default-interface',
             'export-default-function',
             'export-default-class',
           ],
@@ -577,58 +678,63 @@ const config = defineConfig([
       'perfectionist/sort-sets': ['error', arrayLikeSortOptions],
       'perfectionist/sort-switch-case': 'error',
       'perfectionist/sort-union-types': ['error', typeSortOptions],
+      'require-unicode-regexp': [
+        'error',
+        {
+          requireFlag: 'v',
+        },
+      ],
       'sort-imports': 'off',
       'sort-keys': 'off',
-      // Rules introduced by eslint-plugin-unicorn 65-69, kept off until the
-      // codebase is migrated incrementally (343 pre-existing violations).
+      // Autofix breaks `@param` names (`url` → `URL`).
       'unicorn/comment-content': 'off',
+      // Owned by `perfectionist/sort-classes`.
       'unicorn/consistent-class-member-order': 'off',
-      'unicorn/consistent-conditional-object-spread': 'off',
-      'unicorn/custom-error-definition': 'off',
-      // filename-case now also checks directory names, but melcloud_atw and
+      // filename-case also checks directory names, but melcloud_atw and
       // melcloud_erv are Homey driver ids that must match their folder names.
       'unicorn/filename-case': 'off',
-      'unicorn/max-nested-calls': 'off',
       'unicorn/name-replacements': 'off',
+      // Standard JSDoc/TSDoc formatting.
       'unicorn/no-asterisk-prefix-in-documentation-comments': 'off',
-      'unicorn/no-break-in-nested-loop': 'off',
-      'unicorn/no-computed-property-existence-check': 'off',
-      'unicorn/no-constant-zero-expression': 'off',
       'unicorn/no-keyword-prefix': 'off',
-      'unicorn/no-non-function-verb-prefix': 'off',
+      'unicorn/no-non-function-verb-prefix': [
+        'error',
+        {
+          ignore: [
+            // Homey driver mappings named after MELCloud Get/Set tag groups.
+            '^(?:get|set)CapabilityTagMapping$',
+            // MELCloud device-data field names.
+            '^set(?:FanSpeed|Temperature)$',
+          ],
+        },
+      ],
+      // Homey SDK and MELCloud contracts use null.
       'unicorn/no-null': 'off',
-      'unicorn/no-this-outside-of-class': 'off',
-      'unicorn/no-top-level-assignment-in-function': 'off',
-      'unicorn/no-unreadable-for-of-expression': 'off',
       'unicorn/no-unreadable-new-expression': 'off',
-      'unicorn/no-unreadable-object-destructuring': 'off',
-      'unicorn/no-unsafe-dom-html': 'off',
-      'unicorn/no-unsafe-property-key': 'off',
-      'unicorn/no-unsafe-string-replacement': 'off',
       'unicorn/no-useless-switch-case': 'off',
-      'unicorn/prefer-await': 'off',
-      'unicorn/prefer-continue': 'off',
-      'unicorn/prefer-early-return': 'off',
+      // Requires Node.js 24.
       'unicorn/prefer-error-is-error': 'off',
-      'unicorn/prefer-global-number-constants': 'off',
-      'unicorn/prefer-iterator-to-array': 'off',
-      'unicorn/prefer-number-coercion': 'off',
-      'unicorn/prefer-number-is-safe-integer': 'off',
-      'unicorn/prefer-object-define-properties': 'off',
-      'unicorn/prefer-short-arrow-method': 'off',
-      'unicorn/prefer-temporal': 'off',
-      'unicorn/prevent-abbreviations': 'off',
-      'unicorn/require-css-escape': 'off',
-      'unicorn/try-complexity': 'off',
+      'use-isnan': [
+        'error',
+        {
+          enforceForIndexOf: true,
+        },
+      ],
+      'valid-typeof': [
+        'error',
+        {
+          requireStringLiterals: true,
+        },
+      ],
     },
     settings: {
       perfectionist: {
         alphabet: Alphabet.generateRecommendedAlphabet()
-          .sortByNaturalSort()
+          .sortByNaturalSort('en-US')
           .placeCharacterBefore({ characterAfter: '-', characterBefore: '/' })
           .getCharacters(),
         ignoreCase: false,
-        locales: 'en_US',
+        locales: 'en-US',
         newlinesBetween: 0,
         newlinesInside: 0,
         order: 'asc',
@@ -639,7 +745,20 @@ const config = defineConfig([
     },
   },
   {
-    ...jsdoc({ config: 'flat/recommended-typescript-error' }),
+    ...jsdoc({
+      config: 'flat/recommended-typescript-error',
+      rules: {
+        'jsdoc/check-template-names': 'error',
+        'jsdoc/informative-docs': 'error',
+        'jsdoc/no-bad-blocks': 'error',
+        'jsdoc/no-blank-block-descriptions': 'error',
+        'jsdoc/no-blank-blocks': 'error',
+        'jsdoc/require-description': 'error',
+        'jsdoc/require-hyphen-before-param-description': ['error', 'always'],
+        'jsdoc/require-throws': 'error',
+        'jsdoc/sort-tags': 'error',
+      },
+    }),
     files: ['**/api.mts'],
   },
   {
@@ -749,6 +868,37 @@ const config = defineConfig([
       'markdown/no-bare-urls': 'error',
       'markdown/no-duplicate-headings': 'error',
       'markdown/no-html': 'error',
+      'markdown/no-missing-atx-heading-space': [
+        'error',
+        {
+          checkClosedHeadings: true,
+        },
+      ],
+      'markdown/no-missing-label-refs': [
+        'error',
+        {
+          allowLabels: ['!CAUTION', '!IMPORTANT', '!NOTE', '!TIP', '!WARNING'],
+        },
+      ],
+      'markdown/no-missing-link-fragments': [
+        'error',
+        {
+          allowPattern: '',
+          ignoreCase: false,
+        },
+      ],
+      'markdown/no-space-in-emphasis': [
+        'error',
+        {
+          checkStrikethrough: true,
+        },
+      ],
+      'markdown/table-column-count': [
+        'error',
+        {
+          checkMissingCells: true,
+        },
+      ],
     },
   },
   {
@@ -760,13 +910,31 @@ const config = defineConfig([
       '@typescript-eslint/unbound-method': 'off',
       'max-lines-per-function': 'off',
       'max-statements': 'off',
+      'unicorn/max-nested-calls': [
+        'error',
+        {
+          max: 4,
+        },
+      ],
       'vitest/max-expects': 'off',
       'vitest/no-disabled-tests': 'error',
       'vitest/no-hooks': 'off',
-      'vitest/prefer-expect-assertions': 'off',
+      'vitest/prefer-expect-assertions': [
+        'error',
+        {
+          onlyFunctionsWithExpectInCallback: true,
+          onlyFunctionsWithExpectInLoop: true,
+        },
+      ],
       'vitest/prefer-hooks-in-order': 'error',
       'vitest/require-hook': 'off',
-      'vitest/require-mock-type-parameters': 'error',
+      'vitest/require-mock-type-parameters': [
+        'error',
+        {
+          checkImportFunctions: true,
+        },
+      ],
+      'vitest/warn-todo': 'error',
     },
     settings: {
       vitest: {
@@ -832,6 +1000,11 @@ const config = defineConfig([
     extends: [packageJsonConfigs.recommended, packageJsonConfigs.stylistic],
     files: ['**/package.json'],
     rules: {
+      'package-json/require-author': 'error',
+      'package-json/require-bugs': 'error',
+      'package-json/require-engines': 'error',
+      // A Homey app is not a published library: no exports, files,
+      // keywords or types fields.
       'package-json/require-exports': 'off',
       'package-json/require-files': 'off',
     },

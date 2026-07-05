@@ -1,5 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { err, ok } from '@olivierzal/melcloud-api'
+import { Temporal } from 'temporal-polyfill'
 import {
   afterAll,
   beforeAll,
@@ -22,7 +23,9 @@ import { getMockCallArg, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
 
-const FAKE_NOW = new Date('2026-03-18T12:00:00.000+01:00')
+const FAKE_NOW = Temporal.Instant.from(
+  '2026-03-18T12:00:00.000+01:00',
+).epochMilliseconds
 
 const setCapabilityValueMock =
   vi.fn<(capability: string, value: unknown) => Promise<void>>()
@@ -107,7 +110,9 @@ const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   return getEnergyMock
 }
 
-const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
+const createCopMocks = (
+  hasTagMappings = true,
+): ClassicMELCloudDevice<TestDeviceType> => {
   const copConsumed = {
     'measure_power.cop': ['ConsumedTag'],
   } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
@@ -118,9 +123,9 @@ const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
     'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
   } as unknown as EnergyCapabilityTagMapping<TestDeviceType>
   const copDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
-    consumedTagMapping: copConsumed,
+    consumedTagMapping: hasTagMappings ? copConsumed : {},
     energyCapabilityTagMapping: copEnergyMapping,
-    producedTagMapping: copProduced,
+    producedTagMapping: hasTagMappings ? copProduced : {},
   })
   return mock<ClassicMELCloudDevice<TestDeviceType>>({
     cleanMapping: vi
@@ -147,6 +152,15 @@ const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
 describe(EnergyReport, () => {
   beforeAll(() => {
     vi.useFakeTimers({ now: FAKE_NOW, toFake: ['Date'] })
+    // Faking Date is not enough since temporal-polyfill v1: on runtimes
+    // shipping native Temporal it delegates to it, and the native clock
+    // does not consult the mocked Date. Pin Temporal.Now directly
+    vi.spyOn(Temporal.Now, 'zonedDateTimeISO').mockImplementation(
+      (timeZone = 'UTC') =>
+        Temporal.Instant.fromEpochMilliseconds(FAKE_NOW).toZonedDateTimeISO(
+          timeZone,
+        ),
+    )
   })
 
   beforeEach(() => {
@@ -158,6 +172,7 @@ describe(EnergyReport, () => {
 
   afterAll(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   describe('scheduling and data fetching', () => {
@@ -449,6 +464,18 @@ describe(EnergyReport, () => {
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'measure_power.cop',
         5,
+      )
+    })
+
+    it('should default to empty tag lists when mappings lack the capability', async () => {
+      const mockDeviceWithCop = createCopMocks(false)
+      mockEnergyFetch({ ConsumedTag: 2, ProducedTag: 6 })
+      const report = new EnergyReport(mockDeviceWithCop, regularConfig)
+      await report.start()
+
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'measure_power.cop',
+        0,
       )
     })
   })

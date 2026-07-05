@@ -34,7 +34,7 @@ const createLabel = (
   text: string,
 ): HTMLLabelElement => {
   const label = document.createElement('label')
-  ;({ id: label.htmlFor } = formControl)
+  label.htmlFor = formControl.id
   label.textContent = text
   label.append(formControl)
   return label
@@ -47,7 +47,7 @@ const appendFormControl = (
     title,
   }: { formControl: HTMLValueElement | null; title: string },
 ): void => {
-  if (formControl) {
+  if (formControl !== null) {
     parent.append(createLabel(formControl, title))
   }
 }
@@ -129,7 +129,7 @@ const clampNumericInput = ({
 const parseFormValue = (
   element: HTMLValueElement,
 ): Settings[keyof Settings] => {
-  if (element.value) {
+  if (element.value !== '') {
     if (element.type === 'checkbox') {
       return element.indeterminate ? null : element.checked
     }
@@ -177,12 +177,17 @@ export class AtaValueManager {
   }
 
   public applyDefaultZone(defaultZone: Classic.Zone | null): void {
-    if (defaultZone) {
-      const { id, model } = defaultZone
-      const value = getZoneId(id, model)
-      if (document.querySelector(`#zones option[value="${value}"]`)) {
-        this.#zone.value = value
-      }
+    if (defaultZone === null) {
+      return
+    }
+
+    const { id, model } = defaultZone
+    const value = getZoneId(id, model)
+    if (
+      document.querySelector(`#zones option[value="${CSS.escape(value)}"]`) !==
+      null
+    ) {
+      this.#zone.value = value
     }
   }
 
@@ -289,7 +294,7 @@ export class AtaValueManager {
   }
 
   #isGroupAtaState(value: string): value is keyof Classic.GroupState {
-    return value in this.#defaultAtaValues
+    return Object.hasOwn(this.#defaultAtaValues, value)
   }
 
   #syncAtaValues(): void {
@@ -301,7 +306,7 @@ export class AtaValueManager {
   #updateAtaValue(id: keyof Classic.GroupState): void {
     const ataValue = document.querySelector(`#${id}`)
     if (
-      ataValue &&
+      ataValue !== null &&
       (ataValue instanceof HTMLInputElement ||
         ataValue instanceof HTMLSelectElement)
     ) {

@@ -39,7 +39,7 @@ export const toNonNegativeInt = (
     )
   }
   const parsed = Number(value)
-  if (!Number.isInteger(parsed) || parsed < 0) {
+  if (!Number.isSafeInteger(parsed) || parsed < 0) {
     throw new RangeError(
       `${fieldPrefix(field)}expected non-negative integer, got ${String(value)}`,
     )
