@@ -723,7 +723,7 @@ class DeviceSettingsManager {
       if (isCommon) {
         for (const driverId of Object.keys(this.#deviceSettings)) {
           disableButton(
-            `${action}_${id.replace(/common$/v, driverId)}`,
+            `${action}_${id.replace(/common$/v, () => driverId)}`,
             isDisabled,
           )
         }
@@ -1429,7 +1429,10 @@ class SettingsApp {
   }
 
   #hasHomeDevices(): boolean {
-    return HOME_DRIVER_ID in this.#deviceSettingsManager.deviceSettings
+    return Object.hasOwn(
+      this.#deviceSettingsManager.deviceSettings,
+      HOME_DRIVER_ID,
+    )
   }
 
   async #initCredentialFields({

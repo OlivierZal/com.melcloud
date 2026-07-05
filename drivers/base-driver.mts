@@ -122,7 +122,7 @@ export abstract class BaseMELCloudDriver extends Driver {
             },
           )
       })
-      if (capability in this.setCapabilityTagMapping) {
+      if (Object.hasOwn(this.setCapabilityTagMapping, capability)) {
         tryRegisterFlowCard(() => {
           this.homey.flow
             .getActionCard(`${capability}_action`)

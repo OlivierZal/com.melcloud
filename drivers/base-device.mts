@@ -149,16 +149,12 @@ export abstract class BaseMELCloudDevice extends Device {
   public cleanMapping<TMapping extends Readonly<Record<string, unknown>>>(
     capabilityTagMapping: TMapping,
   ): Partial<TMapping> {
-    const result: Partial<TMapping> = {}
-    for (const capability in capabilityTagMapping) {
-      if (!this.hasCapability(capability)) {
-        continue
-      }
-
-      const tag = capabilityTagMapping[capability]
-      result[capability] = tag
-    }
-    return result
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- fromEntries widens the filtered entries to Record<string, unknown>
+    return Object.fromEntries(
+      Object.entries(capabilityTagMapping).filter(([capability]) =>
+        this.hasCapability(capability),
+      ),
+    ) as Partial<TMapping>
   }
 
   public async ensureDevice(): Promise<ClassicDeviceFacade | null> {
@@ -263,7 +259,7 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   protected isEnergyCapability(setting: string): boolean {
-    return setting in this.driver.energyCapabilityTagMapping
+    return Object.hasOwn(this.driver.energyCapabilityTagMapping, setting)
   }
 
   protected isManifestCapability(capability: string): boolean {

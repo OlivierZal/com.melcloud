@@ -305,7 +305,7 @@ export class AnimationController {
   #createAnimatedElement(name: AnimatedElement): HTMLDivElement {
     const element = document.createElement('div')
     element.classList.add(name)
-    if (name in this.#animationMapping) {
+    if (Object.hasOwn(this.#animationMapping, name)) {
       const mapping = this.#animationMapping[name]
       element.textContent = mapping.textContent
       element.id = `${name}-${String(mapping.getIndex())}`
@@ -587,7 +587,7 @@ export class AnimationController {
   }
 
   #hasModeAnimation(mode: number): boolean {
-    return mode in this.#animationRunners
+    return Object.hasOwn(this.#animationRunners, mode)
   }
 
   async #reset(resetParams?: ResetParams): Promise<void> {

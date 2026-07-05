@@ -91,7 +91,7 @@ const mergeDeviceSettings = (
   settings: Record<string, unknown>,
 ): void => {
   for (const [settingId, value] of Object.entries(settings)) {
-    if (!(settingId in driverSettings)) {
+    if (!Object.hasOwn(driverSettings, settingId)) {
       driverSettings[settingId] = value
     } else if (driverSettings[settingId] !== value) {
       driverSettings[settingId] = null
@@ -165,7 +165,10 @@ const getLocalizedCapabilitiesOptions = (
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
     /* v8 ignore next -- enumType mapping: resolves string enum to numeric value */
-    id: enumType !== undefined && id in enumType ? String(enumType[id]) : id,
+    id:
+      enumType !== undefined && Object.hasOwn(enumType, id) ?
+        String(enumType[id])
+      : id,
     /* v8 ignore next -- language fallback to English */
     label: title[language] ?? title.en,
   })),

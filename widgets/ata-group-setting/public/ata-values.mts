@@ -293,7 +293,7 @@ export class AtaValueManager {
   }
 
   #isGroupAtaState(value: string): value is keyof Classic.GroupState {
-    return value in this.#defaultAtaValues
+    return Object.hasOwn(this.#defaultAtaValues, value)
   }
 
   #syncAtaValues(): void {

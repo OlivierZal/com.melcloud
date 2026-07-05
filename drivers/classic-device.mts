@@ -123,7 +123,7 @@ export abstract class ClassicMELCloudDevice<
       .operationalCapabilityTagEntries as OperationalCapabilityTagEntry<T>[]
     await Promise.all(
       entries.map(async ([capability, tag]) => {
-        if (tag in data) {
+        if (Object.hasOwn(data, tag)) {
           await this.setCapabilityValue(
             capability,
             this.#convertFromDevice(capability, data[tag], data),
