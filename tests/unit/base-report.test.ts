@@ -110,7 +110,9 @@ const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   return getEnergyMock
 }
 
-const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
+const createCopMocks = (
+  hasTagMappings = true,
+): ClassicMELCloudDevice<TestDeviceType> => {
   const copConsumed = {
     'measure_power.cop': ['ConsumedTag'],
   } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
@@ -121,9 +123,9 @@ const createCopMocks = (): ClassicMELCloudDevice<TestDeviceType> => {
     'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
   } as unknown as EnergyCapabilityTagMapping<TestDeviceType>
   const copDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
-    consumedTagMapping: copConsumed,
+    consumedTagMapping: hasTagMappings ? copConsumed : {},
     energyCapabilityTagMapping: copEnergyMapping,
-    producedTagMapping: copProduced,
+    producedTagMapping: hasTagMappings ? copProduced : {},
   })
   return mock<ClassicMELCloudDevice<TestDeviceType>>({
     cleanMapping: vi
@@ -452,6 +454,18 @@ describe(EnergyReport, () => {
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'measure_power.cop',
         5,
+      )
+    })
+
+    it('should default to empty tag lists when mappings lack the capability', async () => {
+      const mockDeviceWithCop = createCopMocks(false)
+      mockEnergyFetch({ ConsumedTag: 2, ProducedTag: 6 })
+      const report = new EnergyReport(mockDeviceWithCop, regularConfig)
+      await report.start()
+
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'measure_power.cop',
+        0,
       )
     })
   })

@@ -649,7 +649,7 @@ describe('melCloudApp', () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
           errors: [
-            { date: '2026-03-28T14:30:00.000Z', deviceId: 999, error: 'test' },
+            { date: '2026-03-28T14:30:00', deviceId: 999, error: 'test' },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -1186,6 +1186,18 @@ describe('melCloudApp', () => {
       mockGetLanguage.mockReturnValue('ja')
       mockSettingsGet.mockReturnValue('0.9.0')
       app = createApp()
+      await app.onInit()
+
+      expect(mockSetTimeout).not.toHaveBeenCalled()
+    })
+
+    it('should not set timeout when version is missing from changelog', async () => {
+      mockSettingsGet.mockReturnValue('0.9.0')
+      app = createApp()
+      Object.defineProperty(app.homey, 'manifest', {
+        configurable: true,
+        value: { drivers: [], version: '9.9.9' },
+      })
       await app.onInit()
 
       expect(mockSetTimeout).not.toHaveBeenCalled()
