@@ -680,8 +680,6 @@ const config = defineConfig([
       'unicorn/no-unreadable-new-expression': 'off',
       'unicorn/no-useless-switch-case': 'off',
       'unicorn/prefer-error-is-error': 'off',
-      'unicorn/prefer-temporal': 'off',
-      'unicorn/prevent-abbreviations': 'off',
       'use-isnan': [
         'error',
         {

@@ -4,6 +4,7 @@ import type {
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { ClassicDeviceType } from '@olivierzal/melcloud-api/constants'
+import { Temporal } from 'temporal-polyfill'
 import ApexCharts from 'apexcharts'
 
 import type {
@@ -215,10 +216,15 @@ const getTimeout = (chart: HomeySettings['chart']): number => {
   if (hourlyCharts.has(chart)) {
     return NEXT_TIMEOUT
   }
-  const now = new Date()
-  const next = new Date(now)
-  next.setHours(next.getHours() + 1, AGGREGATION_DELAY_MINUTES, 0, 0)
-  return next.getTime() - now.getTime()
+  const now = Temporal.Now.zonedDateTimeISO()
+  const next = now.add({ hours: 1 }).with({
+    microsecond: 0,
+    millisecond: 0,
+    minute: AGGREGATION_DELAY_MINUTES,
+    nanosecond: 0,
+    second: 0,
+  })
+  return next.epochMilliseconds - now.epochMilliseconds
 }
 
 interface DrawConfig {

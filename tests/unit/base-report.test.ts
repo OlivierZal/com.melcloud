@@ -1,5 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { err, ok } from '@olivierzal/melcloud-api'
+import { Temporal } from 'temporal-polyfill'
 import {
   afterAll,
   beforeAll,
@@ -22,7 +23,9 @@ import { getMockCallArg, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
 
-const FAKE_NOW = new Date('2026-03-18T12:00:00.000+01:00')
+const FAKE_NOW = Temporal.Instant.from(
+  '2026-03-18T12:00:00.000+01:00',
+).epochMilliseconds
 
 const setCapabilityValueMock =
   vi.fn<(capability: string, value: unknown) => Promise<void>>()

@@ -174,6 +174,17 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
+// MELCloud reports error timestamps either as UTC instants (Z or offset
+// suffix) or as wall-clock times in the building's timezone.
+const parseErrorDate = (date: string, timeZone: string): number => {
+  try {
+    return Temporal.Instant.from(date).epochMilliseconds
+  } catch {
+    return Temporal.PlainDateTime.from(date).toZonedDateTime(timeZone)
+      .epochMilliseconds
+  }
+}
+
 export default class MELCloudApp extends App {
   declare public readonly homey: Homey.Homey
 
@@ -301,10 +312,13 @@ export default class MELCloudApp extends App {
       ...rest,
       errors: errors.map(({ date, deviceId, ...errorRest }) => ({
         ...errorRest,
-        date: dateTimeMedFormat.format(new Date(date)),
+        date: dateTimeMedFormat.format(parseErrorDate(date, timeZone)),
         device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
       })),
-      fromDateHuman: dateFullFormat.format(new Date(fromDate)),
+      fromDateHuman: dateFullFormat.format(
+        Temporal.PlainDate.from(fromDate).toZonedDateTime(timeZone)
+          .epochMilliseconds,
+      ),
     }
   }
 

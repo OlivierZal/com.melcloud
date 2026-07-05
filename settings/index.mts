@@ -1,6 +1,7 @@
 import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
+import { Temporal } from 'temporal-polyfill'
 
 import type { Api } from '../types/api.mts'
 import type { HomeySettings } from '../types/app-settings.mts'
@@ -905,7 +906,7 @@ class ErrorLogManager {
       if (!(
         this.#to !== '' &&
         this.#sinceInput.value !== '' &&
-        Date.parse(this.#sinceInput.value) > Date.parse(this.#to)
+        Temporal.PlainDate.compare(this.#sinceInput.value, this.#to) > 0
       )) {
         return
       }
