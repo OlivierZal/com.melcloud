@@ -45,8 +45,7 @@ const typeSortOptions = {
 
 const typeLikeSortOptions = {
   groups: [
-    'required-index-signature',
-    'optional-index-signature',
+    'index-signature',
     'required-property',
     'optional-property',
     'required-method',
@@ -86,7 +85,8 @@ const config = defineConfig([
       sourceType: 'module',
     },
     linterOptions: {
-      reportUnusedDisableDirectives: true,
+      reportUnusedDisableDirectives: 'error',
+      reportUnusedInlineConfigs: 'error',
     },
     plugins: {
       '@stylistic': stylistic,
@@ -482,10 +482,10 @@ const config = defineConfig([
         'error',
         {
           groups: [
-            'type-export',
-            'named-export',
-            'wildcard-export',
-            'value-export',
+            'named-type-export',
+            'wildcard-type-export',
+            'named-value-export',
+            'wildcard-value-export',
           ],
           newlinesBetween: 1,
         },
@@ -496,11 +496,11 @@ const config = defineConfig([
         'error',
         {
           groups: [
-            ...buildImportGroup('side-effect'),
+            'side-effect',
             {
               newlinesBetween: 1,
             },
-            ...buildImportGroup('side-effect-style'),
+            'side-effect-style',
             ...buildImportGroup('style'),
             {
               newlinesBetween: 1,
@@ -546,8 +546,7 @@ const config = defineConfig([
             ['export-interface', 'export-type'],
             'export-function',
             'export-class',
-            'export-default-enum',
-            ['export-default-interface', 'export-default-type'],
+            'export-default-interface',
             'export-default-function',
             'export-default-class',
           ],
@@ -624,11 +623,11 @@ const config = defineConfig([
     settings: {
       perfectionist: {
         alphabet: Alphabet.generateRecommendedAlphabet()
-          .sortByNaturalSort()
+          .sortByNaturalSort('en-US')
           .placeCharacterBefore({ characterAfter: '-', characterBefore: '/' })
           .getCharacters(),
         ignoreCase: false,
-        locales: 'en_US',
+        locales: 'en-US',
         newlinesBetween: 0,
         newlinesInside: 0,
         order: 'asc',
