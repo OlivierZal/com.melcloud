@@ -37,7 +37,7 @@ export interface EnergyReportConfig {
   readonly interval: Temporal.DurationLike
   readonly minus: Temporal.DurationLike
   readonly mode: EnergyReportMode
-  readonly values: Temporal.PlainTimeLike
+  readonly values: Temporal.TimeLikeObject
 }
 
 export class EnergyReport<T extends Classic.DeviceType> {

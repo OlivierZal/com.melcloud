@@ -34,7 +34,7 @@
     "@olivierzal/melcloud-api": "^39.0.0",
     "homey-lib": "^2.50.5",
     "source-map-support": "^0.5.21",
-    "temporal-polyfill": "^0.3.2"
+    "temporal-polyfill": "^1.0.1"
   },
   "devDependencies": {
     "@eslint/css": "^1.3.0",
