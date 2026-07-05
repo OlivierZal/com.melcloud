@@ -38,7 +38,7 @@ const {
   superSetWarningMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
 }))
 
-let isFacadePoweredOn = true
+const facadeState = { isPoweredOn: true }
 
 const createMockFacade = (): Home.DeviceAtaFacade =>
   ({
@@ -51,7 +51,7 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
       return 'Heat'
     },
     get power(): boolean {
-      return isFacadePoweredOn
+      return facadeState.isPoweredOn
     },
     get roomTemperature(): number {
       return 21
@@ -127,7 +127,7 @@ describe(BaseMELCloudDevice, () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    isFacadePoweredOn = true
+    facadeState.isPoweredOn = true
     getHomeFacadeMock.mockReturnValue(createMockFacade())
     setValuesMock.mockResolvedValue(true)
     device = createTestHomeDevice()
@@ -189,7 +189,7 @@ describe(BaseMELCloudDevice, () => {
     })
 
     it('should set thermostat_mode to off when power is off', async () => {
-      isFacadePoweredOn = false
+      facadeState.isPoweredOn = false
       getHomeFacadeMock.mockReturnValue(createMockFacade())
       await device.syncFromDevice()
 

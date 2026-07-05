@@ -13,16 +13,15 @@ import { toHour, toNonNegativeInt } from '../../lib/validation.mts'
 const DAYS_MAX = 366
 
 const api = {
-  getClassicDevices({
+  getClassicDevices: ({
     query: { type },
   }: {
     query: { type?: `${Classic.DeviceType}` }
-  }): Classic.DeviceZone[] {
-    return getClassicZones({
+  }): Classic.DeviceZone[] =>
+    getClassicZones({
       type: type === undefined ? undefined : toDeviceType(type),
-    }).filter((zone) => zone.model === 'devices')
-  },
-  async getClassicHourlyTemperatures({
+    }).filter((zone) => zone.model === 'devices'),
+  getClassicHourlyTemperatures: async ({
     homey: { app },
     params: { deviceId },
     query: { hour },
@@ -30,13 +29,12 @@ const api = {
     homey: Homey
     params: { deviceId: string }
     query: HourQuery
-  }): Promise<ReportChartLineOptions> {
-    return app.getClassicHourlyTemperatures({
+  }): Promise<ReportChartLineOptions> =>
+    app.getClassicHourlyTemperatures({
       deviceId,
       hour: hour === undefined ? undefined : toHour(hour, 'hour'),
-    })
-  },
-  async getClassicOperationModes({
+    }),
+  getClassicOperationModes: async ({
     homey: { app },
     params: { deviceId },
     query: { days },
@@ -44,13 +42,12 @@ const api = {
     homey: Homey
     params: { deviceId: string }
     query: DaysQuery
-  }): Promise<ReportChartPieOptions> {
-    return app.getClassicOperationModes({
+  }): Promise<ReportChartPieOptions> =>
+    app.getClassicOperationModes({
       days: toNonNegativeInt(days, { field: 'days', max: DAYS_MAX }),
       deviceId,
-    })
-  },
-  async getClassicSignal({
+    }),
+  getClassicSignal: async ({
     homey: { app },
     params: { deviceId },
     query: { hour },
@@ -58,13 +55,12 @@ const api = {
     homey: Homey
     params: { deviceId: string }
     query: HourQuery
-  }): Promise<ReportChartLineOptions> {
-    return app.getClassicSignal({
+  }): Promise<ReportChartLineOptions> =>
+    app.getClassicSignal({
       deviceId,
       hour: hour === undefined ? undefined : toHour(hour, 'hour'),
-    })
-  },
-  async getClassicTemperatures({
+    }),
+  getClassicTemperatures: async ({
     homey: { app },
     params: { deviceId },
     query: { days },
@@ -72,15 +68,13 @@ const api = {
     homey: Homey
     params: { deviceId: string }
     query: DaysQuery
-  }): Promise<ReportChartLineOptions> {
-    return app.getClassicTemperatures({
+  }): Promise<ReportChartLineOptions> =>
+    app.getClassicTemperatures({
       days: toNonNegativeInt(days, { field: 'days', max: DAYS_MAX }),
       deviceId,
-    })
-  },
-  getLanguage({ homey: { i18n } }: { homey: Homey }): string {
-    return i18n.getLanguage()
-  },
+    }),
+  getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
+    i18n.getLanguage(),
 }
 
 export default api

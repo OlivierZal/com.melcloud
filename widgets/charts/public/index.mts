@@ -137,7 +137,7 @@ const getChartLineOptions = (
     yaxis: {
       ...axisStyle,
       labels: { style, formatter: (value) => value.toFixed(0) },
-      ...(unit === 'dBm' ? { max: 0, min: -100 } : undefined),
+      ...(unit === 'dBm' && { max: 0, min: -100 }),
     },
   }
 }
@@ -266,7 +266,11 @@ class ChartWidget {
     if (defaultZone !== null) {
       const { id, model } = defaultZone
       const value = getZoneId(id, model)
-      if (document.querySelector(`#zones option[value="${value}"]`) !== null) {
+      if (
+        document.querySelector(
+          `#zones option[value="${CSS.escape(value)}"]`,
+        ) !== null
+      ) {
         this.#zone.value = value
       }
     }

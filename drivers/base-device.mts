@@ -151,10 +151,12 @@ export abstract class BaseMELCloudDevice extends Device {
   ): Partial<TMapping> {
     const result: Partial<TMapping> = {}
     for (const capability in capabilityTagMapping) {
-      if (this.hasCapability(capability)) {
-        const { [capability]: tag } = capabilityTagMapping
-        result[capability] = tag
+      if (!this.hasCapability(capability)) {
+        continue
       }
+
+      const tag = capabilityTagMapping[capability]
+      result[capability] = tag
     }
     return result
   }
@@ -233,9 +235,8 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   protected async applyCapabilitiesOptions(data?: unknown): Promise<void> {
-    for (const [capability, options] of Object.entries(
-      this.driver.getCapabilitiesOptions(data),
-    )) {
+    const capabilitiesOptions = this.driver.getCapabilitiesOptions(data)
+    for (const [capability, options] of Object.entries(capabilitiesOptions)) {
       /* v8 ignore next -- options is always defined in practice; Partial type is defensive */
       if (options !== undefined) {
         // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
@@ -276,7 +277,7 @@ export abstract class BaseMELCloudDevice extends Device {
     const tagMapping = this.#setCapabilityTagMapping
     const result: Record<string, unknown> = {}
     for (const [capability, value] of Object.entries(values)) {
-      const { [capability]: tag } = tagMapping
+      const tag = tagMapping[capability]
       if (tag !== undefined) {
         result[tag] = this.capabilityToDevice[capability]?.(value) ?? value
       }

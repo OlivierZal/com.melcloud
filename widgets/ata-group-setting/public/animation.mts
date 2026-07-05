@@ -70,26 +70,32 @@ const generateDelay = (delay: number, speed: number): number => {
 
 const getZoneValue = (): string => getZonePath(getSelect('zones').value)
 
+// Converts a CSS pixel length (e.g. `12.5px`) into its numeric value.
+// Non-numeric values such as `auto` yield NaN, matching the previous
+// `Number.parseFloat` behavior
+const parsePixelValue = (value: string): number =>
+  Number(value.replace('px', ''))
+
 // ── Animation helpers ──
 
 const createAnimationMapping = (): Record<
   AnimatedElement,
-  { readonly innerHTML: string; readonly getIndex: () => number }
+  { readonly textContent: string; readonly getIndex: () => number }
 > => {
   let flameIndex = 0
   let leafIndex = 0
   let snowflakeIndex = 0
   return {
     flame: {
-      innerHTML: '🔥',
+      textContent: '🔥',
       getIndex: () => (flameIndex += 1),
     },
-    leaf: { innerHTML: '🍁', getIndex: () => (leafIndex += 1) },
+    leaf: { textContent: '🍁', getIndex: () => (leafIndex += 1) },
     snowflake: {
-      innerHTML: '❄',
+      textContent: '❄',
       getIndex: () => (snowflakeIndex += 1),
     },
-    sun: { innerHTML: '☀', getIndex: () => 1 },
+    sun: { textContent: '☀', getIndex: () => 1 },
   }
 }
 
@@ -104,8 +110,9 @@ const generateLeafAnimation = (
   const loopEnd = loopStart + loopDuration
   const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
   const animation = leaf.animate(
-    [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(
-      (index: number) => {
+    Array.from({ length: ANIMATION_KEYFRAME_COUNT })
+      .keys()
+      .map((index: number) => {
         const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
         const indexLoopRadius =
           index >= loopStart && index < loopEnd ? loopRadius : 0
@@ -123,8 +130,8 @@ const generateLeafAnimation = (
         return {
           transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
         }
-      },
-    ),
+      })
+      .toArray(),
     {
       duration: generateStyleNumber({
         divisor: speed,
@@ -184,6 +191,19 @@ const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
 const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
   document.querySelector<HTMLElement>(`#${name}-${String(Number(index) - 1)}`)
 
+const scheduleFlameRemoval = (): void => {
+  // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
+  const flames = Array.from(document.querySelectorAll<HTMLElement>('.flame'))
+  for (const flame of flames) {
+    setTimeout(
+      () => {
+        flame.remove()
+      },
+      generateDelay(AnimationDelay.flame, ClassicFanSpeed.very_slow),
+    )
+  }
+}
+
 // ── AnimationController class ──
 
 export class AnimationController {
@@ -191,7 +211,7 @@ export class AnimationController {
 
   readonly #animationMapping: Record<
     AnimatedElement,
-    { readonly innerHTML: string; readonly getIndex: () => number }
+    { readonly textContent: string; readonly getIndex: () => number }
   >
 
   readonly #animationRunners: Record<
@@ -286,8 +306,8 @@ export class AnimationController {
     const element = document.createElement('div')
     element.classList.add(name)
     if (name in this.#animationMapping) {
-      const { [name]: mapping } = this.#animationMapping
-      ;({ innerHTML: element.innerHTML } = mapping)
+      const mapping = this.#animationMapping[name]
+      element.textContent = mapping.textContent
       element.id = `${name}-${String(mapping.getIndex())}`
     }
     return element
@@ -355,7 +375,7 @@ export class AnimationController {
       const previousPosition =
         previousElement === null ?
           -gap * 2
-        : Number.parseFloat(previousElement.style[positionProperty])
+        : parsePixelValue(previousElement.style[positionProperty])
       element.style[positionProperty] = generateStyleString(
         {
           gap,
@@ -378,7 +398,7 @@ export class AnimationController {
           new SmokeParticle(
             this.#canvasContext,
             left + width / 2,
-            top - Number.parseFloat(getComputedStyle(flame).insetBlockEnd),
+            top - parsePixelValue(getComputedStyle(flame).insetBlockEnd),
           ),
         )
       }
@@ -415,16 +435,19 @@ export class AnimationController {
 
   #generateFlameAnimation(flame: HTMLDivElement, speed: number): Animation {
     const animation = flame.animate(
-      [...Array.from({ length: ANIMATION_KEYFRAME_COUNT }).keys()].map(() => {
-        const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
-        const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
-        const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
-        const scaleY = generateStyleString({ gap: 0.4, min: 0.8 })
-        return {
-          filter: `brightness(${brightness})`,
-          transform: `scale(${scaleX}, ${scaleY}) rotate(${rotate})`,
-        }
-      }),
+      Array.from({ length: ANIMATION_KEYFRAME_COUNT })
+        .keys()
+        .map(() => {
+          const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
+          const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
+          const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
+          const scaleY = generateStyleString({ gap: 0.4, min: 0.8 })
+          return {
+            filter: `brightness(${brightness})`,
+            transform: `scale(${scaleX}, ${scaleY}) rotate(${rotate})`,
+          }
+        })
+        .toArray(),
       {
         duration: generateStyleNumber({
           divisor: speed,
@@ -460,8 +483,8 @@ export class AnimationController {
 
   #generateSmoke(speed: number): void {
     if (this.#canvasContext !== null) {
-      ;({ innerHeight: this.#canvas.height, innerWidth: this.#canvas.width } =
-        globalThis)
+      this.#canvas.height = globalThis.innerHeight
+      this.#canvas.width = globalThis.innerWidth
       this.#canvasContext.clearRect(
         0,
         0,
@@ -494,15 +517,15 @@ export class AnimationController {
     const animation = sun.animate(
       [
         {
-          insetBlockStart: `${String(Number.parseFloat(insetBlockStart))}px`,
-          insetInlineEnd: `${String(Number.parseFloat(insetInlineEnd))}px`,
+          insetBlockStart: `${String(parsePixelValue(insetBlockStart))}px`,
+          insetInlineEnd: `${String(parsePixelValue(insetInlineEnd))}px`,
         },
         {
           insetBlockStart: `${String(
-            (window.innerHeight - Number.parseFloat(blockSize)) / 2,
+            (window.innerHeight - parsePixelValue(blockSize)) / 2,
           )}px`,
           insetInlineEnd: `${String(
-            (window.innerWidth - Number.parseFloat(inlineSize)) / 2,
+            (window.innerWidth - parsePixelValue(inlineSize)) / 2,
           )}px`,
         },
       ],
@@ -524,8 +547,8 @@ export class AnimationController {
     const animation = sun.animate(
       [
         {
-          insetBlockStart: `${String(Number.parseFloat(insetBlockStart))}px`,
-          insetInlineEnd: `${String(Number.parseFloat(insetInlineEnd))}px`,
+          insetBlockStart: `${String(parsePixelValue(insetBlockStart))}px`,
+          insetInlineEnd: `${String(parsePixelValue(insetInlineEnd))}px`,
         },
         {
           insetBlockStart: `${String(-window.innerHeight)}px`,
@@ -597,17 +620,7 @@ export class AnimationController {
         return
       }
     }
-    // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
-    for (const flame of Array.from(
-      document.querySelectorAll<HTMLElement>('.flame'),
-    )) {
-      setTimeout(
-        () => {
-          flame.remove()
-        },
-        generateDelay(AnimationDelay.flame, ClassicFanSpeed.very_slow),
-      )
-    }
+    scheduleFlameRemoval()
   }
 
   async #resetSunAnimation(resetParams?: ResetParams): Promise<void> {

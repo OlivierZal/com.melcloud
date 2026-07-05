@@ -519,11 +519,7 @@ describe(ClassicMELCloudDevice, () => {
   describe('energy report handling', () => {
     it('should create energy report for regular config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
-      const {
-        mock: {
-          calls: { length: callCountBefore },
-        },
-      } = vi.mocked(EnergyReport)
+      const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
       const deviceWithRegular = new TestDevice()
       Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
         value: {
@@ -544,11 +540,7 @@ describe(ClassicMELCloudDevice, () => {
 
     it('should create energy report for total config', async () => {
       const { EnergyReport } = await import('../../drivers/base-report.mts')
-      const {
-        mock: {
-          calls: { length: callCountBefore },
-        },
-      } = vi.mocked(EnergyReport)
+      const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
       const deviceWithTotal = new TestDevice()
       Object.defineProperty(deviceWithTotal, 'energyReportTotal', {
         value: {

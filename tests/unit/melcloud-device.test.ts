@@ -51,9 +51,8 @@ describe(ClassicMELCloudDeviceAta, () => {
       ['horizontal', Classic.Horizontal.center, 'center'],
       ['vertical', Classic.Vertical.auto, 'auto'],
     ])('%s(%s) should return %s', (key, input, expected) => {
-      const {
-        deviceToCapability: { [key]: converter },
-      } = device
+      const { deviceToCapability } = device
+      const converter = deviceToCapability[key]
 
       expect(converter?.(input)).toBe(expected)
     })

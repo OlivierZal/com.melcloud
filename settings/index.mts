@@ -116,8 +116,8 @@ const HOME_DRIVER_ID = 'home-melcloud'
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
 
-  public constructor(homey: Homey) {
-    super(homey.__('settings.devices.none'))
+  public constructor(homey: Homey, options?: ErrorOptions) {
+    super(homey.__('settings.devices.none'), options)
   }
 }
 
@@ -191,7 +191,7 @@ const createLabel = (
   const isCheckbox = formControl.type === 'checkbox'
   const label = document.createElement('label')
   label.classList.add(isCheckbox ? 'homey-form-checkbox' : 'homey-form-label')
-  ;({ id: label.htmlFor } = formControl)
+  label.htmlFor = formControl.id
   if (isCheckbox) {
     addTextToCheckbox(label, formControl, text)
     return label
@@ -304,8 +304,9 @@ const parseNumericInput = (
         max,
         min,
         name: homey.__(
-          document.querySelector<HTMLLabelElement>(`label[for="${id}"]`)
-            ?.textContent ?? '',
+          document.querySelector<HTMLLabelElement>(
+            `label[for="${CSS.escape(id)}"]`,
+          )?.textContent ?? '',
         ),
       }),
     )
@@ -465,9 +466,7 @@ class AuthManager {
   }
 
   #syncInputsFromCredentials(): void {
-    const {
-      [this.#currentApi]: { password, username },
-    } = this.#credentialsByApi
+    const { password, username } = this.#credentialsByApi[this.#currentApi]
     if (this.#usernameInput !== null) {
       this.#usernameInput.value = username ?? ''
     }
@@ -480,11 +479,13 @@ class AuthManager {
     let firstAllowed = ''
     this.#apiSelect.replaceChildren()
     for (const option of this.#apiOptions) {
-      if (allowed.has(option.value)) {
-        this.#apiSelect.append(option)
-        if (firstAllowed === '') {
-          ;({ value: firstAllowed } = option)
-        }
+      if (!allowed.has(option.value)) {
+        continue
+      }
+
+      this.#apiSelect.append(option)
+      if (firstAllowed === '') {
+        ;({ value: firstAllowed } = option)
       }
     }
     return firstAllowed
@@ -636,19 +637,21 @@ class DeviceSettingsManager {
   #createCommonSettingControls(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
   ): void {
-    for (const { id, title, type, values } of driverSettings.options ?? []) {
-      if (
+    const options = driverSettings.options ?? []
+    for (const { id, title, type, values } of options) {
+      if (!(
         this.#settingsCommon.querySelector(
-          `select[data-setting-id="${id}"]`,
-        ) === null &&
-        commonElementTypes.has(type)
-      ) {
-        const formControl = createSelect(this.#homey, id, values)
-        formControl.dataset.settingId = id
-        formControl.dataset.driverId = 'common'
-        appendFormControl(this.#settingsCommon, { formControl, title })
-        this.#updateCommonSetting(formControl)
+          `select[data-setting-id="${CSS.escape(id)}"]`,
+        ) === null && commonElementTypes.has(type)
+      )) {
+        continue
       }
+
+      const formControl = createSelect(this.#homey, id, values)
+      formControl.dataset.settingId = id
+      formControl.dataset.driverId = 'common'
+      appendFormControl(this.#settingsCommon, { formControl, title })
+      this.#updateCommonSetting(formControl)
     }
     this.#addSettingsEventListeners(
       // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
@@ -668,15 +671,17 @@ class DeviceSettingsManager {
       title,
       type,
     } of driverSetting) {
-      if (type === 'checkbox') {
-        if (groupLabel !== previousGroupLabel) {
-          previousGroupLabel = groupLabel
-          createLegend(fieldSet, groupLabel)
-        }
-        const formControl = createCheckbox(id, driverId)
-        appendFormControl(fieldSet, { formControl, title }, false)
-        this.#updateDriverSetting(formControl)
+      if (type !== 'checkbox') {
+        continue
       }
+
+      if (groupLabel !== previousGroupLabel) {
+        previousGroupLabel = groupLabel
+        createLegend(fieldSet, groupLabel)
+      }
+      const formControl = createCheckbox(id, driverId)
+      appendFormControl(fieldSet, { formControl, title }, false)
+      this.#updateDriverSetting(formControl)
     }
   }
 
@@ -684,7 +689,7 @@ class DeviceSettingsManager {
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     driverId: string,
   ): void {
-    const { [driverId]: driverSetting } = driverSettings
+    const driverSetting = driverSettings[driverId]
     if (driverSetting !== undefined) {
       const settingsContainer = document.querySelector(`#settings_${driverId}`)
       if (settingsContainer !== null) {
@@ -773,10 +778,11 @@ class DeviceSettingsManager {
     if (value === null) {
       return false
     }
-    const { [id]: setting } =
+    const settings =
       driverId === undefined ?
         this.flatDeviceSettings
       : (this.#deviceSettings[driverId] ?? {})
+    const setting = settings[id]
     return setting === null || value !== setting
   }
 
@@ -817,9 +823,7 @@ class DeviceSettingsManager {
       dataset: { settingId },
     } = element
     if (settingId !== undefined) {
-      const {
-        flatDeviceSettings: { [settingId]: value },
-      } = this
+      const value = this.flatDeviceSettings[settingId]
       element.value =
         (
           typeof value === 'boolean' ||
@@ -1039,7 +1043,7 @@ class ZoneSettingsManager {
 
   /** @silent Falls back to default values on error. */
   public displayFrostProtectionData(): void {
-    const { [this.#zone.value]: data } = this.#zoneMapping
+    const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
       const {
         FPEnabled: isEnabled,
@@ -1053,7 +1057,7 @@ class ZoneSettingsManager {
   }
 
   public displayHolidayModeData(): void {
-    const { [this.#zone.value]: data } = this.#zoneMapping
+    const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
       const {
         HMEnabled: isEnabled = false,

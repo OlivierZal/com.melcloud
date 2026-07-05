@@ -74,7 +74,8 @@ export class EnergyReport<T extends Classic.DeviceType> {
   ) {
     this.#device = device
     this.#config = config
-    ;({ driver: this.driver, homey: this.#homey } = this.#device)
+    this.driver = device.driver
+    this.#homey = device.homey
   }
 
   public async start(): Promise<void> {
@@ -99,12 +100,9 @@ export class EnergyReport<T extends Classic.DeviceType> {
     data: Classic.EnergyData<T>,
     capability: string & keyof EnergyCapabilities<T>,
   ): number {
-    const {
-      driver: {
-        consumedTagMapping: { [capability]: consumedTags = [] },
-        producedTagMapping: { [capability]: producedTags = [] },
-      },
-    } = this
+    const { consumedTagMapping, producedTagMapping } = this.driver
+    const consumedTags = consumedTagMapping[capability] ?? []
+    const producedTags = producedTagMapping[capability] ?? []
     const consumed = sumTags(data, consumedTags)
     return sumTags(data, producedTags) / (consumed === 0 ? 1 : consumed)
   }
@@ -125,7 +123,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
   ): number {
     let total = 0
     for (const tag of tags) {
-      const { [tag]: tagData } = data
+      const tagData = data[tag]
       if (Array.isArray(tagData)) {
         total += (tagData[hour] ?? 0) * KILOWATT_TO_WATT
       }
@@ -181,8 +179,8 @@ export class EnergyReport<T extends Classic.DeviceType> {
 
   async #set(data: Classic.EnergyData<T>, hour: number): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
-      ;({ length: this.#linkedDeviceCount } =
-        data.UsageDisclaimerPercentages.split(','))
+      this.#linkedDeviceCount =
+        data.UsageDisclaimerPercentages.split(',').length
     }
     await Promise.all(
       this.#energyCapabilityTagEntries.map(

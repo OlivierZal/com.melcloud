@@ -29,8 +29,8 @@ describe(toNonNegativeInt, () => {
     ['abc', /non-negative integer/v],
     [-1, /non-negative integer/v],
     [1.5, /non-negative integer/v],
-    [Number.NaN, /non-negative integer/v],
-    [Number.POSITIVE_INFINITY, /non-negative integer/v],
+    [NaN, /non-negative integer/v],
+    [Infinity, /non-negative integer/v],
   ])('rejects %p', (input, pattern) => {
     expect(() => toNonNegativeInt(input)).toThrow(pattern)
   })

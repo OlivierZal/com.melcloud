@@ -15,7 +15,11 @@ import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { Api } from './types/api.mts'
 import type { GroupAtaStates } from './types/classic-ata.mts'
-import type { DeviceSettings, Settings } from './types/device-settings.mts'
+import type {
+  DeviceSetting,
+  DeviceSettings,
+  Settings,
+} from './types/device-settings.mts'
 import type {
   DriverCapabilitiesOptions,
   DriverSetting,
@@ -79,6 +83,23 @@ const throwOnErrors = (
   }
 }
 
+// Aggregates one device's settings into the per-driver map; a conflicting
+// value across devices marks the setting as indeterminate (`null`) and stops
+// processing the remaining settings of that device.
+const mergeDeviceSettings = (
+  driverSettings: DeviceSetting,
+  settings: Record<string, unknown>,
+): void => {
+  for (const [settingId, value] of Object.entries(settings)) {
+    if (!(settingId in driverSettings)) {
+      driverSettings[settingId] = value
+    } else if (driverSettings[settingId] !== value) {
+      driverSettings[settingId] = null
+      return
+    }
+  }
+}
+
 const getDriverSettings = (
   { id: driverId, settings }: ManifestDriver,
   language: string,
@@ -110,11 +131,11 @@ const getDriverLoginSetting = (
   language: string,
 ): DriverSetting[] => {
   const driverLoginSetting: Record<string, DriverSetting> = {}
-  for (const [option, label] of Object.entries(
+  const loginOptions =
     pair?.find(
       (pairSetting): pairSetting is LoginSetting => pairSetting.id === 'login',
-    )?.options ?? [],
-  )) {
+    )?.options ?? []
+  for (const [option, label] of Object.entries(loginOptions)) {
     const isPassword = option.startsWith('password')
     const key = isPassword ? 'password' : 'username'
     driverLoginSetting[key] ??= {
@@ -390,14 +411,7 @@ export default class MELCloudApp extends App {
         driver: { id: driverId },
       } = device
       deviceSettings[driverId] ??= {}
-      for (const [settingId, value] of Object.entries(device.getSettings())) {
-        if (!(settingId in deviceSettings[driverId])) {
-          deviceSettings[driverId][settingId] = value
-        } else if (deviceSettings[driverId][settingId] !== value) {
-          deviceSettings[driverId][settingId] = null
-          break
-        }
-      }
+      mergeDeviceSettings(deviceSettings[driverId], device.getSettings())
     }
     return deviceSettings
   }
@@ -542,11 +556,12 @@ export default class MELCloudApp extends App {
     if (settings.get('notifiedVersion') === version) {
       return
     }
-    const { [version]: versionChangelog = {} } = changelog as Record<
+    const changelogByVersion = changelog as Record<
       string,
       Record<string, string>
     >
-    const { [language]: excerpt } = versionChangelog
+    const versionChangelog = changelogByVersion[version] ?? {}
+    const excerpt = versionChangelog[language]
     if (excerpt === undefined) {
       return
     }

@@ -34,7 +34,7 @@ const createLabel = (
   text: string,
 ): HTMLLabelElement => {
   const label = document.createElement('label')
-  ;({ id: label.htmlFor } = formControl)
+  label.htmlFor = formControl.id
   label.textContent = text
   label.append(formControl)
   return label
@@ -180,7 +180,11 @@ export class AtaValueManager {
     if (defaultZone !== null) {
       const { id, model } = defaultZone
       const value = getZoneId(id, model)
-      if (document.querySelector(`#zones option[value="${value}"]`) !== null) {
+      if (
+        document.querySelector(
+          `#zones option[value="${CSS.escape(value)}"]`,
+        ) !== null
+      ) {
         this.#zone.value = value
       }
     }

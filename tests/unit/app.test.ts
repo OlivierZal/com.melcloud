@@ -374,10 +374,12 @@ describe('melCloudApp', () => {
     it('should pass logger callbacks that delegate to app.log and app.error', async () => {
       const logMock = vi.fn<(...args: unknown[]) => void>()
       const errorMock = vi.fn<(...args: unknown[]) => void>()
-      Object.defineProperty(app, 'log', { configurable: true, value: logMock })
-      Object.defineProperty(app, 'error', {
-        configurable: true,
-        value: errorMock,
+      Object.defineProperties(app, {
+        error: {
+          configurable: true,
+          value: errorMock,
+        },
+        log: { configurable: true, value: logMock },
       })
       await app.onInit()
 

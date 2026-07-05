@@ -24,75 +24,61 @@ const toNumber = (value: string | undefined): number | undefined => {
 }
 
 const api = {
-  async classicAuthenticate({
+  classicAuthenticate: async ({
     body,
     homey: { app },
   }: {
     body: LoginCredentials
     homey: Homey
-  }): Promise<void> {
-    return app.classicApi.authenticate(body)
-  },
-  getClassicBuildings(): Classic.BuildingZone[] {
-    return getClassicBuildings()
-  },
-  async getClassicErrorLog({
+  }): Promise<void> => app.classicApi.authenticate(body),
+  getClassicBuildings: (): Classic.BuildingZone[] => getClassicBuildings(),
+  getClassicErrorLog: async ({
     homey: { app },
     query: { from, offset, period, to },
   }: {
     homey: Homey
     query: Partial<ClassicErrorLogQueryParams>
-  }): Promise<FormattedErrorLog> {
-    return app.getClassicErrorLog({
+  }): Promise<FormattedErrorLog> =>
+    app.getClassicErrorLog({
       from,
       offset: toNumber(offset),
       period: toNumber(period),
       to,
-    })
-  },
-  async getClassicFrostProtection({
+    }),
+  getClassicFrostProtection: async ({
     homey: { app },
     params,
   }: {
     homey: Homey
     params: DeviceOrZoneData
-  }): Promise<Classic.FrostProtectionData> {
-    return app.getClassicFrostProtection(toDeviceOrZoneData(params))
-  },
-  async getClassicHolidayMode({
+  }): Promise<Classic.FrostProtectionData> =>
+    app.getClassicFrostProtection(toDeviceOrZoneData(params)),
+  getClassicHolidayMode: async ({
     homey: { app },
     params,
   }: {
     homey: Homey
     params: DeviceOrZoneData
-  }): Promise<Classic.HolidayModeData> {
-    return app.getClassicHolidayMode(toDeviceOrZoneData(params))
-  },
-  getDeviceSettings({ homey: { app } }: { homey: Homey }): DeviceSettings {
-    return app.getDeviceSettings()
-  },
-  getDriverSettings({
+  }): Promise<Classic.HolidayModeData> =>
+    app.getClassicHolidayMode(toDeviceOrZoneData(params)),
+  getDeviceSettings: ({ homey: { app } }: { homey: Homey }): DeviceSettings =>
+    app.getDeviceSettings(),
+  getDriverSettings: ({
     homey: { app },
   }: {
     homey: Homey
-  }): Partial<Record<string, DriverSetting[]>> {
-    return app.getDriverSettings()
-  },
-  getLanguage({ homey: { i18n } }: { homey: Homey }): string {
-    return i18n.getLanguage()
-  },
-  async homeAuthenticate({
+  }): Partial<Record<string, DriverSetting[]>> => app.getDriverSettings(),
+  getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
+    i18n.getLanguage(),
+  homeAuthenticate: async ({
     body,
     homey: { app },
   }: {
     body: LoginCredentials
     homey: Homey
-  }): Promise<void> {
-    return app.homeApi.authenticate(body)
-  },
-  isClassicAuthenticated({ homey: { app } }: { homey: Homey }): boolean {
-    return app.classicApi.isAuthenticated()
-  },
+  }): Promise<void> => app.homeApi.authenticate(body),
+  isClassicAuthenticated: ({ homey: { app } }: { homey: Homey }): boolean =>
+    app.classicApi.isAuthenticated(),
   // Home authentication is only "restored" once a /context fetch has
   // succeeded. That boot-time fetch can fail transiently (e.g. the box
   // network is not ready right after an app restart) even though the
@@ -109,7 +95,7 @@ const api = {
     }
     return app.homeApi.isAuthenticated()
   },
-  async updateClassicFrostProtection({
+  updateClassicFrostProtection: async ({
     body,
     homey: { app },
     params,
@@ -117,13 +103,12 @@ const api = {
     body: Classic.FrostProtectionQuery
     homey: Homey
     params: DeviceOrZoneData
-  }): Promise<void> {
-    return app.updateClassicFrostProtection({
+  }): Promise<void> =>
+    app.updateClassicFrostProtection({
       settings: body,
       ...toDeviceOrZoneData(params),
-    })
-  },
-  async updateClassicHolidayMode({
+    }),
+  updateClassicHolidayMode: async ({
     body,
     homey: { app },
     params,
@@ -131,13 +116,12 @@ const api = {
     body: Classic.HolidayModeQuery
     homey: Homey
     params: DeviceOrZoneData
-  }): Promise<void> {
-    return app.updateClassicHolidayMode({
+  }): Promise<void> =>
+    app.updateClassicHolidayMode({
       settings: body,
       ...toDeviceOrZoneData(params),
-    })
-  },
-  async updateDeviceSettings({
+    }),
+  updateDeviceSettings: async ({
     body,
     homey: { app },
     query: { driverId },
@@ -145,9 +129,7 @@ const api = {
     body: Settings
     homey: Homey
     query: { driverId?: string }
-  }): Promise<void> {
-    return app.updateDeviceSettings({ driverId, settings: body })
-  },
+  }): Promise<void> => app.updateDeviceSettings({ driverId, settings: body }),
 }
 
 export default api
