@@ -670,7 +670,6 @@ const config = defineConfig([
       'unicorn/no-null': 'off',
       'unicorn/no-this-outside-of-class': 'off',
       'unicorn/no-unreadable-new-expression': 'off',
-      'unicorn/no-unsafe-dom-html': 'off',
       'unicorn/no-useless-switch-case': 'off',
       'unicorn/prefer-await': 'off',
       'unicorn/prefer-early-return': 'off',
