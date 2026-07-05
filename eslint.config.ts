@@ -277,6 +277,14 @@ const config = defineConfig([
         },
       ],
       '@typescript-eslint/no-redeclare': 'off',
+      '@typescript-eslint/no-shadow': [
+        'error',
+        {
+          allow: ['Intl', 'Temporal'],
+          builtinGlobals: true,
+          hoist: 'all',
+        },
+      ],
       '@typescript-eslint/no-unnecessary-condition': [
         'error',
         {
@@ -295,6 +303,13 @@ const config = defineConfig([
           enableAutofixRemoval: {
             imports: true,
           },
+        },
+      ],
+      '@typescript-eslint/only-throw-error': [
+        'error',
+        {
+          allowThrowingAny: false,
+          allowThrowingUnknown: false,
         },
       ],
       '@typescript-eslint/prefer-destructuring': [
@@ -316,6 +331,14 @@ const config = defineConfig([
       ],
       '@typescript-eslint/prefer-readonly-parameter-types': 'off',
       '@typescript-eslint/return-await': ['error', 'in-try-catch'],
+      '@typescript-eslint/strict-boolean-expressions': [
+        'error',
+        {
+          allowNullableObject: false,
+          allowNumber: false,
+          allowString: false,
+        },
+      ],
       '@typescript-eslint/switch-exhaustiveness-check': [
         'error',
         {
@@ -325,6 +348,12 @@ const config = defineConfig([
         },
       ],
       '@typescript-eslint/typedef': 'off',
+      'array-callback-return': [
+        'error',
+        {
+          checkForEach: true,
+        },
+      ],
       camelcase: 'off',
       'capitalized-comments': 'off',
       curly: 'error',
@@ -371,6 +400,30 @@ const config = defineConfig([
         'error',
         {
           allowElseIf: false,
+        },
+      ],
+      'no-extra-boolean-cast': [
+        'error',
+        {
+          enforceForInnerExpressions: true,
+        },
+      ],
+      'no-fallthrough': [
+        'error',
+        {
+          reportUnusedFallthroughComment: true,
+        },
+      ],
+      'no-irregular-whitespace': [
+        'error',
+        {
+          skipStrings: false,
+        },
+      ],
+      'no-sequences': [
+        'error',
+        {
+          allowInParentheses: false,
         },
       ],
       'no-ternary': 'off',
@@ -594,6 +647,12 @@ const config = defineConfig([
       'perfectionist/sort-sets': ['error', arrayLikeSortOptions],
       'perfectionist/sort-switch-case': 'error',
       'perfectionist/sort-union-types': ['error', typeSortOptions],
+      'require-unicode-regexp': [
+        'error',
+        {
+          requireFlag: 'v',
+        },
+      ],
       'sort-imports': 'off',
       'sort-keys': 'off',
       // Rules introduced by eslint-plugin-unicorn 65-69, kept off until the
@@ -637,6 +696,18 @@ const config = defineConfig([
       'unicorn/prevent-abbreviations': 'off',
       'unicorn/require-css-escape': 'off',
       'unicorn/try-complexity': 'off',
+      'use-isnan': [
+        'error',
+        {
+          enforceForIndexOf: true,
+        },
+      ],
+      'valid-typeof': [
+        'error',
+        {
+          requireStringLiterals: true,
+        },
+      ],
     },
     settings: {
       perfectionist: {

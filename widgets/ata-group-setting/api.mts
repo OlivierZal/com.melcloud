@@ -43,7 +43,7 @@ const api = {
     query: { type?: `${Classic.DeviceType}` }
   }): Classic.BuildingZone[] {
     return getClassicBuildings({
-      type: type ? toDeviceType(type) : undefined,
+      type: type === undefined ? undefined : toDeviceType(type),
     })
   },
   getLanguage({ homey: { i18n } }: { homey: Homey }): string {

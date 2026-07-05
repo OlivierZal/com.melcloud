@@ -47,7 +47,7 @@ const appendFormControl = (
     title,
   }: { formControl: HTMLValueElement | null; title: string },
 ): void => {
-  if (formControl) {
+  if (formControl !== null) {
     parent.append(createLabel(formControl, title))
   }
 }
@@ -129,7 +129,7 @@ const clampNumericInput = ({
 const parseFormValue = (
   element: HTMLValueElement,
 ): Settings[keyof Settings] => {
-  if (element.value) {
+  if (element.value !== '') {
     if (element.type === 'checkbox') {
       return element.indeterminate ? null : element.checked
     }
@@ -177,10 +177,10 @@ export class AtaValueManager {
   }
 
   public applyDefaultZone(defaultZone: Classic.Zone | null): void {
-    if (defaultZone) {
+    if (defaultZone !== null) {
       const { id, model } = defaultZone
       const value = getZoneId(id, model)
-      if (document.querySelector(`#zones option[value="${value}"]`)) {
+      if (document.querySelector(`#zones option[value="${value}"]`) !== null) {
         this.#zone.value = value
       }
     }
@@ -301,7 +301,7 @@ export class AtaValueManager {
   #updateAtaValue(id: keyof Classic.GroupState): void {
     const ataValue = document.querySelector(`#${id}`)
     if (
-      ataValue &&
+      ataValue !== null &&
       (ataValue instanceof HTMLInputElement ||
         ataValue instanceof HTMLSelectElement)
     ) {

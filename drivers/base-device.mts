@@ -161,7 +161,7 @@ export abstract class BaseMELCloudDevice extends Device {
 
   public async ensureDevice(): Promise<ClassicDeviceFacade | null> {
     try {
-      if (!this.#deviceFacade) {
+      if (this.#deviceFacade === undefined) {
         this.#deviceFacade = this.getFacade()
         await this.#init()
       }
@@ -285,11 +285,11 @@ export abstract class BaseMELCloudDevice extends Device {
   }
 
   protected async scheduleEnergyReports(): Promise<void> {
-    if (this.energyReportRegular) {
+    if (this.energyReportRegular !== null) {
       this.#reports.regular = this.createEnergyReport(this.energyReportRegular)
       await this.#reports.regular.start()
     }
-    if (this.energyReportTotal) {
+    if (this.energyReportTotal !== null) {
       this.#reports.total = this.createEnergyReport(this.energyReportTotal)
       await this.#reports.total.start()
     }
@@ -297,7 +297,7 @@ export abstract class BaseMELCloudDevice extends Device {
 
   protected async sendUpdate(values: Record<string, unknown>): Promise<void> {
     const device = await this.ensureDevice()
-    if (!device) {
+    if (device === null) {
       return
     }
     const updateData = this.mapCapabilitiesToDeviceTags(values)

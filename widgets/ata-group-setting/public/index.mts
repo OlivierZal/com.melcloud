@@ -70,7 +70,7 @@ class WidgetApp {
       fireAndForget(this.#ataValueManager.setValues())
     })
     this.#homey.on('deviceupdate', () => {
-      if (this.#debounceTimeout) {
+      if (this.#debounceTimeout !== null) {
         clearTimeout(this.#debounceTimeout)
       }
       this.#debounceTimeout = setTimeout(() => {

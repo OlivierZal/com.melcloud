@@ -188,9 +188,9 @@ describe(ClassicMELCloudDriver, () => {
       )
       await driver.onInit()
 
-      const { onoff_action: listener } = actionListeners
-      assertDefined(listener)
-      await listener({
+      const { onoff_action: registeredListener } = actionListeners
+      assertDefined(registeredListener)
+      await registeredListener({
         device: { triggerCapabilityListener: triggerMock },
         onoff: true,
       })

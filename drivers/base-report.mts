@@ -105,7 +105,8 @@ export class EnergyReport<T extends Classic.DeviceType> {
         producedTagMapping: { [capability]: producedTags = [] },
       },
     } = this
-    return sumTags(data, producedTags) / (sumTags(data, consumedTags) || 1)
+    const consumed = sumTags(data, consumedTags)
+    return sumTags(data, producedTags) / (consumed === 0 ? 1 : consumed)
   }
 
   #calculateEnergyValue(
@@ -140,7 +141,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
 
   async #get(): Promise<void> {
     const device = await this.#device.ensureDevice()
-    if (!device) {
+    if (device === null) {
       return
     }
     // Fetch energy data from the previous period (offset by config.minus)
@@ -160,7 +161,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
   }
 
   #schedule(): void {
-    if (this.#reportTimeout) {
+    if (this.#reportTimeout !== null) {
       return
     }
     const actionType = `${this.#config.mode} energy report`

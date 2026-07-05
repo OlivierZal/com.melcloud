@@ -4,7 +4,7 @@ const applyOverrides = (
   target: object,
   overrides?: Record<string, unknown>,
 ): void => {
-  if (overrides) {
+  if (overrides !== undefined) {
     Object.assign(target, overrides)
   }
 }

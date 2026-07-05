@@ -112,12 +112,15 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
     capability: keyof TargetTemperatureFlowCapabilities,
   ): ConvertFromDevice<typeof Classic.DeviceType.Atw> {
     // Fall back to the minimum allowed value in case of undefined or null
-    return (value: number) => value || this.getCapabilityOptions(capability).min
+    return (value: number) =>
+      Number.isFinite(value) && value !== 0 ?
+        value
+      : this.getCapabilityOptions(capability).min
   }
 
   async #setOperationModeStates(): Promise<void> {
     const { facade } = this
-    if (!facade || !isClassicAtwFacade(facade)) {
+    if (facade === undefined || !isClassicAtwFacade(facade)) {
       return
     }
     await this.setCapabilityValue(

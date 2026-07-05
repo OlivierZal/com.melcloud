@@ -56,12 +56,17 @@ const ANIMATION_KEYFRAME_COUNT = 101
 // Calculates a randomized delay with exponential speed scaling. Higher speed
 // values produce shorter delays via exponential interpolation between
 // factorMin and factorMax
-const generateDelay = (delay: number, speed: number): number =>
-  (Math.random() * delay) /
-  (SPEED_FACTOR_MIN *
+const generateDelay = (delay: number, speed: number): number => {
+  const speedFactor =
+    SPEED_FACTOR_MIN *
     (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
       ((speed - ClassicFanSpeed.very_slow) /
-        (ClassicFanSpeed.very_fast - ClassicFanSpeed.very_slow)) || 1)
+        (ClassicFanSpeed.very_fast - ClassicFanSpeed.very_slow))
+  return (
+    (Math.random() * delay) /
+    (Number.isNaN(speedFactor) || speedFactor === 0 ? 1 : speedFactor)
+  )
+}
 
 const getZoneValue = (): string => getZonePath(getSelect('zones').value)
 
@@ -258,7 +263,11 @@ export class AnimationController {
       const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
 
       const isSomethingOn = isOn !== false
-      const newSpeed = Number(speed) || ClassicFanSpeed.moderate
+      const numberSpeed = Number(speed)
+      const newSpeed =
+        Number.isNaN(numberSpeed) || numberSpeed === 0 ?
+          ClassicFanSpeed.moderate
+        : numberSpeed
       const newMode = Number(mode ?? null)
 
       await this.#reset({ isSomethingOn, mode: newMode })
@@ -344,9 +353,9 @@ export class AnimationController {
     if (elementName !== undefined) {
       const previousElement = getPreviousElement(elementName, index)
       const previousPosition =
-        previousElement ?
-          Number.parseFloat(previousElement.style[positionProperty])
-        : -gap * 2
+        previousElement === null ?
+          -gap * 2
+        : Number.parseFloat(previousElement.style[positionProperty])
       element.style[positionProperty] = generateStyleString(
         {
           gap,
@@ -362,7 +371,7 @@ export class AnimationController {
   }
 
   #createSmoke(flame: HTMLDivElement, speed: number): void {
-    if (flame.isConnected && this.#canvasContext) {
+    if (flame.isConnected && this.#canvasContext !== null) {
       const { left, top, width } = flame.getBoundingClientRect()
       for (let index = 0; index <= SmokeThreshold.iterations; index += 1) {
         this.#smokeParticles.push(
@@ -450,7 +459,7 @@ export class AnimationController {
   }
 
   #generateSmoke(speed: number): void {
-    if (this.#canvasContext) {
+    if (this.#canvasContext !== null) {
       ;({ innerHeight: this.#canvas.height, innerWidth: this.#canvas.width } =
         globalThis)
       this.#canvasContext.clearRect(
@@ -568,7 +577,7 @@ export class AnimationController {
   }
 
   async #resetFireAnimation(resetParams?: ResetParams): Promise<void> {
-    if (resetParams) {
+    if (resetParams !== undefined) {
       const { isSomethingOn, mode } = resetParams
       const modes = await this.#getModes()
       if (

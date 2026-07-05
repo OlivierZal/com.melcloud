@@ -19,7 +19,7 @@ const api = {
     query: { type?: `${Classic.DeviceType}` }
   }): Classic.DeviceZone[] {
     return getClassicZones({
-      type: type ? toDeviceType(type) : undefined,
+      type: type === undefined ? undefined : toDeviceType(type),
     }).filter((zone) => zone.model === 'devices')
   },
   async getClassicHourlyTemperatures({

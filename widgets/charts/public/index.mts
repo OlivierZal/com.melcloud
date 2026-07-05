@@ -255,7 +255,7 @@ class ChartWidget {
 
   #addEventListeners(config: DrawConfig): void {
     this.#zone.addEventListener('change', () => {
-      if (this.#timeout) {
+      if (this.#timeout !== null) {
         clearTimeout(this.#timeout)
       }
       fireAndForget(this.#draw(config))
@@ -263,10 +263,10 @@ class ChartWidget {
   }
 
   #applyDefaultZone(defaultZone: Classic.DeviceZone | null): void {
-    if (defaultZone) {
+    if (defaultZone !== null) {
       const { id, model } = defaultZone
       const value = getZoneId(id, model)
-      if (document.querySelector(`#zones option[value="${value}"]`)) {
+      if (document.querySelector(`#zones option[value="${value}"]`) !== null) {
         this.#zone.value = value
       }
     }
@@ -306,11 +306,11 @@ class ChartWidget {
         days,
         height,
       })
-      if (this.#chart) {
-        await this.#chart.updateOptions(this.#options)
-      } else {
+      if (this.#chart === null) {
         this.#chart = new ApexCharts(getDiv('chart'), this.#options)
         await this.#chart.render()
+      } else {
+        await this.#chart.updateOptions(this.#options)
       }
       await this.#homey.setHeight(document.body.scrollHeight)
     } catch (error) {

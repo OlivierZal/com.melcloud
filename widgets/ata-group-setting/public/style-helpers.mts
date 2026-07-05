@@ -8,7 +8,8 @@ export const generateStyleNumber = ({
   min: number
   divisor?: number
   multiplier?: number
-}): number => ((Math.random() * gap + min) * multiplier) / (divisor || 1)
+}): number =>
+  ((Math.random() * gap + min) * multiplier) / (divisor === 0 ? 1 : divisor)
 
 export const generateStyleString = (
   params: { gap: number; min: number; divisor?: number; multiplier?: number },

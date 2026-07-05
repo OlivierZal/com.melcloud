@@ -74,7 +74,7 @@ const formatErrors = (errors: Record<string, readonly string[]>): string =>
 const throwOnErrors = (
   errors: Record<string, readonly string[]> | null,
 ): void => {
-  if (errors) {
+  if (errors !== null) {
     throw new Error(formatErrors(errors))
   }
 }
@@ -144,7 +144,7 @@ const getLocalizedCapabilitiesOptions = (
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
     /* v8 ignore next -- enumType mapping: resolves string enum to numeric value */
-    id: enumType && id in enumType ? String(enumType[id]) : id,
+    id: enumType !== undefined && id in enumType ? String(enumType[id]) : id,
     /* v8 ignore next -- language fallback to English */
     label: title[language] ?? title.en,
   })),
@@ -301,7 +301,7 @@ export default class MELCloudApp extends App {
     id: number | string,
   ): Classic.Facade {
     const instance = this.#classicRegistry[zoneType].getById(Number(id))
-    if (!instance) {
+    if (instance === undefined) {
       throw new NotFoundError(
         this.homey.__(
           `errors.${zoneType === 'devices' ? 'device' : 'zone'}NotFound`,
@@ -626,9 +626,9 @@ export default class MELCloudApp extends App {
     const stringIds = ids?.map(String)
     return drivers.flatMap((driver) => {
       const devices = driver.getDevices()
-      return stringIds ?
+      return stringIds === undefined ? devices : (
           devices.filter(({ id }) => stringIds.includes(String(id)))
-        : devices
+        )
     })
   }
 

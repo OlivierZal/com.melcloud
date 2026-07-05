@@ -42,7 +42,7 @@ export const createOption = (
   select: HTMLSelectElement,
   { id, label }: { id: string; label: string },
 ): void => {
-  if (!select.querySelector(`option[value="${id}"]`)) {
+  if (select.querySelector(`option[value="${id}"]`) === null) {
     select.append(new Option(label, id))
   }
 }
