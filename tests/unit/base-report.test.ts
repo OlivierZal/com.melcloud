@@ -152,6 +152,15 @@ const createCopMocks = (
 describe(EnergyReport, () => {
   beforeAll(() => {
     vi.useFakeTimers({ now: FAKE_NOW, toFake: ['Date'] })
+    // Faking Date is not enough since temporal-polyfill v1: on runtimes
+    // shipping native Temporal it delegates to it, and the native clock
+    // does not consult the mocked Date. Pin Temporal.Now directly
+    vi.spyOn(Temporal.Now, 'zonedDateTimeISO').mockImplementation(
+      (timeZone = 'UTC') =>
+        Temporal.Instant.fromEpochMilliseconds(FAKE_NOW).toZonedDateTimeISO(
+          timeZone,
+        ),
+    )
   })
 
   beforeEach(() => {
@@ -163,6 +172,7 @@ describe(EnergyReport, () => {
 
   afterAll(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   describe('scheduling and data fetching', () => {
