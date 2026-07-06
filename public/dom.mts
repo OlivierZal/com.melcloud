@@ -23,9 +23,6 @@ const getElement = <T extends HTMLElement>(
 export const getButton = (id: string): HTMLButtonElement =>
   getElement(id, HTMLButtonElement, 'button')
 
-export const getCanvas = (id: string): HTMLCanvasElement =>
-  getElement(id, HTMLCanvasElement, 'canvas')
-
 export const getDiv = (id: string): HTMLDivElement =>
   getElement(id, HTMLDivElement, 'div')
 

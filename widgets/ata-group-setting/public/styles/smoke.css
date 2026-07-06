@@ -1,0 +1,18 @@
+.smoke {
+  /* Soft-edged puff baked into the texture: the canvas version's
+     blur(size/10) never exceeded ~0.7px, and a static gradient costs
+     no per-frame filter pass. */
+  background: radial-gradient(
+    circle,
+    rgb(200 200 200) 0%,
+    rgb(200 200 200) 65%,
+    transparent 100%
+  );
+  block-size: var(--size);
+  border-radius: 50%;
+  inline-size: var(--size);
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  position: absolute;
+}

@@ -3,7 +3,6 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
 import {
   getButton,
-  getCanvas,
   getDiv,
   getSelect,
   translateAriaLabels,
@@ -28,19 +27,12 @@ class WidgetApp {
 
   readonly #homey: Homey<HomeySettings>
 
-  #isAnimations = false
-
   public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
     const animation = getDiv('animation')
-    const canvas = getCanvas('smoke_canvas')
     const ataValues = getDiv('values_melcloud')
     const zone = getSelect('zones')
-    this.#animationController = new AnimationController(
-      homey,
-      animation,
-      canvas,
-    )
+    this.#animationController = new AnimationController(homey, animation)
     this.#ataValueManager = new AtaValueManager(homey, ataValues, zone)
   }
 
@@ -81,7 +73,7 @@ class WidgetApp {
 
   async #fetchAndAnimate(): Promise<void> {
     const values = await this.#ataValueManager.fetchValues()
-    await this.#animationController.applyAnimation(values, this.#isAnimations)
+    await this.#animationController.applyAnimation(values)
   }
 
   async #initBuildings(): Promise<void> {
@@ -92,9 +84,7 @@ class WidgetApp {
       } satisfies { type: `${Classic.DeviceType}` })}`,
     )
     if (buildings.length > 0) {
-      const { animations: isAnimations, default_zone: defaultZone } =
-        this.#homey.getSettings()
-      this.#isAnimations = isAnimations
+      const { default_zone: defaultZone } = this.#homey.getSettings()
       this.#addEventListeners()
       this.#ataValueManager.createAtaFormControls()
       this.#ataValueManager.populateZoneOptions(buildings)
