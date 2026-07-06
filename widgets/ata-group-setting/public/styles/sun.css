@@ -1,6 +1,8 @@
+/* The centering offset and the offscreen offset both live in the
+   animated `translate` property. */
 .sun {
   font-size: 14rem;
-  inset-block-start: -100vb;
-  inset-inline-end: -100vi;
+  inset-block-start: 50%;
+  inset-inline-end: 50%;
   position: absolute;
 }

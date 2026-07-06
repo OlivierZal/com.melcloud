@@ -9,7 +9,11 @@ import {
 import type { GroupAtaStates } from '../../../types/classic-ata.mts'
 import type { GetAtaOptions } from '../../../types/widgets.mts'
 import { getSelect } from '../../../public/dom.mts'
-import { type Homey, homeyApiGet } from '../../../public/homey-api.mts'
+import {
+  type Homey,
+  fireAndForget,
+  homeyApiGet,
+} from '../../../public/homey-api.mts'
 import { getZonePath } from '../../../public/zones.mts'
 import {
   generateStyleNumber,
@@ -23,10 +27,6 @@ interface ResetParams {
   readonly isSomethingOn: boolean
   readonly mode: number
 }
-
-// ── Numeric constants ──
-
-const FULL_CIRCLE = 2 * Math.PI
 
 // ── Animation speed factors ──
 
@@ -53,7 +53,21 @@ const AnimationGap = {
   snowflake: 50,
 } as const
 
-const LEAF_OSCILLATION_FACTOR = 5
+// Distinct duration ranges keep the flicker periods non-commensurate,
+// so the combined motion never visibly repeats (ms).
+const FlickerDurationMin = {
+  brightness: 500,
+  rotate: 400,
+  scale: 300,
+} as const
+
+// Baseline drift of a leaf per path unit, over `units` path units.
+const LeafPath = {
+  driftX: 5,
+  driftY: -2,
+  units: 100,
+} as const
+
 // Smoke particle behaviour, expressed per nominal 60 fps frame: each
 // keyframe pair integrates the linear per-frame motion over the
 // particle's whole lifetime.
@@ -83,11 +97,15 @@ const createSmokeParams = (): {
   speedX: generateStyleNumber({ gap: 0.2, min: -0.1 }),
   speedY: generateStyleNumber({ gap: 0.6, min: 0.2 }),
 })
-const ANIMATION_KEYFRAME_COUNT = 101
 
 // Safe widening: lets runtime `number` modes be probed without asserting
 // them down to ClassicOperationMode.
 const heatModeNumbers: ReadonlySet<number> = classicHeatModes
+
+// Queried lazily so module evaluation stays side-effect-free, and so each
+// animation pass reads the current OS preference.
+const prefersReducedMotion = (): boolean =>
+  matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // Calculates a randomized delay with exponential speed scaling. Higher speed
 // values produce shorter delays via exponential interpolation between
@@ -106,6 +124,21 @@ const generateDelay = (delay: number, speed: number): number => {
 
 const getZoneValue = (): string => getZonePath(getSelect('zones').value)
 
+const parseStateParams = (
+  state: Classic.GroupState,
+): { isSomethingOn: boolean; newMode: number; newSpeed: number } => {
+  const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
+  const numberSpeed = Number(speed)
+  return {
+    isSomethingOn: isOn !== false,
+    newMode: Number(mode ?? null),
+    newSpeed:
+      Number.isNaN(numberSpeed) || numberSpeed === 0 ?
+        ClassicFanSpeed.moderate
+      : numberSpeed,
+  }
+}
+
 // Converts a CSS pixel length (e.g. `12.5px`) into its numeric value.
 // Non-numeric values such as `auto` yield NaN. Unlike Number.parseFloat,
 // an empty string coerces to 0 — no call site can produce one, since the
@@ -113,6 +146,74 @@ const getZoneValue = (): string => getZonePath(getSelect('zones').value)
 // returns resolved values
 const parsePixelValue = (value: string): number =>
   Number(value.replace('px', ''))
+
+// ── Orchestration helpers ──
+
+const newAbortError = (): DOMException =>
+  new DOMException('The animation was aborted', 'AbortError')
+
+const isAbortError = (error: unknown): boolean =>
+  error instanceof DOMException && error.name === 'AbortError'
+
+// Abortable delay: resolves after `ms`, rejects with an abort error as
+// soon as `signal` aborts.
+const sleep = async (ms: number, signal: AbortSignal): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const done = AbortSignal.any([signal, AbortSignal.timeout(ms)])
+    const settle = (): void => {
+      if (signal.aborted) {
+        reject(newAbortError())
+        return
+      }
+      resolve()
+    }
+    // A signal that is already aborted never fires `abort`; settling
+    // synchronously keeps the promise from hanging in that case.
+    if (done.aborted) {
+      settle()
+      return
+    }
+    done.addEventListener('abort', settle, { once: true })
+  })
+
+const spawnUntilAborted = async (
+  generateSpawnDelay: () => number,
+  signal: AbortSignal,
+  spawn: () => void,
+): Promise<void> => {
+  while (!signal.aborted) {
+    // eslint-disable-next-line no-await-in-loop -- sequential by design: each spawn waits out its own randomized delay
+    await sleep(generateSpawnDelay(), signal)
+    // The abort can land between the sleep settling and this continuation
+    // running (an earlier microtask may abort mid-drain); spawning then
+    // would measure a detached element. `throwIfAborted` routes that exit
+    // through the loop's normal abort path.
+    signal.throwIfAborted()
+    spawn()
+  }
+}
+
+// Spawns elements on a randomized cadence until `signal` aborts; the
+// abort rejection is the loop's normal exit and is swallowed.
+const runSpawnLoop = async (
+  generateSpawnDelay: () => number,
+  signal: AbortSignal,
+  spawn: () => void,
+): Promise<void> => {
+  try {
+    await spawnUntilAborted(generateSpawnDelay, signal, spawn)
+  } catch (error) {
+    if (!isAbortError(error)) {
+      throw error
+    }
+  }
+}
+
+const cancelAnimations = (element: HTMLElement): void => {
+  for (const animation of element.getAnimations()) {
+    animation.cancel()
+  }
+}
 
 // ── Animation helpers ──
 
@@ -137,36 +238,79 @@ const createAnimationMapping = (): Record<
   }
 }
 
-// Generates a parametric leaf animation: the leaf follows a curved path
-// with a circular loop segment and sine-wave oscillation
-const generateLeafAnimation = (
-  leaf: HTMLDivElement,
-  speed: number,
-): Animation => {
-  const loopStart = Math.floor(generateStyleNumber({ gap: 50, min: 10 }))
-  const loopDuration = Math.floor(generateStyleNumber({ gap: 20, min: 20 }))
-  const loopEnd = loopStart + loopDuration
+// Negative delay starts each loop at a random phase so flames never sync.
+const createFlickerTiming = (
+  minDuration: number,
+): KeyframeAnimationOptions => ({
+  delay: -generateStyleNumber({ gap: 300, min: 0 }),
+  direction: 'alternate',
+  duration: generateStyleNumber({ gap: 200, min: minDuration }),
+  easing: 'ease-in-out',
+  iterations: Infinity,
+})
+
+const generateFlameScale = (): string =>
+  `${generateStyleString({ gap: 0.4, min: 0.8 })} ${generateStyleString({ gap: 0.4, min: 0.8 })}`
+
+// The individual scale/rotate properties and filter animate independently,
+// so the three loops compose without clashing on transform.
+const startFlameFlicker = (flame: HTMLDivElement): void => {
+  flame.animate(
+    [{ scale: generateFlameScale() }, { scale: generateFlameScale() }],
+    createFlickerTiming(FlickerDurationMin.scale),
+  )
+  flame.animate(
+    [{ rotate: '-6deg' }, { rotate: '6deg' }],
+    createFlickerTiming(FlickerDurationMin.rotate),
+  )
+  flame.animate(
+    [{ filter: 'brightness(100%)' }, { filter: 'brightness(150%)' }],
+    createFlickerTiming(FlickerDurationMin.brightness),
+  )
+}
+
+// Baseline up-right drift with a full circular loop-the-loop inserted at
+// a random point. `path()` coordinates are relative to the leaf's own
+// laid-out position, so its random block-start offset stays in charge
+// of the vertical spread.
+const generateLeafPath = (): string => {
   const loopRadius = generateStyleNumber({ gap: 40, min: 10 })
-  const animation = leaf.animate(
-    Array.from({ length: ANIMATION_KEYFRAME_COUNT }, (_element, index) => {
-      const angle = ((index - loopStart) / loopDuration) * FULL_CIRCLE
-      const indexLoopRadius =
-        index >= loopStart && index < loopEnd ? loopRadius : 0
-      const oscillate =
-        indexLoopRadius > 0 ?
-          ` translate(${String((indexLoopRadius / LEAF_OSCILLATION_FACTOR) * Math.sin(angle * LEAF_OSCILLATION_FACTOR))}px, 0px)`
-        : ''
-      const rotate = generateStyleString({ gap: 45, min: index }, 'deg')
-      const translateX = `${String(
-        index * LEAF_OSCILLATION_FACTOR + indexLoopRadius * Math.sin(angle),
-      )}px`
-      const translateY = `${String(
-        -(index * 2 - indexLoopRadius * Math.cos(angle)),
-      )}px`
-      return {
-        transform: `translate(${translateX}, ${translateY}) rotate(${rotate})${oscillate}`,
-      }
-    }),
+  const loopStart = Math.floor(generateStyleNumber({ gap: 50, min: 10 }))
+  const diameter = 2 * loopRadius
+  const preX = LeafPath.driftX * loopStart
+  const preY = LeafPath.driftY * loopStart
+  const postX = LeafPath.driftX * (LeafPath.units - loopStart)
+  const postY = LeafPath.driftY * (LeafPath.units - loopStart)
+  return [
+    'M 0 0',
+    `l ${String(preX)} ${String(preY)}`,
+    `a ${String(loopRadius)} ${String(loopRadius)} 0 1 1 0 ${String(-diameter)}`,
+    `a ${String(loopRadius)} ${String(loopRadius)} 0 1 1 0 ${String(diameter)}`,
+    `l ${String(postX)} ${String(postY)}`,
+  ].join(' ')
+}
+
+// The wobble lives on `transform`, which applies after the offset
+// transform: it tilts the leaf in place without bending its trajectory.
+const startLeafWobble = (leaf: HTMLDivElement): void => {
+  const angle = generateStyleString({ gap: 10, min: 5 }, 'deg')
+  leaf.animate(
+    [{ transform: `rotate(-${angle})` }, { transform: `rotate(${angle})` }],
+    {
+      direction: 'alternate',
+      duration: generateStyleNumber({ gap: 400, min: 600 }),
+      easing: 'ease-in-out',
+      iterations: Infinity,
+    },
+  )
+}
+
+const generateLeafAnimation = (leaf: HTMLDivElement, speed: number): void => {
+  leaf.style.offsetPath = `path('${generateLeafPath()}')`
+  leaf.style.offsetRotate = 'auto'
+  startLeafWobble(leaf)
+  const drift = leaf.animate(
+    [{ offsetDistance: '0%' }, { offsetDistance: '100%' }],
     {
       duration: generateStyleNumber({
         divisor: speed,
@@ -178,10 +322,10 @@ const generateLeafAnimation = (
       fill: 'forwards',
     },
   )
-  animation.onfinish = (): void => {
+  drift.onfinish = (): void => {
+    cancelAnimations(leaf)
     leaf.remove()
   }
-  return animation
 }
 
 const generateSnowflakeAnimation = (
@@ -210,11 +354,13 @@ const generateSnowflakeAnimation = (
   return animation
 }
 
+// The shine spins the individual `rotate` property, so it composes with
+// the motion's `translate` instead of clashing on transform.
 const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
   sun.animate(
     [
-      { filter: 'brightness(120%) blur(18px)', transform: 'rotate(0deg)' },
-      { filter: 'brightness(120%) blur(18px)', transform: 'rotate(360deg)' },
+      { filter: 'brightness(120%) blur(18px)', rotate: '0deg' },
+      { filter: 'brightness(120%) blur(18px)', rotate: '360deg' },
     ],
     {
       duration: AnimationDelay.sunShine,
@@ -226,11 +372,40 @@ const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
 const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
   document.querySelector<HTMLElement>(`#${name}-${String(Number(index) - 1)}`)
 
+// Lifetime is orchestrated here because the flicker animations are
+// infinite and cannot signal completion themselves.
+const scheduleFlameExpiry = async (
+  flame: HTMLDivElement,
+  controller: AbortController,
+  speed: number,
+): Promise<void> => {
+  try {
+    await sleep(
+      generateStyleNumber({
+        divisor: speed,
+        gap: 10,
+        min: 20,
+        multiplier: 1000,
+      }),
+      controller.signal,
+    )
+  } catch (error) {
+    if (isAbortError(error)) {
+      return
+    }
+    throw error
+  }
+  cancelAnimations(flame)
+  flame.remove()
+  controller.abort()
+}
+
 const scheduleFlameRemoval = (): void => {
   const flames = [...document.querySelectorAll<HTMLElement>('.flame')]
   for (const flame of flames) {
     setTimeout(
       () => {
+        cancelAnimations(flame)
         flame.remove()
       },
       generateDelay(AnimationDelay.flame, ClassicFanSpeed.very_slow),
@@ -265,48 +440,52 @@ export class AnimationController {
       this.#runSunAnimation(speed)
     },
     [ClassicOperationMode.fan]: (speed) => {
-      this.#generateRecurring(
-        (fanSpeed) => {
-          this.#createLeaf(fanSpeed)
-        },
-        AnimationDelay.leaf,
-        speed,
-      )
+      this.#runLeafAnimation(speed)
     },
     [ClassicOperationMode.heat]: (speed) => {
       this.#runFireAnimation(speed)
     },
   }
 
+  #controller = new AbortController()
+
   readonly #homey: Homey
+
+  #lastState: Classic.GroupState | null = null
 
   #liveSmokeCount = 0
 
-  readonly #sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> =
-    {
-      enter: null,
-      exit: null,
-      shine: null,
-    }
+  #sunMotion: Animation | null = null
 
-  readonly #timeouts: NodeJS.Timeout[] = []
+  #sunShine: Animation | null = null
 
   public constructor(homey: Homey, animationElement: HTMLDivElement) {
     this.#homey = homey
     this.#animation = animationElement
     this.#animationMapping = createAnimationMapping()
+    document.addEventListener('visibilitychange', () => {
+      this.#handleVisibilityChange()
+    })
   }
 
   public async applyAnimation(state: Classic.GroupState): Promise<void> {
-    const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
+    this.#lastState = state
 
-    const isSomethingOn = isOn !== false
-    const numberSpeed = Number(speed)
-    const newSpeed =
-      Number.isNaN(numberSpeed) || numberSpeed === 0 ?
-        ClassicFanSpeed.moderate
-      : numberSpeed
-    const newMode = Number(mode ?? null)
+    // A state update landing while the page is hidden must not rebuild the
+    // scene: #reset would replace the aborted controller and restart spawn
+    // loops offscreen. The visibilitychange handler replays #lastState when
+    // the page shows again.
+    if (document.visibilityState === 'hidden') {
+      return
+    }
+
+    // Honor the OS-level reduced-motion preference: clear the scene and stop.
+    if (prefersReducedMotion()) {
+      await this.#reset()
+      return
+    }
+
+    const { isSomethingOn, newMode, newSpeed } = parseStateParams(state)
 
     await this.#reset({ isSomethingOn, mode: newMode })
 
@@ -337,7 +516,7 @@ export class AnimationController {
       positionProperty: 'insetInlineStart',
       windowDimension: window.innerWidth,
       animate: (flame) => {
-        this.#generateFlameAnimation(flame, speed)
+        this.#igniteFlame(flame, speed)
       },
       applyStyles: (flame) => {
         flame.style.setProperty(
@@ -407,36 +586,6 @@ export class AnimationController {
     }
   }
 
-  #createSmoke(flame: HTMLDivElement, speed: number): void {
-    if (!flame.isConnected) {
-      return
-    }
-
-    // `#animation` is fixed at the viewport origin, so the flame's
-    // viewport coordinates are also its coordinates in the container.
-    const { left, top, width } = flame.getBoundingClientRect()
-    const flameInsetBlockEnd = parsePixelValue(
-      getComputedStyle(flame).insetBlockEnd,
-    )
-    for (let index = 0; index <= Smoke.iterations; index++) {
-      const isSpawned = this.#spawnSmokeParticle(
-        left + width / 2,
-        top - flameInsetBlockEnd,
-        speed,
-      )
-      // Budget exhausted: skip the remaining no-op calls this tick.
-      if (!isSpawned) {
-        break
-      }
-    }
-    setTimeout(
-      () => {
-        this.#createSmoke(flame, speed)
-      },
-      generateDelay(AnimationDelay.smoke, ClassicFanSpeed.very_slow),
-    )
-  }
-
   #createSmokeElement(size: number): HTMLDivElement {
     const particle = document.createElement('div')
     particle.classList.add('smoke')
@@ -468,109 +617,45 @@ export class AnimationController {
     })
   }
 
-  #generateFlameAnimation(flame: HTMLDivElement, speed: number): Animation {
-    const animation = flame.animate(
-      Array.from({ length: ANIMATION_KEYFRAME_COUNT }, () => {
-        const brightness = generateStyleString({ gap: 50, min: 100 }, '%')
-        const rotate = generateStyleString({ gap: 12, min: -6 }, 'deg')
-        const scaleX = generateStyleString({ gap: 0.4, min: 0.8 })
-        const scaleY = generateStyleString({ gap: 0.4, min: 0.8 })
-        return {
-          filter: `brightness(${brightness})`,
-          transform: `scale(${scaleX}, ${scaleY}) rotate(${rotate})`,
-        }
-      }),
-      {
-        duration: generateStyleNumber({
-          divisor: speed,
-          gap: 10,
-          min: 20,
-          multiplier: 1000,
-        }),
-        easing: 'ease-in-out',
-      },
-    )
-    animation.onfinish = (): void => {
-      flame.remove()
-    }
-    this.#createSmoke(flame, speed)
-    return animation
-  }
-
   #generateRecurring(
     create: (speed: number) => void,
     delay: number,
     speed: number,
   ): void {
-    this.#timeouts.push(
-      setTimeout(
+    fireAndForget(
+      runSpawnLoop(
+        () => generateDelay(delay, speed),
+        this.#controller.signal,
         () => {
           create(speed)
-          this.#generateRecurring(create, delay, speed)
         },
-        generateDelay(delay, speed),
       ),
     )
   }
 
-  #generateSunEnterAnimation(sun: HTMLDivElement): Animation {
-    const duration = Number(
-      this.#sunAnimation.exit?.currentTime ?? AnimationDelay.sunTransition,
-    )
-    this.#sunAnimation.exit?.pause()
-    this.#sunAnimation.exit = null
-    const { blockSize, inlineSize, insetBlockStart, insetInlineEnd } =
-      getComputedStyle(sun)
-    const animation = sun.animate(
+  #generateSunMotionAnimation(sun: HTMLDivElement): Animation {
+    const motion = sun.animate(
       [
-        {
-          insetBlockStart: `${String(parsePixelValue(insetBlockStart))}px`,
-          insetInlineEnd: `${String(parsePixelValue(insetInlineEnd))}px`,
-        },
-        {
-          insetBlockStart: `${String(
-            (window.innerHeight - parsePixelValue(blockSize)) / 2,
-          )}px`,
-          insetInlineEnd: `${String(
-            (window.innerWidth - parsePixelValue(inlineSize)) / 2,
-          )}px`,
-        },
+        { translate: 'calc(50% + 100vi) calc(-50% - 100vb)' },
+        { translate: '50% -50%' },
       ],
-      { duration, easing: 'ease-in-out', fill: 'forwards' },
+      {
+        duration: AnimationDelay.sunTransition,
+        easing: 'ease-in-out',
+        fill: 'both',
+      },
     )
-    animation.onfinish = (): void => {
-      this.#sunAnimation.enter = null
-    }
-    return animation
-  }
-
-  #generateSunExitAnimation(sun: HTMLDivElement): Animation {
-    const duration = Number(
-      this.#sunAnimation.enter?.currentTime ?? AnimationDelay.sunTransition,
-    )
-    this.#sunAnimation.enter?.pause()
-    this.#sunAnimation.enter = null
-    const { insetBlockStart, insetInlineEnd } = getComputedStyle(sun)
-    const animation = sun.animate(
-      [
-        {
-          insetBlockStart: `${String(parsePixelValue(insetBlockStart))}px`,
-          insetInlineEnd: `${String(parsePixelValue(insetInlineEnd))}px`,
-        },
-        {
-          insetBlockStart: `${String(-window.innerHeight)}px`,
-          insetInlineEnd: `${String(-window.innerWidth)}px`,
-        },
-      ],
-      { duration, easing: 'ease-in-out', fill: 'forwards' },
-    )
-    animation.onfinish = (): void => {
+    // A finish while reversed means the sun is back offscreen.
+    motion.onfinish = (): void => {
+      if (motion.playbackRate >= 0) {
+        return
+      }
+      cancelAnimations(sun)
       sun.remove()
-      this.#sunAnimation.enter = null
-      this.#sunAnimation.exit = null
-      this.#sunAnimation.shine = null
+      this.#sunMotion = null
+      this.#sunShine = null
     }
-    return animation
+    return motion
   }
 
   async #getModes(): Promise<number[]> {
@@ -593,15 +678,41 @@ export class AnimationController {
     return sun
   }
 
+  #handleVisibilityChange(): void {
+    if (document.visibilityState === 'hidden') {
+      // Stop spawning offscreen; already-running animations are harmless.
+      this.#controller.abort()
+      return
+    }
+    if (this.#lastState !== null) {
+      fireAndForget(this.applyAnimation(this.#lastState))
+    }
+  }
+
   #hasModeAnimation(mode: number): boolean {
     return Object.hasOwn(this.#animationRunners, mode)
   }
 
+  #igniteFlame(flame: HTMLDivElement, speed: number): void {
+    const flameController = new AbortController()
+    startFlameFlicker(flame)
+    fireAndForget(scheduleFlameExpiry(flame, flameController, speed))
+    // The smoke chain dies with its flame or with the global reset,
+    // whichever aborts first.
+    fireAndForget(
+      runSpawnLoop(
+        () => generateDelay(AnimationDelay.smoke, ClassicFanSpeed.very_slow),
+        AbortSignal.any([this.#controller.signal, flameController.signal]),
+        () => {
+          this.#spawnSmokeBatch(flame, speed)
+        },
+      ),
+    )
+  }
+
   async #reset(resetParams?: ResetParams): Promise<void> {
-    for (const timeout of this.#timeouts) {
-      clearTimeout(timeout)
-    }
-    this.#timeouts.length = 0
+    this.#controller.abort()
+    this.#controller = new AbortController()
     await this.#resetFireAnimation(resetParams)
     await this.#resetSunAnimation(resetParams)
   }
@@ -623,8 +734,8 @@ export class AnimationController {
   }
 
   async #resetSunAnimation(resetParams?: ResetParams): Promise<void> {
-    const sun = document.querySelector('#sun-1')
-    if (!(sun instanceof HTMLDivElement)) {
+    const motion = this.#sunMotion
+    if (motion === null) {
       return
     }
     if (resetParams?.isSomethingOn === true) {
@@ -637,7 +748,9 @@ export class AnimationController {
         return
       }
     }
-    this.#sunAnimation.exit = this.#generateSunExitAnimation(sun)
+    if (motion.playbackRate > 0) {
+      motion.reverse()
+    }
   }
 
   #runFireAnimation(speed: number): void {
@@ -646,6 +759,16 @@ export class AnimationController {
         this.#createFlame(flameSpeed)
       },
       AnimationDelay.flame,
+      speed,
+    )
+  }
+
+  #runLeafAnimation(speed: number): void {
+    this.#generateRecurring(
+      (leafSpeed) => {
+        this.#createLeaf(leafSpeed)
+      },
+      AnimationDelay.leaf,
       speed,
     )
   }
@@ -668,13 +791,7 @@ export class AnimationController {
       this.#runSunAnimation(speed)
     }
     if (modes.has(ClassicOperationMode.fan)) {
-      this.#generateRecurring(
-        (leafSpeed) => {
-          this.#createLeaf(leafSpeed)
-        },
-        AnimationDelay.leaf,
-        speed,
-      )
+      this.#runLeafAnimation(speed)
     }
   }
 
@@ -690,9 +807,32 @@ export class AnimationController {
 
   #runSunAnimation(speed: number): void {
     const sun = this.#getSunElement()
-    this.#sunAnimation.shine ??= generateSunShineAnimation(sun)
-    this.#sunAnimation.shine.playbackRate = speed
-    this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
+    this.#sunShine ??= generateSunShineAnimation(sun)
+    this.#sunShine.playbackRate = speed
+    this.#sunMotion ??= this.#generateSunMotionAnimation(sun)
+    if (this.#sunMotion.playbackRate < 0) {
+      this.#sunMotion.reverse()
+    }
+  }
+
+  #spawnSmokeBatch(flame: HTMLDivElement, speed: number): void {
+    // `#animation` is fixed at the viewport origin, so the flame's
+    // viewport coordinates are also its coordinates in the container.
+    const { left, top, width } = flame.getBoundingClientRect()
+    const flameInsetBlockEnd = parsePixelValue(
+      getComputedStyle(flame).insetBlockEnd,
+    )
+    for (let index = 0; index <= Smoke.iterations; index++) {
+      const isSpawned = this.#spawnSmokeParticle(
+        left + width / 2,
+        top - flameInsetBlockEnd,
+        speed,
+      )
+      // Budget exhausted: skip the remaining no-op calls this tick.
+      if (!isSpawned) {
+        break
+      }
+    }
   }
 
   // One compositor-driven animation per particle: the motion is linear
