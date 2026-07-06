@@ -11,7 +11,6 @@ import type { GetAtaOptions } from '../../../types/widgets.mts'
 import { getSelect } from '../../../public/dom.mts'
 import { type Homey, homeyApiGet } from '../../../public/homey-api.mts'
 import { getZonePath } from '../../../public/zones.mts'
-import { SmokeParticle, SmokeThreshold } from './smoke-particle.mts'
 import {
   generateStyleNumber,
   generateStyleString,
@@ -55,6 +54,35 @@ const AnimationGap = {
 } as const
 
 const LEAF_OSCILLATION_FACTOR = 5
+// Smoke particle behaviour, expressed per nominal 60 fps frame: each
+// keyframe pair integrates the linear per-frame motion over the
+// particle's whole lifetime.
+const Smoke = {
+  decayPerFrame: 0.002,
+  framesPerSecond: 60,
+  growthPerFrame: 1.002,
+  iterations: 10,
+  // Every live flame runs its own spawn chain, so dozens of concurrent
+  // flames would otherwise pile up thousands of composited layers.
+  maxParticles: 500,
+  msPerSecond: 1000,
+  positionYMin: -50,
+} as const
+
+// The plume reads as one continuous column because the puffs overlap:
+// size and opacity are calibrated against the particle budget (decay
+// scales with opacity, keeping lifetimes at 50-100 frames).
+const createSmokeParams = (): {
+  opacity: number
+  size: number
+  speedX: number
+  speedY: number
+} => ({
+  opacity: generateStyleNumber({ gap: 0.1, min: 0.1 }),
+  size: generateStyleNumber({ gap: 5, min: 5 }),
+  speedX: generateStyleNumber({ gap: 0.2, min: -0.1 }),
+  speedY: generateStyleNumber({ gap: 0.6, min: 0.2 }),
+})
 const ANIMATION_KEYFRAME_COUNT = 101
 
 // Safe widening: lets runtime `number` modes be probed without asserting
@@ -250,15 +278,9 @@ export class AnimationController {
     },
   }
 
-  readonly #canvas: HTMLCanvasElement
-
-  readonly #canvasContext: CanvasRenderingContext2D | null
-
   readonly #homey: Homey
 
-  #smokeAnimationFrameId: number | null = null
-
-  #smokeParticles: SmokeParticle[] = []
+  #liveSmokeCount = 0
 
   readonly #sunAnimation: Record<'enter' | 'exit' | 'shine', Animation | null> =
     {
@@ -269,26 +291,13 @@ export class AnimationController {
 
   readonly #timeouts: NodeJS.Timeout[] = []
 
-  public constructor(
-    homey: Homey,
-    animationElement: HTMLDivElement,
-    canvas: HTMLCanvasElement,
-  ) {
+  public constructor(homey: Homey, animationElement: HTMLDivElement) {
     this.#homey = homey
     this.#animation = animationElement
-    this.#canvas = canvas
-    this.#canvasContext = canvas.getContext('2d')
     this.#animationMapping = createAnimationMapping()
   }
 
-  public async applyAnimation(
-    state: Classic.GroupState,
-    isAnimations: boolean,
-  ): Promise<void> {
-    if (!isAnimations) {
-      return
-    }
-
+  public async applyAnimation(state: Classic.GroupState): Promise<void> {
     const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
 
     const isSomethingOn = isOn !== false
@@ -399,22 +408,26 @@ export class AnimationController {
   }
 
   #createSmoke(flame: HTMLDivElement, speed: number): void {
-    if (!flame.isConnected || this.#canvasContext === null) {
+    if (!flame.isConnected) {
       return
     }
 
+    // `#animation` is fixed at the viewport origin, so the flame's
+    // viewport coordinates are also its coordinates in the container.
     const { left, top, width } = flame.getBoundingClientRect()
     const flameInsetBlockEnd = parsePixelValue(
       getComputedStyle(flame).insetBlockEnd,
     )
-    for (let index = 0; index <= SmokeThreshold.iterations; index++) {
-      this.#smokeParticles.push(
-        new SmokeParticle(
-          this.#canvasContext,
-          left + width / 2,
-          top - flameInsetBlockEnd,
-        ),
+    for (let index = 0; index <= Smoke.iterations; index++) {
+      const isSpawned = this.#spawnSmokeParticle(
+        left + width / 2,
+        top - flameInsetBlockEnd,
+        speed,
       )
+      // Budget exhausted: skip the remaining no-op calls this tick.
+      if (!isSpawned) {
+        break
+      }
     }
     setTimeout(
       () => {
@@ -422,6 +435,15 @@ export class AnimationController {
       },
       generateDelay(AnimationDelay.smoke, ClassicFanSpeed.very_slow),
     )
+  }
+
+  #createSmokeElement(size: number): HTMLDivElement {
+    const particle = document.createElement('div')
+    particle.classList.add('smoke')
+    particle.style.setProperty('--size', `${String(2 * size)}px`)
+    this.#animation.append(particle)
+    this.#liveSmokeCount += 1
+    return particle
   }
 
   #createSnowflake(speed: number): void {
@@ -489,28 +511,6 @@ export class AnimationController {
         generateDelay(delay, speed),
       ),
     )
-  }
-
-  #generateSmoke(speed: number): void {
-    if (this.#canvasContext === null) {
-      return
-    }
-
-    this.#canvas.height = globalThis.innerHeight
-    this.#canvas.width = globalThis.innerWidth
-    this.#canvasContext.clearRect(0, 0, this.#canvas.width, this.#canvas.height)
-    this.#smokeParticles = this.#smokeParticles.filter((particle) => {
-      particle.update(speed)
-      particle.draw()
-      return (
-        particle.size > SmokeThreshold.sizeMin &&
-        particle.opacity > SmokeThreshold.opacityMin &&
-        particle.positionY > SmokeThreshold.positionYMin
-      )
-    })
-    this.#smokeAnimationFrameId = requestAnimationFrame(() => {
-      this.#generateSmoke(speed)
-    })
   }
 
   #generateSunEnterAnimation(sun: HTMLDivElement): Animation {
@@ -616,10 +616,6 @@ export class AnimationController {
           (mode === CLASSIC_OPERATION_MODE_MIXED &&
             modes.some((currentMode) => heatModeNumbers.has(currentMode))))
       ) {
-        if (this.#smokeAnimationFrameId !== null) {
-          cancelAnimationFrame(this.#smokeAnimationFrameId)
-          this.#smokeAnimationFrameId = null
-        }
         return
       }
     }
@@ -652,7 +648,6 @@ export class AnimationController {
       AnimationDelay.flame,
       speed,
     )
-    this.#generateSmoke(speed)
   }
 
   async #runMixedAnimation(speed: number): Promise<void> {
@@ -698,5 +693,58 @@ export class AnimationController {
     this.#sunAnimation.shine ??= generateSunShineAnimation(sun)
     this.#sunAnimation.shine.playbackRate = speed
     this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
+  }
+
+  // One compositor-driven animation per particle: the motion is linear
+  // per frame, so translate/opacity interpolate the whole trajectory
+  // and the growth collapses to a scale keyframe. Only transform and
+  // opacity animate — the soft edge lives in the element's gradient
+  // texture — so no JavaScript and no filter pass run between spawns.
+  #spawnSmokeParticle(
+    positionX: number,
+    positionY: number,
+    speed: number,
+  ): boolean {
+    if (this.#liveSmokeCount >= Smoke.maxParticles) {
+      return false
+    }
+    const { opacity, size, speedX, speedY } = createSmokeParams()
+    // Lifetime: opacity fading to zero or the particle clearing the
+    // viewport top, whichever comes first, in whole frames.
+    const frames = Math.ceil(
+      Math.max(
+        1,
+        Math.min(
+          opacity / Smoke.decayPerFrame,
+          (positionY - Smoke.positionYMin) / (speedY * speed),
+        ),
+      ),
+    )
+    const endScale = Smoke.growthPerFrame ** frames
+    const particle = this.#createSmokeElement(size)
+    const animation = particle.animate(
+      [
+        {
+          opacity,
+          transform: `translate(${String(positionX - size)}px, ${String(positionY - 2 * size)}px)`,
+        },
+        {
+          opacity: Math.max(0, opacity - frames * Smoke.decayPerFrame),
+          transform: `translate(${String(positionX - size + speedX * speed * frames)}px, ${String(
+            positionY - 2 * size - speedY * speed * frames,
+          )}px) scale(${String(endScale)})`,
+        },
+      ],
+      {
+        duration: (frames / Smoke.framesPerSecond) * Smoke.msPerSecond,
+        easing: 'linear',
+        fill: 'forwards',
+      },
+    )
+    animation.onfinish = (): void => {
+      particle.remove()
+      this.#liveSmokeCount -= 1
+    }
+    return true
   }
 }

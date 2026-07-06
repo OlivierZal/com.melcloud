@@ -4,7 +4,6 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { BaseSettings } from './bases.mts'
 
 export interface AtaGroupSettingWidgetSettings extends BaseSettings {
-  readonly animations: boolean
   readonly default_zone: Classic.DeviceZone | null
 }
 
