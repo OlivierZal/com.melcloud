@@ -80,8 +80,9 @@ select:not(.zone-select) {
 }
 
 input {
-  /* Matches the selects' chevron padding so the value column stays aligned */
-  padding-inline-end: 1.5rem;
+  /* Lines up the value's right edge with the selects' chevron, whose right
+     edge sits 6px in (second 4px gradient drawn at calc(100% - 10px)) */
+  padding-inline-end: 6px;
   text-align: end;
 }
 
