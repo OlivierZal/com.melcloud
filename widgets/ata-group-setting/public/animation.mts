@@ -316,7 +316,6 @@ const startLeafWobble = (leaf: HTMLDivElement): void => {
 
 const generateLeafAnimation = (leaf: HTMLDivElement, speed: number): void => {
   leaf.style.offsetPath = `path('${generateLeafPath()}')`
-  leaf.style.offsetRotate = 'auto'
   startLeafWobble(leaf)
   const drift = leaf.animate(
     [{ offsetDistance: '0%' }, { offsetDistance: '100%' }],
@@ -364,19 +363,14 @@ const generateSnowflakeAnimation = (
 }
 
 // The shine spins the individual `rotate` property, so it composes with
-// the motion's `translate` instead of clashing on transform.
+// the motion's `translate` instead of clashing on transform. The glow
+// filter is static and lives in sun.css.
 const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
-  sun.animate(
-    [
-      { filter: 'brightness(120%) blur(18px)', rotate: '0deg' },
-      { filter: 'brightness(120%) blur(18px)', rotate: '360deg' },
-    ],
-    {
-      duration: AnimationDelay.sunShine,
-      easing: 'linear',
-      iterations: Infinity,
-    },
-  )
+  sun.animate([{ rotate: '0deg' }, { rotate: '360deg' }], {
+    duration: AnimationDelay.sunShine,
+    easing: 'linear',
+    iterations: Infinity,
+  })
 
 const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
   document.querySelector<HTMLElement>(`#${name}-${String(Number(index) - 1)}`)
@@ -439,6 +433,8 @@ export class AnimationController {
   #generation = 0
 
   readonly #homey: Homey
+
+  #isFireActive = false
 
   #lastState: Classic.GroupState | null = null
 
@@ -574,7 +570,7 @@ export class AnimationController {
     particle.classList.add('smoke')
     particle.style.setProperty('--size', `${String(2 * size)}px`)
     this.#animation.append(particle)
-    this.#liveSmokeCount += 1
+    ++this.#liveSmokeCount
     return particle
   }
 
@@ -665,7 +661,7 @@ export class AnimationController {
     if (document.visibilityState === 'hidden') {
       // Stop spawning offscreen and invalidate any apply pass still in
       // flight; already-running animations are harmless.
-      this.#generation += 1
+      ++this.#generation
       this.#controller.abort()
       return
     }
@@ -710,7 +706,8 @@ export class AnimationController {
   #reset(scene: ReadonlySet<SceneElement>): void {
     this.#controller.abort()
     this.#controller = new AbortController()
-    if (!scene.has('fire')) {
+    this.#isFireActive = scene.has('fire')
+    if (!this.#isFireActive) {
       scheduleFlameRemoval()
     }
     this.#resetSunAnimation(scene.has('sun'))
@@ -790,10 +787,12 @@ export class AnimationController {
   }
 
   #spawnSmokeBatch(flame: HTMLDivElement, speed: number): void {
-    // The chain outlives the scene signal, so it sits out hidden pages on
-    // its own: the loop keeps ticking (throttled by the browser) and
-    // resumes spawning when the page shows again.
-    if (document.visibilityState === 'hidden') {
+    // The chain deliberately outlives the scene signal (a heat-to-heat
+    // reset keeps it), so standing down is its own job: instantly when
+    // fire leaves the scene — lingering flames must not keep puffing —
+    // and while the page is hidden. The loop keeps ticking and resumes
+    // spawning when conditions return.
+    if (!this.#isFireActive || document.visibilityState === 'hidden') {
       return
     }
     // `#animation` is fixed at the viewport origin, so the flame's
@@ -863,7 +862,7 @@ export class AnimationController {
     )
     animation.onfinish = (): void => {
       particle.remove()
-      this.#liveSmokeCount -= 1
+      --this.#liveSmokeCount
     }
     return true
   }
