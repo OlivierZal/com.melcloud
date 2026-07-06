@@ -541,9 +541,11 @@ class ChartWidget {
     chart,
     days,
   }: Omit<DrawConfig, 'height'>): Promise<WidgetChartConfig> {
-    // Preserve user's hidden series selections across data refreshes. If chart
-    // type changes or a previously hidden series disappears, destroy and
-    // recreate the chart
+    // Legend-toggle state is stored per index (`meta.hidden` for line
+    // datasets, `_hiddenIndices` for pie slices), so it survives an in-place
+    // `update()` only while the series line-up is stable. Destroy and
+    // recreate whenever indices may shift: always for pies (labels come from
+    // the data) and when a hidden series disappears from a line chart.
     const hiddenSeries = (this.#config?.data.datasets ?? []).map((dataset) =>
       dataset.hidden === true ? (dataset.label ?? null) : null,
     )
