@@ -616,7 +616,7 @@ describe(ClassicMELCloudDevice, () => {
       const errorDevice = new TestDevice()
       setDriver(errorDevice)
       vi.spyOn(errorDevice, 'ensureDevice').mockRejectedValue(
-        new EntityNotFoundError('DeviceLocation', 1),
+        new EntityNotFoundError('DeviceLocation', { entityId: 1 }),
       )
       await errorDevice.syncFromDevice()
 

@@ -31,7 +31,7 @@
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^39.0.0",
+    "@olivierzal/melcloud-api": "^40.0.0",
     "homey-lib": "^2.50.5",
     "source-map-support": "^0.5.21",
     "temporal-polyfill": "^1.0.1"
