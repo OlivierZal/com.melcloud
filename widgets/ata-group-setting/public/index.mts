@@ -97,7 +97,7 @@ class WidgetApp {
       this.#isAnimations = isAnimations
       this.#addEventListeners()
       this.#ataValueManager.createAtaFormControls()
-      await this.#ataValueManager.populateZoneOptions(buildings)
+      this.#ataValueManager.populateZoneOptions(buildings)
       this.#ataValueManager.applyDefaultZone(defaultZone)
       await this.#fetchAndAnimate()
     }

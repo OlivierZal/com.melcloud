@@ -11,7 +11,6 @@ import {
 } from '@olivierzal/melcloud-api'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { ClassicDeviceFacade } from '../../types/device.mts'
 import type {
   HomeCapabilitiesAta,
   HomeConvertFromDevice,
@@ -26,7 +25,7 @@ import {
 } from '../../types/ata.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
 
-export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
+export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice<Home.DeviceAtaFacade> {
   declare public readonly getData: () => { id: string }
 
   public override get id(): string {
@@ -102,19 +101,16 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
     return this.homey.app.getHomeFacade(this.id)
   }
 
-  async #setCapabilityValues(device: ClassicDeviceFacade): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- converters accept ClassicDeviceFacade at runtime; concrete HomeConvertFromDevice type is narrower for bivariance
-    const converters = Object.entries(this.deviceToCapability) as [
-      string,
-      (device: ClassicDeviceFacade) => unknown,
-    ][]
+  async #setCapabilityValues(device: Home.DeviceAtaFacade): Promise<void> {
     await Promise.all(
-      converters.map(async ([capability, convert]) => {
-        /* v8 ignore next -- hasCapability always true in tests */
-        if (this.hasCapability(capability)) {
-          await this.setCapabilityValue(capability, convert(device))
-        }
-      }),
+      Object.entries(this.deviceToCapability).map(
+        async ([capability, convert]) => {
+          /* v8 ignore next -- hasCapability always true in tests */
+          if (this.hasCapability(capability)) {
+            await this.setCapabilityValue(capability, convert(device))
+          }
+        },
+      ),
     )
   }
 }

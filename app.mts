@@ -9,7 +9,7 @@ import type {
   SettingManager,
   SyncCallback,
 } from '@olivierzal/melcloud-api'
-import { Temporal } from 'temporal-polyfill'
+import { Intl, Temporal } from 'temporal-polyfill'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
@@ -59,16 +59,9 @@ const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
   [Home.DeviceType.Ata]: 'home-melcloud',
 }
 
-const createDateRange = (
-  days: number,
-  timezone: string,
-): { from: string; to: string } => {
-  const now = Temporal.Now.plainDateTimeISO(timezone)
-  return {
-    from: now.subtract({ days }).toString(),
-    to: now.toString(),
-  }
-}
+// The report `to` bound defaults to now in the API timezone lib-side.
+const daysAgo = (days: number, timezone: string): string =>
+  Temporal.Now.plainDateTimeISO(timezone).subtract({ days }).toString()
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
@@ -176,12 +169,13 @@ const getLocalizedCapabilitiesOptions = (
 
 // MELCloud reports error timestamps either as UTC instants (Z or offset
 // suffix) or as wall-clock times in the building's timezone.
-const parseErrorDate = (date: string, timeZone: string): number => {
+const parseErrorDate = (date: string, timeZone: string): Temporal.Instant => {
   try {
-    return Temporal.Instant.from(date).epochMilliseconds
+    return Temporal.Instant.from(date)
   } catch {
-    return Temporal.PlainDateTime.from(date).toZonedDateTime(timeZone)
-      .epochMilliseconds
+    return Temporal.PlainDateTime.from(date)
+      .toZonedDateTime(timeZone)
+      .toInstant()
   }
 }
 
@@ -258,7 +252,10 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: GetAtaOptions & ZoneData): GroupAtaStates {
-    const { devices } = this.getClassicFacade(zoneType, zoneId)
+    // Annotated to collapse the BuildingFacade | ZoneFacade `devices` union
+    // into one array type, so the `.filter` type guard below can narrow.
+    const { devices }: { devices: readonly Classic.DeviceAny[] } =
+      this.getClassicFacade(zoneType, zoneId)
     if (devices.length === 0) {
       throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
     }
@@ -267,9 +264,10 @@ export default class MELCloudApp extends App {
       this.getClassicAtaCapabilities().map(([key]) => [
         key,
         devices
-          .filter((device) => device.type === Classic.DeviceType.Ata)
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic DeviceModel data to ATA-specific type
-          .map(({ data }) => data as Classic.ListDeviceDataAta)
+          .filter((device) =>
+            Classic.isDeviceOfType(device, Classic.DeviceType.Ata),
+          )
+          .map(({ data }) => data)
           .filter((data) => status !== 'on' || data.Power)
           .map((data) => data[key]),
       ]),
@@ -302,12 +300,6 @@ export default class MELCloudApp extends App {
       timeZone,
       year: 'numeric',
     })
-    const dateFullFormat = new Intl.DateTimeFormat(locale, {
-      day: 'numeric',
-      month: 'long',
-      timeZone,
-      year: 'numeric',
-    })
     return {
       ...rest,
       errors: errors.map(({ date, deviceId, ...errorRest }) => ({
@@ -315,10 +307,11 @@ export default class MELCloudApp extends App {
         date: dateTimeMedFormat.format(parseErrorDate(date, timeZone)),
         device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
       })),
-      fromDateHuman: dateFullFormat.format(
-        Temporal.PlainDate.from(fromDate).toZonedDateTime(timeZone)
-          .epochMilliseconds,
-      ),
+      fromDateHuman: Temporal.PlainDate.from(fromDate).toLocaleString(locale, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
     }
   }
 
@@ -388,11 +381,11 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
-    const dateRange = createDateRange(days, getTimeZone(this.homey))
+    const from = daysAgo(days, getTimeZone(this.homey))
     return unwrapResult(
-      await this.getClassicFacade('devices', deviceId).getOperationModes(
-        dateRange,
-      ),
+      await this.getClassicFacade('devices', deviceId).getOperationModes({
+        from,
+      }),
     )
   }
 
@@ -415,11 +408,11 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const dateRange = createDateRange(days, getTimeZone(this.homey))
+    const from = daysAgo(days, getTimeZone(this.homey))
     return unwrapResult(
-      await this.getClassicFacade('devices', deviceId).getTemperatures(
-        dateRange,
-      ),
+      await this.getClassicFacade('devices', deviceId).getTemperatures({
+        from,
+      }),
     )
   }
 
@@ -602,9 +595,10 @@ export default class MELCloudApp extends App {
         `${api}${key.charAt(0).toUpperCase()}${key.slice(1)}`
       )
     return {
-      get: (key: string): string | null | undefined =>
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- Homey settings.get returns unknown
-        this.homey.settings.get(prefixKey(key)) as string | null | undefined,
+      get: (key: string): string | null | undefined => {
+        const value: unknown = this.homey.settings.get(prefixKey(key))
+        return typeof value === 'string' || value === null ? value : undefined
+      },
       set: (key: string, value: string): void => {
         this.homey.settings.set(prefixKey(key), value)
       },

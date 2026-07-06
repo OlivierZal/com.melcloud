@@ -18,7 +18,7 @@ import { type EnergyReportConfig, EnergyReport } from './base-report.mts'
 
 export abstract class ClassicMELCloudDevice<
   T extends Classic.DeviceType,
-> extends BaseMELCloudDevice {
+> extends BaseMELCloudDevice<Classic.DeviceFacade<T>> {
   declare public readonly driver: ClassicMELCloudDriver<T>
 
   declare public readonly getCapabilityOptions: <
@@ -71,17 +71,11 @@ export abstract class ClassicMELCloudDevice<
   > | null
 
   protected get facade(): Classic.DeviceFacade<T> | undefined {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from generic base FacadeWithSetValues
-    return this.cachedFacade as Classic.DeviceFacade<T> | undefined
+    return this.cachedFacade
   }
 
   get #data(): Readonly<Classic.ListDeviceData<T>> | undefined {
     return this.facade?.data
-  }
-
-  public override async ensureDevice(): Promise<Classic.DeviceFacade<T> | null> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing from base FacadeWithSetValues after super call
-    return (await super.ensureDevice()) as Classic.DeviceFacade<T> | null
   }
 
   public override async syncFromDevice(): Promise<void> {

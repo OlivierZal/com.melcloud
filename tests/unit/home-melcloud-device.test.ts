@@ -14,10 +14,7 @@ import { createInstance } from './create-test-instance.ts'
 
 // eslint-disable-next-line vitest/prefer-import-in-mock -- Mock class is not assignable to typeof DeviceAtaFacade (lacks prototype members)
 vi.mock('@olivierzal/melcloud-api/home', async (importOriginal) => ({
-  ...(await importOriginal<
-    // eslint-disable-next-line @typescript-eslint/consistent-type-imports -- typeof import() required by vitest importOriginal generic
-    typeof import('@olivierzal/melcloud-api/home')
-  >()),
+  ...(await importOriginal<typeof Home>()),
   DeviceAtaFacade: vi.fn<new (...args: unknown[]) => unknown>(),
 }))
 

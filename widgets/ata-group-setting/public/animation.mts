@@ -57,6 +57,10 @@ const AnimationGap = {
 const LEAF_OSCILLATION_FACTOR = 5
 const ANIMATION_KEYFRAME_COUNT = 101
 
+// Safe widening: lets runtime `number` modes be probed without asserting
+// them down to ClassicOperationMode.
+const heatModeNumbers: ReadonlySet<number> = classicHeatModes
+
 // Calculates a randomized delay with exponential speed scaling. Higher speed
 // values produce shorter delays via exponential interpolation between
 // factorMin and factorMax
@@ -195,8 +199,7 @@ const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
   document.querySelector<HTMLElement>(`#${name}-${String(Number(index) - 1)}`)
 
 const scheduleFlameRemoval = (): void => {
-  // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
-  const flames = Array.from(document.querySelectorAll<HTMLElement>('.flame'))
+  const flames = [...document.querySelectorAll<HTMLElement>('.flame')]
   for (const flame of flames) {
     setTimeout(
       () => {
@@ -609,13 +612,9 @@ export class AnimationController {
       const modes = await this.#getModes()
       if (
         isSomethingOn &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- runtime mode is a ClassicOperationMode value or MIXED (0)
-        (classicHeatModes.has(mode as ClassicOperationMode) ||
+        (heatModeNumbers.has(mode) ||
           (mode === CLASSIC_OPERATION_MODE_MIXED &&
-            modes.some((currentMode) =>
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- API contract: detailed states return ClassicOperationMode values
-              classicHeatModes.has(currentMode as ClassicOperationMode),
-            )))
+            modes.some((currentMode) => heatModeNumbers.has(currentMode))))
       ) {
         if (this.#smokeAnimationFrameId !== null) {
           cancelAnimationFrame(this.#smokeAnimationFrameId)

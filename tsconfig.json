@@ -5,7 +5,7 @@
     "declaration": true,
     "erasableSyntaxOnly": true,
     "isolatedDeclarations": true,
-    "lib": ["DOM", "ESNext"],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "libReplacement": false,
     "module": "preserve",
     "noFallthroughCasesInSwitch": true,
