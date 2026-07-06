@@ -380,8 +380,9 @@ const getChartPieConfig = ({
   options: {
     maintainAspectRatio: false,
     plugins: {
-      // Single-series charts do not need a legend.
-      legend: { ...getLegendConfig('right'), display: series.length > 1 },
+      // Always shown: the legend is the only place the mode names appear
+      // (slices only carry percentages), even for a single-mode report.
+      legend: getLegendConfig('right'),
     },
   },
   plugins: [pieDataLabelsPlugin],
@@ -437,6 +438,45 @@ interface DrawConfig {
   readonly days?: number
 }
 
+// Line-dataset visibility flows through `dataset.hidden`: replacing the data
+// rebuilds the metas (they key on dataset object identity), and Chart.js then
+// falls back to `dataset.hidden`, so writing the captured state there is what
+// carries legend toggles across refreshes.
+const applyHiddenByLabel = (
+  config: WidgetChartConfig,
+  hiddenByLabel: ReadonlyMap<string, boolean>,
+): void => {
+  if (config.type === 'pie') {
+    return
+  }
+  for (const dataset of config.data.datasets) {
+    const isHidden =
+      dataset.label === undefined ? undefined : hiddenByLabel.get(dataset.label)
+    if (isHidden !== undefined) {
+      dataset.hidden = isHidden
+    }
+  }
+}
+
+// Pie-slice visibility cannot be seeded through the config (Chart.js only
+// exposes the index-keyed `toggleDataVisibility`), so a recreated pie
+// re-applies the captured state by label after construction.
+const applyPieHiddenByLabel = (
+  chart: Chart<WidgetChartType, (number | null)[], string>,
+  config: WidgetChartConfig,
+  hiddenByLabel: ReadonlyMap<string, boolean>,
+): void => {
+  const hiddenIndices = (config.data.labels ?? []).flatMap((label, index) =>
+    hiddenByLabel.get(label) === true ? [index] : [],
+  )
+  if (hiddenIndices.length > 0) {
+    for (const index of hiddenIndices) {
+      chart.toggleDataVisibility(index)
+    }
+    chart.update()
+  }
+}
+
 // ── ChartWidget class ──
 class ChartWidget {
   #chart: Chart<WidgetChartType, (number | null)[], string> | null = null
@@ -487,6 +527,32 @@ class ChartWidget {
     }
   }
 
+  // Chart.js keeps legend-toggle state where it does not survive this
+  // widget's refreshes (line metas key on dataset object identity) or a pie
+  // recreation (`_hiddenIndices` is index-keyed), so the live visibility is
+  // captured by label and re-applied to each freshly fetched config.
+  #captureHiddenByLabel(): ReadonlyMap<string, boolean> {
+    const chart = this.#chart
+    if (chart === null || this.#config === null) {
+      return new Map()
+    }
+    if (this.#config.type === 'pie') {
+      return new Map(
+        (chart.data.labels ?? []).map((label, index): [string, boolean] => [
+          label,
+          !chart.getDataVisibility(index),
+        ]),
+      )
+    }
+    return new Map(
+      chart.data.datasets.flatMap<[string, boolean]>(({ label }, index) =>
+        label === undefined ? [] : (
+          [[label, !chart.isDatasetVisible(index)]]
+        ),
+      ),
+    )
+  }
+
   async #classicFetchDevices(): Promise<void> {
     const {
       chart,
@@ -511,12 +577,20 @@ class ChartWidget {
     }
   }
 
-  #createChart(config: WidgetChartConfig, height: number): void {
+  #createChart(
+    config: WidgetChartConfig,
+    height: number,
+    hiddenByLabel: ReadonlyMap<string, boolean>,
+  ): void {
     const container = getDiv('chart')
     container.style.height = `${String(height)}px`
     const canvas = document.createElement('canvas')
     container.replaceChildren(canvas)
-    this.#chart = new Chart(canvas, config)
+    const chart = new Chart(canvas, config)
+    this.#chart = chart
+    if (config.type === 'pie') {
+      applyPieHiddenByLabel(chart, config, hiddenByLabel)
+    }
   }
 
   // Never rejects: `init()` awaits the first draw, so a transient failure
@@ -530,10 +604,30 @@ class ChartWidget {
       // eslint-disable-next-line no-console -- surfaces the failure in widget dev tools; the rearmed timer retries
       console.error('Chart refresh failed:', error)
     } finally {
+      // A zone change can start a second draw while this one is in flight;
+      // clearing the tracked timer here collapses both chains back into one
+      // instead of leaving an orphaned timer refreshing forever.
+      if (this.#timeout !== null) {
+        clearTimeout(this.#timeout)
+      }
       this.#timeout = setTimeout(() => {
         fireAndForget(this.#draw({ chart, days, height }))
       }, getTimeout(chart))
     }
+  }
+
+  // Resolves to null when a zone change landed while the fetch was in
+  // flight: the response is stale, and the change listener's own draw
+  // renders the new zone.
+  async #fetchFreshConfig({
+    chart,
+    days,
+  }: Omit<DrawConfig, 'height'>): Promise<WidgetChartConfig | null> {
+    const zoneValue = getZonePath(this.#zone.value)
+    const config = getChartConfig(
+      await fetchChartData(this.#homey, { chart, days, zoneValue }),
+    )
+    return getZonePath(this.#zone.value) === zoneValue ? config : null
   }
 
   #populateDeviceOptions(zones: Classic.DeviceZone[]): void {
@@ -543,24 +637,27 @@ class ChartWidget {
   }
 
   async #refreshChart({ chart, days, height }: DrawConfig): Promise<void> {
-    const config = getChartConfig(
-      await fetchChartData(this.#homey, {
-        chart,
-        days,
-        zoneValue: getZonePath(this.#zone.value),
-      }),
-    )
+    const config = await this.#fetchFreshConfig({ chart, days })
+    if (config === null) {
+      return
+    }
+    const hiddenByLabel = this.#captureHiddenByLabel()
+    applyHiddenByLabel(config, hiddenByLabel)
     if (this.#shouldRecreateChart(config)) {
       this.#chart?.destroy()
       this.#chart = null
     }
     this.#config = config
-    this.#renderOrUpdateChart(config, height)
+    this.#renderOrUpdateChart(config, height, hiddenByLabel)
   }
 
-  #renderOrUpdateChart(config: WidgetChartConfig, height: number): void {
+  #renderOrUpdateChart(
+    config: WidgetChartConfig,
+    height: number,
+    hiddenByLabel: ReadonlyMap<string, boolean>,
+  ): void {
     if (this.#chart === null) {
-      this.#createChart(config, height)
+      this.#createChart(config, height, hiddenByLabel)
       return
     }
     this.#chart.data = config.data
