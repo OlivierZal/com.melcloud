@@ -54,10 +54,10 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice {
       horizontalFromDevice[horizontalToClassic[vaneHorizontalDirection]],
     measure_signal_strength: ({ rssi }) => rssi,
     measure_temperature: ({ roomTemperature }) => roomTemperature,
-    onoff: ({ power }) => power,
+    onoff: ({ power: isOn }) => isOn,
     target_temperature: ({ setTemperature }) => setTemperature,
-    thermostat_mode: ({ operationMode, power }) =>
-      power ?
+    thermostat_mode: ({ operationMode, power: isOn }) =>
+      isOn ?
         operationModeFromDevice[operationModeToClassic[operationMode]]
       : ThermostatModeAta.off,
     vertical: ({ vaneVerticalDirection }) =>

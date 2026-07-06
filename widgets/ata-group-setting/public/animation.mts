@@ -94,12 +94,12 @@ const createAnimationMapping = (): Record<
   return {
     flame: {
       textContent: '🔥',
-      getIndex: () => (flameIndex += 1),
+      getIndex: () => ++flameIndex,
     },
-    leaf: { textContent: '🍁', getIndex: () => (leafIndex += 1) },
+    leaf: { textContent: '🍁', getIndex: () => ++leafIndex },
     snowflake: {
       textContent: '❄',
-      getIndex: () => (snowflakeIndex += 1),
+      getIndex: () => ++snowflakeIndex,
     },
     sun: { textContent: '☀', getIndex: () => 1 },
   }
@@ -404,7 +404,7 @@ export class AnimationController {
     const flameInsetBlockEnd = parsePixelValue(
       getComputedStyle(flame).insetBlockEnd,
     )
-    for (let index = 0; index <= SmokeThreshold.iterations; index += 1) {
+    for (let index = 0; index <= SmokeThreshold.iterations; index++) {
       this.#smokeParticles.push(
         new SmokeParticle(
           this.#canvasContext,
