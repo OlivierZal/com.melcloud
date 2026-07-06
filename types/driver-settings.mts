@@ -1,5 +1,10 @@
 import type { LoginCredentials } from '@olivierzal/melcloud-api'
 
+interface DriverSettingValue {
+  readonly id: string
+  readonly label: string
+}
+
 export interface DriverCapabilitiesOptions {
   readonly title: string
   readonly type: string
@@ -18,11 +23,6 @@ export interface DriverSetting {
   readonly placeholder?: string
   readonly units?: string
   readonly values?: readonly DriverSettingValue[]
-}
-
-export interface DriverSettingValue {
-  readonly id: string
-  readonly label: string
 }
 
 export interface LoginDriverSetting extends DriverSetting {

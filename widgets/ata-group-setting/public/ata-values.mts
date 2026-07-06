@@ -1,6 +1,5 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import {
-  type ClassicOperationMode,
   ClassicTemperature,
   classicCoolModes,
 } from '@olivierzal/melcloud-api/constants'
@@ -100,13 +99,14 @@ const createSelect = (
 
 // ── Value processing ──
 
+// Safe widening: lets the runtime `number` select value be probed without
+// asserting it down to ClassicOperationMode.
+const coolModeNumbers: ReadonlySet<number> = classicCoolModes
+
 const getCoolingAdjustedMin = (id: string, min: string): string =>
   (
     id === 'SetTemperature' &&
-    classicCoolModes.has(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- DOM <select> value is one of ClassicOperationMode values by markup contract
-      Number(getSelect('OperationMode').value) as ClassicOperationMode,
-    )
+    coolModeNumbers.has(Number(getSelect('OperationMode').value))
   ) ?
     String(ClassicTemperature.cooling_min)
   : min
@@ -223,7 +223,7 @@ export class AtaValueManager {
     return values
   }
 
-  public async populateZoneOptions(zones: Classic.Zone[] = []): Promise<void> {
+  public populateZoneOptions(zones: Classic.Zone[] = []): void {
     if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
@@ -231,8 +231,7 @@ export class AtaValueManager {
           id: getZoneId(id, model),
           label: getZoneName(name, level),
         })
-        // eslint-disable-next-line no-await-in-loop -- Sequential: parent-child order required for tree rendering
-        await this.populateZoneOptions(getSubzones(zone))
+        this.populateZoneOptions(getSubzones(zone))
       }
     }
   }
@@ -250,10 +249,7 @@ export class AtaValueManager {
 
   #buildAtaValuesBody(): Classic.GroupState {
     return Object.fromEntries(
-      // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
-      Array.from(
-        this.#ataValues.querySelectorAll<HTMLValueElement>('input, select'),
-      )
+      [...this.#ataValues.querySelectorAll<HTMLValueElement>('input, select')]
         .filter(
           ({ id, value }) =>
             this.#isGroupAtaState(id) &&

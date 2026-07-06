@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import {
-  typedEntries,
-  typedFromEntries,
-  typedKeys,
-} from '../../lib/typed-object.mts'
+import { typedEntries, typedFromEntries } from '../../lib/typed-object.mts'
 
 describe('typed-object', () => {
   const testObject = { bar: 2, foo: 1 }
@@ -28,14 +24,6 @@ describe('typed-object', () => {
       ])
 
       expect(result).toStrictEqual(testObject)
-    })
-  })
-
-  describe(typedKeys, () => {
-    it('should return typed keys', () => {
-      const keys = typedKeys(testObject)
-
-      expect(keys).toStrictEqual(['bar', 'foo'])
     })
   })
 })

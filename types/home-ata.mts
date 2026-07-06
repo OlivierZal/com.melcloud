@@ -7,6 +7,10 @@ import type {
   BaseSetCapabilities,
 } from './bases.mts'
 
+type HomeGetCapabilitiesAta = BaseGetCapabilities
+
+type HomeListCapabilitiesAta = BaseListCapabilities
+
 export type HomeCapabilitiesAta = HomeGetCapabilitiesAta &
   HomeListCapabilitiesAta &
   HomeSetCapabilitiesAta
@@ -35,10 +39,6 @@ export type HomeConvertToDevice = {
     value: HomeSetCapabilitiesAta[keyof HomeSetCapabilitiesAta],
   ): Home.AtaValues[keyof Home.AtaValues]
 }['bivariant']
-
-export type HomeGetCapabilitiesAta = BaseGetCapabilities
-
-export type HomeListCapabilitiesAta = BaseListCapabilities
 
 export interface HomeSetCapabilitiesAta extends BaseSetCapabilities {
   readonly fan_speed: number

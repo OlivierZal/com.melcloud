@@ -19,6 +19,7 @@ import type {
   FormattedErrorDetails,
   FormattedErrorLog,
 } from '../types/error-log.mts'
+import { getErrorMessage } from '../lib/get-error-message.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
@@ -31,29 +32,10 @@ import {
   getSpan,
   translateAriaLabels,
 } from '../public/dom.mts'
+import { fireAndForget } from '../public/homey-api.mts'
 import { getZoneId, getZoneName } from '../public/zones.mts'
 
 // ── Helpers ──
-
-const defaultOnError = (error: unknown): void => {
-  // eslint-disable-next-line no-console -- intentional fallback: surfaces otherwise-swallowed rejections in settings dev tools
-  console.error(error)
-}
-
-const fireAndForget = (
-  promise: Promise<unknown>,
-  onError: (error: unknown) => void = defaultOnError,
-): void => {
-  // eslint-disable-next-line unicorn/prefer-await -- fire-and-forget: rejections route to onError without blocking the caller
-  promise.catch(onError)
-}
-
-const getErrorMessage = (error: unknown): string => {
-  if (error instanceof Error) {
-    return error.message
-  }
-  return typeof error === 'string' ? error : JSON.stringify(error)
-}
 
 // Wraps Homey's callback-based settings API in a Promise for async/await usage
 const createCallback =
@@ -655,10 +637,9 @@ class DeviceSettingsManager {
       appendFormControl(this.#settingsCommon, { formControl, title })
       this.#updateCommonSetting(formControl)
     }
-    this.#addSettingsEventListeners(
-      // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
-      Array.from(this.#settingsCommon.querySelectorAll('select')),
-    )
+    this.#addSettingsEventListeners([
+      ...this.#settingsCommon.querySelectorAll('select'),
+    ])
   }
 
   #createDriverSettingControls(
@@ -700,8 +681,7 @@ class DeviceSettingsManager {
         this.#createDriverSettingControls(driverSetting, fieldSet)
         settingsContainer.append(fieldSet)
         this.#addSettingsEventListeners(
-          // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf not iterable without DOM.Iterable lib
-          Array.from(fieldSet.querySelectorAll('input')),
+          [...fieldSet.querySelectorAll('input')],
           driverId,
         )
         hide(getDiv(`has_devices_${driverId}`), false)
@@ -1110,7 +1090,7 @@ class ZoneSettingsManager {
     await this.fetchHolidayModeData()
   }
 
-  public async populateZoneOptions(zones: Classic.Zone[] = []): Promise<void> {
+  public populateZoneOptions(zones: Classic.Zone[] = []): void {
     if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
@@ -1118,8 +1098,7 @@ class ZoneSettingsManager {
           id: getZoneId(id, model),
           label: getZoneName(name, level),
         })
-        // eslint-disable-next-line no-await-in-loop -- Sequential: parent-child order required for tree rendering
-        await this.populateZoneOptions(getSubzones(zone))
+        this.populateZoneOptions(getSubzones(zone))
       }
     }
   }
@@ -1424,7 +1403,7 @@ class SettingsApp {
     if (buildings.length === 0) {
       throw new NoClassicDeviceError(this.#homey)
     }
-    await this.#zoneSettingsManager.populateZoneOptions(buildings)
+    this.#zoneSettingsManager.populateZoneOptions(buildings)
     await Promise.all([
       this.#errorLogManager.fetchErrorLog(),
       this.#zoneSettingsManager.fetchZoneSettings(),

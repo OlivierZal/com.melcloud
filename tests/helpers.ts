@@ -1,7 +1,10 @@
 import { expect, vi } from 'vitest'
 
-// eslint-disable-next-line func-style -- TS requires function declaration for asserts predicates
-export function assertDefined<T>(value: T | undefined): asserts value is T {
+// TS requires an explicit type annotation on the called identifier for
+// asserts predicates; an annotated arrow satisfies that.
+export const assertDefined: <T>(value: T | undefined) => asserts value is T = (
+  value,
+) => {
   expect(value).toBeDefined()
 }
 

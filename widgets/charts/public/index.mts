@@ -25,10 +25,8 @@ import {
 } from '../../../public/homey-api.mts'
 import { getZoneId, getZonePath } from '../../../public/zones.mts'
 
-// Below --homey-font-size-small (14px) — intentional for compact chart labels
 const FONT_SIZE_VERY_SMALL = '12px'
-const NEXT_TIMEOUT = 60_000
-const AGGREGATION_DELAY_MINUTES = 5
+const HOURLY_CHART_REFRESH_MS = 60_000
 
 const chartsWithDays = new Set<HomeySettings['chart']>([
   'operation_modes',
@@ -210,21 +208,22 @@ const fetchChartData = async (
   )
 }
 
-// Daily charts refresh 5 minutes after each full hour (to allow data
-// aggregation). Hourly charts refresh every 60 seconds
+// Charts of hourly data poll every minute so the latest point shows up
+// promptly; daily aggregates only change after the full hour plus
+// MELCloud's 5-minute aggregation delay, so wait for that instant.
 const getTimeout = (chart: HomeySettings['chart']): number => {
   if (hourlyCharts.has(chart)) {
-    return NEXT_TIMEOUT
+    return HOURLY_CHART_REFRESH_MS
   }
   const now = Temporal.Now.zonedDateTimeISO()
   const next = now.add({ hours: 1 }).with({
     microsecond: 0,
     millisecond: 0,
-    minute: AGGREGATION_DELAY_MINUTES,
+    minute: 5,
     nanosecond: 0,
     second: 0,
   })
-  return next.epochMilliseconds - now.epochMilliseconds
+  return now.until(next).total('milliseconds')
 }
 
 interface DrawConfig {

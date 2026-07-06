@@ -130,7 +130,9 @@ const { default: MelCloudApp } = await import('../../app.mts')
 
 const mockGetLanguage = vi.fn<() => string>().mockReturnValue('en')
 const mockGetTimezone = vi.fn<() => string>().mockReturnValue('Europe/Paris')
-const mockSettingsGet = vi.fn<(key: string) => string | null>()
+// Homey's settings.get is untyped (`any`): the manager must survive
+// non-string values, so the mock mirrors that width.
+const mockSettingsGet = vi.fn<(key: string) => unknown>()
 const mockSettingsSet = vi.fn<(key: string, value: string) => void>()
 const mockSetTimeout =
   vi.fn<(callback: () => Promise<void> | void, ms: number) => void>()
@@ -949,6 +951,25 @@ describe('melCloudApp', () => {
       settingManager.set('expiry', '2026-12-31')
 
       expect(mockSettingsSet).toHaveBeenCalledWith('expiry', '2026-12-31')
+    })
+
+    it('should pass through string and null settings and coerce the rest to undefined', async () => {
+      await app.onInit()
+
+      const { settingManager } = getMockCallArg<{
+        settingManager: {
+          get: (key: string) => unknown
+          set: (key: string, value: string) => void
+        }
+      }>(mockCreate, 0, 0)
+      mockSettingsGet
+        .mockReturnValueOnce('stored')
+        .mockReturnValueOnce(null)
+        .mockReturnValueOnce(42)
+
+      expect(settingManager.get('contextKey')).toBe('stored')
+      expect(settingManager.get('contextKey')).toBeNull()
+      expect(settingManager.get('contextKey')).toBeUndefined()
     })
   })
 

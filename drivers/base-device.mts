@@ -30,7 +30,9 @@ const capitalize = ([first = '', ...rest] = ''): string =>
 const DEBOUNCE_DELAY = 1000
 const modes: EnergyReportMode[] = ['regular', 'total']
 
-export abstract class BaseMELCloudDevice extends Device {
+export abstract class BaseMELCloudDevice<
+  TFacade extends ClassicDeviceFacade = ClassicDeviceFacade,
+> extends Device {
   declare public readonly driver: BaseMELCloudDriver
 
   declare public readonly getData: () => { id: number | string }
@@ -57,7 +59,7 @@ export abstract class BaseMELCloudDevice extends Device {
     return this.getData().id
   }
 
-  protected get cachedFacade(): ClassicDeviceFacade | undefined {
+  protected get cachedFacade(): TFacade | undefined {
     return this.#deviceFacade
   }
 
@@ -73,7 +75,7 @@ export abstract class BaseMELCloudDevice extends Device {
     }).filter((entry): entry is [string, string] => entry[1] !== undefined)
   }
 
-  #deviceFacade?: ClassicDeviceFacade
+  #deviceFacade?: TFacade
 
   #getCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
 
@@ -136,7 +138,7 @@ export abstract class BaseMELCloudDevice extends Device {
     config: EnergyReportConfig,
   ): EnergyReportOperation
 
-  protected abstract getFacade(): ClassicDeviceFacade
+  protected abstract getFacade(): TFacade
 
   public abstract syncFromDevice(): Promise<void>
 
@@ -157,7 +159,7 @@ export abstract class BaseMELCloudDevice extends Device {
     ) as Partial<TMapping>
   }
 
-  public async ensureDevice(): Promise<ClassicDeviceFacade | null> {
+  public async ensureDevice(): Promise<TFacade | null> {
     try {
       return await this.#ensureDeviceFacade()
     } catch (error) {
@@ -229,14 +231,10 @@ export abstract class BaseMELCloudDevice extends Device {
   protected async applyCapabilitiesOptions(data?: unknown): Promise<void> {
     const capabilitiesOptions = this.driver.getCapabilitiesOptions(data)
     for (const [capability, options] of Object.entries(capabilitiesOptions)) {
-      /* v8 ignore next -- options is always defined in practice; Partial type is defensive */
-      if (options !== undefined) {
+      /* v8 ignore next -- options is always an object in practice; Partial type is defensive */
+      if (typeof options === 'object' && options !== null) {
         // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
-        await this.setCapabilityOptions(
-          capability,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing options from unknown
-          options as Record<string, unknown>,
-        )
+        await this.setCapabilityOptions(capability, options)
       }
     }
   }
@@ -306,7 +304,7 @@ export abstract class BaseMELCloudDevice extends Device {
     this.#scheduleSyncFromDevice()
   }
 
-  async #ensureDeviceFacade(): Promise<ClassicDeviceFacade> {
+  async #ensureDeviceFacade(): Promise<TFacade> {
     if (this.#deviceFacade === undefined) {
       this.#deviceFacade = this.getFacade()
       await this.#init()
