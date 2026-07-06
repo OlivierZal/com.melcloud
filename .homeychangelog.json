@@ -331,5 +331,20 @@
     "pl": "Logowanie do API MELCloud Home bezpośrednio ze strony ustawień, niezależnie od konta Classic. Naprawiono stronę ustawień proszącą o dane logowania MELCloud Home, mimo że były prawidłowe.",
     "ru": "Вход в API MELCloud Home прямо со страницы настроек, независимо от учётной записи Classic. Исправлена страница настроек, запрашивавшая учётные данные MELCloud Home, хотя они были действительны.",
     "sv": "Logga in på MELCloud Home-API:et direkt från inställningssidan, oberoende av Classic-kontot. Åtgärdat att inställningssidan bad om MELCloud Home-uppgifter trots att de var giltiga."
+  },
+  "44.1.1": {
+    "ar": "تم إصلاح صفحة الإعدادات التي كانت تطلب بيانات اعتماد MELCloud Home رغم صلاحيتها.",
+    "da": "Rettet indstillingssiden, der bad om MELCloud Home-legitimationsoplysninger, selvom de var gyldige.",
+    "de": "Behoben: Die Einstellungsseite fragte nach MELCloud Home-Anmeldedaten, obwohl diese gültig waren.",
+    "en": "Fixed the settings page asking for MELCloud Home credentials although they were valid.",
+    "es": "Corregida la página de configuración que pedía las credenciales de MELCloud Home aunque fueran válidas.",
+    "fr": "Correction de la page des paramètres qui demandait les identifiants MELCloud Home alors qu'ils étaient valides.",
+    "it": "Corretta la pagina delle impostazioni che chiedeva le credenziali MELCloud Home anche se valide.",
+    "ko": "자격 증명이 유효한데도 MELCloud Home 로그인 정보를 요구하던 설정 페이지를 수정했습니다.",
+    "nl": "Opgelost dat de instellingenpagina om MELCloud Home-inloggegevens vroeg terwijl deze geldig waren.",
+    "no": "Rettet innstillingssiden som ba om MELCloud Home-påloggingsinformasjon selv om den var gyldig.",
+    "pl": "Naprawiono stronę ustawień proszącą o dane logowania MELCloud Home, mimo że były prawidłowe.",
+    "ru": "Исправлена страница настроек, запрашивавшая учётные данные MELCloud Home, хотя они были действительны.",
+    "sv": "Åtgärdat att inställningssidan bad om MELCloud Home-uppgifter trots att de var giltiga."
   }
 }
