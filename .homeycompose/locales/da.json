@@ -7,7 +7,8 @@
     "authenticate": {
       "button": "Log ind",
       "failure": "Godkendelse mislykkedes.",
-      "legend": "Brugernavn og adgangskode"
+      "legend": "Brugernavn og adgangskode",
+      "unverified": "Logget ind, men sessionen kunne ikke bekræftes — prøv igen."
     },
     "boolean": {
       "false": "Nej",
