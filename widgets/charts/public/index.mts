@@ -546,9 +546,7 @@ class ChartWidget {
     }
     return new Map(
       chart.data.datasets.flatMap<[string, boolean]>(({ label }, index) =>
-        label === undefined ? [] : (
-          [[label, !chart.isDatasetVisible(index)]]
-        ),
+        label === undefined ? [] : [[label, !chart.isDatasetVisible(index)]],
       ),
     )
   }
