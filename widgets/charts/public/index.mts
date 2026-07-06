@@ -54,7 +54,8 @@ Chart.register(
   Tooltip,
 )
 
-// ApexCharts' default font stack, kept so the migration is invisible.
+// Historical widget font stack, kept over the Homey font variables so the
+// rendered charts keep their established look.
 const FONT_FAMILY = 'Helvetica, Arial, sans-serif'
 Chart.defaults.font.family = FONT_FAMILY
 
@@ -64,12 +65,9 @@ const HALF_TURN_DEGREES = 180
 const HOURLY_CHART_REFRESH_MS = 60_000
 const LINE_WIDTH = 5
 const PERCENT_FACTOR = 100
-// Matches ApexCharts' `plotOptions.pie.dataLabels.minAngleToShowLabel`.
+// Slices narrower than this angle get no percentage label.
 const PIE_LABEL_MIN_ANGLE_DEGREES = 10
-// ApexCharts prints pie labels at `radialSize / 1.25` from the center.
 const PIE_LABEL_RADIUS_RATIO = 0.8
-// Approximates ApexCharts' `stroke.curve: 'smooth'` bezier.
-const SMOOTH_CURVE_TENSION = 0.4
 
 type FontWeight = number | 'bold' | 'bolder' | 'lighter' | 'normal'
 
@@ -148,9 +146,8 @@ const toRadians = (degrees: number): number =>
   (degrees * Math.PI) / HALF_TURN_DEGREES
 
 // ── Pie data labels plugin ──
-// Chart.js has no built-in data labels; this redraws ApexCharts' pie
-// percentage labels (`val.toFixed(1) + '%'` at 80% of the radius, hidden
-// under `minAngleToShowLabel`).
+// Chart.js has no built-in data labels; this plugin draws each slice's
+// percentage at 80% of the radius, skipping slices too narrow to fit one.
 
 const applyPieLabelStyle = (ctx: CanvasRenderingContext2D): void => {
   ctx.fillStyle = getStyle('--homey-text-color')
@@ -230,8 +227,8 @@ const getFontConfig = (): { size: number; weight: FontWeight } => ({
   weight: getFontWeight('--homey-font-weight-regular'),
 })
 
-// ApexCharts defaults the legend to the bottom for line charts and to the
-// right (top-aligned) for pie charts.
+// Line charts show the legend at the bottom; pie charts show it on the
+// right, top-aligned.
 const getLegendConfig = (
   position: 'bottom' | 'right',
 ): {
@@ -289,7 +286,9 @@ const getLineScalesConfig = (unit: string): WidgetChartOptions['scales'] => {
       ticks: { ...ticksStyle, maxRotation: 0, maxTicksLimit: 4 },
     },
     yAxis: {
-      // Grid lines inherit `border.dash`; the axis border itself stays solid.
+      // In Chart.js v4, `border.dash` styles the grid lines
+      // (`_computeGridLineItems` reads it per line), while `drawBorder`
+      // always strokes the axis border solid.
       border: {
         color: colorLight,
         dash: [GRID_LINE_DASH_PX, GRID_LINE_DASH_PX],
@@ -303,7 +302,7 @@ const getLineScalesConfig = (unit: string): WidgetChartOptions['scales'] => {
       },
       ticks: {
         ...ticksStyle,
-        // ApexCharts' nice-scale algorithm lands on ~5 intervals.
+        // Keeps the historical ~5 y-axis intervals.
         maxTicksLimit: 6,
         callback: (value) => Number(value).toFixed(0),
       },
@@ -323,17 +322,15 @@ const getChartLineConfig = ({
   },
   options: {
     elements: {
-      line: {
-        borderWidth: LINE_WIDTH,
-        cubicInterpolationMode: 'monotone',
-        tension: SMOOTH_CURVE_TENSION,
-      },
+      // Monotone interpolation smooths the line without overshooting data
+      // points (and ignores `tension`).
+      line: { borderWidth: LINE_WIDTH, cubicInterpolationMode: 'monotone' },
       point: { radius: 0 },
     },
     interaction: { intersect: false, mode: 'index' },
     maintainAspectRatio: false,
     plugins: {
-      // ApexCharts hides the legend for single-series charts.
+      // Single-series charts do not need a legend.
       legend: { ...getLegendConfig('bottom'), display: series.length > 1 },
       title: {
         align: 'start',
@@ -344,7 +341,7 @@ const getChartLineConfig = ({
       },
     },
     scales: getLineScalesConfig(unit),
-    // ApexCharts breaks the line at `null` points.
+    // Break the line at missing data points instead of bridging them.
     spanGaps: false,
   },
   type: 'line',
@@ -383,7 +380,7 @@ const getChartPieConfig = ({
   options: {
     maintainAspectRatio: false,
     plugins: {
-      // ApexCharts hides the legend for single-series charts.
+      // Single-series charts do not need a legend.
       legend: { ...getLegendConfig('right'), display: series.length > 1 },
     },
   },
