@@ -25,7 +25,10 @@ runs:
       shell: bash
     - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
       with:
-        cache: ${{ inputs.cache == 'none' && '' || inputs.cache }}
+        # `''` is falsy in expressions, so `cond && '' || x` can never
+        # yield the empty string — the condition must be inverted so
+        # the falsy branch sits after `||`.
+        cache: ${{ inputs.cache != 'none' && inputs.cache || '' }}
         node-version: ${{ inputs.node-version }}
         registry-url: https://npm.pkg.github.com
         scope: '@olivierzal'
