@@ -1,8 +1,10 @@
-concurrency:
-  cancel-in-progress: true
-  group: claude-review-${{ github.event.pull_request.number }}
 jobs:
   review:
+    # Job-level so a fully-skipped bot-triggered run cannot claim the
+    # group and cancel an in-progress human review.
+    concurrency:
+      cancel-in-progress: true
+      group: claude-review-${{ github.event.pull_request.number }}
     if: |
       github.actor != 'claude[bot]' &&
       github.actor != 'dependabot[bot]' &&
