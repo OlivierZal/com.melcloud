@@ -7,7 +7,8 @@
     "authenticate": {
       "button": "Accedi",
       "failure": "Autenticazione fallita.",
-      "legend": "Credenziali"
+      "legend": "Credenziali",
+      "unverified": "Accesso effettuato, ma non è stato possibile verificare la sessione: riprova."
     },
     "boolean": {
       "false": "No",

@@ -1,7 +1,6 @@
 .smoke {
-  /* Soft-edged puff baked into the texture: the canvas version's
-     blur(size/10) never exceeded ~0.7px, and a static gradient costs
-     no per-frame filter pass. */
+  /* Soft edge baked into the texture: a static gradient costs no
+     per-frame filter pass. */
   background: radial-gradient(
     circle,
     rgb(200 200 200) 0%,

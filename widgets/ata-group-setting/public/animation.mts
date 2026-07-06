@@ -54,28 +54,24 @@ const AnimationGap = {
 } as const
 
 const LEAF_OSCILLATION_FACTOR = 5
-// Smoke particle behaviour, expressed per nominal 60 fps frame. The
-// old canvas loop stepped once per requestAnimationFrame, so its
-// wall-clock speed varied with the display refresh rate; the WAAPI
-// keyframes pin the trajectory to the 60 fps case.
+// Smoke particle behaviour, expressed per nominal 60 fps frame: each
+// keyframe pair integrates the linear per-frame motion over the
+// particle's whole lifetime.
 const Smoke = {
   decayPerFrame: 0.002,
   framesPerSecond: 60,
   growthPerFrame: 1.002,
   iterations: 10,
-  // Every live flame runs its own spawn chain, so dozens of flames can
-  // otherwise pile up thousands of composited layers — the unbounded
-  // cost that used to freeze the canvas version CPU-side.
+  // Every live flame runs its own spawn chain, so dozens of concurrent
+  // flames would otherwise pile up thousands of composited layers.
   maxParticles: 500,
   msPerSecond: 1000,
   positionYMin: -50,
 } as const
 
-// The canvas stacked thousands of tiny 5 %-opacity ghosts and drew its
-// density from the overlap; with the particle budget the same plume is
-// rebuilt from fewer, larger, twice-as-opaque puffs (decay scales with
-// opacity, so lifetimes are unchanged) — calibrated against canvas
-// screenshots at widget scale.
+// The plume reads as one continuous column because the puffs overlap:
+// size and opacity are calibrated against the particle budget (decay
+// scales with opacity, keeping lifetimes at 50-100 frames).
 const createSmokeParams = (): {
   opacity: number
   size: number
@@ -423,11 +419,15 @@ export class AnimationController {
       getComputedStyle(flame).insetBlockEnd,
     )
     for (let index = 0; index <= Smoke.iterations; index++) {
-      this.#spawnSmokeParticle(
+      const isSpawned = this.#spawnSmokeParticle(
         left + width / 2,
         top - flameInsetBlockEnd,
         speed,
       )
+      // Budget exhausted: skip the remaining no-op calls this tick.
+      if (!isSpawned) {
+        break
+      }
     }
     setTimeout(
       () => {
@@ -695,24 +695,22 @@ export class AnimationController {
     this.#sunAnimation.enter ??= this.#generateSunEnterAnimation(sun)
   }
 
-  // One compositor-driven animation per particle: the old canvas loop
-  // moved linearly per frame, so translate/opacity interpolate the
-  // same trajectory (at its nominal 60 fps pace) and the per-frame
-  // size growth collapses to a scale keyframe. Only transform and
+  // One compositor-driven animation per particle: the motion is linear
+  // per frame, so translate/opacity interpolate the whole trajectory
+  // and the growth collapses to a scale keyframe. Only transform and
   // opacity animate — the soft edge lives in the element's gradient
   // texture — so no JavaScript and no filter pass run between spawns.
   #spawnSmokeParticle(
     positionX: number,
     positionY: number,
     speed: number,
-  ): void {
+  ): boolean {
     if (this.#liveSmokeCount >= Smoke.maxParticles) {
-      return
+      return false
     }
     const { opacity, size, speedX, speedY } = createSmokeParams()
-    // Lifetime: whichever death the canvas loop hit first — opacity
-    // fading to zero or the particle clearing the viewport top —
-    // rounded up to whole frames like the discrete loop culled.
+    // Lifetime: opacity fading to zero or the particle clearing the
+    // viewport top, whichever comes first, in whole frames.
     const frames = Math.ceil(
       Math.max(
         1,
@@ -747,5 +745,6 @@ export class AnimationController {
       particle.remove()
       this.#liveSmokeCount -= 1
     }
+    return true
   }
 }
