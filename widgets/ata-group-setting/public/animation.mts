@@ -471,6 +471,14 @@ export class AnimationController {
   public async applyAnimation(state: Classic.GroupState): Promise<void> {
     this.#lastState = state
 
+    // A state update landing while the page is hidden must not rebuild the
+    // scene: #reset would replace the aborted controller and restart spawn
+    // loops offscreen. The visibilitychange handler replays #lastState when
+    // the page shows again.
+    if (document.visibilityState === 'hidden') {
+      return
+    }
+
     // Honor the OS-level reduced-motion preference: clear the scene and stop.
     if (prefersReducedMotion()) {
       await this.#reset()
