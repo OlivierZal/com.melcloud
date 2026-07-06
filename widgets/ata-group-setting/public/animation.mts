@@ -186,10 +186,9 @@ const spawnUntilAborted = async (
     await sleep(generateSpawnDelay(), signal)
     // The abort can land between the sleep settling and this continuation
     // running (an earlier microtask may abort mid-drain); spawning then
-    // would measure a detached element.
-    if (signal.aborted) {
-      return
-    }
+    // would measure a detached element. `throwIfAborted` routes that exit
+    // through the loop's normal abort path.
+    signal.throwIfAborted()
     spawn()
   }
 }
