@@ -568,26 +568,19 @@ class ChartWidget {
     this.#chart.update()
   }
 
-  // Legend-toggle state is keyed by index (`meta.hidden` for line datasets,
-  // `_hiddenIndices` for pie slices), so an in-place `update()` keeps it
-  // attributed to the right series only while the line-up is stable.
-  // Recreate when it shifts; otherwise update in place, which preserves the
-  // user's legend toggles across refreshes. The destroy-and-recreate no
-  // longer works around an update crash in the charting library.
-  #shouldRecreateChart(config: WidgetChartConfig): boolean {
-    if (this.#config === null) {
+  // Verified against chart.umd.js in a headless browser: line-dataset legend
+  // toggles live in metas keyed by dataset object identity, so they never
+  // survive this widget's full-config refreshes and recreating buys nothing.
+  // Pie slice toggles live in the chart-level, index-keyed `_hiddenIndices`,
+  // which does survive in-place updates: recreate when the slice line-up
+  // shifts so a stale index cannot hide the wrong slice.
+  #shouldRecreateChart({ data, type }: WidgetChartConfig): boolean {
+    if (this.#config === null || type !== 'pie') {
       return false
     }
-    const lineUp = ({
-      data,
-      type,
-    }: WidgetChartConfig): readonly (string | undefined)[] =>
-      type === 'pie' ?
-        (data.labels ?? [])
-      : data.datasets.map(({ label }) => label)
-    const [previous, next] = [lineUp(this.#config), lineUp(config)]
+    const previous = this.#config.data.labels ?? []
+    const next = data.labels ?? []
     return (
-      this.#config.type !== config.type ||
       previous.length !== next.length ||
       previous.some((label, index) => label !== next[index])
     )
