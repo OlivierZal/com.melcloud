@@ -524,8 +524,7 @@ class ChartWidget {
   // the timer rearmed in `finally` retries it.
   async #draw({ chart, days, height }: DrawConfig): Promise<void> {
     try {
-      this.#config = await this.#fetchAndReconcileChart({ chart, days })
-      this.#renderOrUpdateChart(this.#config, height)
+      await this.#refreshChart({ chart, days, height })
       await this.#homey.setHeight(document.body.scrollHeight)
     } catch (error) {
       // eslint-disable-next-line no-console -- surfaces the failure in widget dev tools; the rearmed timer retries
@@ -537,42 +536,26 @@ class ChartWidget {
     }
   }
 
-  async #fetchAndReconcileChart({
-    chart,
-    days,
-  }: Omit<DrawConfig, 'height'>): Promise<WidgetChartConfig> {
-    // Legend-toggle state is stored per index (`meta.hidden` for line
-    // datasets, `_hiddenIndices` for pie slices), so it survives an in-place
-    // `update()` only while the series line-up is stable. Destroy and
-    // recreate whenever indices may shift: always for pies (labels come from
-    // the data) and when a hidden series disappears from a line chart.
-    const hiddenSeries = (this.#config?.data.datasets ?? []).map((dataset) =>
-      dataset.hidden === true ? (dataset.label ?? null) : null,
-    )
-    const zoneValue = getZonePath(this.#zone.value)
-    const newConfig = getChartConfig(
-      await fetchChartData(this.#homey, { chart, days, zoneValue }),
-    )
-    const shouldRecreateChart =
-      newConfig.type === 'pie' ||
-      hiddenSeries.some(
-        (name) =>
-          name !== null &&
-          !newConfig.data.datasets
-            .map(({ label }) => label ?? null)
-            .includes(name),
-      )
-    if (shouldRecreateChart) {
-      this.#chart?.destroy()
-      this.#chart = null
-    }
-    return newConfig
-  }
-
   #populateDeviceOptions(zones: Classic.DeviceZone[]): void {
     for (const { id, model, name } of zones) {
       createOption(this.#zone, { id: getZoneId(id, model), label: name })
     }
+  }
+
+  async #refreshChart({ chart, days, height }: DrawConfig): Promise<void> {
+    const config = getChartConfig(
+      await fetchChartData(this.#homey, {
+        chart,
+        days,
+        zoneValue: getZonePath(this.#zone.value),
+      }),
+    )
+    if (this.#shouldRecreateChart(config)) {
+      this.#chart?.destroy()
+      this.#chart = null
+    }
+    this.#config = config
+    this.#renderOrUpdateChart(config, height)
   }
 
   #renderOrUpdateChart(config: WidgetChartConfig, height: number): void {
@@ -583,6 +566,31 @@ class ChartWidget {
     this.#chart.data = config.data
     this.#chart.options = config.options
     this.#chart.update()
+  }
+
+  // Legend-toggle state is keyed by index (`meta.hidden` for line datasets,
+  // `_hiddenIndices` for pie slices), so an in-place `update()` keeps it
+  // attributed to the right series only while the line-up is stable.
+  // Recreate when it shifts; otherwise update in place, which preserves the
+  // user's legend toggles across refreshes. The destroy-and-recreate no
+  // longer works around an update crash in the charting library.
+  #shouldRecreateChart(config: WidgetChartConfig): boolean {
+    if (this.#config === null) {
+      return false
+    }
+    const lineUp = ({
+      data,
+      type,
+    }: WidgetChartConfig): readonly (string | undefined)[] =>
+      type === 'pie' ?
+        (data.labels ?? [])
+      : data.datasets.map(({ label }) => label)
+    const [previous, next] = [lineUp(this.#config), lineUp(config)]
+    return (
+      this.#config.type !== config.type ||
+      previous.length !== next.length ||
+      previous.some((label, index) => label !== next[index])
+    )
   }
 }
 
