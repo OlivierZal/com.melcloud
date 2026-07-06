@@ -1,6 +1,8 @@
+/* The offset path itself is random per leaf and stays inline. */
 .leaf {
   filter: brightness(var(--brightness));
   font-size: var(--size);
   inset-block-start: -50px;
+  offset-rotate: auto;
   position: absolute;
 }

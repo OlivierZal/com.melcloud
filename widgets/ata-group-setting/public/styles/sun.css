@@ -1,6 +1,7 @@
 /* The centering offset and the offscreen offset both live in the
    animated `translate` property. */
 .sun {
+  filter: brightness(120%) blur(18px);
   font-size: 14rem;
   inset-block-start: 50%;
   inset-inline-end: 50%;

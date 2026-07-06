@@ -3,7 +3,6 @@ import {
   CLASSIC_OPERATION_MODE_MIXED,
   ClassicFanSpeed,
   ClassicOperationMode,
-  classicHeatModes,
 } from '@olivierzal/melcloud-api/constants'
 
 import type { GroupAtaStates } from '../../../types/classic-ata.mts'
@@ -23,10 +22,7 @@ import {
 
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 
-interface ResetParams {
-  readonly isSomethingOn: boolean
-  readonly mode: number
-}
+type SceneElement = 'fire' | 'leaf' | 'snow' | 'sun'
 
 // ── Animation speed factors ──
 
@@ -98,9 +94,22 @@ const createSmokeParams = (): {
   speedY: generateStyleNumber({ gap: 0.6, min: 0.2 }),
 })
 
-// Safe widening: lets runtime `number` modes be probed without asserting
-// them down to ClassicOperationMode.
-const heatModeNumbers: ReadonlySet<number> = classicHeatModes
+// Scene composition per direct operation mode; a mixed group resolves to
+// the union over its members' modes. Keys are plain numbers so runtime
+// modes can be probed without asserting them down to ClassicOperationMode.
+const MODE_SCENES: Readonly<Partial<Record<number, readonly SceneElement[]>>> =
+  {
+    [ClassicOperationMode.auto]: ['fire', 'snow'],
+    [ClassicOperationMode.cool]: ['snow'],
+    [ClassicOperationMode.dry]: ['sun'],
+    [ClassicOperationMode.fan]: ['leaf'],
+    [ClassicOperationMode.heat]: ['fire'],
+  }
+
+const resolveMemberScene = (
+  modes: readonly number[],
+): ReadonlySet<SceneElement> =>
+  new Set(modes.flatMap((mode) => MODE_SCENES[mode] ?? []))
 
 // Queried lazily so module evaluation stays side-effect-free, and so each
 // animation pass reads the current OS preference.
@@ -307,7 +316,6 @@ const startLeafWobble = (leaf: HTMLDivElement): void => {
 
 const generateLeafAnimation = (leaf: HTMLDivElement, speed: number): void => {
   leaf.style.offsetPath = `path('${generateLeafPath()}')`
-  leaf.style.offsetRotate = 'auto'
   startLeafWobble(leaf)
   const drift = leaf.animate(
     [{ offsetDistance: '0%' }, { offsetDistance: '100%' }],
@@ -355,40 +363,32 @@ const generateSnowflakeAnimation = (
 }
 
 // The shine spins the individual `rotate` property, so it composes with
-// the motion's `translate` instead of clashing on transform.
+// the motion's `translate` instead of clashing on transform. The glow
+// filter is static and lives in sun.css.
 const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
-  sun.animate(
-    [
-      { filter: 'brightness(120%) blur(18px)', rotate: '0deg' },
-      { filter: 'brightness(120%) blur(18px)', rotate: '360deg' },
-    ],
-    {
-      duration: AnimationDelay.sunShine,
-      easing: 'linear',
-      iterations: Infinity,
-    },
-  )
+  sun.animate([{ rotate: '0deg' }, { rotate: '360deg' }], {
+    duration: AnimationDelay.sunShine,
+    easing: 'linear',
+    iterations: Infinity,
+  })
 
 const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
   document.querySelector<HTMLElement>(`#${name}-${String(Number(index) - 1)}`)
 
+// Every removal path ends a flame through its own controller, so
+// everything bound to it — expiry, smoke chain — stops with it.
+const flameControllers = new WeakMap<HTMLDivElement, AbortController>()
+
+// Ends the flame after `delayMs` unless its controller aborts first.
 // Lifetime is orchestrated here because the flicker animations are
 // infinite and cannot signal completion themselves.
-const scheduleFlameExpiry = async (
+const expireFlame = async (
   flame: HTMLDivElement,
   controller: AbortController,
-  speed: number,
+  delayMs: number,
 ): Promise<void> => {
   try {
-    await sleep(
-      generateStyleNumber({
-        divisor: speed,
-        gap: 10,
-        min: 20,
-        multiplier: 1000,
-      }),
-      controller.signal,
-    )
+    await sleep(delayMs, controller.signal)
   } catch (error) {
     if (isAbortError(error)) {
       return
@@ -400,16 +400,21 @@ const scheduleFlameExpiry = async (
   controller.abort()
 }
 
+// Graceful clear when the scene leaves fire: each flame lingers a random
+// beat, then dies through its own controller. A flame whose natural
+// expiry wins the race aborts first, turning this into a no-op.
 const scheduleFlameRemoval = (): void => {
-  const flames = [...document.querySelectorAll<HTMLElement>('.flame')]
-  for (const flame of flames) {
-    setTimeout(
-      () => {
-        cancelAnimations(flame)
-        flame.remove()
-      },
-      generateDelay(AnimationDelay.flame, ClassicFanSpeed.very_slow),
-    )
+  for (const flame of document.querySelectorAll<HTMLDivElement>('.flame')) {
+    const controller = flameControllers.get(flame)
+    if (controller !== undefined) {
+      fireAndForget(
+        expireFlame(
+          flame,
+          controller,
+          generateDelay(AnimationDelay.flame, ClassicFanSpeed.very_slow),
+        ),
+      )
+    }
   }
 }
 
@@ -423,33 +428,13 @@ export class AnimationController {
     { readonly textContent: string; readonly getIndex: () => number }
   >
 
-  readonly #animationRunners: Record<
-    number,
-    (speed: number) => Promise<void> | void
-  > = {
-    [CLASSIC_OPERATION_MODE_MIXED]: async (speed) =>
-      this.#runMixedAnimation(speed),
-    [ClassicOperationMode.auto]: (speed) => {
-      this.#runFireAnimation(speed)
-      this.#runSnowAnimation(speed)
-    },
-    [ClassicOperationMode.cool]: (speed) => {
-      this.#runSnowAnimation(speed)
-    },
-    [ClassicOperationMode.dry]: (speed) => {
-      this.#runSunAnimation(speed)
-    },
-    [ClassicOperationMode.fan]: (speed) => {
-      this.#runLeafAnimation(speed)
-    },
-    [ClassicOperationMode.heat]: (speed) => {
-      this.#runFireAnimation(speed)
-    },
-  }
-
   #controller = new AbortController()
 
+  #generation = 0
+
   readonly #homey: Homey
+
+  #isFireActive = false
 
   #lastState: Classic.GroupState | null = null
 
@@ -472,30 +457,24 @@ export class AnimationController {
     this.#lastState = state
 
     // A state update landing while the page is hidden must not rebuild the
-    // scene: #reset would replace the aborted controller and restart spawn
-    // loops offscreen. The visibilitychange handler replays #lastState when
+    // scene offscreen. The visibilitychange handler replays #lastState when
     // the page shows again.
     if (document.visibilityState === 'hidden') {
       return
     }
 
-    // Honor the OS-level reduced-motion preference: clear the scene and stop.
-    if (prefersReducedMotion()) {
-      await this.#reset()
+    const generation = ++this.#generation
+    const scene = await this.#resolveScene(state)
+
+    // Bail without touching the scene when the fetch failed (the running
+    // scene stays live and the next update retries) or when a newer apply —
+    // or a hide — superseded this pass while it awaited.
+    if (scene === null || generation !== this.#generation) {
       return
     }
 
-    const { isSomethingOn, newMode, newSpeed } = parseStateParams(state)
-
-    await this.#reset({ isSomethingOn, mode: newMode })
-
-    if (isSomethingOn && this.#hasModeAnimation(newMode)) {
-      await this.#animationRunners[newMode]?.(newSpeed)
-    }
-  }
-
-  public async reset(resetParams?: ResetParams): Promise<void> {
-    await this.#reset(resetParams)
+    this.#reset(scene)
+    this.#startScene(scene, parseStateParams(state).newSpeed)
   }
 
   #createAnimatedElement(name: AnimatedElement): HTMLDivElement {
@@ -591,7 +570,7 @@ export class AnimationController {
     particle.classList.add('smoke')
     particle.style.setProperty('--size', `${String(2 * size)}px`)
     this.#animation.append(particle)
-    this.#liveSmokeCount += 1
+    ++this.#liveSmokeCount
     return particle
   }
 
@@ -680,7 +659,9 @@ export class AnimationController {
 
   #handleVisibilityChange(): void {
     if (document.visibilityState === 'hidden') {
-      // Stop spawning offscreen; already-running animations are harmless.
+      // Stop spawning offscreen and invalidate any apply pass still in
+      // flight; already-running animations are harmless.
+      ++this.#generation
       this.#controller.abort()
       return
     }
@@ -689,20 +670,29 @@ export class AnimationController {
     }
   }
 
-  #hasModeAnimation(mode: number): boolean {
-    return Object.hasOwn(this.#animationRunners, mode)
-  }
-
   #igniteFlame(flame: HTMLDivElement, speed: number): void {
     const flameController = new AbortController()
+    flameControllers.set(flame, flameController)
     startFlameFlicker(flame)
-    fireAndForget(scheduleFlameExpiry(flame, flameController, speed))
-    // The smoke chain dies with its flame or with the global reset,
-    // whichever aborts first.
+    fireAndForget(
+      expireFlame(
+        flame,
+        flameController,
+        generateStyleNumber({
+          divisor: speed,
+          gap: 10,
+          min: 20,
+          multiplier: 1000,
+        }),
+      ),
+    )
+    // The smoke chain belongs to its flame alone: a reset that keeps the
+    // flames alive keeps their smoke too, and every removal path ends the
+    // flame through its controller.
     fireAndForget(
       runSpawnLoop(
         () => generateDelay(AnimationDelay.smoke, ClassicFanSpeed.very_slow),
-        AbortSignal.any([this.#controller.signal, flameController.signal]),
+        flameController.signal,
         () => {
           this.#spawnSmokeBatch(flame, speed)
         },
@@ -710,46 +700,49 @@ export class AnimationController {
     )
   }
 
-  async #reset(resetParams?: ResetParams): Promise<void> {
+  // Everything spawned by the previous scene stops here — except flames
+  // when the next scene still contains fire: they and their smoke chains
+  // live on their own controllers.
+  #reset(scene: ReadonlySet<SceneElement>): void {
     this.#controller.abort()
     this.#controller = new AbortController()
-    await this.#resetFireAnimation(resetParams)
-    await this.#resetSunAnimation(resetParams)
-  }
-
-  async #resetFireAnimation(resetParams?: ResetParams): Promise<void> {
-    if (resetParams !== undefined) {
-      const { isSomethingOn, mode } = resetParams
-      const modes = await this.#getModes()
-      if (
-        isSomethingOn &&
-        (heatModeNumbers.has(mode) ||
-          (mode === CLASSIC_OPERATION_MODE_MIXED &&
-            modes.some((currentMode) => heatModeNumbers.has(currentMode))))
-      ) {
-        return
-      }
+    this.#isFireActive = scene.has('fire')
+    if (!this.#isFireActive) {
+      scheduleFlameRemoval()
     }
-    scheduleFlameRemoval()
+    this.#resetSunAnimation(scene.has('sun'))
   }
 
-  async #resetSunAnimation(resetParams?: ResetParams): Promise<void> {
+  #resetSunAnimation(isSunActive: boolean): void {
     const motion = this.#sunMotion
-    if (motion === null) {
+    if (motion === null || isSunActive) {
       return
-    }
-    if (resetParams?.isSomethingOn === true) {
-      const modes = await this.#getModes()
-      const isDryActive =
-        resetParams.mode === ClassicOperationMode.dry ||
-        (resetParams.mode === CLASSIC_OPERATION_MODE_MIXED &&
-          modes.includes(ClassicOperationMode.dry))
-      if (isDryActive) {
-        return
-      }
     }
     if (motion.playbackRate > 0) {
       motion.reverse()
+    }
+  }
+
+  // Resolves which scene elements the new state activates — none when
+  // everything is off or reduced motion is requested. The member-mode
+  // fetch (mixed groups only) happens before any teardown, so a failure
+  // resolves to null with the running scene untouched.
+  async #resolveScene(
+    state: Classic.GroupState,
+  ): Promise<ReadonlySet<SceneElement> | null> {
+    const { isSomethingOn, newMode } = parseStateParams(state)
+    if (!isSomethingOn || prefersReducedMotion()) {
+      return new Set()
+    }
+    if (newMode !== CLASSIC_OPERATION_MODE_MIXED) {
+      return resolveMemberScene([newMode])
+    }
+    try {
+      return resolveMemberScene(await this.#getModes())
+    } catch (error) {
+      // eslint-disable-next-line no-console -- surfaces the failure in widget dev tools; the next update retries
+      console.error('Scene resolution failed:', error)
+      return null
     }
   }
 
@@ -773,28 +766,6 @@ export class AnimationController {
     )
   }
 
-  async #runMixedAnimation(speed: number): Promise<void> {
-    const modes = new Set(await this.#getModes())
-    if (
-      modes.has(ClassicOperationMode.auto) ||
-      modes.has(ClassicOperationMode.cool)
-    ) {
-      this.#runSnowAnimation(speed)
-    }
-    if (
-      modes.has(ClassicOperationMode.auto) ||
-      modes.has(ClassicOperationMode.heat)
-    ) {
-      this.#runFireAnimation(speed)
-    }
-    if (modes.has(ClassicOperationMode.dry)) {
-      this.#runSunAnimation(speed)
-    }
-    if (modes.has(ClassicOperationMode.fan)) {
-      this.#runLeafAnimation(speed)
-    }
-  }
-
   #runSnowAnimation(speed: number): void {
     this.#generateRecurring(
       (snowSpeed) => {
@@ -816,6 +787,14 @@ export class AnimationController {
   }
 
   #spawnSmokeBatch(flame: HTMLDivElement, speed: number): void {
+    // The chain deliberately outlives the scene signal (a heat-to-heat
+    // reset keeps it), so standing down is its own job: instantly when
+    // fire leaves the scene — lingering flames must not keep puffing —
+    // and while the page is hidden. The loop keeps ticking and resumes
+    // spawning when conditions return.
+    if (!this.#isFireActive || document.visibilityState === 'hidden') {
+      return
+    }
     // `#animation` is fixed at the viewport origin, so the flame's
     // viewport coordinates are also its coordinates in the container.
     const { left, top, width } = flame.getBoundingClientRect()
@@ -883,8 +862,25 @@ export class AnimationController {
     )
     animation.onfinish = (): void => {
       particle.remove()
-      this.#liveSmokeCount -= 1
+      --this.#liveSmokeCount
     }
     return true
+  }
+
+  // Runs synchronously right after #reset installs the fresh controller,
+  // so every spawn loop is bound to it with no interleaving window.
+  #startScene(scene: ReadonlySet<SceneElement>, speed: number): void {
+    if (scene.has('fire')) {
+      this.#runFireAnimation(speed)
+    }
+    if (scene.has('leaf')) {
+      this.#runLeafAnimation(speed)
+    }
+    if (scene.has('snow')) {
+      this.#runSnowAnimation(speed)
+    }
+    if (scene.has('sun')) {
+      this.#runSunAnimation(speed)
+    }
   }
 }
