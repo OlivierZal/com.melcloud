@@ -1,7 +1,7 @@
 // Bundles each browser entry point (widgets, settings page) into a single
 // self-contained ES module served statically by Homey. This replaces the
 // former copy-based pipeline (shared helpers and vendored constants were
-// duplicated into every widget) and inlines npm dependencies (ApexCharts)
+// duplicated into every widget) and inlines npm dependencies (Chart.js)
 // so widgets work offline with versions pinned by the lockfile.
 import { build } from 'esbuild'
 

@@ -50,7 +50,7 @@
     "@typescript/native-preview": "^7.0.0-dev.20260626.1",
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/eslint-plugin": "^1.6.20",
-    "apexcharts": "^5.15.2",
+    "chart.js": "^4.5.1",
     "esbuild": "^0.28.1",
     "eslint": "^10.6.0",
     "eslint-config-prettier": "^10.1.8",
