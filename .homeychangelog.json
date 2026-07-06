@@ -318,18 +318,18 @@
     "sv": "Åtgärdat MELCloud Home-parning som inte visade några enheter vid första installationen."
   },
   "44.1.0": {
-    "ar": "المصادقة على واجهة برمجة تطبيقات MELCloud Home مباشرة من صفحة الإعدادات، بشكل مستقل عن حساب Classic.",
-    "da": "Log ind på MELCloud Home-API'en direkte fra indstillingssiden, uafhængigt af Classic-kontoen.",
-    "de": "Bei der MELCloud Home-API direkt von der Einstellungsseite anmelden, unabhängig vom Classic-Konto.",
-    "en": "Sign in to the MELCloud Home API directly from the settings page, independently from the Classic account.",
-    "es": "Inicie sesión en la API de MELCloud Home directamente desde la página de configuración, de forma independiente a la cuenta Classic.",
-    "fr": "Connexion à l'API MELCloud Home directement depuis la page des paramètres, indépendamment du compte Classic.",
-    "it": "Accedi all'API MELCloud Home direttamente dalla pagina delle impostazioni, indipendentemente dall'account Classic.",
-    "ko": "Classic 계정과 독립적으로 설정 페이지에서 MELCloud Home API에 직접 로그인.",
-    "nl": "Meld aan bij de MELCloud Home API rechtstreeks vanaf de instellingenpagina, onafhankelijk van het Classic-account.",
-    "no": "Logg på MELCloud Home-API-en direkte fra innstillingssiden, uavhengig av Classic-kontoen.",
-    "pl": "Logowanie do API MELCloud Home bezpośrednio ze strony ustawień, niezależnie od konta Classic.",
-    "ru": "Вход в API MELCloud Home прямо со страницы настроек, независимо от учётной записи Classic.",
-    "sv": "Logga in på MELCloud Home-API:et direkt från inställningssidan, oberoende av Classic-kontot."
+    "ar": "المصادقة على واجهة برمجة تطبيقات MELCloud Home مباشرة من صفحة الإعدادات، بشكل مستقل عن حساب Classic. تم إصلاح صفحة الإعدادات التي كانت تطلب بيانات اعتماد MELCloud Home رغم صلاحيتها.",
+    "da": "Log ind på MELCloud Home-API'en direkte fra indstillingssiden, uafhængigt af Classic-kontoen. Rettet indstillingssiden, der bad om MELCloud Home-legitimationsoplysninger, selvom de var gyldige.",
+    "de": "Bei der MELCloud Home-API direkt von der Einstellungsseite anmelden, unabhängig vom Classic-Konto. Behoben: Die Einstellungsseite fragte nach MELCloud Home-Anmeldedaten, obwohl diese gültig waren.",
+    "en": "Sign in to the MELCloud Home API directly from the settings page, independently from the Classic account. Fixed the settings page asking for MELCloud Home credentials although they were valid.",
+    "es": "Inicie sesión en la API de MELCloud Home directamente desde la página de configuración, de forma independiente a la cuenta Classic. Corregida la página de configuración que pedía las credenciales de MELCloud Home aunque fueran válidas.",
+    "fr": "Connexion à l'API MELCloud Home directement depuis la page des paramètres, indépendamment du compte Classic. Correction de la page des paramètres qui demandait les identifiants MELCloud Home alors qu'ils étaient valides.",
+    "it": "Accedi all'API MELCloud Home direttamente dalla pagina delle impostazioni, indipendentemente dall'account Classic. Corretta la pagina delle impostazioni che chiedeva le credenziali MELCloud Home anche se valide.",
+    "ko": "Classic 계정과 독립적으로 설정 페이지에서 MELCloud Home API에 직접 로그인. 자격 증명이 유효한데도 MELCloud Home 로그인 정보를 요구하던 설정 페이지를 수정했습니다.",
+    "nl": "Meld aan bij de MELCloud Home API rechtstreeks vanaf de instellingenpagina, onafhankelijk van het Classic-account. Opgelost dat de instellingenpagina om MELCloud Home-inloggegevens vroeg terwijl deze geldig waren.",
+    "no": "Logg på MELCloud Home-API-en direkte fra innstillingssiden, uavhengig av Classic-kontoen. Rettet innstillingssiden som ba om MELCloud Home-påloggingsinformasjon selv om den var gyldig.",
+    "pl": "Logowanie do API MELCloud Home bezpośrednio ze strony ustawień, niezależnie od konta Classic. Naprawiono stronę ustawień proszącą o dane logowania MELCloud Home, mimo że były prawidłowe.",
+    "ru": "Вход в API MELCloud Home прямо со страницы настроек, независимо от учётной записи Classic. Исправлена страница настроек, запрашивавшая учётные данные MELCloud Home, хотя они были действительны.",
+    "sv": "Logga in på MELCloud Home-API:et direkt från inställningssidan, oberoende av Classic-kontot. Åtgärdat att inställningssidan bad om MELCloud Home-uppgifter trots att de var giltiga."
   }
 }
