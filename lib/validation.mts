@@ -2,7 +2,6 @@ import type { Hour } from '@olivierzal/melcloud-api'
 
 import type { DeviceOrZoneData, ZoneData } from '../types/zone.mts'
 
-const HOUR_MIN = 0
 const HOUR_MAX = 23
 
 const zoneTypes = new Set<ZoneData['zoneType']>([
@@ -88,5 +87,3 @@ export const toDeviceOrZoneData = ({
   }
   return { zoneId, zoneType }
 }
-
-export { HOUR_MAX, HOUR_MIN }
