@@ -7,7 +7,8 @@
     "authenticate": {
       "button": "Logga in",
       "failure": "Autentisering misslyckades.",
-      "legend": "Inloggningsuppgifter"
+      "legend": "Inloggningsuppgifter",
+      "unverified": "Inloggad, men sessionen kunde inte verifieras — försök igen."
     },
     "boolean": {
       "false": "Nej",
