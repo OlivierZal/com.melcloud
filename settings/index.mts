@@ -1431,6 +1431,16 @@ class SettingsApp {
     ])
   }
 
+  // A failed probe reads as "not verified" rather than throwing: the
+  // caller must not turn an accepted login into a failure alert.
+  async #fetchSessionState(api: Api): Promise<boolean> {
+    try {
+      return await homeyApiGet<boolean>(this.#homey, `/${api}/sessions`)
+    } catch {
+      return false
+    }
+  }
+
   #getUnauthenticatedApis(): Api[] {
     const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
       this.#authState
@@ -1475,15 +1485,27 @@ class SettingsApp {
 
   /** @alerts Displays post-login errors to the user. */
   async #onLogin(api: Api): Promise<void> {
-    this.#authState[api] = true
-    try {
-      await this.#ensureDevicesForApi(api)
-    } catch (error) {
-      if (error instanceof NoDeviceError) {
-        this.#disableForError(error)
+    // Reflect the server truth instead of assuming success: the login
+    // POST resolves even when the post-login device sync fails, and a
+    // hardcoded `true` here hid the credentials frame for the session
+    // only to bring it back on the next page open.
+    this.#authState[api] = await this.#fetchSessionState(api)
+    if (this.#authState[api]) {
+      try {
+        await this.#ensureDevicesForApi(api)
+      } catch (error) {
+        if (error instanceof NoDeviceError) {
+          this.#disableForError(error)
+        }
+        await this.#homey.alert(
+          error instanceof NoDeviceError ?
+            error.message
+          : getErrorMessage(error),
+        )
       }
+    } else {
       await this.#homey.alert(
-        error instanceof NoDeviceError ? error.message : getErrorMessage(error),
+        this.#homey.__('settings.authenticate.unverified'),
       )
     }
     this.#refreshVisibility()
