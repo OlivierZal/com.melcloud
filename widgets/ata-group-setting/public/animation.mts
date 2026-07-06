@@ -102,7 +102,10 @@ const createSmokeParams = (): {
 // them down to ClassicOperationMode.
 const heatModeNumbers: ReadonlySet<number> = classicHeatModes
 
-const prefersReducedMotion = matchMedia('(prefers-reduced-motion: reduce)')
+// Queried lazily so module evaluation stays side-effect-free, and so each
+// animation pass reads the current OS preference.
+const prefersReducedMotion = (): boolean =>
+  matchMedia('(prefers-reduced-motion: reduce)').matches
 
 // Calculates a randomized delay with exponential speed scaling. Higher speed
 // values produce shorter delays via exponential interpolation between
@@ -156,22 +159,21 @@ const isAbortError = (error: unknown): boolean =>
 // soon as `signal` aborts.
 const sleep = async (ms: number, signal: AbortSignal): Promise<void> =>
   new Promise((resolve, reject) => {
-    if (signal.aborted) {
-      reject(newAbortError())
+    const done = AbortSignal.any([signal, AbortSignal.timeout(ms)])
+    const settle = (): void => {
+      if (signal.aborted) {
+        reject(newAbortError())
+        return
+      }
+      resolve()
+    }
+    // A signal that is already aborted never fires `abort`; settling
+    // synchronously keeps the promise from hanging in that case.
+    if (done.aborted) {
+      settle()
       return
     }
-    const done = AbortSignal.any([signal, AbortSignal.timeout(ms)])
-    done.addEventListener(
-      'abort',
-      () => {
-        if (signal.aborted) {
-          reject(newAbortError())
-          return
-        }
-        resolve()
-      },
-      { once: true },
-    )
+    done.addEventListener('abort', settle, { once: true })
   })
 
 const spawnUntilAborted = async (
@@ -182,6 +184,12 @@ const spawnUntilAborted = async (
   while (!signal.aborted) {
     // eslint-disable-next-line no-await-in-loop -- sequential by design: each spawn waits out its own randomized delay
     await sleep(generateSpawnDelay(), signal)
+    // The abort can land between the sleep settling and this continuation
+    // running (an earlier microtask may abort mid-drain); spawning then
+    // would measure a detached element.
+    if (signal.aborted) {
+      return
+    }
     spawn()
   }
 }
@@ -465,7 +473,7 @@ export class AnimationController {
     this.#lastState = state
 
     // Honor the OS-level reduced-motion preference: clear the scene and stop.
-    if (prefersReducedMotion.matches) {
+    if (prefersReducedMotion()) {
       await this.#reset()
       return
     }
