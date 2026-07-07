@@ -1,7 +1,8 @@
 /* Zone selector — borderless "ghost" control on Homey design tokens.
-   `appearance: none` drops the native dropdown arrow, so the small
-   triangle chevron is redrawn with two currentcolor gradients (the
-   daisyUI technique). */
+   `appearance: none` drops the native dropdown arrow, so a small triangle
+   chevron is redrawn with two currentcolor gradients. Kept byte-identical
+   across both widgets' styles/zone-select.css (the widgets ship
+   separately; a unit test enforces the mirror). */
 .zone-select {
   appearance: none;
   background-color: transparent;
@@ -31,9 +32,9 @@
   background-color: color-mix(in srgb, currentcolor 8%, transparent);
 }
 
-/* The zone select touches the top edge of the widget card, so a default
-   focus ring drawn around the element spills outside the frame. Draw it
-   inside instead. */
+/* The select touches the top edge of the widget card, so a default focus
+   ring drawn around the element spills outside the frame. Draw it inside
+   instead. */
 .zone-select:focus {
   outline: 2px solid var(--homey-text-color-blue);
   outline-offset: -2px;
