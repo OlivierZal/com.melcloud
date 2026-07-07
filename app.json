@@ -667,6 +667,46 @@
         "id": "fan_speed.state_changed"
       },
       {
+        "title": {
+          "ar": "تغيّر وضع الإجازة",
+          "da": "Ferietilstand blev ændret",
+          "de": "Urlaubsmodus hat sich geändert",
+          "en": "Holiday mode changed",
+          "es": "El modo vacaciones ha cambiado",
+          "fr": "Le mode vacances a changé",
+          "it": "La modalità vacanza è cambiata",
+          "ko": "휴가 모드가 변경되었습니다",
+          "nl": "Vakantiemodus is veranderd",
+          "no": "Feriemodus ble endret",
+          "pl": "Tryb wakacyjny uległ zmianie",
+          "ru": "Режим отпуска изменился",
+          "sv": "Semesterläge ändrades"
+        },
+        "tokens": [
+          {
+            "example": true,
+            "name": "enabled",
+            "title": {
+              "ar": "مفعّل",
+              "da": "Aktiveret",
+              "de": "Aktiviert",
+              "en": "Enabled",
+              "es": "Activado",
+              "fr": "Activé",
+              "it": "Attivato",
+              "ko": "활성화됨",
+              "nl": "Ingeschakeld",
+              "no": "Aktivert",
+              "pl": "Włączony",
+              "ru": "Включён",
+              "sv": "Aktiverat"
+            },
+            "type": "boolean"
+          }
+        ],
+        "id": "holiday_mode_changed"
+      },
+      {
         "args": [
           {
             "filter": "driver_id=melcloud|home-melcloud",
@@ -1208,6 +1248,75 @@
           "sv": "Det tysta läget är !{{på|av}}"
         },
         "id": "alarm_generic.silent_condition"
+      },
+      {
+        "args": [
+          {
+            "name": "zone",
+            "placeholder": {
+              "ar": "اختر المنطقة",
+              "da": "Vælg zone",
+              "de": "Zone auswählen",
+              "en": "Select zone",
+              "es": "Seleccionar zona",
+              "fr": "Sélectionner la zone",
+              "it": "Seleziona zona",
+              "ko": "구역 선택",
+              "nl": "Selecteer zone",
+              "no": "Velg sone",
+              "pl": "Wybierz strefę",
+              "ru": "Выберите зону",
+              "sv": "Välj zon"
+            },
+            "title": {
+              "ar": "منطقة",
+              "da": "Zone",
+              "de": "Zone",
+              "en": "Zone",
+              "es": "Zona",
+              "fr": "Zone",
+              "it": "Zona",
+              "ko": "구역",
+              "nl": "Zone",
+              "no": "Sone",
+              "pl": "Strefa",
+              "ru": "Зона",
+              "sv": "Zon"
+            },
+            "type": "autocomplete"
+          }
+        ],
+        "title": {
+          "ar": "وضع الإجازة !{{مفعّل|غير مفعّل}}",
+          "da": "Ferietilstand er !{{aktiveret|ikke aktiveret}}",
+          "de": "Urlaubsmodus !{{ist|ist nicht}} aktiviert",
+          "en": "Holiday mode !{{is|is not}} enabled",
+          "es": "El modo vacaciones !{{está|no está}} activado",
+          "fr": "Le mode vacances !{{est|n'est pas}} activé",
+          "it": "La modalità vacanza !{{è|non è}} attivata",
+          "ko": "휴가 모드가 !{{활성화되어 있습니다|활성화되어 있지 않습니다}}",
+          "nl": "Vakantiemodus is !{{ingeschakeld|niet ingeschakeld}}",
+          "no": "Feriemodus er !{{aktivert|ikke aktivert}}",
+          "pl": "Tryb wakacyjny !{{jest|nie jest}} włączony",
+          "ru": "Режим отпуска !{{включён|не включён}}",
+          "sv": "Semesterläge är !{{aktiverat|inte aktiverat}}"
+        },
+        "titleFormatted": {
+          "ar": "وضع الإجازة في [[zone]] !{{مفعّل|غير مفعّل}}",
+          "da": "Ferietilstand i [[zone]] er !{{aktiveret|ikke aktiveret}}",
+          "de": "Urlaubsmodus in [[zone]] !{{ist|ist nicht}} aktiviert",
+          "en": "Holiday mode in [[zone]] !{{is|is not}} enabled",
+          "es": "El modo vacaciones en [[zone]] !{{está|no está}} activado",
+          "fr": "Le mode vacances dans [[zone]] !{{est|n'est pas}} activé",
+          "it": "La modalità vacanza in [[zone]] !{{è|non è}} attivata",
+          "ko": "[[zone]]의 휴가 모드가 !{{활성화되어 있습니다|활성화되어 있지 않습니다}}",
+          "nl": "Vakantiemodus in [[zone]] is !{{ingeschakeld|niet ingeschakeld}}",
+          "no": "Feriemodus i [[zone]] er !{{aktivert|ikke aktivert}}",
+          "pl": "Tryb wakacyjny w [[zone]] !{{jest|nie jest}} włączony",
+          "ru": "Режим отпуска в [[zone]] !{{включён|не включён}}",
+          "sv": "Semesterläge i [[zone]] är !{{aktiverat|inte aktiverat}}"
+        },
+        "id": "holiday_mode_condition"
       },
       {
         "args": [
@@ -2114,6 +2223,96 @@
       }
     ],
     "actions": [
+      {
+        "args": [
+          {
+            "name": "zone",
+            "placeholder": {
+              "ar": "اختر المنطقة",
+              "da": "Vælg zone",
+              "de": "Zone auswählen",
+              "en": "Select zone",
+              "es": "Seleccionar zona",
+              "fr": "Sélectionner la zone",
+              "it": "Seleziona zona",
+              "ko": "구역 선택",
+              "nl": "Selecteer zone",
+              "no": "Velg sone",
+              "pl": "Wybierz strefę",
+              "ru": "Выберите зону",
+              "sv": "Välj zon"
+            },
+            "title": {
+              "ar": "منطقة",
+              "da": "Zone",
+              "de": "Zone",
+              "en": "Zone",
+              "es": "Zona",
+              "fr": "Zone",
+              "it": "Zona",
+              "ko": "구역",
+              "nl": "Zone",
+              "no": "Sone",
+              "pl": "Strefa",
+              "ru": "Зона",
+              "sv": "Zon"
+            },
+            "type": "autocomplete"
+          },
+          {
+            "max": 365,
+            "min": 0,
+            "name": "duration",
+            "title": {
+              "ar": "المدة بالأيام (0 لإيقاف التشغيل)",
+              "da": "Varighed i dage (0 slukker)",
+              "de": "Dauer in Tagen (0 schaltet aus)",
+              "en": "Duration in days (0 turns off)",
+              "es": "Duración en días (0 lo desactiva)",
+              "fr": "Durée en jours (0 désactive)",
+              "it": "Durata in giorni (0 disattiva)",
+              "ko": "기간(일) (0은 끄기)",
+              "nl": "Duur in dagen (0 schakelt uit)",
+              "no": "Varighet i dager (0 slår av)",
+              "pl": "Czas trwania w dniach (0 wyłącza)",
+              "ru": "Продолжительность в днях (0 отключает)",
+              "sv": "Varaktighet i dagar (0 stänger av)"
+            },
+            "type": "number"
+          }
+        ],
+        "title": {
+          "ar": "ضبط وضع الإجازة",
+          "da": "Indstil ferietilstand",
+          "de": "Urlaubsmodus einstellen",
+          "en": "Set holiday mode",
+          "es": "Configurar modo vacaciones",
+          "fr": "Définir le mode vacances",
+          "it": "Imposta modalità vacanza",
+          "ko": "휴가 모드 설정",
+          "nl": "Vakantiemodus instellen",
+          "no": "Innstill feriemodus",
+          "pl": "Ustaw tryb wakacyjny",
+          "ru": "Установить режим отпуска",
+          "sv": "Ställ in semesterläge"
+        },
+        "titleFormatted": {
+          "ar": "ضبط وضع الإجازة في [[zone]] لمدة [[duration]] يوم",
+          "da": "Indstil ferietilstand i [[zone]] i [[duration]] dage",
+          "de": "Urlaubsmodus in [[zone]] für [[duration]] Tage einstellen",
+          "en": "Set holiday mode in [[zone]] for [[duration]] days",
+          "es": "Configurar modo vacaciones en [[zone]] durante [[duration]] días",
+          "fr": "Définir le mode vacances dans [[zone]] pour [[duration]] jours",
+          "it": "Imposta modalità vacanza in [[zone]] per [[duration]] giorni",
+          "ko": "[[zone]]의 휴가 모드를 [[duration]]일 동안 설정",
+          "nl": "Vakantiemodus instellen in [[zone]] voor [[duration]] dagen",
+          "no": "Innstill feriemodus i [[zone]] i [[duration]] dager",
+          "pl": "Ustaw tryb wakacyjny w [[zone]] na [[duration]] dni",
+          "ru": "Установить режим отпуска в [[zone]] на [[duration]] дней",
+          "sv": "Ställ in semesterläge i [[zone]] i [[duration]] dagar"
+        },
+        "id": "holiday_mode_action"
+      },
       {
         "args": [
           {

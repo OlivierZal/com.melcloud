@@ -1,0 +1,68 @@
+{
+  "args": [
+    {
+      "name": "zone",
+      "placeholder": {
+        "ar": "اختر المنطقة",
+        "da": "Vælg zone",
+        "de": "Zone auswählen",
+        "en": "Select zone",
+        "es": "Seleccionar zona",
+        "fr": "Sélectionner la zone",
+        "it": "Seleziona zona",
+        "ko": "구역 선택",
+        "nl": "Selecteer zone",
+        "no": "Velg sone",
+        "pl": "Wybierz strefę",
+        "ru": "Выберите зону",
+        "sv": "Välj zon"
+      },
+      "title": {
+        "ar": "منطقة",
+        "da": "Zone",
+        "de": "Zone",
+        "en": "Zone",
+        "es": "Zona",
+        "fr": "Zone",
+        "it": "Zona",
+        "ko": "구역",
+        "nl": "Zone",
+        "no": "Sone",
+        "pl": "Strefa",
+        "ru": "Зона",
+        "sv": "Zon"
+      },
+      "type": "autocomplete"
+    }
+  ],
+  "title": {
+    "ar": "وضع الإجازة !{{مفعّل|غير مفعّل}}",
+    "da": "Ferietilstand er !{{aktiveret|ikke aktiveret}}",
+    "de": "Urlaubsmodus !{{ist|ist nicht}} aktiviert",
+    "en": "Holiday mode !{{is|is not}} enabled",
+    "es": "El modo vacaciones !{{está|no está}} activado",
+    "fr": "Le mode vacances !{{est|n'est pas}} activé",
+    "it": "La modalità vacanza !{{è|non è}} attivata",
+    "ko": "휴가 모드가 !{{활성화되어 있습니다|활성화되어 있지 않습니다}}",
+    "nl": "Vakantiemodus is !{{ingeschakeld|niet ingeschakeld}}",
+    "no": "Feriemodus er !{{aktivert|ikke aktivert}}",
+    "pl": "Tryb wakacyjny !{{jest|nie jest}} włączony",
+    "ru": "Режим отпуска !{{включён|не включён}}",
+    "sv": "Semesterläge är !{{aktiverat|inte aktiverat}}"
+  },
+  "titleFormatted": {
+    "ar": "وضع الإجازة في [[zone]] !{{مفعّل|غير مفعّل}}",
+    "da": "Ferietilstand i [[zone]] er !{{aktiveret|ikke aktiveret}}",
+    "de": "Urlaubsmodus in [[zone]] !{{ist|ist nicht}} aktiviert",
+    "en": "Holiday mode in [[zone]] !{{is|is not}} enabled",
+    "es": "El modo vacaciones en [[zone]] !{{está|no está}} activado",
+    "fr": "Le mode vacances dans [[zone]] !{{est|n'est pas}} activé",
+    "it": "La modalità vacanza in [[zone]] !{{è|non è}} attivata",
+    "ko": "[[zone]]의 휴가 모드가 !{{활성화되어 있습니다|활성화되어 있지 않습니다}}",
+    "nl": "Vakantiemodus in [[zone]] is !{{ingeschakeld|niet ingeschakeld}}",
+    "no": "Feriemodus i [[zone]] er !{{aktivert|ikke aktivert}}",
+    "pl": "Tryb wakacyjny w [[zone]] !{{jest|nie jest}} włączony",
+    "ru": "Режим отпуска в [[zone]] !{{включён|не включён}}",
+    "sv": "Semesterläge i [[zone]] är !{{aktiverat|inte aktiverat}}"
+  }
+}

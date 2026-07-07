@@ -42,13 +42,18 @@ import {
   thermostatMode,
   vertical,
 } from './files.mts'
-import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
+import {
+  getClassicZones,
+  setClassicFacadeManager,
+} from './lib/classic-facade-manager.mts'
 import { NotFoundError } from './lib/errors.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { typedFromEntries } from './lib/typed-object.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
+
+const HOLIDAY_MODE_OFF_DURATION = 0
 
 const NOTIFICATION_DELAY_MS = 10_000
 
@@ -167,6 +172,28 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
+// Flow autocomplete: list every zone (including single devices, which the
+// holiday mode endpoints also accept). The zone target is carried on the
+// selected item so run listeners need no id parsing.
+const getZoneAutocomplete = (
+  query: string,
+): {
+  id: string
+  name: string
+  zoneId: string
+  zoneType: DeviceOrZoneData['zoneType']
+}[] => {
+  const lowerCaseQuery = query.toLowerCase()
+  return getClassicZones()
+    .filter(({ name }) => name.toLowerCase().includes(lowerCaseQuery))
+    .map(({ id, model, name }) => ({
+      id: `${model}_${String(id)}`,
+      name,
+      zoneId: String(id),
+      zoneType: model,
+    }))
+}
+
 // MELCloud reports error timestamps either as UTC instants (Z or offset
 // suffix) or as wall-clock times in the building's timezone.
 const parseErrorDate = (date: string, timeZone: string): Temporal.Instant => {
@@ -216,6 +243,7 @@ export default class MELCloudApp extends App {
     await this.#initHomeApi()
     this.#createNotification(language)
     this.#registerWidgetListeners()
+    this.#registerFlowListeners()
   }
 
   public override async onUninit(): Promise<void> {
@@ -496,6 +524,7 @@ export default class MELCloudApp extends App {
       zoneId,
     ).updateHolidayMode(settings)
     throwOnErrors(AttributeErrors)
+    await this.#triggerHolidayModeChanged(settings.to !== undefined)
   }
 
   public async updateDeviceSettings({
@@ -704,6 +733,56 @@ export default class MELCloudApp extends App {
     await this.#homeApi.list()
   }
 
+  #registerFlowListeners(): void {
+    this.#registerHolidayModeAction()
+    this.#registerHolidayModeCondition()
+  }
+
+  #registerHolidayModeAction(): void {
+    const card = this.homey.flow.getActionCard('holiday_mode_action')
+    card.registerArgumentAutocompleteListener('zone', (query) =>
+      getZoneAutocomplete(query),
+    )
+    card.registerRunListener(
+      async ({
+        duration,
+        zone: { zoneId, zoneType },
+      }: {
+        duration: number
+        zone: DeviceOrZoneData
+      }) => {
+        const now = Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
+        await this.updateClassicHolidayMode({
+          settings:
+            duration > HOLIDAY_MODE_OFF_DURATION ?
+              {
+                from: now.toString(),
+                to: now.add({ days: duration }).toString(),
+              }
+            : {},
+          zoneId,
+          zoneType,
+        })
+      },
+    )
+  }
+
+  #registerHolidayModeCondition(): void {
+    const card = this.homey.flow.getConditionCard('holiday_mode_condition')
+    card.registerArgumentAutocompleteListener('zone', (query) =>
+      getZoneAutocomplete(query),
+    )
+    card.registerRunListener(
+      async ({ zone: { zoneId, zoneType } }: { zone: DeviceOrZoneData }) => {
+        const { HMEnabled: isEnabled } = await this.getClassicHolidayMode({
+          zoneId,
+          zoneType,
+        })
+        return isEnabled
+      },
+    )
+  }
+
   #registerWidgetListeners(): void {
     this.homey.dashboards
       .getWidget('ata-group-setting')
@@ -725,5 +804,15 @@ export default class MELCloudApp extends App {
             name.toLowerCase().includes(query.toLowerCase()),
           ),
       )
+  }
+
+  async #triggerHolidayModeChanged(isEnabled: boolean): Promise<void> {
+    try {
+      await this.homey.flow
+        .getTriggerCard('holiday_mode_changed')
+        .trigger({ enabled: isEnabled })
+    } catch (error) {
+      this.error(error)
+    }
   }
 }
