@@ -95,7 +95,7 @@
     "ko": "급탕 작동 상태가 !{{맞습니다|아닙니다}}",
     "nl": "De operationele staat voor het sanitair warm water !{{is|is niet}}",
     "no": "Driftstilstanden for varmvannslastning !{{er|er ikke}}",
-    "pl": "Stan operacyjny ciepłej wody użytkowej !{{jest|nie jest}}",
+    "pl": "Stan działania ciepłej wody użytkowej !{{jest|nie jest}}",
     "ru": "Рабочее состояние горячего водоснабжения !{{соответствует|не соответствует}}",
     "sv": "Drifttillståndet för varmvattenladdning !{{är|är inte}}"
   },
@@ -110,7 +110,7 @@
     "ko": "급탕 작동 상태가 [[operational_state]] !{{입니다|이(가) 아닙니다}}",
     "nl": "De operationele staat voor het sanitair warm water !{{is|is niet}} [[operational_state]]",
     "no": "Driftstilstanden for varmvannslastning !{{er|er ikke}} [[operational_state]]",
-    "pl": "Stan operacyjny ciepłej wody użytkowej !{{jest|nie jest}} [[operational_state]]",
+    "pl": "Stan działania ciepłej wody użytkowej !{{jest|nie jest}} [[operational_state]]",
     "ru": "Рабочее состояние горячего водоснабжения !{{соответствует|не соответствует}} [[operational_state]]",
     "sv": "Drifttillståndet för varmvattenladdning !{{är|är inte}} [[operational_state]]"
   }
