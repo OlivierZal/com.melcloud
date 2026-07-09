@@ -32,11 +32,11 @@
           "title": {
             "ar": "لأعلى",
             "da": "Opad",
-            "de": "Oben",
+            "de": "Nach oben",
             "en": "Upwards",
             "es": "Arriba",
             "fr": "Haut",
-            "it": "Su",
+            "it": "Verso l'alto",
             "ko": "위쪽",
             "nl": "Omhoog",
             "no": "Oppover",
@@ -50,7 +50,7 @@
           "title": {
             "ar": "متوسط-عالي",
             "da": "Mellemhøj",
-            "de": "Mitte-hoch",
+            "de": "Mittel-hoch",
             "en": "Mid-high",
             "es": "Medio alto",
             "fr": "Milieu haut",
@@ -58,8 +58,8 @@
             "ko": "중상",
             "nl": "Midden-hoog",
             "no": "Mellomhøy",
-            "pl": "Średnio-wysoko",
-            "ru": "Средне-высоко",
+            "pl": "Średnio-wysoki",
+            "ru": "Средне-высокий",
             "sv": "Mellanhög"
           }
         },
@@ -72,8 +72,8 @@
             "en": "Middle",
             "es": "Medio",
             "fr": "Milieu",
-            "it": "Medio",
-            "ko": "중간",
+            "it": "Centro",
+            "ko": "중앙",
             "nl": "Midden",
             "no": "Midten",
             "pl": "Środek",
@@ -86,7 +86,7 @@
           "title": {
             "ar": "متوسط-منخفض",
             "da": "Mellemlav",
-            "de": "Mitte-tief",
+            "de": "Mittel-tief",
             "en": "Mid-low",
             "es": "Medio bajo",
             "fr": "Milieu bas",
@@ -94,8 +94,8 @@
             "ko": "중하",
             "nl": "Midden-laag",
             "no": "Mellomlav",
-            "pl": "Średnio-nisko",
-            "ru": "Средне-низко",
+            "pl": "Średnio-niski",
+            "ru": "Средне-низкий",
             "sv": "Mellanlåg"
           }
         },
@@ -104,11 +104,11 @@
           "title": {
             "ar": "لأسفل",
             "da": "Nedad",
-            "de": "Unten",
+            "de": "Nach unten",
             "en": "Downwards",
             "es": "Abajo",
             "fr": "Bas",
-            "it": "Giù",
+            "it": "Verso il basso",
             "ko": "아래쪽",
             "nl": "Omlaag",
             "no": "Nedover",
