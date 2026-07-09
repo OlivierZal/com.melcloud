@@ -15,7 +15,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "npm run build:assets && tsgo --project tsconfig.build.json",
+    "build": "npm run build:assets && node ./node_modules/@typescript/native/bin/tsc --project tsconfig.build.json",
     "build:assets": "node scripts/bundle.mjs",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
@@ -28,7 +28,7 @@
     "lint:fix": "npm run lint -- --fix",
     "test": "vitest run",
     "test:coverage": "npm test -- --coverage",
-    "typecheck": "tsgo --noEmit"
+    "typecheck": "node ./node_modules/@typescript/native/bin/tsc --noEmit"
   },
   "dependencies": {
     "@olivierzal/melcloud-api": "^40.0.0",
@@ -47,7 +47,7 @@
     "@swc/core": "^1.15.43",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/node": "^26.1.0",
-    "@typescript/native-preview": "^7.0.0-dev.20260626.1",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^4.1.9",
     "@vitest/eslint-plugin": "^1.6.20",
     "chart.js": "^4.5.1",
@@ -66,7 +66,7 @@
     "jsonc-eslint-parser": "^3.1.0",
     "prettier": "^3.8.5",
     "prettier-plugin-packagejson": "^3.0.2",
-    "typescript": "^6.0.3",
+    "typescript": "~6.0.3",
     "typescript-eslint": "8.62",
     "unplugin-swc": "^1.5.9",
     "vitest": "^4.1.2"
