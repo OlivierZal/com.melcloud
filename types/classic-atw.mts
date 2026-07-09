@@ -126,7 +126,7 @@ const createCoolObject = ({
 const thermostatModeTitleAtw = addSuffixToTitle(thermostatMode.title, {
   ar: '- المنطقة 2',
   da: '- zone 2',
-  de: '- ClassicZone 2',
+  de: '- Zone 2',
   en: '- zone 2',
   es: '- zona 2',
   fr: '- zone 2',
