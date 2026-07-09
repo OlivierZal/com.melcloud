@@ -17,8 +17,10 @@ caught real failures that the others miss:
 - `npm run typecheck` — `tsc` from `@typescript/native` (TypeScript 7).
 - `npm test` / `npm run test:coverage` — vitest; branches are at 100%,
   keep them there.
-- `npm run build` — esbuild bundles (`scripts/bundle.mjs`) + `tsgo`
-  emit. Widget/settings `*.mjs` bundles are committed build outputs.
+- `npm run build` — esbuild bundles (`scripts/bundle.mjs`) + `tsc` emit.
+  `settings/index.mjs` and `widgets/*/public/index.mjs` are gitignored
+  build outputs, never checked in; the Homey CLI regenerates them on
+  validate/install/run.
 - `npm run homey:validate` — Homey validation at publish level; may
   rewrite files (see locales below), re-stage if it does.
 - `npm run homey:start` — `homey app run --remote` for on-device testing.
