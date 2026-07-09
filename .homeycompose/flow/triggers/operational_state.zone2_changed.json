@@ -17,7 +17,7 @@
     "ko": "구역 2의 작동 상태가 변경되었습니다",
     "nl": "De operationele staat in zone 2 is veranderd",
     "no": "Driftstilstanden i sone 2 ble endret",
-    "pl": "Stan operacyjny w strefie 2 uległ zmianie",
+    "pl": "Stan działania w strefie 2 uległ zmianie",
     "ru": "Рабочее состояние в зоне 2 изменилось",
     "sv": "Drifttillståndet i zon 2 ändrades"
   },
@@ -50,7 +50,7 @@
         "ko": "작동 상태 - 구역 2",
         "nl": "Operationele staat - zone 2",
         "no": "Driftstilstand - sone 2",
-        "pl": "Stan operacyjny - strefa 2",
+        "pl": "Stan działania - strefa 2",
         "ru": "Рабочее состояние - зона 2",
         "sv": "Drifttillstånd - zon 2"
       },

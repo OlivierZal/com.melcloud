@@ -113,7 +113,7 @@
     "ko": "구역 2의 작동 상태가 !{{맞습니다|아닙니다}}",
     "nl": "De operationele staat !{{is|is niet}} in zone 2",
     "no": "Driftstilstanden !{{er|er ikke}} i sone 2",
-    "pl": "Stan operacyjny !{{jest|nie jest}} w strefie 2",
+    "pl": "Stan działania !{{jest|nie jest}} w strefie 2",
     "ru": "Рабочее состояние !{{соответствует|не соответствует}} в зоне 2",
     "sv": "Drifttillståndet !{{är|är inte}} i zon 2"
   },
@@ -128,7 +128,7 @@
     "ko": "구역 2의 작동 상태가 [[operational_state]] !{{입니다|이(가) 아닙니다}}",
     "nl": "De operationele staat !{{is|is niet}} [[operational_state]] in zone 2",
     "no": "Driftstilstanden !{{er|er ikke}} [[operational_state]] i sone 2",
-    "pl": "Stan operacyjny !{{jest|nie jest}} [[operational_state]] w strefie 2",
+    "pl": "Stan działania !{{jest|nie jest}} [[operational_state]] w strefie 2",
     "ru": "Рабочее состояние !{{соответствует|не соответствует}} [[operational_state]] в зоне 2",
     "sv": "Drifttillståndet !{{är|är inte}} [[operational_state]] i zon 2"
   }
