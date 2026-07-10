@@ -512,7 +512,7 @@ class ChartWidget {
     })
   }
 
-  #applyDefaultZone(defaultZone: Classic.DeviceZone | null): void {
+  #applyDefaultZone(defaultZone: HomeySettings['default_zone']): void {
     if (defaultZone === null) {
       return
     }

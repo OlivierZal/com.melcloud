@@ -6,6 +6,7 @@ import {
 
 import type { Settings } from '../../../types/device-settings.mts'
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
+import type { AtaGroupSettingWidgetSettings } from '../../../types/widgets.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
@@ -176,7 +177,9 @@ export class AtaValueManager {
     this.#zone = zoneElement
   }
 
-  public applyDefaultZone(defaultZone: Classic.Zone | null): void {
+  public applyDefaultZone(
+    defaultZone: AtaGroupSettingWidgetSettings['default_zone'],
+  ): void {
     if (defaultZone === null) {
       return
     }

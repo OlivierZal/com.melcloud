@@ -1,6 +1,7 @@
 {
   "errors": {
     "deviceNotFound": "Dispositivo non trovato.",
+    "invalidDuration": "La durata deve essere un numero intero di giorni compreso tra 0 e 365.",
     "zoneNotFound": "Zona non trovata."
   },
   "settings": {

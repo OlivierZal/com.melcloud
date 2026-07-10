@@ -151,6 +151,26 @@ const mockGetWidget = vi
 const mockGetDrivers = vi
   .fn<() => Record<string, unknown>>()
   .mockReturnValue({})
+const mockActionRegisterAutocomplete =
+  vi.fn<(name: string, listener: (query: string) => unknown) => void>()
+const mockActionRegisterRun =
+  vi.fn<(listener: (args: never) => Promise<unknown>) => void>()
+const mockGetActionCard = vi.fn<
+  (id: string) => {
+    registerArgumentAutocompleteListener: typeof mockActionRegisterAutocomplete
+    registerRunListener: typeof mockActionRegisterRun
+  }
+>()
+const mockConditionRegisterAutocomplete =
+  vi.fn<(name: string, listener: (query: string) => unknown) => void>()
+const mockConditionRegisterRun =
+  vi.fn<(listener: (args: never) => Promise<unknown>) => void>()
+const mockGetConditionCard = vi.fn<
+  (id: string) => {
+    registerArgumentAutocompleteListener: typeof mockConditionRegisterAutocomplete
+    registerRunListener: typeof mockConditionRegisterRun
+  }
+>()
 const mockTranslate = vi
   .fn<(key: string) => string>()
   .mockImplementation((key: string) => key)
@@ -202,6 +222,14 @@ const setupMocks = (): void => {
   mockGetWidget.mockReturnValue({
     registerSettingAutocompleteListener: mockWidgetRegister,
   })
+  mockGetActionCard.mockReturnValue({
+    registerArgumentAutocompleteListener: mockActionRegisterAutocomplete,
+    registerRunListener: mockActionRegisterRun,
+  })
+  mockGetConditionCard.mockReturnValue({
+    registerArgumentAutocompleteListener: mockConditionRegisterAutocomplete,
+    registerRunListener: mockConditionRegisterRun,
+  })
 }
 
 const createApp = (): InstanceType<typeof MelCloudApp> => {
@@ -213,6 +241,10 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
       clock: { getTimezone: mockGetTimezone },
       dashboards: { getWidget: mockGetWidget },
       drivers: { getDrivers: mockGetDrivers },
+      flow: {
+        getActionCard: mockGetActionCard,
+        getConditionCard: mockGetConditionCard,
+      },
       i18n: { getLanguage: mockGetLanguage },
       manifest: { drivers: mockManifestDrivers, version: '1.0.0' },
       notifications: { createNotification: mockCreateNotification },
@@ -303,6 +335,21 @@ const mockUpdateResult = (
   vi
     .fn<() => Promise<{ AttributeErrors: Record<string, string[]> | null }>>()
     .mockResolvedValue({ AttributeErrors: attributeErrors })
+
+const initWithHolidayModeFacade = async (
+  app: InstanceType<typeof MelCloudApp>,
+  overrides: Partial<Record<keyof Classic.ZoneFacade, unknown>>,
+): Promise<void> => {
+  await initWithFacade(
+    app,
+    mock<Classic.ZoneFacade>({ name: 'Home', ...overrides }),
+  )
+}
+
+const getActionRunListener = (): ((args: {
+  duration: unknown
+  zone: { zoneId: string; zoneType: 'buildings' }
+}) => Promise<unknown>) => getMockCallArg(mockActionRegisterRun, 0, 0)
 
 const getSyncCallbackFrom = (
   mockCreateFunction: ReturnType<typeof vi.fn>,
@@ -1159,6 +1206,149 @@ describe('melCloudApp', () => {
     })
   })
 
+  describe('holiday mode flow cards', () => {
+    const zoneArg = { zoneId: '1', zoneType: 'buildings' as const }
+
+    describe('zone autocomplete', () => {
+      it('should filter zones by query and carry the zone target', async () => {
+        mockFacadeManagerGetZones.mockReturnValue([
+          mock<Classic.Zone>({ id: 1, model: 'buildings', name: 'Home' }),
+          mock<Classic.Zone>({
+            id: 2,
+            model: 'devices',
+            name: 'Living room unit',
+          }),
+        ])
+        await app.onInit()
+
+        const autocomplete = getMockCallArg<(query: string) => unknown>(
+          mockActionRegisterAutocomplete,
+          0,
+          1,
+        )
+
+        expect(autocomplete('liv')).toStrictEqual([
+          {
+            id: 'devices_2',
+            name: 'Living room unit',
+            zoneId: '2',
+            zoneType: 'devices',
+          },
+        ])
+
+        expect(autocomplete('')).toHaveLength(2)
+      })
+
+      it('should serve the condition card with the same autocomplete', async () => {
+        mockFacadeManagerGetZones.mockReturnValue([
+          mock<Classic.Zone>({ id: 1, model: 'buildings', name: 'Home' }),
+        ])
+        await app.onInit()
+
+        const autocomplete = getMockCallArg<(query: string) => unknown>(
+          mockConditionRegisterAutocomplete,
+          0,
+          1,
+        )
+
+        expect(autocomplete('home')).toStrictEqual([
+          {
+            id: 'buildings_1',
+            name: 'Home',
+            zoneId: '1',
+            zoneType: 'buildings',
+          },
+        ])
+      })
+    })
+
+    describe('action run listener', () => {
+      it('should enable holiday mode for a positive duration', async () => {
+        const mockUpdateHolidayMode = mockUpdateResult(null)
+        await initWithHolidayModeFacade(app, {
+          updateHolidayMode: mockUpdateHolidayMode,
+        })
+
+        await getActionRunListener()({ duration: 3, zone: zoneArg })
+
+        const settings = getMockCallArg<Classic.HolidayModeQuery>(
+          mockUpdateHolidayMode,
+          0,
+          0,
+        )
+
+        // `from` stays unset: the library defaults it to now in the API's
+        // timezone.
+        expect(settings.from).toBeUndefined()
+        expect(settings.to).toMatch(/^\d{4}-\d{2}-\d{2}T/v)
+      })
+
+      it('should disable holiday mode for a zero duration', async () => {
+        const mockUpdateHolidayMode = mockUpdateResult(null)
+        await initWithHolidayModeFacade(app, {
+          updateHolidayMode: mockUpdateHolidayMode,
+        })
+
+        await getActionRunListener()({ duration: 0, zone: zoneArg })
+
+        expect(getMockCallArg(mockUpdateHolidayMode, 0, 0)).toStrictEqual({})
+      })
+
+      // Tokens dropped into the duration field arrive as numbers or
+      // numeric strings and bypass the manifest min/max/step.
+      it('should accept a numeric string duration from a token', async () => {
+        const mockUpdateHolidayMode = mockUpdateResult(null)
+        await initWithHolidayModeFacade(app, {
+          updateHolidayMode: mockUpdateHolidayMode,
+        })
+
+        await getActionRunListener()({ duration: '3', zone: zoneArg })
+
+        expect(
+          getMockCallArg<Classic.HolidayModeQuery>(mockUpdateHolidayMode, 0, 0)
+            .to,
+        ).toMatch(/^\d{4}-\d{2}-\d{2}T/v)
+      })
+
+      it.each([1.5, -1, 366, 'holidays', '', false, true, null])(
+        'should reject the out-of-contract duration %j',
+        async (duration) => {
+          const mockUpdateHolidayMode = mockUpdateResult(null)
+          await initWithHolidayModeFacade(app, {
+            updateHolidayMode: mockUpdateHolidayMode,
+          })
+
+          await expect(
+            getActionRunListener()({ duration, zone: zoneArg }),
+          ).rejects.toThrow('errors.invalidDuration')
+
+          expect(mockUpdateHolidayMode).not.toHaveBeenCalled()
+        },
+      )
+    })
+
+    describe('condition run listener', () => {
+      it.each([true, false])(
+        'should mirror the holiday mode state %s',
+        async (isEnabled) => {
+          await initWithHolidayModeFacade(app, {
+            getHolidayMode: vi
+              .fn<() => Promise<Result<Classic.HolidayModeData>>>()
+              .mockResolvedValue(
+                ok(mock<Classic.HolidayModeData>({ HMEnabled: isEnabled })),
+              ),
+          })
+
+          const run = getMockCallArg<
+            (args: { zone: typeof zoneArg }) => Promise<boolean>
+          >(mockConditionRegisterRun, 0, 0)
+
+          await expect(run({ zone: zoneArg })).resolves.toBe(isEnabled)
+        },
+      )
+    })
+  })
+
   describe('getDriverSettings with login settings', () => {
     it('should extract login settings from pair config', async () => {
       const driversWithLogin: ManifestDriver[] = [
@@ -1268,12 +1458,14 @@ describe('melCloudApp', () => {
   })
 
   describe('widget listener query filtering', () => {
-    it('should filter zones by query for ata-group-setting widget', async () => {
+    it('should serve only matching group zones to the ata-group-setting widget', async () => {
       const { mockRegisterAta } = setupWidgetListeners()
+      // The excluded device's name matches the query, so only the kind
+      // filter can explain its absence.
       mockFacadeManagerGetZones.mockReturnValue([
         { model: 'buildings', name: 'Building 1' },
         { model: 'buildings', name: 'Office' },
-        { model: 'devices', name: 'Device 1' },
+        { model: 'devices', name: 'Building unit' },
       ])
       await app.onInit()
 
@@ -1285,12 +1477,15 @@ describe('melCloudApp', () => {
       const result = ataCallback('build')
 
       expect(result).toStrictEqual([{ model: 'buildings', name: 'Building 1' }])
+      expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
+        type: Classic.DeviceType.Ata,
+      })
     })
 
-    it('should filter zones by query for charts widget', async () => {
+    it('should serve only matching device zones to the charts widget', async () => {
       const { mockRegisterCharts } = setupWidgetListeners()
       mockFacadeManagerGetZones.mockReturnValue([
-        { model: 'buildings', name: 'Building 1' },
+        { model: 'buildings', name: 'Device room' },
         { model: 'devices', name: 'Device 1' },
         { model: 'devices', name: 'Device 2' },
       ])
@@ -1304,6 +1499,9 @@ describe('melCloudApp', () => {
       const result = chartsCallback('device 1')
 
       expect(result).toStrictEqual([{ model: 'devices', name: 'Device 1' }])
+      expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
+        type: undefined,
+      })
     })
   })
 

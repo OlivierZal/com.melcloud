@@ -42,10 +42,7 @@ import {
   thermostatMode,
   vertical,
 } from './files.mts'
-import {
-  getClassicZones,
-  setClassicFacadeManager,
-} from './lib/classic-facade-manager.mts'
+import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { NotFoundError } from './lib/errors.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
@@ -53,6 +50,7 @@ import { typedFromEntries } from './lib/typed-object.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 
+const HOLIDAY_MODE_MAX_DURATION_DAYS = 365
 const HOLIDAY_MODE_OFF_DURATION = 0
 
 const NOTIFICATION_DELAY_MS = 10_000
@@ -172,27 +170,37 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
-// Flow autocomplete: list every zone (including single devices, which the
-// holiday mode endpoints also accept). The zone target is carried on the
-// selected item so run listeners need no id parsing.
-const getZoneAutocomplete = (
+// `devices` = individual units; `groups` = the zone collections (areas,
+// buildings, floors) the group endpoints target.
+type ZoneKind = 'devices' | 'groups'
+
+const filterZonesByName = <T extends { readonly name: string }>(
+  zones: readonly T[],
   query: string,
-): {
-  id: string
-  name: string
-  zoneId: string
-  zoneType: DeviceOrZoneData['zoneType']
-}[] => {
+): T[] => {
   const lowerCaseQuery = query.toLowerCase()
-  return getClassicZones()
-    .filter(({ name }) => name.toLowerCase().includes(lowerCaseQuery))
-    .map(({ id, model, name }) => ({
-      id: `${model}_${String(id)}`,
-      name,
-      zoneId: String(id),
-      zoneType: model,
-    }))
+  return zones.filter(({ name }) => name.toLowerCase().includes(lowerCaseQuery))
 }
+
+const matchesZoneKind = (
+  model: Classic.Zone['model'],
+  kind?: ZoneKind,
+): boolean =>
+  kind === undefined ||
+  (kind === 'devices' ? model === 'devices' : model !== 'devices')
+
+// Flow autocomplete items over the given zones (including single devices,
+// which the holiday mode endpoints also accept). The zone target is
+// carried on the selected item so run listeners need no id parsing.
+const toZoneAutocompleteItems = (
+  zones: readonly Classic.Zone[],
+): (DeviceOrZoneData & { id: string; name: string })[] =>
+  zones.map(({ id, model, name }) => ({
+    id: `${model}_${String(id)}`,
+    name,
+    zoneId: String(id),
+    zoneType: model,
+  }))
 
 // MELCloud reports error timestamps either as UTC instants (Z or offset
 // suffix) or as wall-clock times in the building's timezone.
@@ -524,7 +532,6 @@ export default class MELCloudApp extends App {
       zoneId,
     ).updateHolidayMode(settings)
     throwOnErrors(AttributeErrors)
-    await this.#triggerHolidayModeChanged(settings.to !== undefined)
   }
 
   public async updateDeviceSettings({
@@ -741,23 +748,42 @@ export default class MELCloudApp extends App {
   #registerHolidayModeAction(): void {
     const card = this.homey.flow.getActionCard('holiday_mode_action')
     card.registerArgumentAutocompleteListener('zone', (query) =>
-      getZoneAutocomplete(query),
+      toZoneAutocompleteItems(this.#searchZones(query)),
     )
     card.registerRunListener(
       async ({
         duration,
         zone: { zoneId, zoneType },
       }: {
-        duration: number
+        duration: unknown
         zone: DeviceOrZoneData
       }) => {
-        const now = Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
+        // The manifest min/max/step only constrain manual input: a token
+        // dropped into the field can carry anything at runtime. Only
+        // numbers and numeric strings are accepted — coercing other types
+        // (false, null, '') would silently read as 0 and turn holiday
+        // mode off.
+        const days =
+          typeof duration === 'number' ? duration
+          : typeof duration === 'string' && duration.trim() !== '' ?
+            Number(duration)
+          : NaN
+        if (
+          !Number.isSafeInteger(days) ||
+          days < HOLIDAY_MODE_OFF_DURATION ||
+          days > HOLIDAY_MODE_MAX_DURATION_DAYS
+        ) {
+          throw new RangeError(this.homey.__('errors.invalidDuration'))
+        }
+        // `from` is omitted: the library defaults it to now in the API's
+        // timezone, which onInit seeds from Homey's clock.
         await this.updateClassicHolidayMode({
           settings:
-            duration > HOLIDAY_MODE_OFF_DURATION ?
+            days > HOLIDAY_MODE_OFF_DURATION ?
               {
-                from: now.toString(),
-                to: now.add({ days: duration }).toString(),
+                to: Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
+                  .add({ days })
+                  .toString(),
               }
             : {},
           zoneId,
@@ -770,7 +796,7 @@ export default class MELCloudApp extends App {
   #registerHolidayModeCondition(): void {
     const card = this.homey.flow.getConditionCard('holiday_mode_condition')
     card.registerArgumentAutocompleteListener('zone', (query) =>
-      getZoneAutocomplete(query),
+      toZoneAutocompleteItems(this.#searchZones(query)),
     )
     card.registerRunListener(
       async ({ zone: { zoneId, zoneType } }: { zone: DeviceOrZoneData }) => {
@@ -787,32 +813,27 @@ export default class MELCloudApp extends App {
     this.homey.dashboards
       .getWidget('ata-group-setting')
       .registerSettingAutocompleteListener('default_zone', (query) =>
-        this.#facadeManager
-          .getZones({ type: Classic.DeviceType.Ata })
-          .filter(({ model }) => model !== 'devices')
-          .filter(({ name }) =>
-            name.toLowerCase().includes(query.toLowerCase()),
-          ),
+        this.#searchZones(query, {
+          kind: 'groups',
+          type: Classic.DeviceType.Ata,
+        }),
       )
     this.homey.dashboards
       .getWidget('charts')
       .registerSettingAutocompleteListener('default_zone', (query) =>
-        this.#facadeManager
-          .getZones()
-          .filter(({ model }) => model === 'devices')
-          .filter(({ name }) =>
-            name.toLowerCase().includes(query.toLowerCase()),
-          ),
+        this.#searchZones(query, { kind: 'devices' }),
       )
   }
 
-  async #triggerHolidayModeChanged(isEnabled: boolean): Promise<void> {
-    try {
-      await this.homey.flow
-        .getTriggerCard('holiday_mode_changed')
-        .trigger({ enabled: isEnabled })
-    } catch (error) {
-      this.error(error)
-    }
+  // One zone-search pipeline for every autocomplete surface: registry
+  // fetch (instance state), kind/type narrowing, then query filtering.
+  #searchZones(
+    query: string,
+    { kind, type }: { kind?: ZoneKind; type?: Classic.DeviceType } = {},
+  ): Classic.Zone[] {
+    const zones = this.#facadeManager
+      .getZones({ type })
+      .filter(({ model }) => matchesZoneKind(model, kind))
+    return filterZonesByName(zones, query)
   }
 }

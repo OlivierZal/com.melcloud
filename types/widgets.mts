@@ -4,7 +4,8 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { BaseSettings } from './bases.mts'
 
 export interface AtaGroupSettingWidgetSettings extends BaseSettings {
-  readonly default_zone: Classic.DeviceZone | null
+  // The widget's autocomplete serves zone collections only, never devices.
+  readonly default_zone: Exclude<Classic.Zone, Classic.DeviceZone> | null
 }
 
 export interface ChartsWidgetSettings extends BaseSettings {
