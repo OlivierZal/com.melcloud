@@ -1,6 +1,7 @@
 {
   "errors": {
     "deviceNotFound": "Устройство не найдено.",
+    "invalidDuration": "Продолжительность должна быть целым числом дней от 0 до 365.",
     "zoneNotFound": "Зона не найдена."
   },
   "settings": {

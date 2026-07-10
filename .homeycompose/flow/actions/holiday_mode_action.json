@@ -1,0 +1,105 @@
+{
+  "args": [
+    {
+      "name": "zone",
+      "placeholder": {
+        "ar": "اختر المنطقة",
+        "da": "Vælg zone",
+        "de": "Zone auswählen",
+        "en": "Select zone",
+        "es": "Seleccionar zona",
+        "fr": "Sélectionner la zone",
+        "it": "Seleziona zona",
+        "ko": "구역 선택",
+        "nl": "Selecteer zone",
+        "no": "Velg sone",
+        "pl": "Wybierz strefę",
+        "ru": "Выберите зону",
+        "sv": "Välj zon"
+      },
+      "title": {
+        "ar": "منطقة",
+        "da": "Zone",
+        "de": "Zone",
+        "en": "Zone",
+        "es": "Zona",
+        "fr": "Zone",
+        "it": "Zona",
+        "ko": "구역",
+        "nl": "Zone",
+        "no": "Sone",
+        "pl": "Strefa",
+        "ru": "Зона",
+        "sv": "Zon"
+      },
+      "type": "autocomplete"
+    },
+    {
+      "max": 365,
+      "min": 0,
+      "name": "duration",
+      "step": 1,
+      "title": {
+        "ar": "المدة بالأيام",
+        "da": "Varighed i dage",
+        "de": "Dauer in Tagen",
+        "en": "Duration in days",
+        "es": "Duración en días",
+        "fr": "Durée en jours",
+        "it": "Durata in giorni",
+        "ko": "기간(일)",
+        "nl": "Duur in dagen",
+        "no": "Varighet i dager",
+        "pl": "Czas trwania w dniach",
+        "ru": "Продолжительность в днях",
+        "sv": "Varaktighet i dagar"
+      },
+      "type": "number"
+    }
+  ],
+  "hint": {
+    "ar": "اضبط المدة على 0 لإيقاف وضع الإجازة.",
+    "da": "Sæt varigheden til 0 for at slå ferietilstand fra.",
+    "de": "Die Dauer auf 0 setzen, um den Urlaubsmodus auszuschalten.",
+    "en": "Set the duration to 0 to turn holiday mode off.",
+    "es": "Establecer la duración en 0 para desactivar el modo vacaciones.",
+    "fr": "Mettre la durée à 0 pour désactiver le mode vacances.",
+    "it": "Imposta la durata su 0 per disattivare la modalità vacanza.",
+    "ko": "기간을 0으로 설정하면 휴가 모드가 꺼집니다.",
+    "nl": "Stel de duur in op 0 om de vakantiemodus uit te schakelen.",
+    "no": "Sett varigheten til 0 for å slå av feriemodus.",
+    "pl": "Ustaw czas trwania na 0, aby wyłączyć tryb wakacyjny.",
+    "ru": "Установите продолжительность 0, чтобы отключить режим отпуска.",
+    "sv": "Ställ in varaktigheten på 0 för att stänga av semesterläget."
+  },
+  "title": {
+    "ar": "ضبط وضع الإجازة",
+    "da": "Indstil ferietilstand",
+    "de": "Urlaubsmodus einstellen",
+    "en": "Set holiday mode",
+    "es": "Configurar modo vacaciones",
+    "fr": "Définir le mode vacances",
+    "it": "Imposta la modalità vacanza",
+    "ko": "휴가 모드 설정",
+    "nl": "Vakantiemodus instellen",
+    "no": "Innstill feriemodus",
+    "pl": "Ustaw tryb wakacyjny",
+    "ru": "Установить режим отпуска",
+    "sv": "Ställ in semesterläge"
+  },
+  "titleFormatted": {
+    "ar": "ضبط وضع الإجازة في [[zone]] لمدة [[duration]] من الأيام",
+    "da": "Indstil ferietilstand i [[zone]] i [[duration]] dag(e)",
+    "de": "Urlaubsmodus in [[zone]] für [[duration]] Tag(e) einstellen",
+    "en": "Set holiday mode in [[zone]] for [[duration]] day(s)",
+    "es": "Configurar modo vacaciones en [[zone]] durante [[duration]] día(s)",
+    "fr": "Définir le mode vacances dans [[zone]] pour [[duration]] jour(s)",
+    "it": "Imposta la modalità vacanza in [[zone]] per [[duration]] giorno/i",
+    "ko": "[[zone]]의 휴가 모드를 [[duration]]일 동안 설정",
+    "nl": "Vakantiemodus instellen in [[zone]] voor [[duration]] dag(en)",
+    "no": "Innstill feriemodus i [[zone]] i [[duration]] dag(er)",
+    "pl": "Ustaw tryb wakacyjny w [[zone]] na [[duration]] dzień/dni",
+    "ru": "Установить режим отпуска в [[zone]] на [[duration]] дн.",
+    "sv": "Ställ in semesterläge i [[zone]] i [[duration]] dag(ar)"
+  }
+}
