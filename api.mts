@@ -42,10 +42,10 @@ const api = {
     const parsedOffset = toNumber(offset)
     const parsedPeriod = toNumber(period)
     return app.getClassicErrorLog({
-      ...(from !== undefined && { from }),
-      ...(parsedOffset !== undefined && { offset: parsedOffset }),
-      ...(parsedPeriod !== undefined && { period: parsedPeriod }),
-      ...(to !== undefined && { to }),
+      from,
+      offset: parsedOffset,
+      period: parsedPeriod,
+      to,
     })
   },
   getClassicFrostProtection: async ({
