@@ -1111,9 +1111,9 @@ class ZoneSettingsManager {
   }: Classic.FrostProtectionQuery): Promise<void> {
     await withDisablingButtonPair('frost_protection', async () => {
       const query = {
+        isEnabled,
         max,
         min,
-        ...(isEnabled !== undefined && { isEnabled }),
       } satisfies Classic.FrostProtectionQuery
       const zoneSettings: Partial<Classic.ZoneSettings> = {
         FPMaxTemperature: max,
@@ -1142,8 +1142,8 @@ class ZoneSettingsManager {
   }: Classic.HolidayModeQuery): Promise<void> {
     await withDisablingButtonPair('holiday_mode', async () => {
       const query = {
-        ...(startDate !== undefined && { from: startDate }),
-        ...(endDate !== undefined && { to: endDate }),
+        from: startDate,
+        to: endDate,
       } satisfies Classic.HolidayModeQuery
       const zoneSettings: Partial<Classic.ZoneSettings> = {
         HMEnabled: Boolean(endDate),
