@@ -46,6 +46,22 @@ coverage.
   gaps (date inputs, checkbox `:indeterminate`, `fieldset[hidden]`
   specificity) and app-specific design.
 
+## Driver conventions
+
+- `measure_signal_strength` is never a default capability, on any driver:
+  it stays manifest-declared but opt-in through the shared `options`
+  settings group. Keep it out of every required-capability list.
+- Home drivers compute capabilities per device from the facade — at
+  pairing (`toDeviceDetails`) and again at device init
+  (`getRequiredCapabilities`). Home ATW gates the control capabilities on
+  `isOwner` (guests get the measures only): the MELCloud Home app hides
+  the ATW control surface from guests and guest ATW writes are unverified
+  against the BFF. Home ATA is deliberately NOT gated — live probing
+  showed the BFF accepts guest ATA writes. Do not harmonize the two.
+- Converters from Home devices must never crash the sync on new FTC
+  vocabulary: unknown zone-mode strings (and the external-thermostat
+  variants) degrade to the room modes in `toThermostatModeAtw`.
+
 ## Widgets
 
 - Widgets ship separately; they cannot share files at runtime. The zone

@@ -11,9 +11,9 @@ import type {
 import type { EnergyReportConfig } from '../base-report.mts'
 import { KILOWATT_TO_WATT } from '../../lib/constants.mts'
 import { getLocale } from '../../lib/temporal.mts'
+import { HotWaterMode } from '../../types/atw.mts'
 import {
   type TargetTemperatureFlowCapabilities,
-  HotWaterMode,
   operationModeStateFromDevice,
   operationModeZoneFromDevice,
 } from '../../types/classic-atw.mts'

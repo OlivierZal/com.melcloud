@@ -783,7 +783,7 @@ const config = defineConfig([
             // Homey driver mappings named after MELCloud Get/Set tag groups.
             '^(?:get|set)CapabilityTagMapping$',
             // MELCloud device-data field names.
-            '^set(?:FanSpeed|Temperature)$',
+            '^set(?:FanSpeed|TankWaterTemperature|Temperature(?:Zone[12])?)$',
           ],
         },
       ],

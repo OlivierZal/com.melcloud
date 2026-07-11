@@ -1,5 +1,7 @@
 export type { default as HomeMELCloudDeviceAta } from './home-melcloud/device.mts'
 export type { default as HomeMELCloudDriverAta } from './home-melcloud/driver.mts'
+export type { default as HomeMELCloudDeviceAtw } from './home-melcloud_atw/device.mts'
+export type { default as HomeMELCloudDriverAtw } from './home-melcloud_atw/driver.mts'
 export type { default as ClassicMELCloudDeviceAta } from './melcloud/device.mts'
 export type { default as ClassicMELCloudDriverAta } from './melcloud/driver.mts'
 export type { default as ClassicMELCloudDeviceAtw } from './melcloud_atw/device.mts'

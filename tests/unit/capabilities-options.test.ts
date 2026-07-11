@@ -7,10 +7,9 @@ import {
   getCapabilitiesOptionsAtaErv,
   homeGetCapabilitiesOptions,
 } from '../../types/ata-erv.mts'
-import {
-  getCapabilitiesOptions as getCapabilitiesOptionsAtw,
-  HotWaterMode,
-} from '../../types/classic-atw.mts'
+import { HotWaterMode } from '../../types/atw.mts'
+import { getCapabilitiesOptions as getCapabilitiesOptionsAtw } from '../../types/classic-atw.mts'
+import { homeGetCapabilitiesOptionsAtw } from '../../types/home-atw.mts'
 import { mock } from '../helpers.ts'
 
 describe(getCapabilitiesOptionsAtaErv, () => {
@@ -181,6 +180,79 @@ describe(getCapabilitiesOptionsAtw, () => {
 
     expect(roomCool?.title.en).toBe('Indoor temperature - cooling')
     expect(roomCool?.title.fr).toBe('Température intérieure - refroidissement')
+  })
+})
+
+const createAtwProfile = ({
+  hasCoolingMode = false,
+  hasHotWater = true,
+  hasZone2 = true,
+} = {}): Parameters<typeof homeGetCapabilitiesOptionsAtw>[0] => ({
+  capabilities: mock<Home.AtwDeviceCapabilities>({
+    hasHotWater,
+    hasZone2,
+    maxSetTankTemperature: 60,
+    maxSetTemperature: 30,
+    minSetTankTemperature: 40,
+    minSetTemperature: 10,
+  }),
+  hasCoolingMode,
+  isOwner: true,
+})
+
+describe(homeGetCapabilitiesOptionsAtw, () => {
+  it('should derive the temperature ranges from the device capabilities', () => {
+    const result = homeGetCapabilitiesOptionsAtw(createAtwProfile())
+
+    expect(result.target_temperature).toStrictEqual({ max: 30, min: 10 })
+    expect(result['target_temperature.zone2']).toStrictEqual({
+      max: 30,
+      min: 10,
+    })
+    expect(result['target_temperature.tank_water']).toStrictEqual({
+      max: 60,
+      min: 40,
+    })
+  })
+
+  it('should include only non-cool values without cooling mode', () => {
+    const result = homeGetCapabilitiesOptionsAtw(createAtwProfile())
+    const ids = result.thermostat_mode?.values.map(({ id }) => id)
+
+    expect(ids).toStrictEqual(['room', 'flow', 'curve'])
+  })
+
+  it('should include cool values with cooling mode', () => {
+    const result = homeGetCapabilitiesOptionsAtw(
+      createAtwProfile({ hasCoolingMode: true }),
+    )
+    const ids = result['thermostat_mode.zone2']?.values.map(({ id }) => id)
+
+    expect(ids).toStrictEqual([
+      'room',
+      'flow',
+      'curve',
+      'room_cool',
+      'flow_cool',
+    ])
+    expect(result['thermostat_mode.zone2']?.title.en).toContain('zone 2')
+  })
+
+  it('should omit the tank options without hot water', () => {
+    const result = homeGetCapabilitiesOptionsAtw(
+      createAtwProfile({ hasHotWater: false }),
+    )
+
+    expect(result).not.toHaveProperty('target_temperature.tank_water')
+  })
+
+  it('should omit the zone2 options on a single-zone unit', () => {
+    const result = homeGetCapabilitiesOptionsAtw(
+      createAtwProfile({ hasZone2: false }),
+    )
+
+    expect(result).not.toHaveProperty('target_temperature.zone2')
+    expect(result).not.toHaveProperty('thermostat_mode.zone2')
   })
 })
 

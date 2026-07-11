@@ -313,6 +313,16 @@ describe(ClassicMELCloudDevice, () => {
       expect(triggerCapabilityListenerMock).toHaveBeenCalledWith('onoff', true)
     })
 
+    it('should ignore always_on when the device has no onoff capability', async () => {
+      vi.spyOn(device, 'hasCapability').mockReturnValue(false)
+      await device.onSettings({
+        changedKeys: ['always_on'],
+        newSettings: { always_on: true },
+      })
+
+      expect(triggerCapabilityListenerMock).not.toHaveBeenCalled()
+    })
+
     it('should handle optional capability changes (add)', async () => {
       vi.spyOn(device, 'hasCapability').mockReturnValue(false)
       await device.onSettings({

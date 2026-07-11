@@ -24,8 +24,11 @@ import {
   verticalFromDevice,
 } from '../../types/ata.mts'
 import { BaseMELCloudDevice } from '../base-device.mts'
+import type HomeMELCloudDriverAta from './driver.mts'
 
 export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice<Home.DeviceAtaFacade> {
+  declare public readonly driver: HomeMELCloudDriverAta
+
   declare public readonly getData: () => { id: string }
 
   public override get id(): string {
@@ -98,7 +101,7 @@ export default class HomeMELCloudDeviceAta extends BaseMELCloudDevice<Home.Devic
 
   /* v8 ignore next -- tested via TestHomeDevice which provides its own implementation */
   protected override getFacade(): Home.DeviceAtaFacade {
-    return this.homey.app.getHomeFacade(this.id)
+    return this.homey.app.getHomeFacade(this.id, this.driver.type)
   }
 
   async #setCapabilityValues(device: Home.DeviceAtaFacade): Promise<void> {

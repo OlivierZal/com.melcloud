@@ -60,6 +60,7 @@ const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
   [Classic.DeviceType.Atw]: 'melcloud_atw',
   [Classic.DeviceType.Erv]: 'melcloud_erv',
   [Home.DeviceType.Ata]: 'home-melcloud',
+  [Home.DeviceType.Atw]: 'home-melcloud_atw',
 }
 
 // The report `to` bound defaults to now in the API timezone lib-side.
@@ -486,12 +487,28 @@ export default class MELCloudApp extends App {
     return this.#homeRegistry.getByType(type)
   }
 
-  public getHomeFacade(deviceId: string): Home.DeviceAtaFacade {
+  public getHomeFacade(
+    deviceId: string,
+    type: typeof Home.DeviceType.Ata,
+  ): Home.DeviceAtaFacade
+  public getHomeFacade(
+    deviceId: string,
+    type: typeof Home.DeviceType.Atw,
+  ): Home.DeviceAtwFacade
+  public getHomeFacade(
+    deviceId: string,
+    type: Home.DeviceType,
+  ): Home.DeviceAtaFacade | Home.DeviceAtwFacade {
     const model = this.#homeRegistry.getById(deviceId)
-    if (model?.isAta() !== true) {
-      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+    if (model?.type === type) {
+      if (model.isAta()) {
+        return this.#homeFacadeManager.get(model)
+      }
+      if (model.isAtw()) {
+        return this.#homeFacadeManager.get(model)
+      }
     }
-    return this.#homeFacadeManager.get(model)
+    throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
   }
 
   public async updateClassicAtaState({

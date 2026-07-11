@@ -8,7 +8,7 @@ import type {
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
 } from '../../types/capabilities.mts'
-import { HotWaterMode } from '../../types/classic-atw.mts'
+import { HotWaterMode } from '../../types/atw.mts'
 import {
   testEnergyReportConfig,
   testThermostatMode,

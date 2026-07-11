@@ -781,21 +781,41 @@ describe('melCloudApp', () => {
   })
 
   describe('home facade retrieval', () => {
-    const mockModel = {
+    const mockAtaModel = {
       id: 'device-1',
       name: 'Living Room',
+      type: Home.DeviceType.Ata,
       isAta: (): boolean => true,
+      isAtw: (): boolean => false,
     }
 
-    it('should return a facade for a matching device', async () => {
+    const mockAtwModel = {
+      id: 'device-1',
+      name: 'Heat Pump',
+      type: Home.DeviceType.Atw,
+      isAta: (): boolean => false,
+      isAtw: (): boolean => true,
+    }
+
+    it('should return an ATA facade for a matching ATA device', async () => {
       mockHomeApiInstance.list.mockResolvedValue([])
-      mockHomeRegistry.getById.mockReturnValue(mockModel)
+      mockHomeRegistry.getById.mockReturnValue(mockAtaModel)
       await app.onInit()
 
-      const facade = app.getHomeFacade('device-1')
+      const facade = app.getHomeFacade('device-1', Home.DeviceType.Ata)
 
       expect(facade).toBeInstanceOf(Home.DeviceAtaFacade)
       expect(mockHomeRegistry.getById).toHaveBeenCalledWith('device-1')
+    })
+
+    it('should return an ATW facade for a matching ATW device', async () => {
+      mockHomeApiInstance.list.mockResolvedValue([])
+      mockHomeRegistry.getById.mockReturnValue(mockAtwModel)
+      await app.onInit()
+
+      const facade = app.getHomeFacade('device-1', Home.DeviceType.Atw)
+
+      expect(facade).toBeInstanceOf(Home.DeviceAtwFacade)
     })
 
     it('should throw when device is not found in registry', async () => {
@@ -803,23 +823,31 @@ describe('melCloudApp', () => {
       mockHomeRegistry.getById.mockReset()
       await app.onInit()
 
-      expect(() => app.getHomeFacade('device-1')).toThrow(
+      expect(() => app.getHomeFacade('device-1', Home.DeviceType.Ata)).toThrow(
         'errors.deviceNotFound',
       )
       expect(mockTranslate).toHaveBeenCalledWith('errors.deviceNotFound')
     })
 
-    it('should throw when device is found but is not ATA', async () => {
-      const atwModel = {
-        id: 'device-1',
-        name: 'Heat Pump',
-        isAta: (): boolean => false,
-      }
+    it('should throw when the device type does not match', async () => {
       mockHomeApiInstance.list.mockResolvedValue([])
-      mockHomeRegistry.getById.mockReturnValue(atwModel)
+      mockHomeRegistry.getById.mockReturnValue(mockAtwModel)
       await app.onInit()
 
-      expect(() => app.getHomeFacade('device-1')).toThrow(
+      expect(() => app.getHomeFacade('device-1', Home.DeviceType.Ata)).toThrow(
+        'errors.deviceNotFound',
+      )
+    })
+
+    it('should throw when the model matches neither ATA nor ATW', async () => {
+      mockHomeApiInstance.list.mockResolvedValue([])
+      mockHomeRegistry.getById.mockReturnValue({
+        ...mockAtaModel,
+        isAta: (): boolean => false,
+      })
+      await app.onInit()
+
+      expect(() => app.getHomeFacade('device-1', Home.DeviceType.Ata)).toThrow(
         'errors.deviceNotFound',
       )
     })
