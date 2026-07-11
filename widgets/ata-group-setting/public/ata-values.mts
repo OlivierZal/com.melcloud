@@ -62,8 +62,8 @@ const createInput = ({
 }: {
   id: string
   type: string
-  max?: number
-  min?: number
+  max?: number | undefined
+  min?: number | undefined
   placeholder?: string
   value?: string
 }): HTMLInputElement => {
@@ -272,7 +272,7 @@ export class AtaValueManager {
   }: {
     id: string
     type: string
-    values?: readonly { id: string; label: string }[]
+    values?: readonly { id: string; label: string }[] | undefined
   }): HTMLValueElement | null {
     if (elementTypes.has(type)) {
       return createSelect(this.#homey, id, values)

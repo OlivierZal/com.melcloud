@@ -38,13 +38,16 @@ const api = {
   }: {
     homey: Homey
     query: Partial<ClassicErrorLogQueryParams>
-  }): Promise<FormattedErrorLog> =>
-    app.getClassicErrorLog({
-      from,
-      offset: toNumber(offset),
-      period: toNumber(period),
-      to,
-    }),
+  }): Promise<FormattedErrorLog> => {
+    const parsedOffset = toNumber(offset)
+    const parsedPeriod = toNumber(period)
+    return app.getClassicErrorLog({
+      ...(from !== undefined && { from }),
+      ...(parsedOffset !== undefined && { offset: parsedOffset }),
+      ...(parsedPeriod !== undefined && { period: parsedPeriod }),
+      ...(to !== undefined && { to }),
+    })
+  },
   getClassicFrostProtection: async ({
     homey: { app },
     params,

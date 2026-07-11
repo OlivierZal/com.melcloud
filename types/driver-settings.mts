@@ -8,7 +8,7 @@ interface DriverSettingValue {
 export interface DriverCapabilitiesOptions {
   readonly title: string
   readonly type: string
-  readonly values?: readonly DriverSettingValue[]
+  readonly values?: readonly DriverSettingValue[] | undefined
 }
 
 export interface DriverSetting {
@@ -16,13 +16,13 @@ export interface DriverSetting {
   readonly id: string
   readonly title: string
   readonly type: string
-  readonly groupId?: string
+  readonly groupId?: string | undefined
   readonly groupLabel?: string
-  readonly max?: number
-  readonly min?: number
+  readonly max?: number | undefined
+  readonly min?: number | undefined
   readonly placeholder?: string
-  readonly units?: string
-  readonly values?: readonly DriverSettingValue[]
+  readonly units?: string | undefined
+  readonly values?: readonly DriverSettingValue[] | undefined
 }
 
 export interface LoginDriverSetting extends DriverSetting {

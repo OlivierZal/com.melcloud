@@ -145,10 +145,12 @@ export class EnergyReport<T extends Classic.DeviceType> {
     // Fetch energy data from the previous period (offset by config.minus)
     const toDateTime = getNow(this.#homey).subtract(this.#config.minus)
     const to = toDateTime.toPlainDate().toString()
-    const from = this.#config.mode === 'total' ? undefined : to
+    // Total mode reports from the epoch: omitting `from` lets the API
+    // default to its full-history lower bound.
+    const query = this.#config.mode === 'total' ? { to } : { from: to, to }
     try {
       await this.#set(
-        unwrapResult(await device.getEnergy({ from, to })),
+        unwrapResult(await device.getEnergy(query)),
         toDateTime.hour,
       )
     } catch (error) {

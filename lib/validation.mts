@@ -16,7 +16,7 @@ const deviceOrZoneTypes = new Set<DeviceOrZoneData['zoneType']>([
 ])
 
 interface NonNegativeIntOptions {
-  readonly field?: string
+  readonly field?: string | undefined
   readonly max?: number
 }
 

@@ -52,5 +52,5 @@ export interface ManifestDriver {
 export interface ManifestDriverCapabilitiesOptions {
   readonly title: LocalizedStrings
   readonly type: string
-  readonly values?: readonly CapabilitiesOptionsValues<string>[]
+  readonly values?: readonly CapabilitiesOptionsValues<string>[] | undefined
 }

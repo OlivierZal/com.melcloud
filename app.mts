@@ -401,7 +401,7 @@ export default class MELCloudApp extends App {
     hour,
   }: {
     deviceId: string
-    hour?: Hour
+    hour?: Hour | undefined
   }): Promise<ReportChartLineOptions> {
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getHourlyTemperatures(
@@ -430,7 +430,7 @@ export default class MELCloudApp extends App {
     hour,
   }: {
     deviceId: string
-    hour?: Hour
+    hour?: Hour | undefined
   }): Promise<ReportChartLineOptions> {
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getSignalStrength(hour),
@@ -539,7 +539,7 @@ export default class MELCloudApp extends App {
     settings,
   }: {
     settings: Settings
-    driverId?: string
+    driverId?: string | undefined
   }): Promise<void> {
     await Promise.all(
       this.#getDevices({ driverId }).map(async (device) => {
@@ -571,7 +571,10 @@ export default class MELCloudApp extends App {
   // Sync matching classic devices by pulling their latest state from MELCloud.
   // Per-device sync failures are logged without aborting the full sync run.
   async #classicSyncDevices(
-    filter: { driverId?: string; ids?: (number | string)[] } = {},
+    filter: {
+      driverId?: string | undefined
+      ids?: (number | string)[] | undefined
+    } = {},
   ): Promise<void> {
     const results = await Promise.allSettled(
       this.#getDevices(filter).map(async (device) => device.syncFromDevice()),
@@ -683,8 +686,8 @@ export default class MELCloudApp extends App {
     driverId,
     ids,
   }: {
-    driverId?: string
-    ids?: (number | string)[]
+    driverId?: string | undefined
+    ids?: (number | string)[] | undefined
   } = {}): MELCloudDevice[] {
     const drivers = this.#getDrivers(driverId)
     const stringIds = ids?.map(String)
@@ -832,7 +835,7 @@ export default class MELCloudApp extends App {
     { kind, type }: { kind?: ZoneKind; type?: Classic.DeviceType } = {},
   ): Classic.Zone[] {
     const zones = this.#facadeManager
-      .getZones({ type })
+      .getZones(type === undefined ? {} : { type })
       .filter(({ model }) => matchesZoneKind(model, kind))
     return filterZonesByName(zones, query)
   }

@@ -270,7 +270,9 @@ const getLineDatasets = (
     }
   })
 
-const getLineScalesConfig = (unit: string): WidgetChartOptions['scales'] => {
+const getLineScalesConfig = (
+  unit: string,
+): NonNullable<WidgetChartOptions['scales']> => {
   const colorLight = getStyle('--homey-text-color-light')
   const ticksStyle = { color: colorLight, font: getFontConfig() }
   return {
@@ -402,7 +404,11 @@ const fetchChartData = async (
     chart,
     days,
     zoneValue,
-  }: { chart: HomeySettings['chart']; zoneValue: string; days?: number },
+  }: {
+    chart: HomeySettings['chart']
+    zoneValue: string
+    days?: number | undefined
+  },
 ): Promise<ReportChartLineOptions | ReportChartPieOptions> => {
   const daysQuery =
     chartsWithDays.has(chart) && days !== undefined ?
@@ -435,7 +441,7 @@ const getTimeout = (chart: HomeySettings['chart']): number => {
 interface DrawConfig {
   readonly chart: HomeySettings['chart']
   readonly height: number
-  readonly days?: number
+  readonly days?: number | undefined
 }
 
 // Line-dataset visibility flows through `dataset.hidden`: replacing the data

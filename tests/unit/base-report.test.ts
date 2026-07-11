@@ -391,7 +391,7 @@ describe(EnergyReport, () => {
   })
 
   describe('total mode', () => {
-    it('should pass undefined from for total mode energy requests', async () => {
+    it('should omit from for total mode energy requests', async () => {
       cleanMappingMock.mockReturnValue({
         meter_power: ['TotalAutoConsumed'],
       })
@@ -403,9 +403,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, totalConfig)
       await report.start()
 
-      expect(getEnergyMockLocal).toHaveBeenCalledWith(
-        expect.objectContaining({ from: undefined }),
-      )
+      expect(getEnergyMockLocal).toHaveBeenCalledWith({ to: '2026-03-18' })
     })
   })
 
