@@ -121,7 +121,7 @@ describe('api', () => {
       })
     })
 
-    it('should pass undefined for missing numeric query params', async () => {
+    it('should omit missing numeric query params', async () => {
       const errorLog = mock<FormattedErrorLog>()
       mockApp.getClassicErrorLog.mockResolvedValue(errorLog)
 
@@ -130,12 +130,7 @@ describe('api', () => {
         query: mock<Partial<ClassicErrorLogQueryParams>>(),
       })
 
-      expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith({
-        from: undefined,
-        offset: undefined,
-        period: undefined,
-        to: undefined,
-      })
+      expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith({})
     })
 
     it('should throw on empty string numeric query param', async () => {
