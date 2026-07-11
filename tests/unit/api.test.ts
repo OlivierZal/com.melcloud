@@ -13,7 +13,11 @@ import type { ZoneData } from '../../types/zone.mts'
 import { mock } from '../helpers.js'
 
 const mockGetBuildings =
-  vi.fn<(options?: { type?: Classic.DeviceType }) => Classic.BuildingZone[]>()
+  vi.fn<
+    (options?: {
+      type?: Classic.DeviceType | undefined
+    }) => Classic.BuildingZone[]
+  >()
 
 vi.mock(import('../../lib/classic-facade-manager.mts'), () => ({
   getClassicBuildings: mockGetBuildings,
@@ -334,7 +338,7 @@ describe('api', () => {
       await api.updateDeviceSettings({
         body,
         homey,
-        query: { driverId: undefined },
+        query: {},
       })
 
       expect(mockApp.updateDeviceSettings).toHaveBeenCalledWith({

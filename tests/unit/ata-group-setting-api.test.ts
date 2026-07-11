@@ -95,7 +95,7 @@ describe('ata-group-setting api', () => {
       const buildings = mock<Classic.BuildingZone[]>()
       mockGetBuildings.mockReturnValue(buildings)
 
-      const result = api.getClassicBuildings({ query: { type: undefined } })
+      const result = api.getClassicBuildings({ query: {} })
 
       expect(result).toBe(buildings)
       expect(mockGetBuildings).toHaveBeenCalledWith({ type: undefined })

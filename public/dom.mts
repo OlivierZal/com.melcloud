@@ -66,7 +66,7 @@ export const translateAriaLabels = (
 
 export const configureNumericInput = (
   input: HTMLInputElement,
-  { max, min }: { max?: number; min?: number },
+  { max, min }: { max?: number | undefined; min?: number | undefined },
 ): void => {
   if (input.type !== 'number') {
     return

@@ -220,7 +220,7 @@ const createInput = ({
   type: string
   max?: number
   min?: number
-  placeholder?: string
+  placeholder?: string | undefined
   value?: string | null
 }): HTMLInputElement => {
   const input = document.createElement('input')
@@ -1110,17 +1110,23 @@ class ZoneSettingsManager {
     min,
   }: Classic.FrostProtectionQuery): Promise<void> {
     await withDisablingButtonPair('frost_protection', async () => {
+      const query = {
+        max,
+        min,
+        ...(isEnabled !== undefined && { isEnabled }),
+      } satisfies Classic.FrostProtectionQuery
+      const zoneSettings: Partial<Classic.ZoneSettings> = {
+        FPMaxTemperature: max,
+        FPMinTemperature: min,
+        ...(isEnabled !== undefined && { FPEnabled: isEnabled }),
+      }
       try {
         await homeyApiPut<unknown>(
           this.#homey,
           `/classic/zones/${this.#getZonePath()}/settings/frost-protection`,
-          { isEnabled, max, min } satisfies Classic.FrostProtectionQuery,
+          query,
         )
-        this.#updateZoneMapping({
-          FPEnabled: isEnabled,
-          FPMaxTemperature: max,
-          FPMinTemperature: min,
-        })
+        this.#updateZoneMapping(zoneSettings)
         this.displayFrostProtectionData()
         await this.#homey.alert(this.#homey.__('settings.success'))
       } catch (error) {
@@ -1135,17 +1141,22 @@ class ZoneSettingsManager {
     to: endDate,
   }: Classic.HolidayModeQuery): Promise<void> {
     await withDisablingButtonPair('holiday_mode', async () => {
+      const query = {
+        ...(startDate !== undefined && { from: startDate }),
+        ...(endDate !== undefined && { to: endDate }),
+      } satisfies Classic.HolidayModeQuery
+      const zoneSettings: Partial<Classic.ZoneSettings> = {
+        HMEnabled: Boolean(endDate),
+        HMEndDate: endDate ?? null,
+        HMStartDate: startDate ?? null,
+      }
       try {
         await homeyApiPut<unknown>(
           this.#homey,
           `/classic/zones/${this.#getZonePath()}/settings/holiday-mode`,
-          { from: startDate, to: endDate } satisfies Classic.HolidayModeQuery,
+          query,
         )
-        this.#updateZoneMapping({
-          HMEnabled: Boolean(endDate),
-          HMEndDate: endDate,
-          HMStartDate: startDate,
-        })
+        this.#updateZoneMapping(zoneSettings)
         this.displayHolidayModeData()
         await this.#homey.alert(this.#homey.__('settings.success'))
       } catch (error) {
@@ -1241,8 +1252,8 @@ class ZoneSettingsManager {
       }
       fireAndForget(
         this.setHolidayModeData({
-          from: startDateValue === '' ? undefined : startDateValue,
-          to: endDate,
+          ...(startDateValue !== '' && { from: startDateValue }),
+          ...(endDate !== undefined && { to: endDate }),
         }),
       )
     })
@@ -1448,16 +1459,16 @@ class SettingsApp {
   }: HomeySettings): Promise<void> {
     const driverSettings =
       await this.#deviceSettingsManager.fetchDriverSettings()
-    // Homey Settings may return `null` for a cleared key; coerce to
-    // `undefined` to match `Partial<LoginCredentials>`.
+    // Homey Settings may return `null` for a cleared key; omit such keys
+    // to match `Partial<LoginCredentials>`.
     this.#authManager.createCredentialFields(driverSettings, {
       classic: {
-        password: password ?? undefined,
-        username: username ?? undefined,
+        ...(typeof password === 'string' && { password }),
+        ...(typeof username === 'string' && { username }),
       },
       home: {
-        password: homePassword ?? undefined,
-        username: homeUsername ?? undefined,
+        ...(typeof homePassword === 'string' && { password: homePassword }),
+        ...(typeof homeUsername === 'string' && { username: homeUsername }),
       },
     })
   }

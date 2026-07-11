@@ -9,7 +9,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mock } from '../helpers.js'
 
 const mockGetClassicZones =
-  vi.fn<(options?: { type?: Classic.DeviceType }) => Classic.Zone[]>()
+  vi.fn<
+    (options?: { type?: Classic.DeviceType | undefined }) => Classic.Zone[]
+  >()
 
 vi.mock(
   import('../../lib/classic-facade-manager.mts'),
@@ -51,7 +53,7 @@ describe('charts api', () => {
       ] as unknown as Classic.Zone[]
       mockGetClassicZones.mockReturnValue(zones)
 
-      const result = api.getClassicDevices({ query: { type: undefined } })
+      const result = api.getClassicDevices({ query: {} })
 
       expect(result).toStrictEqual([
         { id: 2, level: 1, model: 'devices', name: 'Device 1' },
@@ -91,7 +93,7 @@ describe('charts api', () => {
       ] as unknown as Classic.Zone[]
       mockGetClassicZones.mockReturnValue(zones)
 
-      const result = api.getClassicDevices({ query: { type: undefined } })
+      const result = api.getClassicDevices({ query: {} })
 
       expect(result).toStrictEqual([])
     })
@@ -122,7 +124,7 @@ describe('charts api', () => {
       const result = await api.getClassicHourlyTemperatures({
         homey,
         params: { deviceId: 'dev1' },
-        query: { hour: undefined },
+        query: {},
       })
 
       expect(result).toBe(lineOptions)
@@ -188,7 +190,7 @@ describe('charts api', () => {
       const result = await api.getClassicSignal({
         homey,
         params: { deviceId: 'dev1' },
-        query: { hour: undefined },
+        query: {},
       })
 
       expect(result).toBe(lineOptions)

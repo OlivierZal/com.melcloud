@@ -4,6 +4,7 @@
     "allowUnusedLabels": false,
     "declaration": true,
     "erasableSyntaxOnly": true,
+    "exactOptionalPropertyTypes": true,
     "isolatedDeclarations": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "libReplacement": false,
