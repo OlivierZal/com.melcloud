@@ -49,7 +49,7 @@
     "@types/node": "^26.1.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^4.1.9",
-    "@vitest/eslint-plugin": "^1.6.20",
+    "@vitest/eslint-plugin": "^1.6.21",
     "chart.js": "^4.5.1",
     "esbuild": "^0.28.1",
     "eslint": "^10.6.0",
