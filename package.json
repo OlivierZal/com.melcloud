@@ -37,10 +37,10 @@
     "temporal-polyfill": "^1.0.1"
   },
   "devDependencies": {
-    "@eslint/css": "^1.3.0",
+    "@eslint/css": "^1.4.0",
     "@eslint/js": "^10.0.1",
-    "@eslint/json": "^2.0.0",
-    "@eslint/markdown": "^8.0.2",
+    "@eslint/json": "^2.0.1",
+    "@eslint/markdown": "^8.0.3",
     "@html-eslint/eslint-plugin": "^0.63.0",
     "@html-eslint/parser": "^0.63.0",
     "@stylistic/eslint-plugin": "^5.10.0",
@@ -56,7 +56,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.5",
     "eslint-plugin-import-x": "^4.17.0",
-    "eslint-plugin-jsdoc": "^63.0.10",
+    "eslint-plugin-jsdoc": "^63.0.11",
     "eslint-plugin-package-json": "^1.5.0",
     "eslint-plugin-perfectionist": "^5.9.1",
     "eslint-plugin-unicorn": "^71.1.0",
