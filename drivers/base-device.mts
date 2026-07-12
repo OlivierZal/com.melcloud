@@ -11,6 +11,7 @@ import { NotFoundError } from '../lib/errors.mts'
 import { getErrorMessage } from '../lib/get-error-message.mts'
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import { sequential } from '../lib/sequential.mts'
 import { getLocale, getNow } from '../lib/temporal.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 import type { EnergyReportConfig } from './base-report.mts'
@@ -46,10 +47,6 @@ export abstract class BaseMELCloudDevice<
     Record<string, CapabilityConverter>
   >
 
-  protected abstract readonly deviceToCapability: Partial<
-    Record<string, CapabilityConverter>
-  >
-
   public get id(): TId {
     return this.getData().id
   }
@@ -76,26 +73,26 @@ export abstract class BaseMELCloudDevice<
 
   protected get operationalCapabilityTagEntries(): [string, string][] {
     return Object.entries({
-      ...this.#setCapabilityTagMapping,
-      ...this.#getCapabilityTagMapping,
-      ...this.#listCapabilityTagMapping,
+      ...this.#tagMappings.set,
+      ...this.#tagMappings.get,
+      ...this.#tagMappings.list,
     }).filter((entry): entry is [string, string] => entry[1] !== undefined)
   }
 
   #deviceFacade?: TFacade
-
-  #getCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
-
-  #listCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
 
   readonly #reports: {
     regular?: EnergyReportOperation
     total?: EnergyReportOperation
   } = {}
 
-  #setCapabilityTagMapping: Partial<Readonly<Record<string, string>>> = {}
-
   #syncTimeout: NodeJS.Timeout | null = null
+
+  readonly #tagMappings: {
+    get: Partial<Readonly<Record<string, string>>>
+    list: Partial<Readonly<Record<string, string>>>
+    set: Partial<Readonly<Record<string, string>>>
+  } = { get: {}, list: {}, set: {} }
 
   public override async onInit(): Promise<void> {
     await this.setWarning(null)
@@ -180,17 +177,13 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  /* v8 ignore start -- trivial override: prepends device name to all error logs */
   public override error(...args: unknown[]): void {
     super.error(this.getName(), '-', ...args)
   }
-  /* v8 ignore stop */
 
-  /* v8 ignore start -- trivial override: prepends device name to all logs */
   public override log(...args: unknown[]): void {
     super.log(this.getName(), '-', ...args)
   }
-  /* v8 ignore stop */
 
   public override async removeCapability(capability: string): Promise<void> {
     if (this.hasCapability(capability)) {
@@ -234,14 +227,14 @@ export abstract class BaseMELCloudDevice<
   }
 
   protected async applyCapabilitiesOptions(): Promise<void> {
-    const capabilitiesOptions = this.getCapabilitiesOptions()
-    for (const [capability, options] of Object.entries(capabilitiesOptions)) {
-      /* v8 ignore next -- options is always an object in practice; Partial type is defensive */
-      if (typeof options === 'object' && options !== null) {
-        // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
-        await this.setCapabilityOptions(capability, options)
-      }
-    }
+    await sequential(
+      Object.entries(this.getCapabilitiesOptions()),
+      async ([capability, options]) => {
+        if (typeof options === 'object' && options !== null) {
+          await this.setCapabilityOptions(capability, options)
+        }
+      },
+    )
   }
 
   protected cleanupDevice(): void {
@@ -254,7 +247,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   protected isEnergyCapability(setting: string): boolean {
-    return Object.hasOwn(this.driver.energyCapabilityTagMapping, setting)
+    return Object.hasOwn(this.driver.tagMappings.energy, setting)
   }
 
   protected isManifestCapability(capability: string): boolean {
@@ -265,7 +258,7 @@ export abstract class BaseMELCloudDevice<
     values: Record<string, unknown>,
   ): Record<string, unknown> {
     this.log('Requested data:', values)
-    const tagMapping = this.#setCapabilityTagMapping
+    const tagMapping = this.#tagMappings.set
     const result: Record<string, unknown> = {}
     for (const [capability, value] of Object.entries(values)) {
       const tag = tagMapping[capability]
@@ -346,7 +339,7 @@ export abstract class BaseMELCloudDevice<
 
   #registerCapabilityListeners(): void {
     this.registerMultipleCapabilityListener(
-      Object.keys(this.driver.setCapabilityTagMapping),
+      Object.keys(this.driver.tagMappings.set),
       async (values) => {
         if (
           'thermostat_mode' in values &&
@@ -394,24 +387,18 @@ export abstract class BaseMELCloudDevice<
       ].filter((capability) => this.isManifestCapability(capability)),
     )
 
-    for (const capability of currentCapabilities.symmetricDifference(
-      requiredCapabilities,
-    )) {
-      // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
-      await (requiredCapabilities.has(capability) ?
-        this.addCapability(capability)
-      : this.removeCapability(capability))
-    }
+    await sequential(
+      [...currentCapabilities.symmetricDifference(requiredCapabilities)],
+      async (capability) => {
+        await (requiredCapabilities.has(capability) ?
+          this.addCapability(capability)
+        : this.removeCapability(capability))
+      },
+    )
 
-    this.#setCapabilityTagMapping = this.cleanMapping(
-      this.driver.setCapabilityTagMapping,
-    )
-    this.#getCapabilityTagMapping = this.cleanMapping(
-      this.driver.getCapabilityTagMapping,
-    )
-    this.#listCapabilityTagMapping = this.cleanMapping(
-      this.driver.listCapabilityTagMapping,
-    )
+    this.#tagMappings.set = this.cleanMapping(this.driver.tagMappings.set)
+    this.#tagMappings.get = this.cleanMapping(this.driver.tagMappings.get)
+    this.#tagMappings.list = this.cleanMapping(this.driver.tagMappings.list)
   }
 
   #setTimer(
@@ -443,15 +430,12 @@ export abstract class BaseMELCloudDevice<
     newSettings: Record<string, unknown>,
     changedCapabilities: string[],
   ): Promise<void> {
-    for (const capability of changedCapabilities) {
-      // eslint-disable-next-line no-await-in-loop -- Sequential: Homey SDK does not support concurrent capability mutations
+    await sequential(changedCapabilities, async (capability) => {
       await (newSettings[capability] === true ?
         this.addCapability(capability)
       : this.removeCapability(capability))
-    }
-    this.#listCapabilityTagMapping = this.cleanMapping(
-      this.driver.listCapabilityTagMapping,
-    )
+    })
+    this.#tagMappings.list = this.cleanMapping(this.driver.tagMappings.list)
   }
 
   async #updateDeviceOnSettings(
@@ -497,7 +481,6 @@ export abstract class BaseMELCloudDevice<
       }),
     )
     for (const result of results) {
-      /* v8 ignore next -- defensive: report.start() rejection is not reachable in unit tests */
       if (result.status === 'rejected') {
         this.error('Energy report update failed:', result.reason)
       }

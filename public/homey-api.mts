@@ -6,19 +6,15 @@ export interface Homey<
   readonly getSettings: () => TSettings
 }
 
-const defaultOnError = (error: unknown): void => {
-  // eslint-disable-next-line no-console -- intentional fallback: surfaces otherwise-swallowed rejections in widget dev tools
-  console.error(error)
-}
-
 /**
  * Runs an async operation that shouldn't block. Rejections go to `onError`
- * (default: console.error). Pass a homey.alert handler for user-visible
- * failures, or a no-op when a miss is acceptable.
+ * (default: `reportError`, which surfaces them in the widget dev tools).
+ * Pass a homey.alert handler for user-visible failures, or a no-op when a
+ * miss is acceptable.
  */
 export const fireAndForget = (
   promise: Promise<unknown>,
-  onError: (error: unknown) => void = defaultOnError,
+  onError: (error: unknown) => void = reportError,
 ): void => {
   // eslint-disable-next-line unicorn/prefer-await -- fire-and-forget: rejections route to onError without blocking the caller
   promise.catch(onError)

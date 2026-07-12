@@ -29,7 +29,7 @@ export interface HomeSetCapabilitiesAta extends BaseSetCapabilities {
   readonly vertical: string
 }
 
-export const homeSetCapabilityTagMappingAta: Record<
+const homeSetCapabilityTagMappingAta: Record<
   keyof HomeSetCapabilitiesAta,
   keyof Home.AtaValues
 > = {
@@ -40,3 +40,10 @@ export const homeSetCapabilityTagMappingAta: Record<
   thermostat_mode: 'operationMode',
   vertical: 'vaneVerticalDirection',
 }
+
+export const homeTagMappingsAta: {
+  readonly energy: Readonly<Record<string, readonly string[]>>
+  readonly get: Readonly<Record<string, string>>
+  readonly list: Readonly<Record<string, string>>
+  readonly set: typeof homeSetCapabilityTagMappingAta
+} = { energy: {}, get: {}, list: {}, set: homeSetCapabilityTagMappingAta }

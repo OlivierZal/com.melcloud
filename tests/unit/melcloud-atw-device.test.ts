@@ -51,15 +51,17 @@ vi.mock(import('homey'), async () => {
 })
 
 const mockDriver = mock<ClassicMELCloudDriver<AtwType>>({
-  energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<AtwType>>({}),
   getCapabilitiesOptions: vi
     .fn<(data?: unknown) => Record<string, unknown>>()
     .mockReturnValue({}),
-  getCapabilityTagMapping: mock<GetCapabilityTagMapping<AtwType>>({}),
   getRequiredCapabilities: vi.fn<() => string[]>().mockReturnValue([]),
-  listCapabilityTagMapping: mock<ListCapabilityTagMapping<AtwType>>({}),
   manifest: mock({ capabilities: [], id: 'melcloud_atw' }),
-  setCapabilityTagMapping: mock<SetCapabilityTagMapping<AtwType>>({}),
+  tagMappings: {
+    energy: mock<EnergyCapabilityTagMapping<AtwType>>({}),
+    get: mock<GetCapabilityTagMapping<AtwType>>({}),
+    list: mock<ListCapabilityTagMapping<AtwType>>({}),
+    set: mock<SetCapabilityTagMapping<AtwType>>({}),
+  },
 })
 
 const mockAtwFacade = (

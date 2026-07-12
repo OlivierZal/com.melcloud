@@ -2,12 +2,7 @@ import type HomeyModule from 'homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
-import {
-  energyCapabilityTagMapping,
-  getCapabilityTagMapping,
-  listCapabilityTagMapping,
-  setCapabilityTagMapping,
-} from '../../types/classic-atw.mts'
+import { tagMappings } from '../../types/classic-atw.mts'
 import { testDriverType, testTagMappings } from '../driver-descriptors.ts'
 import { type InteropModule, mock } from '../helpers.ts'
 import ClassicMELCloudDriverAtw from '../../drivers/melcloud_atw/driver.mts'
@@ -29,14 +24,17 @@ describe(ClassicMELCloudDriverAtw, () => {
 
   testDriverType(() => driver, Classic.DeviceType.Atw)
 
-  testTagMappings(() => driver, {
-    energyCapabilityTagMapping,
-    getCapabilityTagMapping,
-    listCapabilityTagMapping,
-    setCapabilityTagMapping,
-  })
+  testTagMappings(() => driver, tagMappings)
 
   describe('required capabilities', () => {
+    it('should default to the zone-1 capabilities when no data is given', () => {
+      const capabilities = driver.getRequiredCapabilities()
+
+      expect(capabilities).toContain('onoff')
+      expect(capabilities).not.toContain('target_temperature.flow_cool')
+      expect(capabilities).not.toContain('target_temperature.zone2')
+    })
+
     it('should return zone1 capabilities for basic device', () => {
       const data = mock<Classic.ListDeviceDataAtw>({
         CanCool: false,

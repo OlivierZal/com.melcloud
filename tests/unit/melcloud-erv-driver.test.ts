@@ -2,12 +2,7 @@ import type HomeyModule from 'homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
-import {
-  energyCapabilityTagMapping,
-  getCapabilityTagMapping,
-  listCapabilityTagMapping,
-  setCapabilityTagMapping,
-} from '../../types/classic-erv.mts'
+import { tagMappings } from '../../types/classic-erv.mts'
 import { testDriverType, testTagMappings } from '../driver-descriptors.ts'
 import { type InteropModule, mock } from '../helpers.ts'
 import ClassicMELCloudDriverErv from '../../drivers/melcloud_erv/driver.mts'
@@ -44,16 +39,11 @@ describe(ClassicMELCloudDriverErv, () => {
 
   testDriverType(() => driver, Classic.DeviceType.Erv)
 
-  testTagMappings(() => driver, {
-    energyCapabilityTagMapping,
-    getCapabilityTagMapping,
-    listCapabilityTagMapping,
-    setCapabilityTagMapping,
-  })
+  testTagMappings(() => driver, tagMappings)
 
   describe('tag mappings', () => {
     it('should have empty energy capability tag mapping', () => {
-      expect(driver.energyCapabilityTagMapping).toStrictEqual({})
+      expect(driver.tagMappings.energy).toStrictEqual({})
     })
   })
 

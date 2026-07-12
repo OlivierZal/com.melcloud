@@ -135,124 +135,122 @@ export interface TargetTemperatureFlowCapabilities {
   readonly 'target_temperature.flow_heat_zone2': number
 }
 
-export const setCapabilityTagMapping: Record<
-  keyof SetCapabilities,
-  keyof Classic.UpdateDeviceDataAtw
-> = {
-  hot_water_mode: 'ForcedHotWaterMode',
-  onoff: 'Power',
-  target_temperature: 'SetTemperatureZone1',
-  'target_temperature.flow_cool': 'SetCoolFlowTemperatureZone1',
-  'target_temperature.flow_cool_zone2': 'SetCoolFlowTemperatureZone2',
-  'target_temperature.flow_heat': 'SetHeatFlowTemperatureZone1',
-  'target_temperature.flow_heat_zone2': 'SetHeatFlowTemperatureZone2',
-  'target_temperature.tank_water': 'SetTankWaterTemperature',
-  'target_temperature.zone2': 'SetTemperatureZone2',
-  thermostat_mode: 'OperationModeZone1',
-  'thermostat_mode.zone2': 'OperationModeZone2',
-}
-
-export const getCapabilityTagMapping: Record<
-  keyof GetCapabilities,
-  keyof Classic.GetDeviceData<typeof Classic.DeviceType.Atw>
-> = {
-  measure_temperature: 'RoomTemperatureZone1',
-  'measure_temperature.outdoor': 'OutdoorTemperature',
-  'measure_temperature.tank_water': 'TankWaterTemperature',
-  'measure_temperature.zone2': 'RoomTemperatureZone2',
-  operational_state: 'OperationMode',
-}
-
-export const listCapabilityTagMapping: Record<
-  keyof ListCapabilities,
-  keyof Classic.ListDeviceDataAtw
-> = {
-  'alarm_generic.booster_heater1': 'BoosterHeater1Status',
-  'alarm_generic.booster_heater2': 'BoosterHeater2Status',
-  'alarm_generic.booster_heater2_plus': 'BoosterHeater2PlusStatus',
-  'alarm_generic.defrost': 'DefrostMode',
-  'alarm_generic.eco_hot_water': 'EcoHotWater',
-  'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
-  legionella: 'LastLegionellaActivationTime',
-  measure_frequency: 'HeatPumpFrequency',
-  measure_power: 'CurrentEnergyConsumed',
-  'measure_power.produced': 'CurrentEnergyProduced',
-  measure_signal_strength: 'WifiSignalStrength',
-  'measure_temperature.condensing': 'CondensingTemperature',
-  'measure_temperature.flow': 'FlowTemperature',
-  'measure_temperature.flow_zone1': 'FlowTemperatureZone1',
-  'measure_temperature.flow_zone2': 'FlowTemperatureZone2',
-  'measure_temperature.return': 'ReturnTemperature',
-  'measure_temperature.return_zone1': 'ReturnTemperatureZone1',
-  'measure_temperature.return_zone2': 'ReturnTemperatureZone2',
-  'measure_temperature.tank_water_mixing': 'MixingTankWaterTemperature',
-  'measure_temperature.target_curve': 'TargetHCTemperatureZone1',
-  'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
-}
-
-export const energyCapabilityTagMapping: Record<
-  keyof EnergyCapabilities,
-  readonly (keyof Classic.EnergyDataAtw)[]
-> = {
-  meter_power: [
-    'TotalCoolingConsumed',
-    'TotalHeatingConsumed',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.cooling': ['TotalCoolingConsumed'],
-  'meter_power.cop': [
-    'TotalCoolingProduced',
-    'TotalHeatingProduced',
-    'TotalHotWaterProduced',
-    'TotalCoolingConsumed',
-    'TotalHeatingConsumed',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.cop_cooling': ['TotalCoolingProduced', 'TotalCoolingConsumed'],
-  'meter_power.cop_daily': ['CoP'],
-  'meter_power.cop_daily_cooling': [
-    'TotalCoolingProduced',
-    'TotalCoolingConsumed',
-  ],
-  'meter_power.cop_daily_heating': [
-    'TotalHeatingProduced',
-    'TotalHeatingConsumed',
-  ],
-  'meter_power.cop_daily_hotwater': [
-    'TotalHotWaterProduced',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.cop_heating': ['TotalHeatingProduced', 'TotalHeatingConsumed'],
-  'meter_power.cop_hotwater': [
-    'TotalHotWaterProduced',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.daily': [
-    'TotalCoolingConsumed',
-    'TotalHeatingConsumed',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.daily_cooling': ['TotalCoolingConsumed'],
-  'meter_power.daily_heating': ['TotalHeatingConsumed'],
-  'meter_power.daily_hotwater': ['TotalHotWaterConsumed'],
-  'meter_power.heating': ['TotalHeatingConsumed'],
-  'meter_power.hotwater': ['TotalHotWaterConsumed'],
-  'meter_power.produced': [
-    'TotalCoolingProduced',
-    'TotalHeatingProduced',
-    'TotalHotWaterProduced',
-  ],
-  'meter_power.produced_cooling': ['TotalCoolingProduced'],
-  'meter_power.produced_daily': [
-    'TotalCoolingProduced',
-    'TotalHeatingProduced',
-    'TotalHotWaterProduced',
-  ],
-  'meter_power.produced_daily_cooling': ['TotalCoolingProduced'],
-  'meter_power.produced_daily_heating': ['TotalHeatingProduced'],
-  'meter_power.produced_daily_hotwater': ['TotalHotWaterProduced'],
-  'meter_power.produced_heating': ['TotalHeatingProduced'],
-  'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
+export const tagMappings: {
+  readonly energy: Record<
+    keyof EnergyCapabilities,
+    readonly (keyof Classic.EnergyDataAtw)[]
+  >
+  readonly get: Record<
+    keyof GetCapabilities,
+    keyof Classic.GetDeviceData<typeof Classic.DeviceType.Atw>
+  >
+  readonly list: Record<keyof ListCapabilities, keyof Classic.ListDeviceDataAtw>
+  readonly set: Record<keyof SetCapabilities, keyof Classic.UpdateDeviceDataAtw>
+} = {
+  energy: {
+    meter_power: [
+      'TotalCoolingConsumed',
+      'TotalHeatingConsumed',
+      'TotalHotWaterConsumed',
+    ],
+    'meter_power.cooling': ['TotalCoolingConsumed'],
+    'meter_power.cop': [
+      'TotalCoolingProduced',
+      'TotalHeatingProduced',
+      'TotalHotWaterProduced',
+      'TotalCoolingConsumed',
+      'TotalHeatingConsumed',
+      'TotalHotWaterConsumed',
+    ],
+    'meter_power.cop_cooling': ['TotalCoolingProduced', 'TotalCoolingConsumed'],
+    'meter_power.cop_daily': ['CoP'],
+    'meter_power.cop_daily_cooling': [
+      'TotalCoolingProduced',
+      'TotalCoolingConsumed',
+    ],
+    'meter_power.cop_daily_heating': [
+      'TotalHeatingProduced',
+      'TotalHeatingConsumed',
+    ],
+    'meter_power.cop_daily_hotwater': [
+      'TotalHotWaterProduced',
+      'TotalHotWaterConsumed',
+    ],
+    'meter_power.cop_heating': ['TotalHeatingProduced', 'TotalHeatingConsumed'],
+    'meter_power.cop_hotwater': [
+      'TotalHotWaterProduced',
+      'TotalHotWaterConsumed',
+    ],
+    'meter_power.daily': [
+      'TotalCoolingConsumed',
+      'TotalHeatingConsumed',
+      'TotalHotWaterConsumed',
+    ],
+    'meter_power.daily_cooling': ['TotalCoolingConsumed'],
+    'meter_power.daily_heating': ['TotalHeatingConsumed'],
+    'meter_power.daily_hotwater': ['TotalHotWaterConsumed'],
+    'meter_power.heating': ['TotalHeatingConsumed'],
+    'meter_power.hotwater': ['TotalHotWaterConsumed'],
+    'meter_power.produced': [
+      'TotalCoolingProduced',
+      'TotalHeatingProduced',
+      'TotalHotWaterProduced',
+    ],
+    'meter_power.produced_cooling': ['TotalCoolingProduced'],
+    'meter_power.produced_daily': [
+      'TotalCoolingProduced',
+      'TotalHeatingProduced',
+      'TotalHotWaterProduced',
+    ],
+    'meter_power.produced_daily_cooling': ['TotalCoolingProduced'],
+    'meter_power.produced_daily_heating': ['TotalHeatingProduced'],
+    'meter_power.produced_daily_hotwater': ['TotalHotWaterProduced'],
+    'meter_power.produced_heating': ['TotalHeatingProduced'],
+    'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
+  },
+  get: {
+    measure_temperature: 'RoomTemperatureZone1',
+    'measure_temperature.outdoor': 'OutdoorTemperature',
+    'measure_temperature.tank_water': 'TankWaterTemperature',
+    'measure_temperature.zone2': 'RoomTemperatureZone2',
+    operational_state: 'OperationMode',
+  },
+  list: {
+    'alarm_generic.booster_heater1': 'BoosterHeater1Status',
+    'alarm_generic.booster_heater2': 'BoosterHeater2Status',
+    'alarm_generic.booster_heater2_plus': 'BoosterHeater2PlusStatus',
+    'alarm_generic.defrost': 'DefrostMode',
+    'alarm_generic.eco_hot_water': 'EcoHotWater',
+    'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
+    legionella: 'LastLegionellaActivationTime',
+    measure_frequency: 'HeatPumpFrequency',
+    measure_power: 'CurrentEnergyConsumed',
+    'measure_power.produced': 'CurrentEnergyProduced',
+    measure_signal_strength: 'WifiSignalStrength',
+    'measure_temperature.condensing': 'CondensingTemperature',
+    'measure_temperature.flow': 'FlowTemperature',
+    'measure_temperature.flow_zone1': 'FlowTemperatureZone1',
+    'measure_temperature.flow_zone2': 'FlowTemperatureZone2',
+    'measure_temperature.return': 'ReturnTemperature',
+    'measure_temperature.return_zone1': 'ReturnTemperatureZone1',
+    'measure_temperature.return_zone2': 'ReturnTemperatureZone2',
+    'measure_temperature.tank_water_mixing': 'MixingTankWaterTemperature',
+    'measure_temperature.target_curve': 'TargetHCTemperatureZone1',
+    'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
+  },
+  set: {
+    hot_water_mode: 'ForcedHotWaterMode',
+    onoff: 'Power',
+    target_temperature: 'SetTemperatureZone1',
+    'target_temperature.flow_cool': 'SetCoolFlowTemperatureZone1',
+    'target_temperature.flow_cool_zone2': 'SetCoolFlowTemperatureZone2',
+    'target_temperature.flow_heat': 'SetHeatFlowTemperatureZone1',
+    'target_temperature.flow_heat_zone2': 'SetHeatFlowTemperatureZone2',
+    'target_temperature.tank_water': 'SetTankWaterTemperature',
+    'target_temperature.zone2': 'SetTemperatureZone2',
+    thermostat_mode: 'OperationModeZone1',
+    'thermostat_mode.zone2': 'OperationModeZone2',
+  },
 }
 
 export interface CapabilitiesOptions {

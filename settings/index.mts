@@ -83,11 +83,8 @@ const Modulo = {
 
 // Slavic plural rules: numbers ending in 2/3/4 use a special plural
 // form, except 12-14 which use the regular plural
-/* eslint-disable @typescript-eslint/no-magic-numbers -- Slavic grammar constants */
 const PLURAL_THRESHOLD = 2
-const numberEndsWithTwoThreeFour = new Set([2, 3, 4])
-const pluralExceptions = new Set([12, 13, 14])
-/* eslint-enable @typescript-eslint/no-magic-numbers */
+const slavicPaucal = { maxEnding: 4, minEnding: 2, teenMax: 14, teenMin: 12 }
 
 const frostProtectionTemperatureRange = { max: 16, min: 4 }
 const FROST_PROTECTION_TEMPERATURE_GAP = 2
@@ -960,9 +957,12 @@ class ErrorLogManager {
     if (count < PLURAL_THRESHOLD) {
       return this.#homey.__(`settings.errorLog.errorCount.${String(count)}`)
     }
+    const ending = count % Modulo.base10
+    const teen = count % Modulo.base100
     if (
-      numberEndsWithTwoThreeFour.has(count % Modulo.base10) &&
-      !pluralExceptions.has(count % Modulo.base100)
+      ending >= slavicPaucal.minEnding &&
+      ending <= slavicPaucal.maxEnding &&
+      (teen < slavicPaucal.teenMin || teen > slavicPaucal.teenMax)
     ) {
       return this.#homey.__('settings.errorLog.errorCount.234')
     }

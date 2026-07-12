@@ -5,7 +5,7 @@ import * as Home from '@olivierzal/melcloud-api/home'
 
 import {
   type HomeAtwDeviceProfile,
-  homeSetCapabilityTagMappingAtw,
+  homeTagMappingsAtw,
 } from '../../types/home-atw.mts'
 import {
   testDriverType,
@@ -96,9 +96,7 @@ describe(HomeMELCloudDriverAtw, () => {
 
   testDriverType(() => driver, Home.DeviceType.Atw)
 
-  testTagMappings(() => driver, {
-    setCapabilityTagMapping: homeSetCapabilityTagMappingAtw,
-  })
+  testTagMappings(() => driver, homeTagMappingsAtw)
 
   describe('required capabilities', () => {
     it('should return every capability for a full-featured owned device', () => {
@@ -147,6 +145,13 @@ describe(HomeMELCloudDriverAtw, () => {
         'onoff',
         'target_temperature',
         'thermostat_mode',
+      ])
+    })
+
+    it('should default to the measures when no profile is given', () => {
+      expect(driver.getRequiredCapabilities()).toStrictEqual([
+        'measure_temperature',
+        'operational_state',
       ])
     })
 

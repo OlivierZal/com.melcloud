@@ -1,0 +1,104 @@
+{
+  "$flow": {
+    "actions": [
+      {
+        "args": [
+          {
+            "label": "°C",
+            "labelDecimals": 1,
+            "max": 40,
+            "min": 5,
+            "name": "target_temperature",
+            "step": 0.5,
+            "type": "range"
+          }
+        ],
+        "highlight": true,
+        "id": "target_temperature_set",
+        "title": {
+          "ar": "ضبط درجة الحرارة",
+          "da": "Indstil temperaturen",
+          "de": "Die Temperatur setzen",
+          "en": "Set the temperature",
+          "es": "Ajustar la temperatura",
+          "fr": "Définir la température",
+          "it": "Imposta la temperatura",
+          "ko": "희망 온도 설정",
+          "nl": "Stel de temperatuur in",
+          "no": "Innstill temperaturen",
+          "pl": "Ustaw temperaturę",
+          "ru": "Установить температуру",
+          "sv": "Ställ in temperaturen"
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "id": "target_temperature_changed",
+        "title": {
+          "ar": "تغيرت درجة الحرارة المستهدفة",
+          "da": "Måltemperaturen blev ændret",
+          "de": "Die Ziel-Temperatur hat sich geändert",
+          "en": "The target temperature changed",
+          "es": "La temperatura deseada ha cambiado",
+          "fr": "La température cible a été modifiée",
+          "it": "La temperatura nominale è cambiata",
+          "ko": "희망 온도가 변경되면",
+          "nl": "De ingestelde temperatuur is veranderd",
+          "no": "Ønsket temperatur ble endret",
+          "pl": "Zmiana celu temperatury",
+          "ru": "Целевая температура изменена",
+          "sv": "Måltemperaturen ändrades"
+        },
+        "tokens": [
+          {
+            "example": 23.5,
+            "name": "$id",
+            "title": "$title",
+            "type": "$type"
+          }
+        ]
+      }
+    ]
+  },
+  "chartType": "stepLine",
+  "color": "#FA6400",
+  "decimals": 1,
+  "getable": true,
+  "insights": true,
+  "max": 35,
+  "min": 4,
+  "setable": true,
+  "title": {
+    "ar": "درجة الحرارة المستهدفة",
+    "da": "Måltemperatur",
+    "de": "Ziel-Temperatur",
+    "en": "Target temperature",
+    "es": "Temperatura deseada",
+    "fr": "Température cible",
+    "it": "Temperatura nominale",
+    "ko": "희망 온도",
+    "nl": "Ingestelde temperatuur",
+    "no": "Ønsket temperatur",
+    "pl": "Cel temperatury",
+    "ru": "Целевая температура",
+    "sv": "Måltemperatur"
+  },
+  "type": "number",
+  "uiComponent": "thermostat",
+  "units": {
+    "ar": "درجة مئوية",
+    "da": "°C",
+    "de": "°C",
+    "en": "°C",
+    "es": "°C",
+    "fr": "°C",
+    "it": "°C",
+    "ko": "°C",
+    "nl": "°C",
+    "no": "°C",
+    "pl": "°C",
+    "ru": "°C",
+    "sv": "°C"
+  }
+}

@@ -190,6 +190,7 @@ const mockManifestDrivers: ManifestDriver[] = [
         values: [
           { id: 'heat', title: { en: 'Heat' } },
           { id: 'cool', title: { en: 'Cool' } },
+          { id: 'eco', title: { en: 'Eco' } },
           { id: 'off', title: { en: 'Off' } },
         ],
       },
@@ -209,18 +210,55 @@ const mockManifestDrivers: ManifestDriver[] = [
       },
     ],
   },
+  {
+    capabilities: [],
+    id: 'melcloud-login',
+    pair: [
+      {
+        id: 'login',
+        options: {
+          passwordLabel: { en: 'Password' },
+          passwordPlaceholder: { en: 'Your password' },
+          usernameLabel: { en: 'Email', nl: 'E-mail' },
+          usernamePlaceholder: { en: 'Your email' },
+        },
+      },
+    ],
+  },
+  {
+    capabilities: [],
+    id: 'melcloud-odd',
+    settings: [
+      {
+        children: [
+          {
+            id: 'orphan',
+            label: { en: 'Orphan' },
+            type: 'dropdown',
+            values: [{ id: 'first', label: { en: 'First' } }],
+          },
+        ],
+        label: { en: 'No group id' },
+      },
+      { id: 'group2', label: { en: 'Childless' } },
+    ],
+  },
 ]
 
-const setupMocks = (): void => {
-  mockCreate.mockResolvedValue(mockApiInstance)
-  mockHomeCreate.mockResolvedValue(mockHomeApiInstance)
-  // eslint-disable-next-line prefer-arrow-callback -- Constructor mock requires function expression for `new` semantics
-  mockFacadeManagerConstructor.mockImplementation(function mockConstructor() {
+// `new`-able (arrows are not constructible): vitest instantiates the
+// implementation when the mocked FacadeManager class is constructed.
+const newMockFacadeManager =
+  function newMockFacadeManager(): Classic.FacadeManager {
     return mock<Classic.FacadeManager>({
       get: mockFacadeManagerGet,
       getZones: mockFacadeManagerGetZones,
     })
-  })
+  }
+
+const setupMocks = (): void => {
+  mockCreate.mockResolvedValue(mockApiInstance)
+  mockHomeCreate.mockResolvedValue(mockHomeApiInstance)
+  mockFacadeManagerConstructor.mockImplementation(newMockFacadeManager)
   mockGetLanguage.mockReturnValue('en')
   mockGetTimezone.mockReturnValue('Europe/Paris')
   mockTranslate.mockImplementation((key: string) => key)
@@ -515,6 +553,17 @@ describe('melCloudApp', () => {
         operationModeOptions?.values?.find((value) => value.id === 'off'),
       ).toBeUndefined()
     })
+
+    it('should keep value ids absent from the wire enum unmapped', async () => {
+      await app.onInit()
+      const capabilities = app.getClassicAtaCapabilities()
+      const [, operationModeOptions] =
+        capabilities.find(([key]) => key === 'OperationMode') ?? []
+
+      expect(
+        operationModeOptions?.values?.find((value) => value.id === 'eco'),
+      ).toBeDefined()
+    })
   })
 
   describe('ata detailed states', () => {
@@ -660,6 +709,54 @@ describe('melCloudApp', () => {
 
       expect(settings?.[0]?.groupLabel).toBe('Groep 1')
       expect(settings?.[0]?.title).toBe('Instelling 1')
+    })
+
+    it('should fall back to English group and setting labels', async () => {
+      mockGetLanguage.mockReturnValue('fr')
+      app = createApp()
+      await app.onInit()
+
+      const { group1 } = app.getDriverSettings()
+      const [setting] = group1 ?? []
+
+      expect(setting?.groupLabel).toBe('Group 1')
+      expect(setting?.title).toBe('Setting 1')
+    })
+
+    it('should fall back to English login labels and placeholders', async () => {
+      mockGetLanguage.mockReturnValue('fr')
+      app = createApp()
+      await app.onInit()
+
+      const { login } = app.getDriverSettings()
+      const [password, username] = login ?? []
+
+      expect(password?.title).toBe('Password')
+      expect(password?.placeholder).toBe('Your password')
+      expect(username?.title).toBe('Email')
+      expect(username?.placeholder).toBe('Your email')
+    })
+
+    it('should fall back to English value labels and capability titles', async () => {
+      mockGetLanguage.mockReturnValue('fr')
+      app = createApp()
+      await app.onInit()
+
+      const [orphan] = app.getDriverSettings()['melcloud-odd'] ?? []
+
+      expect(orphan?.values?.[0]?.label).toBe('First')
+      expect(app.getClassicAtaCapabilities().length).toBeGreaterThan(0)
+    })
+
+    it('should group settings without a group ID under the driver ID', async () => {
+      await app.onInit()
+
+      const driverSettings = app.getDriverSettings()
+
+      expect(driverSettings['melcloud-odd']?.[0]?.id).toBe('orphan')
+      expect(driverSettings['melcloud-odd']?.[0]?.groupLabel).toBe(
+        'No group id',
+      )
     })
   })
 

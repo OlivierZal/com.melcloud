@@ -779,10 +779,7 @@ const config = defineConfig([
       'unicorn/no-non-function-verb-prefix': [
         'error',
         {
-          ignore: [
-            // Homey driver mappings named after MELCloud Get/Set tag groups.
-            '^(?:get|set)CapabilityTagMapping$',
-          ],
+          ignore: [],
         },
       ],
       // Homey SDK and MELCloud contracts use null.

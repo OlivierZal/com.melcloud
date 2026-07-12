@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { InteropModule } from '../helpers.ts'
 import { NotFoundError } from '../../lib/errors.mts'
-import { homeSetCapabilityTagMappingAtw } from '../../types/home-atw.mts'
+import { homeTagMappingsAtw } from '../../types/home-atw.mts'
 import {
   testEnergyReportConfig,
   testThermostatMode,
@@ -45,18 +45,15 @@ const {
 vi.mock(import('homey'), async () => {
   const { createMockDeviceClass, mock: mockModule } =
     await import('../helpers.ts')
-  const { homeSetCapabilityTagMappingAtw: setCapabilityTagMapping } =
+  const { homeTagMappingsAtw: tagMappings } =
     await import('../../types/home-atw.mts')
   return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Device: createMockDeviceClass({
         overrides: {
           driver: {
-            energyCapabilityTagMapping: {},
-            getCapabilityTagMapping: {},
-            listCapabilityTagMapping: {},
             manifest: { capabilities: requiredCapabilities },
-            setCapabilityTagMapping,
+            tagMappings,
             type: 'airToWater',
             getCapabilitiesOptions: (): Record<string, unknown> => ({}),
             getRequiredCapabilities: (): string[] => requiredCapabilities,
@@ -364,7 +361,7 @@ describe(HomeMELCloudDeviceAtw, () => {
       await device.onInit()
 
       expect(device.registerMultipleCapabilityListener).toHaveBeenCalledWith(
-        Object.keys(homeSetCapabilityTagMappingAtw),
+        Object.keys(homeTagMappingsAtw.set),
         expect.any(Function),
         expect.any(Number),
       )

@@ -23,6 +23,11 @@ caught real failures that the others miss:
   validate/install/run.
 - `npm run homey:validate` — Homey validation at publish level; may
   rewrite files (see locales below), re-stage if it does.
+- `node scripts/sync-capability-definitions.mjs` — refreshes the
+  vendored node-homey-lib capability JSONs under `assets/capabilities/`
+  (homey-lib is a devDependency and must not ship to the device); the
+  drift test in `tests/unit/capability-definitions.test.ts` fails when
+  the copies fall behind.
 - `npm run homey:start` — `homey app run --remote` for on-device testing.
 
 Check real exit codes; never pipe a check's output through `tail`/`grep`

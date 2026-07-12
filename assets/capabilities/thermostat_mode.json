@@ -1,0 +1,194 @@
+{
+  "$flow": {
+    "actions": [
+      {
+        "args": [
+          {
+            "name": "thermostat_mode",
+            "type": "dropdown",
+            "values": "$values"
+          }
+        ],
+        "id": "thermostat_mode_set",
+        "title": {
+          "ar": "ضبط وضع الثرموستات على",
+          "da": "Indstil termostattilstanden til",
+          "de": "Stelle den Thermostat-Modus auf",
+          "en": "Set the thermostat mode to",
+          "es": "Ajustar el modo del termostato en",
+          "fr": "Définir le mode du thermostat sur",
+          "it": "Imposta la modalità del termostato su",
+          "ko": "온도조절기 모드를 다음으로 설정",
+          "nl": "Stel de thermostaatmodus in op",
+          "no": "Sett termostatmodusen til",
+          "pl": "Ustaw tryb termostatu na",
+          "ru": "Установить режим термостата на",
+          "sv": "Ställ in termostatläget på"
+        }
+      }
+    ],
+    "conditions": [
+      {
+        "args": [
+          {
+            "name": "thermostat_mode",
+            "type": "dropdown",
+            "values": "$values"
+          }
+        ],
+        "id": "thermostat_mode_is",
+        "title": {
+          "ar": "وضع الثرموستات !{{هو|ليس}}",
+          "da": "Termostattilstanden !{{er|er ikke}}",
+          "de": "Der Thermostat-Modus !{{ist|ist nicht}}",
+          "en": "The thermostat mode !{{is|is not}}",
+          "es": "El modo del termostato !{{está|no está}}",
+          "fr": "Le mode du thermostat !{{est|n'est pas}}",
+          "it": "La modalità del termostato !{{è|non è}}",
+          "ko": "온도조절기 모드가 다음!{{이면|이 아니면}}",
+          "nl": "De thermostaatmodus !{{is|is niet}}",
+          "no": "Termostatmodusen !{{er|er ikke}}",
+          "pl": "Tryb termostatu !{{jest|nie jest}}",
+          "ru": "Режим термостата !{{|не}}",
+          "sv": "Termostatläget !{{är|är inte}}"
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "args": [
+          {
+            "name": "thermostat_mode",
+            "type": "dropdown",
+            "values": "$values"
+          }
+        ],
+        "id": "thermostat_mode_changed",
+        "title": {
+          "ar": "تم تغيير وضع الثرموستات إلى",
+          "da": "Termostattilstanden er ændret til",
+          "de": "Der Thermostat-Modus wurde geändert auf",
+          "en": "The thermostat mode changed to",
+          "es": "El modo del termostato ha cambiado a",
+          "fr": "Le mode du thermostat est passé à",
+          "it": "La modalità del termostato è passata a",
+          "ko": "온도조절기 모드가 다음으로 변경되면",
+          "nl": "De thermostaatmodus is veranderd naar",
+          "no": "Termostatmodusen ble endret til",
+          "pl": "Tryb termostatu zmienił się na",
+          "ru": "Режим термостата изменен на",
+          "sv": "Termostatläget ändrades till"
+        }
+      }
+    ]
+  },
+  "color": "#FA6400",
+  "desc": {
+    "ar": "وضع الثرموستات",
+    "da": "Tilstand for termostat",
+    "de": "Modus des Thermostates",
+    "en": "Mode of the thermostat",
+    "es": "Modo del termostato",
+    "fr": "Mode du thermostat",
+    "it": "Modalità del termostato",
+    "ko": "온도조절기의 모드",
+    "nl": "Modus van de thermostaat",
+    "no": "Modus for termostaten",
+    "pl": "Tryb termostatu",
+    "ru": "Режим термостата",
+    "sv": "Läge för termostaten"
+  },
+  "getable": true,
+  "setable": true,
+  "title": {
+    "ar": "وضع الثرموستات",
+    "da": "Termostattilstand",
+    "de": "Thermostat-Modus",
+    "en": "Thermostat mode",
+    "es": "Modo del termostato",
+    "fr": "Mode du thermostat",
+    "it": "Modalità termostato",
+    "ko": "온도조절기 모드",
+    "nl": "Thermostaatmodus",
+    "no": "Termostatmodus",
+    "pl": "Tryb termostatu",
+    "ru": "Режим термостата",
+    "sv": "Termostatläge"
+  },
+  "type": "enum",
+  "uiComponent": "picker",
+  "values": [
+    {
+      "id": "auto",
+      "title": {
+        "ar": "تلقائي",
+        "da": "Automatisk",
+        "de": "Automatisch",
+        "en": "Automatic",
+        "es": "Automático",
+        "fr": "Automatique",
+        "it": "Automatica",
+        "ko": "자동",
+        "nl": "Automatisch",
+        "no": "Automatisk",
+        "pl": "Automatyczny",
+        "ru": "Автоматически",
+        "sv": "Automatiskt"
+      }
+    },
+    {
+      "id": "heat",
+      "title": {
+        "ar": "تسخين",
+        "da": "Opvarm",
+        "de": "Heizen",
+        "en": "Heat",
+        "es": "Calentar",
+        "fr": "Chauffer",
+        "it": "Calore",
+        "ko": "난방",
+        "nl": "Verhitten",
+        "no": "Varme",
+        "pl": "Ogrzewanie",
+        "ru": "Обогрев",
+        "sv": "Värme"
+      }
+    },
+    {
+      "id": "cool",
+      "title": {
+        "ar": "تبريد",
+        "da": "Køl ned",
+        "de": "Kühlen",
+        "en": "Cool",
+        "es": "Enfriar",
+        "fr": "Refroidir",
+        "it": "Raffreddamento",
+        "ko": "냉방",
+        "nl": "Koelen",
+        "no": "Avkjøle",
+        "pl": "Chłodzenie",
+        "ru": "Охлаждение",
+        "sv": "Kyla"
+      }
+    },
+    {
+      "id": "off",
+      "title": {
+        "ar": "إيقاف التشغيل",
+        "da": "Deaktiveret",
+        "de": "Aus",
+        "en": "Off",
+        "es": "Desactivado",
+        "fr": "Désactivé",
+        "it": "Disattivata",
+        "ko": "꺼짐",
+        "nl": "Uit",
+        "no": "Av",
+        "pl": "Wył",
+        "ru": "Выкл",
+        "sv": "Av"
+      }
+    }
+  ]
+}

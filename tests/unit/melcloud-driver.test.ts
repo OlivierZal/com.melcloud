@@ -3,12 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { InteropModule } from '../helpers.ts'
-import {
-  energyCapabilityTagMapping,
-  getCapabilityTagMapping,
-  listCapabilityTagMapping,
-  setCapabilityTagMapping,
-} from '../../types/classic-ata.mts'
+import { tagMappings } from '../../types/classic-ata.mts'
 import { testDriverType, testTagMappings } from '../driver-descriptors.ts'
 import ClassicMELCloudDriverAta from '../../drivers/melcloud/driver.mts'
 
@@ -29,12 +24,7 @@ describe(ClassicMELCloudDriverAta, () => {
 
   testDriverType(() => driver, Classic.DeviceType.Ata)
 
-  testTagMappings(() => driver, {
-    energyCapabilityTagMapping,
-    getCapabilityTagMapping,
-    listCapabilityTagMapping,
-    setCapabilityTagMapping,
-  })
+  testTagMappings(() => driver, tagMappings)
 
   describe('required capabilities', () => {
     it('should return all operational capabilities except measure_signal_strength', () => {
@@ -48,9 +38,9 @@ describe(ClassicMELCloudDriverAta, () => {
     it('should include all set, get, and list capability keys', () => {
       const capabilities = driver.getRequiredCapabilities()
       const allKeys = Object.keys({
-        ...setCapabilityTagMapping,
-        ...getCapabilityTagMapping,
-        ...listCapabilityTagMapping,
+        ...tagMappings.set,
+        ...tagMappings.get,
+        ...tagMappings.list,
       }).filter((key) => key !== 'measure_signal_strength')
 
       expect(capabilities).toStrictEqual(allKeys)

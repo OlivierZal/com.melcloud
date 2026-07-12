@@ -31,16 +31,12 @@ export abstract class BaseMELCloudDriver extends Driver {
 
   public abstract readonly type: DeviceType
 
-  public readonly energyCapabilityTagMapping: Readonly<
-    Record<string, readonly string[]>
-  > = {}
-
-  public readonly getCapabilityTagMapping: Readonly<Record<string, string>> = {}
-
-  public readonly listCapabilityTagMapping: Readonly<Record<string, string>> =
-    {}
-
-  public readonly setCapabilityTagMapping: Readonly<Record<string, string>> = {}
+  public readonly tagMappings: {
+    readonly energy: Readonly<Record<string, readonly string[]>>
+    readonly get: Readonly<Record<string, string>>
+    readonly list: Readonly<Record<string, string>>
+    readonly set: Readonly<Record<string, string>>
+  } = { energy: {}, get: {}, list: {}, set: {} }
 
   public override async onInit(): Promise<void> {
     this.#registerFlowListeners()
@@ -104,7 +100,7 @@ export abstract class BaseMELCloudDriver extends Driver {
             },
           )
       })
-      if (Object.hasOwn(this.setCapabilityTagMapping, capability)) {
+      if (Object.hasOwn(this.tagMappings.set, capability)) {
         tryRegisterFlowCard(() => {
           this.homey.flow
             .getActionCard(`${capability}_action`)

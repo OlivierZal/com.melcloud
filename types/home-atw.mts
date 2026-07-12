@@ -38,7 +38,7 @@ export interface HomeSetCapabilitiesAtw extends BaseSetCapabilities {
   readonly 'thermostat_mode.zone2': ThermostatModeAtw
 }
 
-export const homeSetCapabilityTagMappingAtw: Record<
+const homeSetCapabilityTagMappingAtw: Record<
   keyof HomeSetCapabilitiesAtw,
   keyof Home.AtwValues
 > = {
@@ -50,6 +50,13 @@ export const homeSetCapabilityTagMappingAtw: Record<
   thermostat_mode: 'operationModeZone1',
   'thermostat_mode.zone2': 'operationModeZone2',
 }
+
+export const homeTagMappingsAtw: {
+  readonly energy: Readonly<Record<string, readonly string[]>>
+  readonly get: Readonly<Record<string, string>>
+  readonly list: Readonly<Record<string, string>>
+  readonly set: typeof homeSetCapabilityTagMappingAtw
+} = { energy: {}, get: {}, list: {}, set: homeSetCapabilityTagMappingAtw }
 
 // The FTC thermostat modes (external room thermostat) have no Classic
 // equivalent; they regulate on room temperature, so they read as the room

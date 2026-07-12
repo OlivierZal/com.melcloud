@@ -3,6 +3,7 @@ import type HomeyModule from 'homey'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type * as BaseReportModule from '../../drivers/base-report.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type {
   EnergyCapabilityTagMapping,
@@ -65,6 +66,29 @@ const mockDeviceData = {
   SetTemperature: 22,
 }
 
+const { energyReportStartMock } = vi.hoisted(() => ({
+  energyReportStartMock: vi
+    .fn<() => Promise<void>>()
+    .mockResolvedValue(undefined),
+}))
+
+// Overrides the setup-level base-report mock so the shared `start` can be
+// driven per test (e.g. a rejected restart). The implementation is a
+// `new`-able function expression (arrows are not constructible): its
+// returned object becomes the constructed report.
+vi.mock(import('../../drivers/base-report.mts'), async () => {
+  const { mock: mockModule } = await import('../helpers.ts')
+  const newEnergyReportMock = function newEnergyReportMock(): {
+    start: () => Promise<void>
+    unschedule: () => void
+  } {
+    return { start: energyReportStartMock, unschedule: vi.fn<() => void>() }
+  }
+  return mockModule<typeof BaseReportModule>({
+    EnergyReport: vi.fn<typeof newEnergyReportMock>(newEnergyReportMock),
+  })
+})
+
 vi.mock(import('homey'), async () => {
   const { createMockDeviceClass, mock: mockModule } =
     await import('../helpers.ts')
@@ -107,26 +131,26 @@ const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(
 )
 
 const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
-  energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<TestDeviceType>>(
-    {},
-  ),
   getCapabilitiesOptions: vi
     .fn<() => Record<string, unknown>>()
     .mockReturnValue({}),
-  getCapabilityTagMapping: mock<GetCapabilityTagMapping<TestDeviceType>>({
-    measure_temperature: 'RoomTemperature',
-  }),
   getRequiredCapabilities: vi
     .fn<() => string[]>()
     .mockReturnValue(['onoff', 'measure_temperature']),
-  listCapabilityTagMapping: mock<ListCapabilityTagMapping<TestDeviceType>>({}),
   manifest: mock({
     capabilities: ['onoff', 'measure_temperature', 'fan_speed'],
     id: 'test',
   }),
-  setCapabilityTagMapping: mock<SetCapabilityTagMapping<TestDeviceType>>({
-    onoff: 'Power',
-  }),
+  tagMappings: {
+    energy: mock<EnergyCapabilityTagMapping<TestDeviceType>>({}),
+    get: mock<GetCapabilityTagMapping<TestDeviceType>>({
+      measure_temperature: 'RoomTemperature',
+    }),
+    list: mock<ListCapabilityTagMapping<TestDeviceType>>({}),
+    set: mock<SetCapabilityTagMapping<TestDeviceType>>({
+      onoff: 'Power',
+    }),
+  },
 })
 
 const mockFacade = (data: Record<string, unknown> = mockDeviceData): void => {
@@ -373,11 +397,6 @@ describe(ClassicMELCloudDevice, () => {
       vi.spyOn(device, 'hasCapability').mockReturnValue(false)
       const driverWithEnergy = Object.create(mockDriver) as typeof mockDriver
       Object.assign(driverWithEnergy, {
-        energyCapabilityTagMapping: mock<
-          EnergyCapabilityTagMapping<TestDeviceType>
-        >({
-          measure_power: ['Auto', 'Cooling'],
-        }),
         manifest: mock({
           capabilities: [
             'onoff',
@@ -387,6 +406,12 @@ describe(ClassicMELCloudDevice, () => {
           ],
           id: 'test',
         }),
+        tagMappings: {
+          ...mockDriver.tagMappings,
+          energy: mock<EnergyCapabilityTagMapping<TestDeviceType>>({
+            measure_power: ['Auto', 'Cooling'],
+          }),
+        },
       })
       setDriver(device, driverWithEnergy)
       await device.onSettings({
@@ -413,9 +438,10 @@ describe(ClassicMELCloudDevice, () => {
         mockDriver,
       ) as typeof mockDriver
       Object.assign(driverWithEmptySetMapping, {
-        setCapabilityTagMapping: mock<SetCapabilityTagMapping<TestDeviceType>>(
-          {},
-        ),
+        tagMappings: {
+          ...mockDriver.tagMappings,
+          set: mock<SetCapabilityTagMapping<TestDeviceType>>({}),
+        },
       })
       setDriver(freshDevice, driverWithEmptySetMapping)
       await freshDevice.onInit()
@@ -511,6 +537,21 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('capability options setup', () => {
+    it('should skip capabilities options that are not objects', async () => {
+      const driverWithBadOptions = Object.create(
+        mockDriver,
+      ) as typeof mockDriver
+      Object.assign(driverWithBadOptions, {
+        getCapabilitiesOptions: vi
+          .fn<() => Record<string, unknown>>()
+          .mockReturnValue({ measure_temperature: 'not-an-object' }),
+      })
+      setDriver(device, driverWithBadOptions)
+      await device.onInit()
+
+      expect(device.setCapabilityOptions).not.toHaveBeenCalled()
+    })
+
     it('should set capability options from driver', async () => {
       const getCapabilitiesOptionsMock = vi
         .fn<() => Record<string, unknown>>()
@@ -528,6 +569,19 @@ describe(ClassicMELCloudDevice, () => {
         'measure_temperature',
         { units: '°C' },
       )
+    })
+  })
+
+  describe('capability seams', () => {
+    it('should return no capabilities options before the facade is cached', () => {
+      const freshDevice = new TestDevice()
+      const seams = freshDevice as unknown as {
+        getCapabilitiesOptions: () => Partial<Record<string, unknown>>
+        getRequiredCapabilities: () => string[]
+      }
+
+      expect(seams.getCapabilitiesOptions()).toStrictEqual({})
+      expect(seams.getRequiredCapabilities()).toStrictEqual([])
     })
   })
 
@@ -571,6 +625,45 @@ describe(ClassicMELCloudDevice, () => {
 
       expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
         1,
+      )
+    })
+
+    it('should log when an energy report restart fails', async () => {
+      const failure = new Error('report start failed')
+      const deviceWithRegular = new TestDevice()
+      Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
+        value: {
+          duration: { hours: 1 },
+          interval: { hours: 1 },
+          minus: { hours: 1 },
+          mode: 'regular' as const,
+          values: { millisecond: 0, minute: 5, second: 0 },
+        },
+      })
+      const driverWithEnergy = Object.create(mockDriver) as typeof mockDriver
+      Object.assign(driverWithEnergy, {
+        manifest: mock({
+          capabilities: ['onoff', 'measure_temperature', 'measure_power'],
+          id: 'test',
+        }),
+        tagMappings: {
+          ...mockDriver.tagMappings,
+          energy: mock<EnergyCapabilityTagMapping<TestDeviceType>>({
+            measure_power: ['Auto', 'Cooling'],
+          }),
+        },
+      })
+      setDriver(deviceWithRegular, driverWithEnergy)
+      await deviceWithRegular.onInit()
+      energyReportStartMock.mockRejectedValueOnce(failure)
+      await deviceWithRegular.onSettings({
+        changedKeys: ['measure_power'],
+        newSettings: { measure_power: true },
+      })
+
+      expect(deviceWithRegular.error).toHaveBeenCalledWith(
+        'Energy report update failed:',
+        failure,
       )
     })
   })

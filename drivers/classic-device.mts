@@ -58,7 +58,7 @@ export abstract class ClassicMELCloudDevice<
     Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
   >
 
-  protected abstract override readonly deviceToCapability: Partial<
+  protected abstract readonly deviceToCapability: Partial<
     Record<keyof OperationalCapabilities<T>, ConvertFromDevice<T>>
   >
 
@@ -72,7 +72,6 @@ export abstract class ClassicMELCloudDevice<
 
   public override async syncFromDevice(): Promise<void> {
     const data = await this.#getDeviceData()
-    /* v8 ignore next -- defensive guard: data is guaranteed after ensureDevice */
     if (data === null) {
       return
     }
@@ -87,7 +86,6 @@ export abstract class ClassicMELCloudDevice<
     Record<string, unknown>
   > {
     const data = this.#data
-    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
     return data === undefined ? {} : this.driver.getCapabilitiesOptions(data)
   }
 
@@ -97,7 +95,6 @@ export abstract class ClassicMELCloudDevice<
 
   protected override getRequiredCapabilities(): string[] {
     const data = this.#data
-    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
     return data === undefined ? [] : this.driver.getRequiredCapabilities(data)
   }
 

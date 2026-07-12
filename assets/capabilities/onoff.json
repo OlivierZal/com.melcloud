@@ -1,0 +1,277 @@
+{
+  "$flow": {
+    "actions": [
+      {
+        "highlight": true,
+        "id": "on",
+        "title": {
+          "ar": "مشغل",
+          "da": "Tændt",
+          "de": "Einschalten",
+          "en": "Turn on",
+          "es": "Encender",
+          "fr": "Activer",
+          "it": "Attiva",
+          "ko": "켜기",
+          "nl": "Zet aan",
+          "no": "Slå på",
+          "pl": "Włącz",
+          "ru": "Включить",
+          "sv": "Aktivera"
+        }
+      },
+      {
+        "highlight": true,
+        "id": "off",
+        "title": {
+          "ar": "متوقف",
+          "da": "Slukket",
+          "de": "Ausschalten",
+          "en": "Turn off",
+          "es": "Apagar",
+          "fr": "Désactiver",
+          "it": "Disattiva",
+          "ko": "끄기",
+          "nl": "Zet uit",
+          "no": "Slå av",
+          "pl": "Wyłącz",
+          "ru": "Выключить",
+          "sv": "Stäng av"
+        }
+      },
+      {
+        "id": "toggle",
+        "title": {
+          "ar": "تبديل التشغيل أو الإيقاف",
+          "da": "Tænd eller sluk",
+          "de": "Ein- oder ausschalten",
+          "en": "Toggle on or off",
+          "es": "Encender o apagar",
+          "fr": "Alterner activé ou désactivé",
+          "it": "Attiva o disattiva",
+          "ko": "켬/끔 상태 전환하기",
+          "nl": "Schakel aan of uit",
+          "no": "Veksle mellom på og av",
+          "pl": "Przełącz na wł. lub wył.",
+          "ru": "Переключатель включить/выключить",
+          "sv": "Växla på och av"
+        }
+      },
+      {
+        "$filter": {
+          "class": "windowcoverings|curtain|blinds|sunshade"
+        },
+        "id": "open",
+        "title": {
+          "ar": "فتح الستارة أو الستارة الدوارة",
+          "da": "Åbn gardiner eller persienner",
+          "de": "Vorhang oder Rollladen öffnen",
+          "en": "Open the curtain or blind",
+          "es": "Abrir cortina o persiana",
+          "fr": "Ouvrir le rideau ou le store",
+          "it": "Apri la tenda o le persiane",
+          "ko": "커튼 또는 블라인드 열기",
+          "nl": "Open de gordijnen",
+          "no": "Åpne gardinen eller persiennen",
+          "pl": "Rozchyl zasłonę lub roletę",
+          "ru": "Открыть штору или жалюзи",
+          "sv": "Öppna gardin eller persienn"
+        }
+      },
+      {
+        "$filter": {
+          "class": "windowcoverings|curtain|blinds|sunshade"
+        },
+        "id": "close",
+        "title": {
+          "ar": "إغلاق الستارة أو الستارة الدوارة",
+          "da": "Luk gardiner eller persienner",
+          "de": "Vorhang oder Rollladen schließen",
+          "en": "Close the curtain or blind",
+          "es": "Cerrar cortina o persiana",
+          "fr": "Fermer le rideau ou le store",
+          "it": "Chiudi la tenda o le persiane",
+          "ko": "커튼 또는 블라인드 닫기",
+          "nl": "Sluit de gordijnen",
+          "no": "Trekk for gardinen eller persiennen",
+          "pl": "Zasuń zasłonę lub roletę",
+          "ru": "Закрыть штору или жалюзи",
+          "sv": "Stäng gardin eller persienn"
+        }
+      }
+    ],
+    "conditions": [
+      {
+        "id": "on",
+        "title": {
+          "ar": "!{{قيد التشغيل|متوقف عن التشغيل}}",
+          "da": "Er !{{tændt|slukket}}",
+          "de": "Ist !{{an|aus}}",
+          "en": "Is turned !{{on|off}}",
+          "es": "Está !{{encendido|apagado}}",
+          "fr": "Est !{{activé|désactivé}}",
+          "it": "È !{{attivato|disattivato}}",
+          "ko": "!{{켜지면|꺼지면}}",
+          "nl": "Is !{{aan|uit}}",
+          "no": "Er slått !{{på|av}}",
+          "pl": "Jest !{{włączone|wyłączone}}",
+          "ru": "!{{Вкл.|Выкл.}}",
+          "sv": "Är !{{på|av}}"
+        }
+      },
+      {
+        "$filter": {
+          "class": "windowcoverings|curtain|blinds|sunshade"
+        },
+        "id": "open",
+        "title": {
+          "ar": "!{{مفتوح|مغلق}}",
+          "da": "Er !{{åben|lukket}}",
+          "de": "Ist !{{offen|geschlossen}}",
+          "en": "Is !{{open|closed}}",
+          "es": "Está !{{abierto|cerrado}}",
+          "fr": "Est !{{ouvert|fermé}}",
+          "it": "È !{{aperto|chiuso}}",
+          "ko": "!{{열리면|닫히면}}",
+          "nl": "Is !{{geopend|gesloten}}",
+          "no": "Er !{{åpen|lukket}}",
+          "pl": "Jest !{{otwarte|zamknięte}}",
+          "ru": "!{{Открыто|Закрыто}}",
+          "sv": "Är !{{öppen|stängd}}"
+        }
+      }
+    ],
+    "triggers": [
+      {
+        "highlight": true,
+        "id": "onoff_true",
+        "title": {
+          "ar": "مشغل",
+          "da": "Tændt",
+          "de": "Angeschaltet",
+          "en": "Turned on",
+          "es": "Encendido",
+          "fr": "Activé",
+          "it": "Attivato",
+          "ko": "켜지면",
+          "nl": "Aangezet ",
+          "no": "Aktivert",
+          "pl": "Włączone",
+          "ru": "Включено",
+          "sv": "Aktiverad"
+        }
+      },
+      {
+        "highlight": true,
+        "id": "onoff_false",
+        "title": {
+          "ar": "متوقف",
+          "da": "Slukket",
+          "de": "Ausgeschaltet",
+          "en": "Turned off",
+          "es": "Apagado",
+          "fr": "Désactivé",
+          "it": "Disattivato",
+          "ko": "꺼지면",
+          "nl": "Uitgezet",
+          "no": "Deaktivert",
+          "pl": "Wyłączone",
+          "ru": "Выключено",
+          "sv": "Inaktiverad"
+        }
+      }
+    ]
+  },
+  "color": "#9033FC",
+  "getable": true,
+  "insights": true,
+  "insightsTitleFalse": {
+    "ar": "متوقف",
+    "da": "Slukket",
+    "de": "Ausgeschaltet",
+    "en": "Turned off",
+    "es": "Apagado",
+    "fr": "Désactivé",
+    "it": "Disattivato",
+    "ko": "전원 꺼짐",
+    "nl": "Uitgezet",
+    "no": "Deaktivert",
+    "pl": "Wyłączone",
+    "ru": "Выключено",
+    "sv": "Inaktiverad"
+  },
+  "insightsTitleTrue": {
+    "ar": "مشغل",
+    "da": "Tændt",
+    "de": "Eingeschaltet",
+    "en": "Turned on",
+    "es": "Encendido",
+    "fr": "Activé",
+    "it": "Attivato",
+    "ko": "전원 켜짐",
+    "nl": "Aangezet",
+    "no": "Aktivert",
+    "pl": "Włączone",
+    "ru": "Включено",
+    "sv": "Aktiverad"
+  },
+  "options": {
+    "greyout": {
+      "default": false,
+      "desc": {
+        "ar": "عندما تكون هذه الإمكانية خاطئة، أعط تلميحًا مرئيًا لتغميق الجهاز.",
+        "da": "Når denne funktion er falsk, skal du give et visuelt tip for at vise enheden i grå.",
+        "de": "wenn diese Fähigkeit 'false' ist, gibt es einen visuellenen Hinweis, um das Gerät auszugrauen.",
+        "en": "When this capability is false, give a visual hint to greyout the device.",
+        "es": "Cuando esta capacidad es falsa, da una indicación visual para poner en gris el dispositivo.",
+        "fr": "Quand cette capacité est fausse, donnez un indice visuel pour griser cet appareil.",
+        "it": "Quando questa funzione è impostata su falso, dai un indizio visivo per far apparire questo dispositivo in grigio.",
+        "ko": "이 기능이 거짓으로 설정되면 제품이 회색으로 표시되어 쉽게 식별할 수 있어요.",
+        "nl": "Als deze mogelijkheid 'false' is, geef dan een visuele hint om het apparaat grijs te maken.",
+        "no": "Når denne egenskapen er usann, gi et visuelt tips for å vise enheten i grått.",
+        "pl": "Jeśli zdolność jest nieadekwatna, użyj wizualnej wskazówki, aby wyświetlić urządzenie na szaro.",
+        "ru": "Когда функция ложна, установите визуальную подсказку, чтобы выделить устройство серым цветом.",
+        "sv": "När den här funktionen är falsk, ge en ett visuellt tips för att gråa ut enheten."
+      },
+      "type": "boolean"
+    },
+    "setOnDim": {
+      "default": true,
+      "desc": {
+        "ar": "عندما يحتوي الجهاز على كل من إمكانية 'تشغيل/إيقاف' و'تعتيم'، ويريد Homey تشغيل الجهاز وضبط قيمة تعتيم محددة، اضبط هذه الإمكانية على 'false' (خطأ) لمنع Homey من إرسال أمر ضبط.",
+        "da": "Når en enhed har både en `tænd/sluk`- og en `dæmpe`-funktion, og Homey vil tænde for enheden OG indstille til en specifik dæmpeværdi, skal denne funktion indstilles til  `falsk` for at forhindre, at Homey sender en indstillingskommando.",
+        "de": "Wenn ein Gerät sowohl 'An/Aus'- als auch 'Dimm'-Fähigkeit hat und Homey das Gerät anschalten UND auf einen bestimmten Wert dimmen will, setze diese Fähigkeit auf 'false', um Homey am Senden eines Setzen-Befehls zu hindern.",
+        "en": "When a device has both an `onoff` and `dim` capability, and Homey wants to turn the device on AND to a specific dim value, set this capability to `false` to prevent Homey from sending a set command.",
+        "es": "Cuando un dispositivo tiene tanto la capacidad 'encender/apagar' como la de 'intensidad de la luz', y Homey quiere encender el dispositivo Y ajustar una intensidad concreta, configura esta capacidad como 'falso' para evitar que Homey envíe un comando de configuración.",
+        "fr": "Quand un appareil peut `allumer/éteindre` et `estomper`, et que Homey veut allumer l'appareil ET sur une valeur d'estompage spécifique, définissez cette capacité sur `faux` pour empêcher Homey d'envoyer une commande de définition.",
+        "it": "Quando un dispositivo può 'accendersi' e 'attenuarsi' e Homey desidera attivare il dispositivo E definire un valore specifico, imposta questa funzione su 'falso' per impedire a Homey di inviare un comando di definizione.",
+        "ko": "제품에 '전원' 및 '밝기' 기능이 모두 있는데 Homey가 제품을 켜는 동시에 특정한 조절값으로 설정하길 원한다면 이 기능을 '거짓'으로 설정해 Homey가 설정 명령을 보내지 않도록 하세요.",
+        "nl": "Wanneer een apparaat een mogelijkheid voor zowel 'onoff' als 'dim' heeft, en Homey wil het apparaat aanzetten EN op een specifieke dimwaarde instellen, stel deze mogelijkheid dan in op 'false' om te voorkomen dat Homey een vast commando stuurt.",
+        "no": "Når en enhet har både en `på/av`- og en `dempe`-funksjon og Homey vil slå på enheten OG sette dempingen til en spesifikk verdi, sett denne egenskapen til `usann` for å forhindre at Homey sender en innstillingskommando.",
+        "pl": "Jeśli urządzenie ma zdolności „wł.wył.” i „przygaś”, a urządzenie Homey chce włączyć produkt ORAZ ustawić konkretną wartość przygaszenia, ustaw tę zdolność jako „nieadekwatne” – w ten sposób Homey nie będzie wysyłać ustawionych poleceń.",
+        "ru": "Когда устройство имеет функции `onoff` и `dim`, и Homey хочет включить устройство ТАКЖЕ с определенным значением яркости, установите для этой функции значение `false`, чтобы Homey не отправил команду на установку.",
+        "sv": "När en enhet har både en `på/av`- och `dim`-funktionalitet och Homey vill slå på enheten OCH till ett specifikt dimvärde, sätt den här funktionen till `falsk` för att förhindra att Homey skickar ett inställningskommando."
+      },
+      "type": "boolean"
+    }
+  },
+  "setable": true,
+  "title": {
+    "ar": "مشغل",
+    "da": "Tændt",
+    "de": "Eingeschaltet",
+    "en": "Turned on",
+    "es": "Encendido",
+    "fr": "Activé",
+    "it": "Attivato",
+    "ko": "전원",
+    "nl": "Aangezet",
+    "no": "Aktivert",
+    "pl": "Włączone",
+    "ru": "Включено",
+    "sv": "Aktiverad"
+  },
+  "type": "boolean",
+  "uiComponent": "toggle",
+  "uiQuickAction": true
+}

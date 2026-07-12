@@ -4,7 +4,7 @@ import {
   type HomeAtwDeviceProfile,
   type HomeCapabilitiesAtw,
   homeGetCapabilitiesOptionsAtw,
-  homeSetCapabilityTagMappingAtw,
+  homeTagMappingsAtw,
 } from '../../types/home-atw.mts'
 import { HomeMELCloudDriver } from '../home-driver.mts'
 
@@ -12,8 +12,8 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
   public override readonly getCapabilitiesOptions: typeof homeGetCapabilitiesOptionsAtw =
     homeGetCapabilitiesOptionsAtw
 
-  public override readonly setCapabilityTagMapping: typeof homeSetCapabilityTagMappingAtw =
-    homeSetCapabilityTagMappingAtw
+  public override readonly tagMappings: typeof homeTagMappingsAtw =
+    homeTagMappingsAtw
 
   public override readonly type: typeof Home.DeviceType.Atw =
     Home.DeviceType.Atw
@@ -53,7 +53,6 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
   public override getRequiredCapabilities(
     profile?: HomeAtwDeviceProfile,
   ): string[] {
-    /* v8 ignore next -- profile is always provided by callers */
     const { capabilities, isOwner = false } = profile ?? {}
     return [
       ...this.#measureCapabilities,

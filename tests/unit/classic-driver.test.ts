@@ -161,10 +161,13 @@ describe(ClassicMELCloudDriver, () => {
 
     it('should group tags ending with Produced into produced mapping', async () => {
       const driverWithProduced = createTestDriver()
-      Object.defineProperty(driverWithProduced, 'energyCapabilityTagMapping', {
-        value: mock<EnergyCapabilityTagMapping<TestDriverType>>({
-          measure_power: ['TotalHeatingProduced', 'TotalCoolingConsumed'],
-        }),
+      Object.defineProperty(driverWithProduced, 'tagMappings', {
+        value: {
+          ...driverWithProduced.tagMappings,
+          energy: mock<EnergyCapabilityTagMapping<TestDriverType>>({
+            measure_power: ['TotalHeatingProduced', 'TotalCoolingConsumed'],
+          }),
+        },
       })
       await driverWithProduced.onInit()
 

@@ -327,6 +327,12 @@ export const testPostUpdateSync = (
   getCapabilityListenerCallback: () => (
     values: Record<string, unknown>,
   ) => Promise<void>,
+  // Devices whose `error` delegates to a super mock (instead of an instance
+  // spy) pass the spy and its leading arguments explicitly.
+  errorSpy: {
+    readonly argsPrefix?: readonly unknown[]
+    readonly get?: (device: PostUpdateSyncDevice) => unknown
+  } = {},
 ): void => {
   describe('post-update sync', () => {
     it('should sync capabilities after sendUpdate', async () => {
@@ -389,7 +395,14 @@ export const testPostUpdateSync = (
       ).mockRejectedValue(failure)
 
       await expect(syncCallback()).resolves.toBeUndefined()
-      expect(device.error).toHaveBeenCalledWith(
+
+      const {
+        argsPrefix = [],
+        get = (target: PostUpdateSyncDevice): unknown => target.error,
+      } = errorSpy
+
+      expect(get(device)).toHaveBeenCalledWith(
+        ...argsPrefix,
         'Post-update sync failed:',
         failure,
       )

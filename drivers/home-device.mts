@@ -18,7 +18,7 @@ export abstract class HomeMELCloudDevice<
     Record<string, HomeConvertToDevice<T>>
   >
 
-  protected abstract override readonly deviceToCapability: Partial<
+  protected abstract readonly deviceToCapability: Partial<
     Record<string, HomeConvertFromDevice<T>>
   >
 
@@ -34,7 +34,6 @@ export abstract class HomeMELCloudDevice<
     Record<string, unknown>
   > {
     const facade = this.cachedFacade
-    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
     return facade === undefined ?
         {}
       : this.driver.getCapabilitiesOptions(facade)
@@ -46,7 +45,6 @@ export abstract class HomeMELCloudDevice<
 
   protected override getRequiredCapabilities(): string[] {
     const facade = this.cachedFacade
-    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
     return facade === undefined ?
         []
       : this.driver.getRequiredCapabilities(facade)

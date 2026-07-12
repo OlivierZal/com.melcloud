@@ -17,17 +17,16 @@ export abstract class ClassicMELCloudDriver<
 > extends BaseMELCloudDriver {
   declare public readonly getDevices: () => ClassicMELCloudDevice[]
 
-  public abstract override readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
-
   public abstract readonly getCapabilitiesOptions: (
     data: Readonly<Classic.ListDeviceData<T>>,
   ) => Partial<CapabilitiesOptions<T>>
 
-  public abstract override readonly getCapabilityTagMapping: GetCapabilityTagMapping<T>
-
-  public abstract override readonly listCapabilityTagMapping: ListCapabilityTagMapping<T>
-
-  public abstract override readonly setCapabilityTagMapping: SetCapabilityTagMapping<T>
+  public abstract override readonly tagMappings: {
+    readonly energy: EnergyCapabilityTagMapping<T>
+    readonly get: GetCapabilityTagMapping<T>
+    readonly list: ListCapabilityTagMapping<T>
+    readonly set: SetCapabilityTagMapping<T>
+  }
 
   public abstract override readonly type: T
 
@@ -79,7 +78,7 @@ export abstract class ClassicMELCloudDriver<
     for (const [capability, tags] of typedEntries<
       string & keyof EnergyCapabilityTagMapping<T>,
       EnergyCapabilityTagMapping<T>[keyof EnergyCapabilityTagMapping<T>]
-    >(this.energyCapabilityTagMapping)) {
+    >(this.tagMappings.energy)) {
       const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
         tag.endsWith('Consumed') ? 'consumed' : 'produced',
       )

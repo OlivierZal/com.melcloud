@@ -21,9 +21,13 @@ export const testTagMappings = (
 ): void => {
   describe('tag mappings', () => {
     it.each(Object.entries(mappings))(
-      'should use the correct %s',
+      'should use the correct %s mapping',
       (name, expected) => {
-        expect((getDriver() as Record<string, unknown>)[name]).toBe(expected)
+        expect(
+          (getDriver() as { tagMappings: Record<string, unknown> }).tagMappings[
+            name
+          ],
+        ).toBe(expected)
       },
     )
   })
