@@ -1,3 +1,4 @@
+import type HomeyModule from 'homey'
 import type PairSession from 'homey/lib/PairSession'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Home from '@olivierzal/melcloud-api/home'
@@ -11,7 +12,7 @@ import {
   testPairing,
   testTagMappings,
 } from '../driver-descriptors.ts'
-import { mock } from '../helpers.ts'
+import { type InteropModule, mock } from '../helpers.ts'
 import HomeMELCloudDriverAtw from '../../drivers/home-melcloud_atw/driver.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -33,10 +34,10 @@ const {
   showViewMock: vi.fn<(view: string) => Promise<void>>(),
 }))
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
-vi.mock('homey', async () => {
-  const { createMockDriverClass } = await import('../helpers.ts')
-  return {
+vi.mock(import('homey'), async () => {
+  const { createMockDriverClass, mock: mockModule } =
+    await import('../helpers.ts')
+  return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Driver: createMockDriverClass({
         homey: {
@@ -51,7 +52,7 @@ vi.mock('homey', async () => {
         },
       }),
     },
-  }
+  })
 })
 
 const createProfile = ({

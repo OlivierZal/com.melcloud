@@ -79,14 +79,26 @@ export abstract class ClassicMELCloudDevice<
     await this.setCapabilityValues(data)
   }
 
-  protected override createEnergyReport(
+  protected override readonly createEnergyReport = (
     config: EnergyReportConfig,
-  ): EnergyReport<T> {
-    return new EnergyReport(this, config)
+  ): EnergyReport<T> => new EnergyReport(this, config)
+
+  protected override getCapabilitiesOptions(): Partial<
+    Record<string, unknown>
+  > {
+    const data = this.#data
+    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
+    return data === undefined ? {} : this.driver.getCapabilitiesOptions(data)
   }
 
   protected override getFacade(): Classic.DeviceFacade<T> {
     return this.homey.app.getClassicFacade('devices', this.id)
+  }
+
+  protected override getRequiredCapabilities(): string[] {
+    const data = this.#data
+    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
+    return data === undefined ? [] : this.driver.getRequiredCapabilities(data)
   }
 
   protected async setCapabilityValues(
@@ -106,13 +118,6 @@ export abstract class ClassicMELCloudDevice<
         }
       }),
     )
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic override: Classic drivers consume the wire data, not the facade
-  protected override toDriverData(
-    facade: Classic.DeviceFacade<T>,
-  ): Readonly<Classic.ListDeviceData<T>> {
-    return facade.data
   }
 
   #convertFromDevice<TKey extends keyof Capabilities<T>>(

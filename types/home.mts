@@ -37,12 +37,9 @@ type HomeValues<T extends Home.DeviceType> =
  * setpoints on a single-zone ATW unit; the zone-2 thermostat mode instead
  * degrades to the room mode).
  */
-export type HomeConvertFromDevice<T extends Home.DeviceType> = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow the return to a specific capability type
-  bivariant(
-    facade: HomeDeviceFacade<T>,
-  ): HomeCapabilities<T>[keyof HomeCapabilities<T>] | null
-}['bivariant']
+export type HomeConvertFromDevice<T extends Home.DeviceType> = (
+  facade: HomeDeviceFacade<T>,
+) => HomeCapabilities<T>[keyof HomeCapabilities<T>] | null
 
 /**
  * Converter from a Homey capability value to the corresponding Home device

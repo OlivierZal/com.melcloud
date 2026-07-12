@@ -1,3 +1,4 @@
+import type HomeyModule from 'homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
@@ -13,7 +14,7 @@ import {
   testEnergyReportConfig,
   testThermostatMode,
 } from '../device-descriptors.ts'
-import { mock } from '../helpers.ts'
+import { type InteropModule, mock } from '../helpers.ts'
 import ClassicMELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -33,10 +34,10 @@ const { getCapabilityOptionsMock, hasCapabilityMock, setCapabilityValueMock } =
       vi.fn<(capability: string, value: unknown) => Promise<void>>(),
   }))
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
-vi.mock('homey', async () => {
-  const { createMockDeviceClass } = await import('../helpers.ts')
-  return {
+vi.mock(import('homey'), async () => {
+  const { createMockDeviceClass, mock: mockModule } =
+    await import('../helpers.ts')
+  return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Device: createMockDeviceClass({
         overrides: {
@@ -46,7 +47,7 @@ vi.mock('homey', async () => {
         },
       }),
     },
-  }
+  })
 })
 
 const mockDriver = mock<ClassicMELCloudDriver<AtwType>>({

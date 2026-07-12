@@ -5,6 +5,7 @@ import type {
   HomeConvertToDevice,
   HomeDeviceFacade,
 } from '../types/home.mts'
+import { typedEntries } from '../lib/typed-object.mts'
 import type { HomeMELCloudDriver } from './home-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
 
@@ -29,22 +30,37 @@ export abstract class HomeMELCloudDevice<
     await this.#setCapabilityValues(device)
   }
 
+  protected override getCapabilitiesOptions(): Partial<
+    Record<string, unknown>
+  > {
+    const facade = this.cachedFacade
+    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
+    return facade === undefined ?
+        {}
+      : this.driver.getCapabilitiesOptions(facade)
+  }
+
   protected override getFacade(): HomeDeviceFacade<T> {
     return this.homey.app.getHomeFacade(this.id, this.driver.type)
   }
 
+  protected override getRequiredCapabilities(): string[] {
+    const facade = this.cachedFacade
+    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
+    return facade === undefined ?
+        []
+      : this.driver.getRequiredCapabilities(facade)
+  }
+
   async #setCapabilityValues(device: HomeDeviceFacade<T>): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing the Partial abstract to typed entries; concrete converter maps are total
-    const entries = Object.entries(this.deviceToCapability) as [
-      string,
-      HomeConvertFromDevice<T>,
-    ][]
     await Promise.all(
-      entries.map(async ([capability, convert]) => {
-        if (this.hasCapability(capability)) {
-          await this.setCapabilityValue(capability, convert(device))
-        }
-      }),
+      typedEntries(this.deviceToCapability).map(
+        async ([capability, convert]) => {
+          if (this.hasCapability(capability)) {
+            await this.setCapabilityValue(capability, convert(device))
+          }
+        },
+      ),
     )
   }
 }

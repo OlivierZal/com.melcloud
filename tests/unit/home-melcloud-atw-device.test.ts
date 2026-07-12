@@ -1,6 +1,8 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
+import type HomeyModule from 'homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type { InteropModule } from '../helpers.ts'
 import { NotFoundError } from '../../lib/errors.mts'
 import { homeSetCapabilityTagMappingAtw } from '../../types/home-atw.mts'
 import {
@@ -40,12 +42,12 @@ const {
   superSetWarningMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
 }))
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
-vi.mock('homey', async () => {
-  const { createMockDeviceClass } = await import('../helpers.ts')
+vi.mock(import('homey'), async () => {
+  const { createMockDeviceClass, mock: mockModule } =
+    await import('../helpers.ts')
   const { homeSetCapabilityTagMappingAtw: setCapabilityTagMapping } =
     await import('../../types/home-atw.mts')
-  return {
+  return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Device: createMockDeviceClass({
         overrides: {
@@ -75,7 +77,7 @@ vi.mock('homey', async () => {
         superMocks: { setWarning: superSetWarningMock },
       }),
     },
-  }
+  })
 })
 
 const mockFacade = (

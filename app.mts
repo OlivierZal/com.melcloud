@@ -39,7 +39,7 @@ import {
   fanSpeed,
   horizontal,
   power,
-  setTemperature,
+  targetTemperature,
   thermostatMode,
   vertical,
 } from './files.mts'
@@ -665,7 +665,7 @@ export default class MELCloudApp extends App {
   }[] {
     return [
       { key: 'Power', options: power },
-      { key: 'SetTemperature', options: setTemperature },
+      { key: 'SetTemperature', options: targetTemperature },
       {
         enumType: Classic.FanSpeed,
         key: 'FanSpeed',

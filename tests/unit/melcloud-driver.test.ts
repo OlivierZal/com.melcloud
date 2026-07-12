@@ -1,6 +1,8 @@
+import type HomeyModule from 'homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
+import type { InteropModule } from '../helpers.ts'
 import {
   energyCapabilityTagMapping,
   getCapabilityTagMapping,
@@ -10,10 +12,12 @@ import {
 import { testDriverType, testTagMappings } from '../driver-descriptors.ts'
 import ClassicMELCloudDriverAta from '../../drivers/melcloud/driver.mts'
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
-vi.mock('homey', async () => {
-  const { createMockDriverClass } = await import('../helpers.ts')
-  return { default: { Driver: createMockDriverClass() } }
+vi.mock(import('homey'), async () => {
+  const { createMockDriverClass, mock: mockModule } =
+    await import('../helpers.ts')
+  return mockModule<InteropModule<typeof HomeyModule>>({
+    default: { Driver: createMockDriverClass() },
+  })
 })
 
 describe(ClassicMELCloudDriverAta, () => {

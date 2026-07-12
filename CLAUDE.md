@@ -127,12 +127,13 @@ coverage.
 
 ## Lint doctrine
 
-- Code adapts to the rules, never the reverse. Fix violations in code;
-  never loosen a rule or add options to accommodate existing code. Order
-  of preference: refactor > scoped `files` block for an imposed shape >
-  documented inline disable.
-- Inline disables need a `-- reason`; never a bare disable. Zero-warning
-  policy: every enabled rule is at `error`.
+- Code adapts to the rules, never the reverse. Never add a disable — not
+  inline, not through config options or ignore regexes: refactor until
+  the rule passes (rename the binding, move the polymorphic default to a
+  nullable field, push the logic to a class that uses `this`, route casts
+  through the shared typed helpers…). The existing disables are debt:
+  remove them when touching the code they guard, never replicate them.
+- Zero-warning policy: every enabled rule is at `error`.
 - Metric caps (`complexity`, `max-statements` 10, `max-depth`,
   `unicorn/try-complexity` 1…) are measured codebase ceilings: exceeding
   one means extract/refactor, not bump.

@@ -46,11 +46,12 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
       this.#toOperationalState(operationMode),
     'operational_state.hot_water': ({ hotWaterOperationalState }) =>
       hotWaterOperationalState,
-    target_temperature: ({ setTemperatureZone1 }) => setTemperatureZone1,
-    'target_temperature.tank_water': ({ setTankWaterTemperature }) =>
-      setTankWaterTemperature,
-    'target_temperature.zone2': ({ setTemperatureZone2 }) =>
-      setTemperatureZone2,
+    target_temperature: ({ setTemperatureZone1: temperature }) => temperature,
+    'target_temperature.tank_water': ({
+      setTankWaterTemperature: temperature,
+    }) => temperature,
+    'target_temperature.zone2': ({ setTemperatureZone2: temperature }) =>
+      temperature,
     thermostat_mode: ({ operationModeZone1 }) =>
       toThermostatModeAtw(operationModeZone1),
     'thermostat_mode.zone2': ({ operationModeZone2 }) =>

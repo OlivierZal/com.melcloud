@@ -46,13 +46,13 @@ export default class HomeMELCloudDeviceAta extends HomeMELCloudDevice<AtaType> {
     keyof HomeCapabilitiesAta,
     HomeConvertFromDevice<AtaType>
   > = {
-    fan_speed: ({ setFanSpeed }) => fanSpeedToClassic[setFanSpeed],
+    fan_speed: ({ setFanSpeed: speed }) => fanSpeedToClassic[speed],
     horizontal: ({ vaneHorizontalDirection }) =>
       horizontalFromDevice[horizontalToClassic[vaneHorizontalDirection]],
     measure_signal_strength: ({ rssi }) => rssi,
     measure_temperature: ({ roomTemperature }) => roomTemperature,
     onoff: ({ power: isOn }) => isOn,
-    target_temperature: ({ setTemperature }) => setTemperature,
+    target_temperature: ({ setTemperature: temperature }) => temperature,
     thermostat_mode: ({ operationMode, power: isOn }) =>
       isOn ?
         operationModeFromDevice[operationModeToClassic[operationMode]]

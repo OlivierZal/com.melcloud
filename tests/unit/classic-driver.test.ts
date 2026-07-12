@@ -1,4 +1,5 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import type HomeyModule from 'homey'
 import type FlowCardAction from 'homey/lib/FlowCardAction'
 import type FlowCardCondition from 'homey/lib/FlowCardCondition'
 import type PairSession from 'homey/lib/PairSession'
@@ -11,7 +12,7 @@ import {
   testPairing,
   testRepairing,
 } from '../driver-descriptors.ts'
-import { assertDefined, mock } from '../helpers.ts'
+import { type InteropModule, assertDefined, mock } from '../helpers.ts'
 import {
   type TestDriver,
   type TestDriverType,
@@ -34,8 +35,8 @@ const {
   showViewMock: vi.fn<(view: string) => Promise<void>>(),
 }))
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
-vi.mock('homey', () => {
+vi.mock(import('homey'), async () => {
+  const { mock: mockModule } = await import('../helpers.ts')
   class MockDriver {
     public getDevices = vi.fn<() => readonly unknown[]>().mockReturnValue([])
 
@@ -78,7 +79,9 @@ vi.mock('homey', () => {
     }
   }
 
-  return { default: { Driver: MockDriver } }
+  return mockModule<InteropModule<typeof HomeyModule>>({
+    default: { Driver: MockDriver },
+  })
 })
 
 describe(ClassicMELCloudDriver, () => {

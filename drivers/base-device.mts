@@ -54,9 +54,12 @@ export abstract class BaseMELCloudDevice<
     return this.getData().id
   }
 
-  // No energy reports unless a subclass provides both configs and a real
-  // createEnergyReport; thermostat vocabularies without an off value keep
-  // the null default.
+  // No energy reports unless a subclass provides both the configs and the
+  // factory; thermostat vocabularies without an off value keep the null
+  // default.
+  protected readonly createEnergyReport:
+    ((config: EnergyReportConfig) => EnergyReportOperation) | null = null
+
   protected readonly energyReportRegular: EnergyReportConfig | null = null
 
   protected readonly energyReportTotal: EnergyReportConfig | null = null
@@ -134,7 +137,13 @@ export abstract class BaseMELCloudDevice<
     await Promise.resolve()
   }
 
+  // The capability sets and options are driver- and facade-specific: each
+  // intermediate class derives them from its own facade shape.
+  protected abstract getCapabilitiesOptions(): Partial<Record<string, unknown>>
+
   protected abstract getFacade(): TFacade
+
+  protected abstract getRequiredCapabilities(): string[]
 
   public abstract syncFromDevice(): Promise<void>
 
@@ -225,13 +234,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   protected async applyCapabilitiesOptions(): Promise<void> {
-    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
-    if (this.#deviceFacade === undefined) {
-      return
-    }
-    const capabilitiesOptions = this.driver.getCapabilitiesOptions(
-      this.toDriverData(this.#deviceFacade),
-    )
+    const capabilitiesOptions = this.getCapabilitiesOptions()
     for (const [capability, options] of Object.entries(capabilitiesOptions)) {
       /* v8 ignore next -- options is always an object in practice; Partial type is defensive */
       if (typeof options === 'object' && options !== null) {
@@ -248,25 +251,6 @@ export abstract class BaseMELCloudDevice<
     }
     this.#reports.regular?.unschedule()
     this.#reports.total?.unschedule()
-  }
-
-  /* v8 ignore start -- never called: the energy-report configs default to null */
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic default; overridden alongside the energy-report configs
-  protected createEnergyReport(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature must match overrides that use this parameter
-    _config: EnergyReportConfig,
-  ): EnergyReportOperation {
-    throw new Error('Energy reports are not supported for this device')
-  }
-  /* v8 ignore stop */
-
-  protected getRequiredCapabilities(): string[] {
-    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
-    return this.#deviceFacade === undefined ?
-        []
-      : this.driver.getRequiredCapabilities(
-          this.toDriverData(this.#deviceFacade),
-        )
   }
 
   protected isEnergyCapability(setting: string): boolean {
@@ -296,6 +280,9 @@ export abstract class BaseMELCloudDevice<
   }
 
   protected async scheduleEnergyReports(): Promise<void> {
+    if (this.createEnergyReport === null) {
+      return
+    }
     if (this.energyReportRegular !== null) {
       this.#reports.regular = this.createEnergyReport(this.energyReportRegular)
       await this.#reports.regular.start()
@@ -316,13 +303,6 @@ export abstract class BaseMELCloudDevice<
       await this.#pushUpdate(device, updateData)
     }
     this.#scheduleSyncFromDevice()
-  }
-
-  // Polymorphic default: Home drivers consume the facade itself; Classic
-  // overrides to unwrap the wire data its drivers take.
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic default; overridden by the Classic hierarchy
-  protected toDriverData(facade: TFacade): unknown {
-    return facade
   }
 
   async #ensureDeviceFacade(): Promise<TFacade> {

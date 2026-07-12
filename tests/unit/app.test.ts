@@ -11,6 +11,7 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type * as FilesModule from '../../files.mts'
+import type * as HomeyLib from '../../lib/homey.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
 import type { Settings } from '../../types/device-settings.mts'
 import type { ManifestDriver } from '../../types/manifest.mts'
@@ -18,10 +19,10 @@ import { getMockCallArg, mock } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock App constructor is not assignable to typeof App
-vi.mock('../../lib/homey.mts', () => ({
-  App: Function,
-}))
+vi.mock(import('../../lib/homey.mts'), async () => {
+  const { mock: mockModule } = await import('../helpers.ts')
+  return mockModule<typeof HomeyLib>({ App: Function })
+})
 
 vi.mock(
   import('../../lib/classic-facade-manager.mts'),
@@ -31,10 +32,10 @@ vi.mock(
   }),
 )
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Partial mock data is not assignable to the full file exports
-vi.mock('../../files.mts', async (importOriginal) => {
-  const original = await importOriginal<typeof FilesModule>()
-  return {
+vi.mock(import('../../files.mts'), async (importOriginal) => {
+  const { mock: mockModule } = await import('../helpers.ts')
+  const original = await importOriginal()
+  return mockModule<typeof FilesModule>({
     ...original,
     changelog: {
       ...original.changelog,
@@ -53,7 +54,7 @@ vi.mock('../../files.mts', async (importOriginal) => {
       title: { en: 'Power' },
       type: 'boolean',
     },
-    setTemperature: {
+    targetTemperature: {
       title: { en: 'Set temperature' },
       type: 'number',
     },
@@ -66,7 +67,7 @@ vi.mock('../../files.mts', async (importOriginal) => {
       type: 'enum',
       values: [{ id: 'auto', title: { en: 'Auto' } }],
     },
-  }
+  })
 })
 
 const mockApiInstance = {
@@ -109,22 +110,26 @@ const { mockCreate, mockFacadeManagerConstructor, mockHomeCreate } = vi.hoisted(
   }),
 )
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock API classes lack prototype/static members required by typeof ClassicAPI
-vi.mock('@olivierzal/melcloud-api/classic', async (importOriginal) => ({
-  ...(await importOriginal()),
-  API: {
-    create: mockCreate,
-  },
-  FacadeManager: mockFacadeManagerConstructor,
-}))
+vi.mock(import('@olivierzal/melcloud-api/classic'), async (importOriginal) => {
+  const { mock: mockModule } = await import('../helpers.ts')
+  return mockModule<typeof Classic>({
+    ...(await importOriginal()),
+    API: {
+      create: mockCreate,
+    },
+    FacadeManager: mockFacadeManagerConstructor,
+  })
+})
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock API classes lack prototype/static members required by typeof HomeAPI
-vi.mock('@olivierzal/melcloud-api/home', async (importOriginal) => ({
-  ...(await importOriginal()),
-  API: {
-    create: mockHomeCreate,
-  },
-}))
+vi.mock(import('@olivierzal/melcloud-api/home'), async (importOriginal) => {
+  const { mock: mockModule } = await import('../helpers.ts')
+  return mockModule<typeof Home>({
+    ...(await importOriginal()),
+    API: {
+      create: mockHomeCreate,
+    },
+  })
+})
 
 const { default: MelCloudApp } = await import('../../app.mts')
 

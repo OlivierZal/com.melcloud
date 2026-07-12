@@ -19,7 +19,7 @@ export abstract class ClassicMELCloudDriver<
 
   public abstract override readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<T>
 
-  public abstract override readonly getCapabilitiesOptions: (
+  public abstract readonly getCapabilitiesOptions: (
     data: Readonly<Classic.ListDeviceData<T>>,
   ) => Partial<CapabilitiesOptions<T>>
 
@@ -46,7 +46,7 @@ export abstract class ClassicMELCloudDriver<
     this.#setProducedAndConsumedTagMappings()
   }
 
-  public abstract override getRequiredCapabilities(
+  public abstract getRequiredCapabilities(
     data?: Readonly<Classic.ListDeviceData<T>>,
   ): string[]
 

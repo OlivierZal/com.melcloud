@@ -79,27 +79,6 @@ export abstract class BaseMELCloudDriver extends Driver {
     name: string
   }): { data: { id: number | string }; name: string }
 
-  /* v8 ignore start -- default implementation; always overridden by the concrete drivers */
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic default; overridden by subclasses that use this
-  public getCapabilitiesOptions(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature must match overrides that use this parameter
-    ..._data: unknown[]
-  ): Partial<Record<string, unknown>> {
-    return {}
-  }
-  /* v8 ignore stop */
-
-  // Signal strength is never a default capability (it is opt-in through
-  // the options settings group), so the manifest default excludes it.
-  public getRequiredCapabilities(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature must match overrides that use this parameter
-    ..._data: unknown[]
-  ): string[] {
-    return this.manifest.capabilities.filter(
-      (capability) => capability !== 'measure_signal_strength',
-    )
-  }
-
   protected async discoverDevices(): Promise<
     { data: { id: number | string }; name: string }[]
   > {

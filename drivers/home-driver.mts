@@ -12,6 +12,14 @@ export abstract class HomeMELCloudDriver extends BaseMELCloudDriver {
     return this.homey.app.homeApi
   }
 
+  // The facade parameter is typed `unknown` so the concrete drivers can
+  // narrow it (methods are bivariant) to their own facade or profile slice.
+  public abstract getCapabilitiesOptions(
+    facade: unknown,
+  ): Partial<Record<string, unknown>>
+
+  public abstract getRequiredCapabilities(facade: unknown): string[]
+
   protected override getDeviceModels(): { id: string; name: string }[] {
     return this.homey.app.getHomeDevicesByType(this.type)
   }
