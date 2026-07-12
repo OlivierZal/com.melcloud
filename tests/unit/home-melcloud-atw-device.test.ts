@@ -15,6 +15,7 @@ const requiredCapabilities = vi.hoisted(() => [
   'measure_temperature.tank_water',
   'measure_temperature.zone2',
   'onoff',
+  'operational_state',
   'target_temperature',
   'target_temperature.tank_water',
   'target_temperature.zone2',
@@ -89,6 +90,7 @@ const mockFacade = (
     },
     hasCoolingMode: true,
     isOwner: true,
+    operationMode: 'HotWater',
     operationModeZone1: 'HeatRoomTemperature',
     operationModeZone2: 'Curve',
     power: true,
@@ -147,6 +149,10 @@ describe(HomeMELCloudDeviceAtw, () => {
         -42,
       )
       expect(setCapabilityValueMock).toHaveBeenCalledWith('onoff', true)
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'operational_state',
+        'dhw',
+      )
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'target_temperature',
         22,
@@ -231,6 +237,48 @@ describe(HomeMELCloudDeviceAtw, () => {
       expect(
         converter?.(mockFacade({ operationModeZone1: 'SomeNewFtcMode' })),
       ).toBe('room')
+    })
+
+    it.each([
+      ['Cooling', 'cooling'],
+      ['Defrost', 'defrost'],
+      ['Heating', 'heating'],
+      ['HotWater', 'dhw'],
+      ['Idle', 'idle'],
+      ['Legionella', 'legionella'],
+      ['Stop', 'idle'],
+    ])('should convert operation mode %s to %s', (mode, expected) => {
+      const {
+        deviceToCapability: { operational_state: converter },
+      } = device
+
+      expect(converter?.(mockFacade({ operationMode: mode }))).toBe(expected)
+    })
+
+    it('should clear and log an unmapped FTC operation mode', () => {
+      const {
+        deviceToCapability: { operational_state: converter },
+      } = device
+
+      expect(
+        converter?.(mockFacade({ operationMode: 'SomeNewFtcMode' })),
+      ).toBeNull()
+      expect(device.log).toHaveBeenCalledWith(
+        'Unmapped FTC operation mode:',
+        'SomeNewFtcMode',
+      )
+    })
+
+    it('should clear a blank FTC operation mode without logging', () => {
+      const {
+        deviceToCapability: { operational_state: converter },
+      } = device
+
+      expect(converter?.(mockFacade({ operationMode: '' }))).toBeNull()
+      expect(device.log).not.toHaveBeenCalledWith(
+        'Unmapped FTC operation mode:',
+        '',
+      )
     })
   })
 

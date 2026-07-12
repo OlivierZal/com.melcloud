@@ -107,6 +107,7 @@ describe(HomeMELCloudDriverAtw, () => {
 
       expect(capabilities).toStrictEqual([
         'measure_temperature',
+        'operational_state',
         'onoff',
         'target_temperature',
         'thermostat_mode',
@@ -125,6 +126,7 @@ describe(HomeMELCloudDriverAtw, () => {
 
       expect(capabilities).toStrictEqual([
         'measure_temperature',
+        'operational_state',
         'measure_temperature.tank_water',
         'measure_temperature.zone2',
       ])
@@ -137,6 +139,7 @@ describe(HomeMELCloudDriverAtw, () => {
 
       expect(capabilities).toStrictEqual([
         'measure_temperature',
+        'operational_state',
         'onoff',
         'target_temperature',
         'thermostat_mode',

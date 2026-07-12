@@ -34,6 +34,7 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
 
   readonly #measureCapabilities: (keyof HomeCapabilitiesAtw)[] = [
     'measure_temperature',
+    'operational_state',
   ]
 
   readonly #zone2ControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [

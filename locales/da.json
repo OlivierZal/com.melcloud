@@ -2,7 +2,8 @@
   "errors": {
     "deviceNotFound": "Enhed ikke fundet.",
     "zoneNotFound": "Zone ikke fundet.",
-    "invalidDuration": "Varigheden skal være et helt antal dage mellem 0 og 365."
+    "invalidDuration": "Varigheden skal være et helt antal dage mellem 0 og 365.",
+    "updateFailed": "MELCloud afviste opdateringen."
   },
   "settings": {
     "authenticate": {

@@ -16,6 +16,7 @@ import {
 interface HomeGetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
+  readonly operational_state: keyof typeof Classic.OperationModeState
 }
 
 type HomeListCapabilitiesAtw = BaseListCapabilities
@@ -77,6 +78,28 @@ const isHomeOperationModeZone = (
   mode: string,
 ): mode is Home.AtwOperationModeZone =>
   Object.hasOwn(operationModeZoneFromHome, mode)
+
+// Educated FTC-string mapping pending live confirmation: the facade types
+// the top-level operation mode as a plain string ('Stop' is the only
+// captured value so far). Unmapped strings resolve to null (the Homey
+// value is cleared) and are logged device-side to collect the real
+// vocabulary.
+const operationalStateFromHome: Partial<
+  Record<string, keyof typeof Classic.OperationModeState>
+> = {
+  Cooling: 'cooling',
+  Defrost: 'defrost',
+  Heating: 'heating',
+  HotWater: 'dhw',
+  Idle: 'idle',
+  Legionella: 'legionella',
+  Stop: 'idle',
+}
+
+export const toOperationalStateAtw = (
+  mode: string,
+): keyof typeof Classic.OperationModeState | null =>
+  operationalStateFromHome[mode] ?? null
 
 // The facade types zone modes as plain strings because the FTC exposes
 // firmware-specific variants beyond the canonical set; those (and the

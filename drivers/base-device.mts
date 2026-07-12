@@ -312,13 +312,7 @@ export abstract class BaseMELCloudDevice<
     }
     const updateData = this.mapCapabilitiesToDeviceTags(values)
     if (Object.keys(updateData).length > 0) {
-      try {
-        await device.updateValues(updateData)
-      } catch (error) {
-        if (!(error instanceof NoChangesError)) {
-          await this.setWarning(error)
-        }
-      }
+      await this.#pushUpdate(device, updateData)
     }
     this.#scheduleSyncFromDevice()
   }
@@ -347,6 +341,26 @@ export abstract class BaseMELCloudDevice<
 
   #isThermostatModeSupportingOff(): boolean {
     return this.thermostatMode !== null && 'off' in this.thermostatMode
+  }
+
+  async #pushUpdate(
+    device: TFacade,
+    updateData: Record<string, unknown>,
+  ): Promise<void> {
+    let result: unknown
+    try {
+      result = await device.updateValues(updateData)
+    } catch (error) {
+      if (!(error instanceof NoChangesError)) {
+        await this.setWarning(error)
+      }
+      return
+    }
+    // Home facades report BFF rejections as `false` instead of throwing.
+    if (result === false) {
+      this.error('Update rejected:', updateData)
+      await this.setWarning(this.homey.__('errors.updateFailed'))
+    }
   }
 
   #registerCapabilityListeners(): void {

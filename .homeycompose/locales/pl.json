@@ -2,6 +2,7 @@
   "errors": {
     "deviceNotFound": "Nie znaleziono urządzenia.",
     "invalidDuration": "Czas trwania musi być całkowitą liczbą dni od 0 do 365.",
+    "updateFailed": "MELCloud odrzucił aktualizację.",
     "zoneNotFound": "Nie znaleziono strefy."
   },
   "settings": {

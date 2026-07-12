@@ -98,6 +98,9 @@ vi.mock('homey', async () => {
             .mockReturnValue({ id: 'device-1' }),
           getSetting: getSettingMock,
           homey: {
+            __: vi
+              .fn<(key: string) => string>()
+              .mockImplementation((key: string) => key),
             api: { realtime: realtimeMock },
             app: { getHomeFacade: getHomeFacadeMock },
             clearInterval: vi.fn<(timer: NodeJS.Timeout | undefined) => void>(),

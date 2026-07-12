@@ -9,6 +9,7 @@ import {
   type HomeCapabilitiesAtw,
   type HomeSetCapabilitiesAtw,
   operationModeZoneToHome,
+  toOperationalStateAtw,
   toThermostatModeAtw,
 } from '../../types/home-atw.mts'
 import { HomeMELCloudDevice } from '../home-device.mts'
@@ -36,6 +37,8 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     'measure_temperature.zone2': ({ roomTemperatureZone2 }) =>
       roomTemperatureZone2,
     onoff: ({ power: isOn }) => isOn,
+    operational_state: ({ operationMode }) =>
+      this.#toOperationalState(operationMode),
     target_temperature: ({ setTemperatureZone1 }) => setTemperatureZone1,
     'target_temperature.tank_water': ({ setTankWaterTemperature }) =>
       setTankWaterTemperature,
@@ -45,5 +48,15 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
       toThermostatModeAtw(operationModeZone1),
     'thermostat_mode.zone2': ({ operationModeZone2 }) =>
       toThermostatModeAtw(operationModeZone2),
+  }
+
+  // FTC vocabulary collection: unmapped operation modes are logged so the
+  // operational-state mapping can be completed from real firmware strings.
+  #toOperationalState(mode: string): ReturnType<typeof toOperationalStateAtw> {
+    const state = toOperationalStateAtw(mode)
+    if (state === null && mode !== '') {
+      this.log('Unmapped FTC operation mode:', mode)
+    }
+    return state
   }
 }
