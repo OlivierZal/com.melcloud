@@ -1,7 +1,7 @@
 {
   "args": [
     {
-      "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=target_temperature.tank_water",
+      "filter": "driver_id=melcloud_atw|home-melcloud_atw",
       "name": "device",
       "type": "device"
     },

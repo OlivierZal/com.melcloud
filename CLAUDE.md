@@ -81,9 +81,14 @@ coverage.
   variants) degrade to the room modes in `toThermostatModeAtw`.
 - Flow-card filters: `driver_id` lists only the drivers that expose the
   card's capability, and a `capabilities=` clause is only added when the
-  capability is not on every device of those drivers. Do not widen a
-  filter to a driver whose support is unverified (the zone-2 cards stay
-  Classic-only until zone 2 is seen working on MELCloud Home).
+  capability is missing from part of the real pairable population of
+  those drivers (zone 2: only some ATW units have a second zone).
+  Defensive code gates do not count: the hot-water capabilities are
+  treated as universal on ATW even though the Home driver gates them on
+  `hasHotWater`/`isOwner` (guest ATW units cannot even be paired). Do
+  not widen a filter to a driver whose support is unverified (the
+  zone-2 cards stay Classic-only until zone 2 is seen working on
+  MELCloud Home).
 - Runtime capability options (`getCapabilitiesOptions` → pairing details
   and `setCapabilityOptions` at init) must be complete option objects,
   and only for capabilities the device actually gets: device-level

@@ -1,7 +1,7 @@
 {
   "args": [
     {
-      "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=operational_state.hot_water",
+      "filter": "driver_id=melcloud_atw|home-melcloud_atw",
       "name": "device",
       "type": "device"
     },
