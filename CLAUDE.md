@@ -48,6 +48,16 @@ coverage.
 
 ## Driver conventions
 
+- Each API side has an intermediate driver/device base under `drivers/`
+  (`classic-driver`/`classic-device`, `home-driver`/`home-device`):
+  shared behavior lives there (or in the `base-*` classes when both
+  sides share it); type-specific classes hold only converters,
+  capability policies, and manifests.
+- `capabilitiesOptions` blocks that are rigorously identical across
+  drivers live in the `defaults` compose template; `melcloud_atw`'s
+  labels are the reference (node-homey-lib wording). Driver-level
+  entries override the template's per capability, and template entries
+  for capabilities a driver lacks are inert.
 - `measure_signal_strength` is never a default capability, on any driver:
   it stays manifest-declared but opt-in through the shared `options`
   settings group. Keep it out of every required-capability list.

@@ -1,13 +1,10 @@
 import * as Home from '@olivierzal/melcloud-api/home'
 
-import type { HomeMELCloudDevice } from '../../types/home.mts'
 import { homeGetCapabilitiesOptions } from '../../types/ata-erv.mts'
 import { homeSetCapabilityTagMappingAta } from '../../types/home-ata.mts'
-import { BaseMELCloudDriver } from '../base-driver.mts'
+import { HomeMELCloudDriver } from '../home-driver.mts'
 
-export default class HomeMELCloudDriverAta extends BaseMELCloudDriver {
-  declare public readonly getDevices: () => HomeMELCloudDevice[]
-
+export default class HomeMELCloudDriverAta extends HomeMELCloudDriver {
   public override readonly getCapabilitiesOptions: typeof homeGetCapabilitiesOptions =
     homeGetCapabilitiesOptions
 
@@ -16,18 +13,4 @@ export default class HomeMELCloudDriverAta extends BaseMELCloudDriver {
 
   public override readonly type: typeof Home.DeviceType.Ata =
     Home.DeviceType.Ata
-
-  protected override get api(): Home.API {
-    return this.homey.app.homeApi
-  }
-
-  public override getRequiredCapabilities(): string[] {
-    return super
-      .getRequiredCapabilities()
-      .filter((capability) => capability !== 'measure_signal_strength')
-  }
-
-  protected override getDeviceModels(): { id: string; name: string }[] {
-    return this.homey.app.getHomeDevicesByType(this.type)
-  }
 }

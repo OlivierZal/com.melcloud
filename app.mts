@@ -25,6 +25,7 @@ import type {
   DriverSetting,
 } from './types/driver-settings.mts'
 import type { FormattedErrorLog } from './types/error-log.mts'
+import type { HomeDeviceFacade } from './types/home.mts'
 import type {
   LoginSetting,
   ManifestDriver,
@@ -487,14 +488,10 @@ export default class MELCloudApp extends App {
     return this.#homeRegistry.getByType(type)
   }
 
-  public getHomeFacade(
+  public getHomeFacade<T extends Home.DeviceType>(
     deviceId: string,
-    type: typeof Home.DeviceType.Ata,
-  ): Home.DeviceAtaFacade
-  public getHomeFacade(
-    deviceId: string,
-    type: typeof Home.DeviceType.Atw,
-  ): Home.DeviceAtwFacade
+    type: T,
+  ): HomeDeviceFacade<T>
   public getHomeFacade(
     deviceId: string,
     type: Home.DeviceType,

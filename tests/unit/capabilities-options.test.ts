@@ -56,7 +56,7 @@ describe(homeGetCapabilitiesOptions, () => {
       hasAutomaticFanSpeed: true,
       numberOfFanSpeeds: 4,
     })
-    const result = homeGetCapabilitiesOptions(capabilities)
+    const result = homeGetCapabilitiesOptions({ capabilities })
 
     expect(result).toStrictEqual({
       fan_speed: { max: 4, min: 0, step: 1, units: '' },
@@ -68,7 +68,7 @@ describe(homeGetCapabilitiesOptions, () => {
       hasAutomaticFanSpeed: false,
       numberOfFanSpeeds: 5,
     })
-    const result = homeGetCapabilitiesOptions(capabilities)
+    const result = homeGetCapabilitiesOptions({ capabilities })
 
     expect(result).toStrictEqual({
       fan_speed: { max: 5, min: 1, step: 1, units: '' },

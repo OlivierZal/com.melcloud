@@ -1,6 +1,5 @@
 import * as Home from '@olivierzal/melcloud-api/home'
 
-import type { HomeMELCloudDevice } from '../../types/home.mts'
 import {
   type HomeAtwDeviceProfile,
   type HomeCapabilitiesAtw,
@@ -8,11 +7,9 @@ import {
   homeGetCapabilitiesOptionsAtw,
   homeSetCapabilityTagMappingAtw,
 } from '../../types/home-atw.mts'
-import { BaseMELCloudDriver } from '../base-driver.mts'
+import { HomeMELCloudDriver } from '../home-driver.mts'
 
-export default class HomeMELCloudDriverAtw extends BaseMELCloudDriver {
-  declare public readonly getDevices: () => HomeMELCloudDevice[]
-
+export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
   public override readonly getCapabilitiesOptions: typeof homeGetCapabilitiesOptionsAtw =
     homeGetCapabilitiesOptionsAtw
 
@@ -21,10 +18,6 @@ export default class HomeMELCloudDriverAtw extends BaseMELCloudDriver {
 
   public override readonly type: typeof Home.DeviceType.Atw =
     Home.DeviceType.Atw
-
-  protected override get api(): Home.API {
-    return this.homey.app.homeApi
-  }
 
   readonly #controlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
     'onoff',
@@ -76,10 +69,6 @@ export default class HomeMELCloudDriverAtw extends BaseMELCloudDriver {
         ]
       : []),
     ]
-  }
-
-  protected override getDeviceModels(): { id: string; name: string }[] {
-    return this.homey.app.getHomeDevicesByType(this.type)
   }
 
   protected override toDeviceDetails({

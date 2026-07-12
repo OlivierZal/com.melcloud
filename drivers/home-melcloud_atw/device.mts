@@ -1,28 +1,23 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
 
+import type {
+  HomeConvertFromDevice,
+  HomeConvertToDevice,
+} from '../../types/home.mts'
 import {
   type HomeCapabilitiesAtw,
-  type HomeConvertFromDevice,
-  type HomeConvertToDevice,
   type HomeSetCapabilitiesAtw,
   operationModeZoneToHome,
   toThermostatModeAtw,
 } from '../../types/home-atw.mts'
-import { BaseMELCloudDevice } from '../base-device.mts'
-import type HomeMELCloudDriverAtw from './driver.mts'
+import { HomeMELCloudDevice } from '../home-device.mts'
 
-export default class HomeMELCloudDeviceAtw extends BaseMELCloudDevice<Home.DeviceAtwFacade> {
-  declare public readonly driver: HomeMELCloudDriverAtw
+type AtwType = typeof Home.DeviceType.Atw
 
-  declare public readonly getData: () => { id: string }
-
-  public override get id(): string {
-    return this.getData().id
-  }
-
+export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
   protected readonly capabilityToDevice: Partial<
-    Record<keyof HomeSetCapabilitiesAtw, HomeConvertToDevice>
+    Record<keyof HomeSetCapabilitiesAtw, HomeConvertToDevice<AtwType>>
   > = {
     thermostat_mode: (value: keyof typeof Classic.OperationModeZone) =>
       operationModeZoneToHome[value],
@@ -32,7 +27,7 @@ export default class HomeMELCloudDeviceAtw extends BaseMELCloudDevice<Home.Devic
 
   protected readonly deviceToCapability: Record<
     keyof HomeCapabilitiesAtw,
-    HomeConvertFromDevice
+    HomeConvertFromDevice<AtwType>
   > = {
     measure_signal_strength: ({ rssi }) => rssi,
     measure_temperature: ({ roomTemperatureZone1 }) => roomTemperatureZone1,
@@ -52,55 +47,5 @@ export default class HomeMELCloudDeviceAtw extends BaseMELCloudDevice<Home.Devic
       toThermostatModeAtw(operationModeZone2),
   }
 
-  protected readonly energyReportRegular = null
-
-  protected readonly energyReportTotal = null
-
   protected readonly thermostatMode = null
-
-  public override async syncFromDevice(): Promise<void> {
-    const device = await this.ensureDevice()
-    if (device === null) {
-      return
-    }
-    await this.#setCapabilityValues(device)
-  }
-
-  protected override async applyCapabilitiesOptions(): Promise<void> {
-    /* v8 ignore next -- cachedFacade is always set before init() calls applyCapabilitiesOptions */
-    if (this.cachedFacade === undefined) {
-      return
-    }
-    await super.applyCapabilitiesOptions(this.cachedFacade)
-  }
-
-  /* v8 ignore start -- never called: energyReportRegular/Total are null */
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- required override of abstract method; Home devices do not support energy reports
-  protected override createEnergyReport(): never {
-    throw new Error('Energy reports are not supported for Home devices')
-  }
-  /* v8 ignore stop */
-
-  protected override getFacade(): Home.DeviceAtwFacade {
-    return this.homey.app.getHomeFacade(this.id, this.driver.type)
-  }
-
-  protected override getRequiredCapabilities(): string[] {
-    /* v8 ignore next -- defensive guard: facade is set after init */
-    return this.cachedFacade === undefined ?
-        []
-      : this.driver.getRequiredCapabilities(this.cachedFacade)
-  }
-
-  async #setCapabilityValues(device: Home.DeviceAtwFacade): Promise<void> {
-    await Promise.all(
-      Object.entries(this.deviceToCapability).map(
-        async ([capability, convert]) => {
-          if (this.hasCapability(capability)) {
-            await this.setCapabilityValue(capability, convert(device))
-          }
-        },
-      ),
-    )
-  }
 }

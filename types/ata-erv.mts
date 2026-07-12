@@ -1,7 +1,7 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-import type * as Home from '@olivierzal/melcloud-api/home'
 
 import type { CapabilitiesOptionsAtaErv } from './capabilities.mts'
+import type { HomeAtaDeviceProfile } from './home-ata.mts'
 import {
   type CapabilitiesOptionsValues,
   type LocalizedStrings,
@@ -29,9 +29,8 @@ export const getCapabilitiesOptionsAtaErv = ({
   getFanSpeedOptions(hasAutomaticFanSpeed, numberOfFanSpeeds)
 
 export const homeGetCapabilitiesOptions = ({
-  hasAutomaticFanSpeed,
-  numberOfFanSpeeds,
-}: Home.AtaDeviceCapabilities): Partial<CapabilitiesOptionsAtaErv> =>
+  capabilities: { hasAutomaticFanSpeed, numberOfFanSpeeds },
+}: HomeAtaDeviceProfile): Partial<CapabilitiesOptionsAtaErv> =>
   getFanSpeedOptions(hasAutomaticFanSpeed, numberOfFanSpeeds)
 
 const addPrefixToTitle = (

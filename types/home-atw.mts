@@ -26,29 +26,6 @@ export type HomeCapabilitiesAtw = HomeGetCapabilitiesAtw &
   HomeListCapabilitiesAtw &
   HomeSetCapabilitiesAtw
 
-/**
- * Converter from a Home ATW device facade to the corresponding Homey
- * capability value. `null` clears the Homey value — used when the facade
- * reports no reading (e.g. zone-2 fields on a single-zone unit).
- */
-export type HomeConvertFromDevice = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow the return to a specific capability type
-  bivariant(
-    facade: Home.DeviceAtwFacade,
-  ): HomeCapabilitiesAtw[keyof HomeCapabilitiesAtw] | null
-}['bivariant']
-
-/**
- * Converter from a Homey capability value to the corresponding Home ATW
- * device value.
- */
-export type HomeConvertToDevice = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to a specific member of the HomeSetCapabilitiesAtw value union
-  bivariant(
-    value: HomeSetCapabilitiesAtw[keyof HomeSetCapabilitiesAtw],
-  ): Home.AtwValues[keyof Home.AtwValues]
-}['bivariant']
-
 export interface HomeSetCapabilitiesAtw extends BaseSetCapabilities {
   readonly target_temperature: number
   readonly 'target_temperature.tank_water': number

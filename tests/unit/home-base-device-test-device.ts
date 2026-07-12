@@ -1,13 +1,16 @@
-import type {
-  HomeConvertToDevice,
-  HomeSetCapabilitiesAta,
-} from '../../types/home-ata.mts'
+import type * as Home from '@olivierzal/melcloud-api/home'
+
+import type { HomeSetCapabilitiesAta } from '../../types/home-ata.mts'
+import type { HomeConvertToDevice } from '../../types/home.mts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
 export class TestHomeDevice extends HomeMELCloudDeviceAta {
   public override capabilityToDevice: Partial<
-    Record<keyof HomeSetCapabilitiesAta, HomeConvertToDevice>
+    Record<
+      keyof HomeSetCapabilitiesAta,
+      HomeConvertToDevice<typeof Home.DeviceType.Ata>
+    >
   > = {}
 
   public override readonly deviceToCapability = {

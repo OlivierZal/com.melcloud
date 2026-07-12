@@ -140,6 +140,8 @@ export abstract class BaseMELCloudDevice<
 
   protected abstract getFacade(): TFacade
 
+  protected abstract getRequiredCapabilities(): string[]
+
   public abstract syncFromDevice(): Promise<void>
 
   public override async addCapability(capability: string): Promise<void> {
@@ -246,10 +248,6 @@ export abstract class BaseMELCloudDevice<
     }
     this.#reports.regular?.unschedule()
     this.#reports.total?.unschedule()
-  }
-
-  protected getRequiredCapabilities(): string[] {
-    return this.driver.getRequiredCapabilities()
   }
 
   protected isEnergyCapability(setting: string): boolean {

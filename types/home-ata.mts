@@ -11,34 +11,15 @@ type HomeGetCapabilitiesAta = BaseGetCapabilities
 
 type HomeListCapabilitiesAta = BaseListCapabilities
 
+/**
+ * Structural slice of {@link Home.DeviceAtaFacade} driving a Home ATA
+ * device's capability options. Satisfied by the facade itself.
+ */
+export type HomeAtaDeviceProfile = Pick<Home.DeviceAtaFacade, 'capabilities'>
+
 export type HomeCapabilitiesAta = HomeGetCapabilitiesAta &
   HomeListCapabilitiesAta &
   HomeSetCapabilitiesAta
-
-/**
- * Converter from a Home ATA device facade to the corresponding Homey
- * capability value.
- */
-export type HomeConvertFromDevice = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow the return to a specific capability type
-  bivariant(
-    facade: Home.DeviceAtaFacade,
-  ):
-    | HomeCapabilitiesAta[
-        keyof HomeGetCapabilitiesAta | keyof HomeListCapabilitiesAta]
-    | HomeCapabilitiesAta[keyof HomeSetCapabilitiesAta]
-}['bivariant']
-
-/**
- * Converter from a Homey capability value to the corresponding Home ATA
- * device value.
- */
-export type HomeConvertToDevice = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to a specific member of the HomeSetCapabilitiesAta value union
-  bivariant(
-    value: HomeSetCapabilitiesAta[keyof HomeSetCapabilitiesAta],
-  ): Home.AtaValues[keyof Home.AtaValues]
-}['bivariant']
 
 export interface HomeSetCapabilitiesAta extends BaseSetCapabilities {
   readonly fan_speed: number
