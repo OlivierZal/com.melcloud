@@ -573,7 +573,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud&capabilities=alarm_generic.silent",
             "name": "device",
             "type": "device"
           }
@@ -598,7 +598,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud&capabilities=alarm_generic.silent",
             "name": "device",
             "type": "device"
           }
@@ -623,7 +623,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud&capabilities=fan_speed.state",
             "name": "device",
             "type": "device"
           }
@@ -669,7 +669,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=home-melcloud|melcloud&capabilities=horizontal",
             "name": "device",
             "type": "device"
           }
@@ -730,7 +730,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw|home-melcloud_atw",
+            "filter": "driver_id=home-melcloud_atw|melcloud_atw&capabilities=operational_state.hot_water",
             "name": "device",
             "type": "device"
           }
@@ -791,7 +791,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw",
+            "filter": "driver_id=melcloud_atw&capabilities=operational_state.zone1",
             "name": "device",
             "type": "device"
           }
@@ -913,7 +913,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2",
+            "filter": "driver_id=home-melcloud_atw|melcloud_atw&capabilities=thermostat_mode.zone2",
             "name": "device",
             "type": "device"
           }
@@ -974,7 +974,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=home-melcloud|melcloud&capabilities=vertical",
             "name": "device",
             "type": "device"
           }
@@ -1187,7 +1187,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud&capabilities=alarm_generic.silent",
             "name": "device",
             "type": "device"
           }
@@ -1281,7 +1281,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=home-melcloud|melcloud&capabilities=horizontal",
             "name": "device",
             "type": "device"
           },
@@ -1471,7 +1471,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw|home-melcloud_atw",
+            "filter": "driver_id=home-melcloud_atw|melcloud_atw&capabilities=operational_state.hot_water",
             "name": "device",
             "type": "device"
           },
@@ -1589,7 +1589,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw",
+            "filter": "driver_id=melcloud_atw&capabilities=operational_state.zone1",
             "name": "device",
             "type": "device"
           },
@@ -1861,7 +1861,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2",
+            "filter": "driver_id=home-melcloud_atw|melcloud_atw&capabilities=thermostat_mode.zone2",
             "name": "device",
             "type": "device"
           },
@@ -2012,7 +2012,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=home-melcloud|melcloud&capabilities=vertical",
             "name": "device",
             "type": "device"
           },
@@ -2292,7 +2292,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=home-melcloud|melcloud&capabilities=horizontal",
             "name": "device",
             "type": "device"
           },
@@ -2576,7 +2576,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw",
+            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.flow_heat",
             "name": "device",
             "type": "device"
           },
@@ -2670,7 +2670,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw|home-melcloud_atw",
+            "filter": "driver_id=home-melcloud_atw|melcloud_atw&capabilities=target_temperature.tank_water",
             "name": "device",
             "type": "device"
           },
@@ -2717,7 +2717,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2",
+            "filter": "driver_id=home-melcloud_atw|melcloud_atw&capabilities=target_temperature.zone2",
             "name": "device",
             "type": "device"
           },
@@ -2763,7 +2763,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2",
+            "filter": "driver_id=home-melcloud_atw|melcloud_atw&capabilities=thermostat_mode.zone2",
             "name": "device",
             "type": "device"
           },
@@ -2914,7 +2914,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=home-melcloud|melcloud&capabilities=vertical",
             "name": "device",
             "type": "device"
           },

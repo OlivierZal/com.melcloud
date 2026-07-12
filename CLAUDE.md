@@ -84,16 +84,17 @@ coverage.
 - Converters from Home devices must never crash the sync on new FTC
   vocabulary: unknown zone-mode strings (and the external-thermostat
   variants) degrade to the room modes in `toThermostatModeAtw`.
-- Flow-card filters: `driver_id` lists only the drivers that expose the
-  card's capability, and a `capabilities=` clause is only added when the
-  capability is missing from part of the real pairable population of
-  those drivers (zone 2: only some ATW units have a second zone).
-  Defensive code gates do not count: the hot-water capabilities are
-  treated as universal on ATW even though the Home driver gates them on
-  `hasHotWater`/`isOwner` (guest ATW units cannot even be paired). Do
-  not widen a filter to a driver whose support is unverified (the
-  zone-2 cards stay Classic-only until zone 2 is seen working on
-  MELCloud Home).
+- Flow-card device filters are `driver_id=<manifest owners>&capabilities=<cap>`,
+  both parts mechanical: `capabilities=` is the card's real precondition
+  (the run listeners are capability-generic and triggers fire through
+  Homey's `<capability>_changed` convention — the picker follows what
+  each device actually ships), and `driver_id` lists every driver whose
+  MANIFEST declares the capability — required by the platform, not by
+  us: homey-lib's validator only exempts a device arg from the
+  `[[device]]` titleFormatted token when its filter carries `driver_id`
+  (`homey-lib/lib/App/index.js`, `firstDeviceArgument`). No population
+  judgment goes into filters; the verification gate lives in
+  `getRequiredCapabilities` alone.
 - Runtime capability options (`getCapabilitiesOptions` → pairing details
   and `setCapabilityOptions` at init) must be complete option objects,
   and only for capabilities the device actually gets: device-level
