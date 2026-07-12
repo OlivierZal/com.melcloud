@@ -60,14 +60,7 @@ const createProfile = ({
   hasZone2 = false,
   isOwner = true,
 } = {}): HomeAtwDeviceProfile => ({
-  capabilities: mock<Home.AtwDeviceCapabilities>({
-    hasHotWater,
-    hasZone2,
-    maxSetTankTemperature: 60,
-    maxSetTemperature: 30,
-    minSetTankTemperature: 40,
-    minSetTemperature: 10,
-  }),
+  capabilities: mock<Home.AtwDeviceCapabilities>({ hasHotWater, hasZone2 }),
   hasCoolingMode,
   isOwner,
 })
@@ -191,12 +184,10 @@ describe(HomeMELCloudDriverAtw, () => {
       expect(details.name).toBe('Heat Pump')
       expect(details.capabilities).toContain('target_temperature.tank_water')
       expect(details.capabilities).toContain('thermostat_mode.zone2')
-      expect(details.capabilitiesOptions).toStrictEqual(
-        expect.objectContaining({
-          target_temperature: { max: 30, min: 10 },
-          'target_temperature.tank_water': { max: 60, min: 40 },
-        }),
-      )
+      expect(Object.keys(details.capabilitiesOptions)).toStrictEqual([
+        'thermostat_mode',
+        'thermostat_mode.zone2',
+      ])
     })
 
     it('should return empty array when no ATW device is registered', async () => {

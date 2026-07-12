@@ -185,34 +185,19 @@ describe(getCapabilitiesOptionsAtw, () => {
 
 const createAtwProfile = ({
   hasCoolingMode = false,
-  hasHotWater = true,
   hasZone2 = true,
+  isOwner = true,
 } = {}): Parameters<typeof homeGetCapabilitiesOptionsAtw>[0] => ({
-  capabilities: mock<Home.AtwDeviceCapabilities>({
-    hasHotWater,
-    hasZone2,
-    maxSetTankTemperature: 60,
-    maxSetTemperature: 30,
-    minSetTankTemperature: 40,
-    minSetTemperature: 10,
-  }),
+  capabilities: mock<Home.AtwDeviceCapabilities>({ hasZone2 }),
   hasCoolingMode,
-  isOwner: true,
+  isOwner,
 })
 
 describe(homeGetCapabilitiesOptionsAtw, () => {
-  it('should derive the temperature ranges from the device capabilities', () => {
-    const result = homeGetCapabilitiesOptionsAtw(createAtwProfile())
-
-    expect(result.target_temperature).toStrictEqual({ max: 30, min: 10 })
-    expect(result['target_temperature.zone2']).toStrictEqual({
-      max: 30,
-      min: 10,
-    })
-    expect(result['target_temperature.tank_water']).toStrictEqual({
-      max: 60,
-      min: 40,
-    })
+  it('should return no options for a guest device', () => {
+    expect(
+      homeGetCapabilitiesOptionsAtw(createAtwProfile({ isOwner: false })),
+    ).toStrictEqual({})
   })
 
   it('should include only non-cool values without cooling mode', () => {
@@ -220,6 +205,7 @@ describe(homeGetCapabilitiesOptionsAtw, () => {
     const ids = result.thermostat_mode?.values.map(({ id }) => id)
 
     expect(ids).toStrictEqual(['room', 'flow', 'curve'])
+    expect(result).not.toHaveProperty('target_temperature')
   })
 
   it('should include cool values with cooling mode', () => {
@@ -236,14 +222,6 @@ describe(homeGetCapabilitiesOptionsAtw, () => {
       'flow_cool',
     ])
     expect(result['thermostat_mode.zone2']?.title.en).toContain('zone 2')
-  })
-
-  it('should omit the tank options without hot water', () => {
-    const result = homeGetCapabilitiesOptionsAtw(
-      createAtwProfile({ hasHotWater: false }),
-    )
-
-    expect(result).not.toHaveProperty('target_temperature.tank_water')
   })
 
   it('should omit the zone2 options on a single-zone unit', () => {

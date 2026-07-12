@@ -7,7 +7,6 @@ import type {
   BaseSetCapabilities,
   CapabilitiesOptionsValues,
   LocalizedStrings,
-  RangeOptions,
 } from './bases.mts'
 import {
   getThermostatModeValuesAtw,
@@ -123,9 +122,6 @@ export type HomeAtwDeviceProfile = Pick<
 >
 
 export interface HomeCapabilitiesOptionsAtw {
-  readonly target_temperature: RangeOptions
-  readonly 'target_temperature.tank_water': RangeOptions
-  readonly 'target_temperature.zone2': RangeOptions
   readonly thermostat_mode: {
     readonly values: readonly CapabilitiesOptionsValues<ThermostatModeAtw>[]
   }
@@ -142,30 +138,23 @@ export interface HomeDeviceDetailsAtw {
   readonly name: string
 }
 
+// Only complete option objects, and only for capabilities the device will
+// actually have: device-level options shadow the manifest's per capability
+// (temperature ranges/steps/titles stay in the compose manifest — the facade
+// clamps setpoints device-side anyway), and setting options on an absent
+// capability fails, so guests get none.
 export const homeGetCapabilitiesOptionsAtw = ({
-  capabilities: {
-    hasHotWater,
-    hasZone2,
-    maxSetTankTemperature,
-    maxSetTemperature,
-    minSetTankTemperature,
-    minSetTemperature,
-  },
+  capabilities: { hasZone2 },
   hasCoolingMode,
+  isOwner,
 }: HomeAtwDeviceProfile): Partial<HomeCapabilitiesOptionsAtw> => {
+  if (!isOwner) {
+    return {}
+  }
   const values = getThermostatModeValuesAtw(hasCoolingMode)
-  const zoneRange = { max: maxSetTemperature, min: minSetTemperature }
   return {
-    target_temperature: zoneRange,
     thermostat_mode: { values },
-    ...(hasHotWater && {
-      'target_temperature.tank_water': {
-        max: maxSetTankTemperature,
-        min: minSetTankTemperature,
-      },
-    }),
     ...(hasZone2 && {
-      'target_temperature.zone2': zoneRange,
       'thermostat_mode.zone2': { title: thermostatModeZone2TitleAtw, values },
     }),
   }

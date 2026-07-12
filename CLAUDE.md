@@ -70,6 +70,14 @@ coverage.
   capability is not on every device of those drivers. Do not widen a
   filter to a driver whose support is unverified (the zone-2 cards stay
   Classic-only until zone 2 is seen working on MELCloud Home).
+- Runtime capability options (`getCapabilitiesOptions` → pairing details
+  and `setCapabilityOptions` at init) must be complete option objects,
+  and only for capabilities the device actually gets: device-level
+  options shadow the manifest's per capability (a bare `{max, min}`
+  would drop the manifest step/title), and setting options on an absent
+  capability fails. Temperature ranges/steps/titles live in the compose
+  manifest; the only runtime options are enum values (thermostat modes,
+  fan speeds).
 
 ## Widgets
 
