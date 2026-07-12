@@ -3108,9 +3108,82 @@
             "sv": "Utomhustemperatur"
           }
         },
+        "measure_temperature.tank_water": {
+          "title": {
+            "ar": "درجة حرارة الماء الساخن",
+            "da": "Varmtvandstemperatur",
+            "de": "Warmwassertemperatur",
+            "en": "Hot water temperature",
+            "es": "Temperatura del agua caliente",
+            "fr": "Température de l'eau chaude",
+            "it": "Temperatura dell'acqua calda",
+            "ko": "온수 온도",
+            "nl": "Warmwatertemperatuur",
+            "no": "Varmtvanntemperatur",
+            "pl": "Temperatura ciepłej wody",
+            "ru": "Температура горячей воды",
+            "sv": "Varmvattentemperatur"
+          }
+        },
+        "measure_temperature.zone2": {
+          "title": {
+            "ar": "درجة الحرارة - المنطقة 2",
+            "da": "Temperatur - zone 2",
+            "de": "Temperatur - Zone 2",
+            "en": "Temperature - zone 2",
+            "es": "Temperatura - zona 2",
+            "fr": "Température - zone 2",
+            "it": "Temperatura - zona 2",
+            "ko": "온도 - 구역 2",
+            "nl": "Temperatuur - zone 2",
+            "no": "Temperatur - sone 2",
+            "pl": "Temperatura - strefa 2",
+            "ru": "Температура - зона 2",
+            "sv": "Temperatur - zon 2"
+          }
+        },
         "target_temperature": {
           "max": 31,
           "min": 10
+        },
+        "target_temperature.tank_water": {
+          "max": 60,
+          "min": 40,
+          "step": 1,
+          "title": {
+            "ar": "درجة حرارة الماء الساخن المستهدفة",
+            "da": "Måltemperatur for varmtvand",
+            "de": "Solltemperatur Warmwasser",
+            "en": "Hot water target temperature",
+            "es": "Temperatura configurada del agua caliente",
+            "fr": "Température cible de l'eau chaude",
+            "it": "Temperatura obiettivo acqua calda",
+            "ko": "온수 목표 온도",
+            "nl": "Ingestelde warmwatertemperatuur",
+            "no": "Ønsket temperatur for varmtvann",
+            "pl": "Temperatura docelowa ciepłej wody",
+            "ru": "Целевая температура горячей воды",
+            "sv": "Måltemperatur för varmvatten"
+          }
+        },
+        "target_temperature.zone2": {
+          "max": 30,
+          "min": 10,
+          "title": {
+            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
+            "da": "Måltemperatur - zone 2",
+            "de": "Solltemperatur - Zone 2",
+            "en": "Target temperature - zone 2",
+            "es": "Temperatura configurada - zona 2",
+            "fr": "Température cible - zone 2",
+            "it": "Temperatura obiettivo - zona 2",
+            "ko": "목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur - zone 2",
+            "no": "Ønsket temperatur - sone 2",
+            "pl": "Temperatura docelowa - strefa 2",
+            "ru": "Целевая температура - зона 2",
+            "sv": "Måltemperatur - zon 2"
+          }
         },
         "thermostat_mode": {
           "values": [
@@ -3877,6 +3950,83 @@
             "sv": "Utomhustemperatur"
           }
         },
+        "measure_temperature.tank_water": {
+          "title": {
+            "ar": "درجة حرارة الماء الساخن",
+            "da": "Varmtvandstemperatur",
+            "de": "Warmwassertemperatur",
+            "en": "Hot water temperature",
+            "es": "Temperatura del agua caliente",
+            "fr": "Température de l'eau chaude",
+            "it": "Temperatura dell'acqua calda",
+            "ko": "온수 온도",
+            "nl": "Warmwatertemperatuur",
+            "no": "Varmtvanntemperatur",
+            "pl": "Temperatura ciepłej wody",
+            "ru": "Температура горячей воды",
+            "sv": "Varmvattentemperatur"
+          }
+        },
+        "measure_temperature.zone2": {
+          "title": {
+            "ar": "درجة الحرارة - المنطقة 2",
+            "da": "Temperatur - zone 2",
+            "de": "Temperatur - Zone 2",
+            "en": "Temperature - zone 2",
+            "es": "Temperatura - zona 2",
+            "fr": "Température - zone 2",
+            "it": "Temperatura - zona 2",
+            "ko": "온도 - 구역 2",
+            "nl": "Temperatuur - zone 2",
+            "no": "Temperatur - sone 2",
+            "pl": "Temperatura - strefa 2",
+            "ru": "Температура - зона 2",
+            "sv": "Temperatur - zon 2"
+          }
+        },
+        "target_temperature": {
+          "max": 31,
+          "min": 10
+        },
+        "target_temperature.tank_water": {
+          "max": 60,
+          "min": 40,
+          "step": 1,
+          "title": {
+            "ar": "درجة حرارة الماء الساخن المستهدفة",
+            "da": "Måltemperatur for varmtvand",
+            "de": "Solltemperatur Warmwasser",
+            "en": "Hot water target temperature",
+            "es": "Temperatura configurada del agua caliente",
+            "fr": "Température cible de l'eau chaude",
+            "it": "Temperatura obiettivo acqua calda",
+            "ko": "온수 목표 온도",
+            "nl": "Ingestelde warmwatertemperatuur",
+            "no": "Ønsket temperatur for varmtvann",
+            "pl": "Temperatura docelowa ciepłej wody",
+            "ru": "Целевая температура горячей воды",
+            "sv": "Måltemperatur för varmvatten"
+          }
+        },
+        "target_temperature.zone2": {
+          "max": 30,
+          "min": 10,
+          "title": {
+            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
+            "da": "Måltemperatur - zone 2",
+            "de": "Solltemperatur - Zone 2",
+            "en": "Target temperature - zone 2",
+            "es": "Temperatura configurada - zona 2",
+            "fr": "Température cible - zone 2",
+            "it": "Temperatura obiettivo - zona 2",
+            "ko": "목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur - zone 2",
+            "no": "Ønsket temperatur - sone 2",
+            "pl": "Temperatura docelowa - strefa 2",
+            "ru": "Целевая температура - зона 2",
+            "sv": "Måltemperatur - zon 2"
+          }
+        },
         "alarm_generic.silent": {
           "insightsTitleFalse": {
             "ar": "تم إيقاف الوضع الصامت",
@@ -4268,10 +4418,6 @@
             "ru": "Энергия - прочее",
             "sv": "Energi - övrigt"
           }
-        },
-        "target_temperature": {
-          "max": 31,
-          "min": 10
         },
         "thermostat_mode": {
           "values": [
@@ -5176,6 +5322,83 @@
             "sv": "Utomhustemperatur"
           }
         },
+        "measure_temperature.tank_water": {
+          "title": {
+            "ar": "درجة حرارة الماء الساخن",
+            "da": "Varmtvandstemperatur",
+            "de": "Warmwassertemperatur",
+            "en": "Hot water temperature",
+            "es": "Temperatura del agua caliente",
+            "fr": "Température de l'eau chaude",
+            "it": "Temperatura dell'acqua calda",
+            "ko": "온수 온도",
+            "nl": "Warmwatertemperatuur",
+            "no": "Varmtvanntemperatur",
+            "pl": "Temperatura ciepłej wody",
+            "ru": "Температура горячей воды",
+            "sv": "Varmvattentemperatur"
+          }
+        },
+        "measure_temperature.zone2": {
+          "title": {
+            "ar": "درجة الحرارة - المنطقة 2",
+            "da": "Temperatur - zone 2",
+            "de": "Temperatur - Zone 2",
+            "en": "Temperature - zone 2",
+            "es": "Temperatura - zona 2",
+            "fr": "Température - zone 2",
+            "it": "Temperatura - zona 2",
+            "ko": "온도 - 구역 2",
+            "nl": "Temperatuur - zone 2",
+            "no": "Temperatur - sone 2",
+            "pl": "Temperatura - strefa 2",
+            "ru": "Температура - зона 2",
+            "sv": "Temperatur - zon 2"
+          }
+        },
+        "target_temperature": {
+          "max": 30,
+          "min": 10
+        },
+        "target_temperature.tank_water": {
+          "max": 60,
+          "min": 40,
+          "step": 1,
+          "title": {
+            "ar": "درجة حرارة الماء الساخن المستهدفة",
+            "da": "Måltemperatur for varmtvand",
+            "de": "Solltemperatur Warmwasser",
+            "en": "Hot water target temperature",
+            "es": "Temperatura configurada del agua caliente",
+            "fr": "Température cible de l'eau chaude",
+            "it": "Temperatura obiettivo acqua calda",
+            "ko": "온수 목표 온도",
+            "nl": "Ingestelde warmwatertemperatuur",
+            "no": "Ønsket temperatur for varmtvann",
+            "pl": "Temperatura docelowa ciepłej wody",
+            "ru": "Целевая температура горячей воды",
+            "sv": "Måltemperatur för varmvatten"
+          }
+        },
+        "target_temperature.zone2": {
+          "max": 30,
+          "min": 10,
+          "title": {
+            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
+            "da": "Måltemperatur - zone 2",
+            "de": "Solltemperatur - Zone 2",
+            "en": "Target temperature - zone 2",
+            "es": "Temperatura configurada - zona 2",
+            "fr": "Température cible - zone 2",
+            "it": "Temperatura obiettivo - zona 2",
+            "ko": "목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur - zone 2",
+            "no": "Ønsket temperatur - sone 2",
+            "pl": "Temperatura docelowa - strefa 2",
+            "ru": "Целевая температура - зона 2",
+            "sv": "Måltemperatur - zon 2"
+          }
+        },
         "alarm_generic.booster_heater1": {
           "insightsTitleFalse": {
             "ar": "تم إيقاف سخان التعزيز 1",
@@ -5634,23 +5857,6 @@
             "sv": "Returtemperatur - zon 2 (extern sensor)"
           }
         },
-        "measure_temperature.tank_water": {
-          "title": {
-            "ar": "درجة حرارة الماء الساخن",
-            "da": "Varmtvandstemperatur",
-            "de": "Warmwassertemperatur",
-            "en": "Hot water temperature",
-            "es": "Temperatura del agua caliente",
-            "fr": "Température de l'eau chaude",
-            "it": "Temperatura dell'acqua calda",
-            "ko": "온수 온도",
-            "nl": "Warmwatertemperatuur",
-            "no": "Varmtvanntemperatur",
-            "pl": "Temperatura ciepłej wody",
-            "ru": "Температура горячей воды",
-            "sv": "Varmvattentemperatur"
-          }
-        },
         "measure_temperature.tank_water_mixing": {
           "title": {
             "ar": "درجة حرارة مياه خزان الخلط",
@@ -5700,23 +5906,6 @@
             "pl": "Temperatura docelowa krzywej pogodowej - strefa 2",
             "ru": "Целевая температура погодозависимой кривой - зона 2",
             "sv": "Måltemperatur för värmekurva - zon 2"
-          }
-        },
-        "measure_temperature.zone2": {
-          "title": {
-            "ar": "درجة الحرارة - المنطقة 2",
-            "da": "Temperatur - zone 2",
-            "de": "Temperatur - Zone 2",
-            "en": "Temperature - zone 2",
-            "es": "Temperatura - zona 2",
-            "fr": "Température - zone 2",
-            "it": "Temperatura - zona 2",
-            "ko": "온도 - 구역 2",
-            "nl": "Temperatuur - zone 2",
-            "no": "Temperatur - sone 2",
-            "pl": "Temperatura - strefa 2",
-            "ru": "Температура - зона 2",
-            "sv": "Temperatur - zon 2"
           }
         },
         "meter_power.cooling": {
@@ -6557,10 +6746,6 @@
             }
           ]
         },
-        "target_temperature": {
-          "max": 30,
-          "min": 10
-        },
         "target_temperature.flow_cool": {
           "max": 25,
           "min": 5,
@@ -6639,45 +6824,6 @@
             "pl": "Temperatura docelowa zasilania - strefa 2",
             "ru": "Целевая температура подачи - зона 2",
             "sv": "Måltemperatur för framledning - zon 2"
-          }
-        },
-        "target_temperature.tank_water": {
-          "max": 60,
-          "min": 40,
-          "step": 1,
-          "title": {
-            "ar": "درجة حرارة الماء الساخن المستهدفة",
-            "da": "Måltemperatur for varmtvand",
-            "de": "Solltemperatur Warmwasser",
-            "en": "Hot water target temperature",
-            "es": "Temperatura configurada del agua caliente",
-            "fr": "Température cible de l'eau chaude",
-            "it": "Temperatura obiettivo acqua calda",
-            "ko": "온수 목표 온도",
-            "nl": "Ingestelde warmwatertemperatuur",
-            "no": "Ønsket temperatur for varmtvann",
-            "pl": "Temperatura docelowa ciepłej wody",
-            "ru": "Целевая температура горячей воды",
-            "sv": "Måltemperatur för varmvatten"
-          }
-        },
-        "target_temperature.zone2": {
-          "max": 30,
-          "min": 10,
-          "title": {
-            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
-            "da": "Måltemperatur - zone 2",
-            "de": "Solltemperatur - Zone 2",
-            "en": "Target temperature - zone 2",
-            "es": "Temperatura configurada - zona 2",
-            "fr": "Température cible - zone 2",
-            "it": "Temperatura obiettivo - zona 2",
-            "ko": "목표 온도 - 구역 2",
-            "nl": "Ingestelde temperatuur - zone 2",
-            "no": "Ønsket temperatur - sone 2",
-            "pl": "Temperatura docelowa - strefa 2",
-            "ru": "Целевая температура - зона 2",
-            "sv": "Måltemperatur - zon 2"
           }
         }
       },
@@ -8037,6 +8183,83 @@
             "pl": "Temperatura zewnętrzna",
             "ru": "Температура на улице",
             "sv": "Utomhustemperatur"
+          }
+        },
+        "measure_temperature.tank_water": {
+          "title": {
+            "ar": "درجة حرارة الماء الساخن",
+            "da": "Varmtvandstemperatur",
+            "de": "Warmwassertemperatur",
+            "en": "Hot water temperature",
+            "es": "Temperatura del agua caliente",
+            "fr": "Température de l'eau chaude",
+            "it": "Temperatura dell'acqua calda",
+            "ko": "온수 온도",
+            "nl": "Warmwatertemperatuur",
+            "no": "Varmtvanntemperatur",
+            "pl": "Temperatura ciepłej wody",
+            "ru": "Температура горячей воды",
+            "sv": "Varmvattentemperatur"
+          }
+        },
+        "measure_temperature.zone2": {
+          "title": {
+            "ar": "درجة الحرارة - المنطقة 2",
+            "da": "Temperatur - zone 2",
+            "de": "Temperatur - Zone 2",
+            "en": "Temperature - zone 2",
+            "es": "Temperatura - zona 2",
+            "fr": "Température - zone 2",
+            "it": "Temperatura - zona 2",
+            "ko": "온도 - 구역 2",
+            "nl": "Temperatuur - zone 2",
+            "no": "Temperatur - sone 2",
+            "pl": "Temperatura - strefa 2",
+            "ru": "Температура - зона 2",
+            "sv": "Temperatur - zon 2"
+          }
+        },
+        "target_temperature": {
+          "max": 30,
+          "min": 10
+        },
+        "target_temperature.tank_water": {
+          "max": 60,
+          "min": 40,
+          "step": 1,
+          "title": {
+            "ar": "درجة حرارة الماء الساخن المستهدفة",
+            "da": "Måltemperatur for varmtvand",
+            "de": "Solltemperatur Warmwasser",
+            "en": "Hot water target temperature",
+            "es": "Temperatura configurada del agua caliente",
+            "fr": "Température cible de l'eau chaude",
+            "it": "Temperatura obiettivo acqua calda",
+            "ko": "온수 목표 온도",
+            "nl": "Ingestelde warmwatertemperatuur",
+            "no": "Ønsket temperatur for varmtvann",
+            "pl": "Temperatura docelowa ciepłej wody",
+            "ru": "Целевая температура горячей воды",
+            "sv": "Måltemperatur för varmvatten"
+          }
+        },
+        "target_temperature.zone2": {
+          "max": 30,
+          "min": 10,
+          "title": {
+            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
+            "da": "Måltemperatur - zone 2",
+            "de": "Solltemperatur - Zone 2",
+            "en": "Target temperature - zone 2",
+            "es": "Temperatura configurada - zona 2",
+            "fr": "Température cible - zone 2",
+            "it": "Temperatura obiettivo - zona 2",
+            "ko": "목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur - zone 2",
+            "no": "Ønsket temperatur - sone 2",
+            "pl": "Temperatura docelowa - strefa 2",
+            "ru": "Целевая температура - зона 2",
+            "sv": "Måltemperatur - zon 2"
           }
         },
         "thermostat_mode": {
