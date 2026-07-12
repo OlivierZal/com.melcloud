@@ -41,7 +41,7 @@ export abstract class BaseMELCloudDevice<
 
   declare public readonly homey: Homey.Homey
 
-  protected abstract capabilityToDevice: Partial<
+  protected abstract readonly capabilityToDevice: Partial<
     Record<string, CapabilityConverter>
   >
 
@@ -94,10 +94,6 @@ export abstract class BaseMELCloudDevice<
   #syncTimeout: NodeJS.Timeout | null = null
 
   public override async onInit(): Promise<void> {
-    this.capabilityToDevice = {
-      onoff: (isOn: boolean): boolean => this.isAlwaysOn || isOn,
-      ...this.capabilityToDevice,
-    }
     await this.setWarning(null)
     this.#registerCapabilityListeners()
     await this.ensureDevice()
@@ -289,7 +285,10 @@ export abstract class BaseMELCloudDevice<
     for (const [capability, value] of Object.entries(values)) {
       const tag = tagMapping[capability]
       if (tag !== undefined) {
-        result[tag] = this.capabilityToDevice[capability]?.(value) ?? value
+        // always_on devices never switch off from Homey: the outgoing
+        // value is coerced before any converter runs.
+        const coerced = capability === 'onoff' && this.isAlwaysOn ? true : value
+        result[tag] = this.capabilityToDevice[capability]?.(coerced) ?? coerced
       }
     }
     return result

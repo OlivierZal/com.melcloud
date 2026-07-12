@@ -15,7 +15,7 @@ import {
   createCapabilityListenerCallbackGetter,
   testDeletion,
   testEnsureDeviceNull,
-  testOnoffConverter,
+  testOnoffCoercion,
   testPostUpdateSync,
   testSetValuesErrorHandling,
   testThermostatModeOff,
@@ -176,7 +176,11 @@ describe(ClassicMELCloudDevice, () => {
     })
   })
 
-  testOnoffConverter(() => device, getSettingMock)
+  testOnoffCoercion(() => device, getCapabilityListenerCallback, {
+    getSettingMock,
+    onTag: 'Power',
+    setValuesMock,
+  })
 
   testDeletion(() => device)
 

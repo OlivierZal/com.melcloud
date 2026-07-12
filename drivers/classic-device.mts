@@ -57,7 +57,7 @@ export abstract class ClassicMELCloudDevice<
 
   declare public readonly setSettings: (settings: Settings) => Promise<void>
 
-  protected abstract override capabilityToDevice: Partial<
+  protected abstract override readonly capabilityToDevice: Partial<
     Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
   >
 

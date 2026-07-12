@@ -15,7 +15,7 @@ export abstract class HomeMELCloudDevice<
 
   declare public readonly getData: () => { id: string }
 
-  protected abstract override capabilityToDevice: Partial<
+  protected abstract override readonly capabilityToDevice: Partial<
     Record<string, HomeConvertToDevice<T>>
   >
 
