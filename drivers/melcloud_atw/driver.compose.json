@@ -349,46 +349,6 @@
         "sv": "Doppvärmare"
       }
     },
-    "hot_water_mode": {
-      "values": [
-        {
-          "id": "auto",
-          "title": {
-            "ar": "تلقائي",
-            "da": "Automatisk",
-            "de": "Automatisch",
-            "en": "Automatic",
-            "es": "Automático",
-            "fr": "Automatique",
-            "it": "Automatica",
-            "ko": "자동",
-            "nl": "Automatisch",
-            "no": "Automatisk",
-            "pl": "Automatyczny",
-            "ru": "Авто",
-            "sv": "Automatiskt"
-          }
-        },
-        {
-          "id": "forced",
-          "title": {
-            "ar": "إجباري",
-            "da": "Tvungen",
-            "de": "Erzwungen",
-            "en": "Forced",
-            "es": "Forzado",
-            "fr": "Forcé",
-            "it": "Forzato",
-            "ko": "강제",
-            "nl": "Gedwongen",
-            "no": "Tvungen",
-            "pl": "Wymuszony",
-            "ru": "Принудительный",
-            "sv": "Tvingad"
-          }
-        }
-      ]
-    },
     "measure_power.produced": {
       "title": {
         "ar": "الطاقة المنتجة",

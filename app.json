@@ -3088,6 +3088,46 @@
   "drivers": [
     {
       "capabilitiesOptions": {
+        "hot_water_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "ar": "تلقائي",
+                "da": "Automatisk",
+                "de": "Automatisch",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "it": "Automatica",
+                "ko": "자동",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "pl": "Automatyczny",
+                "ru": "Авто",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "forced",
+              "title": {
+                "ar": "إجباري",
+                "da": "Tvungen",
+                "de": "Erzwungen",
+                "en": "Forced",
+                "es": "Forzado",
+                "fr": "Forcé",
+                "it": "Forzato",
+                "ko": "강제",
+                "nl": "Gedwongen",
+                "no": "Tvungen",
+                "pl": "Wymuszony",
+                "ru": "Принудительный",
+                "sv": "Tvingad"
+              }
+            }
+          ]
+        },
         "measure_power": {
           "approximated": true
         },
@@ -3785,6 +3825,46 @@
     },
     {
       "capabilitiesOptions": {
+        "hot_water_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "ar": "تلقائي",
+                "da": "Automatisk",
+                "de": "Automatisch",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "it": "Automatica",
+                "ko": "자동",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "pl": "Automatyczny",
+                "ru": "Авто",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "forced",
+              "title": {
+                "ar": "إجباري",
+                "da": "Tvungen",
+                "de": "Erzwungen",
+                "en": "Forced",
+                "es": "Forzado",
+                "fr": "Forcé",
+                "it": "Forzato",
+                "ko": "강제",
+                "nl": "Gedwongen",
+                "no": "Tvungen",
+                "pl": "Wymuszony",
+                "ru": "Принудительный",
+                "sv": "Tvingad"
+              }
+            }
+          ]
+        },
         "measure_power": {
           "approximated": true
         },
@@ -4265,6 +4345,7 @@
       ],
       "capabilities": [
         "onoff",
+        "hot_water_mode",
         "measure_temperature",
         "measure_temperature.zone2",
         "measure_temperature.tank_water",
@@ -4374,6 +4455,46 @@
     },
     {
       "capabilitiesOptions": {
+        "hot_water_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "ar": "تلقائي",
+                "da": "Automatisk",
+                "de": "Automatisch",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "it": "Automatica",
+                "ko": "자동",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "pl": "Automatyczny",
+                "ru": "Авто",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "forced",
+              "title": {
+                "ar": "إجباري",
+                "da": "Tvungen",
+                "de": "Erzwungen",
+                "en": "Forced",
+                "es": "Forzado",
+                "fr": "Forcé",
+                "it": "Forzato",
+                "ko": "강제",
+                "nl": "Gedwongen",
+                "no": "Tvungen",
+                "pl": "Wymuszony",
+                "ru": "Принудительный",
+                "sv": "Tvingad"
+              }
+            }
+          ]
+        },
         "measure_power": {
           "approximated": true
         },
@@ -5967,6 +6088,46 @@
     },
     {
       "capabilitiesOptions": {
+        "hot_water_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "ar": "تلقائي",
+                "da": "Automatisk",
+                "de": "Automatisch",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "it": "Automatica",
+                "ko": "자동",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "pl": "Automatyczny",
+                "ru": "Авто",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "forced",
+              "title": {
+                "ar": "إجباري",
+                "da": "Tvungen",
+                "de": "Erzwungen",
+                "en": "Forced",
+                "es": "Forzado",
+                "fr": "Forcé",
+                "it": "Forzato",
+                "ko": "강제",
+                "nl": "Gedwongen",
+                "no": "Tvungen",
+                "pl": "Wymuszony",
+                "ru": "Принудительный",
+                "sv": "Tvingad"
+              }
+            }
+          ]
+        },
         "measure_power": {
           "approximated": true
         },
@@ -6562,46 +6723,6 @@
             "ru": "Погружной нагреватель",
             "sv": "Doppvärmare"
           }
-        },
-        "hot_water_mode": {
-          "values": [
-            {
-              "id": "auto",
-              "title": {
-                "ar": "تلقائي",
-                "da": "Automatisk",
-                "de": "Automatisch",
-                "en": "Automatic",
-                "es": "Automático",
-                "fr": "Automatique",
-                "it": "Automatica",
-                "ko": "자동",
-                "nl": "Automatisch",
-                "no": "Automatisk",
-                "pl": "Automatyczny",
-                "ru": "Авто",
-                "sv": "Automatiskt"
-              }
-            },
-            {
-              "id": "forced",
-              "title": {
-                "ar": "إجباري",
-                "da": "Tvungen",
-                "de": "Erzwungen",
-                "en": "Forced",
-                "es": "Forzado",
-                "fr": "Forcé",
-                "it": "Forzato",
-                "ko": "강제",
-                "nl": "Gedwongen",
-                "no": "Tvungen",
-                "pl": "Wymuszony",
-                "ru": "Принудительный",
-                "sv": "Tvingad"
-              }
-            }
-          ]
         },
         "measure_power.produced": {
           "title": {
@@ -8830,6 +8951,46 @@
     },
     {
       "capabilitiesOptions": {
+        "hot_water_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "ar": "تلقائي",
+                "da": "Automatisk",
+                "de": "Automatisch",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "it": "Automatica",
+                "ko": "자동",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "pl": "Automatyczny",
+                "ru": "Авто",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "forced",
+              "title": {
+                "ar": "إجباري",
+                "da": "Tvungen",
+                "de": "Erzwungen",
+                "en": "Forced",
+                "es": "Forzado",
+                "fr": "Forcé",
+                "it": "Forzato",
+                "ko": "강제",
+                "nl": "Gedwongen",
+                "no": "Tvungen",
+                "pl": "Wymuszony",
+                "ru": "Принудительный",
+                "sv": "Tvingad"
+              }
+            }
+          ]
+        },
         "measure_power": {
           "approximated": true
         },

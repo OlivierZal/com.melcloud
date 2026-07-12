@@ -9,6 +9,7 @@ import type {
   LocalizedStrings,
 } from './bases.mts'
 import {
+  type HotWaterMode,
   getThermostatModeValuesAtw,
   thermostatModeZone2TitleAtw,
 } from './atw.mts'
@@ -29,6 +30,7 @@ export type HomeCapabilitiesAtw = HomeGetCapabilitiesAtw &
   HomeSetCapabilitiesAtw
 
 export interface HomeSetCapabilitiesAtw extends BaseSetCapabilities {
+  readonly hot_water_mode: keyof typeof HotWaterMode
   readonly target_temperature: number
   readonly 'target_temperature.tank_water': number
   readonly 'target_temperature.zone2': number
@@ -40,6 +42,7 @@ export const homeSetCapabilityTagMappingAtw: Record<
   keyof HomeSetCapabilitiesAtw,
   keyof Home.AtwValues
 > = {
+  hot_water_mode: 'forcedHotWaterMode',
   onoff: 'power',
   target_temperature: 'setTemperatureZone1',
   'target_temperature.tank_water': 'setTankWaterTemperature',

@@ -25,6 +25,7 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
   ]
 
   readonly #hotWaterControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
+    'hot_water_mode',
     'target_temperature.tank_water',
   ]
 

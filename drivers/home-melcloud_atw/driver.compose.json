@@ -2,6 +2,7 @@
   "$extends": ["defaults"],
   "capabilities": [
     "onoff",
+    "hot_water_mode",
     "measure_temperature",
     "measure_temperature.zone2",
     "measure_temperature.tank_water",

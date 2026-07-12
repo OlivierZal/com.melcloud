@@ -64,9 +64,11 @@ coverage.
   it stays manifest-declared but opt-in through the shared `options`
   settings group. Keep it out of every required-capability list.
 - Home drivers only ship surfaces the MELCloud Home app itself exposes,
-  even when the API facade can read more — no forced hot water and no
-  outdoor temperature on Home ATW: unverified reads may report defaults
-  and unverified writes may silently fail.
+  even when the API facade can read more — no outdoor temperature on
+  Home ATW (not in the app UI; an absent setting would read as 0), and
+  no per-zone operational states (their derivation inputs are absent
+  from the Home wire). Forced hot water IS app-exposed (the DHW tab's
+  auto/heat-now toggle) and its write path is live-verified.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
   (`getRequiredCapabilities`). Home ATW gates the control capabilities on

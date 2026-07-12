@@ -11,6 +11,7 @@ import HomeMELCloudDeviceAtw from '../../drivers/home-melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
 const requiredCapabilities = vi.hoisted(() => [
+  'hot_water_mode',
   'measure_temperature',
   'measure_temperature.tank_water',
   'measure_temperature.zone2',
@@ -89,6 +90,7 @@ const mockFacade = (
       minSetTankTemperature: 40,
       minSetTemperature: 10,
     },
+    forcedHotWaterMode: false,
     hasCoolingMode: true,
     hotWaterOperationalState: 'dhw',
     isOwner: true,
@@ -151,6 +153,10 @@ describe(HomeMELCloudDeviceAtw, () => {
         -42,
       )
       expect(setCapabilityValueMock).toHaveBeenCalledWith('onoff', true)
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'hot_water_mode',
+        'auto',
+      )
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'operational_state',
         'dhw',
@@ -261,6 +267,16 @@ describe(HomeMELCloudDeviceAtw, () => {
       expect(converter?.(mockFacade({ operationMode: mode }))).toBe(expected)
     })
 
+    it('should report forced hot water as the forced mode', () => {
+      const {
+        deviceToCapability: { hot_water_mode: converter },
+      } = device
+
+      expect(converter?.(mockFacade({ forcedHotWaterMode: true }))).toBe(
+        'forced',
+      )
+    })
+
     it('should pass the derived hot-water state through', () => {
       const {
         deviceToCapability: { 'operational_state.hot_water': converter },
@@ -310,6 +326,17 @@ describe(HomeMELCloudDeviceAtw, () => {
 
       expect(capabilityToDevice.thermostat_mode?.(mode)).toBe(expected)
       expect(capabilityToDevice['thermostat_mode.zone2']?.(mode)).toBe(expected)
+    })
+
+    it.each([
+      ['forced', true],
+      ['auto', false],
+    ])('should convert hot_water_mode %s to %s', (mode, isForced) => {
+      const {
+        capabilityToDevice: { hot_water_mode: converter },
+      } = device
+
+      expect(converter?.(mode)).toBe(isForced)
     })
   })
 
