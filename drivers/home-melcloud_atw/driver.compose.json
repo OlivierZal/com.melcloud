@@ -12,6 +12,12 @@
     "thermostat_mode.zone2",
     "measure_signal_strength"
   ],
+  "capabilitiesOptions": {
+    "target_temperature": {
+      "max": 30,
+      "min": 10
+    }
+  },
   "name": {
     "ar": "مضخة حرارية هواء-ماء",
     "da": "Luft-til-vand varmepumpe (Home)",

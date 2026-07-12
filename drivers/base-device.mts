@@ -140,8 +140,6 @@ export abstract class BaseMELCloudDevice<
 
   protected abstract getFacade(): TFacade
 
-  protected abstract getRequiredCapabilities(): string[]
-
   public abstract syncFromDevice(): Promise<void>
 
   public override async addCapability(capability: string): Promise<void> {
@@ -230,8 +228,14 @@ export abstract class BaseMELCloudDevice<
     await super.setWarning(null)
   }
 
-  protected async applyCapabilitiesOptions(data?: unknown): Promise<void> {
-    const capabilitiesOptions = this.driver.getCapabilitiesOptions(data)
+  protected async applyCapabilitiesOptions(): Promise<void> {
+    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
+    if (this.#deviceFacade === undefined) {
+      return
+    }
+    const capabilitiesOptions = this.driver.getCapabilitiesOptions(
+      this.toDriverData(this.#deviceFacade),
+    )
     for (const [capability, options] of Object.entries(capabilitiesOptions)) {
       /* v8 ignore next -- options is always an object in practice; Partial type is defensive */
       if (typeof options === 'object' && options !== null) {
@@ -248,6 +252,15 @@ export abstract class BaseMELCloudDevice<
     }
     this.#reports.regular?.unschedule()
     this.#reports.total?.unschedule()
+  }
+
+  protected getRequiredCapabilities(): string[] {
+    /* v8 ignore next -- defensive guard: facade is set before init() calls this */
+    return this.#deviceFacade === undefined ?
+        []
+      : this.driver.getRequiredCapabilities(
+          this.toDriverData(this.#deviceFacade),
+        )
   }
 
   protected isEnergyCapability(setting: string): boolean {
@@ -300,6 +313,13 @@ export abstract class BaseMELCloudDevice<
       }
     }
     this.#scheduleSyncFromDevice()
+  }
+
+  // Polymorphic default: Home drivers consume the facade itself; Classic
+  // overrides to unwrap the wire data its drivers take.
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic default; overridden by the Classic hierarchy
+  protected toDriverData(facade: TFacade): unknown {
+    return facade
   }
 
   async #ensureDeviceFacade(): Promise<TFacade> {

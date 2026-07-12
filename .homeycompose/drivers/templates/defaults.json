@@ -54,10 +54,6 @@
         "sv": "Temperatur - zon 2"
       }
     },
-    "target_temperature": {
-      "max": 30,
-      "min": 10
-    },
     "target_temperature.tank_water": {
       "max": 60,
       "min": 40,

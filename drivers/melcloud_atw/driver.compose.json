@@ -1414,6 +1414,10 @@
         }
       ]
     },
+    "target_temperature": {
+      "max": 30,
+      "min": 10
+    },
     "target_temperature.flow_cool": {
       "max": 25,
       "min": 5,

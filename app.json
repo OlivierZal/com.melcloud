@@ -3142,10 +3142,6 @@
             "sv": "Temperatur - zon 2"
           }
         },
-        "target_temperature": {
-          "max": 31,
-          "min": 10
-        },
         "target_temperature.tank_water": {
           "max": 60,
           "min": 40,
@@ -3184,6 +3180,10 @@
             "ru": "Целевая температура - зона 2",
             "sv": "Måltemperatur - zon 2"
           }
+        },
+        "target_temperature": {
+          "max": 31,
+          "min": 10
         },
         "thermostat_mode": {
           "values": [
@@ -3618,10 +3618,6 @@
             "sv": "Temperatur - zon 2"
           }
         },
-        "target_temperature": {
-          "max": 30,
-          "min": 10
-        },
         "target_temperature.tank_water": {
           "max": 60,
           "min": 40,
@@ -3660,6 +3656,10 @@
             "ru": "Целевая температура - зона 2",
             "sv": "Måltemperatur - zon 2"
           }
+        },
+        "target_temperature": {
+          "max": 30,
+          "min": 10
         }
       },
       "class": "heatpump",
@@ -3983,10 +3983,6 @@
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
           }
-        },
-        "target_temperature": {
-          "max": 31,
-          "min": 10
         },
         "target_temperature.tank_water": {
           "max": 60,
@@ -4418,6 +4414,10 @@
             "ru": "Энергия - прочее",
             "sv": "Energi - övrigt"
           }
+        },
+        "target_temperature": {
+          "max": 31,
+          "min": 10
         },
         "thermostat_mode": {
           "values": [
@@ -5355,10 +5355,6 @@
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
           }
-        },
-        "target_temperature": {
-          "max": 30,
-          "min": 10
         },
         "target_temperature.tank_water": {
           "max": 60,
@@ -6745,6 +6741,10 @@
               }
             }
           ]
+        },
+        "target_temperature": {
+          "max": 30,
+          "min": 10
         },
         "target_temperature.flow_cool": {
           "max": 25,
@@ -8218,10 +8218,6 @@
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
           }
-        },
-        "target_temperature": {
-          "max": 30,
-          "min": 10
         },
         "target_temperature.tank_water": {
           "max": 60,

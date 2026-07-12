@@ -53,11 +53,13 @@ coverage.
   shared behavior lives there (or in the `base-*` classes when both
   sides share it); type-specific classes hold only converters,
   capability policies, and manifests.
-- `capabilitiesOptions` blocks that are rigorously identical across
-  drivers live in the `defaults` compose template; `melcloud_atw`'s
-  labels are the reference (node-homey-lib wording). Driver-level
-  entries override the template's per capability, and template entries
-  for capabilities a driver lacks are inert.
+- `capabilitiesOptions` blocks that are rigorously identical across the
+  drivers defining them live in the `defaults` compose template;
+  `melcloud_atw`'s labels are the reference (node-homey-lib wording).
+  Template entries for capabilities a driver lacks are inert, but a
+  capability another driver configures differently stays per-driver
+  (e.g. `target_temperature`: ATA 10–31, ATW 10–30) — precedence would
+  resolve the collision, relying on it is a trap.
 - `measure_signal_strength` is never a default capability, on any driver:
   it stays manifest-declared but opt-in through the shared `options`
   settings group. Keep it out of every required-capability list.

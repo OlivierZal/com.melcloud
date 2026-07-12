@@ -84,7 +84,10 @@ export abstract class BaseMELCloudDriver extends Driver {
   }
   /* v8 ignore stop */
 
-  public getRequiredCapabilities(): string[] {
+  public getRequiredCapabilities(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature must match overrides that use this parameter
+    ..._data: unknown[]
+  ): string[] {
     return [...this.manifest.capabilities]
   }
 

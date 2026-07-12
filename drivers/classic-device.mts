@@ -87,10 +87,6 @@ export abstract class ClassicMELCloudDevice<
     await this.setCapabilityValues(data)
   }
 
-  protected override async applyCapabilitiesOptions(): Promise<void> {
-    await super.applyCapabilitiesOptions(this.#data)
-  }
-
   protected override createEnergyReport(
     config: EnergyReportConfig,
   ): EnergyReport<T> {
@@ -99,13 +95,6 @@ export abstract class ClassicMELCloudDevice<
 
   protected override getFacade(): Classic.DeviceFacade<T> {
     return this.homey.app.getClassicFacade('devices', this.id)
-  }
-
-  protected override getRequiredCapabilities(): string[] {
-    /* v8 ignore next -- defensive guard: facade is set after init */
-    return this.#data === undefined ?
-        []
-      : this.driver.getRequiredCapabilities(this.#data)
   }
 
   protected async setCapabilityValues(
@@ -125,6 +114,13 @@ export abstract class ClassicMELCloudDevice<
         }
       }),
     )
+  }
+
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic override: Classic drivers consume the wire data, not the facade
+  protected override toDriverData(
+    facade: Classic.DeviceFacade<T>,
+  ): Readonly<Classic.ListDeviceData<T>> {
+    return facade.data
   }
 
   #convertFromDevice<TKey extends keyof Capabilities<T>>(

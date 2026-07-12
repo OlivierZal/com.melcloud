@@ -39,14 +39,6 @@ export abstract class HomeMELCloudDevice<
     await this.#setCapabilityValues(device)
   }
 
-  protected override async applyCapabilitiesOptions(): Promise<void> {
-    /* v8 ignore next -- cachedFacade is always set before init() calls applyCapabilitiesOptions */
-    if (this.cachedFacade === undefined) {
-      return
-    }
-    await super.applyCapabilitiesOptions(this.cachedFacade)
-  }
-
   /* v8 ignore start -- never called: energyReportRegular/Total are null */
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- required override of abstract method; Home devices do not support energy reports
   protected override createEnergyReport(): never {
@@ -56,13 +48,6 @@ export abstract class HomeMELCloudDevice<
 
   protected override getFacade(): HomeDeviceFacade<T> {
     return this.homey.app.getHomeFacade(this.id, this.driver.type)
-  }
-
-  protected override getRequiredCapabilities(): string[] {
-    /* v8 ignore next -- defensive guard: facade is set after init */
-    return this.cachedFacade === undefined ?
-        []
-      : this.driver.getRequiredCapabilities(this.cachedFacade)
   }
 
   async #setCapabilityValues(device: HomeDeviceFacade<T>): Promise<void> {
