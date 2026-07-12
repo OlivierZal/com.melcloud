@@ -33,8 +33,9 @@ type HomeValues<T extends Home.DeviceType> =
 /**
  * Converter from a Home device facade to the corresponding Homey capability
  * value, parameterized by device type. `null` clears the Homey value — used
- * when the facade reports no reading (e.g. zone-2 fields on a single-zone
- * ATW unit).
+ * when the facade reports no reading (e.g. the zone-2 temperatures and
+ * setpoints on a single-zone ATW unit; the zone-2 thermostat mode instead
+ * degrades to the room mode).
  */
 export type HomeConvertFromDevice<T extends Home.DeviceType> = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow the return to a specific capability type
