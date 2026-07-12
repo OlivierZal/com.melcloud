@@ -27,10 +27,6 @@ export abstract class HomeMELCloudDevice<
     return this.getData().id
   }
 
-  protected readonly energyReportRegular = null
-
-  protected readonly energyReportTotal = null
-
   public override async syncFromDevice(): Promise<void> {
     const device = await this.ensureDevice()
     if (device === null) {
@@ -38,13 +34,6 @@ export abstract class HomeMELCloudDevice<
     }
     await this.#setCapabilityValues(device)
   }
-
-  /* v8 ignore start -- never called: energyReportRegular/Total are null */
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- required override of abstract method; Home devices do not support energy reports
-  protected override createEnergyReport(): never {
-    throw new Error('Energy reports are not supported for Home devices')
-  }
-  /* v8 ignore stop */
 
   protected override getFacade(): HomeDeviceFacade<T> {
     return this.homey.app.getHomeFacade(this.id, this.driver.type)

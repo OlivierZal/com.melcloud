@@ -61,6 +61,6 @@ export default class HomeMELCloudDeviceAta extends HomeMELCloudDevice<AtaType> {
       verticalFromDevice[verticalToClassic[vaneVerticalDirection]],
   }
 
-  protected readonly thermostatMode: typeof ThermostatModeAta =
+  protected override readonly thermostatMode: typeof ThermostatModeAta =
     ThermostatModeAta
 }

@@ -49,7 +49,7 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
     vertical: (value: Classic.Vertical) => verticalFromDevice[value],
   }
 
-  protected readonly energyReportRegular: EnergyReportConfig = {
+  protected override readonly energyReportRegular: EnergyReportConfig = {
     duration: { hours: 1 },
     interval: { hours: 1 },
     minus: { hours: 1 },
@@ -57,7 +57,7 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
     values: { millisecond: 0, minute: 5, second: 0 },
   }
 
-  protected readonly energyReportTotal: EnergyReportConfig = {
+  protected override readonly energyReportTotal: EnergyReportConfig = {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { hours: 1 },
@@ -65,6 +65,6 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   }
 
-  protected readonly thermostatMode: typeof ThermostatModeAta =
+  protected override readonly thermostatMode: typeof ThermostatModeAta =
     ThermostatModeAta
 }

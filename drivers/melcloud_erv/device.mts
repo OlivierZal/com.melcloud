@@ -38,10 +38,6 @@ export default class ClassicMELCloudDeviceErv extends ClassicMELCloudDevice<
       data.Power ? ventilationModeFromDevice[value] : ThermostatModeErv.off,
   }
 
-  protected readonly energyReportRegular = null
-
-  protected readonly energyReportTotal = null
-
-  protected readonly thermostatMode: typeof ThermostatModeErv =
+  protected override readonly thermostatMode: typeof ThermostatModeErv =
     ThermostatModeErv
 }

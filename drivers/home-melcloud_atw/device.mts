@@ -46,6 +46,4 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     'thermostat_mode.zone2': ({ operationModeZone2 }) =>
       toThermostatModeAtw(operationModeZone2),
   }
-
-  protected readonly thermostatMode = null
 }

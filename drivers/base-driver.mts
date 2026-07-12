@@ -74,7 +74,12 @@ export abstract class BaseMELCloudDriver extends Driver {
     name: string
   }[]
 
-  /* v8 ignore start -- default implementation; always overridden by classic or test mock */
+  protected abstract toDeviceDetails(model: {
+    id: number | string
+    name: string
+  }): { data: { id: number | string }; name: string }
+
+  /* v8 ignore start -- default implementation; always overridden by the concrete drivers */
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic default; overridden by subclasses that use this
   public getCapabilitiesOptions(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature must match overrides that use this parameter
@@ -84,11 +89,15 @@ export abstract class BaseMELCloudDriver extends Driver {
   }
   /* v8 ignore stop */
 
+  // Signal strength is never a default capability (it is opt-in through
+  // the options settings group), so the manifest default excludes it.
   public getRequiredCapabilities(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature must match overrides that use this parameter
     ..._data: unknown[]
   ): string[] {
-    return [...this.manifest.capabilities]
+    return this.manifest.capabilities.filter(
+      (capability) => capability !== 'measure_signal_strength',
+    )
   }
 
   protected async discoverDevices(): Promise<
@@ -96,17 +105,6 @@ export abstract class BaseMELCloudDriver extends Driver {
   > {
     await Promise.resolve()
     return this.getDeviceModels().map((model) => this.toDeviceDetails(model))
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- default mapping; overridden in classic to add capabilities
-  protected toDeviceDetails({
-    id,
-    name,
-  }: {
-    id: number | string
-    name: string
-  }): { data: { id: number | string }; name: string } {
-    return { data: { id }, name }
   }
 
   #registerFlowListeners(): void {

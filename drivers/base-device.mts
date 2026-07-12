@@ -49,15 +49,18 @@ export abstract class BaseMELCloudDevice<
     Record<string, CapabilityConverter>
   >
 
-  protected abstract readonly energyReportRegular: EnergyReportConfig | null
-
-  protected abstract readonly energyReportTotal: EnergyReportConfig | null
-
-  protected abstract readonly thermostatMode: Record<string, string> | null
-
   public get id(): number | string {
     return this.getData().id
   }
+
+  // No energy reports unless a subclass provides both configs and a real
+  // createEnergyReport; thermostat vocabularies without an off value keep
+  // the null default.
+  protected readonly energyReportRegular: EnergyReportConfig | null = null
+
+  protected readonly energyReportTotal: EnergyReportConfig | null = null
+
+  protected readonly thermostatMode: Record<string, string> | null = null
 
   protected get cachedFacade(): TFacade | undefined {
     return this.#deviceFacade
@@ -133,10 +136,6 @@ export abstract class BaseMELCloudDevice<
     this.onDeleted()
     await Promise.resolve()
   }
-
-  protected abstract createEnergyReport(
-    config: EnergyReportConfig,
-  ): EnergyReportOperation
 
   protected abstract getFacade(): TFacade
 
@@ -253,6 +252,16 @@ export abstract class BaseMELCloudDevice<
     this.#reports.regular?.unschedule()
     this.#reports.total?.unschedule()
   }
+
+  /* v8 ignore start -- never called: the energy-report configs default to null */
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic default; overridden alongside the energy-report configs
+  protected createEnergyReport(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature must match overrides that use this parameter
+    _config: EnergyReportConfig,
+  ): EnergyReportOperation {
+    throw new Error('Energy reports are not supported for this device')
+  }
+  /* v8 ignore stop */
 
   protected getRequiredCapabilities(): string[] {
     /* v8 ignore next -- defensive guard: facade is set before init() calls this */

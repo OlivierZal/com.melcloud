@@ -3,7 +3,6 @@ import * as Home from '@olivierzal/melcloud-api/home'
 import {
   type HomeAtwDeviceProfile,
   type HomeCapabilitiesAtw,
-  type HomeDeviceDetailsAtw,
   homeGetCapabilitiesOptionsAtw,
   homeSetCapabilityTagMappingAtw,
 } from '../../types/home-atw.mts'
@@ -69,21 +68,5 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
         ]
       : []),
     ]
-  }
-
-  protected override toDeviceDetails({
-    id,
-    name,
-  }: {
-    id: string
-    name: string
-  }): HomeDeviceDetailsAtw {
-    const facade = this.homey.app.getHomeFacade(id, this.type)
-    return {
-      capabilities: this.getRequiredCapabilities(facade),
-      capabilitiesOptions: this.getCapabilitiesOptions(facade),
-      data: { id },
-      name,
-    }
   }
 }

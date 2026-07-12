@@ -65,11 +65,6 @@ export abstract class ClassicMELCloudDevice<
     Record<keyof OperationalCapabilities<T>, ConvertFromDevice<T>>
   >
 
-  protected abstract override readonly thermostatMode: Record<
-    string,
-    string
-  > | null
-
   protected get facade(): Classic.DeviceFacade<T> | undefined {
     return this.cachedFacade
   }

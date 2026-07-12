@@ -7,12 +7,10 @@ import type {
   HomeMELCloudDriverAtw,
 } from '../drivers/index.mts'
 import type {
-  HomeAtaDeviceProfile,
   HomeCapabilitiesAta,
   HomeSetCapabilitiesAta,
 } from './home-ata.mts'
 import type {
-  HomeAtwDeviceProfile,
   HomeCapabilitiesAtw,
   HomeSetCapabilitiesAtw,
 } from './home-atw.mts'
@@ -52,15 +50,16 @@ export type HomeConvertToDevice<T extends Home.DeviceType> = {
   ): HomeValues<T>[keyof HomeValues<T>]
 }['bivariant']
 
+export interface HomeDeviceDetails {
+  readonly capabilities: readonly string[]
+  readonly capabilitiesOptions: Partial<Record<string, unknown>>
+  readonly data: { readonly id: string }
+  readonly name: string
+}
+
 export type HomeDeviceFacade<T extends Home.DeviceType> =
   T extends typeof Home.DeviceType.Ata ? Home.DeviceAtaFacade
   : Home.DeviceAtwFacade
-
-/**
- * Structural facade slice a Home driver derives a device's capabilities
- * from; satisfied by the matching facade itself.
- */
-export type HomeDeviceProfile = HomeAtaDeviceProfile | HomeAtwDeviceProfile
 
 export type HomeMELCloudDevice = HomeMELCloudDeviceAta | HomeMELCloudDeviceAtw
 

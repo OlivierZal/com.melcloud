@@ -83,7 +83,7 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
       operationModeStateFromDevice[value],
   }
 
-  protected readonly energyReportRegular: EnergyReportConfig = {
+  protected override readonly energyReportRegular: EnergyReportConfig = {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { days: 1 },
@@ -91,15 +91,13 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
   }
 
-  protected readonly energyReportTotal: EnergyReportConfig = {
+  protected override readonly energyReportTotal: EnergyReportConfig = {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { days: 1 },
     mode: 'total',
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   }
-
-  protected readonly thermostatMode = null
 
   protected override async setCapabilityValues(
     data: Readonly<Classic.ListDeviceData<typeof Classic.DeviceType.Atw>>,

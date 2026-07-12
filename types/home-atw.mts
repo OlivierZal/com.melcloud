@@ -108,13 +108,6 @@ export interface HomeCapabilitiesOptionsAtw {
   }
 }
 
-export interface HomeDeviceDetailsAtw {
-  readonly capabilities: readonly string[]
-  readonly capabilitiesOptions: Partial<HomeCapabilitiesOptionsAtw>
-  readonly data: { readonly id: string }
-  readonly name: string
-}
-
 // Only complete option objects, and only for capabilities the device will
 // actually have: device-level options shadow the manifest's per capability
 // (temperature ranges/steps/titles stay in the compose manifest — the facade

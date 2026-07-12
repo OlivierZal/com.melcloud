@@ -1,6 +1,6 @@
-import type * as Home from '@olivierzal/melcloud-api/home'
 import type PairSession from 'homey/lib/PairSession'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as Home from '@olivierzal/melcloud-api/home'
 
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import {
@@ -15,6 +15,7 @@ import { createInstance } from './create-test-instance.ts'
 const {
   authenticateMock,
   getHomeDevicesByTypeMock,
+  getHomeFacadeMock,
   isAuthenticatedMock,
   setHandlerMock,
   showViewMock,
@@ -22,6 +23,7 @@ const {
   authenticateMock: vi.fn<(data: unknown) => Promise<boolean>>(),
   getHomeDevicesByTypeMock:
     vi.fn<(type: Home.DeviceType) => readonly unknown[]>(),
+  getHomeFacadeMock: vi.fn<(id: string, type: Home.DeviceType) => unknown>(),
   isAuthenticatedMock: vi.fn<() => boolean>(),
   setHandlerMock:
     vi.fn<(event: string, handler: (...args: unknown[]) => unknown) => void>(),
@@ -34,6 +36,7 @@ vi.mock('homey', () => {
     public homey = {
       app: {
         getHomeDevicesByType: getHomeDevicesByTypeMock,
+        getHomeFacade: getHomeFacadeMock,
         homeApi: {
           authenticate: authenticateMock,
           isAuthenticated: isAuthenticatedMock,
@@ -133,6 +136,9 @@ describe(BaseMELCloudDriver, () => {
         }),
       ]
       getHomeDevicesByTypeMock.mockReturnValue(devices)
+      getHomeFacadeMock.mockReturnValue({
+        capabilities: { hasAutomaticFanSpeed: true, numberOfFanSpeeds: 5 },
+      })
 
       const listHandler = vi.fn<(...args: unknown[]) => unknown>()
       const session = mock<PairSession>({
@@ -152,12 +158,33 @@ describe(BaseMELCloudDriver, () => {
       await driver.onPair(session)
       const result = await listHandler()
 
+      const capabilities = [
+        'onoff',
+        'measure_temperature',
+        'target_temperature',
+        'thermostat_mode',
+        'fan_speed',
+        'vertical',
+        'horizontal',
+      ]
+      const capabilitiesOptions = {
+        fan_speed: { max: 5, min: 0, step: 1, units: '' },
+      }
+
+      expect(getHomeFacadeMock).toHaveBeenCalledWith(
+        'device-1',
+        Home.DeviceType.Ata,
+      )
       expect(result).toStrictEqual([
         {
+          capabilities,
+          capabilitiesOptions,
           data: { id: 'device-1' },
           name: 'Living Room',
         },
         {
+          capabilities,
+          capabilitiesOptions,
           data: { id: 'device-2' },
           name: 'Guest Room',
         },
