@@ -30,6 +30,7 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
 
   readonly #hotWaterMeasureCapabilities: (keyof HomeCapabilitiesAtw)[] = [
     'measure_temperature.tank_water',
+    'operational_state.hot_water',
   ]
 
   readonly #measureCapabilities: (keyof HomeCapabilitiesAtw)[] = [

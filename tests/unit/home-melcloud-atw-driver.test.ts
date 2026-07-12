@@ -112,6 +112,7 @@ describe(HomeMELCloudDriverAtw, () => {
         'target_temperature',
         'thermostat_mode',
         'measure_temperature.tank_water',
+        'operational_state.hot_water',
         'target_temperature.tank_water',
         'measure_temperature.zone2',
         'target_temperature.zone2',
@@ -128,6 +129,7 @@ describe(HomeMELCloudDriverAtw, () => {
         'measure_temperature',
         'operational_state',
         'measure_temperature.tank_water',
+        'operational_state.hot_water',
         'measure_temperature.zone2',
       ])
     })

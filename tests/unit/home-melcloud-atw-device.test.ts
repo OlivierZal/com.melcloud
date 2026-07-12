@@ -16,6 +16,7 @@ const requiredCapabilities = vi.hoisted(() => [
   'measure_temperature.zone2',
   'onoff',
   'operational_state',
+  'operational_state.hot_water',
   'target_temperature',
   'target_temperature.tank_water',
   'target_temperature.zone2',
@@ -89,6 +90,7 @@ const mockFacade = (
       minSetTemperature: 10,
     },
     hasCoolingMode: true,
+    hotWaterOperationalState: 'dhw',
     isOwner: true,
     operationMode: 'HotWater',
     operationModeZone1: 'HeatRoomTemperature',
@@ -151,6 +153,10 @@ describe(HomeMELCloudDeviceAtw, () => {
       expect(setCapabilityValueMock).toHaveBeenCalledWith('onoff', true)
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'operational_state',
+        'dhw',
+      )
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'operational_state.hot_water',
         'dhw',
       )
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
@@ -253,6 +259,16 @@ describe(HomeMELCloudDeviceAtw, () => {
       } = device
 
       expect(converter?.(mockFacade({ operationMode: mode }))).toBe(expected)
+    })
+
+    it('should pass the derived hot-water state through', () => {
+      const {
+        deviceToCapability: { 'operational_state.hot_water': converter },
+      } = device
+
+      expect(
+        converter?.(mockFacade({ hotWaterOperationalState: 'prohibited' })),
+      ).toBe('prohibited')
     })
 
     it('should clear and log an unmapped FTC operation mode', () => {
