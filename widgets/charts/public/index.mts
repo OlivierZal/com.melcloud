@@ -37,6 +37,7 @@ import {
   fireAndForget,
   homeyApiGet,
   setDocumentLanguage,
+  surfaceError,
 } from '../../../public/homey-api.mts'
 import { getZoneId, getZonePath } from '../../../public/zones.mts'
 
@@ -606,7 +607,7 @@ class ChartWidget {
       await this.#homey.setHeight(document.body.scrollHeight)
     } catch (error) {
       // Surfaces in the widget dev tools; the rearmed timer retries.
-      reportError(new Error('Chart refresh failed', { cause: error }))
+      surfaceError(new Error('Chart refresh failed', { cause: error }))
     } finally {
       // A zone change can start a second draw while this one is in flight;
       // clearing the tracked timer here collapses both chains back into one

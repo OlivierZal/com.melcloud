@@ -7,14 +7,28 @@ export interface Homey<
 }
 
 /**
+ * Surfaces an error in the widget dev tools without blocking the caller:
+ * `reportError` where the webview provides it, an async rethrow otherwise.
+ */
+export const surfaceError = (error: unknown): void => {
+  if (typeof reportError === 'function') {
+    reportError(error)
+    return
+  }
+  setTimeout(() => {
+    throw error instanceof Error ? error : new Error(JSON.stringify(error))
+  }, 0)
+}
+
+/**
  * Runs an async operation that shouldn't block. Rejections go to `onError`
- * (default: `reportError`, which surfaces them in the widget dev tools).
+ * (default: `surfaceError`, which reports them in the widget dev tools).
  * Pass a homey.alert handler for user-visible failures, or a no-op when a
  * miss is acceptable.
  */
 export const fireAndForget = (
   promise: Promise<unknown>,
-  onError: (error: unknown) => void = reportError,
+  onError: (error: unknown) => void = surfaceError,
 ): void => {
   // eslint-disable-next-line unicorn/prefer-await -- fire-and-forget: rejections route to onError without blocking the caller
   promise.catch(onError)

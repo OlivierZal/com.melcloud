@@ -12,6 +12,7 @@ import {
   type Homey,
   fireAndForget,
   homeyApiGet,
+  surfaceError,
 } from '../../../public/homey-api.mts'
 import { getZonePath } from '../../../public/zones.mts'
 import {
@@ -741,7 +742,7 @@ export class AnimationController {
       return resolveMemberScene(await this.#getModes())
     } catch (error) {
       // Surfaces in the widget dev tools; the next update retries.
-      reportError(new Error('Scene resolution failed', { cause: error }))
+      surfaceError(new Error('Scene resolution failed', { cause: error }))
       return null
     }
   }
