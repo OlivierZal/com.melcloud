@@ -51,6 +51,10 @@ coverage.
 - `measure_signal_strength` is never a default capability, on any driver:
   it stays manifest-declared but opt-in through the shared `options`
   settings group. Keep it out of every required-capability list.
+- Home drivers only ship surfaces the MELCloud Home app itself exposes,
+  even when the API facade can read more — no forced hot water and no
+  outdoor temperature on Home ATW: unverified reads may report defaults
+  and unverified writes may silently fail.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
   (`getRequiredCapabilities`). Home ATW gates the control capabilities on
@@ -61,6 +65,11 @@ coverage.
 - Converters from Home devices must never crash the sync on new FTC
   vocabulary: unknown zone-mode strings (and the external-thermostat
   variants) degrade to the room modes in `toThermostatModeAtw`.
+- Flow-card filters: `driver_id` lists only the drivers that expose the
+  card's capability, and a `capabilities=` clause is only added when the
+  capability is not on every device of those drivers. Do not widen a
+  filter to a driver whose support is unverified (the zone-2 cards stay
+  Classic-only until zone 2 is seen working on MELCloud Home).
 
 ## Widgets
 

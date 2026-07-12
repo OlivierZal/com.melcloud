@@ -913,7 +913,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=thermostat_mode.zone2",
+            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2",
             "name": "device",
             "type": "device"
           }
@@ -1861,7 +1861,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=thermostat_mode.zone2",
+            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2",
             "name": "device",
             "type": "device"
           },
@@ -2670,7 +2670,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=target_temperature.tank_water",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw",
             "name": "device",
             "type": "device"
           },
@@ -2717,7 +2717,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=target_temperature.zone2",
+            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2",
             "name": "device",
             "type": "device"
           },
@@ -2763,7 +2763,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=thermostat_mode.zone2",
+            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2",
             "name": "device",
             "type": "device"
           },
@@ -3511,46 +3511,6 @@
             "sv": "Utomhustemperatur"
           }
         },
-        "hot_water_mode": {
-          "values": [
-            {
-              "id": "auto",
-              "title": {
-                "ar": "تلقائي",
-                "da": "Automatisk",
-                "de": "Automatisch",
-                "en": "Automatic",
-                "es": "Automático",
-                "fr": "Automatique",
-                "it": "Automatica",
-                "ko": "자동",
-                "nl": "Automatisch",
-                "no": "Automatisk",
-                "pl": "Automatyczny",
-                "ru": "Авто",
-                "sv": "Automatiskt"
-              }
-            },
-            {
-              "id": "forced",
-              "title": {
-                "ar": "إجباري",
-                "da": "Tvungen",
-                "de": "Erzwungen",
-                "en": "Forced",
-                "es": "Forzado",
-                "fr": "Forcé",
-                "it": "Forzato",
-                "ko": "강제",
-                "nl": "Gedwongen",
-                "no": "Tvungen",
-                "pl": "Wymuszony",
-                "ru": "Принудительный",
-                "sv": "Tvingad"
-              }
-            }
-          ]
-        },
         "measure_temperature.tank_water": {
           "title": {
             "ar": "درجة حرارة الماء الساخن",
@@ -3790,10 +3750,8 @@
       ],
       "capabilities": [
         "onoff",
-        "hot_water_mode",
         "measure_temperature",
         "measure_temperature.zone2",
-        "measure_temperature.outdoor",
         "measure_temperature.tank_water",
         "target_temperature",
         "target_temperature.zone2",

@@ -114,12 +114,10 @@ describe(HomeMELCloudDriverAtw, () => {
 
       expect(capabilities).toStrictEqual([
         'measure_temperature',
-        'measure_temperature.outdoor',
         'onoff',
         'target_temperature',
         'thermostat_mode',
         'measure_temperature.tank_water',
-        'hot_water_mode',
         'target_temperature.tank_water',
         'measure_temperature.zone2',
         'target_temperature.zone2',
@@ -134,7 +132,6 @@ describe(HomeMELCloudDriverAtw, () => {
 
       expect(capabilities).toStrictEqual([
         'measure_temperature',
-        'measure_temperature.outdoor',
         'measure_temperature.tank_water',
         'measure_temperature.zone2',
       ])
@@ -147,7 +144,6 @@ describe(HomeMELCloudDriverAtw, () => {
 
       expect(capabilities).toStrictEqual([
         'measure_temperature',
-        'measure_temperature.outdoor',
         'onoff',
         'target_temperature',
         'thermostat_mode',
@@ -193,7 +189,7 @@ describe(HomeMELCloudDriverAtw, () => {
       )
       expect(details.data).toStrictEqual({ id: 'atw-1' })
       expect(details.name).toBe('Heat Pump')
-      expect(details.capabilities).toContain('hot_water_mode')
+      expect(details.capabilities).toContain('target_temperature.tank_water')
       expect(details.capabilities).toContain('thermostat_mode.zone2')
       expect(details.capabilitiesOptions).toStrictEqual(
         expect.objectContaining({

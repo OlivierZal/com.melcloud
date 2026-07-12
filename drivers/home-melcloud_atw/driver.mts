@@ -33,7 +33,6 @@ export default class HomeMELCloudDriverAtw extends BaseMELCloudDriver {
   ]
 
   readonly #hotWaterControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
-    'hot_water_mode',
     'target_temperature.tank_water',
   ]
 
@@ -43,7 +42,6 @@ export default class HomeMELCloudDriverAtw extends BaseMELCloudDriver {
 
   readonly #measureCapabilities: (keyof HomeCapabilitiesAtw)[] = [
     'measure_temperature',
-    'measure_temperature.outdoor',
   ]
 
   readonly #zone2ControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [

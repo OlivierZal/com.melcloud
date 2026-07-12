@@ -1,7 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
 
-import { HotWaterMode } from '../../types/atw.mts'
 import {
   type HomeCapabilitiesAtw,
   type HomeConvertFromDevice,
@@ -25,8 +24,6 @@ export default class HomeMELCloudDeviceAtw extends BaseMELCloudDevice<Home.Devic
   protected readonly capabilityToDevice: Partial<
     Record<keyof HomeSetCapabilitiesAtw, HomeConvertToDevice>
   > = {
-    hot_water_mode: (value: keyof typeof HotWaterMode) =>
-      HotWaterMode[value] === HotWaterMode.forced,
     thermostat_mode: (value: keyof typeof Classic.OperationModeZone) =>
       operationModeZoneToHome[value],
     'thermostat_mode.zone2': (value: keyof typeof Classic.OperationModeZone) =>
@@ -37,12 +34,8 @@ export default class HomeMELCloudDeviceAtw extends BaseMELCloudDevice<Home.Devic
     keyof HomeCapabilitiesAtw,
     HomeConvertFromDevice
   > = {
-    hot_water_mode: ({ forcedHotWaterMode: isForced }) =>
-      isForced ? HotWaterMode.forced : HotWaterMode.auto,
     measure_signal_strength: ({ rssi }) => rssi,
     measure_temperature: ({ roomTemperatureZone1 }) => roomTemperatureZone1,
-    'measure_temperature.outdoor': ({ outdoorTemperature }) =>
-      outdoorTemperature,
     'measure_temperature.tank_water': ({ tankWaterTemperature }) =>
       tankWaterTemperature,
     'measure_temperature.zone2': ({ roomTemperatureZone2 }) =>
