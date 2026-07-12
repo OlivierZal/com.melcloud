@@ -92,7 +92,7 @@ const mockFacade = (
     isOwner: true,
     operationMode: 'HotWater',
     operationModeZone1: 'HeatRoomTemperature',
-    operationModeZone2: 'Curve',
+    operationModeZone2: 'HeatCurve',
     power: true,
     roomTemperatureZone1: 21,
     roomTemperatureZone2: 19,
@@ -215,7 +215,7 @@ describe(HomeMELCloudDeviceAtw, () => {
       ['CoolFlowTemperature', 'flow_cool'],
       ['CoolRoomTemperature', 'room_cool'],
       ['CoolThermostat', 'room_cool'],
-      ['Curve', 'curve'],
+      ['HeatCurve', 'curve'],
       ['HeatFlowTemperature', 'flow'],
       ['HeatRoomTemperature', 'room'],
       ['HeatThermostat', 'room'],
@@ -286,7 +286,7 @@ describe(HomeMELCloudDeviceAtw, () => {
     it.each([
       ['room', 'HeatRoomTemperature'],
       ['flow', 'HeatFlowTemperature'],
-      ['curve', 'Curve'],
+      ['curve', 'HeatCurve'],
       ['room_cool', 'CoolRoomTemperature'],
       ['flow_cool', 'CoolFlowTemperature'],
     ])('should convert zone mode %s to %s', (mode, expected) => {
@@ -310,7 +310,7 @@ describe(HomeMELCloudDeviceAtw, () => {
       })
 
       expect(facade.updateValues).toHaveBeenCalledWith({
-        operationModeZone1: 'Curve',
+        operationModeZone1: 'HeatCurve',
         setTankWaterTemperature: 55,
       })
     })

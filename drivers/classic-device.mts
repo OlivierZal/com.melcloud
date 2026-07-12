@@ -11,14 +11,13 @@ import type {
   SetCapabilities,
 } from '../types/capabilities.mts'
 import type { Settings } from '../types/device-settings.mts'
-import type { DeviceDetails } from '../types/device.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
 import { type EnergyReportConfig, EnergyReport } from './base-report.mts'
 
 export abstract class ClassicMELCloudDevice<
   T extends Classic.DeviceType,
-> extends BaseMELCloudDevice<Classic.DeviceFacade<T>> {
+> extends BaseMELCloudDevice<Classic.DeviceFacade<T>, number> {
   declare public readonly driver: ClassicMELCloudDriver<T>
 
   declare public readonly getCapabilityOptions: <
@@ -32,8 +31,6 @@ export abstract class ClassicMELCloudDevice<
   >(
     capability: TKey,
   ) => Capabilities<T>[TKey]
-
-  declare public readonly getData: () => DeviceDetails<T>['data']
 
   declare public readonly getSetting: <TKey extends keyof Settings>(
     setting: TKey,

@@ -32,10 +32,11 @@ const modes: EnergyReportMode[] = ['regular', 'total']
 
 export abstract class BaseMELCloudDevice<
   TFacade extends ClassicDeviceFacade = ClassicDeviceFacade,
+  TId extends number | string = number | string,
 > extends Device {
   declare public readonly driver: BaseMELCloudDriver
 
-  declare public readonly getData: () => { id: number | string }
+  declare public readonly getData: () => { id: TId }
 
   declare public readonly getSettings: () => Record<string, unknown>
 
@@ -49,7 +50,7 @@ export abstract class BaseMELCloudDevice<
     Record<string, CapabilityConverter>
   >
 
-  public get id(): number | string {
+  public get id(): TId {
     return this.getData().id
   }
 

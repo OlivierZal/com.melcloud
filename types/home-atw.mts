@@ -57,7 +57,7 @@ const operationModeZoneFromHome: Record<
   CoolFlowTemperature: 'flow_cool',
   CoolRoomTemperature: 'room_cool',
   CoolThermostat: 'room_cool',
-  Curve: 'curve',
+  HeatCurve: 'curve',
   HeatFlowTemperature: 'flow',
   HeatRoomTemperature: 'room',
   HeatThermostat: 'room',
@@ -67,7 +67,7 @@ export const operationModeZoneToHome: Record<
   ThermostatModeAtw,
   Home.AtwOperationModeZone
 > = {
-  curve: 'Curve',
+  curve: 'HeatCurve',
   flow: 'HeatFlowTemperature',
   flow_cool: 'CoolFlowTemperature',
   room: 'HeatRoomTemperature',
@@ -79,13 +79,12 @@ const isHomeOperationModeZone = (
 ): mode is Home.AtwOperationModeZone =>
   Object.hasOwn(operationModeZoneFromHome, mode)
 
-// Educated FTC-string mapping pending live confirmation: the facade types
-// the top-level operation mode as a plain string ('Stop' is the only
-// captured value so far). Unmapped strings resolve to null (the Homey
-// value is cleared) and are logged device-side to collect the real
-// vocabulary.
-const operationalStateFromHome: Partial<
-  Record<string, keyof typeof Classic.OperationModeState>
+// The facade types the top-level operation mode as a plain string for
+// firmware headroom: strings outside the Home.AtwOperationMode vocabulary
+// resolve to null (the Homey value is cleared) and are logged device-side.
+const operationalStateFromHome: Record<
+  Home.AtwOperationMode,
+  keyof typeof Classic.OperationModeState
 > = {
   Cooling: 'cooling',
   Defrost: 'defrost',
@@ -96,10 +95,13 @@ const operationalStateFromHome: Partial<
   Stop: 'idle',
 }
 
+const isHomeAtwOperationMode = (mode: string): mode is Home.AtwOperationMode =>
+  Object.hasOwn(operationalStateFromHome, mode)
+
 export const toOperationalStateAtw = (
   mode: string,
 ): keyof typeof Classic.OperationModeState | null =>
-  operationalStateFromHome[mode] ?? null
+  isHomeAtwOperationMode(mode) ? operationalStateFromHome[mode] : null
 
 // The facade types zone modes as plain strings because the FTC exposes
 // firmware-specific variants beyond the canonical set; those (and the

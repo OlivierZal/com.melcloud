@@ -10,10 +10,8 @@ import { BaseMELCloudDevice } from './base-device.mts'
 
 export abstract class HomeMELCloudDevice<
   T extends Home.DeviceType,
-> extends BaseMELCloudDevice<HomeDeviceFacade<T>> {
+> extends BaseMELCloudDevice<HomeDeviceFacade<T>, string> {
   declare public readonly driver: HomeMELCloudDriver & { readonly type: T }
-
-  declare public readonly getData: () => { id: string }
 
   protected abstract override readonly capabilityToDevice: Partial<
     Record<string, HomeConvertToDevice<T>>
@@ -22,10 +20,6 @@ export abstract class HomeMELCloudDevice<
   protected abstract override readonly deviceToCapability: Partial<
     Record<string, HomeConvertFromDevice<T>>
   >
-
-  public override get id(): string {
-    return this.getData().id
-  }
 
   public override async syncFromDevice(): Promise<void> {
     const device = await this.ensureDevice()

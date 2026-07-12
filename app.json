@@ -3142,6 +3142,136 @@
             "sv": "Temperatur - zon 2"
           }
         },
+        "operational_state": {
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
         "target_temperature.tank_water": {
           "max": 60,
           "min": 40,
@@ -3618,45 +3748,6 @@
             "sv": "Temperatur - zon 2"
           }
         },
-        "target_temperature.tank_water": {
-          "max": 60,
-          "min": 40,
-          "step": 1,
-          "title": {
-            "ar": "درجة حرارة الماء الساخن المستهدفة",
-            "da": "Måltemperatur for varmtvand",
-            "de": "Solltemperatur Warmwasser",
-            "en": "Hot water target temperature",
-            "es": "Temperatura configurada del agua caliente",
-            "fr": "Température cible de l'eau chaude",
-            "it": "Temperatura obiettivo acqua calda",
-            "ko": "온수 목표 온도",
-            "nl": "Ingestelde warmwatertemperatuur",
-            "no": "Ønsket temperatur for varmtvann",
-            "pl": "Temperatura docelowa ciepłej wody",
-            "ru": "Целевая температура горячей воды",
-            "sv": "Måltemperatur för varmvatten"
-          }
-        },
-        "target_temperature.zone2": {
-          "max": 30,
-          "min": 10,
-          "title": {
-            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
-            "da": "Måltemperatur - zone 2",
-            "de": "Solltemperatur - Zone 2",
-            "en": "Target temperature - zone 2",
-            "es": "Temperatura configurada - zona 2",
-            "fr": "Température cible - zone 2",
-            "it": "Temperatura obiettivo - zona 2",
-            "ko": "목표 온도 - 구역 2",
-            "nl": "Ingestelde temperatuur - zone 2",
-            "no": "Ønsket temperatur - sone 2",
-            "pl": "Temperatura docelowa - strefa 2",
-            "ru": "Целевая температура - зона 2",
-            "sv": "Måltemperatur - zon 2"
-          }
-        },
         "operational_state": {
           "values": [
             {
@@ -3786,6 +3877,45 @@
               }
             }
           ]
+        },
+        "target_temperature.tank_water": {
+          "max": 60,
+          "min": 40,
+          "step": 1,
+          "title": {
+            "ar": "درجة حرارة الماء الساخن المستهدفة",
+            "da": "Måltemperatur for varmtvand",
+            "de": "Solltemperatur Warmwasser",
+            "en": "Hot water target temperature",
+            "es": "Temperatura configurada del agua caliente",
+            "fr": "Température cible de l'eau chaude",
+            "it": "Temperatura obiettivo acqua calda",
+            "ko": "온수 목표 온도",
+            "nl": "Ingestelde warmwatertemperatuur",
+            "no": "Ønsket temperatur for varmtvann",
+            "pl": "Temperatura docelowa ciepłej wody",
+            "ru": "Целевая температура горячей воды",
+            "sv": "Måltemperatur för varmvatten"
+          }
+        },
+        "target_temperature.zone2": {
+          "max": 30,
+          "min": 10,
+          "title": {
+            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
+            "da": "Måltemperatur - zone 2",
+            "de": "Solltemperatur - Zone 2",
+            "en": "Target temperature - zone 2",
+            "es": "Temperatura configurada - zona 2",
+            "fr": "Température cible - zone 2",
+            "it": "Temperatura obiettivo - zona 2",
+            "ko": "목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur - zone 2",
+            "no": "Ønsket temperatur - sone 2",
+            "pl": "Temperatura docelowa - strefa 2",
+            "ru": "Целевая температура - зона 2",
+            "sv": "Måltemperatur - zon 2"
+          }
         },
         "target_temperature": {
           "max": 30,
@@ -4114,6 +4244,136 @@
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
           }
+        },
+        "operational_state": {
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
         },
         "target_temperature.tank_water": {
           "max": 60,
@@ -5487,6 +5747,136 @@
             "sv": "Temperatur - zon 2"
           }
         },
+        "operational_state": {
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
         "target_temperature.tank_water": {
           "max": 60,
           "min": 40,
@@ -6433,136 +6823,6 @@
             "ru": "Произведённая энергия - ГВС",
             "sv": "Producerad energi - varmvattenladdning"
           }
-        },
-        "operational_state": {
-          "values": [
-            {
-              "id": "idle",
-              "title": {
-                "ar": "خامل",
-                "da": "Inaktiv",
-                "de": "Inaktiv",
-                "en": "Idle",
-                "es": "Inactivo",
-                "fr": "Inactif",
-                "it": "Inattivo",
-                "ko": "대기",
-                "nl": "Inactief",
-                "no": "Inaktiv",
-                "pl": "Bezczynny",
-                "ru": "Ожидание",
-                "sv": "Inaktiv"
-              }
-            },
-            {
-              "id": "dhw",
-              "title": {
-                "ar": "مياه ساخنة صحية",
-                "da": "Varmtvandsindlæsning",
-                "de": "Brauchwarmwasser",
-                "en": "Domestic hot water",
-                "es": "Agua caliente sanitaria",
-                "fr": "Eau chaude sanitaire",
-                "it": "Acqua calda sanitaria",
-                "ko": "생활 온수",
-                "nl": "Sanitair warm water",
-                "no": "Varmvannslastning",
-                "pl": "Ciepła woda użytkowa",
-                "ru": "ГВС",
-                "sv": "Varmvattenladdning"
-              }
-            },
-            {
-              "id": "heating",
-              "title": {
-                "ar": "تدفئة",
-                "da": "Opvarmning",
-                "de": "Heizung",
-                "en": "Heating",
-                "es": "Calefacción",
-                "fr": "Chauffage",
-                "it": "Riscaldamento",
-                "ko": "난방",
-                "nl": "Verwarming",
-                "no": "Oppvarming",
-                "pl": "Ogrzewanie",
-                "ru": "Отопление",
-                "sv": "Uppvärmning"
-              }
-            },
-            {
-              "id": "cooling",
-              "title": {
-                "ar": "تبريد",
-                "da": "Køling",
-                "de": "Kühlung",
-                "en": "Cooling",
-                "es": "Enfriamiento",
-                "fr": "Refroidissement",
-                "it": "Raffreddamento",
-                "ko": "냉방",
-                "nl": "Koeling",
-                "no": "Kjøling",
-                "pl": "Chłodzenie",
-                "ru": "Охлаждение",
-                "sv": "Kylning"
-              }
-            },
-            {
-              "id": "defrost",
-              "title": {
-                "ar": "إزالة الجليد",
-                "da": "Afrimning",
-                "de": "Abtauung",
-                "en": "Defrost",
-                "es": "Descongelación",
-                "fr": "Dégivrage",
-                "it": "Sbrinamento",
-                "ko": "제상",
-                "nl": "Ontdooien",
-                "no": "Avfrosting",
-                "pl": "Odszranianie",
-                "ru": "Разморозка",
-                "sv": "Avfrostning"
-              }
-            },
-            {
-              "id": "legionella",
-              "title": {
-                "ar": "مكافحة الليجيونيلا",
-                "da": "Anti-legionella",
-                "de": "Anti-Legionellen",
-                "en": "Anti-legionella",
-                "es": "Anti-legionela",
-                "fr": "Antilégionelle",
-                "it": "Anti-legionella",
-                "ko": "레지오넬라 방지",
-                "nl": "Anti-legionella",
-                "no": "Anti-legionella",
-                "pl": "Anti-legionella",
-                "ru": "Антилегионелла",
-                "sv": "Anti-legionella"
-              }
-            },
-            {
-              "id": "prohibited",
-              "title": {
-                "ar": "محظور",
-                "da": "Forbudt",
-                "de": "Gesperrt",
-                "en": "Prohibited",
-                "es": "Prohibido",
-                "fr": "Interdit",
-                "it": "Vietato",
-                "ko": "금지",
-                "nl": "Verboden",
-                "no": "Forbudt",
-                "pl": "Zabroniony",
-                "ru": "Запрещено",
-                "sv": "Förbjuden"
-              }
-            }
-          ]
         },
         "operational_state.hot_water": {
           "title": {
@@ -8349,6 +8609,136 @@
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
           }
+        },
+        "operational_state": {
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
         },
         "target_temperature.tank_water": {
           "max": 60,
