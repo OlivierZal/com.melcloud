@@ -171,7 +171,16 @@ coverage.
 - Verify claimed library behavior empirically (headless chromium against
   the real dist/bundle in the scratchpad) rather than from memory — this
   repo's PRs document several review claims refuted that way.
-- `update-version.yml` pushes directly to `main` and will fail against
-  the ruleset (known debt).
+- Homey App Store releases: write the user-facing changelog entry into
+  `.homeychangelog.json` under the NEW version key (all 13 locales,
+  non-exhaustive store-facing wording), bump `version` in
+  `.homeycompose/app.json`, align `package.json` via
+  `npm version X.Y.Z --no-git-tag-version`, run `homey:validate` to
+  regenerate `app.json`, and land it all through a PR. Then tag
+  `vX.Y.Z` and publish a GitHub release: `publish.yml` fires on
+  release-published (environment `homey`) and pushes to the App Store
+  via athombv's action. Do NOT dispatch `update-version.yml` — it
+  commits directly to `main` and fails against the ruleset (known
+  debt); the PR + release flow above replaces it.
 - Store submissions: a rejected version number cannot be resubmitted —
   bump the patch version.
