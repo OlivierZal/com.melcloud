@@ -11,6 +11,7 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type * as FilesModule from '../../files.mts'
+import type * as HomeyLib from '../../lib/homey.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
 import type { Settings } from '../../types/device-settings.mts'
 import type { ManifestDriver } from '../../types/manifest.mts'
@@ -18,10 +19,10 @@ import { getMockCallArg, mock } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock App constructor is not assignable to typeof App
-vi.mock('../../lib/homey.mts', () => ({
-  App: Function,
-}))
+vi.mock(import('../../lib/homey.mts'), async () => {
+  const { mock: mockModule } = await import('../helpers.ts')
+  return mockModule<typeof HomeyLib>({ App: Function })
+})
 
 vi.mock(
   import('../../lib/classic-facade-manager.mts'),
@@ -31,10 +32,10 @@ vi.mock(
   }),
 )
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Partial mock data is not assignable to the full file exports
-vi.mock('../../files.mts', async (importOriginal) => {
-  const original = await importOriginal<typeof FilesModule>()
-  return {
+vi.mock(import('../../files.mts'), async (importOriginal) => {
+  const { mock: mockModule } = await import('../helpers.ts')
+  const original = await importOriginal()
+  return mockModule<typeof FilesModule>({
     ...original,
     changelog: {
       ...original.changelog,
@@ -53,7 +54,7 @@ vi.mock('../../files.mts', async (importOriginal) => {
       title: { en: 'Power' },
       type: 'boolean',
     },
-    setTemperature: {
+    targetTemperature: {
       title: { en: 'Set temperature' },
       type: 'number',
     },
@@ -66,7 +67,7 @@ vi.mock('../../files.mts', async (importOriginal) => {
       type: 'enum',
       values: [{ id: 'auto', title: { en: 'Auto' } }],
     },
-  }
+  })
 })
 
 const mockApiInstance = {
@@ -109,22 +110,26 @@ const { mockCreate, mockFacadeManagerConstructor, mockHomeCreate } = vi.hoisted(
   }),
 )
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock API classes lack prototype/static members required by typeof ClassicAPI
-vi.mock('@olivierzal/melcloud-api/classic', async (importOriginal) => ({
-  ...(await importOriginal()),
-  API: {
-    create: mockCreate,
-  },
-  FacadeManager: mockFacadeManagerConstructor,
-}))
+vi.mock(import('@olivierzal/melcloud-api/classic'), async (importOriginal) => {
+  const { mock: mockModule } = await import('../helpers.ts')
+  return mockModule<typeof Classic>({
+    ...(await importOriginal()),
+    API: {
+      create: mockCreate,
+    },
+    FacadeManager: mockFacadeManagerConstructor,
+  })
+})
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Mock API classes lack prototype/static members required by typeof HomeAPI
-vi.mock('@olivierzal/melcloud-api/home', async (importOriginal) => ({
-  ...(await importOriginal()),
-  API: {
-    create: mockHomeCreate,
-  },
-}))
+vi.mock(import('@olivierzal/melcloud-api/home'), async (importOriginal) => {
+  const { mock: mockModule } = await import('../helpers.ts')
+  return mockModule<typeof Home>({
+    ...(await importOriginal()),
+    API: {
+      create: mockHomeCreate,
+    },
+  })
+})
 
 const { default: MelCloudApp } = await import('../../app.mts')
 
@@ -185,6 +190,7 @@ const mockManifestDrivers: ManifestDriver[] = [
         values: [
           { id: 'heat', title: { en: 'Heat' } },
           { id: 'cool', title: { en: 'Cool' } },
+          { id: 'eco', title: { en: 'Eco' } },
           { id: 'off', title: { en: 'Off' } },
         ],
       },
@@ -204,18 +210,55 @@ const mockManifestDrivers: ManifestDriver[] = [
       },
     ],
   },
+  {
+    capabilities: [],
+    id: 'melcloud-login',
+    pair: [
+      {
+        id: 'login',
+        options: {
+          passwordLabel: { en: 'Password' },
+          passwordPlaceholder: { en: 'Your password' },
+          usernameLabel: { en: 'Email', nl: 'E-mail' },
+          usernamePlaceholder: { en: 'Your email' },
+        },
+      },
+    ],
+  },
+  {
+    capabilities: [],
+    id: 'melcloud-odd',
+    settings: [
+      {
+        children: [
+          {
+            id: 'orphan',
+            label: { en: 'Orphan' },
+            type: 'dropdown',
+            values: [{ id: 'first', label: { en: 'First' } }],
+          },
+        ],
+        label: { en: 'No group id' },
+      },
+      { id: 'group2', label: { en: 'Childless' } },
+    ],
+  },
 ]
 
-const setupMocks = (): void => {
-  mockCreate.mockResolvedValue(mockApiInstance)
-  mockHomeCreate.mockResolvedValue(mockHomeApiInstance)
-  // eslint-disable-next-line prefer-arrow-callback -- Constructor mock requires function expression for `new` semantics
-  mockFacadeManagerConstructor.mockImplementation(function mockConstructor() {
+// `new`-able (arrows are not constructible): vitest instantiates the
+// implementation when the mocked FacadeManager class is constructed.
+const newMockFacadeManager =
+  function newMockFacadeManager(): Classic.FacadeManager {
     return mock<Classic.FacadeManager>({
       get: mockFacadeManagerGet,
       getZones: mockFacadeManagerGetZones,
     })
-  })
+  }
+
+const setupMocks = (): void => {
+  mockCreate.mockResolvedValue(mockApiInstance)
+  mockHomeCreate.mockResolvedValue(mockHomeApiInstance)
+  mockFacadeManagerConstructor.mockImplementation(newMockFacadeManager)
   mockGetLanguage.mockReturnValue('en')
   mockGetTimezone.mockReturnValue('Europe/Paris')
   mockTranslate.mockImplementation((key: string) => key)
@@ -510,6 +553,17 @@ describe('melCloudApp', () => {
         operationModeOptions?.values?.find((value) => value.id === 'off'),
       ).toBeUndefined()
     })
+
+    it('should keep value ids absent from the wire enum unmapped', async () => {
+      await app.onInit()
+      const capabilities = app.getClassicAtaCapabilities()
+      const [, operationModeOptions] =
+        capabilities.find(([key]) => key === 'OperationMode') ?? []
+
+      expect(
+        operationModeOptions?.values?.find((value) => value.id === 'eco'),
+      ).toBeDefined()
+    })
   })
 
   describe('ata detailed states', () => {
@@ -656,6 +710,54 @@ describe('melCloudApp', () => {
       expect(settings?.[0]?.groupLabel).toBe('Groep 1')
       expect(settings?.[0]?.title).toBe('Instelling 1')
     })
+
+    it('should fall back to English group and setting labels', async () => {
+      mockGetLanguage.mockReturnValue('fr')
+      app = createApp()
+      await app.onInit()
+
+      const { group1 } = app.getDriverSettings()
+      const [setting] = group1 ?? []
+
+      expect(setting?.groupLabel).toBe('Group 1')
+      expect(setting?.title).toBe('Setting 1')
+    })
+
+    it('should fall back to English login labels and placeholders', async () => {
+      mockGetLanguage.mockReturnValue('fr')
+      app = createApp()
+      await app.onInit()
+
+      const { login } = app.getDriverSettings()
+      const [password, username] = login ?? []
+
+      expect(password?.title).toBe('Password')
+      expect(password?.placeholder).toBe('Your password')
+      expect(username?.title).toBe('Email')
+      expect(username?.placeholder).toBe('Your email')
+    })
+
+    it('should fall back to English value labels and capability titles', async () => {
+      mockGetLanguage.mockReturnValue('fr')
+      app = createApp()
+      await app.onInit()
+
+      const [orphan] = app.getDriverSettings()['melcloud-odd'] ?? []
+
+      expect(orphan?.values?.[0]?.label).toBe('First')
+      expect(app.getClassicAtaCapabilities().length).toBeGreaterThan(0)
+    })
+
+    it('should group settings without a group ID under the driver ID', async () => {
+      await app.onInit()
+
+      const driverSettings = app.getDriverSettings()
+
+      expect(driverSettings['melcloud-odd']?.[0]?.id).toBe('orphan')
+      expect(driverSettings['melcloud-odd']?.[0]?.groupLabel).toBe(
+        'No group id',
+      )
+    })
   })
 
   describe('error retrieval', () => {
@@ -781,21 +883,41 @@ describe('melCloudApp', () => {
   })
 
   describe('home facade retrieval', () => {
-    const mockModel = {
+    const mockAtaModel = {
       id: 'device-1',
       name: 'Living Room',
+      type: Home.DeviceType.Ata,
       isAta: (): boolean => true,
+      isAtw: (): boolean => false,
     }
 
-    it('should return a facade for a matching device', async () => {
+    const mockAtwModel = {
+      id: 'device-1',
+      name: 'Heat Pump',
+      type: Home.DeviceType.Atw,
+      isAta: (): boolean => false,
+      isAtw: (): boolean => true,
+    }
+
+    it('should return an ATA facade for a matching ATA device', async () => {
       mockHomeApiInstance.list.mockResolvedValue([])
-      mockHomeRegistry.getById.mockReturnValue(mockModel)
+      mockHomeRegistry.getById.mockReturnValue(mockAtaModel)
       await app.onInit()
 
-      const facade = app.getHomeFacade('device-1')
+      const facade = app.getHomeFacade('device-1', Home.DeviceType.Ata)
 
       expect(facade).toBeInstanceOf(Home.DeviceAtaFacade)
       expect(mockHomeRegistry.getById).toHaveBeenCalledWith('device-1')
+    })
+
+    it('should return an ATW facade for a matching ATW device', async () => {
+      mockHomeApiInstance.list.mockResolvedValue([])
+      mockHomeRegistry.getById.mockReturnValue(mockAtwModel)
+      await app.onInit()
+
+      const facade = app.getHomeFacade('device-1', Home.DeviceType.Atw)
+
+      expect(facade).toBeInstanceOf(Home.DeviceAtwFacade)
     })
 
     it('should throw when device is not found in registry', async () => {
@@ -803,23 +925,31 @@ describe('melCloudApp', () => {
       mockHomeRegistry.getById.mockReset()
       await app.onInit()
 
-      expect(() => app.getHomeFacade('device-1')).toThrow(
+      expect(() => app.getHomeFacade('device-1', Home.DeviceType.Ata)).toThrow(
         'errors.deviceNotFound',
       )
       expect(mockTranslate).toHaveBeenCalledWith('errors.deviceNotFound')
     })
 
-    it('should throw when device is found but is not ATA', async () => {
-      const atwModel = {
-        id: 'device-1',
-        name: 'Heat Pump',
-        isAta: (): boolean => false,
-      }
+    it('should throw when the device type does not match', async () => {
       mockHomeApiInstance.list.mockResolvedValue([])
-      mockHomeRegistry.getById.mockReturnValue(atwModel)
+      mockHomeRegistry.getById.mockReturnValue(mockAtwModel)
       await app.onInit()
 
-      expect(() => app.getHomeFacade('device-1')).toThrow(
+      expect(() => app.getHomeFacade('device-1', Home.DeviceType.Ata)).toThrow(
+        'errors.deviceNotFound',
+      )
+    })
+
+    it('should throw when the model matches neither ATA nor ATW', async () => {
+      mockHomeApiInstance.list.mockResolvedValue([])
+      mockHomeRegistry.getById.mockReturnValue({
+        ...mockAtaModel,
+        isAta: (): boolean => false,
+      })
+      await app.onInit()
+
+      expect(() => app.getHomeFacade('device-1', Home.DeviceType.Ata)).toThrow(
         'errors.deviceNotFound',
       )
     })

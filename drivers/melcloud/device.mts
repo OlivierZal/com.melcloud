@@ -37,19 +37,19 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
       ConvertFromDevice<typeof Classic.DeviceType.Ata>
     >
   > = {
-    'alarm_generic.silent': (value: Classic.FanSpeed) =>
-      value === Classic.FanSpeed.silent,
-    fan_speed: (value: Classic.FanSpeed) =>
-      value === Classic.FanSpeed.silent ? Classic.FanSpeed.auto : value,
-    horizontal: (value: Classic.Horizontal) => horizontalFromDevice[value],
-    thermostat_mode: (
-      value: Classic.OperationMode,
-      data: Classic.ListDeviceData<typeof Classic.DeviceType.Ata>,
-    ) => (data.Power ? operationModeFromDevice[value] : ThermostatModeAta.off),
-    vertical: (value: Classic.Vertical) => verticalFromDevice[value],
+    'alarm_generic.silent': ({ FanSpeed: speed }) =>
+      speed === Classic.FanSpeed.silent,
+    fan_speed: ({ FanSpeed: speed = Classic.FanSpeed.auto }) =>
+      speed === Classic.FanSpeed.silent ? Classic.FanSpeed.auto : speed,
+    horizontal: ({ VaneHorizontalDirection: direction }) =>
+      horizontalFromDevice[direction],
+    thermostat_mode: ({ OperationMode: mode, Power: isOn }) =>
+      isOn ? operationModeFromDevice[mode] : ThermostatModeAta.off,
+    vertical: ({ VaneVerticalDirection: direction }) =>
+      verticalFromDevice[direction],
   }
 
-  protected readonly energyReportRegular: EnergyReportConfig = {
+  protected override readonly energyReportRegular: EnergyReportConfig = {
     duration: { hours: 1 },
     interval: { hours: 1 },
     minus: { hours: 1 },
@@ -57,7 +57,7 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
     values: { millisecond: 0, minute: 5, second: 0 },
   }
 
-  protected readonly energyReportTotal: EnergyReportConfig = {
+  protected override readonly energyReportTotal: EnergyReportConfig = {
     duration: { days: 1 },
     interval: { days: 1 },
     minus: { hours: 1 },
@@ -65,6 +65,6 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   }
 
-  protected readonly thermostatMode: typeof ThermostatModeAta =
+  protected override readonly thermostatMode: typeof ThermostatModeAta =
     ThermostatModeAta
 }

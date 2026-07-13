@@ -38,6 +38,8 @@ export const createMockDeviceClass = (
       .fn<() => { id: number | string }>()
       .mockReturnValue({ id: 1 })
 
+    public getName = vi.fn<() => string>().mockReturnValue('Test device')
+
     public getSetting = vi.fn<(key: string) => unknown>()
 
     public getSettings = vi
@@ -98,8 +100,7 @@ export const createMockDeviceClass = (
         // Strip shadowing instance props so the prototype super-delegates win
         const instance = this as Record<string, unknown>
         for (const methodName of Object.keys(superMocks)) {
-          // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- methodName is a known key from superMocks; dynamic delete required to shadow instance vi.fn() props with prototype super-delegates
-          delete instance[methodName]
+          Reflect.deleteProperty(instance, methodName)
         }
       }
     }

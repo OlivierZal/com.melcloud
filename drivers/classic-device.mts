@@ -11,14 +11,13 @@ import type {
   SetCapabilities,
 } from '../types/capabilities.mts'
 import type { Settings } from '../types/device-settings.mts'
-import type { DeviceDetails } from '../types/device.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
 import { type EnergyReportConfig, EnergyReport } from './base-report.mts'
 
 export abstract class ClassicMELCloudDevice<
   T extends Classic.DeviceType,
-> extends BaseMELCloudDevice<Classic.DeviceFacade<T>> {
+> extends BaseMELCloudDevice<Classic.DeviceFacade<T>, number> {
   declare public readonly driver: ClassicMELCloudDriver<T>
 
   declare public readonly getCapabilityOptions: <
@@ -32,8 +31,6 @@ export abstract class ClassicMELCloudDevice<
   >(
     capability: TKey,
   ) => Capabilities<T>[TKey]
-
-  declare public readonly getData: () => DeviceDetails<T>['data']
 
   declare public readonly getSetting: <TKey extends keyof Settings>(
     setting: TKey,
@@ -57,18 +54,13 @@ export abstract class ClassicMELCloudDevice<
 
   declare public readonly setSettings: (settings: Settings) => Promise<void>
 
-  protected abstract override capabilityToDevice: Partial<
+  protected abstract override readonly capabilityToDevice: Partial<
     Record<keyof SetCapabilities<T>, ConvertToDevice<T>>
   >
 
-  protected abstract override readonly deviceToCapability: Partial<
+  protected abstract readonly deviceToCapability: Partial<
     Record<keyof OperationalCapabilities<T>, ConvertFromDevice<T>>
   >
-
-  protected abstract override readonly thermostatMode: Record<
-    string,
-    string
-  > | null
 
   protected get facade(): Classic.DeviceFacade<T> | undefined {
     return this.cachedFacade
@@ -80,21 +72,21 @@ export abstract class ClassicMELCloudDevice<
 
   public override async syncFromDevice(): Promise<void> {
     const data = await this.#getDeviceData()
-    /* v8 ignore next -- defensive guard: data is guaranteed after ensureDevice */
     if (data === null) {
       return
     }
     await this.setCapabilityValues(data)
   }
 
-  protected override async applyCapabilitiesOptions(): Promise<void> {
-    await super.applyCapabilitiesOptions(this.#data)
-  }
-
-  protected override createEnergyReport(
+  protected override readonly createEnergyReport = (
     config: EnergyReportConfig,
-  ): EnergyReport<T> {
-    return new EnergyReport(this, config)
+  ): EnergyReport<T> => new EnergyReport(this, config)
+
+  protected override getCapabilitiesOptions(): Partial<
+    Record<string, unknown>
+  > {
+    const data = this.#data
+    return data === undefined ? {} : this.driver.getCapabilitiesOptions(data)
   }
 
   protected override getFacade(): Classic.DeviceFacade<T> {
@@ -102,10 +94,8 @@ export abstract class ClassicMELCloudDevice<
   }
 
   protected override getRequiredCapabilities(): string[] {
-    /* v8 ignore next -- defensive guard: facade is set after init */
-    return this.#data === undefined ?
-        []
-      : this.driver.getRequiredCapabilities(this.#data)
+    const data = this.#data
+    return data === undefined ? [] : this.driver.getRequiredCapabilities(data)
   }
 
   protected async setCapabilityValues(
@@ -120,7 +110,7 @@ export abstract class ClassicMELCloudDevice<
         if (Object.hasOwn(data, tag)) {
           await this.setCapabilityValue(
             capability,
-            this.#convertFromDevice(capability, data[tag], data),
+            this.#convertFromDevice(capability, tag, data),
           )
         }
       }),
@@ -129,12 +119,12 @@ export abstract class ClassicMELCloudDevice<
 
   #convertFromDevice<TKey extends keyof Capabilities<T>>(
     capability: TKey,
-    value: Classic.ListDeviceData<T>[keyof Classic.ListDeviceData<T>],
-    data?: Readonly<Classic.ListDeviceData<T>>,
+    tag: keyof Classic.ListDeviceData<T>,
+    data: Readonly<Classic.ListDeviceData<T>>,
   ): Capabilities<T>[TKey] {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- converter output narrowed to specific capability type
-    return (this.deviceToCapability[capability]?.(value, data) ??
-      value) as Capabilities<T>[TKey]
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- raw tag values and union-returning converters narrow to the capability's type
+    return (this.deviceToCapability[capability]?.(data) ??
+      data[tag]) as Capabilities<T>[TKey]
   }
 
   async #getDeviceData(): Promise<Readonly<Classic.ListDeviceData<T>> | null> {

@@ -45,7 +45,7 @@ export interface ManifestDriver {
     string,
     ManifestDriverCapabilitiesOptions
   >
-  readonly pair?: LoginSetting & readonly PairSetting[]
+  readonly pair?: readonly (LoginSetting | PairSetting)[]
   readonly settings?: readonly ManifestDriverSetting[]
 }
 

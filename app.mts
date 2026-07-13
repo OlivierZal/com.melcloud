@@ -25,6 +25,7 @@ import type {
   DriverSetting,
 } from './types/driver-settings.mts'
 import type { FormattedErrorLog } from './types/error-log.mts'
+import type { HomeDeviceFacade } from './types/home.mts'
 import type {
   LoginSetting,
   ManifestDriver,
@@ -38,7 +39,7 @@ import {
   fanSpeed,
   horizontal,
   power,
-  setTemperature,
+  targetTemperature,
   thermostatMode,
   vertical,
 } from './files.mts'
@@ -60,6 +61,7 @@ const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
   [Classic.DeviceType.Atw]: 'melcloud_atw',
   [Classic.DeviceType.Erv]: 'melcloud_erv',
   [Home.DeviceType.Ata]: 'home-melcloud',
+  [Home.DeviceType.Atw]: 'home-melcloud_atw',
 }
 
 // The report `to` bound defaults to now in the API timezone lib-side.
@@ -101,22 +103,18 @@ const getDriverSettings = (
   language: string,
 ): DriverSetting[] =>
   (settings ?? []).flatMap(({ children, id: groupId, label: groupLabel }) =>
-    /* v8 ignore next -- manifest children is optional in SDK type */
     (children ?? []).map(({ id, label, max, min, type, units, values }) => ({
       driverId,
       groupId,
-      /* v8 ignore next -- language fallback to English */
       groupLabel: groupLabel[language] ?? groupLabel.en,
       id,
       max,
       min,
-      /* v8 ignore next -- language fallback to English */
       title: label[language] ?? label.en,
       type,
       units,
       values: values?.map(({ id: valueId, label: valueLabel }) => ({
         id: valueId,
-        /* v8 ignore next -- language fallback to English */
         label: valueLabel[language] ?? valueLabel.en,
       })),
     })),
@@ -144,7 +142,6 @@ const getDriverLoginSetting = (
     driverLoginSetting[key] = {
       ...driverLoginSetting[key],
       [option.endsWith('Placeholder') ? 'placeholder' : 'title']:
-        /* v8 ignore next -- language fallback to English */
         label[language] ?? label.en,
     }
   }
@@ -156,16 +153,13 @@ const getLocalizedCapabilitiesOptions = (
   language: string,
   enumType?: Record<string, number | string>,
 ): DriverCapabilitiesOptions => ({
-  /* v8 ignore next -- language fallback to English */
   title: options.title[language] ?? options.title.en,
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
-    /* v8 ignore next -- enumType mapping: resolves string enum to numeric value */
     id:
       enumType !== undefined && Object.hasOwn(enumType, id) ?
         String(enumType[id])
       : id,
-    /* v8 ignore next -- language fallback to English */
     label: title[language] ?? title.en,
   })),
 })
@@ -477,7 +471,6 @@ export default class MELCloudApp extends App {
         ...getDriverSettings(driver, language),
         ...getDriverLoginSetting(driver, language),
       ]),
-      /* v8 ignore next -- groupId fallback: login settings have no groupId */
       ({ driverId, groupId }) => groupId ?? driverId,
     )
   }
@@ -486,12 +479,24 @@ export default class MELCloudApp extends App {
     return this.#homeRegistry.getByType(type)
   }
 
-  public getHomeFacade(deviceId: string): Home.DeviceAtaFacade {
+  public getHomeFacade<T extends Home.DeviceType>(
+    deviceId: string,
+    type: T,
+  ): HomeDeviceFacade<T>
+  public getHomeFacade(
+    deviceId: string,
+    type: Home.DeviceType,
+  ): Home.DeviceAtaFacade | Home.DeviceAtwFacade {
     const model = this.#homeRegistry.getById(deviceId)
-    if (model?.isAta() !== true) {
-      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+    if (model?.type === type) {
+      if (model.isAta()) {
+        return this.#homeFacadeManager.get(model)
+      }
+      if (model.isAtw()) {
+        return this.#homeFacadeManager.get(model)
+      }
     }
-    return this.#homeFacadeManager.get(model)
+    throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
   }
 
   public async updateClassicAtaState({
@@ -651,7 +656,7 @@ export default class MELCloudApp extends App {
   }[] {
     return [
       { key: 'Power', options: power },
-      { key: 'SetTemperature', options: setTemperature },
+      { key: 'SetTemperature', options: targetTemperature },
       {
         enumType: Classic.FanSpeed,
         key: 'FanSpeed',

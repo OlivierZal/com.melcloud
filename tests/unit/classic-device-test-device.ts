@@ -1,6 +1,5 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type {
   ConvertFromDevice,
   ConvertToDevice,
@@ -27,12 +26,6 @@ export class TestDevice extends ClassicMELCloudDevice<TestDeviceType> {
       ConvertFromDevice<TestDeviceType>
     >
   > = {}
-
-  public readonly energyReportRegular: EnergyReportConfig | null = null
-
-  public readonly energyReportTotal: EnergyReportConfig | null = null
-
-  public readonly thermostatMode: Record<string, string> | null = null
 
   public get exposedFacade(): typeof this.facade {
     return this.facade

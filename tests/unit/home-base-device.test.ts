@@ -1,6 +1,8 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
+import type HomeyModule from 'homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type { InteropModule } from '../helpers.ts'
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import { NotFoundError } from '../../lib/errors.mts'
 import {
@@ -21,6 +23,8 @@ const {
   realtimeMock,
   registerMultipleCapabilityListenerMock,
   setValuesMock,
+  superErrorMock,
+  superLogMock,
   superSetWarningMock,
 } = vi.hoisted(() => ({
   getHomeFacadeMock: vi.fn<(id: string) => unknown>(),
@@ -35,6 +39,8 @@ const {
       ) => void
     >(),
   setValuesMock: vi.fn<(values: Record<string, unknown>) => Promise<boolean>>(),
+  superErrorMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
+  superLogMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
   superSetWarningMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
 }))
 
@@ -68,27 +74,29 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
     },
   }) as unknown as Home.DeviceAtaFacade
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
-vi.mock('homey', async () => {
-  const { createMockDeviceClass } = await import('../helpers.ts')
-  return {
+vi.mock(import('homey'), async () => {
+  const { createMockDeviceClass, mock: mockModule } =
+    await import('../helpers.ts')
+  return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Device: createMockDeviceClass({
         overrides: {
           driver: {
-            energyCapabilityTagMapping: {},
-            getCapabilityTagMapping: {},
-            listCapabilityTagMapping: {},
             manifest: {
               capabilities: requiredCapabilities,
             },
-            setCapabilityTagMapping: {
-              fan_speed: 'setFanSpeed',
-              horizontal: 'vaneHorizontalDirection',
-              onoff: 'power',
-              target_temperature: 'setTemperature',
-              thermostat_mode: 'operationMode',
-              vertical: 'vaneVerticalDirection',
+            tagMappings: {
+              energy: {},
+              get: {},
+              list: {},
+              set: {
+                fan_speed: 'setFanSpeed',
+                horizontal: 'vaneHorizontalDirection',
+                onoff: 'power',
+                target_temperature: 'setTemperature',
+                thermostat_mode: 'operationMode',
+                vertical: 'vaneVerticalDirection',
+              },
             },
             getCapabilitiesOptions: (): Record<string, unknown> => ({}),
             getRequiredCapabilities: (): string[] => requiredCapabilities,
@@ -98,6 +106,9 @@ vi.mock('homey', async () => {
             .mockReturnValue({ id: 'device-1' }),
           getSetting: getSettingMock,
           homey: {
+            __: vi
+              .fn<(key: string) => string>()
+              .mockImplementation((key: string) => key),
             api: { realtime: realtimeMock },
             app: { getHomeFacade: getHomeFacadeMock },
             clearInterval: vi.fn<(timer: NodeJS.Timeout | undefined) => void>(),
@@ -110,10 +121,14 @@ vi.mock('homey', async () => {
           registerMultipleCapabilityListener:
             registerMultipleCapabilityListenerMock,
         },
-        superMocks: { setWarning: superSetWarningMock },
+        superMocks: {
+          error: superErrorMock,
+          log: superLogMock,
+          setWarning: superSetWarningMock,
+        },
       }),
     },
-  }
+  })
 })
 
 const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(
@@ -308,7 +323,10 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
-  testPostUpdateSync(() => device, getCapabilityListenerCallback)
+  testPostUpdateSync(() => device, getCapabilityListenerCallback, {
+    argsPrefix: ['Test device', '-'],
+    get: () => superErrorMock,
+  })
 
   testThermostatModeOff(createTestHomeDevice, getCapabilityListenerCallback, {
     expectedValues: {
@@ -337,6 +355,32 @@ describe(BaseMELCloudDevice, () => {
 
     it('should be undefined before sync', () => {
       expect(device.exposedFacade).toBeUndefined()
+    })
+  })
+
+  describe('capability seams', () => {
+    it('should return no capabilities options before the facade is cached', () => {
+      const seams = device as unknown as {
+        getCapabilitiesOptions: () => Partial<Record<string, unknown>>
+        getRequiredCapabilities: () => string[]
+      }
+
+      expect(seams.getCapabilitiesOptions()).toStrictEqual({})
+      expect(seams.getRequiredCapabilities()).toStrictEqual([])
+    })
+  })
+
+  describe('prefixed logging', () => {
+    it('should prepend the device name to logs', () => {
+      device.log('synced')
+
+      expect(superLogMock).toHaveBeenCalledWith('Test device', '-', 'synced')
+    })
+
+    it('should prepend the device name to error logs', () => {
+      device.error('failed')
+
+      expect(superErrorMock).toHaveBeenCalledWith('Test device', '-', 'failed')
     })
   })
 })

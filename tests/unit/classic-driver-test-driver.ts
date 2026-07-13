@@ -15,33 +15,33 @@ type TestDriverType = typeof Classic.DeviceType.Ata
 
 export type { TestDriverType }
 export class TestDriver extends ClassicMELCloudDriver<TestDriverType> {
-  public readonly energyCapabilityTagMapping: EnergyCapabilityTagMapping<TestDriverType> =
-    mock<EnergyCapabilityTagMapping<TestDriverType>>({
-      measure_power: ['Auto', 'Cooling'],
-    })
-
   public readonly getCapabilitiesOptions: ReturnType<
     typeof vi.fn<() => Partial<Record<string, unknown>>>
   > = vi.fn<() => Partial<Record<string, unknown>>>().mockReturnValue({})
 
-  public readonly getCapabilityTagMapping: GetCapabilityTagMapping<TestDriverType> =
-    mock<GetCapabilityTagMapping<TestDriverType>>({
+  public readonly tagMappings: {
+    readonly energy: EnergyCapabilityTagMapping<TestDriverType>
+    readonly get: GetCapabilityTagMapping<TestDriverType>
+    readonly list: ListCapabilityTagMapping<TestDriverType>
+    readonly set: SetCapabilityTagMapping<TestDriverType>
+  } = {
+    energy: mock<EnergyCapabilityTagMapping<TestDriverType>>({
+      measure_power: ['Auto', 'Cooling'],
+    }),
+    get: mock<GetCapabilityTagMapping<TestDriverType>>({
       measure_temperature: 'RoomTemperature',
-    })
-
-  public readonly listCapabilityTagMapping: ListCapabilityTagMapping<TestDriverType> =
-    mock<ListCapabilityTagMapping<TestDriverType>>({})
-
-  public readonly setCapabilityTagMapping: SetCapabilityTagMapping<TestDriverType> =
-    mock<SetCapabilityTagMapping<TestDriverType>>({
+    }),
+    list: mock<ListCapabilityTagMapping<TestDriverType>>({}),
+    set: mock<SetCapabilityTagMapping<TestDriverType>>({
       onoff: 'Power',
       thermostat_mode: 'OperationMode',
-    })
+    }),
+  }
 
   public readonly type: TestDriverType = 0
 
   public getRequiredCapabilities(): string[] {
-    return Object.keys(this.setCapabilityTagMapping)
+    return Object.keys(this.tagMappings.set)
   }
 }
 

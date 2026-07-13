@@ -2,31 +2,18 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { Capabilities } from '../../types/capabilities.mts'
 import {
-  energyCapabilityTagMapping,
   getCapabilitiesOptions,
-  getCapabilityTagMapping,
-  listCapabilityTagMapping,
-  setCapabilityTagMapping,
+  tagMappings,
 } from '../../types/classic-atw.mts'
 import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
 type AtwType = typeof Classic.DeviceType.Atw
 
 export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<AtwType> {
-  public readonly energyCapabilityTagMapping: typeof energyCapabilityTagMapping =
-    energyCapabilityTagMapping
-
   public readonly getCapabilitiesOptions: typeof getCapabilitiesOptions =
     getCapabilitiesOptions
 
-  public readonly getCapabilityTagMapping: typeof getCapabilityTagMapping =
-    getCapabilityTagMapping
-
-  public readonly listCapabilityTagMapping: typeof listCapabilityTagMapping =
-    listCapabilityTagMapping
-
-  public readonly setCapabilityTagMapping: typeof setCapabilityTagMapping =
-    setCapabilityTagMapping
+  public override readonly tagMappings: typeof tagMappings = tagMappings
 
   public readonly type: AtwType = Classic.DeviceType.Atw
 
@@ -73,7 +60,6 @@ export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<AtwT
   public override getRequiredCapabilities(
     data?: Readonly<Classic.ListDeviceData<typeof Classic.DeviceType.Atw>>,
   ): string[] {
-    /* v8 ignore next -- data is always provided by callers */
     const { CanCool: canCool, HasZone2: hasClassicZone2 } = data ?? {}
     return [
       ...this.#zone1Capabilities,

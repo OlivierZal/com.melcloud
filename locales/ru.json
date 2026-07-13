@@ -2,7 +2,8 @@
   "errors": {
     "deviceNotFound": "Устройство не найдено.",
     "zoneNotFound": "Зона не найдена.",
-    "invalidDuration": "Продолжительность должна быть целым числом дней от 0 до 365."
+    "invalidDuration": "Продолжительность должна быть целым числом дней от 0 до 365.",
+    "updateFailed": "MELCloud отклонил обновление."
   },
   "settings": {
     "authenticate": {

@@ -23,6 +23,11 @@ caught real failures that the others miss:
   validate/install/run.
 - `npm run homey:validate` — Homey validation at publish level; may
   rewrite files (see locales below), re-stage if it does.
+- `node scripts/sync-capability-definitions.mjs` — refreshes the
+  vendored node-homey-lib capability JSONs under `vendor/capabilities/`
+  (homey-lib is a devDependency and must not ship to the device); the
+  drift test in `tests/unit/capability-definitions.test.ts` fails when
+  the copies fall behind.
 - `npm run homey:start` — `homey app run --remote` for on-device testing.
 
 Check real exit codes; never pipe a check's output through `tail`/`grep`
@@ -45,6 +50,64 @@ coverage.
   `homey-button-*` classes; `settings/index.css` only fills documented SDK
   gaps (date inputs, checkbox `:indeterminate`, `fieldset[hidden]`
   specificity) and app-specific design.
+
+## Driver conventions
+
+- Each API side has an intermediate driver/device base under `drivers/`
+  (`classic-driver`/`classic-device`, `home-driver`/`home-device`):
+  shared behavior lives there (or in the `base-*` classes when both
+  sides share it); type-specific classes hold only converters,
+  capability policies, and manifests.
+- `capabilitiesOptions` blocks that are rigorously identical across the
+  drivers defining them live in the `defaults` compose template;
+  `melcloud_atw`'s labels are the reference (node-homey-lib wording).
+  Template entries for capabilities a driver lacks are inert, but a
+  capability another driver configures differently stays per-driver
+  (e.g. `target_temperature`: ATA 10–31, ATW 10–30) — precedence would
+  resolve the collision, relying on it is a trap.
+- `measure_signal_strength` is never a default capability, on any driver:
+  it stays manifest-declared but opt-in through the shared `options`
+  settings group. Keep it out of every required-capability list.
+- Home drivers only ship surfaces the MELCloud Home app itself exposes,
+  even when the API facade can read more — no outdoor temperature on
+  Home ATW (not in the app UI; an absent setting would read as 0).
+  Forced hot water IS app-exposed (the DHW tab's auto/heat-now toggle,
+  write path live-verified), and so are the per-zone states: the app
+  displays them as a projection of the top-level `OperationMode`
+  (live-observed: a legionella cycle shows the zone idle), which is
+  exactly what `operationalStateZone1/2` derive API-side — the Classic
+  flag refinements do not exist on the Home wire.
+- Home drivers compute capabilities per device from the facade — at
+  pairing (`toDeviceDetails`) and again at device init
+  (`getRequiredCapabilities`). Home ATW gates the control capabilities on
+  `isOwner` (guests get the measures only): the MELCloud Home app hides
+  the ATW control surface from guests and guest ATW writes are unverified
+  against the BFF. Home ATA is deliberately NOT gated — live probing
+  showed the BFF accepts guest ATA writes. Do not harmonize the two.
+- New FTC vocabulary must never crash a sync — and that tolerance lives
+  in melcloud-api, not here: the Home ATW facade getters normalize the
+  wire dialect (`HomeAtwZoneMode`, `operationalState`), degrading
+  unknown zone modes to the room modes, so the app-side converters are
+  plain field picks.
+- Flow-card device filters are `driver_id=<manifest owners>&capabilities=<cap>`,
+  both parts mechanical: `capabilities=` is the card's real precondition
+  (the run listeners are capability-generic and triggers fire through
+  Homey's `<capability>_changed` convention — the picker follows what
+  each device actually ships), and `driver_id` lists every driver whose
+  MANIFEST declares the capability — required by the platform, not by
+  us: homey-lib's validator only exempts a device arg from the
+  `[[device]]` titleFormatted token when its filter carries `driver_id`
+  (`homey-lib/lib/App/index.js`, `firstDeviceArgument`). No population
+  judgment goes into filters; the verification gate lives in
+  `getRequiredCapabilities` alone.
+- Runtime capability options (`getCapabilitiesOptions` → pairing details
+  and `setCapabilityOptions` at init) must be complete option objects,
+  and only for capabilities the device actually gets: device-level
+  options shadow the manifest's per capability (a bare `{max, min}`
+  would drop the manifest step/title), and setting options on an absent
+  capability fails. Temperature ranges/steps/titles live in the compose
+  manifest; the only runtime options are enum values (thermostat modes,
+  fan speeds).
 
 ## Widgets
 
@@ -75,12 +138,17 @@ coverage.
 
 ## Lint doctrine
 
-- Code adapts to the rules, never the reverse. Fix violations in code;
-  never loosen a rule or add options to accommodate existing code. Order
-  of preference: refactor > scoped `files` block for an imposed shape >
-  documented inline disable.
-- Inline disables need a `-- reason`; never a bare disable. Zero-warning
-  policy: every enabled rule is at `error`.
+- Code adapts to the rules, never the reverse. Never add a disable — not
+  inline, not through config options or ignore regexes: refactor until
+  the rule passes (rename the binding, move the polymorphic default to a
+  nullable field, push the logic to a class that uses `this`, route casts
+  through the shared typed helpers…). The existing disables are debt:
+  remove them when touching the code they guard, never replicate them.
+  One counterweight: when every compliant shape reads worse than the
+  violation (a rule's own documented exception like a sequential-by-design
+  loop, a protocol-imposed form, a rule-pair conflict), the documented
+  disable IS the honest form — simplicity outranks disable-count golf.
+- Zero-warning policy: every enabled rule is at `error`.
 - Metric caps (`complexity`, `max-statements` 10, `max-depth`,
   `unicorn/try-complexity` 1…) are measured codebase ceilings: exceeding
   one means extract/refactor, not bump.

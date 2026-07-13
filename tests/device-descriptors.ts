@@ -105,6 +105,15 @@ export const testSetValuesErrorHandling = (
 
       expect(superSetWarningMock).toHaveBeenCalledWith('string error')
     })
+
+    it('should warn when the update rejects with a transport error', async () => {
+      setValuesMock.mockRejectedValueOnce(new Error('update failed'))
+      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+
+      expect(superSetWarningMock).toHaveBeenCalledWith('update failed')
+    })
   })
 }
 
@@ -252,42 +261,51 @@ export const testEnsureDeviceNull = (
   })
 }
 
-export const testOnoffConverter = (
-  getDevice: () => object,
-  getSettingMock: ReturnType<typeof vi.fn>,
+export const testOnoffCoercion = (
+  getDevice: () => { onInit: () => Promise<void> },
+  getCapabilityListenerCallback: () => (
+    values: Record<string, unknown>,
+  ) => Promise<void>,
+  mocks: {
+    getSettingMock: ReturnType<typeof vi.fn>
+    onTag: string
+    setValuesMock: ReturnType<typeof vi.fn>
+  },
 ): void => {
-  describe('onoff converter', () => {
-    it('should set default onoff converter in capabilityToDevice', async () => {
-      getSettingMock.mockReturnValue(false)
-      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+  const { getSettingMock, onTag, setValuesMock } = mocks
 
-      expect(getDevice()).toHaveProperty('capabilityToDevice.onoff')
-    })
-
-    it('should respect always_on setting for onoff converter', async () => {
+  describe('onoff coercion', () => {
+    it('should coerce onoff to true when always_on is set', async () => {
       getSettingMock.mockReturnValue(true)
-      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+      await getDevice().onInit()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: false })
 
-      const {
-        capabilityToDevice: { onoff: converter },
-      } = getDevice() as {
-        capabilityToDevice: { onoff?: (value: never) => boolean }
-      }
-
-      expect(converter?.(false as never)).toBe(true)
+      expect(setValuesMock).toHaveBeenCalledWith(
+        expect.objectContaining({ [onTag]: true }),
+      )
     })
 
-    it('should return true for onoff when value is true regardless of always_on', async () => {
+    it('should pass onoff through when always_on is not set', async () => {
       getSettingMock.mockReturnValue(false)
-      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+      await getDevice().onInit()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: false })
 
-      const {
-        capabilityToDevice: { onoff: converter },
-      } = getDevice() as {
-        capabilityToDevice: { onoff?: (value: never) => boolean }
-      }
+      expect(setValuesMock).toHaveBeenCalledWith(
+        expect.objectContaining({ [onTag]: false }),
+      )
+    })
 
-      expect(converter?.(true as never)).toBe(true)
+    it('should keep onoff true regardless of always_on', async () => {
+      getSettingMock.mockReturnValue(false)
+      await getDevice().onInit()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+
+      expect(setValuesMock).toHaveBeenCalledWith(
+        expect.objectContaining({ [onTag]: true }),
+      )
     })
   })
 }
@@ -309,6 +327,12 @@ export const testPostUpdateSync = (
   getCapabilityListenerCallback: () => (
     values: Record<string, unknown>,
   ) => Promise<void>,
+  // Devices whose `error` delegates to a super mock (instead of an instance
+  // spy) pass the spy and its leading arguments explicitly.
+  errorSpy: {
+    readonly argsPrefix?: readonly unknown[]
+    readonly get?: (device: PostUpdateSyncDevice) => unknown
+  } = {},
 ): void => {
   describe('post-update sync', () => {
     it('should sync capabilities after sendUpdate', async () => {
@@ -371,7 +395,14 @@ export const testPostUpdateSync = (
       ).mockRejectedValue(failure)
 
       await expect(syncCallback()).resolves.toBeUndefined()
-      expect(device.error).toHaveBeenCalledWith(
+
+      const {
+        argsPrefix = [],
+        get = (target: PostUpdateSyncDevice): unknown => target.error,
+      } = errorSpy
+
+      expect(get(device)).toHaveBeenCalledWith(
+        ...argsPrefix,
         'Post-update sync failed:',
         failure,
       )

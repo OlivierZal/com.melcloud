@@ -1,26 +1,34 @@
+// The derived-state LABELS are shared across both dialects; the Home-named
+// union carries the canonical capability ids.
+import type { HomeAtwOperationalState } from '@olivierzal/melcloud-api'
+// The derived-state LABELS are shared across both dialects; the Home-named
+// union carries the canonical capability ids.
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
-import { thermostatMode } from '../files.mts'
-import {
-  type BaseGetCapabilities,
-  type BaseListCapabilities,
-  type BaseSetCapabilities,
-  type CapabilitiesOptionsValues,
-  type LocalizedStrings,
-  type RangeOptions,
-  localizeWithAffix,
+import type {
+  BaseGetCapabilities,
+  BaseListCapabilities,
+  BaseSetCapabilities,
+  CapabilitiesOptionsValues,
+  LocalizedStrings,
+  RangeOptions,
 } from './bases.mts'
+import {
+  type HotWaterMode,
+  getThermostatModeValuesAtw,
+  thermostatModeZone2TitleAtw,
+} from './atw.mts'
 
 export const operationModeStateFromDevice: Record<
   Classic.OperationModeState,
-  keyof typeof Classic.OperationModeState
+  HomeAtwOperationalState
 > = {
   [Classic.OperationModeState.cooling]: 'cooling',
   [Classic.OperationModeState.defrost]: 'defrost',
   [Classic.OperationModeState.dhw]: 'dhw',
   [Classic.OperationModeState.heating]: 'heating',
   [Classic.OperationModeState.idle]: 'idle',
-  [Classic.OperationModeState.legionella]: 'legionella',
+  [Classic.OperationModeState.legionellaPrevention]: 'legionella',
 }
 
 export const operationModeZoneFromDevice: Record<
@@ -34,139 +42,18 @@ export const operationModeZoneFromDevice: Record<
   [Classic.OperationModeZone.room_cool]: 'room_cool',
 }
 
-const addSuffixToTitle = (
-  title: LocalizedStrings,
-  suffix: LocalizedStrings,
-): LocalizedStrings => localizeWithAffix(title, suffix, 'suffix')
-
-const curve: CapabilitiesOptionsValues<'curve'> = {
-  id: 'curve',
-  title: {
-    ar: 'منحنى التعويض المناخي',
-    da: 'Varmekurve',
-    de: 'Heizkurve',
-    en: 'Weather compensation curve',
-    es: 'Curva de calefacción',
-    fr: 'Courbe de chauffe',
-    it: 'Curva di compensazione climatica',
-    ko: '기상 보상 곡선',
-    nl: 'Weerscompensatiecurve',
-    no: 'Varmekurve',
-    pl: 'Krzywa kompensacji pogodowej',
-    ru: 'Кривая погодозависимого регулирования',
-    sv: 'Värmekurva',
-  },
-}
-
-const flow: CapabilitiesOptionsValues<'flow'> = {
-  id: 'flow',
-  title: {
-    ar: 'درجة حرارة تدفق ثابتة',
-    da: 'Fast fremledningstemperatur',
-    de: 'Feste Vorlauftemperatur',
-    en: 'Fixed flow temperature',
-    es: 'Temperatura de partida fija',
-    fr: 'Température de départ fixe',
-    it: 'Temperatura di mandata fissa',
-    ko: '고정 유량 온도',
-    nl: 'Vaste aanvoertemperatuur',
-    no: 'Fast fremløpstemperatur',
-    pl: 'Stała temperatura zasilania',
-    ru: 'Фиксированная температура подачи',
-    sv: 'Fast framledningstemperatur',
-  },
-}
-
-const room: CapabilitiesOptionsValues<'room'> = {
-  id: 'room',
-  title: {
-    ar: 'درجة الحرارة الداخلية',
-    da: 'Indendørs føler',
-    de: 'Innentemperatur',
-    en: 'Indoor temperature',
-    es: 'Temperatura interior',
-    fr: 'Température intérieure',
-    it: 'Temperatura interna',
-    ko: '실내 온도',
-    nl: 'Binnentemperatuur',
-    no: 'Innendørs føler',
-    pl: 'Temperatura wewnętrzna',
-    ru: 'Температура в помещении',
-    sv: 'Inomhusgivare',
-  },
-}
-
-const COOL_SUFFIX = 'cool'
-
-const createCoolObject = ({
-  id,
-  title,
-}: {
-  id: 'flow' | 'room'
-  title: LocalizedStrings
-}): CapabilitiesOptionsValues<keyof typeof Classic.OperationModeZone> => ({
-  id: `${id}_${COOL_SUFFIX}`,
-  title: addSuffixToTitle(title, {
-    ar: '- تبريد',
-    da: '- køling',
-    de: '- Kühlung',
-    en: '- cooling',
-    es: '- enfriamiento',
-    fr: '- refroidissement',
-    it: '- raffrescamento',
-    ko: '- 냉방',
-    nl: '- koeling',
-    no: '- kjøling',
-    pl: '- chłodzenie',
-    ru: '- охлаждение',
-    sv: '- kylning',
-  }),
-})
-
-const thermostatModeTitleAtw = addSuffixToTitle(thermostatMode.title, {
-  ar: '- المنطقة 2',
-  da: '- zone 2',
-  de: '- Zone 2',
-  en: '- zone 2',
-  es: '- zona 2',
-  fr: '- zone 2',
-  it: '- zona 2',
-  ko: '- 구역 2',
-  nl: '- zone 2',
-  no: '- sone 2',
-  pl: '- strefa 2',
-  ru: '- зона 2',
-  sv: '- zon 2',
-})
-
-const thermostatModeValuesAtw = [
-  room,
-  flow,
-  curve,
-  createCoolObject(room),
-  createCoolObject(flow),
-]
-
 export const getCapabilitiesOptions = ({
   CanCool: canCool,
   HasZone2: hasClassicZone2,
 }: Readonly<Classic.ListDeviceDataAtw>): Partial<CapabilitiesOptions> => {
-  const values =
-    canCool ?
-      thermostatModeValuesAtw
-    : thermostatModeValuesAtw.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
+  const values = getThermostatModeValuesAtw(canCool)
   return {
     thermostat_mode: { values },
     ...(hasClassicZone2 && {
-      'thermostat_mode.zone2': { title: thermostatModeTitleAtw, values },
+      'thermostat_mode.zone2': { title: thermostatModeZone2TitleAtw, values },
     }),
   }
 }
-
-export const HotWaterMode = {
-  auto: 'auto',
-  forced: 'forced',
-} as const
 
 export interface Capabilities
   extends
@@ -210,10 +97,8 @@ export interface GetCapabilities extends BaseGetCapabilities {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
-  readonly operational_state: keyof typeof Classic.OperationModeState
+  readonly operational_state: HomeAtwOperationalState
 }
-
-export type HotWaterMode = (typeof HotWaterMode)[keyof typeof HotWaterMode]
 
 export interface ListCapabilities extends BaseListCapabilities {
   readonly 'alarm_generic.booster_heater1': boolean
@@ -255,124 +140,122 @@ export interface TargetTemperatureFlowCapabilities {
   readonly 'target_temperature.flow_heat_zone2': number
 }
 
-export const setCapabilityTagMapping: Record<
-  keyof SetCapabilities,
-  keyof Classic.UpdateDeviceDataAtw
-> = {
-  hot_water_mode: 'ForcedHotWaterMode',
-  onoff: 'Power',
-  target_temperature: 'SetTemperatureZone1',
-  'target_temperature.flow_cool': 'SetCoolFlowTemperatureZone1',
-  'target_temperature.flow_cool_zone2': 'SetCoolFlowTemperatureZone2',
-  'target_temperature.flow_heat': 'SetHeatFlowTemperatureZone1',
-  'target_temperature.flow_heat_zone2': 'SetHeatFlowTemperatureZone2',
-  'target_temperature.tank_water': 'SetTankWaterTemperature',
-  'target_temperature.zone2': 'SetTemperatureZone2',
-  thermostat_mode: 'OperationModeZone1',
-  'thermostat_mode.zone2': 'OperationModeZone2',
-}
-
-export const getCapabilityTagMapping: Record<
-  keyof GetCapabilities,
-  keyof Classic.GetDeviceData<typeof Classic.DeviceType.Atw>
-> = {
-  measure_temperature: 'RoomTemperatureZone1',
-  'measure_temperature.outdoor': 'OutdoorTemperature',
-  'measure_temperature.tank_water': 'TankWaterTemperature',
-  'measure_temperature.zone2': 'RoomTemperatureZone2',
-  operational_state: 'OperationMode',
-}
-
-export const listCapabilityTagMapping: Record<
-  keyof ListCapabilities,
-  keyof Classic.ListDeviceDataAtw
-> = {
-  'alarm_generic.booster_heater1': 'BoosterHeater1Status',
-  'alarm_generic.booster_heater2': 'BoosterHeater2Status',
-  'alarm_generic.booster_heater2_plus': 'BoosterHeater2PlusStatus',
-  'alarm_generic.defrost': 'DefrostMode',
-  'alarm_generic.eco_hot_water': 'EcoHotWater',
-  'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
-  legionella: 'LastLegionellaActivationTime',
-  measure_frequency: 'HeatPumpFrequency',
-  measure_power: 'CurrentEnergyConsumed',
-  'measure_power.produced': 'CurrentEnergyProduced',
-  measure_signal_strength: 'WifiSignalStrength',
-  'measure_temperature.condensing': 'CondensingTemperature',
-  'measure_temperature.flow': 'FlowTemperature',
-  'measure_temperature.flow_zone1': 'FlowTemperatureZone1',
-  'measure_temperature.flow_zone2': 'FlowTemperatureZone2',
-  'measure_temperature.return': 'ReturnTemperature',
-  'measure_temperature.return_zone1': 'ReturnTemperatureZone1',
-  'measure_temperature.return_zone2': 'ReturnTemperatureZone2',
-  'measure_temperature.tank_water_mixing': 'MixingTankWaterTemperature',
-  'measure_temperature.target_curve': 'TargetHCTemperatureZone1',
-  'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
-}
-
-export const energyCapabilityTagMapping: Record<
-  keyof EnergyCapabilities,
-  readonly (keyof Classic.EnergyDataAtw)[]
-> = {
-  meter_power: [
-    'TotalCoolingConsumed',
-    'TotalHeatingConsumed',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.cooling': ['TotalCoolingConsumed'],
-  'meter_power.cop': [
-    'TotalCoolingProduced',
-    'TotalHeatingProduced',
-    'TotalHotWaterProduced',
-    'TotalCoolingConsumed',
-    'TotalHeatingConsumed',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.cop_cooling': ['TotalCoolingProduced', 'TotalCoolingConsumed'],
-  'meter_power.cop_daily': ['CoP'],
-  'meter_power.cop_daily_cooling': [
-    'TotalCoolingProduced',
-    'TotalCoolingConsumed',
-  ],
-  'meter_power.cop_daily_heating': [
-    'TotalHeatingProduced',
-    'TotalHeatingConsumed',
-  ],
-  'meter_power.cop_daily_hotwater': [
-    'TotalHotWaterProduced',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.cop_heating': ['TotalHeatingProduced', 'TotalHeatingConsumed'],
-  'meter_power.cop_hotwater': [
-    'TotalHotWaterProduced',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.daily': [
-    'TotalCoolingConsumed',
-    'TotalHeatingConsumed',
-    'TotalHotWaterConsumed',
-  ],
-  'meter_power.daily_cooling': ['TotalCoolingConsumed'],
-  'meter_power.daily_heating': ['TotalHeatingConsumed'],
-  'meter_power.daily_hotwater': ['TotalHotWaterConsumed'],
-  'meter_power.heating': ['TotalHeatingConsumed'],
-  'meter_power.hotwater': ['TotalHotWaterConsumed'],
-  'meter_power.produced': [
-    'TotalCoolingProduced',
-    'TotalHeatingProduced',
-    'TotalHotWaterProduced',
-  ],
-  'meter_power.produced_cooling': ['TotalCoolingProduced'],
-  'meter_power.produced_daily': [
-    'TotalCoolingProduced',
-    'TotalHeatingProduced',
-    'TotalHotWaterProduced',
-  ],
-  'meter_power.produced_daily_cooling': ['TotalCoolingProduced'],
-  'meter_power.produced_daily_heating': ['TotalHeatingProduced'],
-  'meter_power.produced_daily_hotwater': ['TotalHotWaterProduced'],
-  'meter_power.produced_heating': ['TotalHeatingProduced'],
-  'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
+export const tagMappings: {
+  readonly energy: Record<
+    keyof EnergyCapabilities,
+    readonly (keyof Classic.EnergyDataAtw)[]
+  >
+  readonly get: Record<
+    keyof GetCapabilities,
+    keyof Classic.GetDeviceData<typeof Classic.DeviceType.Atw>
+  >
+  readonly list: Record<keyof ListCapabilities, keyof Classic.ListDeviceDataAtw>
+  readonly set: Record<keyof SetCapabilities, keyof Classic.UpdateDeviceDataAtw>
+} = {
+  energy: {
+    meter_power: [
+      'TotalCoolingConsumed',
+      'TotalHeatingConsumed',
+      'TotalHotWaterConsumed',
+    ],
+    'meter_power.cooling': ['TotalCoolingConsumed'],
+    'meter_power.cop': [
+      'TotalCoolingProduced',
+      'TotalHeatingProduced',
+      'TotalHotWaterProduced',
+      'TotalCoolingConsumed',
+      'TotalHeatingConsumed',
+      'TotalHotWaterConsumed',
+    ],
+    'meter_power.cop_cooling': ['TotalCoolingProduced', 'TotalCoolingConsumed'],
+    'meter_power.cop_daily': ['CoP'],
+    'meter_power.cop_daily_cooling': [
+      'TotalCoolingProduced',
+      'TotalCoolingConsumed',
+    ],
+    'meter_power.cop_daily_heating': [
+      'TotalHeatingProduced',
+      'TotalHeatingConsumed',
+    ],
+    'meter_power.cop_daily_hotwater': [
+      'TotalHotWaterProduced',
+      'TotalHotWaterConsumed',
+    ],
+    'meter_power.cop_heating': ['TotalHeatingProduced', 'TotalHeatingConsumed'],
+    'meter_power.cop_hotwater': [
+      'TotalHotWaterProduced',
+      'TotalHotWaterConsumed',
+    ],
+    'meter_power.daily': [
+      'TotalCoolingConsumed',
+      'TotalHeatingConsumed',
+      'TotalHotWaterConsumed',
+    ],
+    'meter_power.daily_cooling': ['TotalCoolingConsumed'],
+    'meter_power.daily_heating': ['TotalHeatingConsumed'],
+    'meter_power.daily_hotwater': ['TotalHotWaterConsumed'],
+    'meter_power.heating': ['TotalHeatingConsumed'],
+    'meter_power.hotwater': ['TotalHotWaterConsumed'],
+    'meter_power.produced': [
+      'TotalCoolingProduced',
+      'TotalHeatingProduced',
+      'TotalHotWaterProduced',
+    ],
+    'meter_power.produced_cooling': ['TotalCoolingProduced'],
+    'meter_power.produced_daily': [
+      'TotalCoolingProduced',
+      'TotalHeatingProduced',
+      'TotalHotWaterProduced',
+    ],
+    'meter_power.produced_daily_cooling': ['TotalCoolingProduced'],
+    'meter_power.produced_daily_heating': ['TotalHeatingProduced'],
+    'meter_power.produced_daily_hotwater': ['TotalHotWaterProduced'],
+    'meter_power.produced_heating': ['TotalHeatingProduced'],
+    'meter_power.produced_hotwater': ['TotalHotWaterProduced'],
+  },
+  get: {
+    measure_temperature: 'RoomTemperatureZone1',
+    'measure_temperature.outdoor': 'OutdoorTemperature',
+    'measure_temperature.tank_water': 'TankWaterTemperature',
+    'measure_temperature.zone2': 'RoomTemperatureZone2',
+    operational_state: 'OperationMode',
+  },
+  list: {
+    'alarm_generic.booster_heater1': 'BoosterHeater1Status',
+    'alarm_generic.booster_heater2': 'BoosterHeater2Status',
+    'alarm_generic.booster_heater2_plus': 'BoosterHeater2PlusStatus',
+    'alarm_generic.defrost': 'DefrostMode',
+    'alarm_generic.eco_hot_water': 'EcoHotWater',
+    'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
+    legionella: 'LastLegionellaActivationTime',
+    measure_frequency: 'HeatPumpFrequency',
+    measure_power: 'CurrentEnergyConsumed',
+    'measure_power.produced': 'CurrentEnergyProduced',
+    measure_signal_strength: 'WifiSignalStrength',
+    'measure_temperature.condensing': 'CondensingTemperature',
+    'measure_temperature.flow': 'FlowTemperature',
+    'measure_temperature.flow_zone1': 'FlowTemperatureZone1',
+    'measure_temperature.flow_zone2': 'FlowTemperatureZone2',
+    'measure_temperature.return': 'ReturnTemperature',
+    'measure_temperature.return_zone1': 'ReturnTemperatureZone1',
+    'measure_temperature.return_zone2': 'ReturnTemperatureZone2',
+    'measure_temperature.tank_water_mixing': 'MixingTankWaterTemperature',
+    'measure_temperature.target_curve': 'TargetHCTemperatureZone1',
+    'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
+  },
+  set: {
+    hot_water_mode: 'ForcedHotWaterMode',
+    onoff: 'Power',
+    target_temperature: 'SetTemperatureZone1',
+    'target_temperature.flow_cool': 'SetCoolFlowTemperatureZone1',
+    'target_temperature.flow_cool_zone2': 'SetCoolFlowTemperatureZone2',
+    'target_temperature.flow_heat': 'SetHeatFlowTemperatureZone1',
+    'target_temperature.flow_heat_zone2': 'SetHeatFlowTemperatureZone2',
+    'target_temperature.tank_water': 'SetTankWaterTemperature',
+    'target_temperature.zone2': 'SetTemperatureZone2',
+    thermostat_mode: 'OperationModeZone1',
+    'thermostat_mode.zone2': 'OperationModeZone2',
+  },
 }
 
 export interface CapabilitiesOptions {

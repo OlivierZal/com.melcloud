@@ -56,9 +56,7 @@ export class EnergyReport<T extends Classic.DeviceType> {
   private readonly driver: ClassicMELCloudDriver<T>
 
   get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
-    const cleaned = this.#device.cleanMapping(
-      this.driver.energyCapabilityTagMapping,
-    )
+    const cleaned = this.#device.cleanMapping(this.driver.tagMappings.energy)
     return typedEntries<
       string & keyof EnergyCapabilities<T>,
       readonly (keyof Classic.EnergyData<T>)[]

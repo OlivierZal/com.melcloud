@@ -1,3 +1,4 @@
+import type HomeyModule from 'homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
@@ -8,12 +9,12 @@ import type {
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
 } from '../../types/capabilities.mts'
-import { HotWaterMode } from '../../types/classic-atw.mts'
+import { HotWaterMode } from '../../types/atw.mts'
 import {
   testEnergyReportConfig,
   testThermostatMode,
 } from '../device-descriptors.ts'
-import { mock } from '../helpers.ts'
+import { type InteropModule, mock } from '../helpers.ts'
 import ClassicMELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -33,10 +34,10 @@ const { getCapabilityOptionsMock, hasCapabilityMock, setCapabilityValueMock } =
       vi.fn<(capability: string, value: unknown) => Promise<void>>(),
   }))
 
-// eslint-disable-next-line vitest/prefer-import-in-mock -- Stub class is not assignable to the full homey module type (40+ exports)
-vi.mock('homey', async () => {
-  const { createMockDeviceClass } = await import('../helpers.ts')
-  return {
+vi.mock(import('homey'), async () => {
+  const { createMockDeviceClass, mock: mockModule } =
+    await import('../helpers.ts')
+  return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Device: createMockDeviceClass({
         overrides: {
@@ -46,19 +47,21 @@ vi.mock('homey', async () => {
         },
       }),
     },
-  }
+  })
 })
 
 const mockDriver = mock<ClassicMELCloudDriver<AtwType>>({
-  energyCapabilityTagMapping: mock<EnergyCapabilityTagMapping<AtwType>>({}),
   getCapabilitiesOptions: vi
     .fn<(data?: unknown) => Record<string, unknown>>()
     .mockReturnValue({}),
-  getCapabilityTagMapping: mock<GetCapabilityTagMapping<AtwType>>({}),
   getRequiredCapabilities: vi.fn<() => string[]>().mockReturnValue([]),
-  listCapabilityTagMapping: mock<ListCapabilityTagMapping<AtwType>>({}),
   manifest: mock({ capabilities: [], id: 'melcloud_atw' }),
-  setCapabilityTagMapping: mock<SetCapabilityTagMapping<AtwType>>({}),
+  tagMappings: {
+    energy: mock<EnergyCapabilityTagMapping<AtwType>>({}),
+    get: mock<GetCapabilityTagMapping<AtwType>>({}),
+    list: mock<ListCapabilityTagMapping<AtwType>>({}),
+    set: mock<SetCapabilityTagMapping<AtwType>>({}),
+  },
 })
 
 const mockAtwFacade = (
@@ -126,22 +129,38 @@ describe(ClassicMELCloudDeviceAtw, () => {
 
   describe('device-to-capability conversions', () => {
     it.each([
-      ['alarm_generic.defrost', 1, true],
-      ['alarm_generic.defrost', 0, false],
-      ['measure_power', 2.5, 2.5 * K_MULTIPLIER],
-      ['measure_power.produced', 1.5, 1.5 * K_MULTIPLIER],
-      ['thermostat_mode', Classic.OperationModeZone.room, 'room'],
-      ['thermostat_mode.zone2', Classic.OperationModeZone.flow, 'flow'],
-      ['hot_water_mode', true, HotWaterMode.forced],
-      ['hot_water_mode', false, HotWaterMode.auto],
-      ['operational_state', Classic.OperationModeState.heating, 'heating'],
-      ['target_temperature.flow_heat', 0, 10],
-      ['target_temperature.flow_heat', 35, 35],
-    ])('%s(%s) should return %s', (key, input, expected) => {
+      ['alarm_generic.defrost', { DefrostMode: 1 }, true],
+      ['alarm_generic.defrost', { DefrostMode: 0 }, false],
+      ['measure_power', { CurrentEnergyConsumed: 2.5 }, 2.5 * K_MULTIPLIER],
+      [
+        'measure_power.produced',
+        { CurrentEnergyProduced: 1.5 },
+        1.5 * K_MULTIPLIER,
+      ],
+      [
+        'thermostat_mode',
+        { OperationModeZone1: Classic.OperationModeZone.room },
+        'room',
+      ],
+      [
+        'thermostat_mode.zone2',
+        { OperationModeZone2: Classic.OperationModeZone.flow },
+        'flow',
+      ],
+      ['hot_water_mode', { ForcedHotWaterMode: true }, HotWaterMode.forced],
+      ['hot_water_mode', { ForcedHotWaterMode: false }, HotWaterMode.auto],
+      [
+        'operational_state',
+        { OperationMode: Classic.OperationModeState.heating },
+        'heating',
+      ],
+      ['target_temperature.flow_heat', { SetHeatFlowTemperatureZone1: 0 }, 10],
+      ['target_temperature.flow_heat', { SetHeatFlowTemperatureZone1: 35 }, 35],
+    ])('%s(%o) should return %s', (key, input, expected) => {
       const { deviceToCapability } = device
       const converter = deviceToCapability[key]
 
-      expect(converter?.(input)).toBe(expected)
+      expect(converter?.(mock<Classic.ListDeviceDataAtw>(input))).toBe(expected)
     })
 
     it('should convert legionella from ISO date to locale string', () => {
@@ -149,7 +168,11 @@ describe(ClassicMELCloudDeviceAtw, () => {
         deviceToCapability: { legionella: converter },
       } = device
 
-      const result = converter?.('2026-03-18T10:00:00')
+      const result = converter?.(
+        mock<Classic.ListDeviceDataAtw>({
+          LastLegionellaActivationTime: '2026-03-18T10:00:00',
+        }),
+      )
 
       expect(result).toBeDefined()
       expect(result).toBeTypeOf('string')

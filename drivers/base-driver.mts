@@ -31,16 +31,12 @@ export abstract class BaseMELCloudDriver extends Driver {
 
   public abstract readonly type: DeviceType
 
-  public readonly energyCapabilityTagMapping: Readonly<
-    Record<string, readonly string[]>
-  > = {}
-
-  public readonly getCapabilityTagMapping: Readonly<Record<string, string>> = {}
-
-  public readonly listCapabilityTagMapping: Readonly<Record<string, string>> =
-    {}
-
-  public readonly setCapabilityTagMapping: Readonly<Record<string, string>> = {}
+  public readonly tagMappings: {
+    readonly energy: Readonly<Record<string, readonly string[]>>
+    readonly get: Readonly<Record<string, string>>
+    readonly list: Readonly<Record<string, string>>
+    readonly set: Readonly<Record<string, string>>
+  } = { energy: {}, get: {}, list: {}, set: {} }
 
   public override async onInit(): Promise<void> {
     this.#registerFlowListeners()
@@ -74,36 +70,16 @@ export abstract class BaseMELCloudDriver extends Driver {
     name: string
   }[]
 
-  /* v8 ignore start -- default implementation; always overridden by classic or test mock */
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- polymorphic default; overridden by subclasses that use this
-  public getCapabilitiesOptions(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- signature must match overrides that use this parameter
-    ..._data: unknown[]
-  ): Partial<Record<string, unknown>> {
-    return {}
-  }
-  /* v8 ignore stop */
-
-  public getRequiredCapabilities(): string[] {
-    return [...this.manifest.capabilities]
-  }
+  protected abstract toDeviceDetails(model: {
+    id: number | string
+    name: string
+  }): { data: { id: number | string }; name: string }
 
   protected async discoverDevices(): Promise<
     { data: { id: number | string }; name: string }[]
   > {
     await Promise.resolve()
     return this.getDeviceModels().map((model) => this.toDeviceDetails(model))
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this -- default mapping; overridden in classic to add capabilities
-  protected toDeviceDetails({
-    id,
-    name,
-  }: {
-    id: number | string
-    name: string
-  }): { data: { id: number | string }; name: string } {
-    return { data: { id }, name }
   }
 
   #registerFlowListeners(): void {
@@ -124,7 +100,7 @@ export abstract class BaseMELCloudDriver extends Driver {
             },
           )
       })
-      if (Object.hasOwn(this.setCapabilityTagMapping, capability)) {
+      if (Object.hasOwn(this.tagMappings.set, capability)) {
         tryRegisterFlowCard(() => {
           this.homey.flow
             .getActionCard(`${capability}_action`)

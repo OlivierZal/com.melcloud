@@ -29,30 +29,28 @@ export interface SetCapabilities extends BaseSetCapabilities {
   readonly thermostat_mode: keyof typeof ThermostatModeErv
 }
 
-export const setCapabilityTagMapping: Record<
-  keyof SetCapabilities,
-  keyof Classic.UpdateDeviceDataErv
-> = {
-  fan_speed: 'SetFanSpeed',
-  onoff: 'Power',
-  thermostat_mode: 'VentilationMode',
+export const tagMappings: {
+  readonly energy: Record<string, never>
+  readonly get: Record<
+    keyof GetCapabilities,
+    keyof Classic.GetDeviceData<typeof Classic.DeviceType.Erv>
+  >
+  readonly list: Record<keyof ListCapabilities, keyof Classic.ListDeviceDataErv>
+  readonly set: Record<keyof SetCapabilities, keyof Classic.UpdateDeviceDataErv>
+} = {
+  energy: {},
+  get: {
+    measure_co2: 'RoomCO2Level',
+    measure_temperature: 'RoomTemperature',
+    'measure_temperature.outdoor': 'OutdoorTemperature',
+  },
+  list: {
+    measure_pm25: 'PM25Level',
+    measure_signal_strength: 'WifiSignalStrength',
+  },
+  set: {
+    fan_speed: 'SetFanSpeed',
+    onoff: 'Power',
+    thermostat_mode: 'VentilationMode',
+  },
 }
-
-export const getCapabilityTagMapping: Record<
-  keyof GetCapabilities,
-  keyof Classic.GetDeviceData<typeof Classic.DeviceType.Erv>
-> = {
-  measure_co2: 'RoomCO2Level',
-  measure_temperature: 'RoomTemperature',
-  'measure_temperature.outdoor': 'OutdoorTemperature',
-}
-
-export const listCapabilityTagMapping: Record<
-  keyof ListCapabilities,
-  keyof Classic.ListDeviceDataErv
-> = {
-  measure_pm25: 'PM25Level',
-  measure_signal_strength: 'WifiSignalStrength',
-}
-
-export const energyCapabilityTagMapping: Record<string, never> = {}

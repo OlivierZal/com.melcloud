@@ -1,0 +1,41 @@
+{
+  "$extends": ["defaults"],
+  "capabilities": [
+    "onoff",
+    "hot_water_mode",
+    "measure_temperature",
+    "measure_temperature.zone2",
+    "measure_temperature.tank_water",
+    "target_temperature",
+    "target_temperature.zone2",
+    "target_temperature.tank_water",
+    "operational_state",
+    "operational_state.hot_water",
+    "operational_state.zone1",
+    "operational_state.zone2",
+    "thermostat_mode",
+    "thermostat_mode.zone2",
+    "measure_signal_strength"
+  ],
+  "capabilitiesOptions": {
+    "target_temperature": {
+      "max": 30,
+      "min": 10
+    }
+  },
+  "name": {
+    "ar": "[Home] مضخة حرارية هواء-ماء",
+    "da": "[Home] Luft-til-vand varmepumpe",
+    "de": "[Home] Luft-Wasser-Wärmepumpe",
+    "en": "[Home] Air-to-water heat pump",
+    "es": "[Home] Bomba de calor aire-agua",
+    "fr": "[Home] Pompe à chaleur air-eau",
+    "it": "[Home] Pompa di calore aria-acqua",
+    "ko": "[Home] 공기-물 히트펌프",
+    "nl": "[Home] Lucht-water warmtepomp",
+    "no": "[Home] Luft-til-vann varmepumpe",
+    "pl": "[Home] Pompa ciepła powietrze-woda",
+    "ru": "[Home] Воздушно-водяной тепловой насос",
+    "sv": "[Home] Luft-till-vatten värmepump"
+  }
+}

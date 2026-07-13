@@ -71,17 +71,15 @@ const totalConfig = {
   values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
 } satisfies EnergyReportConfig
 
-const energyCapabilityTagMapping = mock<
-  EnergyCapabilityTagMapping<TestDeviceType>
->({
+const energyTagMapping = mock<EnergyCapabilityTagMapping<TestDeviceType>>({
   measure_power: ['Auto', 'Cooling'],
   'meter_power.daily': ['TotalAutoConsumed', 'TotalCoolingConsumed'],
 })
 
 const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
   consumedTagMapping: { measure_power: ['Auto', 'Cooling'] },
-  energyCapabilityTagMapping,
   producedTagMapping: {},
+  tagMappings: { energy: energyTagMapping },
 })
 
 const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
@@ -124,8 +122,8 @@ const createCopMocks = (
   } as unknown as EnergyCapabilityTagMapping<TestDeviceType>
   const copDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
     consumedTagMapping: hasTagMappings ? copConsumed : {},
-    energyCapabilityTagMapping: copEnergyMapping,
     producedTagMapping: hasTagMappings ? copProduced : {},
+    tagMappings: { energy: copEnergyMapping },
   })
   return mock<ClassicMELCloudDevice<TestDeviceType>>({
     cleanMapping: vi

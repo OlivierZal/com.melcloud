@@ -1,7 +1,7 @@
 {
   "args": [
     {
-      "filter": "driver_id=melcloud_atw",
+      "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=operational_state.zone1",
       "name": "device",
       "type": "device"
     }

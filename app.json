@@ -573,7 +573,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud&capabilities=alarm_generic.silent",
             "name": "device",
             "type": "device"
           }
@@ -598,7 +598,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud&capabilities=alarm_generic.silent",
             "name": "device",
             "type": "device"
           }
@@ -623,7 +623,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud&capabilities=fan_speed.state",
             "name": "device",
             "type": "device"
           }
@@ -669,7 +669,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=melcloud|home-melcloud&capabilities=horizontal",
             "name": "device",
             "type": "device"
           }
@@ -730,7 +730,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=operational_state.hot_water",
             "name": "device",
             "type": "device"
           }
@@ -791,7 +791,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=operational_state.zone1",
             "name": "device",
             "type": "device"
           }
@@ -852,7 +852,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw&capabilities=operational_state.zone2",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=operational_state.zone2",
             "name": "device",
             "type": "device"
           }
@@ -913,7 +913,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=thermostat_mode.zone2",
             "name": "device",
             "type": "device"
           }
@@ -974,7 +974,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=melcloud|home-melcloud&capabilities=vertical",
             "name": "device",
             "type": "device"
           }
@@ -1187,7 +1187,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud",
+            "filter": "driver_id=melcloud&capabilities=alarm_generic.silent",
             "name": "device",
             "type": "device"
           }
@@ -1281,7 +1281,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=melcloud|home-melcloud&capabilities=horizontal",
             "name": "device",
             "type": "device"
           },
@@ -1471,7 +1471,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=operational_state.hot_water",
             "name": "device",
             "type": "device"
           },
@@ -1589,7 +1589,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=operational_state.zone1",
             "name": "device",
             "type": "device"
           },
@@ -1725,7 +1725,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw&capabilities=operational_state.zone2",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=operational_state.zone2",
             "name": "device",
             "type": "device"
           },
@@ -1861,7 +1861,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=thermostat_mode.zone2",
             "name": "device",
             "type": "device"
           },
@@ -2012,7 +2012,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=melcloud|home-melcloud&capabilities=vertical",
             "name": "device",
             "type": "device"
           },
@@ -2292,7 +2292,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=melcloud|home-melcloud&capabilities=horizontal",
             "name": "device",
             "type": "device"
           },
@@ -2576,7 +2576,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw",
+            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.flow_heat",
             "name": "device",
             "type": "device"
           },
@@ -2670,7 +2670,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=target_temperature.tank_water",
             "name": "device",
             "type": "device"
           },
@@ -2717,7 +2717,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw&capabilities=target_temperature.zone2",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=target_temperature.zone2",
             "name": "device",
             "type": "device"
           },
@@ -2763,7 +2763,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud_atw&capabilities=thermostat_mode.zone2",
+            "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=thermostat_mode.zone2",
             "name": "device",
             "type": "device"
           },
@@ -2914,7 +2914,7 @@
       {
         "args": [
           {
-            "filter": "driver_id=melcloud|home-melcloud",
+            "filter": "driver_id=melcloud|home-melcloud&capabilities=vertical",
             "name": "device",
             "type": "device"
           },
@@ -3088,6 +3088,46 @@
   "drivers": [
     {
       "capabilitiesOptions": {
+        "hot_water_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "ar": "تلقائي",
+                "da": "Automatisk",
+                "de": "Automatisch",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "it": "Automatica",
+                "ko": "자동",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "pl": "Automatyczny",
+                "ru": "Авто",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "forced",
+              "title": {
+                "ar": "إجباري",
+                "da": "Tvungen",
+                "de": "Erzwungen",
+                "en": "Forced",
+                "es": "Forzado",
+                "fr": "Forcé",
+                "it": "Forzato",
+                "ko": "강제",
+                "nl": "Gedwongen",
+                "no": "Tvungen",
+                "pl": "Wymuszony",
+                "ru": "Принудительный",
+                "sv": "Tvingad"
+              }
+            }
+          ]
+        },
         "measure_power": {
           "approximated": true
         },
@@ -3106,6 +3146,518 @@
             "pl": "Temperatura zewnętrzna",
             "ru": "Температура на улице",
             "sv": "Utomhustemperatur"
+          }
+        },
+        "measure_temperature.tank_water": {
+          "title": {
+            "ar": "درجة حرارة الماء الساخن",
+            "da": "Varmtvandstemperatur",
+            "de": "Warmwassertemperatur",
+            "en": "Hot water temperature",
+            "es": "Temperatura del agua caliente",
+            "fr": "Température de l'eau chaude",
+            "it": "Temperatura dell'acqua calda",
+            "ko": "온수 온도",
+            "nl": "Warmwatertemperatuur",
+            "no": "Varmtvanntemperatur",
+            "pl": "Temperatura ciepłej wody",
+            "ru": "Температура горячей воды",
+            "sv": "Varmvattentemperatur"
+          }
+        },
+        "measure_temperature.zone2": {
+          "title": {
+            "ar": "درجة الحرارة - المنطقة 2",
+            "da": "Temperatur - zone 2",
+            "de": "Temperatur - Zone 2",
+            "en": "Temperature - zone 2",
+            "es": "Temperatura - zona 2",
+            "fr": "Température - zone 2",
+            "it": "Temperatura - zona 2",
+            "ko": "온도 - 구역 2",
+            "nl": "Temperatuur - zone 2",
+            "no": "Temperatur - sone 2",
+            "pl": "Temperatura - strefa 2",
+            "ru": "Температура - зона 2",
+            "sv": "Temperatur - zon 2"
+          }
+        },
+        "operational_state": {
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.hot_water": {
+          "title": {
+            "ar": "حالة التشغيل - مياه ساخنة صحية",
+            "da": "Driftstilstand - varmtvandsindlæsning",
+            "de": "Betriebszustand - Brauchwarmwasser",
+            "en": "Operational state - domestic hot water",
+            "es": "Estado operativo - agua caliente sanitaria",
+            "fr": "État opérationnel - eau chaude sanitaire",
+            "it": "Stato operativo - acqua calda sanitaria",
+            "ko": "작동 상태 - 생활 온수",
+            "nl": "Operationele staat - sanitair warm water",
+            "no": "Driftstilstand - varmvannslastning",
+            "pl": "Stan pracy - ciepła woda użytkowa",
+            "ru": "Рабочее состояние - ГВС",
+            "sv": "Drifttillstånd - varmvattenladdning"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.zone1": {
+          "title": {
+            "ar": "حالة التشغيل - المنطقة 1",
+            "da": "Driftstilstand - zone 1",
+            "de": "Betriebszustand - Zone 1",
+            "en": "Operational state - zone 1",
+            "es": "Estado operativo - zona 1",
+            "fr": "État opérationnel - zone 1",
+            "it": "Stato operativo - zona 1",
+            "ko": "작동 상태 - 구역 1",
+            "nl": "Operationele staat - zone 1",
+            "no": "Driftstilstand - sone 1",
+            "pl": "Stan pracy - strefa 1",
+            "ru": "Рабочее состояние - зона 1",
+            "sv": "Drifttillstånd - zon 1"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.zone2": {
+          "title": {
+            "ar": "حالة التشغيل - المنطقة 2",
+            "da": "Driftstilstand - zone 2",
+            "de": "Betriebszustand - Zone 2",
+            "en": "Operational state - zone 2",
+            "es": "Estado operativo - zona 2",
+            "fr": "État opérationnel - zone 2",
+            "it": "Stato operativo - zona 2",
+            "ko": "작동 상태 - 구역 2",
+            "nl": "Operationele staat - zone 2",
+            "no": "Driftstilstand - sone 2",
+            "pl": "Stan pracy - strefa 2",
+            "ru": "Рабочее состояние - зона 2",
+            "sv": "Drifttillstånd - zon 2"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "target_temperature.tank_water": {
+          "max": 60,
+          "min": 40,
+          "step": 1,
+          "title": {
+            "ar": "درجة حرارة الماء الساخن المستهدفة",
+            "da": "Måltemperatur for varmtvand",
+            "de": "Solltemperatur Warmwasser",
+            "en": "Hot water target temperature",
+            "es": "Temperatura configurada del agua caliente",
+            "fr": "Température cible de l'eau chaude",
+            "it": "Temperatura obiettivo acqua calda",
+            "ko": "온수 목표 온도",
+            "nl": "Ingestelde warmwatertemperatuur",
+            "no": "Ønsket temperatur for varmtvann",
+            "pl": "Temperatura docelowa ciepłej wody",
+            "ru": "Целевая температура горячей воды",
+            "sv": "Måltemperatur för varmvatten"
+          }
+        },
+        "target_temperature.zone2": {
+          "max": 30,
+          "min": 10,
+          "title": {
+            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
+            "da": "Måltemperatur - zone 2",
+            "de": "Solltemperatur - Zone 2",
+            "en": "Target temperature - zone 2",
+            "es": "Temperatura configurada - zona 2",
+            "fr": "Température cible - zone 2",
+            "it": "Temperatura obiettivo - zona 2",
+            "ko": "목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur - zone 2",
+            "no": "Ønsket temperatur - sone 2",
+            "pl": "Temperatura docelowa - strefa 2",
+            "ru": "Целевая температура - зона 2",
+            "sv": "Måltemperatur - zon 2"
           }
         },
         "target_temperature": {
@@ -3395,19 +3947,19 @@
         "measure_signal_strength"
       ],
       "name": {
-        "ar": "مضخة حرارية هواء-هواء",
-        "da": "Luft-til-luft varmepumpe (Home)",
-        "de": "Luft-Luft-Wärmepumpe (Home)",
-        "en": "Air-to-air heat pump (Home)",
-        "es": "Bomba de calor aire-aire (Home)",
-        "fr": "Pompe à chaleur air-air (Home)",
-        "it": "Pompa di calore aria-aria (Home)",
-        "ko": "공기-공기 히트펌프 (Home)",
-        "nl": "Lucht-lucht warmtepomp (Home)",
-        "no": "Luft-til-luft varmepumpe (Home)",
-        "pl": "Pompa ciepła powietrze-powietrze (Home)",
-        "ru": "Воздушный тепловой насос (Home)",
-        "sv": "Luft-till-luft värmepump (Home)"
+        "ar": "[Home] مضخة حرارية هواء-هواء",
+        "da": "[Home] Luft-til-luft varmepumpe",
+        "de": "[Home] Luft-Luft-Wärmepumpe",
+        "en": "[Home] Air-to-air heat pump",
+        "es": "[Home] Bomba de calor aire-aire",
+        "fr": "[Home] Pompe à chaleur air-air",
+        "it": "[Home] Pompa di calore aria-aria",
+        "ko": "[Home] 공기-공기 히트펌프",
+        "nl": "[Home] Lucht-lucht warmtepomp",
+        "no": "[Home] Luft-til-luft varmepumpe",
+        "pl": "[Home] Pompa ciepła powietrze-powietrze",
+        "ru": "[Home] Воздушный тепловой насос",
+        "sv": "[Home] Luft-till-luft värmepump"
       },
       "id": "home-melcloud",
       "settings": [
@@ -3491,6 +4043,46 @@
     },
     {
       "capabilitiesOptions": {
+        "hot_water_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "ar": "تلقائي",
+                "da": "Automatisk",
+                "de": "Automatisch",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "it": "Automatica",
+                "ko": "자동",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "pl": "Automatyczny",
+                "ru": "Авто",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "forced",
+              "title": {
+                "ar": "إجباري",
+                "da": "Tvungen",
+                "de": "Erzwungen",
+                "en": "Forced",
+                "es": "Forzado",
+                "fr": "Forcé",
+                "it": "Forzato",
+                "ko": "강제",
+                "nl": "Gedwongen",
+                "no": "Tvungen",
+                "pl": "Wymuszony",
+                "ru": "Принудительный",
+                "sv": "Tvingad"
+              }
+            }
+          ]
+        },
         "measure_power": {
           "approximated": true
         },
@@ -3509,6 +4101,1368 @@
             "pl": "Temperatura zewnętrzna",
             "ru": "Температура на улице",
             "sv": "Utomhustemperatur"
+          }
+        },
+        "measure_temperature.tank_water": {
+          "title": {
+            "ar": "درجة حرارة الماء الساخن",
+            "da": "Varmtvandstemperatur",
+            "de": "Warmwassertemperatur",
+            "en": "Hot water temperature",
+            "es": "Temperatura del agua caliente",
+            "fr": "Température de l'eau chaude",
+            "it": "Temperatura dell'acqua calda",
+            "ko": "온수 온도",
+            "nl": "Warmwatertemperatuur",
+            "no": "Varmtvanntemperatur",
+            "pl": "Temperatura ciepłej wody",
+            "ru": "Температура горячей воды",
+            "sv": "Varmvattentemperatur"
+          }
+        },
+        "measure_temperature.zone2": {
+          "title": {
+            "ar": "درجة الحرارة - المنطقة 2",
+            "da": "Temperatur - zone 2",
+            "de": "Temperatur - Zone 2",
+            "en": "Temperature - zone 2",
+            "es": "Temperatura - zona 2",
+            "fr": "Température - zone 2",
+            "it": "Temperatura - zona 2",
+            "ko": "온도 - 구역 2",
+            "nl": "Temperatuur - zone 2",
+            "no": "Temperatur - sone 2",
+            "pl": "Temperatura - strefa 2",
+            "ru": "Температура - зона 2",
+            "sv": "Temperatur - zon 2"
+          }
+        },
+        "operational_state": {
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.hot_water": {
+          "title": {
+            "ar": "حالة التشغيل - مياه ساخنة صحية",
+            "da": "Driftstilstand - varmtvandsindlæsning",
+            "de": "Betriebszustand - Brauchwarmwasser",
+            "en": "Operational state - domestic hot water",
+            "es": "Estado operativo - agua caliente sanitaria",
+            "fr": "État opérationnel - eau chaude sanitaire",
+            "it": "Stato operativo - acqua calda sanitaria",
+            "ko": "작동 상태 - 생활 온수",
+            "nl": "Operationele staat - sanitair warm water",
+            "no": "Driftstilstand - varmvannslastning",
+            "pl": "Stan pracy - ciepła woda użytkowa",
+            "ru": "Рабочее состояние - ГВС",
+            "sv": "Drifttillstånd - varmvattenladdning"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.zone1": {
+          "title": {
+            "ar": "حالة التشغيل - المنطقة 1",
+            "da": "Driftstilstand - zone 1",
+            "de": "Betriebszustand - Zone 1",
+            "en": "Operational state - zone 1",
+            "es": "Estado operativo - zona 1",
+            "fr": "État opérationnel - zone 1",
+            "it": "Stato operativo - zona 1",
+            "ko": "작동 상태 - 구역 1",
+            "nl": "Operationele staat - zone 1",
+            "no": "Driftstilstand - sone 1",
+            "pl": "Stan pracy - strefa 1",
+            "ru": "Рабочее состояние - зона 1",
+            "sv": "Drifttillstånd - zon 1"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.zone2": {
+          "title": {
+            "ar": "حالة التشغيل - المنطقة 2",
+            "da": "Driftstilstand - zone 2",
+            "de": "Betriebszustand - Zone 2",
+            "en": "Operational state - zone 2",
+            "es": "Estado operativo - zona 2",
+            "fr": "État opérationnel - zone 2",
+            "it": "Stato operativo - zona 2",
+            "ko": "작동 상태 - 구역 2",
+            "nl": "Operationele staat - zone 2",
+            "no": "Driftstilstand - sone 2",
+            "pl": "Stan pracy - strefa 2",
+            "ru": "Рабочее состояние - зона 2",
+            "sv": "Drifttillstånd - zon 2"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "target_temperature.tank_water": {
+          "max": 60,
+          "min": 40,
+          "step": 1,
+          "title": {
+            "ar": "درجة حرارة الماء الساخن المستهدفة",
+            "da": "Måltemperatur for varmtvand",
+            "de": "Solltemperatur Warmwasser",
+            "en": "Hot water target temperature",
+            "es": "Temperatura configurada del agua caliente",
+            "fr": "Température cible de l'eau chaude",
+            "it": "Temperatura obiettivo acqua calda",
+            "ko": "온수 목표 온도",
+            "nl": "Ingestelde warmwatertemperatuur",
+            "no": "Ønsket temperatur for varmtvann",
+            "pl": "Temperatura docelowa ciepłej wody",
+            "ru": "Целевая температура горячей воды",
+            "sv": "Måltemperatur för varmvatten"
+          }
+        },
+        "target_temperature.zone2": {
+          "max": 30,
+          "min": 10,
+          "title": {
+            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
+            "da": "Måltemperatur - zone 2",
+            "de": "Solltemperatur - Zone 2",
+            "en": "Target temperature - zone 2",
+            "es": "Temperatura configurada - zona 2",
+            "fr": "Température cible - zone 2",
+            "it": "Temperatura obiettivo - zona 2",
+            "ko": "목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur - zone 2",
+            "no": "Ønsket temperatur - sone 2",
+            "pl": "Temperatura docelowa - strefa 2",
+            "ru": "Целевая температура - зона 2",
+            "sv": "Måltemperatur - zon 2"
+          }
+        },
+        "target_temperature": {
+          "max": 30,
+          "min": 10
+        }
+      },
+      "class": "heatpump",
+      "icon": "/drivers/home-melcloud_atw/assets/icon.svg",
+      "images": {
+        "large": "/drivers/home-melcloud_atw/assets/images/large.png",
+        "small": "/drivers/home-melcloud_atw/assets/images/small.png"
+      },
+      "pair": [
+        {
+          "id": "loading",
+          "template": "loading"
+        },
+        {
+          "id": "login",
+          "options": {
+            "logo": "logo.png",
+            "passwordLabel": {
+              "ar": "كلمة المرور",
+              "da": "Adgangskode",
+              "de": "Passwort",
+              "en": "Password",
+              "es": "Contraseña",
+              "fr": "Mot de passe",
+              "it": "Password",
+              "ko": "비밀번호",
+              "nl": "Wachtwoord",
+              "no": "Passord",
+              "pl": "Hasło",
+              "ru": "Пароль",
+              "sv": "Lösenord"
+            },
+            "passwordPlaceholder": {
+              "ar": "P4ssw0rd",
+              "da": "P4ssw0rd",
+              "de": "P4ssw0rd",
+              "en": "P4ssw0rd",
+              "es": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "it": "P4ssw0rd",
+              "ko": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "pl": "P4ssw0rd",
+              "ru": "P4ssw0rd",
+              "sv": "P4ssw0rd"
+            },
+            "usernameLabel": {
+              "ar": "اسم المستخدم",
+              "da": "Brugernavn",
+              "de": "Benutzername",
+              "en": "Username",
+              "es": "Nombre de usuario",
+              "fr": "Nom d'utilisateur",
+              "it": "Nome utente",
+              "ko": "사용자 이름",
+              "nl": "Gebruikersnaam",
+              "no": "Brukernavn",
+              "pl": "Nazwa użytkownika",
+              "ru": "Имя пользователя",
+              "sv": "Användarnamn"
+            },
+            "usernamePlaceholder": {
+              "ar": "user@domain.com",
+              "da": "bruger@domain.dk",
+              "de": "benutzer@domain.de",
+              "en": "user@domain.com",
+              "es": "usuario@domain.es",
+              "fr": "utilisateur@domain.fr",
+              "it": "utente@domain.it",
+              "ko": "user@domain.com",
+              "nl": "gebruiker@domain.nl",
+              "no": "bruker@domain.no",
+              "pl": "uzytkownik@domain.pl",
+              "ru": "user@domain.com",
+              "sv": "anvandare@domain.se"
+            }
+          },
+          "template": "login_credentials"
+        },
+        {
+          "id": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "template": "list_devices"
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login",
+          "options": {
+            "logo": "logo.png",
+            "passwordLabel": {
+              "ar": "كلمة المرور",
+              "da": "Adgangskode",
+              "de": "Passwort",
+              "en": "Password",
+              "es": "Contraseña",
+              "fr": "Mot de passe",
+              "it": "Password",
+              "ko": "비밀번호",
+              "nl": "Wachtwoord",
+              "no": "Passord",
+              "pl": "Hasło",
+              "ru": "Пароль",
+              "sv": "Lösenord"
+            },
+            "passwordPlaceholder": {
+              "ar": "P4ssw0rd",
+              "da": "P4ssw0rd",
+              "de": "P4ssw0rd",
+              "en": "P4ssw0rd",
+              "es": "P4ssw0rd",
+              "fr": "P4ssw0rd",
+              "it": "P4ssw0rd",
+              "ko": "P4ssw0rd",
+              "nl": "P4ssw0rd",
+              "no": "P4ssw0rd",
+              "pl": "P4ssw0rd",
+              "ru": "P4ssw0rd",
+              "sv": "P4ssw0rd"
+            },
+            "usernameLabel": {
+              "ar": "اسم المستخدم",
+              "da": "Brugernavn",
+              "de": "Benutzername",
+              "en": "Username",
+              "es": "Nombre de usuario",
+              "fr": "Nom d'utilisateur",
+              "it": "Nome utente",
+              "ko": "사용자 이름",
+              "nl": "Gebruikersnaam",
+              "no": "Brukernavn",
+              "pl": "Nazwa użytkownika",
+              "ru": "Имя пользователя",
+              "sv": "Användarnamn"
+            },
+            "usernamePlaceholder": {
+              "ar": "user@domain.com",
+              "da": "bruger@domain.dk",
+              "de": "benutzer@domain.de",
+              "en": "user@domain.com",
+              "es": "usuario@domain.es",
+              "fr": "utilisateur@domain.fr",
+              "it": "utente@domain.it",
+              "ko": "user@domain.com",
+              "nl": "gebruiker@domain.nl",
+              "no": "bruker@domain.no",
+              "pl": "uzytkownik@domain.pl",
+              "ru": "user@domain.com",
+              "sv": "anvandare@domain.se"
+            }
+          },
+          "template": "login_credentials"
+        }
+      ],
+      "capabilities": [
+        "onoff",
+        "hot_water_mode",
+        "measure_temperature",
+        "measure_temperature.zone2",
+        "measure_temperature.tank_water",
+        "target_temperature",
+        "target_temperature.zone2",
+        "target_temperature.tank_water",
+        "operational_state",
+        "operational_state.hot_water",
+        "operational_state.zone1",
+        "operational_state.zone2",
+        "thermostat_mode",
+        "thermostat_mode.zone2",
+        "measure_signal_strength"
+      ],
+      "name": {
+        "ar": "[Home] مضخة حرارية هواء-ماء",
+        "da": "[Home] Luft-til-vand varmepumpe",
+        "de": "[Home] Luft-Wasser-Wärmepumpe",
+        "en": "[Home] Air-to-water heat pump",
+        "es": "[Home] Bomba de calor aire-agua",
+        "fr": "[Home] Pompe à chaleur air-eau",
+        "it": "[Home] Pompa di calore aria-acqua",
+        "ko": "[Home] 공기-물 히트펌프",
+        "nl": "[Home] Lucht-water warmtepomp",
+        "no": "[Home] Luft-til-vann varmepumpe",
+        "pl": "[Home] Pompa ciepła powietrze-woda",
+        "ru": "[Home] Воздушно-водяной тепловой насос",
+        "sv": "[Home] Luft-till-vatten värmepump"
+      },
+      "id": "home-melcloud_atw",
+      "settings": [
+        {
+          "id": "options",
+          "children": [
+            {
+              "hint": {
+                "ar": "يمنع هذا الإعداد إيقاف تشغيل الجهاز من Homey.\n\nلا يزال بإمكانك إيقاف تشغيله يدويًا (من جهاز التحكم عن بعد أو من الجهاز الفعلي).",
+                "da": "Denne indstilling forhindrer at enheden slukkes fra Homey.\n\nDen kan stadig slukkes manuelt (fra en fjernbetjening eller fra den fysiske enhed).",
+                "de": "Diese Einstellung verhindert, dass das Gerät von Homey ausgeschaltet wird.\n\nEs kann weiterhin manuell ausgeschaltet werden (über eine Fernbedienung oder am physischen Gerät).",
+                "en": "This setting prevents the device from being switched off from Homey.\n\nIt can still be switched off manually (from a remote control or from the physical device).",
+                "es": "Esta configuración evita que el dispositivo se apague desde Homey.\n\nTodavía se puede apagar manualmente (desde un mando a distancia o desde el dispositivo físico).",
+                "fr": "Ce paramètre empêche l'appareil d'être éteint depuis Homey.\n\nIl peut toujours être éteint manuellement (à partir d'une télécommande ou depuis l'appareil physique).",
+                "it": "Questa impostazione impedisce lo spegnimento del dispositivo da Homey.\n\nPuò comunque essere spento manualmente (dal telecomando o dal dispositivo fisico).",
+                "ko": "이 설정은 Homey에서 장치를 끄는 것을 방지합니다.\n\n리모컨이나 물리적 장치에서 수동으로 끌 수 있습니다.",
+                "nl": "Deze instelling voorkomt dat het apparaat door Homey kan worden uitgeschakeld.\n\nHet kan nog steeds handmatig worden uitgeschakeld (met een afstandsbediening of vanaf het fysieke apparaat).",
+                "no": "Denne innstillingen forhindrer at enheten blir skrudd av fra Homey.\n\nDen kan fortsatt skrus av manuelt (fra en fjernkontroll eller fra den fysiske enheten).",
+                "pl": "To ustawienie zapobiega wyłączeniu urządzenia z Homey.\n\nNadal można je wyłączyć ręcznie (za pomocą pilota lub z urządzenia fizycznego).",
+                "ru": "Эта настройка предотвращает выключение устройства из Homey.\n\nЕго по-прежнему можно выключить вручную (с пульта дистанционного управления или с физического устройства).",
+                "sv": "Detta alternativ förhindrar att enheten stängs av från Homey.\n\nDen kan fortfarande stängas av manuellt (från en fjärrkontroll eller från det fysiska enheten)."
+              },
+              "id": "always_on",
+              "label": {
+                "ar": "تعطيل الإيقاف من Homey",
+                "da": "Deaktiver slukning fra Homey",
+                "de": "Abschaltung von Homey deaktivieren",
+                "en": "Disable shutdown from Homey",
+                "es": "Desactivar el apagado desde Homey",
+                "fr": "Désactiver l'extinction depuis Homey",
+                "it": "Disattiva lo spegnimento da Homey",
+                "ko": "Homey에서 종료 비활성화",
+                "nl": "Schakel uitschakeling van Homey uit",
+                "no": "Deaktiver avstenging fra Homey",
+                "pl": "Wyłącz zamykanie z Homey",
+                "ru": "Отключить выключение из Homey",
+                "sv": "Inaktivera avstängning från Homey"
+              },
+              "type": "checkbox",
+              "value": false
+            },
+            {
+              "id": "measure_signal_strength",
+              "label": {
+                "ar": "عرض قوة الإشارة",
+                "da": "Vise signalstyrke",
+                "de": "Signalstärke anzeigen",
+                "en": "Display signal strength",
+                "es": "Visualizar la intensidad de la señal",
+                "fr": "Afficher l'intensité du signal",
+                "it": "Visualizza intensità del segnale",
+                "ko": "신호 강도 표시",
+                "nl": "Signaalsterkte weergeven",
+                "no": "Vise signalstyrke",
+                "pl": "Wyświetl siłę sygnału",
+                "ru": "Отображать уровень сигнала",
+                "sv": "Visa signalstyrka"
+              },
+              "type": "checkbox",
+              "value": false
+            }
+          ],
+          "label": {
+            "ar": "خيارات",
+            "da": "Indstillinger",
+            "de": "Optionen",
+            "en": "Options",
+            "es": "Opciones",
+            "fr": "Options",
+            "it": "Opzioni",
+            "ko": "옵션",
+            "nl": "Opties",
+            "no": "Alternativer",
+            "pl": "Opcje",
+            "ru": "Параметры",
+            "sv": "Alternativ"
+          },
+          "type": "group"
+        }
+      ]
+    },
+    {
+      "capabilitiesOptions": {
+        "hot_water_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "ar": "تلقائي",
+                "da": "Automatisk",
+                "de": "Automatisch",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "it": "Automatica",
+                "ko": "자동",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "pl": "Automatyczny",
+                "ru": "Авто",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "forced",
+              "title": {
+                "ar": "إجباري",
+                "da": "Tvungen",
+                "de": "Erzwungen",
+                "en": "Forced",
+                "es": "Forzado",
+                "fr": "Forcé",
+                "it": "Forzato",
+                "ko": "강제",
+                "nl": "Gedwongen",
+                "no": "Tvungen",
+                "pl": "Wymuszony",
+                "ru": "Принудительный",
+                "sv": "Tvingad"
+              }
+            }
+          ]
+        },
+        "measure_power": {
+          "approximated": true
+        },
+        "measure_temperature.outdoor": {
+          "title": {
+            "ar": "درجة الحرارة الخارجية",
+            "da": "Udendørstemperatur",
+            "de": "Außentemperatur",
+            "en": "Outdoor temperature",
+            "es": "Temperatura exterior",
+            "fr": "Température extérieure",
+            "it": "Temperatura esterna",
+            "ko": "실외 온도",
+            "nl": "Buitentemperatuur",
+            "no": "Utetemperatur",
+            "pl": "Temperatura zewnętrzna",
+            "ru": "Температура на улице",
+            "sv": "Utomhustemperatur"
+          }
+        },
+        "measure_temperature.tank_water": {
+          "title": {
+            "ar": "درجة حرارة الماء الساخن",
+            "da": "Varmtvandstemperatur",
+            "de": "Warmwassertemperatur",
+            "en": "Hot water temperature",
+            "es": "Temperatura del agua caliente",
+            "fr": "Température de l'eau chaude",
+            "it": "Temperatura dell'acqua calda",
+            "ko": "온수 온도",
+            "nl": "Warmwatertemperatuur",
+            "no": "Varmtvanntemperatur",
+            "pl": "Temperatura ciepłej wody",
+            "ru": "Температура горячей воды",
+            "sv": "Varmvattentemperatur"
+          }
+        },
+        "measure_temperature.zone2": {
+          "title": {
+            "ar": "درجة الحرارة - المنطقة 2",
+            "da": "Temperatur - zone 2",
+            "de": "Temperatur - Zone 2",
+            "en": "Temperature - zone 2",
+            "es": "Temperatura - zona 2",
+            "fr": "Température - zone 2",
+            "it": "Temperatura - zona 2",
+            "ko": "온도 - 구역 2",
+            "nl": "Temperatuur - zone 2",
+            "no": "Temperatur - sone 2",
+            "pl": "Temperatura - strefa 2",
+            "ru": "Температура - зона 2",
+            "sv": "Temperatur - zon 2"
+          }
+        },
+        "operational_state": {
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.hot_water": {
+          "title": {
+            "ar": "حالة التشغيل - مياه ساخنة صحية",
+            "da": "Driftstilstand - varmtvandsindlæsning",
+            "de": "Betriebszustand - Brauchwarmwasser",
+            "en": "Operational state - domestic hot water",
+            "es": "Estado operativo - agua caliente sanitaria",
+            "fr": "État opérationnel - eau chaude sanitaire",
+            "it": "Stato operativo - acqua calda sanitaria",
+            "ko": "작동 상태 - 생활 온수",
+            "nl": "Operationele staat - sanitair warm water",
+            "no": "Driftstilstand - varmvannslastning",
+            "pl": "Stan pracy - ciepła woda użytkowa",
+            "ru": "Рабочее состояние - ГВС",
+            "sv": "Drifttillstånd - varmvattenladdning"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.zone1": {
+          "title": {
+            "ar": "حالة التشغيل - المنطقة 1",
+            "da": "Driftstilstand - zone 1",
+            "de": "Betriebszustand - Zone 1",
+            "en": "Operational state - zone 1",
+            "es": "Estado operativo - zona 1",
+            "fr": "État opérationnel - zone 1",
+            "it": "Stato operativo - zona 1",
+            "ko": "작동 상태 - 구역 1",
+            "nl": "Operationele staat - zone 1",
+            "no": "Driftstilstand - sone 1",
+            "pl": "Stan pracy - strefa 1",
+            "ru": "Рабочее состояние - зона 1",
+            "sv": "Drifttillstånd - zon 1"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.zone2": {
+          "title": {
+            "ar": "حالة التشغيل - المنطقة 2",
+            "da": "Driftstilstand - zone 2",
+            "de": "Betriebszustand - Zone 2",
+            "en": "Operational state - zone 2",
+            "es": "Estado operativo - zona 2",
+            "fr": "État opérationnel - zone 2",
+            "it": "Stato operativo - zona 2",
+            "ko": "작동 상태 - 구역 2",
+            "nl": "Operationele staat - zone 2",
+            "no": "Driftstilstand - sone 2",
+            "pl": "Stan pracy - strefa 2",
+            "ru": "Рабочее состояние - зона 2",
+            "sv": "Drifttillstånd - zon 2"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "target_temperature.tank_water": {
+          "max": 60,
+          "min": 40,
+          "step": 1,
+          "title": {
+            "ar": "درجة حرارة الماء الساخن المستهدفة",
+            "da": "Måltemperatur for varmtvand",
+            "de": "Solltemperatur Warmwasser",
+            "en": "Hot water target temperature",
+            "es": "Temperatura configurada del agua caliente",
+            "fr": "Température cible de l'eau chaude",
+            "it": "Temperatura obiettivo acqua calda",
+            "ko": "온수 목표 온도",
+            "nl": "Ingestelde warmwatertemperatuur",
+            "no": "Ønsket temperatur for varmtvann",
+            "pl": "Temperatura docelowa ciepłej wody",
+            "ru": "Целевая температура горячей воды",
+            "sv": "Måltemperatur för varmvatten"
+          }
+        },
+        "target_temperature.zone2": {
+          "max": 30,
+          "min": 10,
+          "title": {
+            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
+            "da": "Måltemperatur - zone 2",
+            "de": "Solltemperatur - Zone 2",
+            "en": "Target temperature - zone 2",
+            "es": "Temperatura configurada - zona 2",
+            "fr": "Température cible - zone 2",
+            "it": "Temperatura obiettivo - zona 2",
+            "ko": "목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur - zone 2",
+            "no": "Ønsket temperatur - sone 2",
+            "pl": "Temperatura docelowa - strefa 2",
+            "ru": "Целевая температура - зона 2",
+            "sv": "Måltemperatur - zon 2"
           }
         },
         "alarm_generic.silent": {
@@ -4790,308 +6744,6 @@
     },
     {
       "capabilitiesOptions": {
-        "measure_power": {
-          "approximated": true
-        },
-        "measure_temperature.outdoor": {
-          "title": {
-            "ar": "درجة الحرارة الخارجية",
-            "da": "Udendørstemperatur",
-            "de": "Außentemperatur",
-            "en": "Outdoor temperature",
-            "es": "Temperatura exterior",
-            "fr": "Température extérieure",
-            "it": "Temperatura esterna",
-            "ko": "실외 온도",
-            "nl": "Buitentemperatuur",
-            "no": "Utetemperatur",
-            "pl": "Temperatura zewnętrzna",
-            "ru": "Температура на улице",
-            "sv": "Utomhustemperatur"
-          }
-        },
-        "alarm_generic.booster_heater1": {
-          "insightsTitleFalse": {
-            "ar": "تم إيقاف سخان التعزيز 1",
-            "da": "Tilkoblingsvarme 1 blev deaktiveret",
-            "de": "Zusatzheizung 1 ausgeschaltet",
-            "en": "Booster heater 1 turned off",
-            "es": "Calentador de refuerzo 1 desactivado",
-            "fr": "Chauffage d'appoint 1 s'est désactivé",
-            "it": "Riscaldatore ausiliario 1 disattivato",
-            "ko": "보조 히터 1 꺼짐",
-            "nl": "Bijverwarmingselement 1 ging uit",
-            "no": "Tilleggsvarme 1 deaktivert",
-            "pl": "Grzałka wspomagająca 1 wyłączona",
-            "ru": "Дополнительный нагреватель 1 выключен",
-            "sv": "Tillskottsvärmare 1 inaktiverad"
-          },
-          "insightsTitleTrue": {
-            "ar": "تم تشغيل سخان التعزيز 1",
-            "da": "Tilkoblingsvarme 1 blev aktiveret",
-            "de": "Zusatzheizung 1 eingeschaltet",
-            "en": "Booster heater 1 turned on",
-            "es": "Calentador de refuerzo 1 activado",
-            "fr": "Chauffage d'appoint 1 s'est activé",
-            "it": "Riscaldatore ausiliario 1 attivato",
-            "ko": "보조 히터 1 켜짐",
-            "nl": "Bijverwarmingselement 1 ging af",
-            "no": "Tilleggsvarme 1 aktivert",
-            "pl": "Grzałka wspomagająca 1 włączona",
-            "ru": "Дополнительный нагреватель 1 включен",
-            "sv": "Tillskottsvärmare 1 aktiverad"
-          },
-          "title": {
-            "ar": "سخان التعزيز 1",
-            "da": "Tilkoblingsvarme 1",
-            "de": "Zusatzheizung 1",
-            "en": "Booster heater 1",
-            "es": "Calentador de refuerzo 1",
-            "fr": "Chauffage d'appoint 1",
-            "it": "Riscaldatore ausiliario 1",
-            "ko": "보조 히터 1",
-            "nl": "Bijverwarmingselement 1",
-            "no": "Tilleggsvarme 1",
-            "pl": "Grzałka wspomagająca 1",
-            "ru": "Дополнительный нагреватель 1",
-            "sv": "Tillskottsvärmare 1"
-          }
-        },
-        "alarm_generic.booster_heater2": {
-          "insightsTitleFalse": {
-            "ar": "تم إيقاف سخان التعزيز 2",
-            "da": "Tilkoblingsvarme 2 blev deaktiveret",
-            "de": "Zusatzheizung 2 ausgeschaltet",
-            "en": "Booster heater 2 turned off",
-            "es": "Calentador de refuerzo 2 desactivado",
-            "fr": "Chauffage d'appoint 2 s'est désactivé",
-            "it": "Riscaldatore ausiliario 2 disattivato",
-            "ko": "보조 히터 2 꺼짐",
-            "nl": "Bijverwarmingselement 2 ging uit",
-            "no": "Tilleggsvarme 2 deaktivert",
-            "pl": "Grzałka wspomagająca 2 wyłączona",
-            "ru": "Дополнительный нагреватель 2 выключен",
-            "sv": "Tillskottsvärmare 2 inaktiverad"
-          },
-          "insightsTitleTrue": {
-            "ar": "تم تشغيل سخان التعزيز 2",
-            "da": "Tilkoblingsvarme 2 blev aktiveret",
-            "de": "Zusatzheizung 2 eingeschaltet",
-            "en": "Booster heater 2 turned on",
-            "es": "Calentador de refuerzo 2 activado",
-            "fr": "Chauffage d'appoint 2 s'est activé",
-            "it": "Riscaldatore ausiliario 2 attivato",
-            "ko": "보조 히터 2 켜짐",
-            "nl": "Bijverwarmingselement 2 ging af",
-            "no": "Tilleggsvarme 2 aktivert",
-            "pl": "Grzałka wspomagająca 2 włączona",
-            "ru": "Дополнительный нагреватель 2 включен",
-            "sv": "Tillskottsvärmare 2 aktiverad"
-          },
-          "title": {
-            "ar": "سخان التعزيز 2",
-            "da": "Tilkoblingsvarme 2",
-            "de": "Zusatzheizung 2",
-            "en": "Booster heater 2",
-            "es": "Calentador de refuerzo 2",
-            "fr": "Chauffage d'appoint 2",
-            "it": "Riscaldatore ausiliario 2",
-            "ko": "보조 히터 2",
-            "nl": "Bijverwarmingselement 2",
-            "no": "Tilleggsvarme 2",
-            "pl": "Grzałka wspomagająca 2",
-            "ru": "Дополнительный нагреватель 2",
-            "sv": "Tillskottsvärmare 2"
-          }
-        },
-        "alarm_generic.booster_heater2_plus": {
-          "insightsTitleFalse": {
-            "ar": "تم إيقاف سخان التعزيز +2",
-            "da": "Tilkoblingsvarme 2+ blev deaktiveret",
-            "de": "Zusatzheizung 2+ ausgeschaltet",
-            "en": "Booster heater 2+ turned off",
-            "es": "Calentador de refuerzo 2+ desactivado",
-            "fr": "Chauffage d'appoint 2+ s'est désactivé",
-            "it": "Riscaldatore ausiliario 2+ disattivato",
-            "ko": "보조 히터 2+ 꺼짐",
-            "nl": "Bijverwarmingselement 2+ ging uit",
-            "no": "Tilleggsvarme 2+ deaktivert",
-            "pl": "Grzałka wspomagająca 2+ wyłączona",
-            "ru": "Дополнительный нагреватель 2+ выключен",
-            "sv": "Tillskottsvärmare 2+ inaktiverad"
-          },
-          "insightsTitleTrue": {
-            "ar": "تم تشغيل سخان التعزيز +2",
-            "da": "Tilkoblingsvarme 2+ blev aktiveret",
-            "de": "Zusatzheizung 2+ eingeschaltet",
-            "en": "Booster heater 2+ turned on",
-            "es": "Calentador de refuerzo 2+ activado",
-            "fr": "Chauffage d'appoint 2+ s'est activé",
-            "it": "Riscaldatore ausiliario 2+ attivato",
-            "ko": "보조 히터 2+ 켜짐",
-            "nl": "Bijverwarmingselement 2+ ging af",
-            "no": "Tilleggsvarme 2+ aktivert",
-            "pl": "Grzałka wspomagająca 2+ włączona",
-            "ru": "Дополнительный нагреватель 2+ включен",
-            "sv": "Tillskottsvärmare 2+ aktiverad"
-          },
-          "title": {
-            "ar": "سخان التعزيز +2",
-            "da": "Tilkoblingsvarme 2+",
-            "de": "Zusatzheizung 2+",
-            "en": "Booster heater 2+",
-            "es": "Calentador de refuerzo 2+",
-            "fr": "Chauffage d'appoint 2+",
-            "it": "Riscaldatore ausiliario 2+",
-            "ko": "보조 히터 2+",
-            "nl": "Bijverwarmingselement 2+",
-            "no": "Tilleggsvarme 2+",
-            "pl": "Grzałka wspomagająca 2+",
-            "ru": "Дополнительный нагреватель 2+",
-            "sv": "Tillskottsvärmare 2+"
-          }
-        },
-        "alarm_generic.defrost": {
-          "insightsTitleFalse": {
-            "ar": "تم إيقاف وضع إزالة الجليد",
-            "da": "Afrimningsfunktion blev deaktiveret",
-            "de": "Abtaumodus ausgeschaltet",
-            "en": "Defrost mode turned off",
-            "es": "Modo de descongelación desactivado",
-            "fr": "Mode dégivrage s'est désactivé",
-            "it": "Modalità sbrinamento disattivata",
-            "ko": "제상 모드 꺼짐",
-            "nl": "Ontdooimodus ging uit",
-            "no": "Avfrostingsmodus deaktivert",
-            "pl": "Tryb odszraniania wyłączony",
-            "ru": "Режим разморозки выключен",
-            "sv": "Avfrostningsläge inaktiverat"
-          },
-          "insightsTitleTrue": {
-            "ar": "تم تشغيل وضع إزالة الجليد",
-            "da": "Afrimningsfunktion blev aktiveret",
-            "de": "Abtaumodus eingeschaltet",
-            "en": "Defrost mode turned on",
-            "es": "Modo de descongelación activado",
-            "fr": "Mode dégivrage s'est activé",
-            "it": "Modalità sbrinamento attivata",
-            "ko": "제상 모드 켜짐",
-            "nl": "Ontdooimodus ging af",
-            "no": "Avfrostingsmodus aktivert",
-            "pl": "Tryb odszraniania włączony",
-            "ru": "Режим разморозки включен",
-            "sv": "Avfrostningsläge aktiverat"
-          },
-          "title": {
-            "ar": "وضع إزالة الجليد",
-            "da": "Afrimningsfunktion",
-            "de": "Abtaumodus",
-            "en": "Defrost mode",
-            "es": "Modo de descongelación",
-            "fr": "Mode dégivrage",
-            "it": "Modalità sbrinamento",
-            "ko": "제상 모드",
-            "nl": "Ontdooimodus",
-            "no": "Avfrostingsmodus",
-            "pl": "Tryb odszraniania",
-            "ru": "Режим разморозки",
-            "sv": "Avfrostningsläge"
-          }
-        },
-        "alarm_generic.eco_hot_water": {
-          "insightsTitleFalse": {
-            "ar": "تم إيقاف وضع المياه الساخنة الاقتصادي",
-            "da": "Eco-tilstand for varmtvandsindlæsning blev deaktiveret",
-            "de": "Eco-Warmwasser ausgeschaltet",
-            "en": "Eco hot water turned off",
-            "es": "Agua caliente eco desactivada",
-            "fr": "Eau chaude éco s'est désactivée",
-            "it": "Acqua calda eco disattivata",
-            "ko": "에코 온수 꺼짐",
-            "nl": "Eco sanitair warm water ging uit",
-            "no": "Eco-modus for varmtvann deaktivert",
-            "pl": "Eco ciepła woda wyłączona",
-            "ru": "Эко-режим горячей воды выключен",
-            "sv": "Eco-läge för varmvatten inaktiverat"
-          },
-          "insightsTitleTrue": {
-            "ar": "تم تشغيل وضع المياه الساخنة الاقتصادي",
-            "da": "Eco-tilstand for varmtvandsindlæsning blev aktiveret",
-            "de": "Eco-Warmwasser eingeschaltet",
-            "en": "Eco hot water turned on",
-            "es": "Agua caliente eco activada",
-            "fr": "Eau chaude éco s'est activée",
-            "it": "Acqua calda eco attivata",
-            "ko": "에코 온수 켜짐",
-            "nl": "Eco sanitair warm water ging af",
-            "no": "Eco-modus for varmtvann aktivert",
-            "pl": "Eco ciepła woda włączona",
-            "ru": "Эко-режим горячей воды включен",
-            "sv": "Eco-läge för varmvatten aktiverat"
-          },
-          "title": {
-            "ar": "مياه ساخنة صحية اقتصادية",
-            "da": "Eco-tilstand af varmtvandsindlæsning",
-            "de": "Eco-Brauchwarmwasser",
-            "en": "Eco domestic hot water",
-            "es": "Agua caliente sanitaria eco",
-            "fr": "Eau chaude sanitaire éco",
-            "it": "Acqua calda sanitaria eco",
-            "ko": "에코 생활 온수",
-            "nl": "Eco sanitair warm water",
-            "no": "Eco-modus for varmvannslastning",
-            "pl": "Eco ciepła woda użytkowa",
-            "ru": "Эко-режим ГВС",
-            "sv": "Eco-läge för varmvattenladdning"
-          }
-        },
-        "alarm_generic.immersion_heater": {
-          "insightsTitleFalse": {
-            "ar": "تم إيقاف السخان الغاطس",
-            "da": "Dyppevarmer blev deaktiveret",
-            "de": "Tauchsieder ausgeschaltet",
-            "en": "Immersion heater turned off",
-            "es": "Calentador eléctrico sumergible desactivado",
-            "fr": "Thermoplongeur s'est désactivé",
-            "it": "Riscaldatore a immersione disattivato",
-            "ko": "침수 히터 꺼짐",
-            "nl": "Dompelelement ging uit",
-            "no": "Dyppvarmer ble deaktivert",
-            "pl": "Grzałka zanurzeniowa wyłączona",
-            "ru": "Погружной нагреватель выключен",
-            "sv": "Doppvärmare inaktiverad"
-          },
-          "insightsTitleTrue": {
-            "ar": "تم تشغيل السخان الغاطس",
-            "da": "Dyppevarmer blev aktiveret",
-            "de": "Tauchsieder eingeschaltet",
-            "en": "Immersion heater turned on",
-            "es": "Calentador eléctrico sumergible activado",
-            "fr": "Thermoplongeur s'est activé",
-            "it": "Riscaldatore a immersione attivato",
-            "ko": "침수 히터 켜짐",
-            "nl": "Dompelelement ging af",
-            "no": "Dyppvarmer ble aktivert",
-            "pl": "Grzałka zanurzeniowa włączona",
-            "ru": "Погружной нагреватель включен",
-            "sv": "Doppvärmare aktiverad"
-          },
-          "title": {
-            "ar": "السخان الغاطس",
-            "da": "Dyppevarmer",
-            "de": "Tauchsieder",
-            "en": "Immersion heater",
-            "es": "Calentador eléctrico sumergible",
-            "fr": "Thermoplongeur",
-            "it": "Riscaldatore a immersione",
-            "ko": "침수 히터",
-            "nl": "Dompelelement",
-            "no": "Dyppvarmer",
-            "pl": "Grzałka zanurzeniowa",
-            "ru": "Погружной нагреватель",
-            "sv": "Doppvärmare"
-          }
-        },
         "hot_water_mode": {
           "values": [
             {
@@ -5132,140 +6784,24 @@
             }
           ]
         },
-        "measure_power.produced": {
-          "title": {
-            "ar": "الطاقة المنتجة",
-            "da": "Produceret effekt",
-            "de": "Erzeugte Leistung",
-            "en": "Produced power",
-            "es": "Potencia producida",
-            "fr": "Puissance produite",
-            "it": "Potenza prodotta",
-            "ko": "생산 전력",
-            "nl": "Geproduceerd vermogen",
-            "no": "Produsert effekt",
-            "pl": "Moc wytworzona",
-            "ru": "Произведённая мощность",
-            "sv": "Producerad effekt"
-          }
+        "measure_power": {
+          "approximated": true
         },
-        "measure_temperature.condensing": {
+        "measure_temperature.outdoor": {
           "title": {
-            "ar": "درجة حرارة التكثيف",
-            "da": "Kondenseringstemperatur",
-            "de": "Kondensationstemperatur",
-            "en": "Condensing temperature",
-            "es": "Temperatura de condensación",
-            "fr": "Température de condensation",
-            "it": "Temperatura di condensazione",
-            "ko": "응축 온도",
-            "nl": "Condensatietemperatuur",
-            "no": "Kondenseringstemperatur",
-            "pl": "Temperatura skraplania",
-            "ru": "Температура конденсации",
-            "sv": "Kondenseringstemperatur"
-          }
-        },
-        "measure_temperature.flow": {
-          "title": {
-            "ar": "درجة حرارة التدفق",
-            "da": "Fremledningstemperatur",
-            "de": "Vorlauftemperatur",
-            "en": "Flow temperature",
-            "es": "Temperatura de partida",
-            "fr": "Température de départ",
-            "it": "Temperatura di mandata",
-            "ko": "유량 온도",
-            "nl": "Aanvoertemperatuur",
-            "no": "Fremløpstemperatur",
-            "pl": "Temperatura zasilania",
-            "ru": "Температура подачи",
-            "sv": "Framledningstemperatur"
-          }
-        },
-        "measure_temperature.flow_zone1": {
-          "title": {
-            "ar": "درجة حرارة التدفق (مستشعر خارجي)",
-            "da": "Fremledningstemperatur (ekstern sensor)",
-            "de": "Vorlauftemperatur (externer Sensor)",
-            "en": "Flow temperature (external sensor)",
-            "es": "Temperatura de partida (sensor externo)",
-            "fr": "Température de départ (capteur externe)",
-            "it": "Temperatura di mandata (sensore esterno)",
-            "ko": "유량 온도 (외부 센서)",
-            "nl": "Aanvoertemperatuur (externe sensor)",
-            "no": "Fremløpstemperatur (ekstern sensor)",
-            "pl": "Temperatura zasilania (czujnik zewnętrzny)",
-            "ru": "Температура подачи (внешний датчик)",
-            "sv": "Framledningstemperatur (extern sensor)"
-          }
-        },
-        "measure_temperature.flow_zone2": {
-          "title": {
-            "ar": "درجة حرارة التدفق - المنطقة 2 (مستشعر خارجي)",
-            "da": "Fremledningstemperatur - zone 2 (ekstern sensor)",
-            "de": "Vorlauftemperatur - Zone 2 (externer Sensor)",
-            "en": "Flow temperature - zone 2 (external sensor)",
-            "es": "Temperatura de partida - zona 2 (sensor externo)",
-            "fr": "Température de départ - zone 2 (capteur externe)",
-            "it": "Temperatura di mandata - zona 2 (sensore esterno)",
-            "ko": "유량 온도 - 구역 2 (외부 센서)",
-            "nl": "Aanvoertemperatuur - zone 2 (externe sensor)",
-            "no": "Fremløpstemperatur - sone 2 (ekstern sensor)",
-            "pl": "Temperatura zasilania - strefa 2 (czujnik zewnętrzny)",
-            "ru": "Температура подачи - зона 2 (внешний датчик)",
-            "sv": "Framledningstemperatur - zon 2 (extern sensor)"
-          }
-        },
-        "measure_temperature.return": {
-          "title": {
-            "ar": "درجة حرارة الرجوع",
-            "da": "Returtemperatur",
-            "de": "Rücklauftemperatur",
-            "en": "Return temperature",
-            "es": "Temperatura de retorno",
-            "fr": "Température de retour",
-            "it": "Temperatura di ritorno",
-            "ko": "복귀 온도",
-            "nl": "Retourtemperatuur",
-            "no": "Returtemperatur",
-            "pl": "Temperatura powrotu",
-            "ru": "Температура обратки",
-            "sv": "Returtemperatur"
-          }
-        },
-        "measure_temperature.return_zone1": {
-          "title": {
-            "ar": "درجة حرارة الرجوع (مستشعر خارجي)",
-            "da": "Returtemperatur (ekstern sensor)",
-            "de": "Rücklauftemperatur (externer Sensor)",
-            "en": "Return temperature (external sensor)",
-            "es": "Temperatura de retorno (sensor externo)",
-            "fr": "Température de retour (capteur externe)",
-            "it": "Temperatura di ritorno (sensore esterno)",
-            "ko": "복귀 온도 (외부 센서)",
-            "nl": "Retourtemperatuur (externe sensor)",
-            "no": "Returtemperatur (ekstern sensor)",
-            "pl": "Temperatura powrotu (czujnik zewnętrzny)",
-            "ru": "Температура обратки (внешний датчик)",
-            "sv": "Returtemperatur (extern sensor)"
-          }
-        },
-        "measure_temperature.return_zone2": {
-          "title": {
-            "ar": "درجة حرارة الرجوع - المنطقة 2 (مستشعر خارجي)",
-            "da": "Returtemperatur - zone 2 (ekstern sensor)",
-            "de": "Rücklauftemperatur - Zone 2 (externer Sensor)",
-            "en": "Return temperature - zone 2 (external sensor)",
-            "es": "Temperatura de retorno - zona 2 (sensor externo)",
-            "fr": "Température de retour - zone 2 (capteur externe)",
-            "it": "Temperatura di ritorno - zona 2 (sensore esterno)",
-            "ko": "복귀 온도 - 구역 2 (외부 센서)",
-            "nl": "Retourtemperatuur - zone 2 (externe sensor)",
-            "no": "Returtemperatur - sone 2 (ekstern sensor)",
-            "pl": "Temperatura powrotu - strefa 2 (czujnik zewnętrzny)",
-            "ru": "Температура обратки - зона 2 (внешний датчик)",
-            "sv": "Returtemperatur - zon 2 (extern sensor)"
+            "ar": "درجة الحرارة الخارجية",
+            "da": "Udendørstemperatur",
+            "de": "Außentemperatur",
+            "en": "Outdoor temperature",
+            "es": "Temperatura exterior",
+            "fr": "Température extérieure",
+            "it": "Temperatura esterna",
+            "ko": "실외 온도",
+            "nl": "Buitentemperatuur",
+            "no": "Utetemperatur",
+            "pl": "Temperatura zewnętrzna",
+            "ru": "Температура на улице",
+            "sv": "Utomhustemperatur"
           }
         },
         "measure_temperature.tank_water": {
@@ -5285,57 +6821,6 @@
             "sv": "Varmvattentemperatur"
           }
         },
-        "measure_temperature.tank_water_mixing": {
-          "title": {
-            "ar": "درجة حرارة مياه خزان الخلط",
-            "da": "Vandtemperatur for blandingstank",
-            "de": "Wassertemperatur Mischbehälter",
-            "en": "Mixing tank water temperature",
-            "es": "Temperatura del agua del tanque de mezcla",
-            "fr": "Température de l'eau du réservoir de mélange",
-            "it": "Temperatura dell'acqua del serbatoio di miscelazione",
-            "ko": "혼합 탱크 수온",
-            "nl": "Watertemperatuur voor mengtank",
-            "no": "Vanntemperatur for blandingstank",
-            "pl": "Temperatura wody zbiornika mieszającego",
-            "ru": "Температура воды смесительного бака",
-            "sv": "Vattentemperatur för blandningstank"
-          }
-        },
-        "measure_temperature.target_curve": {
-          "title": {
-            "ar": "درجة الحرارة المستهدفة لمنحنى التعويض المناخي",
-            "da": "Måltemperatur for varmekurve",
-            "de": "Solltemperatur der Heizkurve",
-            "en": "Weather compensation curve target temperature",
-            "es": "Temperatura configurada de la curva de calefacción",
-            "fr": "Température cible de la courbe de chauffe",
-            "it": "Temperatura obiettivo della curva climatica",
-            "ko": "기상 보상 곡선 목표 온도",
-            "nl": "Ingestelde temperatuur voor de weerscompensatiecurve",
-            "no": "Ønsket temperatur for varmekurve",
-            "pl": "Temperatura docelowa krzywej pogodowej",
-            "ru": "Целевая температура погодозависимой кривой",
-            "sv": "Måltemperatur för värmekurva"
-          }
-        },
-        "measure_temperature.target_curve_zone2": {
-          "title": {
-            "ar": "درجة الحرارة المستهدفة لمنحنى التعويض المناخي - المنطقة 2",
-            "da": "Måltemperatur for varmekurve - zone 2",
-            "de": "Solltemperatur der Heizkurve - Zone 2",
-            "en": "Weather compensation curve target temperature - zone 2",
-            "es": "Temperatura configurada de la curva de calefacción - zona 2",
-            "fr": "Température cible de la courbe de chauffe - zone 2",
-            "it": "Temperatura obiettivo della curva climatica - zona 2",
-            "ko": "기상 보상 곡선 목표 온도 - 구역 2",
-            "nl": "Ingestelde temperatuur voor de weerscompensatiecurve - zone 2",
-            "no": "Ønsket temperatur for varmekurve - sone 2",
-            "pl": "Temperatura docelowa krzywej pogodowej - strefa 2",
-            "ru": "Целевая температура погодозависимой кривой - зона 2",
-            "sv": "Måltemperatur för värmekurva - zon 2"
-          }
-        },
         "measure_temperature.zone2": {
           "title": {
             "ar": "درجة الحرارة - المنطقة 2",
@@ -5351,405 +6836,6 @@
             "pl": "Temperatura - strefa 2",
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
-          }
-        },
-        "meter_power.cooling": {
-          "title": {
-            "ar": "الطاقة المستهلكة - تبريد",
-            "da": "Energi - køling",
-            "de": "Energie - Kühlung",
-            "en": "Energy - cooling",
-            "es": "Energía - enfriamiento",
-            "fr": "Énergie - refroidissement",
-            "it": "Energia - raffreddamento",
-            "ko": "에너지 - 냉방",
-            "nl": "Energie - koeling",
-            "no": "Energi - kjøling",
-            "pl": "Energia - chłodzenie",
-            "ru": "Энергия - охлаждение",
-            "sv": "Energi - kylning"
-          }
-        },
-        "meter_power.cop": {
-          "title": {
-            "ar": "CoP",
-            "da": "CoP",
-            "de": "CoP",
-            "en": "CoP",
-            "es": "CoP",
-            "fr": "CoP",
-            "it": "CoP",
-            "ko": "CoP",
-            "nl": "CoP",
-            "no": "CoP",
-            "pl": "CoP",
-            "ru": "CoP",
-            "sv": "CoP"
-          },
-          "units": ""
-        },
-        "meter_power.cop_cooling": {
-          "title": {
-            "ar": "CoP - تبريد",
-            "da": "CoP - køling",
-            "de": "CoP - Kühlung",
-            "en": "CoP - cooling",
-            "es": "CoP - enfriamiento",
-            "fr": "CoP - refroidissement",
-            "it": "CoP - raffreddamento",
-            "ko": "CoP - 냉방",
-            "nl": "CoP - koeling",
-            "no": "CoP - kjøling",
-            "pl": "CoP - chłodzenie",
-            "ru": "CoP - охлаждение",
-            "sv": "CoP - kylning"
-          },
-          "units": ""
-        },
-        "meter_power.cop_daily": {
-          "title": {
-            "ar": "CoP يومي",
-            "da": "Daglig CoP",
-            "de": "Täglicher CoP",
-            "en": "Daily CoP",
-            "es": "CoP diario",
-            "fr": "CoP quotidien",
-            "it": "CoP giornaliero",
-            "ko": "일일 CoP",
-            "nl": "Dagelijkse CoP",
-            "no": "Daglig CoP",
-            "pl": "Dzienny CoP",
-            "ru": "CoP за день",
-            "sv": "Daglig CoP"
-          },
-          "units": ""
-        },
-        "meter_power.cop_daily_cooling": {
-          "title": {
-            "ar": "CoP يومي - تبريد",
-            "da": "Daglig CoP - køling",
-            "de": "Täglicher CoP - Kühlung",
-            "en": "Daily CoP - cooling",
-            "es": "CoP diario - enfriamiento",
-            "fr": "CoP quotidien - refroidissement",
-            "it": "CoP giornaliero - raffreddamento",
-            "ko": "일일 CoP - 냉방",
-            "nl": "Dagelijkse CoP - koeling",
-            "no": "Daglig CoP - kjøling",
-            "pl": "Dzienny CoP - chłodzenie",
-            "ru": "CoP за день - охлаждение",
-            "sv": "Daglig CoP - kylning"
-          },
-          "units": ""
-        },
-        "meter_power.cop_daily_heating": {
-          "title": {
-            "ar": "CoP يومي - تدفئة",
-            "da": "Daglig CoP - opvarmning",
-            "de": "Täglicher CoP - Heizung",
-            "en": "Daily CoP - heating",
-            "es": "CoP diario - calefacción",
-            "fr": "CoP quotidien - chauffage",
-            "it": "CoP giornaliero - riscaldamento",
-            "ko": "일일 CoP - 난방",
-            "nl": "Dagelijkse CoP - verwarming",
-            "no": "Daglig CoP - oppvarming",
-            "pl": "Dzienny CoP - ogrzewanie",
-            "ru": "CoP за день - отопление",
-            "sv": "Daglig CoP - uppvärmning"
-          },
-          "units": ""
-        },
-        "meter_power.cop_daily_hotwater": {
-          "title": {
-            "ar": "CoP يومي - مياه ساخنة صحية",
-            "da": "Daglig CoP - varmtvandslastning",
-            "de": "Täglicher CoP - Brauchwarmwasser",
-            "en": "Daily CoP - domestic hot water",
-            "es": "CoP diario - agua caliente sanitaria",
-            "fr": "CoP quotidien - eau chaude sanitaire",
-            "it": "CoP giornaliero - acqua calda sanitaria",
-            "ko": "일일 CoP - 생활 온수",
-            "nl": "Dagelijkse CoP - sanitair warm water",
-            "no": "Daglig CoP - varmvannslastning",
-            "pl": "Dzienny CoP - ciepła woda użytkowa",
-            "ru": "CoP за день - ГВС",
-            "sv": "Daglig CoP - varmvattenladdning"
-          },
-          "units": ""
-        },
-        "meter_power.cop_heating": {
-          "title": {
-            "ar": "CoP - تدفئة",
-            "da": "CoP - opvarmning",
-            "de": "CoP - Heizung",
-            "en": "CoP - heating",
-            "es": "CoP - calefacción",
-            "fr": "CoP - chauffage",
-            "it": "CoP - riscaldamento",
-            "ko": "CoP - 난방",
-            "nl": "CoP - verwarming",
-            "no": "CoP - oppvarming",
-            "pl": "CoP - ogrzewanie",
-            "ru": "CoP - отопление",
-            "sv": "CoP - uppvärmning"
-          },
-          "units": ""
-        },
-        "meter_power.cop_hotwater": {
-          "title": {
-            "ar": "CoP - مياه ساخنة صحية",
-            "da": "CoP - varmtvandsindlæsning",
-            "de": "CoP - Brauchwarmwasser",
-            "en": "CoP - domestic hot water",
-            "es": "CoP - agua caliente sanitaria",
-            "fr": "CoP - eau chaude sanitaire",
-            "it": "CoP - acqua calda sanitaria",
-            "ko": "CoP - 생활 온수",
-            "nl": "CoP - sanitair warm water",
-            "no": "CoP - varmvannslastning",
-            "pl": "CoP - ciepła woda użytkowa",
-            "ru": "CoP - ГВС",
-            "sv": "CoP - varmvattenladdning"
-          },
-          "units": ""
-        },
-        "meter_power.daily": {
-          "title": {
-            "ar": "الطاقة اليومية",
-            "da": "Daglig energi",
-            "de": "Tägliche Energie",
-            "en": "Daily energy",
-            "es": "Energía diaria",
-            "fr": "Énergie quotidienne",
-            "it": "Energia giornaliera",
-            "ko": "일일 에너지",
-            "nl": "Dagelijkse energie",
-            "no": "Daglig energi",
-            "pl": "Energia dzienna",
-            "ru": "Энергия за день",
-            "sv": "Daglig energi"
-          }
-        },
-        "meter_power.daily_cooling": {
-          "title": {
-            "ar": "الطاقة اليومية - تبريد",
-            "da": "Daglig energi - køling",
-            "de": "Tägliche Energie - Kühlung",
-            "en": "Daily energy - cooling",
-            "es": "Energía diaria - enfriamiento",
-            "fr": "Énergie quotidienne - refroidissement",
-            "it": "Energia giornaliera - raffreddamento",
-            "ko": "일일 에너지 - 냉방",
-            "nl": "Dagelijkse energie - koeling",
-            "no": "Daglig energi - kjøling",
-            "pl": "Energia dzienna - chłodzenie",
-            "ru": "Энергия за день - охлаждение",
-            "sv": "Daglig energi - kylning"
-          }
-        },
-        "meter_power.daily_heating": {
-          "title": {
-            "ar": "الطاقة اليومية - تدفئة",
-            "da": "Daglig energi - opvarmning",
-            "de": "Tägliche Energie - Heizung",
-            "en": "Daily energy - heating",
-            "es": "Energía diaria - calefacción",
-            "fr": "Énergie quotidienne - chauffage",
-            "it": "Energia giornaliera - riscaldamento",
-            "ko": "일일 에너지 - 난방",
-            "nl": "Dagelijkse energie - verwarming",
-            "no": "Daglig energi - oppvarming",
-            "pl": "Energia dzienna - ogrzewanie",
-            "ru": "Энергия за день - отопление",
-            "sv": "Daglig energi - uppvärmning"
-          }
-        },
-        "meter_power.daily_hotwater": {
-          "title": {
-            "ar": "الطاقة اليومية - مياه ساخنة صحية",
-            "da": "Daglig energi - varmtvandslastning",
-            "de": "Tägliche Energie - Brauchwarmwasser",
-            "en": "Daily energy - domestic hot water",
-            "es": "Energía diaria - agua caliente sanitaria",
-            "fr": "Énergie quotidienne - eau chaude sanitaire",
-            "it": "Energia giornaliera - acqua calda sanitaria",
-            "ko": "일일 에너지 - 생활 온수",
-            "nl": "Dagelijkse energie - sanitair warm water",
-            "no": "Daglig energi - varmvannslastning",
-            "pl": "Energia dzienna - ciepła woda użytkowa",
-            "ru": "Энергия за день - ГВС",
-            "sv": "Daglig energi - varmvattenladdning"
-          }
-        },
-        "meter_power.heating": {
-          "title": {
-            "ar": "الطاقة المستهلكة - تدفئة",
-            "da": "Energi - opvarmning",
-            "de": "Energie - Heizung",
-            "en": "Energy - heating",
-            "es": "Energía - calefacción",
-            "fr": "Énergie - chauffage",
-            "it": "Energia - riscaldamento",
-            "ko": "에너지 - 난방",
-            "nl": "Energie - verwarming",
-            "no": "Energi - oppvarming",
-            "pl": "Energia - ogrzewanie",
-            "ru": "Энергия - отопление",
-            "sv": "Energi - uppvärmning"
-          }
-        },
-        "meter_power.hotwater": {
-          "title": {
-            "ar": "الطاقة المستهلكة - مياه ساخنة صحية",
-            "da": "Energi - varmtvandsindlæsning",
-            "de": "Energie - Brauchwarmwasser",
-            "en": "Energy - domestic hot water",
-            "es": "Energía - agua caliente sanitaria",
-            "fr": "Énergie - eau chaude sanitaire",
-            "it": "Energia - acqua calda sanitaria",
-            "ko": "에너지 - 생활 온수",
-            "nl": "Energie - sanitair warm water",
-            "no": "Energi - varmvannslastning",
-            "pl": "Energia - ciepła woda użytkowa",
-            "ru": "Энергия - ГВС",
-            "sv": "Energi - varmvattenladdning"
-          }
-        },
-        "meter_power.produced": {
-          "title": {
-            "ar": "الطاقة المنتجة",
-            "da": "Produceret energi",
-            "de": "Erzeugte Energie",
-            "en": "Produced energy",
-            "es": "Energía producida",
-            "fr": "Énergie produite",
-            "it": "Energia prodotta",
-            "ko": "생산 에너지",
-            "nl": "Geproduceerde energie",
-            "no": "Produsert energi",
-            "pl": "Energia wytworzona",
-            "ru": "Произведённая энергия",
-            "sv": "Producerad energi"
-          }
-        },
-        "meter_power.produced_cooling": {
-          "title": {
-            "ar": "الطاقة المنتجة - تبريد",
-            "da": "Produceret energi - køling",
-            "de": "Erzeugte Energie - Kühlung",
-            "en": "Produced energy - cooling",
-            "es": "Energía producida - enfriamiento",
-            "fr": "Énergie produite - refroidissement",
-            "it": "Energia prodotta - raffreddamento",
-            "ko": "생산 에너지 - 냉방",
-            "nl": "Geproduceerde energie - koeling",
-            "no": "Produsert energi - kjøling",
-            "pl": "Energia wytworzona - chłodzenie",
-            "ru": "Произведённая энергия - охлаждение",
-            "sv": "Producerad energi - kylning"
-          }
-        },
-        "meter_power.produced_daily": {
-          "title": {
-            "ar": "الطاقة المنتجة اليومية",
-            "da": "Daglig produceret energi",
-            "de": "Tägliche erzeugte Energie",
-            "en": "Daily produced energy",
-            "es": "Energía producida diaria",
-            "fr": "Énergie produite quotidienne",
-            "it": "Energia prodotta giornaliera",
-            "ko": "일일 생산 에너지",
-            "nl": "Dagelijkse geproduceerde energie",
-            "no": "Daglig produsert energi",
-            "pl": "Dzienna energia wytworzona",
-            "ru": "Произведённая энергия за день",
-            "sv": "Daglig producerad energi"
-          }
-        },
-        "meter_power.produced_daily_cooling": {
-          "title": {
-            "ar": "الطاقة المنتجة اليومية - تبريد",
-            "da": "Daglig produceret energi - køling",
-            "de": "Tägliche erzeugte Energie - Kühlung",
-            "en": "Daily produced energy - cooling",
-            "es": "Energía producida diaria - enfriamiento",
-            "fr": "Énergie produite quotidienne - refroidissement",
-            "it": "Energia prodotta giornaliera - raffreddamento",
-            "ko": "일일 생산 에너지 - 냉방",
-            "nl": "Dagelijkse geproduceerde energie - koeling",
-            "no": "Daglig produsert energi - kjøling",
-            "pl": "Dzienna energia wytworzona - chłodzenie",
-            "ru": "Произведённая энергия за день - охлаждение",
-            "sv": "Daglig producerad energi - kylning"
-          }
-        },
-        "meter_power.produced_daily_heating": {
-          "title": {
-            "ar": "الطاقة المنتجة اليومية - تدفئة",
-            "da": "Daglig produceret energi - opvarmning",
-            "de": "Tägliche erzeugte Energie - Heizung",
-            "en": "Daily produced energy - heating",
-            "es": "Energía producida diaria - calefacción",
-            "fr": "Énergie produite quotidienne - chauffage",
-            "it": "Energia prodotta giornaliera - riscaldamento",
-            "ko": "일일 생산 에너지 - 난방",
-            "nl": "Dagelijkse geproduceerde energie - verwarming",
-            "no": "Daglig produsert energi - oppvarming",
-            "pl": "Dzienna energia wytworzona - ogrzewanie",
-            "ru": "Произведённая энергия за день - отопление",
-            "sv": "Daglig producerad energi - uppvärmning"
-          }
-        },
-        "meter_power.produced_daily_hotwater": {
-          "title": {
-            "ar": "الطاقة المنتجة اليومية - مياه ساخنة صحية",
-            "da": "Daglig produceret energi - varmtvandslastning",
-            "de": "Tägliche erzeugte Energie - Brauchwarmwasser",
-            "en": "Daily produced energy - domestic hot water",
-            "es": "Energía producida diaria - agua caliente sanitaria",
-            "fr": "Énergie produite quotidienne - eau chaude sanitaire",
-            "it": "Energia prodotta giornaliera - acqua calda sanitaria",
-            "ko": "일일 생산 에너지 - 생활 온수",
-            "nl": "Dagelijkse geproduceerde energie - sanitair warm water",
-            "no": "Daglig produsert energi - varmvannslastning",
-            "pl": "Dzienna energia wytworzona - ciepła woda użytkowa",
-            "ru": "Произведённая энергия за день - ГВС",
-            "sv": "Daglig producerad energi - varmvattenladdning"
-          }
-        },
-        "meter_power.produced_heating": {
-          "title": {
-            "ar": "الطاقة المنتجة - تدفئة",
-            "da": "Produceret energi - opvarmning",
-            "de": "Erzeugte Energie - Heizung",
-            "en": "Produced energy - heating",
-            "es": "Energía producida - calefacción",
-            "fr": "Énergie produite - chauffage",
-            "it": "Energia prodotta - riscaldamento",
-            "ko": "생산 에너지 - 난방",
-            "nl": "Geproduceerde energie - verwarming",
-            "no": "Produsert energi - oppvarming",
-            "pl": "Energia wytworzona - ogrzewanie",
-            "ru": "Произведённая энергия - отопление",
-            "sv": "Producerad energi - uppvärmning"
-          }
-        },
-        "meter_power.produced_hotwater": {
-          "title": {
-            "ar": "الطاقة المنتجة - مياه ساخنة صحية",
-            "da": "Produceret energi - varmtvandsindlæsning",
-            "de": "Erzeugte Energie - Brauchwarmwasser",
-            "en": "Produced energy - domestic hot water",
-            "es": "Energía producida - agua caliente sanitaria",
-            "fr": "Énergie produite - eau chaude sanitaire",
-            "it": "Energia prodotta - acqua calda sanitaria",
-            "ko": "생산 에너지 - 생활 온수",
-            "nl": "Geproduceerde energie - sanitair warm water",
-            "no": "Produsert energi - varmvannslastning",
-            "pl": "Energia wytworzona - ciepła woda użytkowa",
-            "ru": "Произведённая энергия - ГВС",
-            "sv": "Producerad energi - varmvattenladdning"
           }
         },
         "operational_state": {
@@ -6191,6 +7277,913 @@
             }
           ]
         },
+        "target_temperature.tank_water": {
+          "max": 60,
+          "min": 40,
+          "step": 1,
+          "title": {
+            "ar": "درجة حرارة الماء الساخن المستهدفة",
+            "da": "Måltemperatur for varmtvand",
+            "de": "Solltemperatur Warmwasser",
+            "en": "Hot water target temperature",
+            "es": "Temperatura configurada del agua caliente",
+            "fr": "Température cible de l'eau chaude",
+            "it": "Temperatura obiettivo acqua calda",
+            "ko": "온수 목표 온도",
+            "nl": "Ingestelde warmwatertemperatuur",
+            "no": "Ønsket temperatur for varmtvann",
+            "pl": "Temperatura docelowa ciepłej wody",
+            "ru": "Целевая температура горячей воды",
+            "sv": "Måltemperatur för varmvatten"
+          }
+        },
+        "target_temperature.zone2": {
+          "max": 30,
+          "min": 10,
+          "title": {
+            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
+            "da": "Måltemperatur - zone 2",
+            "de": "Solltemperatur - Zone 2",
+            "en": "Target temperature - zone 2",
+            "es": "Temperatura configurada - zona 2",
+            "fr": "Température cible - zone 2",
+            "it": "Temperatura obiettivo - zona 2",
+            "ko": "목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur - zone 2",
+            "no": "Ønsket temperatur - sone 2",
+            "pl": "Temperatura docelowa - strefa 2",
+            "ru": "Целевая температура - зона 2",
+            "sv": "Måltemperatur - zon 2"
+          }
+        },
+        "alarm_generic.booster_heater1": {
+          "insightsTitleFalse": {
+            "ar": "تم إيقاف سخان التعزيز 1",
+            "da": "Tilkoblingsvarme 1 blev deaktiveret",
+            "de": "Zusatzheizung 1 ausgeschaltet",
+            "en": "Booster heater 1 turned off",
+            "es": "Calentador de refuerzo 1 desactivado",
+            "fr": "Chauffage d'appoint 1 s'est désactivé",
+            "it": "Riscaldatore ausiliario 1 disattivato",
+            "ko": "보조 히터 1 꺼짐",
+            "nl": "Bijverwarmingselement 1 ging uit",
+            "no": "Tilleggsvarme 1 deaktivert",
+            "pl": "Grzałka wspomagająca 1 wyłączona",
+            "ru": "Дополнительный нагреватель 1 выключен",
+            "sv": "Tillskottsvärmare 1 inaktiverad"
+          },
+          "insightsTitleTrue": {
+            "ar": "تم تشغيل سخان التعزيز 1",
+            "da": "Tilkoblingsvarme 1 blev aktiveret",
+            "de": "Zusatzheizung 1 eingeschaltet",
+            "en": "Booster heater 1 turned on",
+            "es": "Calentador de refuerzo 1 activado",
+            "fr": "Chauffage d'appoint 1 s'est activé",
+            "it": "Riscaldatore ausiliario 1 attivato",
+            "ko": "보조 히터 1 켜짐",
+            "nl": "Bijverwarmingselement 1 ging af",
+            "no": "Tilleggsvarme 1 aktivert",
+            "pl": "Grzałka wspomagająca 1 włączona",
+            "ru": "Дополнительный нагреватель 1 включен",
+            "sv": "Tillskottsvärmare 1 aktiverad"
+          },
+          "title": {
+            "ar": "سخان التعزيز 1",
+            "da": "Tilkoblingsvarme 1",
+            "de": "Zusatzheizung 1",
+            "en": "Booster heater 1",
+            "es": "Calentador de refuerzo 1",
+            "fr": "Chauffage d'appoint 1",
+            "it": "Riscaldatore ausiliario 1",
+            "ko": "보조 히터 1",
+            "nl": "Bijverwarmingselement 1",
+            "no": "Tilleggsvarme 1",
+            "pl": "Grzałka wspomagająca 1",
+            "ru": "Дополнительный нагреватель 1",
+            "sv": "Tillskottsvärmare 1"
+          }
+        },
+        "alarm_generic.booster_heater2": {
+          "insightsTitleFalse": {
+            "ar": "تم إيقاف سخان التعزيز 2",
+            "da": "Tilkoblingsvarme 2 blev deaktiveret",
+            "de": "Zusatzheizung 2 ausgeschaltet",
+            "en": "Booster heater 2 turned off",
+            "es": "Calentador de refuerzo 2 desactivado",
+            "fr": "Chauffage d'appoint 2 s'est désactivé",
+            "it": "Riscaldatore ausiliario 2 disattivato",
+            "ko": "보조 히터 2 꺼짐",
+            "nl": "Bijverwarmingselement 2 ging uit",
+            "no": "Tilleggsvarme 2 deaktivert",
+            "pl": "Grzałka wspomagająca 2 wyłączona",
+            "ru": "Дополнительный нагреватель 2 выключен",
+            "sv": "Tillskottsvärmare 2 inaktiverad"
+          },
+          "insightsTitleTrue": {
+            "ar": "تم تشغيل سخان التعزيز 2",
+            "da": "Tilkoblingsvarme 2 blev aktiveret",
+            "de": "Zusatzheizung 2 eingeschaltet",
+            "en": "Booster heater 2 turned on",
+            "es": "Calentador de refuerzo 2 activado",
+            "fr": "Chauffage d'appoint 2 s'est activé",
+            "it": "Riscaldatore ausiliario 2 attivato",
+            "ko": "보조 히터 2 켜짐",
+            "nl": "Bijverwarmingselement 2 ging af",
+            "no": "Tilleggsvarme 2 aktivert",
+            "pl": "Grzałka wspomagająca 2 włączona",
+            "ru": "Дополнительный нагреватель 2 включен",
+            "sv": "Tillskottsvärmare 2 aktiverad"
+          },
+          "title": {
+            "ar": "سخان التعزيز 2",
+            "da": "Tilkoblingsvarme 2",
+            "de": "Zusatzheizung 2",
+            "en": "Booster heater 2",
+            "es": "Calentador de refuerzo 2",
+            "fr": "Chauffage d'appoint 2",
+            "it": "Riscaldatore ausiliario 2",
+            "ko": "보조 히터 2",
+            "nl": "Bijverwarmingselement 2",
+            "no": "Tilleggsvarme 2",
+            "pl": "Grzałka wspomagająca 2",
+            "ru": "Дополнительный нагреватель 2",
+            "sv": "Tillskottsvärmare 2"
+          }
+        },
+        "alarm_generic.booster_heater2_plus": {
+          "insightsTitleFalse": {
+            "ar": "تم إيقاف سخان التعزيز +2",
+            "da": "Tilkoblingsvarme 2+ blev deaktiveret",
+            "de": "Zusatzheizung 2+ ausgeschaltet",
+            "en": "Booster heater 2+ turned off",
+            "es": "Calentador de refuerzo 2+ desactivado",
+            "fr": "Chauffage d'appoint 2+ s'est désactivé",
+            "it": "Riscaldatore ausiliario 2+ disattivato",
+            "ko": "보조 히터 2+ 꺼짐",
+            "nl": "Bijverwarmingselement 2+ ging uit",
+            "no": "Tilleggsvarme 2+ deaktivert",
+            "pl": "Grzałka wspomagająca 2+ wyłączona",
+            "ru": "Дополнительный нагреватель 2+ выключен",
+            "sv": "Tillskottsvärmare 2+ inaktiverad"
+          },
+          "insightsTitleTrue": {
+            "ar": "تم تشغيل سخان التعزيز +2",
+            "da": "Tilkoblingsvarme 2+ blev aktiveret",
+            "de": "Zusatzheizung 2+ eingeschaltet",
+            "en": "Booster heater 2+ turned on",
+            "es": "Calentador de refuerzo 2+ activado",
+            "fr": "Chauffage d'appoint 2+ s'est activé",
+            "it": "Riscaldatore ausiliario 2+ attivato",
+            "ko": "보조 히터 2+ 켜짐",
+            "nl": "Bijverwarmingselement 2+ ging af",
+            "no": "Tilleggsvarme 2+ aktivert",
+            "pl": "Grzałka wspomagająca 2+ włączona",
+            "ru": "Дополнительный нагреватель 2+ включен",
+            "sv": "Tillskottsvärmare 2+ aktiverad"
+          },
+          "title": {
+            "ar": "سخان التعزيز +2",
+            "da": "Tilkoblingsvarme 2+",
+            "de": "Zusatzheizung 2+",
+            "en": "Booster heater 2+",
+            "es": "Calentador de refuerzo 2+",
+            "fr": "Chauffage d'appoint 2+",
+            "it": "Riscaldatore ausiliario 2+",
+            "ko": "보조 히터 2+",
+            "nl": "Bijverwarmingselement 2+",
+            "no": "Tilleggsvarme 2+",
+            "pl": "Grzałka wspomagająca 2+",
+            "ru": "Дополнительный нагреватель 2+",
+            "sv": "Tillskottsvärmare 2+"
+          }
+        },
+        "alarm_generic.defrost": {
+          "insightsTitleFalse": {
+            "ar": "تم إيقاف وضع إزالة الجليد",
+            "da": "Afrimningsfunktion blev deaktiveret",
+            "de": "Abtaumodus ausgeschaltet",
+            "en": "Defrost mode turned off",
+            "es": "Modo de descongelación desactivado",
+            "fr": "Mode dégivrage s'est désactivé",
+            "it": "Modalità sbrinamento disattivata",
+            "ko": "제상 모드 꺼짐",
+            "nl": "Ontdooimodus ging uit",
+            "no": "Avfrostingsmodus deaktivert",
+            "pl": "Tryb odszraniania wyłączony",
+            "ru": "Режим разморозки выключен",
+            "sv": "Avfrostningsläge inaktiverat"
+          },
+          "insightsTitleTrue": {
+            "ar": "تم تشغيل وضع إزالة الجليد",
+            "da": "Afrimningsfunktion blev aktiveret",
+            "de": "Abtaumodus eingeschaltet",
+            "en": "Defrost mode turned on",
+            "es": "Modo de descongelación activado",
+            "fr": "Mode dégivrage s'est activé",
+            "it": "Modalità sbrinamento attivata",
+            "ko": "제상 모드 켜짐",
+            "nl": "Ontdooimodus ging af",
+            "no": "Avfrostingsmodus aktivert",
+            "pl": "Tryb odszraniania włączony",
+            "ru": "Режим разморозки включен",
+            "sv": "Avfrostningsläge aktiverat"
+          },
+          "title": {
+            "ar": "وضع إزالة الجليد",
+            "da": "Afrimningsfunktion",
+            "de": "Abtaumodus",
+            "en": "Defrost mode",
+            "es": "Modo de descongelación",
+            "fr": "Mode dégivrage",
+            "it": "Modalità sbrinamento",
+            "ko": "제상 모드",
+            "nl": "Ontdooimodus",
+            "no": "Avfrostingsmodus",
+            "pl": "Tryb odszraniania",
+            "ru": "Режим разморозки",
+            "sv": "Avfrostningsläge"
+          }
+        },
+        "alarm_generic.eco_hot_water": {
+          "insightsTitleFalse": {
+            "ar": "تم إيقاف وضع المياه الساخنة الاقتصادي",
+            "da": "Eco-tilstand for varmtvandsindlæsning blev deaktiveret",
+            "de": "Eco-Warmwasser ausgeschaltet",
+            "en": "Eco hot water turned off",
+            "es": "Agua caliente eco desactivada",
+            "fr": "Eau chaude éco s'est désactivée",
+            "it": "Acqua calda eco disattivata",
+            "ko": "에코 온수 꺼짐",
+            "nl": "Eco sanitair warm water ging uit",
+            "no": "Eco-modus for varmtvann deaktivert",
+            "pl": "Eco ciepła woda wyłączona",
+            "ru": "Эко-режим горячей воды выключен",
+            "sv": "Eco-läge för varmvatten inaktiverat"
+          },
+          "insightsTitleTrue": {
+            "ar": "تم تشغيل وضع المياه الساخنة الاقتصادي",
+            "da": "Eco-tilstand for varmtvandsindlæsning blev aktiveret",
+            "de": "Eco-Warmwasser eingeschaltet",
+            "en": "Eco hot water turned on",
+            "es": "Agua caliente eco activada",
+            "fr": "Eau chaude éco s'est activée",
+            "it": "Acqua calda eco attivata",
+            "ko": "에코 온수 켜짐",
+            "nl": "Eco sanitair warm water ging af",
+            "no": "Eco-modus for varmtvann aktivert",
+            "pl": "Eco ciepła woda włączona",
+            "ru": "Эко-режим горячей воды включен",
+            "sv": "Eco-läge för varmvatten aktiverat"
+          },
+          "title": {
+            "ar": "مياه ساخنة صحية اقتصادية",
+            "da": "Eco-tilstand af varmtvandsindlæsning",
+            "de": "Eco-Brauchwarmwasser",
+            "en": "Eco domestic hot water",
+            "es": "Agua caliente sanitaria eco",
+            "fr": "Eau chaude sanitaire éco",
+            "it": "Acqua calda sanitaria eco",
+            "ko": "에코 생활 온수",
+            "nl": "Eco sanitair warm water",
+            "no": "Eco-modus for varmvannslastning",
+            "pl": "Eco ciepła woda użytkowa",
+            "ru": "Эко-режим ГВС",
+            "sv": "Eco-läge för varmvattenladdning"
+          }
+        },
+        "alarm_generic.immersion_heater": {
+          "insightsTitleFalse": {
+            "ar": "تم إيقاف السخان الغاطس",
+            "da": "Dyppevarmer blev deaktiveret",
+            "de": "Tauchsieder ausgeschaltet",
+            "en": "Immersion heater turned off",
+            "es": "Calentador eléctrico sumergible desactivado",
+            "fr": "Thermoplongeur s'est désactivé",
+            "it": "Riscaldatore a immersione disattivato",
+            "ko": "침수 히터 꺼짐",
+            "nl": "Dompelelement ging uit",
+            "no": "Dyppvarmer ble deaktivert",
+            "pl": "Grzałka zanurzeniowa wyłączona",
+            "ru": "Погружной нагреватель выключен",
+            "sv": "Doppvärmare inaktiverad"
+          },
+          "insightsTitleTrue": {
+            "ar": "تم تشغيل السخان الغاطس",
+            "da": "Dyppevarmer blev aktiveret",
+            "de": "Tauchsieder eingeschaltet",
+            "en": "Immersion heater turned on",
+            "es": "Calentador eléctrico sumergible activado",
+            "fr": "Thermoplongeur s'est activé",
+            "it": "Riscaldatore a immersione attivato",
+            "ko": "침수 히터 켜짐",
+            "nl": "Dompelelement ging af",
+            "no": "Dyppvarmer ble aktivert",
+            "pl": "Grzałka zanurzeniowa włączona",
+            "ru": "Погружной нагреватель включен",
+            "sv": "Doppvärmare aktiverad"
+          },
+          "title": {
+            "ar": "السخان الغاطس",
+            "da": "Dyppevarmer",
+            "de": "Tauchsieder",
+            "en": "Immersion heater",
+            "es": "Calentador eléctrico sumergible",
+            "fr": "Thermoplongeur",
+            "it": "Riscaldatore a immersione",
+            "ko": "침수 히터",
+            "nl": "Dompelelement",
+            "no": "Dyppvarmer",
+            "pl": "Grzałka zanurzeniowa",
+            "ru": "Погружной нагреватель",
+            "sv": "Doppvärmare"
+          }
+        },
+        "measure_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret effekt",
+            "de": "Erzeugte Leistung",
+            "en": "Produced power",
+            "es": "Potencia producida",
+            "fr": "Puissance produite",
+            "it": "Potenza prodotta",
+            "ko": "생산 전력",
+            "nl": "Geproduceerd vermogen",
+            "no": "Produsert effekt",
+            "pl": "Moc wytworzona",
+            "ru": "Произведённая мощность",
+            "sv": "Producerad effekt"
+          }
+        },
+        "measure_temperature.condensing": {
+          "title": {
+            "ar": "درجة حرارة التكثيف",
+            "da": "Kondenseringstemperatur",
+            "de": "Kondensationstemperatur",
+            "en": "Condensing temperature",
+            "es": "Temperatura de condensación",
+            "fr": "Température de condensation",
+            "it": "Temperatura di condensazione",
+            "ko": "응축 온도",
+            "nl": "Condensatietemperatuur",
+            "no": "Kondenseringstemperatur",
+            "pl": "Temperatura skraplania",
+            "ru": "Температура конденсации",
+            "sv": "Kondenseringstemperatur"
+          }
+        },
+        "measure_temperature.flow": {
+          "title": {
+            "ar": "درجة حرارة التدفق",
+            "da": "Fremledningstemperatur",
+            "de": "Vorlauftemperatur",
+            "en": "Flow temperature",
+            "es": "Temperatura de partida",
+            "fr": "Température de départ",
+            "it": "Temperatura di mandata",
+            "ko": "유량 온도",
+            "nl": "Aanvoertemperatuur",
+            "no": "Fremløpstemperatur",
+            "pl": "Temperatura zasilania",
+            "ru": "Температура подачи",
+            "sv": "Framledningstemperatur"
+          }
+        },
+        "measure_temperature.flow_zone1": {
+          "title": {
+            "ar": "درجة حرارة التدفق (مستشعر خارجي)",
+            "da": "Fremledningstemperatur (ekstern sensor)",
+            "de": "Vorlauftemperatur (externer Sensor)",
+            "en": "Flow temperature (external sensor)",
+            "es": "Temperatura de partida (sensor externo)",
+            "fr": "Température de départ (capteur externe)",
+            "it": "Temperatura di mandata (sensore esterno)",
+            "ko": "유량 온도 (외부 센서)",
+            "nl": "Aanvoertemperatuur (externe sensor)",
+            "no": "Fremløpstemperatur (ekstern sensor)",
+            "pl": "Temperatura zasilania (czujnik zewnętrzny)",
+            "ru": "Температура подачи (внешний датчик)",
+            "sv": "Framledningstemperatur (extern sensor)"
+          }
+        },
+        "measure_temperature.flow_zone2": {
+          "title": {
+            "ar": "درجة حرارة التدفق - المنطقة 2 (مستشعر خارجي)",
+            "da": "Fremledningstemperatur - zone 2 (ekstern sensor)",
+            "de": "Vorlauftemperatur - Zone 2 (externer Sensor)",
+            "en": "Flow temperature - zone 2 (external sensor)",
+            "es": "Temperatura de partida - zona 2 (sensor externo)",
+            "fr": "Température de départ - zone 2 (capteur externe)",
+            "it": "Temperatura di mandata - zona 2 (sensore esterno)",
+            "ko": "유량 온도 - 구역 2 (외부 센서)",
+            "nl": "Aanvoertemperatuur - zone 2 (externe sensor)",
+            "no": "Fremløpstemperatur - sone 2 (ekstern sensor)",
+            "pl": "Temperatura zasilania - strefa 2 (czujnik zewnętrzny)",
+            "ru": "Температура подачи - зона 2 (внешний датчик)",
+            "sv": "Framledningstemperatur - zon 2 (extern sensor)"
+          }
+        },
+        "measure_temperature.return": {
+          "title": {
+            "ar": "درجة حرارة الرجوع",
+            "da": "Returtemperatur",
+            "de": "Rücklauftemperatur",
+            "en": "Return temperature",
+            "es": "Temperatura de retorno",
+            "fr": "Température de retour",
+            "it": "Temperatura di ritorno",
+            "ko": "복귀 온도",
+            "nl": "Retourtemperatuur",
+            "no": "Returtemperatur",
+            "pl": "Temperatura powrotu",
+            "ru": "Температура обратки",
+            "sv": "Returtemperatur"
+          }
+        },
+        "measure_temperature.return_zone1": {
+          "title": {
+            "ar": "درجة حرارة الرجوع (مستشعر خارجي)",
+            "da": "Returtemperatur (ekstern sensor)",
+            "de": "Rücklauftemperatur (externer Sensor)",
+            "en": "Return temperature (external sensor)",
+            "es": "Temperatura de retorno (sensor externo)",
+            "fr": "Température de retour (capteur externe)",
+            "it": "Temperatura di ritorno (sensore esterno)",
+            "ko": "복귀 온도 (외부 센서)",
+            "nl": "Retourtemperatuur (externe sensor)",
+            "no": "Returtemperatur (ekstern sensor)",
+            "pl": "Temperatura powrotu (czujnik zewnętrzny)",
+            "ru": "Температура обратки (внешний датчик)",
+            "sv": "Returtemperatur (extern sensor)"
+          }
+        },
+        "measure_temperature.return_zone2": {
+          "title": {
+            "ar": "درجة حرارة الرجوع - المنطقة 2 (مستشعر خارجي)",
+            "da": "Returtemperatur - zone 2 (ekstern sensor)",
+            "de": "Rücklauftemperatur - Zone 2 (externer Sensor)",
+            "en": "Return temperature - zone 2 (external sensor)",
+            "es": "Temperatura de retorno - zona 2 (sensor externo)",
+            "fr": "Température de retour - zone 2 (capteur externe)",
+            "it": "Temperatura di ritorno - zona 2 (sensore esterno)",
+            "ko": "복귀 온도 - 구역 2 (외부 센서)",
+            "nl": "Retourtemperatuur - zone 2 (externe sensor)",
+            "no": "Returtemperatur - sone 2 (ekstern sensor)",
+            "pl": "Temperatura powrotu - strefa 2 (czujnik zewnętrzny)",
+            "ru": "Температура обратки - зона 2 (внешний датчик)",
+            "sv": "Returtemperatur - zon 2 (extern sensor)"
+          }
+        },
+        "measure_temperature.tank_water_mixing": {
+          "title": {
+            "ar": "درجة حرارة مياه خزان الخلط",
+            "da": "Vandtemperatur for blandingstank",
+            "de": "Wassertemperatur Mischbehälter",
+            "en": "Mixing tank water temperature",
+            "es": "Temperatura del agua del tanque de mezcla",
+            "fr": "Température de l'eau du réservoir de mélange",
+            "it": "Temperatura dell'acqua del serbatoio di miscelazione",
+            "ko": "혼합 탱크 수온",
+            "nl": "Watertemperatuur voor mengtank",
+            "no": "Vanntemperatur for blandingstank",
+            "pl": "Temperatura wody zbiornika mieszającego",
+            "ru": "Температура воды смесительного бака",
+            "sv": "Vattentemperatur för blandningstank"
+          }
+        },
+        "measure_temperature.target_curve": {
+          "title": {
+            "ar": "درجة الحرارة المستهدفة لمنحنى التعويض المناخي",
+            "da": "Måltemperatur for varmekurve",
+            "de": "Solltemperatur der Heizkurve",
+            "en": "Weather compensation curve target temperature",
+            "es": "Temperatura configurada de la curva de calefacción",
+            "fr": "Température cible de la courbe de chauffe",
+            "it": "Temperatura obiettivo della curva climatica",
+            "ko": "기상 보상 곡선 목표 온도",
+            "nl": "Ingestelde temperatuur voor de weerscompensatiecurve",
+            "no": "Ønsket temperatur for varmekurve",
+            "pl": "Temperatura docelowa krzywej pogodowej",
+            "ru": "Целевая температура погодозависимой кривой",
+            "sv": "Måltemperatur för värmekurva"
+          }
+        },
+        "measure_temperature.target_curve_zone2": {
+          "title": {
+            "ar": "درجة الحرارة المستهدفة لمنحنى التعويض المناخي - المنطقة 2",
+            "da": "Måltemperatur for varmekurve - zone 2",
+            "de": "Solltemperatur der Heizkurve - Zone 2",
+            "en": "Weather compensation curve target temperature - zone 2",
+            "es": "Temperatura configurada de la curva de calefacción - zona 2",
+            "fr": "Température cible de la courbe de chauffe - zone 2",
+            "it": "Temperatura obiettivo della curva climatica - zona 2",
+            "ko": "기상 보상 곡선 목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur voor de weerscompensatiecurve - zone 2",
+            "no": "Ønsket temperatur for varmekurve - sone 2",
+            "pl": "Temperatura docelowa krzywej pogodowej - strefa 2",
+            "ru": "Целевая температура погодозависимой кривой - зона 2",
+            "sv": "Måltemperatur för värmekurva - zon 2"
+          }
+        },
+        "meter_power.cooling": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تبريد",
+            "da": "Energi - køling",
+            "de": "Energie - Kühlung",
+            "en": "Energy - cooling",
+            "es": "Energía - enfriamiento",
+            "fr": "Énergie - refroidissement",
+            "it": "Energia - raffreddamento",
+            "ko": "에너지 - 냉방",
+            "nl": "Energie - koeling",
+            "no": "Energi - kjøling",
+            "pl": "Energia - chłodzenie",
+            "ru": "Энергия - охлаждение",
+            "sv": "Energi - kylning"
+          }
+        },
+        "meter_power.cop": {
+          "title": {
+            "ar": "CoP",
+            "da": "CoP",
+            "de": "CoP",
+            "en": "CoP",
+            "es": "CoP",
+            "fr": "CoP",
+            "it": "CoP",
+            "ko": "CoP",
+            "nl": "CoP",
+            "no": "CoP",
+            "pl": "CoP",
+            "ru": "CoP",
+            "sv": "CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_cooling": {
+          "title": {
+            "ar": "CoP - تبريد",
+            "da": "CoP - køling",
+            "de": "CoP - Kühlung",
+            "en": "CoP - cooling",
+            "es": "CoP - enfriamiento",
+            "fr": "CoP - refroidissement",
+            "it": "CoP - raffreddamento",
+            "ko": "CoP - 냉방",
+            "nl": "CoP - koeling",
+            "no": "CoP - kjøling",
+            "pl": "CoP - chłodzenie",
+            "ru": "CoP - охлаждение",
+            "sv": "CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily": {
+          "title": {
+            "ar": "CoP يومي",
+            "da": "Daglig CoP",
+            "de": "Täglicher CoP",
+            "en": "Daily CoP",
+            "es": "CoP diario",
+            "fr": "CoP quotidien",
+            "it": "CoP giornaliero",
+            "ko": "일일 CoP",
+            "nl": "Dagelijkse CoP",
+            "no": "Daglig CoP",
+            "pl": "Dzienny CoP",
+            "ru": "CoP за день",
+            "sv": "Daglig CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_cooling": {
+          "title": {
+            "ar": "CoP يومي - تبريد",
+            "da": "Daglig CoP - køling",
+            "de": "Täglicher CoP - Kühlung",
+            "en": "Daily CoP - cooling",
+            "es": "CoP diario - enfriamiento",
+            "fr": "CoP quotidien - refroidissement",
+            "it": "CoP giornaliero - raffreddamento",
+            "ko": "일일 CoP - 냉방",
+            "nl": "Dagelijkse CoP - koeling",
+            "no": "Daglig CoP - kjøling",
+            "pl": "Dzienny CoP - chłodzenie",
+            "ru": "CoP за день - охлаждение",
+            "sv": "Daglig CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_heating": {
+          "title": {
+            "ar": "CoP يومي - تدفئة",
+            "da": "Daglig CoP - opvarmning",
+            "de": "Täglicher CoP - Heizung",
+            "en": "Daily CoP - heating",
+            "es": "CoP diario - calefacción",
+            "fr": "CoP quotidien - chauffage",
+            "it": "CoP giornaliero - riscaldamento",
+            "ko": "일일 CoP - 난방",
+            "nl": "Dagelijkse CoP - verwarming",
+            "no": "Daglig CoP - oppvarming",
+            "pl": "Dzienny CoP - ogrzewanie",
+            "ru": "CoP за день - отопление",
+            "sv": "Daglig CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_hotwater": {
+          "title": {
+            "ar": "CoP يومي - مياه ساخنة صحية",
+            "da": "Daglig CoP - varmtvandslastning",
+            "de": "Täglicher CoP - Brauchwarmwasser",
+            "en": "Daily CoP - domestic hot water",
+            "es": "CoP diario - agua caliente sanitaria",
+            "fr": "CoP quotidien - eau chaude sanitaire",
+            "it": "CoP giornaliero - acqua calda sanitaria",
+            "ko": "일일 CoP - 생활 온수",
+            "nl": "Dagelijkse CoP - sanitair warm water",
+            "no": "Daglig CoP - varmvannslastning",
+            "pl": "Dzienny CoP - ciepła woda użytkowa",
+            "ru": "CoP за день - ГВС",
+            "sv": "Daglig CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_heating": {
+          "title": {
+            "ar": "CoP - تدفئة",
+            "da": "CoP - opvarmning",
+            "de": "CoP - Heizung",
+            "en": "CoP - heating",
+            "es": "CoP - calefacción",
+            "fr": "CoP - chauffage",
+            "it": "CoP - riscaldamento",
+            "ko": "CoP - 난방",
+            "nl": "CoP - verwarming",
+            "no": "CoP - oppvarming",
+            "pl": "CoP - ogrzewanie",
+            "ru": "CoP - отопление",
+            "sv": "CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_hotwater": {
+          "title": {
+            "ar": "CoP - مياه ساخنة صحية",
+            "da": "CoP - varmtvandsindlæsning",
+            "de": "CoP - Brauchwarmwasser",
+            "en": "CoP - domestic hot water",
+            "es": "CoP - agua caliente sanitaria",
+            "fr": "CoP - eau chaude sanitaire",
+            "it": "CoP - acqua calda sanitaria",
+            "ko": "CoP - 생활 온수",
+            "nl": "CoP - sanitair warm water",
+            "no": "CoP - varmvannslastning",
+            "pl": "CoP - ciepła woda użytkowa",
+            "ru": "CoP - ГВС",
+            "sv": "CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.daily": {
+          "title": {
+            "ar": "الطاقة اليومية",
+            "da": "Daglig energi",
+            "de": "Tägliche Energie",
+            "en": "Daily energy",
+            "es": "Energía diaria",
+            "fr": "Énergie quotidienne",
+            "it": "Energia giornaliera",
+            "ko": "일일 에너지",
+            "nl": "Dagelijkse energie",
+            "no": "Daglig energi",
+            "pl": "Energia dzienna",
+            "ru": "Энергия за день",
+            "sv": "Daglig energi"
+          }
+        },
+        "meter_power.daily_cooling": {
+          "title": {
+            "ar": "الطاقة اليومية - تبريد",
+            "da": "Daglig energi - køling",
+            "de": "Tägliche Energie - Kühlung",
+            "en": "Daily energy - cooling",
+            "es": "Energía diaria - enfriamiento",
+            "fr": "Énergie quotidienne - refroidissement",
+            "it": "Energia giornaliera - raffreddamento",
+            "ko": "일일 에너지 - 냉방",
+            "nl": "Dagelijkse energie - koeling",
+            "no": "Daglig energi - kjøling",
+            "pl": "Energia dzienna - chłodzenie",
+            "ru": "Энергия за день - охлаждение",
+            "sv": "Daglig energi - kylning"
+          }
+        },
+        "meter_power.daily_heating": {
+          "title": {
+            "ar": "الطاقة اليومية - تدفئة",
+            "da": "Daglig energi - opvarmning",
+            "de": "Tägliche Energie - Heizung",
+            "en": "Daily energy - heating",
+            "es": "Energía diaria - calefacción",
+            "fr": "Énergie quotidienne - chauffage",
+            "it": "Energia giornaliera - riscaldamento",
+            "ko": "일일 에너지 - 난방",
+            "nl": "Dagelijkse energie - verwarming",
+            "no": "Daglig energi - oppvarming",
+            "pl": "Energia dzienna - ogrzewanie",
+            "ru": "Энергия за день - отопление",
+            "sv": "Daglig energi - uppvärmning"
+          }
+        },
+        "meter_power.daily_hotwater": {
+          "title": {
+            "ar": "الطاقة اليومية - مياه ساخنة صحية",
+            "da": "Daglig energi - varmtvandslastning",
+            "de": "Tägliche Energie - Brauchwarmwasser",
+            "en": "Daily energy - domestic hot water",
+            "es": "Energía diaria - agua caliente sanitaria",
+            "fr": "Énergie quotidienne - eau chaude sanitaire",
+            "it": "Energia giornaliera - acqua calda sanitaria",
+            "ko": "일일 에너지 - 생활 온수",
+            "nl": "Dagelijkse energie - sanitair warm water",
+            "no": "Daglig energi - varmvannslastning",
+            "pl": "Energia dzienna - ciepła woda użytkowa",
+            "ru": "Энергия за день - ГВС",
+            "sv": "Daglig energi - varmvattenladdning"
+          }
+        },
+        "meter_power.heating": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تدفئة",
+            "da": "Energi - opvarmning",
+            "de": "Energie - Heizung",
+            "en": "Energy - heating",
+            "es": "Energía - calefacción",
+            "fr": "Énergie - chauffage",
+            "it": "Energia - riscaldamento",
+            "ko": "에너지 - 난방",
+            "nl": "Energie - verwarming",
+            "no": "Energi - oppvarming",
+            "pl": "Energia - ogrzewanie",
+            "ru": "Энергия - отопление",
+            "sv": "Energi - uppvärmning"
+          }
+        },
+        "meter_power.hotwater": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مياه ساخنة صحية",
+            "da": "Energi - varmtvandsindlæsning",
+            "de": "Energie - Brauchwarmwasser",
+            "en": "Energy - domestic hot water",
+            "es": "Energía - agua caliente sanitaria",
+            "fr": "Énergie - eau chaude sanitaire",
+            "it": "Energia - acqua calda sanitaria",
+            "ko": "에너지 - 생활 온수",
+            "nl": "Energie - sanitair warm water",
+            "no": "Energi - varmvannslastning",
+            "pl": "Energia - ciepła woda użytkowa",
+            "ru": "Энергия - ГВС",
+            "sv": "Energi - varmvattenladdning"
+          }
+        },
+        "meter_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret energi",
+            "de": "Erzeugte Energie",
+            "en": "Produced energy",
+            "es": "Energía producida",
+            "fr": "Énergie produite",
+            "it": "Energia prodotta",
+            "ko": "생산 에너지",
+            "nl": "Geproduceerde energie",
+            "no": "Produsert energi",
+            "pl": "Energia wytworzona",
+            "ru": "Произведённая энергия",
+            "sv": "Producerad energi"
+          }
+        },
+        "meter_power.produced_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة - تبريد",
+            "da": "Produceret energi - køling",
+            "de": "Erzeugte Energie - Kühlung",
+            "en": "Produced energy - cooling",
+            "es": "Energía producida - enfriamiento",
+            "fr": "Énergie produite - refroidissement",
+            "it": "Energia prodotta - raffreddamento",
+            "ko": "생산 에너지 - 냉방",
+            "nl": "Geproduceerde energie - koeling",
+            "no": "Produsert energi - kjøling",
+            "pl": "Energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия - охлаждение",
+            "sv": "Producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية",
+            "da": "Daglig produceret energi",
+            "de": "Tägliche erzeugte Energie",
+            "en": "Daily produced energy",
+            "es": "Energía producida diaria",
+            "fr": "Énergie produite quotidienne",
+            "it": "Energia prodotta giornaliera",
+            "ko": "일일 생산 에너지",
+            "nl": "Dagelijkse geproduceerde energie",
+            "no": "Daglig produsert energi",
+            "pl": "Dzienna energia wytworzona",
+            "ru": "Произведённая энергия за день",
+            "sv": "Daglig producerad energi"
+          }
+        },
+        "meter_power.produced_daily_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تبريد",
+            "da": "Daglig produceret energi - køling",
+            "de": "Tägliche erzeugte Energie - Kühlung",
+            "en": "Daily produced energy - cooling",
+            "es": "Energía producida diaria - enfriamiento",
+            "fr": "Énergie produite quotidienne - refroidissement",
+            "it": "Energia prodotta giornaliera - raffreddamento",
+            "ko": "일일 생산 에너지 - 냉방",
+            "nl": "Dagelijkse geproduceerde energie - koeling",
+            "no": "Daglig produsert energi - kjøling",
+            "pl": "Dzienna energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия за день - охлаждение",
+            "sv": "Daglig producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تدفئة",
+            "da": "Daglig produceret energi - opvarmning",
+            "de": "Tägliche erzeugte Energie - Heizung",
+            "en": "Daily produced energy - heating",
+            "es": "Energía producida diaria - calefacción",
+            "fr": "Énergie produite quotidienne - chauffage",
+            "it": "Energia prodotta giornaliera - riscaldamento",
+            "ko": "일일 생산 에너지 - 난방",
+            "nl": "Dagelijkse geproduceerde energie - verwarming",
+            "no": "Daglig produsert energi - oppvarming",
+            "pl": "Dzienna energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия за день - отопление",
+            "sv": "Daglig producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_daily_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - مياه ساخنة صحية",
+            "da": "Daglig produceret energi - varmtvandslastning",
+            "de": "Tägliche erzeugte Energie - Brauchwarmwasser",
+            "en": "Daily produced energy - domestic hot water",
+            "es": "Energía producida diaria - agua caliente sanitaria",
+            "fr": "Énergie produite quotidienne - eau chaude sanitaire",
+            "it": "Energia prodotta giornaliera - acqua calda sanitaria",
+            "ko": "일일 생산 에너지 - 생활 온수",
+            "nl": "Dagelijkse geproduceerde energie - sanitair warm water",
+            "no": "Daglig produsert energi - varmvannslastning",
+            "pl": "Dzienna energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия за день - ГВС",
+            "sv": "Daglig producerad energi - varmvattenladdning"
+          }
+        },
+        "meter_power.produced_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة - تدفئة",
+            "da": "Produceret energi - opvarmning",
+            "de": "Erzeugte Energie - Heizung",
+            "en": "Produced energy - heating",
+            "es": "Energía producida - calefacción",
+            "fr": "Énergie produite - chauffage",
+            "it": "Energia prodotta - riscaldamento",
+            "ko": "생산 에너지 - 난방",
+            "nl": "Geproduceerde energie - verwarming",
+            "no": "Produsert energi - oppvarming",
+            "pl": "Energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия - отопление",
+            "sv": "Producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة - مياه ساخنة صحية",
+            "da": "Produceret energi - varmtvandsindlæsning",
+            "de": "Erzeugte Energie - Brauchwarmwasser",
+            "en": "Produced energy - domestic hot water",
+            "es": "Energía producida - agua caliente sanitaria",
+            "fr": "Énergie produite - eau chaude sanitaire",
+            "it": "Energia prodotta - acqua calda sanitaria",
+            "ko": "생산 에너지 - 생활 온수",
+            "nl": "Geproduceerde energie - sanitair warm water",
+            "no": "Produsert energi - varmvannslastning",
+            "pl": "Energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия - ГВС",
+            "sv": "Producerad energi - varmvattenladdning"
+          }
+        },
         "target_temperature": {
           "max": 30,
           "min": 10
@@ -6273,45 +8266,6 @@
             "pl": "Temperatura docelowa zasilania - strefa 2",
             "ru": "Целевая температура подачи - зона 2",
             "sv": "Måltemperatur för framledning - zon 2"
-          }
-        },
-        "target_temperature.tank_water": {
-          "max": 60,
-          "min": 40,
-          "step": 1,
-          "title": {
-            "ar": "درجة حرارة الماء الساخن المستهدفة",
-            "da": "Måltemperatur for varmtvand",
-            "de": "Solltemperatur Warmwasser",
-            "en": "Hot water target temperature",
-            "es": "Temperatura configurada del agua caliente",
-            "fr": "Température cible de l'eau chaude",
-            "it": "Temperatura obiettivo acqua calda",
-            "ko": "온수 목표 온도",
-            "nl": "Ingestelde warmwatertemperatuur",
-            "no": "Ønsket temperatur for varmtvann",
-            "pl": "Temperatura docelowa ciepłej wody",
-            "ru": "Целевая температура горячей воды",
-            "sv": "Måltemperatur för varmvatten"
-          }
-        },
-        "target_temperature.zone2": {
-          "max": 30,
-          "min": 10,
-          "title": {
-            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
-            "da": "Måltemperatur - zone 2",
-            "de": "Solltemperatur - Zone 2",
-            "en": "Target temperature - zone 2",
-            "es": "Temperatura configurada - zona 2",
-            "fr": "Température cible - zone 2",
-            "it": "Temperatura obiettivo - zona 2",
-            "ko": "목표 온도 - 구역 2",
-            "nl": "Ingestelde temperatuur - zone 2",
-            "no": "Ønsket temperatur - sone 2",
-            "pl": "Temperatura docelowa - strefa 2",
-            "ru": "Целевая температура - зона 2",
-            "sv": "Måltemperatur - zon 2"
           }
         }
       },
@@ -7653,6 +9607,46 @@
     },
     {
       "capabilitiesOptions": {
+        "hot_water_mode": {
+          "values": [
+            {
+              "id": "auto",
+              "title": {
+                "ar": "تلقائي",
+                "da": "Automatisk",
+                "de": "Automatisch",
+                "en": "Automatic",
+                "es": "Automático",
+                "fr": "Automatique",
+                "it": "Automatica",
+                "ko": "자동",
+                "nl": "Automatisch",
+                "no": "Automatisk",
+                "pl": "Automatyczny",
+                "ru": "Авто",
+                "sv": "Automatiskt"
+              }
+            },
+            {
+              "id": "forced",
+              "title": {
+                "ar": "إجباري",
+                "da": "Tvungen",
+                "de": "Erzwungen",
+                "en": "Forced",
+                "es": "Forzado",
+                "fr": "Forcé",
+                "it": "Forzato",
+                "ko": "강제",
+                "nl": "Gedwongen",
+                "no": "Tvungen",
+                "pl": "Wymuszony",
+                "ru": "Принудительный",
+                "sv": "Tvingad"
+              }
+            }
+          ]
+        },
         "measure_power": {
           "approximated": true
         },
@@ -7671,6 +9665,518 @@
             "pl": "Temperatura zewnętrzna",
             "ru": "Температура на улице",
             "sv": "Utomhustemperatur"
+          }
+        },
+        "measure_temperature.tank_water": {
+          "title": {
+            "ar": "درجة حرارة الماء الساخن",
+            "da": "Varmtvandstemperatur",
+            "de": "Warmwassertemperatur",
+            "en": "Hot water temperature",
+            "es": "Temperatura del agua caliente",
+            "fr": "Température de l'eau chaude",
+            "it": "Temperatura dell'acqua calda",
+            "ko": "온수 온도",
+            "nl": "Warmwatertemperatuur",
+            "no": "Varmtvanntemperatur",
+            "pl": "Temperatura ciepłej wody",
+            "ru": "Температура горячей воды",
+            "sv": "Varmvattentemperatur"
+          }
+        },
+        "measure_temperature.zone2": {
+          "title": {
+            "ar": "درجة الحرارة - المنطقة 2",
+            "da": "Temperatur - zone 2",
+            "de": "Temperatur - Zone 2",
+            "en": "Temperature - zone 2",
+            "es": "Temperatura - zona 2",
+            "fr": "Température - zone 2",
+            "it": "Temperatura - zona 2",
+            "ko": "온도 - 구역 2",
+            "nl": "Temperatuur - zone 2",
+            "no": "Temperatur - sone 2",
+            "pl": "Temperatura - strefa 2",
+            "ru": "Температура - зона 2",
+            "sv": "Temperatur - zon 2"
+          }
+        },
+        "operational_state": {
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.hot_water": {
+          "title": {
+            "ar": "حالة التشغيل - مياه ساخنة صحية",
+            "da": "Driftstilstand - varmtvandsindlæsning",
+            "de": "Betriebszustand - Brauchwarmwasser",
+            "en": "Operational state - domestic hot water",
+            "es": "Estado operativo - agua caliente sanitaria",
+            "fr": "État opérationnel - eau chaude sanitaire",
+            "it": "Stato operativo - acqua calda sanitaria",
+            "ko": "작동 상태 - 생활 온수",
+            "nl": "Operationele staat - sanitair warm water",
+            "no": "Driftstilstand - varmvannslastning",
+            "pl": "Stan pracy - ciepła woda użytkowa",
+            "ru": "Рабочее состояние - ГВС",
+            "sv": "Drifttillstånd - varmvattenladdning"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "dhw",
+              "title": {
+                "ar": "مياه ساخنة صحية",
+                "da": "Varmtvandsindlæsning",
+                "de": "Brauchwarmwasser",
+                "en": "Domestic hot water",
+                "es": "Agua caliente sanitaria",
+                "fr": "Eau chaude sanitaire",
+                "it": "Acqua calda sanitaria",
+                "ko": "생활 온수",
+                "nl": "Sanitair warm water",
+                "no": "Varmvannslastning",
+                "pl": "Ciepła woda użytkowa",
+                "ru": "ГВС",
+                "sv": "Varmvattenladdning"
+              }
+            },
+            {
+              "id": "legionella",
+              "title": {
+                "ar": "مكافحة الليجيونيلا",
+                "da": "Anti-legionella",
+                "de": "Anti-Legionellen",
+                "en": "Anti-legionella",
+                "es": "Anti-legionela",
+                "fr": "Antilégionelle",
+                "it": "Anti-legionella",
+                "ko": "레지오넬라 방지",
+                "nl": "Anti-legionella",
+                "no": "Anti-legionella",
+                "pl": "Anti-legionella",
+                "ru": "Антилегионелла",
+                "sv": "Anti-legionella"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.zone1": {
+          "title": {
+            "ar": "حالة التشغيل - المنطقة 1",
+            "da": "Driftstilstand - zone 1",
+            "de": "Betriebszustand - Zone 1",
+            "en": "Operational state - zone 1",
+            "es": "Estado operativo - zona 1",
+            "fr": "État opérationnel - zone 1",
+            "it": "Stato operativo - zona 1",
+            "ko": "작동 상태 - 구역 1",
+            "nl": "Operationele staat - zone 1",
+            "no": "Driftstilstand - sone 1",
+            "pl": "Stan pracy - strefa 1",
+            "ru": "Рабочее состояние - зона 1",
+            "sv": "Drifttillstånd - zon 1"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "operational_state.zone2": {
+          "title": {
+            "ar": "حالة التشغيل - المنطقة 2",
+            "da": "Driftstilstand - zone 2",
+            "de": "Betriebszustand - Zone 2",
+            "en": "Operational state - zone 2",
+            "es": "Estado operativo - zona 2",
+            "fr": "État opérationnel - zone 2",
+            "it": "Stato operativo - zona 2",
+            "ko": "작동 상태 - 구역 2",
+            "nl": "Operationele staat - zone 2",
+            "no": "Driftstilstand - sone 2",
+            "pl": "Stan pracy - strefa 2",
+            "ru": "Рабочее состояние - зона 2",
+            "sv": "Drifttillstånd - zon 2"
+          },
+          "values": [
+            {
+              "id": "idle",
+              "title": {
+                "ar": "خامل",
+                "da": "Inaktiv",
+                "de": "Inaktiv",
+                "en": "Idle",
+                "es": "Inactivo",
+                "fr": "Inactif",
+                "it": "Inattivo",
+                "ko": "대기",
+                "nl": "Inactief",
+                "no": "Inaktiv",
+                "pl": "Bezczynny",
+                "ru": "Ожидание",
+                "sv": "Inaktiv"
+              }
+            },
+            {
+              "id": "heating",
+              "title": {
+                "ar": "تدفئة",
+                "da": "Opvarmning",
+                "de": "Heizung",
+                "en": "Heating",
+                "es": "Calefacción",
+                "fr": "Chauffage",
+                "it": "Riscaldamento",
+                "ko": "난방",
+                "nl": "Verwarming",
+                "no": "Oppvarming",
+                "pl": "Ogrzewanie",
+                "ru": "Отопление",
+                "sv": "Uppvärmning"
+              }
+            },
+            {
+              "id": "cooling",
+              "title": {
+                "ar": "تبريد",
+                "da": "Køling",
+                "de": "Kühlung",
+                "en": "Cooling",
+                "es": "Enfriamiento",
+                "fr": "Refroidissement",
+                "it": "Raffreddamento",
+                "ko": "냉방",
+                "nl": "Koeling",
+                "no": "Kjøling",
+                "pl": "Chłodzenie",
+                "ru": "Охлаждение",
+                "sv": "Kylning"
+              }
+            },
+            {
+              "id": "defrost",
+              "title": {
+                "ar": "إزالة الجليد",
+                "da": "Afrimning",
+                "de": "Abtauung",
+                "en": "Defrost",
+                "es": "Descongelación",
+                "fr": "Dégivrage",
+                "it": "Sbrinamento",
+                "ko": "제상",
+                "nl": "Ontdooien",
+                "no": "Avfrosting",
+                "pl": "Odszranianie",
+                "ru": "Разморозка",
+                "sv": "Avfrostning"
+              }
+            },
+            {
+              "id": "prohibited",
+              "title": {
+                "ar": "محظور",
+                "da": "Forbudt",
+                "de": "Gesperrt",
+                "en": "Prohibited",
+                "es": "Prohibido",
+                "fr": "Interdit",
+                "it": "Vietato",
+                "ko": "금지",
+                "nl": "Verboden",
+                "no": "Forbudt",
+                "pl": "Zabroniony",
+                "ru": "Запрещено",
+                "sv": "Förbjuden"
+              }
+            }
+          ]
+        },
+        "target_temperature.tank_water": {
+          "max": 60,
+          "min": 40,
+          "step": 1,
+          "title": {
+            "ar": "درجة حرارة الماء الساخن المستهدفة",
+            "da": "Måltemperatur for varmtvand",
+            "de": "Solltemperatur Warmwasser",
+            "en": "Hot water target temperature",
+            "es": "Temperatura configurada del agua caliente",
+            "fr": "Température cible de l'eau chaude",
+            "it": "Temperatura obiettivo acqua calda",
+            "ko": "온수 목표 온도",
+            "nl": "Ingestelde warmwatertemperatuur",
+            "no": "Ønsket temperatur for varmtvann",
+            "pl": "Temperatura docelowa ciepłej wody",
+            "ru": "Целевая температура горячей воды",
+            "sv": "Måltemperatur för varmvatten"
+          }
+        },
+        "target_temperature.zone2": {
+          "max": 30,
+          "min": 10,
+          "title": {
+            "ar": "درجة الحرارة المستهدفة - المنطقة 2",
+            "da": "Måltemperatur - zone 2",
+            "de": "Solltemperatur - Zone 2",
+            "en": "Target temperature - zone 2",
+            "es": "Temperatura configurada - zona 2",
+            "fr": "Température cible - zone 2",
+            "it": "Temperatura obiettivo - zona 2",
+            "ko": "목표 온도 - 구역 2",
+            "nl": "Ingestelde temperatuur - zone 2",
+            "no": "Ønsket temperatur - sone 2",
+            "pl": "Temperatura docelowa - strefa 2",
+            "ru": "Целевая температура - зона 2",
+            "sv": "Måltemperatur - zon 2"
           }
         },
         "thermostat_mode": {

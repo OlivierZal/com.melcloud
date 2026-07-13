@@ -1,12 +1,7 @@
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import { getCapabilitiesOptionsAtaErv } from '../../types/ata-erv.mts'
-import {
-  energyCapabilityTagMapping,
-  getCapabilityTagMapping,
-  listCapabilityTagMapping,
-  setCapabilityTagMapping,
-} from '../../types/classic-erv.mts'
+import { tagMappings } from '../../types/classic-erv.mts'
 import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
 const measureCapabilities = new Set([
@@ -18,20 +13,10 @@ const measureCapabilities = new Set([
 type ErvType = typeof Classic.DeviceType.Erv
 
 export default class ClassicMELCloudDriverErv extends ClassicMELCloudDriver<ErvType> {
-  public readonly energyCapabilityTagMapping: typeof energyCapabilityTagMapping =
-    energyCapabilityTagMapping
-
   public readonly getCapabilitiesOptions: typeof getCapabilitiesOptionsAtaErv =
     getCapabilitiesOptionsAtaErv
 
-  public readonly getCapabilityTagMapping: typeof getCapabilityTagMapping =
-    getCapabilityTagMapping
-
-  public readonly listCapabilityTagMapping: typeof listCapabilityTagMapping =
-    listCapabilityTagMapping
-
-  public readonly setCapabilityTagMapping: typeof setCapabilityTagMapping =
-    setCapabilityTagMapping
+  public override readonly tagMappings: typeof tagMappings = tagMappings
 
   public readonly type: ErvType = Classic.DeviceType.Erv
 

@@ -1,33 +1,25 @@
 import * as Home from '@olivierzal/melcloud-api/home'
 
-import type { HomeMELCloudDevice } from '../../types/home.mts'
 import { homeGetCapabilitiesOptions } from '../../types/ata-erv.mts'
-import { homeSetCapabilityTagMappingAta } from '../../types/home-ata.mts'
-import { BaseMELCloudDriver } from '../base-driver.mts'
+import { homeTagMappingsAta } from '../../types/home-ata.mts'
+import { HomeMELCloudDriver } from '../home-driver.mts'
 
-export default class HomeMELCloudDriverAta extends BaseMELCloudDriver {
-  declare public readonly getDevices: () => HomeMELCloudDevice[]
-
+export default class HomeMELCloudDriverAta extends HomeMELCloudDriver {
   public override readonly getCapabilitiesOptions: typeof homeGetCapabilitiesOptions =
     homeGetCapabilitiesOptions
 
-  public override readonly setCapabilityTagMapping: typeof homeSetCapabilityTagMappingAta =
-    homeSetCapabilityTagMappingAta
+  public override readonly tagMappings: typeof homeTagMappingsAta =
+    homeTagMappingsAta
 
   public override readonly type: typeof Home.DeviceType.Ata =
     Home.DeviceType.Ata
 
-  protected override get api(): Home.API {
-    return this.homey.app.homeApi
-  }
-
+  // Signal strength stays manifest-declared but is opt-in through the
+  // options settings group, so it is filtered out of the defaults the
+  // manifest otherwise provides.
   public override getRequiredCapabilities(): string[] {
-    return super
-      .getRequiredCapabilities()
-      .filter((capability) => capability !== 'measure_signal_strength')
-  }
-
-  protected override getDeviceModels(): { id: string; name: string }[] {
-    return this.homey.app.getHomeDevicesByType(this.type)
+    return this.manifest.capabilities.filter(
+      (capability) => capability !== 'measure_signal_strength',
+    )
   }
 }
