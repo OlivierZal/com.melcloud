@@ -16,7 +16,9 @@ export const surfaceError = (error: unknown): void => {
     return
   }
   setTimeout(() => {
-    throw error instanceof Error ? error : new Error(JSON.stringify(error))
+    throw error instanceof Error ? error : (
+        new Error('Unhandled widget error', { cause: error })
+      )
   }, 0)
 }
 
