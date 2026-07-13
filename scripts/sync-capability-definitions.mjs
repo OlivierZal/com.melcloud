@@ -34,7 +34,7 @@ await Promise.all(
       ),
     )
     await writeFile(
-      `assets/capabilities/${capability}.json`,
+      `vendor/capabilities/${capability}.json`,
       `${JSON.stringify(sortKeysDeep(definition), null, 2)}\n`,
     )
   }),

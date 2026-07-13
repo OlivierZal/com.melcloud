@@ -24,7 +24,7 @@ caught real failures that the others miss:
 - `npm run homey:validate` — Homey validation at publish level; may
   rewrite files (see locales below), re-stage if it does.
 - `node scripts/sync-capability-definitions.mjs` — refreshes the
-  vendored node-homey-lib capability JSONs under `assets/capabilities/`
+  vendored node-homey-lib capability JSONs under `vendor/capabilities/`
   (homey-lib is a devDependency and must not ship to the device); the
   drift test in `tests/unit/capability-definitions.test.ts` fails when
   the copies fall behind.
@@ -139,6 +139,10 @@ coverage.
   nullable field, push the logic to a class that uses `this`, route casts
   through the shared typed helpers…). The existing disables are debt:
   remove them when touching the code they guard, never replicate them.
+  One counterweight: when every compliant shape reads worse than the
+  violation (a rule's own documented exception like a sequential-by-design
+  loop, a protocol-imposed form, a rule-pair conflict), the documented
+  disable IS the honest form — simplicity outranks disable-count golf.
 - Zero-warning policy: every enabled rule is at `error`.
 - Metric caps (`complexity`, `max-statements` 10, `max-depth`,
   `unicorn/try-complexity` 1…) are measured codebase ceilings: exceeding

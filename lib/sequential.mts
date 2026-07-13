@@ -7,13 +7,8 @@ export const sequential = async <T,>(
   items: readonly T[],
   run: (item: T) => Promise<void>,
 ): Promise<void> => {
-  const step = async (iterator: Iterator<T>): Promise<void> => {
-    const result = iterator.next()
-    if (result.done === true) {
-      return
-    }
-    await run(result.value)
-    await step(iterator)
+  for (const item of items) {
+    // eslint-disable-next-line no-await-in-loop -- sequential by design: the rule targets accidental serialization, and the compliant shapes (reduce chain, awaited recursion) read worse than the loop
+    await run(item)
   }
-  await step(items[Symbol.iterator]())
 }

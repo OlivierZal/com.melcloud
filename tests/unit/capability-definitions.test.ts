@@ -12,7 +12,7 @@ import {
 } from '../../files.mts'
 
 // homey-lib is a devDependency: the runtime consumes the vendored copies
-// under assets/capabilities. Refresh them with
+// under vendor/capabilities. Refresh them with
 // `node scripts/sync-capability-definitions.mjs` when this fails.
 describe('vendored capability definitions', () => {
   it.each([
