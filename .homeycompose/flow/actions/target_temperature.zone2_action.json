@@ -1,7 +1,7 @@
 {
   "args": [
     {
-      "filter": "driver_id=home-melcloud_atw|melcloud_atw&capabilities=target_temperature.zone2",
+      "filter": "driver_id=melcloud_atw|home-melcloud_atw&capabilities=target_temperature.zone2",
       "name": "device",
       "type": "device"
     },
