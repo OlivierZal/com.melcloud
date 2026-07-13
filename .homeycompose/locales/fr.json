@@ -2,7 +2,6 @@
   "errors": {
     "deviceNotFound": "Appareil introuvable.",
     "invalidDuration": "La durée doit être un nombre entier de jours entre 0 et 365.",
-    "updateFailed": "MELCloud a refusé la mise à jour.",
     "zoneNotFound": "Zone introuvable."
   },
   "settings": {

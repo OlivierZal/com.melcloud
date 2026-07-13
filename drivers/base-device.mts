@@ -321,19 +321,12 @@ export abstract class BaseMELCloudDevice<
     device: TFacade,
     updateData: Record<string, unknown>,
   ): Promise<void> {
-    let result: unknown
     try {
-      result = await device.updateValues(updateData)
+      await device.updateValues(updateData)
     } catch (error) {
       if (!(error instanceof NoChangesError)) {
         await this.setWarning(error)
       }
-      return
-    }
-    // Home facades report BFF rejections as `false` instead of throwing.
-    if (result === false) {
-      this.error('Update rejected:', updateData)
-      await this.setWarning(this.homey.__('errors.updateFailed'))
     }
   }
 

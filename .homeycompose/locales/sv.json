@@ -2,7 +2,6 @@
   "errors": {
     "deviceNotFound": "Enhet ej hittad.",
     "invalidDuration": "Varaktigheten måste vara ett helt antal dagar mellan 0 och 365.",
-    "updateFailed": "MELCloud avvisade uppdateringen.",
     "zoneNotFound": "Zon ej hittad."
   },
   "settings": {

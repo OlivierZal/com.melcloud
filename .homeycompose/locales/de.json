@@ -2,7 +2,6 @@
   "errors": {
     "deviceNotFound": "Gerät nicht gefunden.",
     "invalidDuration": "Die Dauer muss eine ganze Zahl von Tagen zwischen 0 und 365 sein.",
-    "updateFailed": "MELCloud hat die Aktualisierung abgelehnt.",
     "zoneNotFound": "Zone nicht gefunden."
   },
   "settings": {

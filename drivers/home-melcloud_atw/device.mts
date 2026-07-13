@@ -1,32 +1,26 @@
-import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
 
+import type {
+  HomeCapabilitiesAtw,
+  HomeSetCapabilitiesAtw,
+} from '../../types/home-atw.mts'
 import type {
   HomeConvertFromDevice,
   HomeConvertToDevice,
 } from '../../types/home.mts'
 import { HotWaterMode } from '../../types/atw.mts'
-import {
-  type HomeCapabilitiesAtw,
-  type HomeSetCapabilitiesAtw,
-  operationModeZoneToHome,
-  toOperationalStateAtw,
-  toThermostatModeAtw,
-} from '../../types/home-atw.mts'
 import { HomeMELCloudDevice } from '../home-device.mts'
 
 type AtwType = typeof Home.DeviceType.Atw
 
 export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
+  // The zone modes and operational states need no conversion: the facade
+  // already exposes the normalized vocabularies the capabilities use.
   protected readonly capabilityToDevice: Partial<
     Record<keyof HomeSetCapabilitiesAtw, HomeConvertToDevice<AtwType>>
   > = {
     hot_water_mode: (value: keyof typeof HotWaterMode) =>
       HotWaterMode[value] === HotWaterMode.forced,
-    thermostat_mode: (value: keyof typeof Classic.OperationModeZone) =>
-      operationModeZoneToHome[value],
-    'thermostat_mode.zone2': (value: keyof typeof Classic.OperationModeZone) =>
-      operationModeZoneToHome[value],
   }
 
   protected readonly deviceToCapability: Record<
@@ -42,8 +36,7 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     'measure_temperature.zone2': ({ roomTemperatureZone2 }) =>
       roomTemperatureZone2,
     onoff: ({ power: isOn }) => isOn,
-    operational_state: ({ operationMode }) =>
-      this.#toOperationalState(operationMode),
+    operational_state: ({ operationalState }) => operationalState,
     'operational_state.hot_water': ({ hotWaterOperationalState }) =>
       hotWaterOperationalState,
     target_temperature: ({ setTemperatureZone1: temperature }) => temperature,
@@ -52,19 +45,7 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     }) => temperature,
     'target_temperature.zone2': ({ setTemperatureZone2: temperature }) =>
       temperature,
-    thermostat_mode: ({ operationModeZone1 }) =>
-      toThermostatModeAtw(operationModeZone1),
-    'thermostat_mode.zone2': ({ operationModeZone2 }) =>
-      toThermostatModeAtw(operationModeZone2),
-  }
-
-  // FTC vocabulary collection: unmapped operation modes are logged so the
-  // operational-state mapping can be completed from real firmware strings.
-  #toOperationalState(mode: string): ReturnType<typeof toOperationalStateAtw> {
-    const state = toOperationalStateAtw(mode)
-    if (state === null && mode !== '') {
-      this.log('Unmapped FTC operation mode:', mode)
-    }
-    return state
+    thermostat_mode: ({ operationModeZone1 }) => operationModeZone1,
+    'thermostat_mode.zone2': ({ operationModeZone2 }) => operationModeZone2,
   }
 }

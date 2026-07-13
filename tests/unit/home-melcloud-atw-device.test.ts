@@ -93,9 +93,9 @@ const mockFacade = (
     hasCoolingMode: true,
     hotWaterOperationalState: 'dhw',
     isOwner: true,
-    operationMode: 'HotWater',
-    operationModeZone1: 'HeatRoomTemperature',
-    operationModeZone2: 'HeatCurve',
+    operationalState: 'dhw',
+    operationModeZone1: 'room',
+    operationModeZone2: 'curve',
     power: true,
     roomTemperatureZone1: 21,
     roomTemperatureZone2: 19,
@@ -104,7 +104,7 @@ const mockFacade = (
     setTemperatureZone1: 22,
     setTemperatureZone2: 20,
     tankWaterTemperature: 48,
-    updateValues: vi.fn<() => Promise<boolean>>().mockResolvedValue(true),
+    updateValues: vi.fn<() => Promise<void>>().mockResolvedValue(),
     ...overrides,
   }) as unknown as Home.DeviceAtwFacade
 
@@ -219,51 +219,7 @@ describe(HomeMELCloudDeviceAtw, () => {
       expect(
         deviceToCapability['target_temperature.zone2']?.(facade),
       ).toBeNull()
-      expect(deviceToCapability['thermostat_mode.zone2']?.(facade)).toBe('room')
-    })
-
-    it.each([
-      ['CoolFlowTemperature', 'flow_cool'],
-      ['CoolRoomTemperature', 'room_cool'],
-      ['CoolThermostat', 'room_cool'],
-      ['HeatCurve', 'curve'],
-      ['HeatFlowTemperature', 'flow'],
-      ['HeatRoomTemperature', 'room'],
-      ['HeatThermostat', 'room'],
-    ])('should convert zone mode %s to %s', (mode, expected) => {
-      const {
-        deviceToCapability: { thermostat_mode: converter },
-      } = device
-
-      expect(converter?.(mockFacade({ operationModeZone1: mode }))).toBe(
-        expected,
-      )
-    })
-
-    it('should fall back to room for a firmware-specific zone mode', () => {
-      const {
-        deviceToCapability: { thermostat_mode: converter },
-      } = device
-
-      expect(
-        converter?.(mockFacade({ operationModeZone1: 'SomeNewFtcMode' })),
-      ).toBe('room')
-    })
-
-    it.each([
-      ['Cooling', 'cooling'],
-      ['Defrost', 'defrost'],
-      ['Heating', 'heating'],
-      ['HotWater', 'dhw'],
-      ['Idle', 'idle'],
-      ['Legionella', 'legionella'],
-      ['Stop', 'idle'],
-    ])('should convert operation mode %s to %s', (mode, expected) => {
-      const {
-        deviceToCapability: { operational_state: converter },
-      } = device
-
-      expect(converter?.(mockFacade({ operationMode: mode }))).toBe(expected)
+      expect(deviceToCapability['thermostat_mode.zone2']?.(facade)).toBeNull()
     })
 
     it('should report forced hot water as the forced mode', () => {
@@ -285,48 +241,9 @@ describe(HomeMELCloudDeviceAtw, () => {
         converter?.(mockFacade({ hotWaterOperationalState: 'prohibited' })),
       ).toBe('prohibited')
     })
-
-    it('should clear and log an unmapped FTC operation mode', () => {
-      const {
-        deviceToCapability: { operational_state: converter },
-      } = device
-
-      expect(
-        converter?.(mockFacade({ operationMode: 'SomeNewFtcMode' })),
-      ).toBeNull()
-      expect(device.log).toHaveBeenCalledWith(
-        'Unmapped FTC operation mode:',
-        'SomeNewFtcMode',
-      )
-    })
-
-    it('should clear a blank FTC operation mode without logging', () => {
-      const {
-        deviceToCapability: { operational_state: converter },
-      } = device
-
-      expect(converter?.(mockFacade({ operationMode: '' }))).toBeNull()
-      expect(device.log).not.toHaveBeenCalledWith(
-        'Unmapped FTC operation mode:',
-        '',
-      )
-    })
   })
 
   describe('capability-to-device conversions', () => {
-    it.each([
-      ['room', 'HeatRoomTemperature'],
-      ['flow', 'HeatFlowTemperature'],
-      ['curve', 'HeatCurve'],
-      ['room_cool', 'CoolRoomTemperature'],
-      ['flow_cool', 'CoolFlowTemperature'],
-    ])('should convert zone mode %s to %s', (mode, expected) => {
-      const { capabilityToDevice } = device
-
-      expect(capabilityToDevice.thermostat_mode?.(mode)).toBe(expected)
-      expect(capabilityToDevice['thermostat_mode.zone2']?.(mode)).toBe(expected)
-    })
-
     it.each([
       ['forced', true],
       ['auto', false],
@@ -352,7 +269,7 @@ describe(HomeMELCloudDeviceAtw, () => {
       })
 
       expect(facade.updateValues).toHaveBeenCalledWith({
-        operationModeZone1: 'HeatCurve',
+        operationModeZone1: 'curve',
         setTankWaterTemperature: 55,
       })
     })

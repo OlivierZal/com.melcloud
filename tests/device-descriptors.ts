@@ -106,13 +106,13 @@ export const testSetValuesErrorHandling = (
       expect(superSetWarningMock).toHaveBeenCalledWith('string error')
     })
 
-    it('should warn when the device reports a rejected update', async () => {
-      setValuesMock.mockResolvedValue(false)
+    it('should warn when the update rejects with a transport error', async () => {
+      setValuesMock.mockRejectedValueOnce(new Error('update failed'))
       await (getDevice() as { onInit: () => Promise<void> }).onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
-      expect(superSetWarningMock).toHaveBeenCalledWith('errors.updateFailed')
+      expect(superSetWarningMock).toHaveBeenCalledWith('update failed')
     })
   })
 }

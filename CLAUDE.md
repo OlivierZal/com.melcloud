@@ -81,9 +81,11 @@ coverage.
   the ATW control surface from guests and guest ATW writes are unverified
   against the BFF. Home ATA is deliberately NOT gated — live probing
   showed the BFF accepts guest ATA writes. Do not harmonize the two.
-- Converters from Home devices must never crash the sync on new FTC
-  vocabulary: unknown zone-mode strings (and the external-thermostat
-  variants) degrade to the room modes in `toThermostatModeAtw`.
+- New FTC vocabulary must never crash a sync — and that tolerance lives
+  in melcloud-api, not here: the Home ATW facade getters normalize the
+  wire dialect (`HomeAtwZoneMode`, `operationalState`), degrading
+  unknown zone modes to the room modes, so the app-side converters are
+  plain field picks.
 - Flow-card device filters are `driver_id=<manifest owners>&capabilities=<cap>`,
   both parts mechanical: `capabilities=` is the card's real precondition
   (the run listeners are capability-generic and triggers fire through

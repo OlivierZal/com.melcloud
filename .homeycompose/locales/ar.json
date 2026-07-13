@@ -2,7 +2,6 @@
   "errors": {
     "deviceNotFound": "لم يتم العثور على الجهاز.",
     "invalidDuration": "يجب أن تكون المدة عددًا صحيحًا من الأيام بين 0 و365.",
-    "updateFailed": "رفض MELCloud التحديث.",
     "zoneNotFound": "لم يتم العثور على المنطقة."
   },
   "settings": {
