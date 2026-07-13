@@ -37,6 +37,7 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
   readonly #measureCapabilities: (keyof HomeCapabilitiesAtw)[] = [
     'measure_temperature',
     'operational_state',
+    'operational_state.zone1',
   ]
 
   readonly #zone2ControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
@@ -46,6 +47,7 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
 
   readonly #zone2MeasureCapabilities: (keyof HomeCapabilitiesAtw)[] = [
     'measure_temperature.zone2',
+    'operational_state.zone2',
   ]
 
   // Guests only get the read-only measures: the MELCloud Home app does not

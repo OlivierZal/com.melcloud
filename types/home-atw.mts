@@ -19,6 +19,8 @@ interface HomeGetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'measure_temperature.zone2': number
   readonly operational_state: Home.AtwOperationalState | null
   readonly 'operational_state.hot_water': Classic.OperationModeStateHotWater
+  readonly 'operational_state.zone1': Classic.OperationModeStateZone
+  readonly 'operational_state.zone2': Classic.OperationModeStateZone | null
 }
 
 type HomeListCapabilitiesAtw = BaseListCapabilities

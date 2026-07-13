@@ -11,6 +11,8 @@
     "target_temperature.tank_water",
     "operational_state",
     "operational_state.hot_water",
+    "operational_state.zone1",
+    "operational_state.zone2",
     "thermostat_mode",
     "thermostat_mode.zone2",
     "measure_signal_strength"

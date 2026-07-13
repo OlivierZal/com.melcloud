@@ -39,6 +39,10 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     operational_state: ({ operationalState }) => operationalState,
     'operational_state.hot_water': ({ hotWaterOperationalState }) =>
       hotWaterOperationalState,
+    'operational_state.zone1': ({ operationalStateZone1 }) =>
+      operationalStateZone1,
+    'operational_state.zone2': ({ operationalStateZone2 }) =>
+      operationalStateZone2,
     target_temperature: ({ setTemperatureZone1: temperature }) => temperature,
     'target_temperature.tank_water': ({
       setTankWaterTemperature: temperature,

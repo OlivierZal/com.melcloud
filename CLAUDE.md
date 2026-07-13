@@ -70,10 +70,13 @@ coverage.
   settings group. Keep it out of every required-capability list.
 - Home drivers only ship surfaces the MELCloud Home app itself exposes,
   even when the API facade can read more — no outdoor temperature on
-  Home ATW (not in the app UI; an absent setting would read as 0), and
-  no per-zone operational states (their derivation inputs are absent
-  from the Home wire). Forced hot water IS app-exposed (the DHW tab's
-  auto/heat-now toggle) and its write path is live-verified.
+  Home ATW (not in the app UI; an absent setting would read as 0).
+  Forced hot water IS app-exposed (the DHW tab's auto/heat-now toggle,
+  write path live-verified), and so are the per-zone states: the app
+  displays them as a projection of the top-level `OperationMode`
+  (live-observed: a legionella cycle shows the zone idle), which is
+  exactly what `operationalStateZone1/2` derive API-side — the Classic
+  flag refinements do not exist on the Home wire.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
   (`getRequiredCapabilities`). Home ATW gates the control capabilities on

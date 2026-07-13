@@ -20,6 +20,8 @@ const requiredCapabilities = vi.hoisted(() => [
   'onoff',
   'operational_state',
   'operational_state.hot_water',
+  'operational_state.zone1',
+  'operational_state.zone2',
   'target_temperature',
   'target_temperature.tank_water',
   'target_temperature.zone2',
@@ -94,6 +96,8 @@ const mockFacade = (
     hotWaterOperationalState: 'dhw',
     isOwner: true,
     operationalState: 'dhw',
+    operationalStateZone1: 'idle',
+    operationalStateZone2: 'idle',
     operationModeZone1: 'room',
     operationModeZone2: 'curve',
     power: true,
@@ -165,6 +169,14 @@ describe(HomeMELCloudDeviceAtw, () => {
         'dhw',
       )
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'operational_state.zone1',
+        'idle',
+      )
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'operational_state.zone2',
+        'idle',
+      )
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'target_temperature',
         22,
       )
@@ -208,6 +220,7 @@ describe(HomeMELCloudDeviceAtw, () => {
     it('should clear the zone2 values on a single-zone unit', () => {
       const { deviceToCapability } = device
       const facade = mockFacade({
+        operationalStateZone2: null,
         operationModeZone2: null,
         roomTemperatureZone2: null,
         setTemperatureZone2: null,
@@ -220,6 +233,7 @@ describe(HomeMELCloudDeviceAtw, () => {
         deviceToCapability['target_temperature.zone2']?.(facade),
       ).toBeNull()
       expect(deviceToCapability['thermostat_mode.zone2']?.(facade)).toBeNull()
+      expect(deviceToCapability['operational_state.zone2']?.(facade)).toBeNull()
     })
 
     it('should report forced hot water as the forced mode', () => {
