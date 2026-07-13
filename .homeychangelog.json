@@ -346,5 +346,20 @@
     "pl": "Naprawiono stronę ustawień proszącą o dane logowania MELCloud Home, mimo że były prawidłowe.",
     "ru": "Исправлена страница настроек, запрашивавшая учётные данные MELCloud Home, хотя они были действительны.",
     "sv": "Åtgärdat att inställningssidan bad om MELCloud Home-uppgifter trots att de var giltiga."
+  },
+  "45.0.0": {
+    "ar": "إضافة دعم مضخات الحرارة هواء-ماء لحسابات MELCloud Home، وإعادة تصميم الأدوات، وإصلاح تعطل رسوم أداة مجموعة المكيفات.",
+    "da": "Tilføjet understøttelse af luft-til-vand varmepumper til MELCloud Home-konti, redesignet widgets og rettet et nedbrud i gruppe-widgettens animationer.",
+    "de": "Luft-Wasser-Wärmepumpen für MELCloud-Home-Konten hinzugefügt, Widgets neu gestaltet und einen Absturz der Animationen des Gruppen-Widgets behoben.",
+    "en": "Added air-to-water heat pump support for MELCloud Home accounts, redesigned the widgets, and fixed a crash in the group air-conditioner widget animations.",
+    "es": "Añadida compatibilidad con bombas de calor aire-agua para cuentas MELCloud Home, rediseño de los widgets y corrección de un fallo en las animaciones del widget de grupo.",
+    "fr": "Ajout de la prise en charge des pompes à chaleur air-eau pour les comptes MELCloud Home, refonte des widgets et correction d'un plantage des animations du widget de groupe de climatiseurs.",
+    "it": "Aggiunto il supporto delle pompe di calore aria-acqua per gli account MELCloud Home, riprogettati i widget e corretto un arresto anomalo delle animazioni del widget di gruppo.",
+    "ko": "MELCloud Home 계정에 공기-물 히트펌프 지원을 추가하고, 위젯을 새로 디자인했으며, 그룹 에어컨 위젯 애니메이션의 충돌을 수정했습니다.",
+    "nl": "Ondersteuning voor lucht-water warmtepompen toegevoegd voor MELCloud Home-accounts, de widgets opnieuw ontworpen en een crash in de animaties van de groepswidget verholpen.",
+    "no": "Lagt til støtte for luft-til-vann varmepumper for MELCloud Home-kontoer, redesignet widgetene og fikset et krasj i gruppe-widgetens animasjoner.",
+    "pl": "Dodano obsługę pomp ciepła powietrze-woda dla kont MELCloud Home, przeprojektowano widżety i naprawiono awarię animacji widżetu grupowego.",
+    "ru": "Добавлена поддержка тепловых насосов воздух-вода для аккаунтов MELCloud Home, переработаны виджеты и исправлен сбой анимаций группового виджета.",
+    "sv": "Lagt till stöd för luft-till-vatten värmepumpar för MELCloud Home-konton, omdesignade widgetarna och fixade en krasch i gruppwidgetens animationer."
   }
 }
