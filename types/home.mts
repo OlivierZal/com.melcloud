@@ -33,9 +33,8 @@ type HomeValues<T extends Home.DeviceType> =
 /**
  * Converter from a Home device facade to the corresponding Homey capability
  * value, parameterized by device type. `null` clears the Homey value — used
- * when the facade reports no reading (e.g. the zone-2 temperatures and
- * setpoints on a single-zone ATW unit; the zone-2 thermostat mode instead
- * degrades to the room mode).
+ * when the facade reports no reading (e.g. every zone-2 field on a
+ * single-zone ATW unit).
  */
 export type HomeConvertFromDevice<T extends Home.DeviceType> = (
   facade: HomeDeviceFacade<T>,
