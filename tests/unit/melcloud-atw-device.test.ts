@@ -129,22 +129,38 @@ describe(ClassicMELCloudDeviceAtw, () => {
 
   describe('device-to-capability conversions', () => {
     it.each([
-      ['alarm_generic.defrost', 1, true],
-      ['alarm_generic.defrost', 0, false],
-      ['measure_power', 2.5, 2.5 * K_MULTIPLIER],
-      ['measure_power.produced', 1.5, 1.5 * K_MULTIPLIER],
-      ['thermostat_mode', Classic.OperationModeZone.room, 'room'],
-      ['thermostat_mode.zone2', Classic.OperationModeZone.flow, 'flow'],
-      ['hot_water_mode', true, HotWaterMode.forced],
-      ['hot_water_mode', false, HotWaterMode.auto],
-      ['operational_state', Classic.OperationModeState.heating, 'heating'],
-      ['target_temperature.flow_heat', 0, 10],
-      ['target_temperature.flow_heat', 35, 35],
-    ])('%s(%s) should return %s', (key, input, expected) => {
+      ['alarm_generic.defrost', { DefrostMode: 1 }, true],
+      ['alarm_generic.defrost', { DefrostMode: 0 }, false],
+      ['measure_power', { CurrentEnergyConsumed: 2.5 }, 2.5 * K_MULTIPLIER],
+      [
+        'measure_power.produced',
+        { CurrentEnergyProduced: 1.5 },
+        1.5 * K_MULTIPLIER,
+      ],
+      [
+        'thermostat_mode',
+        { OperationModeZone1: Classic.OperationModeZone.room },
+        'room',
+      ],
+      [
+        'thermostat_mode.zone2',
+        { OperationModeZone2: Classic.OperationModeZone.flow },
+        'flow',
+      ],
+      ['hot_water_mode', { ForcedHotWaterMode: true }, HotWaterMode.forced],
+      ['hot_water_mode', { ForcedHotWaterMode: false }, HotWaterMode.auto],
+      [
+        'operational_state',
+        { OperationMode: Classic.OperationModeState.heating },
+        'heating',
+      ],
+      ['target_temperature.flow_heat', { SetHeatFlowTemperatureZone1: 0 }, 10],
+      ['target_temperature.flow_heat', { SetHeatFlowTemperatureZone1: 35 }, 35],
+    ])('%s(%o) should return %s', (key, input, expected) => {
       const { deviceToCapability } = device
       const converter = deviceToCapability[key]
 
-      expect(converter?.(input)).toBe(expected)
+      expect(converter?.(mock<Classic.ListDeviceDataAtw>(input))).toBe(expected)
     })
 
     it('should convert legionella from ISO date to locale string', () => {
@@ -152,7 +168,11 @@ describe(ClassicMELCloudDeviceAtw, () => {
         deviceToCapability: { legionella: converter },
       } = device
 
-      const result = converter?.('2026-03-18T10:00:00')
+      const result = converter?.(
+        mock<Classic.ListDeviceDataAtw>({
+          LastLegionellaActivationTime: '2026-03-18T10:00:00',
+        }),
+      )
 
       expect(result).toBeDefined()
       expect(result).toBeTypeOf('string')

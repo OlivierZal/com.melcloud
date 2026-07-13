@@ -31,11 +31,8 @@ export default class ClassicMELCloudDeviceErv extends ClassicMELCloudDevice<
       ConvertFromDevice<typeof Classic.DeviceType.Erv>
     >
   > = {
-    thermostat_mode: (
-      value: Classic.VentilationMode,
-      data: Classic.ListDeviceData<typeof Classic.DeviceType.Erv>,
-    ) =>
-      data.Power ? ventilationModeFromDevice[value] : ThermostatModeErv.off,
+    thermostat_mode: ({ Power: isOn, VentilationMode: mode }) =>
+      isOn ? ventilationModeFromDevice[mode] : ThermostatModeErv.off,
   }
 
   protected override readonly thermostatMode: typeof ThermostatModeErv =

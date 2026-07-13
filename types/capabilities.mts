@@ -31,23 +31,21 @@ export interface CapabilitiesOptionsAtaErv {
   readonly fan_speed: RangeOptions
 }
 
-/** Base converter type for capability/device value transforms. */
+/** Base write-converter type for capability-to-device transforms. */
 export type CapabilityConverter = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters accept narrower param types
-  bivariant(value: unknown, data?: unknown): unknown
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to their capability's type
+  bivariant(value: unknown): unknown
 }['bivariant']
 
 /**
- * Converter from a classic device data value to the corresponding Homey
- * capability value, parameterized by device type.
+ * Converter from the classic device payload to the corresponding Homey
+ * capability value, parameterized by device type. Like the Home dialect's
+ * converters, it receives the whole payload and picks its fields
+ * explicitly — no positional value threading.
  */
-export type ConvertFromDevice<T extends Classic.DeviceType> = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to a specific member of the Classic.ListDeviceData value union (e.g., ClassicFanSpeed)
-  bivariant(
-    value: Classic.ListDeviceData<T>[keyof Classic.ListDeviceData<T>],
-    data?: Readonly<Classic.ListDeviceData<T>>,
-  ): OperationalCapabilities<T>[keyof OperationalCapabilities<T>]
-}['bivariant']
+export type ConvertFromDevice<T extends Classic.DeviceType> = (
+  data: Readonly<Classic.ListDeviceData<T>>,
+) => OperationalCapabilities<T>[keyof OperationalCapabilities<T>]
 
 /**
  * Converter from a Homey capability value to the corresponding classic device

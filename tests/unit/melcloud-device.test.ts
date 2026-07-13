@@ -47,37 +47,49 @@ describe(ClassicMELCloudDeviceAta, () => {
 
   describe('device-to-capability conversions', () => {
     it.each([
-      ['alarm_generic.silent', Classic.FanSpeed.silent, true],
-      ['alarm_generic.silent', Classic.FanSpeed.auto, false],
-      ['fan_speed', Classic.FanSpeed.silent, Classic.FanSpeed.auto],
-      ['fan_speed', Classic.FanSpeed.fast, Classic.FanSpeed.fast],
-      ['horizontal', Classic.Horizontal.center, 'center'],
-      ['vertical', Classic.Vertical.auto, 'auto'],
-    ])('%s(%s) should return %s', (key, input, expected) => {
+      ['alarm_generic.silent', { FanSpeed: Classic.FanSpeed.silent }, true],
+      ['alarm_generic.silent', { FanSpeed: Classic.FanSpeed.auto }, false],
+      [
+        'fan_speed',
+        { FanSpeed: Classic.FanSpeed.silent },
+        Classic.FanSpeed.auto,
+      ],
+      ['fan_speed', { FanSpeed: Classic.FanSpeed.fast }, Classic.FanSpeed.fast],
+      [
+        'horizontal',
+        { VaneHorizontalDirection: Classic.Horizontal.center },
+        'center',
+      ],
+      ['vertical', { VaneVerticalDirection: Classic.Vertical.auto }, 'auto'],
+    ])('%s(%o) should return %s', (key, input, expected) => {
       const { deviceToCapability } = device
       const converter = deviceToCapability[key]
 
-      expect(converter?.(input)).toBe(expected)
+      expect(converter?.(mock<Classic.ListDeviceDataAta>(input))).toBe(expected)
     })
 
     it('should convert thermostat_mode to key when Power is on', () => {
       const {
         deviceToCapability: { thermostat_mode: converter },
       } = device
-      const data = mock<Classic.ListDeviceDataAta>({ Power: true })
+      const data = mock<Classic.ListDeviceDataAta>({
+        OperationMode: Classic.OperationMode.heat,
+        Power: true,
+      })
 
-      expect(converter?.(Classic.OperationMode.heat, data)).toBe('heat')
+      expect(converter?.(data)).toBe('heat')
     })
 
     it('should return off for thermostat_mode when Power is off', () => {
       const {
         deviceToCapability: { thermostat_mode: converter },
       } = device
-      const data = mock<Classic.ListDeviceDataAta>({ Power: false })
+      const data = mock<Classic.ListDeviceDataAta>({
+        OperationMode: Classic.OperationMode.heat,
+        Power: false,
+      })
 
-      expect(converter?.(Classic.OperationMode.heat, data)).toBe(
-        ThermostatModeAta.off,
-      )
+      expect(converter?.(data)).toBe(ThermostatModeAta.off)
     })
   })
 

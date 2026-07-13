@@ -110,7 +110,7 @@ export abstract class ClassicMELCloudDevice<
         if (Object.hasOwn(data, tag)) {
           await this.setCapabilityValue(
             capability,
-            this.#convertFromDevice(capability, data[tag], data),
+            this.#convertFromDevice(capability, tag, data),
           )
         }
       }),
@@ -119,12 +119,12 @@ export abstract class ClassicMELCloudDevice<
 
   #convertFromDevice<TKey extends keyof Capabilities<T>>(
     capability: TKey,
-    value: Classic.ListDeviceData<T>[keyof Classic.ListDeviceData<T>],
-    data?: Readonly<Classic.ListDeviceData<T>>,
+    tag: keyof Classic.ListDeviceData<T>,
+    data: Readonly<Classic.ListDeviceData<T>>,
   ): Capabilities<T>[TKey] {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- converter output narrowed to specific capability type
-    return (this.deviceToCapability[capability]?.(value, data) ??
-      value) as Capabilities<T>[TKey]
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- raw tag values and union-returning converters narrow to the capability's type
+    return (this.deviceToCapability[capability]?.(data) ??
+      data[tag]) as Capabilities<T>[TKey]
   }
 
   async #getDeviceData(): Promise<Readonly<Classic.ListDeviceData<T>> | null> {

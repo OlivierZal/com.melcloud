@@ -488,7 +488,9 @@ describe(ClassicMELCloudDevice, () => {
       const customDevice = new TestDevice()
       Object.defineProperty(customDevice, 'deviceToCapability', {
         value: {
-          measure_temperature: (value: number): number => value * 2,
+          measure_temperature: ({
+            RoomTemperature: temperature,
+          }: Readonly<Classic.ListDeviceDataAta>): number => temperature * 2,
         },
       })
       setDriver(customDevice)

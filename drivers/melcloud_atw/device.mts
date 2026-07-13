@@ -19,13 +19,19 @@ import {
 } from '../../types/classic-atw.mts'
 import { ClassicMELCloudDevice } from '../classic-device.mts'
 
-const convertFromDeviceMeasurePower: ConvertFromDevice<
-  typeof Classic.DeviceType.Atw
-> = (value: number) => value * KILOWATT_TO_WATT
+const convertFromDeviceMeasurePower =
+  (
+    tag: 'CurrentEnergyConsumed' | 'CurrentEnergyProduced',
+  ): ConvertFromDevice<typeof Classic.DeviceType.Atw> =>
+  (data) =>
+    data[tag] * KILOWATT_TO_WATT
 
-const convertFromDeviceOperationZone: ConvertFromDevice<
-  typeof Classic.DeviceType.Atw
-> = (value: Classic.OperationModeZone) => operationModeZoneFromDevice[value]
+const convertFromDeviceOperationZone =
+  (
+    tag: 'OperationModeZone1' | 'OperationModeZone2',
+  ): ConvertFromDevice<typeof Classic.DeviceType.Atw> =>
+  (data) =>
+    operationModeZoneFromDevice[data[tag]]
 
 export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
   typeof Classic.DeviceType.Atw
@@ -50,37 +56,44 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
       ConvertFromDevice<typeof Classic.DeviceType.Atw>
     >
   > = {
-    'alarm_generic.defrost': Boolean,
-    measure_power: convertFromDeviceMeasurePower,
-    'measure_power.produced': convertFromDeviceMeasurePower,
+    measure_power: convertFromDeviceMeasurePower('CurrentEnergyConsumed'),
+    'measure_power.produced': convertFromDeviceMeasurePower(
+      'CurrentEnergyProduced',
+    ),
     'target_temperature.flow_cool':
       this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_cool',
+        'SetCoolFlowTemperatureZone1',
       ),
     'target_temperature.flow_cool_zone2':
       this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_cool_zone2',
+        'SetCoolFlowTemperatureZone2',
       ),
     'target_temperature.flow_heat':
       this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_heat',
+        'SetHeatFlowTemperatureZone1',
       ),
     'target_temperature.flow_heat_zone2':
       this.#convertFromDeviceTargetTemperatureFlow(
         'target_temperature.flow_heat_zone2',
+        'SetHeatFlowTemperatureZone2',
       ),
-    thermostat_mode: convertFromDeviceOperationZone,
-    'thermostat_mode.zone2': convertFromDeviceOperationZone,
-    hot_water_mode: (isForced: boolean) =>
+    thermostat_mode: convertFromDeviceOperationZone('OperationModeZone1'),
+    'thermostat_mode.zone2':
+      convertFromDeviceOperationZone('OperationModeZone2'),
+    'alarm_generic.defrost': ({ DefrostMode: mode }) => Boolean(mode),
+    hot_water_mode: ({ ForcedHotWaterMode: isForced }) =>
       isForced ? HotWaterMode.forced : HotWaterMode.auto,
-    legionella: (value: string) =>
-      Temporal.PlainDate.from(value).toLocaleString(getLocale(this.homey), {
+    legionella: ({ LastLegionellaActivationTime: time }) =>
+      Temporal.PlainDate.from(time).toLocaleString(getLocale(this.homey), {
         day: 'numeric',
         month: 'short',
         weekday: 'short',
       }),
-    operational_state: (value: Classic.OperationModeState) =>
-      operationModeStateFromDevice[value],
+    operational_state: ({ OperationMode: state }) =>
+      operationModeStateFromDevice[state],
   }
 
   protected override readonly energyReportRegular: EnergyReportConfig = {
@@ -108,14 +121,21 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
 
   #convertFromDeviceTargetTemperatureFlow(
     capability: keyof TargetTemperatureFlowCapabilities,
+    tag:
+      | 'SetCoolFlowTemperatureZone1'
+      | 'SetCoolFlowTemperatureZone2'
+      | 'SetHeatFlowTemperatureZone1'
+      | 'SetHeatFlowTemperatureZone2',
   ): ConvertFromDevice<typeof Classic.DeviceType.Atw> {
     // Fall back to the minimum allowed value when the device reports no
-    // usable temperature: zero, NaN, or nullish values that reach this
-    // bivariant converter despite the number type
-    return (value: number) =>
-      Number.isFinite(value) && value !== 0 ?
-        value
-      : this.getCapabilityOptions(capability).min
+    // usable temperature (zero, NaN, or nullish on the wire despite the
+    // number type).
+    return (data) => {
+      const value = data[tag]
+      return Number.isFinite(value) && value !== 0 ?
+          value
+        : this.getCapabilityOptions(capability).min
+    }
   }
 
   async #setOperationModeStates(): Promise<void> {

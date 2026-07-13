@@ -45,9 +45,12 @@ describe(ClassicMELCloudDeviceErv, () => {
         const {
           deviceToCapability: { thermostat_mode: converter },
         } = device
-        const data = mock<Classic.ListDeviceDataErv>({ Power: isPoweredOn })
+        const data = mock<Classic.ListDeviceDataErv>({
+          Power: isPoweredOn,
+          VentilationMode: input,
+        })
 
-        expect(converter?.(input, data)).toBe(expected)
+        expect(converter?.(data)).toBe(expected)
       },
     )
   })
