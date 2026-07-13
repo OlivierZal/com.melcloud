@@ -1,5 +1,8 @@
 // The derived-state LABELS are shared across both dialects; the Home-named
 // union carries the canonical capability ids.
+import type { HomeAtwOperationalState } from '@olivierzal/melcloud-api'
+// The derived-state LABELS are shared across both dialects; the Home-named
+// union carries the canonical capability ids.
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {

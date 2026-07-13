@@ -248,7 +248,7 @@ describe('hot water operation state options', () => {
     expect(Classic.OperationModeStateHotWater).toStrictEqual({
       dhw: 'dhw',
       idle: 'idle',
-      legionella: 'legionella',
+      legionellaPrevention: 'legionella',
       prohibited: 'prohibited',
     })
   })
