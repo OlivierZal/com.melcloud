@@ -1,3 +1,5 @@
+// The derived-state LABELS are shared across both dialects; the Home-named
+// union carries the canonical capability ids.
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {
@@ -16,14 +18,14 @@ import {
 
 export const operationModeStateFromDevice: Record<
   Classic.OperationModeState,
-  keyof typeof Classic.OperationModeState
+  HomeAtwOperationalState
 > = {
   [Classic.OperationModeState.cooling]: 'cooling',
   [Classic.OperationModeState.defrost]: 'defrost',
   [Classic.OperationModeState.dhw]: 'dhw',
   [Classic.OperationModeState.heating]: 'heating',
   [Classic.OperationModeState.idle]: 'idle',
-  [Classic.OperationModeState.legionella]: 'legionella',
+  [Classic.OperationModeState.legionellaPrevention]: 'legionella',
 }
 
 export const operationModeZoneFromDevice: Record<
@@ -92,7 +94,7 @@ export interface GetCapabilities extends BaseGetCapabilities {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
-  readonly operational_state: keyof typeof Classic.OperationModeState
+  readonly operational_state: HomeAtwOperationalState
 }
 
 export interface ListCapabilities extends BaseListCapabilities {
