@@ -9,7 +9,11 @@ import {
 } from '../../types/ata-erv.mts'
 import { HotWaterMode } from '../../types/atw.mts'
 import { getCapabilitiesOptions as getCapabilitiesOptionsAtw } from '../../types/classic-atw.mts'
-import { homeGetCapabilitiesOptionsAtw } from '../../types/home-atw.mts'
+import {
+  fromHomeGuestThermostatMode,
+  homeGetCapabilitiesOptionsAtw,
+  toHomeGuestThermostatMode,
+} from '../../types/home-atw.mts'
 import { mock } from '../helpers.ts'
 
 describe(getCapabilitiesOptionsAtaErv, () => {
@@ -200,12 +204,12 @@ describe(homeGetCapabilitiesOptionsAtw, () => {
     )
 
     expect(result.thermostat_mode?.values).toMatchObject([
-      { id: 'flow', title: { en: 'Heat', fr: 'Chauffer' } },
-      { id: 'flow_cool', title: { en: 'Cool', fr: 'Refroidir' } },
+      { id: 'heat', title: { en: 'Heat', fr: 'Chauffer' } },
+      { id: 'cool', title: { en: 'Cool', fr: 'Refroidir' } },
     ])
     expect(result['thermostat_mode.zone2']?.values).toMatchObject([
-      { id: 'flow' },
-      { id: 'flow_cool' },
+      { id: 'heat' },
+      { id: 'cool' },
     ])
   })
 
@@ -215,7 +219,7 @@ describe(homeGetCapabilitiesOptionsAtw, () => {
     )
 
     expect(result.thermostat_mode?.values).toMatchObject([
-      { id: 'flow', title: { en: 'Heat' } },
+      { id: 'heat', title: { en: 'Heat' } },
     ])
   })
 
@@ -282,5 +286,39 @@ describe('zone operation state options', () => {
       idle: 'idle',
       prohibited: 'prohibited',
     })
+  })
+})
+
+describe('guest thermostat mode mapping', () => {
+  it.each([
+    ['curve', 'heat'],
+    ['flow', 'heat'],
+    ['flow_cool', 'cool'],
+    ['room', 'heat'],
+    ['room_cool', 'cool'],
+  ] as const)('should read %s as the %s side', (mode, side) => {
+    expect(toHomeGuestThermostatMode(mode)).toBe(side)
+  })
+
+  it.each([
+    ['curve', 'curve'],
+    ['flow', 'flow'],
+    ['flow_cool', 'flow'],
+    ['room', 'room'],
+    ['room_cool', 'room'],
+    [undefined, 'flow'],
+  ] as const)('should project heat onto %s as %s', (current, mode) => {
+    expect(fromHomeGuestThermostatMode('heat', current)).toBe(mode)
+  })
+
+  it.each([
+    ['curve', 'flow_cool'],
+    ['flow', 'flow_cool'],
+    ['flow_cool', 'flow_cool'],
+    ['room', 'room_cool'],
+    ['room_cool', 'room_cool'],
+    [undefined, 'flow_cool'],
+  ] as const)('should project cool onto %s as %s', (current, mode) => {
+    expect(fromHomeGuestThermostatMode('cool', current)).toBe(mode)
   })
 })

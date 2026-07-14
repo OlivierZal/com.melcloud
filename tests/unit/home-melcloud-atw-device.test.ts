@@ -255,6 +255,25 @@ describe(HomeMELCloudDeviceAtw, () => {
         converter?.(mockFacade({ hotWaterOperationalState: 'prohibited' })),
       ).toBe('prohibited')
     })
+
+    it('should read the precise zone modes for an owner', () => {
+      const { deviceToCapability } = device
+      const facade = mockFacade({ operationModeZone1: 'room_cool' })
+
+      expect(deviceToCapability.thermostat_mode?.(facade)).toBe('room_cool')
+    })
+
+    it('should read the abstract side for a guest', () => {
+      const { deviceToCapability } = device
+      const facade = mockFacade({
+        isOwner: false,
+        operationModeZone1: 'room_cool',
+        operationModeZone2: 'curve',
+      })
+
+      expect(deviceToCapability.thermostat_mode?.(facade)).toBe('cool')
+      expect(deviceToCapability['thermostat_mode.zone2']?.(facade)).toBe('heat')
+    })
   })
 
   describe('capability-to-device conversions', () => {
@@ -267,6 +286,45 @@ describe(HomeMELCloudDeviceAtw, () => {
       } = device
 
       expect(converter?.(mode)).toBe(isForced)
+    })
+
+    it('should pass a precise owner mode through unchanged', () => {
+      const { capabilityToDevice } = device
+
+      expect(capabilityToDevice.thermostat_mode?.('curve')).toBe('curve')
+      expect(capabilityToDevice['thermostat_mode.zone2']?.('room')).toBe('room')
+    })
+
+    it('should project a guest side onto the current mode family', async () => {
+      getHomeFacadeMock.mockReturnValue(
+        mockFacade({ operationModeZone1: 'room', operationModeZone2: 'flow' }),
+      )
+      await device.ensureDevice()
+      const { capabilityToDevice } = device
+
+      expect(capabilityToDevice.thermostat_mode?.('cool')).toBe('room_cool')
+      expect(capabilityToDevice['thermostat_mode.zone2']?.('cool')).toBe(
+        'flow_cool',
+      )
+    })
+
+    it('should default a guest side to the flow family on a single-zone unit', async () => {
+      getHomeFacadeMock.mockReturnValue(
+        mockFacade({ operationModeZone2: null }),
+      )
+      await device.ensureDevice()
+      const { capabilityToDevice } = device
+
+      expect(capabilityToDevice['thermostat_mode.zone2']?.('heat')).toBe('flow')
+    })
+
+    it('should default a guest side to the flow family without a facade', () => {
+      const { capabilityToDevice } = device
+
+      expect(capabilityToDevice.thermostat_mode?.('heat')).toBe('flow')
+      expect(capabilityToDevice['thermostat_mode.zone2']?.('cool')).toBe(
+        'flow_cool',
+      )
     })
   })
 
