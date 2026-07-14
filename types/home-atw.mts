@@ -98,9 +98,9 @@ export const homeTagMappingsAtw: {
  * Structural slice of {@link Home.DeviceAtwFacade} driving which capabilities
  * a Home ATW device gets and their options. Satisfied by the facade itself;
  * guests get everything but the power toggle, with the zone thermostat modes
- * narrowed to the coarse heating/cooling pair the MELCloud Home app offers
- * them (`flow`/`flow_cool` — live-captured guest writes with `/context`
- * readback, 2026-07-14); owners get the full precise mode set.
+ * narrowed to the abstract heat/cool sides the MELCloud Home app offers them
+ * (family-preserving writes, live-captured with `/context` readback on both
+ * the room and flow families, 2026-07-14); owners get the full precise set.
  */
 export type HomeAtwDeviceProfile = Pick<
   Home.DeviceAtwFacade,
