@@ -34,17 +34,21 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
     'operational_state.zone1',
   ]
 
-  // Owner-only: the MELCloud Home app gives guests every setpoint but keeps
-  // the power toggle and the precise zone thermostat modes (room/flow/curve)
-  // for owners — a guest only gets a coarse heating/cooling switch the app
-  // drives through a separate, uncaptured path.
-  readonly #zone1OwnerCapabilities: (keyof HomeCapabilitiesAtw)[] = [
-    'onoff',
+  readonly #zone1ControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
     'thermostat_mode',
+    'target_temperature',
   ]
 
-  readonly #zone1SetpointCapabilities: (keyof HomeCapabilitiesAtw)[] = [
-    'target_temperature',
+  // The power toggle is the one owner-only capability: the MELCloud Home
+  // app gives guests every setpoint, the hot-water controls and the zone
+  // thermostat modes (narrowed by `getCapabilitiesOptions` to the coarse
+  // flow pair its heating/cooling switch writes — live-captured with
+  // `/context` readback, 2026-07-14), but never the unit master on/off.
+  readonly #zone1OwnerCapabilities: (keyof HomeCapabilitiesAtw)[] = ['onoff']
+
+  readonly #zone2ControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
+    'thermostat_mode.zone2',
+    'target_temperature.zone2',
   ]
 
   readonly #zone2MeasureCapabilities: (keyof HomeCapabilitiesAtw)[] = [
@@ -52,17 +56,9 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
     'operational_state.zone2',
   ]
 
-  readonly #zone2OwnerCapabilities: (keyof HomeCapabilitiesAtw)[] = [
-    'thermostat_mode.zone2',
-  ]
-
-  readonly #zone2SetpointCapabilities: (keyof HomeCapabilitiesAtw)[] = [
-    'target_temperature.zone2',
-  ]
-
-  // Only `isOwner` narrows the ATW surface (ATA is never gated): guests get
-  // the measures, both zones' setpoints and the hot-water controls; owners
-  // additionally get the power toggle and the precise zone thermostat modes.
+  // Only `isOwner` narrows the ATW surface (ATA is never gated), and only
+  // by the power toggle; the guest thermostat-mode narrowing happens in
+  // the capabilities options, not here.
   public override getRequiredCapabilities(
     profile?: HomeAtwDeviceProfile,
   ): string[] {
@@ -70,7 +66,7 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
     return [
       ...this.#measureCapabilities,
       ...(isOwner ? this.#zone1OwnerCapabilities : []),
-      ...this.#zone1SetpointCapabilities,
+      ...this.#zone1ControlCapabilities,
       ...(capabilities?.hasHotWater === true ?
         [
           ...this.#hotWaterMeasureCapabilities,
@@ -78,11 +74,7 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
         ]
       : []),
       ...(capabilities?.hasZone2 === true ?
-        [
-          ...this.#zone2MeasureCapabilities,
-          ...(isOwner ? this.#zone2OwnerCapabilities : []),
-          ...this.#zone2SetpointCapabilities,
-        ]
+        [...this.#zone2MeasureCapabilities, ...this.#zone2ControlCapabilities]
       : []),
     ]
   }

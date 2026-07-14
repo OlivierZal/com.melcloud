@@ -79,17 +79,16 @@ coverage.
   flag refinements do not exist on the Home wire.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
-  (`getRequiredCapabilities`). `isOwner` narrows ONLY Home ATW, and only
-  by two capabilities: guests get every measure, both zones' setpoints
-  and the hot-water controls, but NOT the power toggle (`onoff`) or the
-  precise zone thermostat modes (`thermostat_mode`/`.zone2`) — the
-  MELCloud Home app reserves those for owners and gives guests a coarse
-  heating/cooling switch through a separate, still-uncaptured write path.
-  Home ATA is NEVER gated — live probing showed the BFF accepts guest ATA
-  writes. Guest ATW setpoint writes match the app UI (Olivier, direct
-  observation) but are not yet BFF-readback-verified: no accepted guest
-  ATW invite exists to probe (as of 2026-07-14 the only guest ATW invite,
-  ZEV62, is unaccepted).
+  (`getRequiredCapabilities`). `isOwner` narrows ONLY Home ATW (ATA is
+  never gated), and only by the power toggle (`onoff`): guests get every
+  measure, both zones' setpoints, the hot-water controls AND the zone
+  thermostat modes, whose VALUES `homeGetCapabilitiesOptionsAtw` narrows
+  to the coarse pair the guest app writes — `flow`/`flow_cool` (its
+  heating/cooling switch is no separate API: a Charles capture of the
+  accepted ZEV62 guest, 2026-07-14, shows plain PUTs of
+  `operationModeZone1: Heat|CoolFlowTemperature` with the change
+  confirmed by `/context` readback). Owners keep the full precise set
+  (room/flow/curve plus the cool variants).
 - New FTC vocabulary must never crash a sync — and that tolerance lives
   in melcloud-api, not here: the Home ATW facade getters normalize the
   wire dialect (`HomeAtwZoneMode`, `operationalState`), degrading

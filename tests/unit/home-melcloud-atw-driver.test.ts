@@ -122,7 +122,7 @@ describe(HomeMELCloudDriverAtw, () => {
       ])
     })
 
-    it('should drop only the power toggle and precise modes for a guest device', () => {
+    it('should drop only the power toggle for a guest device', () => {
       const capabilities = driver.getRequiredCapabilities(
         createProfile({ hasZone2: true, isOwner: false }),
       )
@@ -131,6 +131,7 @@ describe(HomeMELCloudDriverAtw, () => {
         'measure_temperature',
         'operational_state',
         'operational_state.zone1',
+        'thermostat_mode',
         'target_temperature',
         'measure_temperature.tank_water',
         'operational_state.hot_water',
@@ -138,6 +139,7 @@ describe(HomeMELCloudDriverAtw, () => {
         'target_temperature.tank_water',
         'measure_temperature.zone2',
         'operational_state.zone2',
+        'thermostat_mode.zone2',
         'target_temperature.zone2',
       ])
     })
@@ -157,11 +159,12 @@ describe(HomeMELCloudDriverAtw, () => {
       ])
     })
 
-    it('should default to the measures and zone1 setpoint when no profile is given', () => {
+    it('should default to the measures and zone1 controls when no profile is given', () => {
       expect(driver.getRequiredCapabilities()).toStrictEqual([
         'measure_temperature',
         'operational_state',
         'operational_state.zone1',
+        'thermostat_mode',
         'target_temperature',
       ])
     })

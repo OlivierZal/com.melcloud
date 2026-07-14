@@ -194,10 +194,28 @@ const createAtwProfile = ({
 })
 
 describe(homeGetCapabilitiesOptionsAtw, () => {
-  it('should return no options for a guest device', () => {
+  it('should narrow a guest to the coarse flow pair', () => {
+    const result = homeGetCapabilitiesOptionsAtw(
+      createAtwProfile({ hasCoolingMode: true, isOwner: false }),
+    )
+
+    expect(result.thermostat_mode?.values.map(({ id }) => id)).toStrictEqual([
+      'flow',
+      'flow_cool',
+    ])
     expect(
-      homeGetCapabilitiesOptionsAtw(createAtwProfile({ isOwner: false })),
-    ).toStrictEqual({})
+      result['thermostat_mode.zone2']?.values.map(({ id }) => id),
+    ).toStrictEqual(['flow', 'flow_cool'])
+  })
+
+  it('should leave a non-cooling guest with the flow mode only', () => {
+    const result = homeGetCapabilitiesOptionsAtw(
+      createAtwProfile({ isOwner: false }),
+    )
+
+    expect(result.thermostat_mode?.values.map(({ id }) => id)).toStrictEqual([
+      'flow',
+    ])
   })
 
   it('should include only non-cool values without cooling mode', () => {

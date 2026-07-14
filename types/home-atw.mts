@@ -61,9 +61,10 @@ export const homeTagMappingsAtw: {
 /**
  * Structural slice of {@link Home.DeviceAtwFacade} driving which capabilities
  * a Home ATW device gets and their options. Satisfied by the facade itself;
- * guests get the measures, setpoints and hot-water controls, while owners
- * additionally get the power toggle and the precise zone thermostat modes
- * (the MELCloud Home app reserves those two for owners).
+ * guests get everything but the power toggle, with the zone thermostat modes
+ * narrowed to the coarse heating/cooling pair the MELCloud Home app offers
+ * them (`flow`/`flow_cool` — live-captured guest writes with `/context`
+ * readback, 2026-07-14); owners get the full precise mode set.
  */
 export type HomeAtwDeviceProfile = Pick<
   Home.DeviceAtwFacade,
@@ -80,20 +81,23 @@ export interface HomeCapabilitiesOptionsAtw {
   }
 }
 
+// The guest app only toggles between the flow-family modes (the pair its
+// coarse heating/cooling switch writes on the wire).
+const GUEST_THERMOSTAT_MODE_IDS = new Set(['flow', 'flow_cool'])
+
 // Only complete option objects, and only for capabilities the device will
 // actually have: device-level options shadow the manifest's per capability
 // (temperature ranges/steps/titles stay in the compose manifest — the facade
 // clamps setpoints device-side anyway), and setting options on an absent
-// capability fails, so guests get none.
+// capability fails.
 export const homeGetCapabilitiesOptionsAtw = ({
   capabilities: { hasZone2 },
   hasCoolingMode,
   isOwner,
 }: HomeAtwDeviceProfile): Partial<HomeCapabilitiesOptionsAtw> => {
-  if (!isOwner) {
-    return {}
-  }
-  const values = getThermostatModeValuesAtw(hasCoolingMode)
+  const values = getThermostatModeValuesAtw(hasCoolingMode).filter(
+    ({ id }) => isOwner || GUEST_THERMOSTAT_MODE_IDS.has(id),
+  )
   return {
     thermostat_mode: { values },
     ...(hasZone2 && {
