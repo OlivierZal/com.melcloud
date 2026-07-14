@@ -198,26 +198,25 @@ describe(homeGetCapabilitiesOptionsAtw, () => {
     const result = homeGetCapabilitiesOptionsAtw(
       createAtwProfile({ hasCoolingMode: true, isOwner: false }),
     )
-    const values = result.thermostat_mode?.values
 
-    expect(values?.map(({ id }) => id)).toStrictEqual(['flow', 'flow_cool'])
-    expect(values?.[0]?.title.en).toBe('Heat')
-    expect(values?.[0]?.title.fr).toBe('Chauffer')
-    expect(values?.[1]?.title.en).toBe('Cool')
-    expect(values?.[1]?.title.fr).toBe('Refroidir')
-    expect(
-      result['thermostat_mode.zone2']?.values.map(({ id }) => id),
-    ).toStrictEqual(['flow', 'flow_cool'])
+    expect(result.thermostat_mode?.values).toMatchObject([
+      { id: 'flow', title: { en: 'Heat', fr: 'Chauffer' } },
+      { id: 'flow_cool', title: { en: 'Cool', fr: 'Refroidir' } },
+    ])
+    expect(result['thermostat_mode.zone2']?.values).toMatchObject([
+      { id: 'flow' },
+      { id: 'flow_cool' },
+    ])
   })
 
   it('should leave a non-cooling guest with the heat mode only', () => {
     const result = homeGetCapabilitiesOptionsAtw(
       createAtwProfile({ isOwner: false }),
     )
-    const values = result.thermostat_mode?.values
 
-    expect(values?.map(({ id }) => id)).toStrictEqual(['flow'])
-    expect(values?.[0]?.title.en).toBe('Heat')
+    expect(result.thermostat_mode?.values).toMatchObject([
+      { id: 'flow', title: { en: 'Heat' } },
+    ])
   })
 
   it('should include only non-cool values without cooling mode', () => {
