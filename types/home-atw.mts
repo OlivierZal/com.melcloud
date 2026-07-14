@@ -81,9 +81,47 @@ export interface HomeCapabilitiesOptionsAtw {
   }
 }
 
-// The guest app only toggles between the flow-family modes (the pair its
-// coarse heating/cooling switch writes on the wire).
-const GUEST_THERMOSTAT_MODE_IDS = new Set(['flow', 'flow_cool'])
+// The guest app's coarse switch, labeled with the neutral heat/cool
+// wording (node-homey-lib's thermostat_mode values, the vocabulary the
+// ATA drivers show); the ids stay the flow-family modes its writes carry
+// on the wire.
+const guestHeat: CapabilitiesOptionsValues<'flow'> = {
+  id: 'flow',
+  title: {
+    ar: 'تسخين',
+    da: 'Opvarm',
+    de: 'Heizen',
+    en: 'Heat',
+    es: 'Calentar',
+    fr: 'Chauffer',
+    it: 'Calore',
+    ko: '난방',
+    nl: 'Verhitten',
+    no: 'Varme',
+    pl: 'Ogrzewanie',
+    ru: 'Обогрев',
+    sv: 'Värme',
+  },
+}
+
+const guestCool: CapabilitiesOptionsValues<'flow_cool'> = {
+  id: 'flow_cool',
+  title: {
+    ar: 'تبريد',
+    da: 'Køl ned',
+    de: 'Kühlen',
+    en: 'Cool',
+    es: 'Enfriar',
+    fr: 'Refroidir',
+    it: 'Raffreddamento',
+    ko: '냉방',
+    nl: 'Koelen',
+    no: 'Avkjøle',
+    pl: 'Chłodzenie',
+    ru: 'Охлаждение',
+    sv: 'Kyla',
+  },
+}
 
 // Only complete option objects, and only for capabilities the device will
 // actually have: device-level options shadow the manifest's per capability
@@ -95,9 +133,10 @@ export const homeGetCapabilitiesOptionsAtw = ({
   hasCoolingMode,
   isOwner,
 }: HomeAtwDeviceProfile): Partial<HomeCapabilitiesOptionsAtw> => {
-  const values = getThermostatModeValuesAtw(hasCoolingMode).filter(
-    ({ id }) => isOwner || GUEST_THERMOSTAT_MODE_IDS.has(id),
-  )
+  const values =
+    isOwner ? getThermostatModeValuesAtw(hasCoolingMode)
+    : hasCoolingMode ? [guestHeat, guestCool]
+    : [guestHeat]
   return {
     thermostat_mode: { values },
     ...(hasZone2 && {
