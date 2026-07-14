@@ -75,6 +75,49 @@ describe('api', () => {
     })
   })
 
+  describe('device groups retrieval', () => {
+    it('should flatten both dialects into named groups sorted by name', async () => {
+      mockGetBuildings.mockReturnValue([
+        mock<Classic.BuildingZone>({
+          areas: [mock<Classic.AreaZone>({ devices: [{ id: 3 }] })],
+          devices: [{ id: 1 }, { id: 2 }],
+          floors: [
+            mock<Classic.FloorZone>({
+              areas: [mock<Classic.AreaZone>({ devices: [{ id: 5 }] })],
+              devices: [{ id: 4 }],
+            }),
+          ],
+          name: 'Ma maison',
+        }),
+        mock<Classic.BuildingZone>({
+          areas: [],
+          devices: [],
+          floors: [],
+          name: 'Bâtiment vide',
+        }),
+      ])
+      mockHomeList.mockResolvedValue([
+        {
+          airToAirUnits: [{ id: 'uuid-1' }],
+          airToWaterUnits: [{ id: 'uuid-2' }],
+          name: 'Appartement',
+        },
+      ])
+
+      await expect(api.getDeviceGroups({ homey })).resolves.toStrictEqual([
+        { deviceIds: ['uuid-1', 'uuid-2'], name: 'Appartement' },
+        { deviceIds: ['1', '2', '3', '4', '5'], name: 'Ma maison' },
+      ])
+    })
+
+    it('should return no groups when both dialects are empty', async () => {
+      mockGetBuildings.mockReturnValue([])
+      mockHomeList.mockResolvedValue([])
+
+      await expect(api.getDeviceGroups({ homey })).resolves.toStrictEqual([])
+    })
+  })
+
   describe('device settings retrieval', () => {
     it('should delegate to app.getDeviceSettings', () => {
       const deviceSettings = mock<DeviceSettings>()

@@ -21,6 +21,10 @@
       "method": "GET",
       "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
     },
+    "getDeviceGroups": {
+      "method": "GET",
+      "path": "/device_groups"
+    },
     "getDeviceSettings": {
       "method": "GET",
       "path": "/settings/devices"
