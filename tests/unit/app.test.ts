@@ -1896,7 +1896,12 @@ describe('melCloudApp', () => {
       expect(result).toStrictEqual([
         { model: 'buildings', name: 'Building 1' },
         { model: 'devices', name: 'Building unit' },
-        { id: 'account-1', level: 0, model: 'homeBuildings', name: 'Buildings' },
+        {
+          id: 'account-1',
+          level: 0,
+          model: 'homeBuildings',
+          name: 'Buildings',
+        },
         { id: 'home-1', level: 1, model: 'homeDevices', name: 'Building one' },
         { id: 'home-2', level: 1, model: 'homeDevices', name: 'Building two' },
       ])
