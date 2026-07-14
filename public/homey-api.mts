@@ -6,6 +6,35 @@ export interface Homey<
   readonly getSettings: () => TSettings
 }
 
+// Give slow transports a real chance while keeping the loading overlay
+// finite: past this point the page surfaces the failure instead.
+const INIT_TIMEOUT_MS = 10_000
+
+/**
+ * Bounds a webview init chain: `Homey.ready()` must always end the
+ * loading overlay, so a hung transport call cannot be allowed to hold it
+ * open forever. The underlying work is not cancelled — a late success
+ * simply repaints over the error state.
+ * @template T - Result type of the bounded work.
+ * @param work - The init chain to bound.
+ * @returns The work's result, or a rejection once the deadline passes.
+ */
+export const withInitTimeout = async <T,>(work: Promise<T>): Promise<T> => {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    return await Promise.race([
+      work,
+      new Promise<never>((_resolve, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error('Timed out while loading data from the app'))
+        }, INIT_TIMEOUT_MS)
+      }),
+    ])
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 /**
  * Surfaces an error in the widget dev tools without blocking the caller:
  * `reportError` where the webview provides it, an async rethrow otherwise.
@@ -55,4 +84,16 @@ export const setDocumentLanguage = async (
   homey: HomeyWidget,
 ): Promise<void> => {
   document.documentElement.lang = await homeyApiGet<string>(homey, '/language')
+}
+
+// The display language is cosmetic: a failed fetch must not abort a
+// webview init, so the page keeps its authored default instead.
+export const trySetDocumentLanguage = async (
+  homey: HomeyWidget,
+): Promise<void> => {
+  try {
+    await setDocumentLanguage(homey)
+  } catch (error) {
+    surfaceError(error)
+  }
 }

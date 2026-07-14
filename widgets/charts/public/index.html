@@ -4,12 +4,36 @@
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>MELCloud charts</title>
-        <link href="styles/layout.css" rel="stylesheet">
-        <link href="styles/zone-select.css" rel="stylesheet">
-        <script type="module" src="index.mjs"></script>
+        <script>
+            // Canonical entry point from the widget docs: the SDK needs
+            // this global at parse time. The page logic lives in the
+            // module bundle; a failed bundle load still ends the overlay.
+            function onHomeyReady(homey) {
+                import('./index.mjs?v=608991ef')
+                    .then((module) => module.start(homey))
+                    .catch((error) => {
+                        globalThis.reportError?.(error)
+                        const message = document.querySelector('#init_error')
+                        if (message) {
+                            message.hidden = false
+                            message.textContent = homey.__('widgets.loadFailed')
+                        }
+                        homey.ready()
+                    })
+            }
+        </script>
+        <link href="styles/layout.css?v=b98ed57e" rel="stylesheet">
+        <link href="styles/zone-select.css?v=2cded214" rel="stylesheet">
+        <link href="index.mjs?v=608991ef" rel="modulepreload">
         <meta content="MELCloud charts" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">
+        <p
+            id="init_error"
+            class="homey-text-small"
+            hidden
+            role="alert"
+        ></p>
         <select
             id="charts"
             class="zone-select chart-select"

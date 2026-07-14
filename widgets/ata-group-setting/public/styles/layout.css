@@ -8,6 +8,17 @@
   z-index: -1;
 }
 
+/* Homey's injected class styles can outrank the UA's `[hidden]` rule (the
+   settings page fights the same specificity trap): keep the dismissed
+   error truly gone, and keep the visible one from adding stray gaps. */
+#init_error {
+  margin-block: 0 var(--homey-su-2);
+}
+
+#init_error[hidden] {
+  display: none;
+}
+
 /* The shared ghost styling lives in zone-select.css; the spacing to the
    value rows below is specific to this widget. */
 .zone-select {

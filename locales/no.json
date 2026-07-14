@@ -63,20 +63,20 @@
       "startDate": "Startdato"
     },
     "intError": "__name__: må være et heltall mellom __min__ og __max__.",
+    "loadFailed": "Innlasting mislyktes",
     "refresh": "Oppfrisk",
     "success": "Oppdatering lyktes.",
     "title": "MELCloud-innstillinger",
+    "update": "Oppdater",
     "zones": {
       "legend": "Sonesinnstillinger (Classic)",
       "update": "Oppdater"
-    },
-    "update": "Oppdater"
+    }
   },
   "warnings": {
     "dashboard": "Forlat enheten og gå tilbake for å oppdatere dashbordet ditt."
   },
   "widgets": {
-    "zones": "Soner",
     "chart": "Diagram",
     "charts": {
       "hourly_temperatures": "Temperaturer siden siste time",
@@ -84,6 +84,8 @@
       "signal": "Signalstyrke siden siste time",
       "temperatures": "Temperaturer"
     },
-    "days": "Antall dager"
+    "days": "Antall dager",
+    "loadFailed": "Innlasting mislyktes",
+    "zones": "Soner"
   }
 }

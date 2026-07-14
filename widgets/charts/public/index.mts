@@ -26,14 +26,17 @@ import {
   createOption,
   getDiv,
   getSelect,
+  hideInitError,
+  showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
 import {
   type Homey,
   fireAndForget,
   homeyApiGet,
-  setDocumentLanguage,
   surfaceError,
+  trySetDocumentLanguage,
+  withInitTimeout,
 } from '../../../public/homey-api.mts'
 import { getZoneId, getZonePath } from '../../../public/zones.mts'
 import {
@@ -41,20 +44,6 @@ import {
   type ChartsWidgetSettings as HomeySettings,
   DAYS_MAX,
 } from '../../../types/widgets.mts'
-
-// Register only what the two chart types use so esbuild tree-shakes the rest.
-Chart.register(
-  ArcElement,
-  CategoryScale,
-  Legend,
-  LinearScale,
-  LineController,
-  LineElement,
-  PieController,
-  PointElement,
-  Title,
-  Tooltip,
-)
 
 // Historical widget font stack, kept over the Homey font variables so the
 // rendered charts keep their established look.
@@ -580,6 +569,8 @@ class ChartWidget {
 
   readonly #homey: Homey<HomeySettings>
 
+  #isReady = false
+
   #timeout: NodeJS.Timeout | null = null
 
   readonly #zoneSelect: HTMLSelectElement
@@ -601,13 +592,17 @@ class ChartWidget {
     this.#zoneSelect = getSelect('zones')
   }
 
+  // `ready()` always fires — an unbounded await here would hold Homey's
+  // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
-    translateAriaLabels((key) => this.#homey.__(key))
-    // Sequenced, not parallel: the day picker labels are formatted with
-    // the app language, so it must land before the pickers are populated.
-    await setDocumentLanguage(this.#homey)
-    await this.#initControls()
-    this.#homey.ready({ height: document.body.scrollHeight })
+    try {
+      await withInitTimeout(this.#run())
+    } catch (error) {
+      showInitError(error)
+    } finally {
+      this.#homey.ready({ height: document.body.scrollHeight })
+      this.#isReady = true
+    }
   }
 
   #addEventListeners(
@@ -832,6 +827,21 @@ class ChartWidget {
     }
   }
 
+  async #run(): Promise<void> {
+    translateAriaLabels((key) => this.#homey.__(key))
+    // Sequenced, not parallel: the day picker labels are formatted with
+    // the app language, so it must land before the pickers are populated
+    // (a failed fetch is cosmetic and falls back to the authored default).
+    await trySetDocumentLanguage(this.#homey)
+    await this.#initControls()
+    // A load that outlived its timeout recovers here: drop the message
+    // and resize to the recovered content (`ready` heights are one-shot).
+    hideInitError()
+    if (this.#isReady) {
+      await this.#homey.setHeight(document.body.scrollHeight)
+    }
+  }
+
   // Verified against chart.umd.js in a headless browser: line-dataset legend
   // toggles live in metas keyed by dataset object identity, so they never
   // survive this widget's full-config refreshes and recreating buys nothing.
@@ -867,9 +877,24 @@ class ChartWidget {
 
 // ── Entry point ──
 
-const onHomeyReady = async (homey: Homey<HomeySettings>): Promise<void> => {
-  const widget = new ChartWidget(homey)
-  await widget.init()
+/**
+ * Page entry point, invoked by the HTML's canonical `onHomeyReady` once
+ * the SDK has dispatched (see the inline script in the page head).
+ * @param homey - The Homey instance handed to `onHomeyReady`.
+ */
+export const start = async (homey: Homey<HomeySettings>): Promise<void> => {
+  // Register only what the two chart types use so esbuild tree-shakes the rest.
+  Chart.register(
+    ArcElement,
+    CategoryScale,
+    Legend,
+    LinearScale,
+    LineController,
+    LineElement,
+    PieController,
+    PointElement,
+    Title,
+    Tooltip,
+  )
+  await new ChartWidget(homey).init()
 }
-
-Object.assign(globalThis, { onHomeyReady })

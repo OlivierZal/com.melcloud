@@ -63,20 +63,20 @@
       "startDate": "Startdatum"
     },
     "intError": "__name__: muss eine ganze Zahl zwischen __min__ und __max__ sein.",
+    "loadFailed": "Laden fehlgeschlagen",
     "refresh": "Neu laden",
     "success": "Aktualisierung erfolgreich.",
     "title": "MELCloud-Einstellungen",
+    "update": "Aktualisieren",
     "zones": {
       "legend": "Zoneneinstellungen (Classic)",
       "update": "Aktualisieren"
-    },
-    "update": "Aktualisieren"
+    }
   },
   "warnings": {
     "dashboard": "Verlassen Sie das Gerät und kehren Sie zurück, um Ihr Dashboard zu aktualisieren."
   },
   "widgets": {
-    "zones": "Zonen",
     "chart": "Diagramm",
     "charts": {
       "hourly_temperatures": "Temperaturen seit der letzten Stunde",
@@ -84,6 +84,8 @@
       "signal": "Signalstärke seit der letzten Stunde",
       "temperatures": "Temperaturen"
     },
-    "days": "Anzahl der Tage"
+    "days": "Anzahl der Tage",
+    "loadFailed": "Laden fehlgeschlagen",
+    "zones": "Zonen"
   }
 }

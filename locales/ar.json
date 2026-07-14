@@ -63,20 +63,20 @@
       "startDate": "تاريخ البدء"
     },
     "intError": "__name__: يجب أن يكون عددًا صحيحًا بين __min__ و __max__.",
+    "loadFailed": "فشل التحميل",
     "refresh": "إعادة تحميل",
     "success": "تم التحديث بنجاح.",
     "title": "إعدادات MELCloud",
+    "update": "تحديث",
     "zones": {
       "legend": "إعدادات المنطقة (Classic)",
       "update": "تحديث"
-    },
-    "update": "تحديث"
+    }
   },
   "warnings": {
     "dashboard": "اخرج من الجهاز وعد لتحديث لوحة التحكم."
   },
   "widgets": {
-    "zones": "المناطق",
     "chart": "الرسم البياني",
     "charts": {
       "hourly_temperatures": "درجات الحرارة منذ الساعة الأخيرة",
@@ -84,6 +84,8 @@
       "signal": "قوة الإشارة منذ الساعة الأخيرة",
       "temperatures": "درجات الحرارة"
     },
-    "days": "عدد الأيام"
+    "days": "عدد الأيام",
+    "loadFailed": "فشل التحميل",
+    "zones": "المناطق"
   }
 }

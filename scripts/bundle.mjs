@@ -3,6 +3,10 @@
 // former copy-based pipeline (shared helpers and vendored constants were
 // duplicated into every widget) and inlines npm dependencies (Chart.js)
 // so widgets work offline with versions pinned by the lockfile.
+import { createHash } from 'node:crypto'
+import { readFile, writeFile } from 'node:fs/promises'
+import path from 'node:path'
+
 import { build } from 'esbuild'
 
 const entryPoints = [
@@ -24,4 +28,46 @@ await Promise.all(
       target: ['es2020'],
     }),
   ),
+)
+
+// Cache-bust the static references: the phone webviews cache assets
+// across app versions, so a content hash per file forces a refetch
+// exactly when a file changes (same mechanism as the extension app).
+const hashOf = async (filePath) => {
+  const content = await readFile(filePath)
+  return createHash('sha256').update(content).digest('hex').slice(0, 8)
+}
+
+const stampHtml = async (htmlPath) => {
+  const html = await readFile(htmlPath, 'utf8')
+  const directory = path.dirname(htmlPath)
+  // Local files referenced from attributes (href/src) or the inline
+  // entry point's dynamic import — every occurrence gets the same stamp.
+  const files = new Set(
+    [
+      ...html.matchAll(
+        /(?:href="|src="|import\('\.\/)(?<file>[^"':?/][^"':?]*)(?:\?v=[0-9a-f]+)?["')]/gu,
+      ),
+    ].map((match) => match.groups.file),
+  )
+  let stamped = html
+  for (const file of files) {
+    const hash = await hashOf(path.join(directory, file))
+    const escaped = file.replaceAll('.', String.raw`\.`)
+    stamped = stamped.replaceAll(
+      new RegExp(String.raw`${escaped}(?:\?v=[0-9a-f]+)?`, 'gu'),
+      `${file}?v=${hash}`,
+    )
+  }
+  if (stamped !== html) {
+    await writeFile(htmlPath, stamped)
+  }
+}
+
+await Promise.all(
+  [
+    'settings/index.html',
+    'widgets/ata-group-setting/public/index.html',
+    'widgets/charts/public/index.html',
+  ].map(stampHtml),
 )

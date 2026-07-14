@@ -1,3 +1,5 @@
+import { getErrorMessage } from '../lib/get-error-message.mts'
+
 export type HTMLValueElement = HTMLInputElement | HTMLSelectElement
 
 export const booleanStrings: string[] = [
@@ -78,5 +80,32 @@ export const configureNumericInput = (
   }
   if (max !== undefined) {
     input.max = String(max)
+  }
+}
+
+/**
+ * Clears the `#init_error` element: called when the init work completes,
+ * so a load that outlives its timeout removes the degraded state once it
+ * eventually succeeds.
+ */
+export const hideInitError = (): void => {
+  const element = document.querySelector('#init_error')
+  if (element instanceof HTMLElement) {
+    element.hidden = true
+    element.textContent = ''
+  }
+}
+
+/**
+ * Reveals the static `#init_error` element with the failure message: the
+ * webview stays visible (`ready()` fires in the caller's `finally`), so
+ * the user sees why the page is degraded instead of an endless overlay.
+ * @param error - The init failure to display.
+ */
+export const showInitError = (error: unknown): void => {
+  const element = document.querySelector('#init_error')
+  if (element instanceof HTMLElement) {
+    element.textContent = getErrorMessage(error)
+    element.hidden = false
   }
 }

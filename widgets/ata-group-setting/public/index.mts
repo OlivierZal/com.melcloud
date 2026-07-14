@@ -6,14 +6,17 @@ import {
   getButton,
   getDiv,
   getSelect,
+  hideInitError,
+  showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
 import {
   type Homey,
   fireAndForget,
   homeyApiGet,
-  setDocumentLanguage,
   surfaceError,
+  trySetDocumentLanguage,
+  withInitTimeout,
 } from '../../../public/homey-api.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
@@ -40,6 +43,8 @@ class WidgetApp {
 
   readonly #homey: Homey<HomeySettings>
 
+  #isReady = false
+
   public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
     const animation = getDiv('animation')
@@ -49,14 +54,17 @@ class WidgetApp {
     this.#ataValueManager = new AtaValueManager(homey, ataValues, zone)
   }
 
+  // `ready()` always fires — an unbounded await here would hold Homey's
+  // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
-    translateAriaLabels((key) => this.#homey.__(key))
-    await Promise.all([
-      setDocumentLanguage(this.#homey),
-      this.#ataValueManager.fetchCapabilities(),
-    ])
-    await this.#initTargets()
-    this.#homey.ready({ height: document.body.scrollHeight })
+    try {
+      await withInitTimeout(this.#run())
+    } catch (error) {
+      showInitError(error)
+    } finally {
+      this.#homey.ready({ height: document.body.scrollHeight })
+      this.#isReady = true
+    }
   }
 
   #addEventListeners(): void {
@@ -112,13 +120,30 @@ class WidgetApp {
       await this.#fetchAndAnimate()
     }
   }
+
+  async #run(): Promise<void> {
+    translateAriaLabels((key) => this.#homey.__(key))
+    await Promise.all([
+      trySetDocumentLanguage(this.#homey),
+      this.#ataValueManager.fetchCapabilities(),
+    ])
+    await this.#initTargets()
+    // A load that outlived its timeout recovers here: drop the message
+    // and resize to the recovered content (`ready` heights are one-shot).
+    hideInitError()
+    if (this.#isReady) {
+      await this.#homey.setHeight(document.body.scrollHeight)
+    }
+  }
 }
 
 // ── Entry point ──
 
-const onHomeyReady = async (homey: Homey<HomeySettings>): Promise<void> => {
-  const app = new WidgetApp(homey)
-  await app.init()
+/**
+ * Page entry point, invoked by the HTML's canonical `onHomeyReady` once
+ * the SDK has dispatched (see the inline script in the page head).
+ * @param homey - The Homey instance handed to `onHomeyReady`.
+ */
+export const start = async (homey: Homey<HomeySettings>): Promise<void> => {
+  await new WidgetApp(homey).init()
 }
-
-Object.assign(globalThis, { onHomeyReady })

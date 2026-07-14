@@ -4,17 +4,41 @@
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>Air-to-air device values</title>
-        <link href="styles/layout.css" rel="stylesheet">
-        <link href="styles/zone-select.css" rel="stylesheet">
-        <link href="styles/flame.css" rel="stylesheet">
-        <link href="styles/leaf.css" rel="stylesheet">
-        <link href="styles/smoke.css" rel="stylesheet">
-        <link href="styles/snowflake.css" rel="stylesheet">
-        <link href="styles/sun.css" rel="stylesheet">
-        <script type="module" src="index.mjs"></script>
+        <script>
+            // Canonical entry point from the widget docs: the SDK needs
+            // this global at parse time. The page logic lives in the
+            // module bundle; a failed bundle load still ends the overlay.
+            function onHomeyReady(homey) {
+                import('./index.mjs?v=dea9566a')
+                    .then((module) => module.start(homey))
+                    .catch((error) => {
+                        globalThis.reportError?.(error)
+                        const message = document.querySelector('#init_error')
+                        if (message) {
+                            message.hidden = false
+                            message.textContent = homey.__('widgets.loadFailed')
+                        }
+                        homey.ready()
+                    })
+            }
+        </script>
+        <link href="styles/layout.css?v=7d7e3bf5" rel="stylesheet">
+        <link href="styles/zone-select.css?v=2cded214" rel="stylesheet">
+        <link href="styles/flame.css?v=dfc29c4e" rel="stylesheet">
+        <link href="styles/leaf.css?v=f5b9d664" rel="stylesheet">
+        <link href="styles/smoke.css?v=a17bb95c" rel="stylesheet">
+        <link href="styles/snowflake.css?v=06f4b14b" rel="stylesheet">
+        <link href="styles/sun.css?v=da326d17" rel="stylesheet">
+        <link href="index.mjs?v=dea9566a" rel="modulepreload">
         <meta content="MELCloud air-to-air device setting" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">
+        <p
+            id="init_error"
+            class="homey-text-small"
+            hidden
+            role="alert"
+        ></p>
         <select
             id="zones"
             class="zone-select"

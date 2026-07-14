@@ -4,9 +4,23 @@
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>MELCloud Settings</title>
-        <link href="index.css" rel="stylesheet">
+        <script>
+            // Canonical entry point from the app-settings docs: the SDK
+            // needs this global at parse time. The page logic lives in the
+            // module bundle; a failed bundle load still ends the overlay.
+            function onHomeyReady(homey) {
+                import('./index.mjs?v=99ae2e8d')
+                    .then((module) => module.start(homey))
+                    .catch((error) => {
+                        globalThis.reportError?.(error)
+                        homey.ready()
+                        homey.alert(homey.__('settings.loadFailed'))
+                    })
+            }
+        </script>
+        <link href="index.css?v=b7fc840a" rel="stylesheet">
+        <link href="index.mjs?v=99ae2e8d" rel="modulepreload">
         <script data-origin="settings" defer src="/homey.js"></script>
-        <script type="module" src="index.mjs"></script>
         <meta content="MELCloud settings" name="description">
     </head>
     <body>

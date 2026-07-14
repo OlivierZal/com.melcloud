@@ -32,7 +32,7 @@ import {
   getSpan,
   translateAriaLabels,
 } from '../public/dom.mts'
-import { fireAndForget } from '../public/homey-api.mts'
+import { fireAndForget, withInitTimeout } from '../public/homey-api.mts'
 import { getZoneId, getZoneName } from '../public/zones.mts'
 
 // ── Helpers ──
@@ -480,21 +480,25 @@ class DeviceSettingsManager {
     return this.#deviceSettings
   }
 
+  // Folded with a Map rather than `Object.groupBy`: the webview must run
+  // on engines older than Safari 17.4, and esbuild only lowers syntax,
+  // never runtime APIs.
   public get flatDeviceSettings(): Partial<DeviceSetting> {
-    const settingValues = Object.values(this.#deviceSettings).flatMap(
-      (settings) =>
-        Object.entries(settings ?? {}).map(([id, values]) => ({
-          id,
-          values,
-        })),
-    )
+    const valuesById = new Map<string, Set<unknown>>()
+    const allSettings = Object.values(this.#deviceSettings)
+    for (const settings of allSettings) {
+      const entries = Object.entries(settings ?? {})
+      for (const [id, values] of entries) {
+        const set = valuesById.get(id) ?? new Set()
+        set.add(values)
+        valuesById.set(id, set)
+      }
+    }
     return Object.fromEntries(
-      Object.entries(Object.groupBy(settingValues, ({ id }) => id)).map(
-        ([id, groupedValues]) => {
-          const set = new Set(groupedValues?.map(({ values }) => values))
-          return [id, set.size === 1 ? set.values().next().value : null]
-        },
-      ),
+      [...valuesById].map(([id, set]) => [
+        id,
+        set.size === 1 ? set.values().next().value : null,
+      ]),
     )
   }
 
@@ -1343,24 +1347,24 @@ class SettingsApp {
     }
   }
 
+  // `ready()` always fires — an unbounded await here would hold Homey's
+  // loading overlay open forever on a single hung or failed call. The
+  // failure alert waits until after `ready()`: an alert raised while the
+  // overlay is still up never gets seen.
   public async init(): Promise<void> {
-    const [settings, isClassicAuthenticated, isHomeAuthenticated] =
-      await Promise.all([
-        SettingsApp.#fetchHomeySettings(this.#homey),
-        homeyApiGet<boolean>(this.#homey, '/classic/sessions'),
-        homeyApiGet<boolean>(this.#homey, '/home/sessions'),
-        SettingsApp.#setDocumentLanguage(this.#homey),
-        this.#deviceSettingsManager.fetchDeviceSettings(),
-      ])
-    this.#authState = {
-      classic: isClassicAuthenticated,
-      home: isHomeAuthenticated,
+    let initError: unknown
+    let hasInitFailed = false
+    try {
+      await withInitTimeout(this.#run())
+    } catch (error) {
+      initError = error
+      hasInitFailed = true
+    } finally {
+      this.#homey.ready()
     }
-    await this.#initCredentialFields(settings)
-    this.#addEventListeners()
-    await this.#validateInitialAuthStates()
-    this.#refreshVisibility()
-    this.#homey.ready()
+    if (hasInitFailed) {
+      await this.#homey.alert(getErrorMessage(initError))
+    }
   }
 
   #addEventListeners(): void {
@@ -1512,6 +1516,25 @@ class SettingsApp {
     this.#authManager.setAvailableApis(this.#getUnauthenticatedApis())
   }
 
+  async #run(): Promise<void> {
+    const [settings, isClassicAuthenticated, isHomeAuthenticated] =
+      await Promise.all([
+        SettingsApp.#fetchHomeySettings(this.#homey),
+        homeyApiGet<boolean>(this.#homey, '/classic/sessions'),
+        homeyApiGet<boolean>(this.#homey, '/home/sessions'),
+        SettingsApp.#setDocumentLanguage(this.#homey),
+        this.#deviceSettingsManager.fetchDeviceSettings(),
+      ])
+    this.#authState = {
+      classic: isClassicAuthenticated,
+      home: isHomeAuthenticated,
+    }
+    await this.#initCredentialFields(settings)
+    this.#addEventListeners()
+    await this.#validateInitialAuthStates()
+    this.#refreshVisibility()
+  }
+
   async #validateInitialAuthStates(): Promise<void> {
     if (this.#authState.classic) {
       await this.#validateInitialClassicAuth()
@@ -1534,10 +1557,12 @@ class SettingsApp {
   }
 }
 
-const onHomeyReady = async (homey: Homey): Promise<void> => {
+/**
+ * Page entry point, invoked by the HTML's canonical `onHomeyReady` once
+ * the SDK has dispatched (see the inline script in the page head).
+ * @param homey - The Homey instance handed to `onHomeyReady`.
+ */
+export const start = async (homey: Homey): Promise<void> => {
   translateAriaLabels((key) => homey.__(key))
-  const app = new SettingsApp(homey)
-  await app.init()
+  await new SettingsApp(homey).init()
 }
-
-Object.assign(globalThis, { onHomeyReady })
