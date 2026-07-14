@@ -376,5 +376,20 @@
     "pl": "Informacje o budynkach są teraz udostępniane aplikacji MELCloud Extension.",
     "ru": "Информация о зданиях теперь передаётся приложению MELCloud Extension.",
     "sv": "Byggnadsinformation delas nu med MELCloud Extension-appen."
+  },
+  "45.2.0": {
+    "ar": "أصبحت أداة التكييف تتحكم الآن في مباني MELCloud Home والأجهزة الفردية، ويحصل الضيوف على تحكم كامل في مضخة الحرارة، وتكتسب أداة الرسوم البيانية محددات مدمجة.",
+    "da": "Klima-widgetten styrer nu MELCloud Home-bygninger og enkelte enheder, gæster får fuld kontrol over deres varmepumpe, og diagram-widgetten får indbyggede vælgere.",
+    "de": "Das Klima-Widget steuert jetzt MELCloud-Home-Gebäude und einzelne Geräte, Gäste erhalten volle Kontrolle über ihre Wärmepumpe, und das Diagramm-Widget bekommt integrierte Auswahlfelder.",
+    "en": "The AC widget now targets MELCloud Home buildings and individual devices, guests get full control of their heat pump, and the charts widget gains in-widget chart and period pickers.",
+    "es": "El widget de clima ahora controla edificios de MELCloud Home y dispositivos individuales, los invitados obtienen control total de su bomba de calor y el widget de gráficos gana selectores integrados.",
+    "fr": "Le widget clim pilote désormais les bâtiments MELCloud Home et les appareils individuels, les invités contrôlent intégralement leur pompe à chaleur, et le widget graphiques gagne des sélecteurs intégrés.",
+    "it": "Il widget clima ora controlla gli edifici MELCloud Home e i singoli dispositivi, gli ospiti ottengono il controllo completo della pompa di calore e il widget grafici guadagna selettori integrati.",
+    "ko": "에어컨 위젯이 이제 MELCloud Home 건물과 개별 장치를 제어하고, 게스트는 히트펌프를 완전히 제어할 수 있으며, 차트 위젯에 내장 선택기가 추가되었습니다.",
+    "nl": "De airco-widget bedient nu MELCloud Home-gebouwen en losse apparaten, gasten krijgen volledige controle over hun warmtepomp, en de grafiek-widget krijgt ingebouwde keuzelijsten.",
+    "no": "Klima-widgeten styrer nå MELCloud Home-bygninger og enkeltenheter, gjester får full kontroll over varmepumpen sin, og diagram-widgeten får innebygde velgere.",
+    "pl": "Widżet klimatyzacji obsługuje teraz budynki MELCloud Home i pojedyncze urządzenia, goście mają pełną kontrolę nad pompą ciepła, a widżet wykresów zyskuje wbudowane selektory.",
+    "ru": "Виджет кондиционера теперь управляет зданиями MELCloud Home и отдельными устройствами, гости получают полный контроль над тепловым насосом, а виджет графиков — встроенные селекторы.",
+    "sv": "Klimat-widgeten styr nu MELCloud Home-byggnader och enskilda enheter, gäster får full kontroll över sin värmepump, och diagram-widgeten får inbyggda väljare."
   }
 }

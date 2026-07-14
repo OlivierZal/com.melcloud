@@ -2,6 +2,7 @@ import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DeviceSettings, Settings } from '../../types/device-settings.mts'
 import type { DriverSetting } from '../../types/driver-settings.mts'
@@ -28,6 +29,7 @@ const { default: api } = await import('../../api.mts')
 const mockIsAuthenticated = vi.fn<() => boolean>()
 const mockIsHomeAuthenticated = vi.fn<() => boolean>()
 const mockHomeList = vi.fn<() => Promise<unknown[]>>()
+const mockGetBuildingsByType = vi.fn<Home.Registry['getBuildingsByType']>()
 const mockClassicAuthenticate = vi.fn<() => Promise<void>>()
 const mockHomeAuthenticate = vi.fn<() => Promise<void>>()
 
@@ -46,6 +48,7 @@ const mockApp = {
     authenticate: mockHomeAuthenticate,
     isAuthenticated: mockIsHomeAuthenticated,
     list: mockHomeList,
+    registry: { getBuildingsByType: mockGetBuildingsByType },
   },
   updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
   updateClassicHolidayMode: vi.fn<() => Promise<void>>(),
@@ -76,7 +79,7 @@ describe('api', () => {
   })
 
   describe('device groups retrieval', () => {
-    it('should flatten both dialects into named groups sorted by name', async () => {
+    it('should flatten both dialects into named groups sorted by name', () => {
       mockGetBuildings.mockReturnValue([
         mock<Classic.BuildingZone>({
           areas: [mock<Classic.AreaZone>({ devices: [{ id: 3 }] })],
@@ -96,25 +99,48 @@ describe('api', () => {
           name: 'Bâtiment vide',
         }),
       ])
-      mockHomeList.mockResolvedValue([
+      mockGetBuildingsByType.mockImplementation((type) => [
         {
-          airToAirUnits: [{ id: 'uuid-1' }],
-          airToWaterUnits: [{ id: 'uuid-2' }],
+          devices:
+            type === Home.DeviceType.Ata ?
+              [mock<Home.Device>({ id: 'uuid-1' })]
+            : [mock<Home.Device>({ id: 'uuid-2' })],
+          id: 'home-building-1',
           name: 'Appartement',
         },
       ])
 
-      await expect(api.getDeviceGroups({ homey })).resolves.toStrictEqual([
+      expect(api.getDeviceGroups({ homey })).toStrictEqual([
         { deviceIds: ['uuid-1', 'uuid-2'], name: 'Appartement' },
         { deviceIds: ['1', '2', '3', '4', '5'], name: 'Ma maison' },
       ])
     })
 
-    it('should return no groups when both dialects are empty', async () => {
+    it('should serve Home groups from the registry without a wire call', () => {
       mockGetBuildings.mockReturnValue([])
-      mockHomeList.mockResolvedValue([])
+      mockGetBuildingsByType.mockImplementation((type) =>
+        type === Home.DeviceType.Ata ?
+          [
+            {
+              devices: [mock<Home.Device>({ id: 'uuid-1' })],
+              id: 'home-building-1',
+              name: 'Appartement',
+            },
+          ]
+        : [],
+      )
 
-      await expect(api.getDeviceGroups({ homey })).resolves.toStrictEqual([])
+      expect(api.getDeviceGroups({ homey })).toStrictEqual([
+        { deviceIds: ['uuid-1'], name: 'Appartement' },
+      ])
+      expect(mockHomeList).not.toHaveBeenCalled()
+    })
+
+    it('should return no groups when both dialects are empty', () => {
+      mockGetBuildings.mockReturnValue([])
+      mockGetBuildingsByType.mockReturnValue([])
+
+      expect(api.getDeviceGroups({ homey })).toStrictEqual([])
     })
   })
 
