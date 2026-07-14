@@ -61,12 +61,14 @@ export const homeTagMappingsAtw: {
 /**
  * Structural slice of {@link Home.DeviceAtwFacade} driving which capabilities
  * a Home ATW device gets and their options. Satisfied by the facade itself;
- * only owners get the control capabilities (the MELCloud Home app hides the
- * ATW control surface from guests).
+ * guests get the exact owner surface — the app's guest UI hides the power
+ * toggle and the precise modes, but the BFF enforces nothing (guest `curve`
+ * write and a full power round-trip both `/context`-readback-verified,
+ * 2026-07-14), so nothing is gated on ownership.
  */
 export type HomeAtwDeviceProfile = Pick<
   Home.DeviceAtwFacade,
-  'capabilities' | 'hasCoolingMode' | 'isOwner'
+  'capabilities' | 'hasCoolingMode'
 >
 
 export interface HomeCapabilitiesOptionsAtw {
@@ -83,15 +85,11 @@ export interface HomeCapabilitiesOptionsAtw {
 // actually have: device-level options shadow the manifest's per capability
 // (temperature ranges/steps/titles stay in the compose manifest — the facade
 // clamps setpoints device-side anyway), and setting options on an absent
-// capability fails, so guests get none.
+// capability fails.
 export const homeGetCapabilitiesOptionsAtw = ({
   capabilities: { hasZone2 },
   hasCoolingMode,
-  isOwner,
 }: HomeAtwDeviceProfile): Partial<HomeCapabilitiesOptionsAtw> => {
-  if (!isOwner) {
-    return {}
-  }
   const values = getThermostatModeValuesAtw(hasCoolingMode)
   return {
     thermostat_mode: { values },

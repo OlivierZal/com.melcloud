@@ -59,11 +59,9 @@ const createProfile = ({
   hasCoolingMode = false,
   hasHotWater = true,
   hasZone2 = false,
-  isOwner = true,
 } = {}): HomeAtwDeviceProfile => ({
   capabilities: mock<Home.AtwDeviceCapabilities>({ hasHotWater, hasZone2 }),
   hasCoolingMode,
-  isOwner,
 })
 
 const registerListHandler = async (driver: {
@@ -109,32 +107,16 @@ describe(HomeMELCloudDriverAtw, () => {
         'operational_state',
         'operational_state.zone1',
         'onoff',
-        'target_temperature',
         'thermostat_mode',
+        'target_temperature',
         'measure_temperature.tank_water',
         'operational_state.hot_water',
         'hot_water_mode',
         'target_temperature.tank_water',
         'measure_temperature.zone2',
         'operational_state.zone2',
-        'target_temperature.zone2',
         'thermostat_mode.zone2',
-      ])
-    })
-
-    it('should only return the measures for a guest device', () => {
-      const capabilities = driver.getRequiredCapabilities(
-        createProfile({ hasZone2: true, isOwner: false }),
-      )
-
-      expect(capabilities).toStrictEqual([
-        'measure_temperature',
-        'operational_state',
-        'operational_state.zone1',
-        'measure_temperature.tank_water',
-        'operational_state.hot_water',
-        'measure_temperature.zone2',
-        'operational_state.zone2',
+        'target_temperature.zone2',
       ])
     })
 
@@ -148,16 +130,19 @@ describe(HomeMELCloudDriverAtw, () => {
         'operational_state',
         'operational_state.zone1',
         'onoff',
-        'target_temperature',
         'thermostat_mode',
+        'target_temperature',
       ])
     })
 
-    it('should default to the measures when no profile is given', () => {
+    it('should default to the measures and zone1 controls when no profile is given', () => {
       expect(driver.getRequiredCapabilities()).toStrictEqual([
         'measure_temperature',
         'operational_state',
         'operational_state.zone1',
+        'onoff',
+        'thermostat_mode',
+        'target_temperature',
       ])
     })
 

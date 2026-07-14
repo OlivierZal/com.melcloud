@@ -79,11 +79,14 @@ coverage.
   flag refinements do not exist on the Home wire.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
-  (`getRequiredCapabilities`). Home ATW gates the control capabilities on
-  `isOwner` (guests get the measures only): the MELCloud Home app hides
-  the ATW control surface from guests and guest ATW writes are unverified
-  against the BFF. Home ATA is deliberately NOT gated — live probing
-  showed the BFF accepts guest ATA writes. Do not harmonize the two.
+  (`getRequiredCapabilities`). `isOwner` gates NOTHING, on any driver:
+  the MELCloud Home app hides the ATW power toggle and precise zone
+  modes from guests, but the BFF enforces no owner/guest distinction —
+  guest `curve` write and a full guest power round-trip were both
+  `/context`-readback-verified (2026-07-14, melcloud-api
+  `scripts/probe-guest-precise-modes.ts` / `probe-guest-power.ts`),
+  as were the guest ATA writes earlier. App-UI narrowing is NOT a
+  permission: only server-verified behavior gates capabilities.
 - New FTC vocabulary must never crash a sync — and that tolerance lives
   in melcloud-api, not here: the Home ATW facade getters normalize the
   wire dialect (`HomeAtwZoneMode`, `operationalState`), degrading

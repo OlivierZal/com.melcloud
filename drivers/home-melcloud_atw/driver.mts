@@ -18,12 +18,6 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
   public override readonly type: typeof Home.DeviceType.Atw =
     Home.DeviceType.Atw
 
-  readonly #controlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
-    'onoff',
-    'target_temperature',
-    'thermostat_mode',
-  ]
-
   readonly #hotWaterControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
     'hot_water_mode',
     'target_temperature.tank_water',
@@ -40,9 +34,15 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
     'operational_state.zone1',
   ]
 
+  readonly #zone1ControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
+    'onoff',
+    'thermostat_mode',
+    'target_temperature',
+  ]
+
   readonly #zone2ControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
-    'target_temperature.zone2',
     'thermostat_mode.zone2',
+    'target_temperature.zone2',
   ]
 
   readonly #zone2MeasureCapabilities: (keyof HomeCapabilitiesAtw)[] = [
@@ -50,26 +50,25 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
     'operational_state.zone2',
   ]
 
-  // Guests only get the read-only measures: the MELCloud Home app does not
-  // expose the ATW control surface to guest accounts.
+  // Ownership gates NOTHING: the app's guest UI hides the power toggle and
+  // the precise modes, but the BFF enforces no owner/guest distinction —
+  // guest `curve` write and a full power round-trip both readback-verified
+  // (2026-07-14) — so guests get the exact owner surface.
   public override getRequiredCapabilities(
     profile?: HomeAtwDeviceProfile,
   ): string[] {
-    const { capabilities, isOwner = false } = profile ?? {}
+    const { capabilities } = profile ?? {}
     return [
       ...this.#measureCapabilities,
-      ...(isOwner ? this.#controlCapabilities : []),
+      ...this.#zone1ControlCapabilities,
       ...(capabilities?.hasHotWater === true ?
         [
           ...this.#hotWaterMeasureCapabilities,
-          ...(isOwner ? this.#hotWaterControlCapabilities : []),
+          ...this.#hotWaterControlCapabilities,
         ]
       : []),
       ...(capabilities?.hasZone2 === true ?
-        [
-          ...this.#zone2MeasureCapabilities,
-          ...(isOwner ? this.#zone2ControlCapabilities : []),
-        ]
+        [...this.#zone2MeasureCapabilities, ...this.#zone2ControlCapabilities]
       : []),
     ]
   }

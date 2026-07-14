@@ -186,20 +186,12 @@ describe(getCapabilitiesOptionsAtw, () => {
 const createAtwProfile = ({
   hasCoolingMode = false,
   hasZone2 = true,
-  isOwner = true,
 } = {}): Parameters<typeof homeGetCapabilitiesOptionsAtw>[0] => ({
   capabilities: mock<Home.AtwDeviceCapabilities>({ hasZone2 }),
   hasCoolingMode,
-  isOwner,
 })
 
 describe(homeGetCapabilitiesOptionsAtw, () => {
-  it('should return no options for a guest device', () => {
-    expect(
-      homeGetCapabilitiesOptionsAtw(createAtwProfile({ isOwner: false })),
-    ).toStrictEqual({})
-  })
-
   it('should include only non-cool values without cooling mode', () => {
     const result = homeGetCapabilitiesOptionsAtw(createAtwProfile())
     const ids = result.thermostat_mode?.values.map(({ id }) => id)
