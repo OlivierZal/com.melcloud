@@ -14,7 +14,11 @@
                     .catch((error) => {
                         globalThis.reportError?.(error)
                         homey.ready()
-                        homey.alert(homey.__('settings.loadFailed'))
+                        homey
+                            .alert(homey.__('settings.loadFailed'))
+                            .catch((alertError) => {
+                                globalThis.reportError?.(alertError)
+                            })
                     })
             }
         </script>
