@@ -14,8 +14,11 @@
   justify-content: center;
 }
 
-/* Flex children refuse to shrink below their content by default, so a long
-   device name would overflow the widget frame. */
+/* Flex children refuse to shrink below their content by default
+   (`min-inline-size: auto`), so a long device name would force the select
+   wider than the widget frame; the explicit `0` lets it shrink and the max
+   clamps it to the frame. */
 .picker-row .zone-select {
   max-inline-size: 100%;
+  min-inline-size: 0;
 }

@@ -10692,7 +10692,7 @@
             "sv": "Endast för diagram där detta gäller."
           },
           "id": "days",
-          "max": 366,
+          "max": 365,
           "min": 1,
           "title": {
             "da": "Standardantal dage",
