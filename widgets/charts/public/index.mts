@@ -72,7 +72,7 @@ const PIE_LABEL_MIN_ANGLE_DEGREES = 10
 const PIE_LABEL_RADIUS_RATIO = 0.8
 
 interface ChartSelection {
-  readonly chart: HomeySettings['default_chart']
+  readonly chart: HomeySettings['chart']
   readonly days: number
   readonly zoneValue: string
 }
@@ -90,7 +90,7 @@ type WidgetChartOptions = ChartOptions<WidgetChartType>
 type WidgetChartType = 'line' | 'pie'
 
 // Picker line-up, in the order the widget settings dropdown lists them.
-const CHARTS: readonly HomeySettings['default_chart'][] = [
+const CHARTS: readonly HomeySettings['chart'][] = [
   'operation_modes',
   'temperatures',
   'hourly_temperatures',
@@ -117,11 +117,11 @@ const DAY_CHOICES: readonly `${number}`[] = [
   '365',
 ]
 
-const chartsWithDays = new Set<HomeySettings['default_chart']>([
+const chartsWithDays = new Set<HomeySettings['chart']>([
   'operation_modes',
   'temperatures',
 ])
-const hourlyCharts = new Set<HomeySettings['default_chart']>([
+const hourlyCharts = new Set<HomeySettings['chart']>([
   'hourly_temperatures',
   'signal',
 ])
@@ -221,7 +221,7 @@ const getDayValues = (defaultDays: number): number[] =>
     )
     .toSorted((first, second) => first - second)
 
-const isChart = (value: string): value is HomeySettings['default_chart'] => {
+const isChart = (value: string): value is HomeySettings['chart'] => {
   // Widened, not asserted: `includes` on the union-typed array rejects a
   // plain string argument.
   const charts: readonly string[] = CHARTS
@@ -506,7 +506,7 @@ const fetchChartData = async (
 // Charts of hourly data poll every minute so the latest point shows up
 // promptly; daily aggregates only change after the full hour plus
 // MELCloud's 5-minute aggregation delay, so wait for that instant.
-const getTimeout = (chart: HomeySettings['default_chart']): number => {
+const getTimeout = (chart: HomeySettings['chart']): number => {
   if (hourlyCharts.has(chart)) {
     return HOURLY_CHART_REFRESH_MS
   }
@@ -570,7 +570,7 @@ class ChartWidget {
 
   readonly #daySelect: HTMLSelectElement
 
-  readonly #defaultChart: HomeySettings['default_chart']
+  readonly #defaultChart: HomeySettings['chart']
 
   readonly #defaultDays: number
 
@@ -587,8 +587,8 @@ class ChartWidget {
   public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
     const {
-      default_chart: defaultChart,
-      default_days: defaultDays,
+      chart: defaultChart,
+      days: defaultDays,
       default_zone: defaultZone,
       height,
     } = homey.getSettings()
@@ -721,7 +721,7 @@ class ChartWidget {
 
   // The picker only ever holds ids from `CHARTS`; the fallback is
   // type-level only.
-  #getChart(): HomeySettings['default_chart'] {
+  #getChart(): HomeySettings['chart'] {
     const { value } = this.#chartSelect
     return isChart(value) ? value : 'operation_modes'
   }

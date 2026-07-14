@@ -10614,7 +10614,7 @@
       },
       "settings": [
         {
-          "id": "default_chart",
+          "id": "chart",
           "title": {
             "da": "Standarddiagram",
             "en": "Default chart",
@@ -10687,7 +10687,7 @@
             "no": "Kun for diagrammer der dette gjelder.",
             "sv": "Endast för diagram där detta gäller."
           },
-          "id": "default_days",
+          "id": "days",
           "max": 366,
           "min": 1,
           "title": {
