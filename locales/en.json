@@ -76,6 +76,14 @@
     "dashboard": "Exit the device and return to update your dashboard."
   },
   "widgets": {
-    "zones": "Zones"
+    "zones": "Zones",
+    "chart": "Chart",
+    "charts": {
+      "hourly_temperatures": "Temperatures since the last hour",
+      "operation_modes": "Operational states",
+      "signal": "Signal Strength since the last hour",
+      "temperatures": "Temperatures"
+    },
+    "days": "Number of days"
   }
 }

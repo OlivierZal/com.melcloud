@@ -70,6 +70,12 @@ const PERCENT_FACTOR = 100
 const PIE_LABEL_MIN_ANGLE_DEGREES = 10
 const PIE_LABEL_RADIUS_RATIO = 0.8
 
+interface ChartSelection {
+  readonly chart: HomeySettings['default_chart']
+  readonly days: number
+  readonly zoneValue: string
+}
+
 type FontWeight = number | 'bold' | 'bolder' | 'lighter' | 'normal'
 
 type WidgetChartConfig = ChartConfiguration<
@@ -82,11 +88,39 @@ type WidgetChartOptions = ChartOptions<WidgetChartType>
 
 type WidgetChartType = 'line' | 'pie'
 
-const chartsWithDays = new Set<HomeySettings['chart']>([
+// Picker line-up, in the order the widget settings dropdown lists them.
+const CHARTS: readonly HomeySettings['default_chart'][] = [
+  'operation_modes',
+  'temperatures',
+  'hourly_temperatures',
+  'signal',
+]
+
+// Curated day counts offered by the picker, string-typed because they feed
+// `<option>` values; the configured default is merged in so an off-ladder
+// value stays selectable.
+const DAY_CHOICES: readonly `${number}`[] = [
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '14',
+  '21',
+  '30',
+  '60',
+  '90',
+  '180',
+  '365',
+]
+
+const chartsWithDays = new Set<HomeySettings['default_chart']>([
   'operation_modes',
   'temperatures',
 ])
-const hourlyCharts = new Set<HomeySettings['chart']>([
+const hourlyCharts = new Set<HomeySettings['default_chart']>([
   'hourly_temperatures',
   'signal',
 ])
@@ -145,6 +179,39 @@ const normalizeSeriesName = (name: string): string =>
 
 const toRadians = (degrees: number): number =>
   (degrees * Math.PI) / HALF_TURN_DEGREES
+
+// ── Select helpers ──
+
+// Guarded assignment: writing a value with no matching option would reset
+// the select to an empty selection.
+const applySelectValue = (select: HTMLSelectElement, value: string): void => {
+  if (select.querySelector(`option[value="${CSS.escape(value)}"]`) !== null) {
+    select.value = value
+  }
+}
+
+// The integer filter shields the picker from a value the wire may carry
+// despite the manifest bounds: a pre-rename instance (no stored value) or
+// a default saved before the bounds existed.
+const getDayValues = (defaultDays: number): number[] =>
+  [...new Set([...DAY_CHOICES.map(Number), defaultDays])]
+    .filter((days) => Number.isSafeInteger(days) && days > 0)
+    .toSorted((first, second) => first - second)
+
+const isChart = (value: string): value is HomeySettings['default_chart'] => {
+  // Widened, not asserted: `includes` on the union-typed array rejects a
+  // plain string argument.
+  const charts: readonly string[] = CHARTS
+  return charts.includes(value)
+}
+
+const isSameSelection = (
+  first: ChartSelection,
+  second: ChartSelection,
+): boolean =>
+  first.chart === second.chart &&
+  first.days === second.days &&
+  first.zoneValue === second.zoneValue
 
 // ── Pie data labels plugin ──
 // Chart.js has no built-in data labels; this plugin draws each slice's
@@ -401,18 +468,10 @@ const getChartConfig = (
 
 const fetchChartData = async (
   homey: Homey,
-  {
-    chart,
-    days,
-    zoneValue,
-  }: {
-    chart: HomeySettings['chart']
-    zoneValue: string
-    days?: number | undefined
-  },
+  { chart, days, zoneValue }: ChartSelection,
 ): Promise<ReportChartLineOptions | ReportChartPieOptions> => {
   const daysQuery =
-    chartsWithDays.has(chart) && days !== undefined ?
+    chartsWithDays.has(chart) ?
       `?${new URLSearchParams({ days: String(days) } satisfies DaysQuery)}`
     : ''
   return homeyApiGet<ReportChartLineOptions | ReportChartPieOptions>(
@@ -424,7 +483,7 @@ const fetchChartData = async (
 // Charts of hourly data poll every minute so the latest point shows up
 // promptly; daily aggregates only change after the full hour plus
 // MELCloud's 5-minute aggregation delay, so wait for that instant.
-const getTimeout = (chart: HomeySettings['chart']): number => {
+const getTimeout = (chart: HomeySettings['default_chart']): number => {
   if (hourlyCharts.has(chart)) {
     return HOURLY_CHART_REFRESH_MS
   }
@@ -437,12 +496,6 @@ const getTimeout = (chart: HomeySettings['chart']): number => {
     second: 0,
   })
   return now.until(next).total('milliseconds')
-}
-
-interface DrawConfig {
-  readonly chart: HomeySettings['chart']
-  readonly height: number
-  readonly days?: number | undefined
 }
 
 // Line-dataset visibility flows through `dataset.hidden`: replacing the data
@@ -488,50 +541,74 @@ const applyPieHiddenByLabel = (
 class ChartWidget {
   #chart: Chart<WidgetChartType, (number | null)[], string> | null = null
 
+  readonly #chartSelect: HTMLSelectElement
+
   #config: WidgetChartConfig | null = null
+
+  readonly #daySelect: HTMLSelectElement
+
+  readonly #defaultChart: HomeySettings['default_chart']
+
+  readonly #defaultDays: number
+
+  readonly #defaultZone: HomeySettings['default_zone']
+
+  readonly #height: number
 
   readonly #homey: Homey<HomeySettings>
 
   #timeout: NodeJS.Timeout | null = null
 
-  readonly #zone: HTMLSelectElement
+  readonly #zoneSelect: HTMLSelectElement
 
   public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
-    this.#zone = getSelect('zones')
+    const {
+      default_chart: defaultChart,
+      default_days: defaultDays,
+      default_zone: defaultZone,
+      height,
+    } = homey.getSettings()
+    this.#defaultChart = defaultChart
+    this.#defaultDays = defaultDays
+    this.#defaultZone = defaultZone
+    this.#height = Number(height)
+    this.#chartSelect = getSelect('charts')
+    this.#daySelect = getSelect('days')
+    this.#zoneSelect = getSelect('zones')
   }
 
   public async init(): Promise<void> {
     translateAriaLabels((key) => this.#homey.__(key))
-    await Promise.all([
-      setDocumentLanguage(this.#homey),
-      this.#classicFetchDevices(),
-    ])
+    // Sequenced, not parallel: the day picker labels are formatted with
+    // the app language, so it must land before the pickers are populated.
+    await setDocumentLanguage(this.#homey)
+    await this.#initControls()
     this.#homey.ready({ height: document.body.scrollHeight })
   }
 
-  #addEventListeners(config: DrawConfig): void {
-    this.#zone.addEventListener('change', () => {
-      if (this.#timeout !== null) {
-        clearTimeout(this.#timeout)
-      }
-      fireAndForget(this.#draw(config))
+  #addEventListeners(
+    devicesForChart: () => readonly Classic.DeviceZone[],
+  ): void {
+    this.#chartSelect.addEventListener('change', () => {
+      this.#repopulateZoneOptions(devicesForChart())
+      this.#syncDayVisibility()
+      this.#redraw()
+    })
+    this.#daySelect.addEventListener('change', () => {
+      this.#redraw()
+    })
+    this.#zoneSelect.addEventListener('change', () => {
+      this.#redraw()
     })
   }
 
-  #applyDefaultZone(defaultZone: HomeySettings['default_zone']): void {
-    if (defaultZone === null) {
+  #applyDefaultZone(): void {
+    if (this.#defaultZone === null) {
       return
     }
-
-    const { id, model } = defaultZone
-    const value = getZoneId(id, model)
-    if (
-      document.querySelector(`#zones option[value="${CSS.escape(value)}"]`) !==
-      null
-    ) {
-      this.#zone.value = value
-    }
+    const { id, model } = this.#defaultZone
+    applySelectValue(this.#zoneSelect, getZoneId(id, model))
   }
 
   // Chart.js keeps legend-toggle state where it does not survive this
@@ -558,37 +635,12 @@ class ChartWidget {
     )
   }
 
-  async #classicFetchDevices(): Promise<void> {
-    const {
-      chart,
-      days,
-      default_zone: defaultZone,
-      height,
-    } = this.#homey.getSettings()
-    const typeQuery =
-      chart === 'hourly_temperatures' ?
-        `?${new URLSearchParams({ type: String(ClassicDeviceType.Atw) })}`
-      : ''
-    const devices = await homeyApiGet<Classic.DeviceZone[]>(
-      this.#homey,
-      `/classic/devices${typeQuery}`,
-    )
-    if (devices.length > 0) {
-      const config: DrawConfig = { chart, days, height: Number(height) }
-      this.#addEventListeners(config)
-      this.#populateDeviceOptions(devices)
-      this.#applyDefaultZone(defaultZone)
-      await this.#draw(config)
-    }
-  }
-
   #createChart(
     config: WidgetChartConfig,
-    height: number,
     hiddenByLabel: ReadonlyMap<string, boolean>,
   ): void {
     const container = getDiv('chart')
-    container.style.height = `${String(height)}px`
+    container.style.height = `${String(this.#height)}px`
     const canvas = document.createElement('canvas')
     container.replaceChildren(canvas)
     const chart = new Chart(canvas, config)
@@ -601,48 +653,118 @@ class ChartWidget {
   // Never rejects: `init()` awaits the first draw, so a transient failure
   // must neither block `homey.ready()` nor stop the auto-refresh loop —
   // the timer rearmed in `finally` retries it.
-  async #draw({ chart, days, height }: DrawConfig): Promise<void> {
+  async #draw(): Promise<void> {
     try {
-      await this.#refreshChart({ chart, days, height })
+      await this.#refreshChart()
       await this.#homey.setHeight(document.body.scrollHeight)
     } catch (error) {
       // Surfaces in the widget dev tools; the rearmed timer retries.
       surfaceError(new Error('Chart refresh failed', { cause: error }))
     } finally {
-      // A zone change can start a second draw while this one is in flight;
-      // clearing the tracked timer here collapses both chains back into one
-      // instead of leaving an orphaned timer refreshing forever.
+      // A picker change can start a second draw while this one is in
+      // flight; clearing the tracked timer here collapses both chains back
+      // into one instead of leaving an orphaned timer refreshing forever.
       if (this.#timeout !== null) {
         clearTimeout(this.#timeout)
       }
       this.#timeout = setTimeout(() => {
-        fireAndForget(this.#draw({ chart, days, height }))
-      }, getTimeout(chart))
+        fireAndForget(this.#draw())
+      }, getTimeout(this.#getChart()))
     }
   }
 
-  // Resolves to null when a zone change landed while the fetch was in
-  // flight: the response is stale, and the change listener's own draw
-  // renders the new zone.
-  async #fetchFreshConfig({
-    chart,
-    days,
-  }: Omit<DrawConfig, 'height'>): Promise<WidgetChartConfig | null> {
-    const zoneValue = getZonePath(this.#zone.value)
-    const config = getChartConfig(
-      await fetchChartData(this.#homey, { chart, days, zoneValue }),
+  async #fetchDevices(
+    type?: Classic.DeviceType,
+  ): Promise<Classic.DeviceZone[]> {
+    const typeQuery =
+      type === undefined ? '' : (
+        `?${new URLSearchParams({ type: String(type) })}`
+      )
+    return homeyApiGet<Classic.DeviceZone[]>(
+      this.#homey,
+      `/classic/devices${typeQuery}`,
     )
-    return getZonePath(this.#zone.value) === zoneValue ? config : null
   }
 
-  #populateDeviceOptions(zones: Classic.DeviceZone[]): void {
-    for (const { id, model, name } of zones) {
-      createOption(this.#zone, { id: getZoneId(id, model), label: name })
+  // Resolves to null when a picker change landed while the fetch was in
+  // flight: the response is stale, and the change listener's own draw
+  // renders the new selection.
+  async #fetchFreshConfig(): Promise<WidgetChartConfig | null> {
+    const selection = this.#readSelection()
+    const config = getChartConfig(await fetchChartData(this.#homey, selection))
+    return isSameSelection(selection, this.#readSelection()) ? config : null
+  }
+
+  // The picker only ever holds ids from `CHARTS`; the fallback is
+  // type-level only.
+  #getChart(): HomeySettings['default_chart'] {
+    const { value } = this.#chartSelect
+    return isChart(value) ? value : 'operation_modes'
+  }
+
+  async #initControls(): Promise<void> {
+    const [devices, atwDevices] = await Promise.all([
+      this.#fetchDevices(),
+      this.#fetchDevices(ClassicDeviceType.Atw),
+    ])
+    if (devices.length > 0) {
+      this.#populateChartOptions(atwDevices.length > 0)
+      this.#populateDayOptions()
+      const devicesForChart = (): Classic.DeviceZone[] =>
+        this.#getChart() === 'hourly_temperatures' ? atwDevices : devices
+      this.#repopulateZoneOptions(devicesForChart())
+      this.#addEventListeners(devicesForChart)
+      await this.#draw()
     }
   }
 
-  async #refreshChart({ chart, days, height }: DrawConfig): Promise<void> {
-    const config = await this.#fetchFreshConfig({ chart, days })
+  // ATW-only charts are omitted when no ATW device exists; the picker then
+  // falls back to its first option if the configured default was omitted.
+  #populateChartOptions(hasAtwDevices: boolean): void {
+    for (const chart of CHARTS) {
+      if (chart !== 'hourly_temperatures' || hasAtwDevices) {
+        createOption(this.#chartSelect, {
+          id: chart,
+          label: this.#homey.__(`widgets.charts.${chart}`),
+        })
+      }
+    }
+    applySelectValue(this.#chartSelect, this.#defaultChart)
+  }
+
+  #populateDayOptions(): void {
+    const formatter = new Intl.NumberFormat(document.documentElement.lang, {
+      style: 'unit',
+      unit: 'day',
+      unitDisplay: 'long',
+    })
+    for (const days of getDayValues(this.#defaultDays)) {
+      createOption(this.#daySelect, {
+        id: String(days),
+        label: formatter.format(days),
+      })
+    }
+    applySelectValue(this.#daySelect, String(this.#defaultDays))
+    this.#syncDayVisibility()
+  }
+
+  #readSelection(): ChartSelection {
+    return {
+      chart: this.#getChart(),
+      days: Number(this.#daySelect.value),
+      zoneValue: getZonePath(this.#zoneSelect.value),
+    }
+  }
+
+  #redraw(): void {
+    if (this.#timeout !== null) {
+      clearTimeout(this.#timeout)
+    }
+    fireAndForget(this.#draw())
+  }
+
+  async #refreshChart(): Promise<void> {
+    const config = await this.#fetchFreshConfig()
     if (config === null) {
       return
     }
@@ -653,16 +775,15 @@ class ChartWidget {
       this.#chart = null
     }
     this.#config = config
-    this.#renderOrUpdateChart(config, height, hiddenByLabel)
+    this.#renderOrUpdateChart(config, hiddenByLabel)
   }
 
   #renderOrUpdateChart(
     config: WidgetChartConfig,
-    height: number,
     hiddenByLabel: ReadonlyMap<string, boolean>,
   ): void {
     if (this.#chart === null) {
-      this.#createChart(config, height, hiddenByLabel)
+      this.#createChart(config, hiddenByLabel)
       return
     }
     this.#chart.data = config.data
@@ -670,14 +791,38 @@ class ChartWidget {
     this.#chart.update()
   }
 
+  // The zone line-up depends on the selected chart (ATW-only for the hourly
+  // temperatures), so the options are rebuilt on every chart change: the
+  // previous selection wins, then the configured default, then the first
+  // option as the final fallback.
+  #repopulateZoneOptions(devices: readonly Classic.DeviceZone[]): void {
+    const previous = this.#zoneSelect.value
+    this.#zoneSelect.replaceChildren()
+    for (const { id, model, name } of devices) {
+      createOption(this.#zoneSelect, { id: getZoneId(id, model), label: name })
+    }
+    applySelectValue(this.#zoneSelect, previous)
+    if (this.#zoneSelect.value !== previous) {
+      this.#applyDefaultZone()
+    }
+  }
+
   // Verified against chart.umd.js in a headless browser: line-dataset legend
   // toggles live in metas keyed by dataset object identity, so they never
   // survive this widget's full-config refreshes and recreating buys nothing.
   // Pie slice toggles live in the chart-level, index-keyed `_hiddenIndices`,
   // which does survive in-place updates: recreate when the slice line-up
-  // shifts so a stale index cannot hide the wrong slice.
+  // shifts so a stale index cannot hide the wrong slice. A type flip
+  // (line <-> pie, reachable from the chart picker) always recreates:
+  // a live Chart.js instance keeps the type it was constructed with.
   #shouldRecreateChart({ data, type }: WidgetChartConfig): boolean {
-    if (this.#config === null || type !== 'pie') {
+    if (this.#config === null) {
+      return false
+    }
+    if (type !== this.#config.type) {
+      return true
+    }
+    if (type !== 'pie') {
       return false
     }
     const previous = this.#config.data.labels ?? []
@@ -686,6 +831,12 @@ class ChartWidget {
       previous.length !== next.length ||
       previous.some((label, index) => label !== next[index])
     )
+  }
+
+  // The day count only applies to the daily aggregate charts; the picker
+  // hides for the hourly ones.
+  #syncDayVisibility(): void {
+    this.#daySelect.hidden = !chartsWithDays.has(this.#getChart())
   }
 }
 

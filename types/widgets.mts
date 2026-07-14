@@ -9,9 +9,9 @@ export interface AtaGroupSettingWidgetSettings extends BaseSettings {
 }
 
 export interface ChartsWidgetSettings extends BaseSettings {
-  readonly chart:
+  readonly default_chart:
     'hourly_temperatures' | 'operation_modes' | 'signal' | 'temperatures'
-  readonly days: number
+  readonly default_days: number
   readonly default_zone: Classic.DeviceZone | null
   readonly height: `${number}`
 }

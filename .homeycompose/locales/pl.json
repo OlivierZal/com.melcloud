@@ -71,5 +71,16 @@
   },
   "warnings": {
     "dashboard": "Wyjdź z urządzenia i wróć, aby zaktualizować pulpit."
+  },
+  "widgets": {
+    "chart": "Wykres",
+    "charts": {
+      "hourly_temperatures": "Temperatury od ostatniej godziny",
+      "operation_modes": "Stany pracy",
+      "signal": "Siła sygnału od ostatniej godziny",
+      "temperatures": "Temperatury"
+    },
+    "days": "Liczba dni",
+    "zones": "Strefy"
   }
 }
