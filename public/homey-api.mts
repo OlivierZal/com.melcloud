@@ -6,28 +6,9 @@ export interface Homey<
   readonly getSettings: () => TSettings
 }
 
-declare global {
-  // Resolved by the inline bootstrap each webview HTML registers at
-  // parse time (see the <script> in the page head).
-  var homeyReady: Promise<unknown>
-}
-
 // Give slow transports a real chance while keeping the loading overlay
 // finite: past this point the page surfaces the failure instead.
 const INIT_TIMEOUT_MS = 10_000
-
-/**
- * The Homey SDK calls `onHomeyReady` on its own schedule — for widgets it
- * is injected by the host app at a time the page does not control, so the
- * handler must exist at HTML parse time, before this module has even been
- * fetched. Each webview HTML registers it inline and exposes the instance
- * through `window.homeyReady`; this is the module-side await.
- * @template THomey - Page-specific Homey shape (widget settings generic).
- * @returns The Homey instance handed to `onHomeyReady`.
- */
-export const resolveHomey = async <THomey,>(): Promise<THomey> =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- the SDK hands an untyped instance to onHomeyReady; this is that same parse boundary
-  (await globalThis.homeyReady) as THomey
 
 /**
  * Bounds a webview init chain: `Homey.ready()` must always end the

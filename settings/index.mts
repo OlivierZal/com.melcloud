@@ -32,11 +32,7 @@ import {
   getSpan,
   translateAriaLabels,
 } from '../public/dom.mts'
-import {
-  fireAndForget,
-  resolveHomey,
-  withInitTimeout,
-} from '../public/homey-api.mts'
+import { fireAndForget, withInitTimeout } from '../public/homey-api.mts'
 import { getZoneId, getZoneName } from '../public/zones.mts'
 
 // ── Helpers ──
@@ -1559,11 +1555,12 @@ class SettingsApp {
   }
 }
 
-const start = async (): Promise<void> => {
-  const homey = await resolveHomey<Homey>()
+/**
+ * Page entry point, invoked by the HTML's canonical `onHomeyReady` once
+ * the SDK has dispatched (see the inline script in the page head).
+ * @param homey - The Homey instance handed to `onHomeyReady`.
+ */
+export const start = async (homey: Homey): Promise<void> => {
   translateAriaLabels((key) => homey.__(key))
   await new SettingsApp(homey).init()
 }
-
-// eslint-disable-next-line unicorn/prefer-top-level-await -- a top-level await would need an es2022 bundle target and could deadlock: the module would suspend on `homeyReady` while the SDK may wait for module evaluation before dispatching it
-fireAndForget(start())

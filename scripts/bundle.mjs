@@ -41,20 +41,24 @@ const hashOf = async (filePath) => {
 const stampHtml = async (htmlPath) => {
   const html = await readFile(htmlPath, 'utf8')
   const directory = path.dirname(htmlPath)
-  const references = [
-    ...html.matchAll(
-      /(?:href|src)="(?<file>[^":/][^":?]*)(?:\?v=[0-9a-f]+)?"/gu,
-    ),
-  ]
+  // Local files referenced from attributes (href/src) or the inline
+  // entry point's dynamic import — every occurrence gets the same stamp.
+  const files = new Set(
+    [
+      ...html.matchAll(
+        /(?:href="|src="|import\('\.\/)(?<file>[^"':?/][^"':?]*)(?:\?v=[0-9a-f]+)?["')]/gu,
+      ),
+    ].map((match) => match.groups.file),
+  )
   let stamped = html
-  for (const [reference, file] of references.map((match) => [
-    match[0],
-    match.groups.file,
-  ])) {
-    const attribute = reference.slice(0, reference.indexOf('='))
-    stamped = stamped.replace(
-      reference,
-      `${attribute}="${file}?v=${await hashOf(path.join(directory, file))}"`,
+  for (const file of files) {
+    const hash = await hashOf(path.join(directory, file))
+    stamped = stamped.replaceAll(
+      new RegExp(
+        `${file.replaceAll('.', String.raw`\.`)}(?:\\?v=[0-9a-f]+)?`,
+        'gu',
+      ),
+      `${file}?v=${hash}`,
     )
   }
   if (stamped !== html) {

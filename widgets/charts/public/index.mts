@@ -34,7 +34,6 @@ import {
   type Homey,
   fireAndForget,
   homeyApiGet,
-  resolveHomey,
   surfaceError,
   trySetDocumentLanguage,
   withInitTimeout,
@@ -45,20 +44,6 @@ import {
   type ChartsWidgetSettings as HomeySettings,
   DAYS_MAX,
 } from '../../../types/widgets.mts'
-
-// Register only what the two chart types use so esbuild tree-shakes the rest.
-Chart.register(
-  ArcElement,
-  CategoryScale,
-  Legend,
-  LinearScale,
-  LineController,
-  LineElement,
-  PieController,
-  PointElement,
-  Title,
-  Tooltip,
-)
 
 // Historical widget font stack, kept over the Homey font variables so the
 // rendered charts keep their established look.
@@ -885,10 +870,24 @@ class ChartWidget {
 
 // ── Entry point ──
 
-const start = async (): Promise<void> => {
-  const homey = await resolveHomey<Homey<HomeySettings>>()
+/**
+ * Page entry point, invoked by the HTML's canonical `onHomeyReady` once
+ * the SDK has dispatched (see the inline script in the page head).
+ * @param homey - The Homey instance handed to `onHomeyReady`.
+ */
+export const start = async (homey: Homey<HomeySettings>): Promise<void> => {
+  // Register only what the two chart types use so esbuild tree-shakes the rest.
+  Chart.register(
+    ArcElement,
+    CategoryScale,
+    Legend,
+    LinearScale,
+    LineController,
+    LineElement,
+    PieController,
+    PointElement,
+    Title,
+    Tooltip,
+  )
   await new ChartWidget(homey).init()
 }
-
-// eslint-disable-next-line unicorn/prefer-top-level-await -- a top-level await would need an es2022 bundle target and could deadlock: the module would suspend on `homeyReady` while the SDK may wait for module evaluation before dispatching it
-fireAndForget(start())

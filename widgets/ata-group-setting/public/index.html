@@ -5,11 +5,21 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>Air-to-air device values</title>
         <script>
-            // Registered at parse time: the Homey SDK may dispatch
-            // onHomeyReady before the module bundle below has loaded.
-            window.homeyReady = new Promise((resolve) => {
-                window.onHomeyReady = resolve
-            })
+            // Canonical entry point from the widget docs: the SDK needs
+            // this global at parse time. The page logic lives in the
+            // module bundle; a failed bundle load still ends the overlay.
+            function onHomeyReady(homey) {
+                import('./index.mjs?v=a4f70ddf')
+                    .then((module) => module.start(homey))
+                    .catch(() => {
+                        const error = document.querySelector('#init_error')
+                        if (error) {
+                            error.hidden = false
+                            error.textContent = 'Failed to load the widget'
+                        }
+                        homey.ready()
+                    })
+            }
         </script>
         <link href="styles/layout.css?v=1af1e2c4" rel="stylesheet">
         <link href="styles/zone-select.css?v=2cded214" rel="stylesheet">
@@ -18,7 +28,7 @@
         <link href="styles/smoke.css?v=a17bb95c" rel="stylesheet">
         <link href="styles/snowflake.css?v=06f4b14b" rel="stylesheet">
         <link href="styles/sun.css?v=da326d17" rel="stylesheet">
-        <script type="module" src="index.mjs?v=32307016"></script>
+        <link href="index.mjs?v=a4f70ddf" rel="modulepreload">
         <meta content="MELCloud air-to-air device setting" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">
