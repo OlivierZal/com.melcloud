@@ -569,6 +569,8 @@ class ChartWidget {
 
   readonly #homey: Homey<HomeySettings>
 
+  #isReady = false
+
   #timeout: NodeJS.Timeout | null = null
 
   readonly #zoneSelect: HTMLSelectElement
@@ -599,6 +601,7 @@ class ChartWidget {
       showInitError(error)
     } finally {
       this.#homey.ready({ height: document.body.scrollHeight })
+      this.#isReady = true
     }
   }
 
@@ -831,8 +834,12 @@ class ChartWidget {
     // (a failed fetch is cosmetic and falls back to the authored default).
     await trySetDocumentLanguage(this.#homey)
     await this.#initControls()
-    // A load that outlived its timeout recovers here: drop the message.
+    // A load that outlived its timeout recovers here: drop the message
+    // and resize to the recovered content (`ready` heights are one-shot).
     hideInitError()
+    if (this.#isReady) {
+      await this.#homey.setHeight(document.body.scrollHeight)
+    }
   }
 
   // Verified against chart.umd.js in a headless browser: line-dataset legend

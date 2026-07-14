@@ -63,20 +63,20 @@
       "startDate": "시작 날짜"
     },
     "intError": "__name__: __min__에서 __max__ 사이의 정수여야 합니다.",
+    "loadFailed": "로드에 실패했습니다",
     "refresh": "새로고침",
     "success": "업데이트 성공.",
     "title": "MELCloud 설정",
+    "update": "업데이트",
     "zones": {
       "legend": "구역 설정 (Classic)",
       "update": "업데이트"
-    },
-    "update": "업데이트"
+    }
   },
   "warnings": {
     "dashboard": "기기를 나갔다가 다시 돌아와 대시보드를 업데이트하세요."
   },
   "widgets": {
-    "zones": "구역",
     "chart": "차트",
     "charts": {
       "hourly_temperatures": "지난 1시간 동안의 온도",
@@ -84,6 +84,8 @@
       "signal": "지난 1시간 동안의 신호 강도",
       "temperatures": "온도"
     },
-    "days": "일수"
+    "days": "일수",
+    "loadFailed": "로드에 실패했습니다",
+    "zones": "구역"
   }
 }

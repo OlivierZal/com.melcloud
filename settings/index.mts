@@ -1352,15 +1352,17 @@ class SettingsApp {
   // failure alert waits until after `ready()`: an alert raised while the
   // overlay is still up never gets seen.
   public async init(): Promise<void> {
-    let initError: unknown = null
+    let initError: unknown
+    let hasInitFailed = false
     try {
       await withInitTimeout(this.#run())
     } catch (error) {
       initError = error
+      hasInitFailed = true
     } finally {
       this.#homey.ready()
     }
-    if (initError !== null) {
+    if (hasInitFailed) {
       await this.#homey.alert(getErrorMessage(initError))
     }
   }

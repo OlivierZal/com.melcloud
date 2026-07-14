@@ -9,13 +9,14 @@
             // this global at parse time. The page logic lives in the
             // module bundle; a failed bundle load still ends the overlay.
             function onHomeyReady(homey) {
-                import('./index.mjs?v=a4f70ddf')
+                import('./index.mjs?v=dea9566a')
                     .then((module) => module.start(homey))
-                    .catch(() => {
-                        const error = document.querySelector('#init_error')
-                        if (error) {
-                            error.hidden = false
-                            error.textContent = 'Failed to load the widget'
+                    .catch((error) => {
+                        globalThis.reportError?.(error)
+                        const message = document.querySelector('#init_error')
+                        if (message) {
+                            message.hidden = false
+                            message.textContent = homey.__('widgets.loadFailed')
                         }
                         homey.ready()
                     })
@@ -28,7 +29,7 @@
         <link href="styles/smoke.css?v=a17bb95c" rel="stylesheet">
         <link href="styles/snowflake.css?v=06f4b14b" rel="stylesheet">
         <link href="styles/sun.css?v=da326d17" rel="stylesheet">
-        <link href="index.mjs?v=a4f70ddf" rel="modulepreload">
+        <link href="index.mjs?v=dea9566a" rel="modulepreload">
         <meta content="MELCloud air-to-air device setting" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">

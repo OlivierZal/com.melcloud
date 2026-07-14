@@ -43,6 +43,8 @@ class WidgetApp {
 
   readonly #homey: Homey<HomeySettings>
 
+  #isReady = false
+
   public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
     const animation = getDiv('animation')
@@ -61,6 +63,7 @@ class WidgetApp {
       showInitError(error)
     } finally {
       this.#homey.ready({ height: document.body.scrollHeight })
+      this.#isReady = true
     }
   }
 
@@ -125,8 +128,12 @@ class WidgetApp {
       this.#ataValueManager.fetchCapabilities(),
     ])
     await this.#initTargets()
-    // A load that outlived its timeout recovers here: drop the message.
+    // A load that outlived its timeout recovers here: drop the message
+    // and resize to the recovered content (`ready` heights are one-shot).
     hideInitError()
+    if (this.#isReady) {
+      await this.#homey.setHeight(document.body.scrollHeight)
+    }
   }
 }
 

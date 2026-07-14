@@ -63,20 +63,20 @@
       "startDate": "Startdato"
     },
     "intError": "__name__: skal være et heltal mellem __min__ og __max__.",
+    "loadFailed": "Indlæsning mislykkedes",
     "refresh": "Genindlæs",
     "success": "Opdatering lykkedes.",
     "title": "MELCloud-indstillinger",
+    "update": "Opdater",
     "zones": {
       "legend": "Zonesindstillinger (Classic)",
       "update": "Opdater"
-    },
-    "update": "Opdater"
+    }
   },
   "warnings": {
     "dashboard": "Forlad enheden og vend tilbage for at opdatere dit dashboard."
   },
   "widgets": {
-    "zones": "Zoner",
     "chart": "Diagram",
     "charts": {
       "hourly_temperatures": "Temperaturer siden sidste time",
@@ -84,6 +84,8 @@
       "signal": "Signalstyrke siden sidste time",
       "temperatures": "Temperaturer"
     },
-    "days": "Antal dage"
+    "days": "Antal dage",
+    "loadFailed": "Indlæsning mislykkedes",
+    "zones": "Zoner"
   }
 }

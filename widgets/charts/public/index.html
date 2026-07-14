@@ -9,13 +9,14 @@
             // this global at parse time. The page logic lives in the
             // module bundle; a failed bundle load still ends the overlay.
             function onHomeyReady(homey) {
-                import('./index.mjs?v=0e77a782')
+                import('./index.mjs?v=608991ef')
                     .then((module) => module.start(homey))
-                    .catch(() => {
-                        const error = document.querySelector('#init_error')
-                        if (error) {
-                            error.hidden = false
-                            error.textContent = 'Failed to load the widget'
+                    .catch((error) => {
+                        globalThis.reportError?.(error)
+                        const message = document.querySelector('#init_error')
+                        if (message) {
+                            message.hidden = false
+                            message.textContent = homey.__('widgets.loadFailed')
                         }
                         homey.ready()
                     })
@@ -23,7 +24,7 @@
         </script>
         <link href="styles/layout.css?v=a2e4374e" rel="stylesheet">
         <link href="styles/zone-select.css?v=2cded214" rel="stylesheet">
-        <link href="index.mjs?v=0e77a782" rel="modulepreload">
+        <link href="index.mjs?v=608991ef" rel="modulepreload">
         <meta content="MELCloud charts" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">
