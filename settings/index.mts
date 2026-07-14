@@ -1363,7 +1363,10 @@ class SettingsApp {
       this.#homey.ready()
     }
     if (hasInitFailed) {
-      await this.#homey.alert(getErrorMessage(initError))
+      // Fire-and-forget keeps `start()` non-throwing: a rejected alert
+      // must not trip the HTML loader's catch (double `ready()`, second
+      // generic alert).
+      fireAndForget(this.#homey.alert(getErrorMessage(initError)))
     }
   }
 
