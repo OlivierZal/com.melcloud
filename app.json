@@ -21,6 +21,10 @@
       "method": "GET",
       "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
     },
+    "getDeviceGroups": {
+      "method": "GET",
+      "path": "/device_groups"
+    },
     "getDeviceSettings": {
       "method": "GET",
       "path": "/settings/devices"
@@ -267,7 +271,7 @@
       "värmeåtervinning"
     ]
   },
-  "version": "45.0.0",
+  "version": "45.1.0",
   "flow": {
     "triggers": [
       {
