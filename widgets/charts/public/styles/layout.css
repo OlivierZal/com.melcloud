@@ -2,6 +2,17 @@
    the pickers out — independently of Homey's runtime stylesheet: the chart
    picker sits alone on top as the widget title, the zone and day pickers
    share a centered row beneath it. */
+/* Homey's injected class styles can outrank the UA's `[hidden]` rule (the
+   settings page fights the same specificity trap): keep the dismissed
+   error truly gone, and keep the visible one from adding stray gaps. */
+#init_error {
+  margin-block: 0 var(--homey-su-2);
+}
+
+#init_error[hidden] {
+  display: none;
+}
+
 .chart-select {
   display: block;
   margin-inline: auto;
