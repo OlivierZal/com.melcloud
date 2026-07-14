@@ -104,3 +104,15 @@ export const setDocumentLanguage = async (
 ): Promise<void> => {
   document.documentElement.lang = await homeyApiGet<string>(homey, '/language')
 }
+
+// The display language is cosmetic: a failed fetch must not abort a
+// webview init, so the page keeps its authored default instead.
+export const trySetDocumentLanguage = async (
+  homey: HomeyWidget,
+): Promise<void> => {
+  try {
+    await setDocumentLanguage(homey)
+  } catch (error) {
+    surfaceError(error)
+  }
+}

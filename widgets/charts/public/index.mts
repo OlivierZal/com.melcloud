@@ -34,8 +34,8 @@ import {
   fireAndForget,
   homeyApiGet,
   resolveHomey,
-  setDocumentLanguage,
   surfaceError,
+  trySetDocumentLanguage,
   withInitTimeout,
 } from '../../../public/homey-api.mts'
 import { getZoneId, getZonePath } from '../../../public/zones.mts'
@@ -841,8 +841,9 @@ class ChartWidget {
   async #run(): Promise<void> {
     translateAriaLabels((key) => this.#homey.__(key))
     // Sequenced, not parallel: the day picker labels are formatted with
-    // the app language, so it must land before the pickers are populated.
-    await setDocumentLanguage(this.#homey)
+    // the app language, so it must land before the pickers are populated
+    // (a failed fetch is cosmetic and falls back to the authored default).
+    await trySetDocumentLanguage(this.#homey)
     await this.#initControls()
   }
 

@@ -14,8 +14,8 @@ import {
   fireAndForget,
   homeyApiGet,
   resolveHomey,
-  setDocumentLanguage,
   surfaceError,
+  trySetDocumentLanguage,
   withInitTimeout,
 } from '../../../public/homey-api.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
@@ -121,7 +121,7 @@ class WidgetApp {
   async #run(): Promise<void> {
     translateAriaLabels((key) => this.#homey.__(key))
     await Promise.all([
-      setDocumentLanguage(this.#homey),
+      trySetDocumentLanguage(this.#homey),
       this.#ataValueManager.fetchCapabilities(),
     ])
     await this.#initTargets()
