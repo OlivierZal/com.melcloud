@@ -838,14 +838,6 @@ class ChartWidget {
     }
   }
 
-  // Verified against chart.umd.js in a headless browser: line-dataset legend
-  // toggles live in metas keyed by dataset object identity, so they never
-  // survive this widget's full-config refreshes and recreating buys nothing.
-  // Pie slice toggles live in the chart-level, index-keyed `_hiddenIndices`,
-  // which does survive in-place updates: recreate when the slice line-up
-  // shifts so a stale index cannot hide the wrong slice. A type flip
-  // (line <-> pie, reachable from the chart picker) always recreates:
-  // a live Chart.js instance keeps the type it was constructed with.
   async #run(): Promise<void> {
     translateAriaLabels((key) => this.#homey.__(key))
     // Sequenced, not parallel: the day picker labels are formatted with
@@ -854,6 +846,14 @@ class ChartWidget {
     await this.#initControls()
   }
 
+  // Verified against chart.umd.js in a headless browser: line-dataset legend
+  // toggles live in metas keyed by dataset object identity, so they never
+  // survive this widget's full-config refreshes and recreating buys nothing.
+  // Pie slice toggles live in the chart-level, index-keyed `_hiddenIndices`,
+  // which does survive in-place updates: recreate when the slice line-up
+  // shifts so a stale index cannot hide the wrong slice. A type flip
+  // (line <-> pie, reachable from the chart picker) always recreates:
+  // a live Chart.js instance keeps the type it was constructed with.
   #shouldRecreateChart({ data, type }: WidgetChartConfig): boolean {
     if (this.#config === null) {
       return false
