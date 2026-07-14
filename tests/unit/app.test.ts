@@ -4,6 +4,7 @@ import {
   type ReportChartPieOptions,
   type Result,
   type SyncCallback,
+  NoChangesError,
   ok,
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -101,14 +102,19 @@ const mockFacadeManagerGet = vi.fn<(instance: unknown) => unknown>()
 const mockFacadeManagerGetZones = vi
   .fn<(options?: { type?: Classic.DeviceType }) => unknown[]>()
   .mockReturnValue([])
+const mockHomeFacadeManagerGet = vi.fn<(model: unknown) => unknown>()
 
-const { mockCreate, mockFacadeManagerConstructor, mockHomeCreate } = vi.hoisted(
-  () => ({
-    mockCreate: vi.fn<(options: unknown) => Promise<unknown>>(),
-    mockFacadeManagerConstructor: vi.fn<(...args: unknown[]) => unknown>(),
-    mockHomeCreate: vi.fn<(options: unknown) => Promise<unknown>>(),
-  }),
-)
+const {
+  mockCreate,
+  mockFacadeManagerConstructor,
+  mockHomeCreate,
+  mockHomeFacadeManagerConstructor,
+} = vi.hoisted(() => ({
+  mockCreate: vi.fn<(options: unknown) => Promise<unknown>>(),
+  mockFacadeManagerConstructor: vi.fn<(...args: unknown[]) => unknown>(),
+  mockHomeCreate: vi.fn<(options: unknown) => Promise<unknown>>(),
+  mockHomeFacadeManagerConstructor: vi.fn<(...args: unknown[]) => unknown>(),
+}))
 
 vi.mock(import('@olivierzal/melcloud-api/classic'), async (importOriginal) => {
   const { mock: mockModule } = await import('../helpers.ts')
@@ -128,6 +134,7 @@ vi.mock(import('@olivierzal/melcloud-api/home'), async (importOriginal) => {
     API: {
       create: mockHomeCreate,
     },
+    FacadeManager: mockHomeFacadeManagerConstructor,
   })
 })
 
@@ -255,10 +262,23 @@ const newMockFacadeManager =
     })
   }
 
+const newMockHomeFacadeManager =
+  function newMockHomeFacadeManager(): Home.FacadeManager {
+    return mock<Home.FacadeManager>({ get: mockHomeFacadeManagerGet })
+  }
+
+// Models the group surface the ATA device facade gains with the melcloud-api
+// device-as-group-of-one contract this feature tracks.
+type ClassicAtaDeviceGroupFacade = Classic.DeviceFacade<
+  typeof Classic.DeviceType.Ata
+> &
+  Pick<Classic.ZoneFacade, 'getGroup' | 'updateGroupState'>
+
 const setupMocks = (): void => {
   mockCreate.mockResolvedValue(mockApiInstance)
   mockHomeCreate.mockResolvedValue(mockHomeApiInstance)
   mockFacadeManagerConstructor.mockImplementation(newMockFacadeManager)
+  mockHomeFacadeManagerConstructor.mockImplementation(newMockHomeFacadeManager)
   mockGetLanguage.mockReturnValue('en')
   mockGetTimezone.mockReturnValue('Europe/Paris')
   mockTranslate.mockImplementation((key: string) => key)
@@ -433,6 +453,7 @@ describe('melCloudApp', () => {
     mockSettingsGet.mockReturnValue(null)
     mockGetDrivers.mockReturnValue({})
     mockFacadeManagerGetZones.mockReturnValue([])
+    mockHomeRegistry.getByType.mockReturnValue([])
     app = createApp()
   })
 
@@ -645,6 +666,41 @@ describe('melCloudApp', () => {
       })
 
       expect(groupState).toBe(mockGroupState)
+    })
+
+    it('should treat a single ata device as a group of one', async () => {
+      const mockGroupState = mock<Classic.GroupState>()
+      const mockFacade = mock<ClassicAtaDeviceGroupFacade>({
+        getGroup: vi
+          .fn<() => Promise<Result<Classic.GroupState>>>()
+          .mockResolvedValue(ok(mockGroupState)),
+        type: Classic.DeviceType.Ata,
+      })
+      mockFacadeManagerGet.mockReturnValue(mockFacade)
+      mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
+      await app.onInit()
+
+      const groupState = await app.getClassicAtaState({
+        zoneId: '1',
+        zoneType: 'devices',
+      })
+
+      expect(groupState).toBe(mockGroupState)
+      expect(mockApiInstance.registry.devices.getById).toHaveBeenCalledWith(1)
+    })
+
+    it('should reject a non-ata device as group target', async () => {
+      mockFacadeManagerGet.mockReturnValue(
+        mock<Classic.DeviceFacade<typeof Classic.DeviceType.Atw>>({
+          type: Classic.DeviceType.Atw,
+        }),
+      )
+      mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
+      await app.onInit()
+
+      await expect(
+        app.getClassicAtaState({ zoneId: '1', zoneType: 'devices' }),
+      ).rejects.toThrow('errors.deviceNotFound')
     })
   })
 
@@ -900,24 +956,30 @@ describe('melCloudApp', () => {
     }
 
     it('should return an ATA facade for a matching ATA device', async () => {
+      const mockFacade = mock<Home.DeviceAtaFacade>()
       mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getById.mockReturnValue(mockAtaModel)
+      mockHomeFacadeManagerGet.mockReturnValue(mockFacade)
       await app.onInit()
 
       const facade = app.getHomeFacade('device-1', Home.DeviceType.Ata)
 
-      expect(facade).toBeInstanceOf(Home.DeviceAtaFacade)
+      expect(facade).toBe(mockFacade)
+      expect(mockHomeFacadeManagerGet).toHaveBeenCalledWith(mockAtaModel)
       expect(mockHomeRegistry.getById).toHaveBeenCalledWith('device-1')
     })
 
     it('should return an ATW facade for a matching ATW device', async () => {
+      const mockFacade = mock<Home.DeviceAtwFacade>()
       mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getById.mockReturnValue(mockAtwModel)
+      mockHomeFacadeManagerGet.mockReturnValue(mockFacade)
       await app.onInit()
 
       const facade = app.getHomeFacade('device-1', Home.DeviceType.Atw)
 
-      expect(facade).toBeInstanceOf(Home.DeviceAtwFacade)
+      expect(facade).toBe(mockFacade)
+      expect(mockHomeFacadeManagerGet).toHaveBeenCalledWith(mockAtwModel)
     })
 
     it('should throw when device is not found in registry', async () => {
@@ -952,6 +1014,114 @@ describe('melCloudApp', () => {
       expect(() => app.getHomeFacade('device-1', Home.DeviceType.Ata)).toThrow(
         'errors.deviceNotFound',
       )
+    })
+  })
+
+  describe('home ata device zones', () => {
+    it('should map and alpha-sort home ata devices as root zones', async () => {
+      mockHomeApiInstance.list.mockResolvedValue([])
+      mockHomeRegistry.getByType.mockReturnValue([
+        { id: 'device-2', name: 'Salon' },
+        { id: 'device-1', name: 'Bureau' },
+      ])
+      await app.onInit()
+
+      expect(app.getHomeAtaDeviceZones()).toStrictEqual([
+        { id: 'device-1', level: 0, model: 'homeDevices', name: 'Bureau' },
+        { id: 'device-2', level: 0, model: 'homeDevices', name: 'Salon' },
+      ])
+      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
+        Home.DeviceType.Ata,
+      )
+    })
+  })
+
+  describe('home ata state', () => {
+    const mockAtaModel = {
+      id: 'device-1',
+      name: 'Living Room',
+      type: Home.DeviceType.Ata,
+      isAta: (): boolean => true,
+      isAtw: (): boolean => false,
+    }
+
+    const setupHomeAtaFacade = (facade: Home.DeviceAtaFacade): void => {
+      mockHomeApiInstance.list.mockResolvedValue([])
+      mockHomeRegistry.getById.mockReturnValue(mockAtaModel)
+      mockHomeFacadeManagerGet.mockReturnValue(facade)
+    }
+
+    it('should project the facade onto the classic group dialect', async () => {
+      setupHomeAtaFacade(
+        mock<Home.DeviceAtaFacade>({
+          operationMode: 'Cool',
+          power: true,
+          setFanSpeed: 'Two',
+          setTemperature: 21,
+          vaneHorizontalDirection: 'Wide',
+          vaneVerticalDirection: 'Swing',
+        }),
+      )
+      await app.onInit()
+
+      expect(app.getHomeAtaState('device-1')).toStrictEqual({
+        FanSpeed: Classic.FanSpeed.slow,
+        OperationMode: Classic.OperationMode.cool,
+        Power: true,
+        SetTemperature: 21,
+        VaneHorizontalDirection: Classic.Horizontal.wide,
+        VaneVerticalDirection: Classic.Vertical.swing,
+      })
+    })
+
+    it('should translate and push the update delta', async () => {
+      const mockUpdateValues = vi
+        .fn<(values: unknown) => Promise<void>>()
+        .mockResolvedValue()
+      setupHomeAtaFacade(
+        mock<Home.DeviceAtaFacade>({ updateValues: mockUpdateValues }),
+      )
+      await app.onInit()
+
+      await app.updateHomeAtaState({
+        deviceId: 'device-1',
+        state: { Power: true, SetTemperature: 20 },
+      })
+
+      expect(mockUpdateValues).toHaveBeenCalledWith({
+        power: true,
+        setTemperature: 20,
+      })
+    })
+
+    it('should swallow a no-changes rejection', async () => {
+      setupHomeAtaFacade(
+        mock<Home.DeviceAtaFacade>({
+          updateValues: vi
+            .fn<(values: unknown) => Promise<void>>()
+            .mockRejectedValue(new NoChangesError('device-1')),
+        }),
+      )
+      await app.onInit()
+
+      await expect(
+        app.updateHomeAtaState({ deviceId: 'device-1', state: {} }),
+      ).resolves.toBeUndefined()
+    })
+
+    it('should propagate other update failures', async () => {
+      setupHomeAtaFacade(
+        mock<Home.DeviceAtaFacade>({
+          updateValues: vi
+            .fn<(values: unknown) => Promise<void>>()
+            .mockRejectedValue(new Error('BFF failure')),
+        }),
+      )
+      await app.onInit()
+
+      await expect(
+        app.updateHomeAtaState({ deviceId: 'device-1', state: {} }),
+      ).rejects.toThrow('BFF failure')
     })
   })
 
@@ -1588,14 +1758,19 @@ describe('melCloudApp', () => {
   })
 
   describe('widget listener query filtering', () => {
-    it('should serve only matching group zones to the ata-group-setting widget', async () => {
+    it('should serve matching classic zones, classic devices and home devices to the ata-group-setting widget', async () => {
       const { mockRegisterAta } = setupWidgetListeners()
-      // The excluded device's name matches the query, so only the kind
-      // filter can explain its absence.
       mockFacadeManagerGetZones.mockReturnValue([
         { model: 'buildings', name: 'Building 1' },
         { model: 'buildings', name: 'Office' },
         { model: 'devices', name: 'Building unit' },
+      ])
+      // Unsorted on purpose: home entries must come back alpha-sorted,
+      // appended after the classic ones.
+      mockHomeRegistry.getByType.mockReturnValue([
+        { id: 'home-2', name: 'Building two' },
+        { id: 'home-1', name: 'Building one' },
+        { id: 'home-3', name: 'Bedroom' },
       ])
       await app.onInit()
 
@@ -1606,7 +1781,12 @@ describe('melCloudApp', () => {
       )
       const result = ataCallback('build')
 
-      expect(result).toStrictEqual([{ model: 'buildings', name: 'Building 1' }])
+      expect(result).toStrictEqual([
+        { model: 'buildings', name: 'Building 1' },
+        { model: 'devices', name: 'Building unit' },
+        { id: 'home-1', level: 0, model: 'homeDevices', name: 'Building one' },
+        { id: 'home-2', level: 0, model: 'homeDevices', name: 'Building two' },
+      ])
       expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
         type: Classic.DeviceType.Ata,
       })

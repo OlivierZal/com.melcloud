@@ -1,13 +1,15 @@
 import 'source-map-support/register.js'
 
-import type {
-  DeviceType,
-  Hour,
-  Logger,
-  ReportChartLineOptions,
-  ReportChartPieOptions,
-  SettingManager,
-  SyncCallback,
+import {
+  type DeviceType,
+  type Hour,
+  type Logger,
+  type ReportChartLineOptions,
+  type ReportChartPieOptions,
+  type SettingManager,
+  type SyncCallback,
+  isClassicAtaFacade,
+  NoChangesError,
 } from '@olivierzal/melcloud-api'
 import { Intl, Temporal } from 'temporal-polyfill'
 import * as Classic from '@olivierzal/melcloud-api/classic'
@@ -33,7 +35,11 @@ import type {
 } from './types/manifest.mts'
 import type { MELCloudDevice, MELCloudDriver } from './types/melcloud.mts'
 import type { GetAtaOptions } from './types/widgets.mts'
-import type { DeviceOrZoneData, ZoneData } from './types/zone.mts'
+import type {
+  DeviceOrZoneData,
+  HomeDeviceZone,
+  ZoneData,
+} from './types/zone.mts'
 import {
   changelog,
   fanSpeed,
@@ -45,6 +51,10 @@ import {
 } from './files.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { NotFoundError } from './lib/errors.mts'
+import {
+  toClassicAtaGroupState,
+  toHomeAtaValues,
+} from './lib/home-ata-group.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { typedFromEntries } from './lib/typed-object.mts'
@@ -164,9 +174,17 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
-// `devices` = individual units; `groups` = the zone collections (areas,
-// buildings, floors) the group endpoints target.
-type ZoneKind = 'devices' | 'groups'
+// The ATA group surface shared by the zone facades and — per the
+// melcloud-api contract this feature tracks — the ATA device facade, which
+// emulates it as a group of one.
+type ClassicAtaGroupFacade = Pick<
+  Classic.ZoneFacade,
+  'getGroup' | 'updateGroupState'
+>
+
+// `devices` = individual units only; omitting the kind serves the zone
+// collections (areas, buildings, floors) and the devices alike.
+type ZoneKind = 'devices'
 
 const filterZonesByName = <T extends { readonly name: string }>(
   zones: readonly T[],
@@ -179,9 +197,7 @@ const filterZonesByName = <T extends { readonly name: string }>(
 const matchesZoneKind = (
   model: Classic.Zone['model'],
   kind?: ZoneKind,
-): boolean =>
-  kind === undefined ||
-  (kind === 'devices' ? model === 'devices' : model !== 'devices')
+): boolean => kind === undefined || model === 'devices'
 
 // Flow autocomplete items over the given zones (including single devices,
 // which the holiday mode endpoints also accept). The zone target is
@@ -307,9 +323,9 @@ export default class MELCloudApp extends App {
   public async getClassicAtaState({
     zoneId,
     zoneType,
-  }: ZoneData): Promise<Classic.GroupState> {
+  }: DeviceOrZoneData): Promise<Classic.GroupState> {
     return unwrapResult(
-      await this.getClassicFacade(zoneType, zoneId).getGroup(),
+      await this.#getClassicAtaGroupFacade({ zoneId, zoneType }).getGroup(),
     )
   }
 
@@ -475,6 +491,23 @@ export default class MELCloudApp extends App {
     )
   }
 
+  public getHomeAtaDeviceZones(): HomeDeviceZone[] {
+    return this.getHomeDevicesByType(Home.DeviceType.Ata)
+      .map(({ id, name }): HomeDeviceZone => ({
+        id,
+        level: 0,
+        model: 'homeDevices',
+        name,
+      }))
+      .toSorted((zone, other) => zone.name.localeCompare(other.name))
+  }
+
+  public getHomeAtaState(deviceId: string): Classic.GroupState {
+    return toClassicAtaGroupState(
+      this.getHomeFacade(deviceId, Home.DeviceType.Ata),
+    )
+  }
+
   public getHomeDevicesByType(type: Home.DeviceType): Home.Device[] {
     return this.#homeRegistry.getByType(type)
   }
@@ -503,11 +536,11 @@ export default class MELCloudApp extends App {
     state,
     zoneId,
     zoneType,
-  }: ZoneData & { state: Classic.GroupState }): Promise<void> {
-    const { AttributeErrors } = await this.getClassicFacade(
-      zoneType,
+  }: DeviceOrZoneData & { state: Classic.GroupState }): Promise<void> {
+    const { AttributeErrors } = await this.#getClassicAtaGroupFacade({
       zoneId,
-    ).updateGroupState(state)
+      zoneType,
+    }).updateGroupState(state)
     throwOnErrors(AttributeErrors)
   }
 
@@ -564,6 +597,24 @@ export default class MELCloudApp extends App {
         })
       }),
     )
+  }
+
+  public async updateHomeAtaState({
+    deviceId,
+    state,
+  }: {
+    deviceId: string
+    state: Classic.GroupState
+  }): Promise<void> {
+    try {
+      await this.getHomeFacade(deviceId, Home.DeviceType.Ata).updateValues(
+        toHomeAtaValues(state),
+      )
+    } catch (error) {
+      if (!(error instanceof NoChangesError)) {
+        throw error
+      }
+    }
   }
 
   readonly #onSync: SyncCallback = async ({ ids, type } = {}) => {
@@ -685,6 +736,20 @@ export default class MELCloudApp extends App {
         },
       },
     ]
+  }
+
+  #getClassicAtaGroupFacade({
+    zoneId,
+    zoneType,
+  }: DeviceOrZoneData): ClassicAtaGroupFacade {
+    if (zoneType !== 'devices') {
+      return this.getClassicFacade(zoneType, zoneId)
+    }
+    const facade = this.getClassicFacade('devices', zoneId)
+    if (!isClassicAtaFacade(facade)) {
+      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+    }
+    return facade
   }
 
   #getDevices({
@@ -821,16 +886,22 @@ export default class MELCloudApp extends App {
     this.homey.dashboards
       .getWidget('ata-group-setting')
       .registerSettingAutocompleteListener('default_zone', (query) =>
-        this.#searchZones(query, {
-          kind: 'groups',
-          type: Classic.DeviceType.Ata,
-        }),
+        this.#searchAtaTargets(query),
       )
     this.homey.dashboards
       .getWidget('charts')
       .registerSettingAutocompleteListener('default_zone', (query) =>
         this.#searchZones(query, { kind: 'devices' }),
       )
+  }
+
+  // Everything the ATA group widget can target: the Classic zones and
+  // devices, then the Home devices at root level (already alpha-sorted).
+  #searchAtaTargets(query: string): (Classic.Zone | HomeDeviceZone)[] {
+    return [
+      ...this.#searchZones(query, { type: Classic.DeviceType.Ata }),
+      ...filterZonesByName(this.getHomeAtaDeviceZones(), query),
+    ]
   }
 
   // One zone-search pipeline for every autocomplete surface: registry

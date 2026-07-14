@@ -16,6 +16,14 @@
       "method": "GET",
       "path": "/classic/buildings"
     },
+    "getHomeAtaDevices": {
+      "method": "GET",
+      "path": "/home/devices/ata"
+    },
+    "getHomeAtaState": {
+      "method": "GET",
+      "path": "/home/devices/:deviceId/ata"
+    },
     "getLanguage": {
       "method": "GET",
       "path": "/language"
@@ -23,6 +31,10 @@
     "updateClassicAtaState": {
       "method": "PUT",
       "path": "/classic/zones/:zoneType/:zoneId/ata"
+    },
+    "updateHomeAtaState": {
+      "method": "PUT",
+      "path": "/home/devices/:deviceId/ata"
     }
   },
   "name": {
@@ -38,13 +50,13 @@
     {
       "id": "default_zone",
       "title": {
-        "da": "Standardzone",
-        "en": "Default zone",
-        "es": "Zona predeterminada",
-        "fr": "Zone par défaut",
-        "nl": "Standaardzone",
-        "no": "Standardsone",
-        "sv": "Standardzon"
+        "da": "Standardzone eller -enhed",
+        "en": "Default zone or device",
+        "es": "Zona o dispositivo predeterminado",
+        "fr": "Zone ou appareil par défaut",
+        "nl": "Standaardzone of -apparaat",
+        "no": "Standardsone eller -enhet",
+        "sv": "Standardzon eller -enhet"
       },
       "type": "autocomplete"
     }

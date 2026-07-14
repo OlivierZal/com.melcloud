@@ -2,10 +2,11 @@ import type { Hour } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { BaseSettings } from './bases.mts'
+import type { HomeDeviceZone } from './zone.mts'
 
 export interface AtaGroupSettingWidgetSettings extends BaseSettings {
-  // The widget's autocomplete serves zone collections only, never devices.
-  readonly default_zone: Exclude<Classic.Zone, Classic.DeviceZone> | null
+  // Classic zone collections and devices, plus Home devices at root level.
+  readonly default_zone: Classic.Zone | HomeDeviceZone | null
 }
 
 export interface ChartsWidgetSettings extends BaseSettings {

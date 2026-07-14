@@ -4,7 +4,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { GroupAtaStates } from '../../types/classic-ata.mts'
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
-import type { ZoneData } from '../../types/zone.mts'
+import type {
+  DeviceOrZoneData,
+  HomeDeviceZone,
+  ZoneData,
+} from '../../types/zone.mts'
 import { mock } from '../helpers.js'
 
 const mockGetBuildings = vi.fn<() => Classic.BuildingZone[]>()
@@ -24,7 +28,10 @@ const mockApp = {
     vi.fn<() => [keyof Classic.GroupState, DriverCapabilitiesOptions][]>(),
   getClassicAtaDetailedStates: vi.fn<() => GroupAtaStates>(),
   getClassicAtaState: vi.fn<() => Promise<Classic.GroupState>>(),
+  getHomeAtaDeviceZones: vi.fn<() => HomeDeviceZone[]>(),
+  getHomeAtaState: vi.fn<() => Classic.GroupState>(),
   updateClassicAtaState: vi.fn<() => Promise<void>>(),
+  updateHomeAtaState: vi.fn<() => Promise<void>>(),
 }
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
@@ -79,11 +86,47 @@ describe('ata-group-setting api', () => {
       expect(mockApp.getClassicAtaState).toHaveBeenCalledWith(params)
     })
 
+    it('should accept a single device as group state target', async () => {
+      const deviceParams = mock<DeviceOrZoneData>({
+        zoneId: '42',
+        zoneType: 'devices',
+      })
+      const values = mock<Classic.GroupState>()
+      mockApp.getClassicAtaState.mockResolvedValue(values)
+
+      const result = await api.getClassicAtaState({
+        homey,
+        params: deviceParams,
+      })
+
+      expect(result).toBe(values)
+      expect(mockApp.getClassicAtaState).toHaveBeenCalledWith(deviceParams)
+    })
+
+    it('should reject an invalid zone type on the group state path', async () => {
+      await expect(
+        api.getClassicAtaState({
+          homey,
+          params: { zoneId: '1', zoneType: 'constructor' as 'buildings' },
+        }),
+      ).rejects.toThrow(RangeError)
+    })
+
     it('should reject an invalid zone type from the URL', () => {
       expect(() =>
         api.getClassicAtaDetailedStates({
           homey,
           params: { zoneId: '1', zoneType: 'constructor' as 'buildings' },
+          query: {},
+        }),
+      ).toThrow(RangeError)
+    })
+
+    it('should keep detailed states zone-only', () => {
+      expect(() =>
+        api.getClassicAtaDetailedStates({
+          homey,
+          params: { zoneId: '42', zoneType: 'devices' as 'buildings' },
           query: {},
         }),
       ).toThrow(RangeError)
@@ -112,6 +155,31 @@ describe('ata-group-setting api', () => {
     })
   })
 
+  describe('home device retrieval', () => {
+    it('should delegate to app.getHomeAtaDeviceZones', () => {
+      const devices = mock<HomeDeviceZone[]>()
+      mockApp.getHomeAtaDeviceZones.mockReturnValue(devices)
+
+      const result = api.getHomeAtaDevices({ homey })
+
+      expect(result).toBe(devices)
+      expect(mockApp.getHomeAtaDeviceZones).toHaveBeenCalledTimes(1)
+    })
+
+    it('should delegate home state to app.getHomeAtaState', () => {
+      const values = mock<Classic.GroupState>()
+      mockApp.getHomeAtaState.mockReturnValue(values)
+
+      const result = api.getHomeAtaState({
+        homey,
+        params: { deviceId: 'home_1' },
+      })
+
+      expect(result).toBe(values)
+      expect(mockApp.getHomeAtaState).toHaveBeenCalledWith('home_1')
+    })
+  })
+
   describe('language retrieval', () => {
     it('should return the language from i18n', () => {
       mockI18n.getLanguage.mockReturnValue('en')
@@ -134,6 +202,38 @@ describe('ata-group-setting api', () => {
       expect(mockApp.updateClassicAtaState).toHaveBeenCalledWith({
         state: body,
         ...params,
+      })
+    })
+
+    it('should accept a single device as update target', async () => {
+      const body = mock<Classic.GroupState>()
+      const params = mock<DeviceOrZoneData>({
+        zoneId: '42',
+        zoneType: 'devices',
+      })
+      mockApp.updateClassicAtaState.mockResolvedValue()
+
+      await api.updateClassicAtaState({ body, homey, params })
+
+      expect(mockApp.updateClassicAtaState).toHaveBeenCalledWith({
+        state: body,
+        ...params,
+      })
+    })
+
+    it('should delegate home updates to app.updateHomeAtaState', async () => {
+      const body = mock<Classic.GroupState>()
+      mockApp.updateHomeAtaState.mockResolvedValue()
+
+      await api.updateHomeAtaState({
+        body,
+        homey,
+        params: { deviceId: 'home_1' },
+      })
+
+      expect(mockApp.updateHomeAtaState).toHaveBeenCalledWith({
+        deviceId: 'home_1',
+        state: body,
       })
     })
   })
