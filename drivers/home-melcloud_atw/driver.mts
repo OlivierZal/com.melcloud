@@ -18,12 +18,6 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
   public override readonly type: typeof Home.DeviceType.Atw =
     Home.DeviceType.Atw
 
-  readonly #controlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
-    'onoff',
-    'target_temperature',
-    'thermostat_mode',
-  ]
-
   readonly #hotWaterControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
     'hot_water_mode',
     'target_temperature.tank_water',
@@ -40,9 +34,17 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
     'operational_state.zone1',
   ]
 
-  readonly #zone2ControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
-    'target_temperature.zone2',
-    'thermostat_mode.zone2',
+  // Owner-only: the MELCloud Home app gives guests every setpoint but keeps
+  // the power toggle and the precise zone thermostat modes (room/flow/curve)
+  // for owners — a guest only gets a coarse heating/cooling switch the app
+  // drives through a separate, uncaptured path.
+  readonly #zone1OwnerCapabilities: (keyof HomeCapabilitiesAtw)[] = [
+    'onoff',
+    'thermostat_mode',
+  ]
+
+  readonly #zone1SetpointCapabilities: (keyof HomeCapabilitiesAtw)[] = [
+    'target_temperature',
   ]
 
   readonly #zone2MeasureCapabilities: (keyof HomeCapabilitiesAtw)[] = [
@@ -50,25 +52,36 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
     'operational_state.zone2',
   ]
 
-  // Guests only get the read-only measures: the MELCloud Home app does not
-  // expose the ATW control surface to guest accounts.
+  readonly #zone2OwnerCapabilities: (keyof HomeCapabilitiesAtw)[] = [
+    'thermostat_mode.zone2',
+  ]
+
+  readonly #zone2SetpointCapabilities: (keyof HomeCapabilitiesAtw)[] = [
+    'target_temperature.zone2',
+  ]
+
+  // Only `isOwner` narrows the ATW surface (ATA is never gated): guests get
+  // the measures, both zones' setpoints and the hot-water controls; owners
+  // additionally get the power toggle and the precise zone thermostat modes.
   public override getRequiredCapabilities(
     profile?: HomeAtwDeviceProfile,
   ): string[] {
     const { capabilities, isOwner = false } = profile ?? {}
     return [
       ...this.#measureCapabilities,
-      ...(isOwner ? this.#controlCapabilities : []),
+      ...(isOwner ? this.#zone1OwnerCapabilities : []),
+      ...this.#zone1SetpointCapabilities,
       ...(capabilities?.hasHotWater === true ?
         [
           ...this.#hotWaterMeasureCapabilities,
-          ...(isOwner ? this.#hotWaterControlCapabilities : []),
+          ...this.#hotWaterControlCapabilities,
         ]
       : []),
       ...(capabilities?.hasZone2 === true ?
         [
           ...this.#zone2MeasureCapabilities,
-          ...(isOwner ? this.#zone2ControlCapabilities : []),
+          ...(isOwner ? this.#zone2OwnerCapabilities : []),
+          ...this.#zone2SetpointCapabilities,
         ]
       : []),
     ]

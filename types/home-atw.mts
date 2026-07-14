@@ -61,8 +61,9 @@ export const homeTagMappingsAtw: {
 /**
  * Structural slice of {@link Home.DeviceAtwFacade} driving which capabilities
  * a Home ATW device gets and their options. Satisfied by the facade itself;
- * only owners get the control capabilities (the MELCloud Home app hides the
- * ATW control surface from guests).
+ * guests get the measures, setpoints and hot-water controls, while owners
+ * additionally get the power toggle and the precise zone thermostat modes
+ * (the MELCloud Home app reserves those two for owners).
  */
 export type HomeAtwDeviceProfile = Pick<
   Home.DeviceAtwFacade,
