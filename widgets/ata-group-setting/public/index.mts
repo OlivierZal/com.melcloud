@@ -6,6 +6,7 @@ import {
   getButton,
   getDiv,
   getSelect,
+  hideInitError,
   showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
@@ -125,6 +126,8 @@ class WidgetApp {
       this.#ataValueManager.fetchCapabilities(),
     ])
     await this.#initTargets()
+    // A load that outlived its timeout recovers here: drop the message.
+    hideInitError()
   }
 }
 

@@ -26,6 +26,7 @@ import {
   createOption,
   getDiv,
   getSelect,
+  hideInitError,
   showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
@@ -845,6 +846,8 @@ class ChartWidget {
     // (a failed fetch is cosmetic and falls back to the authored default).
     await trySetDocumentLanguage(this.#homey)
     await this.#initControls()
+    // A load that outlived its timeout recovers here: drop the message.
+    hideInitError()
   }
 
   // Verified against chart.umd.js in a headless browser: line-dataset legend
