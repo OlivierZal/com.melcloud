@@ -6,6 +6,7 @@ import type { GroupAtaStates } from '../../types/classic-ata.mts'
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
 import type {
   DeviceOrZoneData,
+  HomeBuildingZone,
   HomeDeviceZone,
   ZoneData,
 } from '../../types/zone.mts'
@@ -28,10 +29,13 @@ const mockApp = {
     vi.fn<() => [keyof Classic.GroupState, DriverCapabilitiesOptions][]>(),
   getClassicAtaDetailedStates: vi.fn<() => GroupAtaStates>(),
   getClassicAtaState: vi.fn<() => Promise<Classic.GroupState>>(),
-  getHomeAtaDeviceZones: vi.fn<() => HomeDeviceZone[]>(),
-  getHomeAtaState: vi.fn<() => Classic.GroupState>(),
+  getHomeAtaState: vi.fn<() => Promise<Classic.GroupState>>(),
+  getHomeAtaTargets: vi.fn<() => (HomeBuildingZone | HomeDeviceZone)[]>(),
+  getHomeBuildingAtaModes: vi.fn<() => number[]>(),
+  getHomeBuildingAtaState: vi.fn<() => Promise<Classic.GroupState>>(),
   updateClassicAtaState: vi.fn<() => Promise<void>>(),
   updateHomeAtaState: vi.fn<() => Promise<void>>(),
+  updateHomeBuildingAtaState: vi.fn<() => Promise<void>>(),
 }
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
@@ -155,28 +159,53 @@ describe('ata-group-setting api', () => {
     })
   })
 
-  describe('home device retrieval', () => {
-    it('should delegate to app.getHomeAtaDeviceZones', () => {
-      const devices = mock<HomeDeviceZone[]>()
-      mockApp.getHomeAtaDeviceZones.mockReturnValue(devices)
+  describe('home target retrieval', () => {
+    it('should delegate to app.getHomeAtaTargets', () => {
+      const targets = mock<(HomeBuildingZone | HomeDeviceZone)[]>()
+      mockApp.getHomeAtaTargets.mockReturnValue(targets)
 
-      const result = api.getHomeAtaDevices({ homey })
+      const result = api.getHomeAtaTargets({ homey })
 
-      expect(result).toBe(devices)
-      expect(mockApp.getHomeAtaDeviceZones).toHaveBeenCalledTimes(1)
+      expect(result).toBe(targets)
+      expect(mockApp.getHomeAtaTargets).toHaveBeenCalledTimes(1)
     })
 
-    it('should delegate home state to app.getHomeAtaState', () => {
+    it('should delegate home state to app.getHomeAtaState', async () => {
       const values = mock<Classic.GroupState>()
-      mockApp.getHomeAtaState.mockReturnValue(values)
+      mockApp.getHomeAtaState.mockResolvedValue(values)
 
-      const result = api.getHomeAtaState({
+      const result = await api.getHomeAtaState({
         homey,
         params: { deviceId: 'home_1' },
       })
 
       expect(result).toBe(values)
       expect(mockApp.getHomeAtaState).toHaveBeenCalledWith('home_1')
+    })
+
+    it('should delegate building state to app.getHomeBuildingAtaState', async () => {
+      const values = mock<Classic.GroupState>()
+      mockApp.getHomeBuildingAtaState.mockResolvedValue(values)
+
+      const result = await api.getHomeBuildingAtaState({
+        homey,
+        params: { buildingId: 'building_1' },
+      })
+
+      expect(result).toBe(values)
+      expect(mockApp.getHomeBuildingAtaState).toHaveBeenCalledWith('building_1')
+    })
+
+    it('should delegate building modes to app.getHomeBuildingAtaModes', () => {
+      mockApp.getHomeBuildingAtaModes.mockReturnValue([1, 3])
+
+      const result = api.getHomeBuildingAtaModes({
+        homey,
+        params: { buildingId: 'building_1' },
+      })
+
+      expect(result).toStrictEqual([1, 3])
+      expect(mockApp.getHomeBuildingAtaModes).toHaveBeenCalledWith('building_1')
     })
   })
 
@@ -233,6 +262,22 @@ describe('ata-group-setting api', () => {
 
       expect(mockApp.updateHomeAtaState).toHaveBeenCalledWith({
         deviceId: 'home_1',
+        state: body,
+      })
+    })
+
+    it('should delegate building updates to app.updateHomeBuildingAtaState', async () => {
+      const body = mock<Classic.GroupState>()
+      mockApp.updateHomeBuildingAtaState.mockResolvedValue()
+
+      await api.updateHomeBuildingAtaState({
+        body,
+        homey,
+        params: { buildingId: 'building_1' },
+      })
+
+      expect(mockApp.updateHomeBuildingAtaState).toHaveBeenCalledWith({
+        buildingId: 'building_1',
         state: body,
       })
     })

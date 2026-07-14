@@ -10,6 +10,7 @@ import {
   type SyncCallback,
   isClassicAtaFacade,
   NoChangesError,
+  operationModeToClassic,
 } from '@olivierzal/melcloud-api'
 import { Intl, Temporal } from 'temporal-polyfill'
 import * as Classic from '@olivierzal/melcloud-api/classic'
@@ -37,6 +38,7 @@ import type { MELCloudDevice, MELCloudDriver } from './types/melcloud.mts'
 import type { GetAtaOptions } from './types/widgets.mts'
 import type {
   DeviceOrZoneData,
+  HomeBuildingZone,
   HomeDeviceZone,
   ZoneData,
 } from './types/zone.mts'
@@ -51,10 +53,6 @@ import {
 } from './files.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { NotFoundError } from './lib/errors.mts'
-import {
-  toClassicAtaGroupState,
-  toHomeAtaValues,
-} from './lib/home-ata-group.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { typedFromEntries } from './lib/typed-object.mts'
@@ -491,20 +489,53 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public getHomeAtaDeviceZones(): HomeDeviceZone[] {
-    return this.getHomeDevicesByType(Home.DeviceType.Ata)
-      .map(({ id, name }): HomeDeviceZone => ({
-        id,
-        level: 0,
-        model: 'homeDevices',
-        name,
-      }))
-      .toSorted((zone, other) => zone.name.localeCompare(other.name))
+  public async getHomeAtaState(deviceId: string): Promise<Classic.GroupState> {
+    return unwrapResult(
+      await this.getHomeFacade(deviceId, Home.DeviceType.Ata).getGroup(),
+    )
   }
 
-  public getHomeAtaState(deviceId: string): Classic.GroupState {
-    return toClassicAtaGroupState(
-      this.getHomeFacade(deviceId, Home.DeviceType.Ata),
+  // Every ATA target the group widget can address on the Home side: one
+  // root entry per `/context` building (the account-level group), its
+  // devices one level below, both alphabetical.
+  public getHomeAtaTargets(): (HomeBuildingZone | HomeDeviceZone)[] {
+    return this.#homeRegistry
+      .getBuildingsByType(Home.DeviceType.Ata)
+      .toSorted((building, other) => building.name.localeCompare(other.name))
+      .flatMap(({ devices, id, name }) => [
+        {
+          id,
+          level: 0,
+          model: 'homeBuildings',
+          name,
+        } satisfies HomeBuildingZone,
+        ...devices
+          .map((device): HomeDeviceZone => ({
+            id: device.id,
+            level: 1,
+            model: 'homeDevices',
+            name: device.name,
+          }))
+          .toSorted((zone, other) => zone.name.localeCompare(other.name)),
+      ])
+  }
+
+  // Member operation modes in the Classic vocabulary — what the widget's
+  // mixed-mode scene resolver consumes.
+  public getHomeBuildingAtaModes(buildingId: string): number[] {
+    return this.#getHomeBuildingFacade(buildingId).devices.map(
+      (device) =>
+        operationModeToClassic[
+          this.#homeFacadeManager.get(device).operationMode
+        ],
+    )
+  }
+
+  public async getHomeBuildingAtaState(
+    buildingId: string,
+  ): Promise<Classic.GroupState> {
+    return unwrapResult(
+      await this.#getHomeBuildingFacade(buildingId).getGroup(),
     )
   }
 
@@ -606,21 +637,26 @@ export default class MELCloudApp extends App {
     deviceId: string
     state: Classic.GroupState
   }): Promise<void> {
-    const values = toHomeAtaValues(state)
-    // An all-null delta translates to an empty payload: nothing to push, and
-    // calling updateValues with it would only raise a swallowed NoChangesError.
-    if (Object.keys(values).length === 0) {
-      return
-    }
     try {
-      await this.getHomeFacade(deviceId, Home.DeviceType.Ata).updateValues(
-        values,
+      await this.getHomeFacade(deviceId, Home.DeviceType.Ata).updateGroupState(
+        state,
       )
     } catch (error) {
+      // A delta the device already matches is fine by definition.
       if (!(error instanceof NoChangesError)) {
         throw error
       }
     }
+  }
+
+  public async updateHomeBuildingAtaState({
+    buildingId,
+    state,
+  }: {
+    buildingId: string
+    state: Classic.GroupState
+  }): Promise<void> {
+    await this.#getHomeBuildingFacade(buildingId).updateGroupState(state)
   }
 
   readonly #onSync: SyncCallback = async ({ ids, type } = {}) => {
@@ -791,6 +827,14 @@ export default class MELCloudApp extends App {
       )
   }
 
+  #getHomeBuildingFacade(buildingId: string): Home.BuildingAtaFacade {
+    const facade = this.#homeFacadeManager.getBuilding(buildingId)
+    if (facade === null) {
+      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+    }
+    return facade
+  }
+
   async #initClassicApi(config: {
     language: string
     locale: string
@@ -902,11 +946,13 @@ export default class MELCloudApp extends App {
   }
 
   // Everything the ATA group widget can target: the Classic zones and
-  // devices, then the Home devices at root level (already alpha-sorted).
-  #searchAtaTargets(query: string): (Classic.Zone | HomeDeviceZone)[] {
+  // devices, then the Home buildings with their devices (alpha-sorted).
+  #searchAtaTargets(
+    query: string,
+  ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[] {
     return [
       ...this.#searchZones(query, { type: Classic.DeviceType.Ata }),
-      ...filterZonesByName(this.getHomeAtaDeviceZones(), query),
+      ...filterZonesByName(this.getHomeAtaTargets(), query),
     ]
   }
 

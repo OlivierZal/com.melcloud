@@ -10544,13 +10544,21 @@
           "method": "GET",
           "path": "/classic/buildings"
         },
-        "getHomeAtaDevices": {
-          "method": "GET",
-          "path": "/home/devices/ata"
-        },
         "getHomeAtaState": {
           "method": "GET",
           "path": "/home/devices/:deviceId/ata"
+        },
+        "getHomeAtaTargets": {
+          "method": "GET",
+          "path": "/home/targets/ata"
+        },
+        "getHomeBuildingAtaModes": {
+          "method": "GET",
+          "path": "/home/buildings/:buildingId/ata/modes"
+        },
+        "getHomeBuildingAtaState": {
+          "method": "GET",
+          "path": "/home/buildings/:buildingId/ata"
         },
         "getLanguage": {
           "method": "GET",
@@ -10563,6 +10571,10 @@
         "updateHomeAtaState": {
           "method": "PUT",
           "path": "/home/devices/:deviceId/ata"
+        },
+        "updateHomeBuildingAtaState": {
+          "method": "PUT",
+          "path": "/home/buildings/:buildingId/ata"
         }
       },
       "name": {

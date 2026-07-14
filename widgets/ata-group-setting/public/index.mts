@@ -1,7 +1,7 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
-import type { HomeDeviceZone } from '../../../types/zone.mts'
+import type { HomeBuildingZone, HomeDeviceZone } from '../../../types/zone.mts'
 import {
   getButton,
   getDiv,
@@ -90,21 +90,24 @@ class WidgetApp {
   }
 
   async #initTargets(): Promise<void> {
-    const [buildings, homeDevices] = await Promise.all([
+    const [buildings, homeTargets] = await Promise.all([
       fetchList<Classic.BuildingZone>(
         this.#homey,
         `/classic/buildings?${new URLSearchParams({
           type: '0',
         } satisfies { type: `${Classic.DeviceType}` })}`,
       ),
-      fetchList<HomeDeviceZone>(this.#homey, '/home/devices/ata'),
+      fetchList<HomeBuildingZone | HomeDeviceZone>(
+        this.#homey,
+        '/home/targets/ata',
+      ),
     ])
-    if (buildings.length > 0 || homeDevices.length > 0) {
+    if (buildings.length > 0 || homeTargets.length > 0) {
       const { default_zone: defaultZone } = this.#homey.getSettings()
       this.#addEventListeners()
       this.#ataValueManager.createAtaFormControls()
       this.#ataValueManager.populateZoneOptions(buildings)
-      this.#ataValueManager.populateZoneOptions(homeDevices)
+      this.#ataValueManager.populateZoneOptions(homeTargets)
       this.#ataValueManager.applyDefaultZone(defaultZone)
       await this.#fetchAndAnimate()
     }

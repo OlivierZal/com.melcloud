@@ -6,6 +6,7 @@ import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
 import type { GetAtaOptions } from '../../types/widgets.mts'
 import type {
   DeviceOrZoneData,
+  HomeBuildingZone,
   HomeDeviceZone,
   ZoneData,
 } from '../../types/zone.mts'
@@ -46,15 +47,32 @@ const api = {
     getClassicBuildings({
       type: type === undefined ? undefined : toDeviceType(type),
     }),
-  getHomeAtaDevices: ({ homey: { app } }: { homey: Homey }): HomeDeviceZone[] =>
-    app.getHomeAtaDeviceZones(),
-  getHomeAtaState: ({
+  getHomeAtaState: async ({
     homey: { app },
     params: { deviceId },
   }: {
     homey: Homey
     params: { deviceId: string }
-  }): Classic.GroupState => app.getHomeAtaState(deviceId),
+  }): Promise<Classic.GroupState> => app.getHomeAtaState(deviceId),
+  getHomeAtaTargets: ({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): (HomeBuildingZone | HomeDeviceZone)[] => app.getHomeAtaTargets(),
+  getHomeBuildingAtaModes: ({
+    homey: { app },
+    params: { buildingId },
+  }: {
+    homey: Homey
+    params: { buildingId: string }
+  }): number[] => app.getHomeBuildingAtaModes(buildingId),
+  getHomeBuildingAtaState: async ({
+    homey: { app },
+    params: { buildingId },
+  }: {
+    homey: Homey
+    params: { buildingId: string }
+  }): Promise<Classic.GroupState> => app.getHomeBuildingAtaState(buildingId),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
   updateClassicAtaState: async ({
@@ -76,6 +94,16 @@ const api = {
     homey: Homey
     params: { deviceId: string }
   }): Promise<void> => app.updateHomeAtaState({ deviceId, state: body }),
+  updateHomeBuildingAtaState: async ({
+    body,
+    homey: { app },
+    params: { buildingId },
+  }: {
+    body: Classic.GroupState
+    homey: Homey
+    params: { buildingId: string }
+  }): Promise<void> =>
+    app.updateHomeBuildingAtaState({ buildingId, state: body }),
 }
 
 export default api

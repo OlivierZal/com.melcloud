@@ -16,13 +16,20 @@ export interface DeviceOrZoneData {
   readonly zoneType: 'areas' | 'buildings' | 'devices' | 'floors'
 }
 
-// MELCloud-Home devices have no zone hierarchy; zone selectors surface
-// them as root-level leaves. The model is camelCase because option values
-// split `${model}_${id}` at the FIRST underscore — a Home id may itself
-// contain underscores.
-export interface HomeDeviceZone {
+// MELCloud-Home targets: each `/context` building (the account-level
+// group) is a selectable root entry, its devices one level below. The
+// models are camelCase because option values split `${model}_${id}` at
+// the FIRST underscore — a Home id may itself contain underscores.
+export interface HomeBuildingZone {
   readonly id: string
   readonly level: 0
+  readonly model: 'homeBuildings'
+  readonly name: string
+}
+
+export interface HomeDeviceZone {
+  readonly id: string
+  readonly level: 1
   readonly model: 'homeDevices'
   readonly name: string
 }

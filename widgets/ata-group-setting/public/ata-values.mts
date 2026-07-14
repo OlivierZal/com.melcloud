@@ -7,7 +7,7 @@ import {
 import type { Settings } from '../../../types/device-settings.mts'
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import type { AtaGroupSettingWidgetSettings } from '../../../types/widgets.mts'
-import type { HomeDeviceZone } from '../../../types/zone.mts'
+import type { HomeBuildingZone, HomeDeviceZone } from '../../../types/zone.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
@@ -22,7 +22,7 @@ import {
 } from '../../../public/homey-api.mts'
 import { getZoneId, getZoneName } from '../../../public/zones.mts'
 
-type TargetZone = Classic.Zone | HomeDeviceZone
+type TargetZone = Classic.Zone | HomeBuildingZone | HomeDeviceZone
 
 // ── DOM helpers ──
 
@@ -161,6 +161,9 @@ const getAtaStatePath = (value: string): string => {
   const separatorIndex = value.indexOf('_')
   const model = value.slice(0, separatorIndex)
   const id = value.slice(separatorIndex + 1)
+  if (model === 'homeBuildings') {
+    return `/home/buildings/${encodeURIComponent(id)}/ata`
+  }
   return model === 'homeDevices' ?
       `/home/devices/${encodeURIComponent(id)}/ata`
     : `/classic/zones/${model}/${id}/ata`
