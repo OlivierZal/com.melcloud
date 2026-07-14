@@ -8,9 +8,23 @@ import type {
   ClassicErrorLogQueryParams,
   FormattedErrorLog,
 } from './types/error-log.mts'
-import type { DeviceOrZoneData } from './types/zone.mts'
+import type { DeviceGroup, DeviceOrZoneData } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 import { toDeviceOrZoneData } from './lib/validation.mts'
+
+// The registry zone tree nests devices under the building itself, its
+// areas, and its floors (which nest areas of their own)
+const collectClassicDeviceIds = (
+  building: Classic.BuildingZone,
+): readonly string[] =>
+  [
+    ...building.devices,
+    ...building.areas.flatMap(({ devices }) => devices),
+    ...building.floors.flatMap((floor) => [
+      ...floor.devices,
+      ...floor.areas.flatMap(({ devices }) => devices),
+    ]),
+  ].map(({ id }) => String(id))
 
 const toNumber = (value: string | undefined): number | undefined => {
   if (value === undefined) {
@@ -64,6 +78,35 @@ const api = {
     params: DeviceOrZoneData
   }): Promise<Classic.HolidayModeData> =>
     app.getClassicHolidayMode(toDeviceOrZoneData(params)),
+  /**
+   * Lists the MELCloud buildings of both dialects with the device ids
+   * they own, for the extension app's per-building settings grouping.
+   * Home buildings come from the live context (owned and guest); a
+   * failed Home fetch simply yields no Home entries.
+   * @param options - Homey API context.
+   * @param options.homey - Homey instance carrying the app.
+   * @returns One entry per non-empty building, sorted by name.
+   */
+  getDeviceGroups: async ({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): Promise<DeviceGroup[]> => {
+    const classicGroups = getClassicBuildings().map((building) => ({
+      deviceIds: collectClassicDeviceIds(building),
+      name: building.name,
+    }))
+    const homeBuildings = await app.homeApi.list()
+    const homeGroups = homeBuildings.map(
+      ({ airToAirUnits, airToWaterUnits, name }) => ({
+        deviceIds: [...airToAirUnits, ...airToWaterUnits].map(({ id }) => id),
+        name,
+      }),
+    )
+    return [...classicGroups, ...homeGroups]
+      .filter(({ deviceIds }) => deviceIds.length > 0)
+      .toSorted((group1, group2) => group1.name.localeCompare(group2.name))
+  },
   getDeviceSettings: ({ homey: { app } }: { homey: Homey }): DeviceSettings =>
     app.getDeviceSettings(),
   getDriverSettings: ({

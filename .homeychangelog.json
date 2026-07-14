@@ -361,5 +361,20 @@
     "pl": "Dodano obsługę pomp ciepła powietrze-woda dla kont MELCloud Home, przeprojektowano widżety i naprawiono awarię animacji widżetu grupowego.",
     "ru": "Добавлена поддержка тепловых насосов воздух-вода для аккаунтов MELCloud Home, переработаны виджеты и исправлен сбой анимаций группового виджета.",
     "sv": "Lagt till stöd för luft-till-vatten värmepumpar för MELCloud Home-konton, omdesignade widgetarna och fixade en krasch i gruppwidgetens animationer."
+  },
+  "45.1.0": {
+    "ar": "أصبحت معلومات المباني تُشارك الآن مع تطبيق MELCloud Extension.",
+    "da": "Bygningsoplysninger deles nu med MELCloud Extension-appen.",
+    "de": "Gebäudeinformationen werden jetzt mit der MELCloud-Extension-App geteilt.",
+    "en": "Building information is now shared with the MELCloud Extension app.",
+    "es": "La información de los edificios ahora se comparte con la app MELCloud Extension.",
+    "fr": "Les informations de bâtiment sont désormais partagées avec l'app Extension pour MELCloud.",
+    "it": "Le informazioni sugli edifici sono ora condivise con l'app MELCloud Extension.",
+    "ko": "건물 정보가 이제 MELCloud Extension 앱과 공유됩니다.",
+    "nl": "Gebouwinformatie wordt nu gedeeld met de MELCloud Extension-app.",
+    "no": "Bygningsinformasjon deles nå med MELCloud Extension-appen.",
+    "pl": "Informacje o budynkach są teraz udostępniane aplikacji MELCloud Extension.",
+    "ru": "Информация о зданиях теперь передаётся приложению MELCloud Extension.",
+    "sv": "Byggnadsinformation delas nu med MELCloud Extension-appen."
   }
 }

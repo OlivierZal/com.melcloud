@@ -4,6 +4,10 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { BaseSettings } from './bases.mts'
 import type { HomeDeviceZone } from './zone.mts'
 
+// Report-history cap shared by the charts widget API validation, the
+// widget day picker and the settings manifest bound: a full year.
+export const DAYS_MAX = 365
+
 export interface AtaGroupSettingWidgetSettings extends BaseSettings {
   // Classic zone collections and devices, plus Home devices at root level.
   readonly default_zone: Classic.Zone | HomeDeviceZone | null

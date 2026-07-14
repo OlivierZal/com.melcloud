@@ -76,6 +76,14 @@
     "dashboard": "Verlassen Sie das Gerät und kehren Sie zurück, um Ihr Dashboard zu aktualisieren."
   },
   "widgets": {
-    "zones": "Zonen"
+    "zones": "Zonen",
+    "chart": "Diagramm",
+    "charts": {
+      "hourly_temperatures": "Temperaturen seit der letzten Stunde",
+      "operation_modes": "Betriebszustände",
+      "signal": "Signalstärke seit der letzten Stunde",
+      "temperatures": "Temperaturen"
+    },
+    "days": "Anzahl der Tage"
   }
 }
