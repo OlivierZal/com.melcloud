@@ -6,14 +6,17 @@ import {
   getButton,
   getDiv,
   getSelect,
+  showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
 import {
   type Homey,
   fireAndForget,
   homeyApiGet,
+  resolveHomey,
   setDocumentLanguage,
   surfaceError,
+  withInitTimeout,
 } from '../../../public/homey-api.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
@@ -49,14 +52,16 @@ class WidgetApp {
     this.#ataValueManager = new AtaValueManager(homey, ataValues, zone)
   }
 
+  // `ready()` always fires — an unbounded await here would hold Homey's
+  // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
-    translateAriaLabels((key) => this.#homey.__(key))
-    await Promise.all([
-      setDocumentLanguage(this.#homey),
-      this.#ataValueManager.fetchCapabilities(),
-    ])
-    await this.#initTargets()
-    this.#homey.ready({ height: document.body.scrollHeight })
+    try {
+      await withInitTimeout(this.#run())
+    } catch (error) {
+      showInitError(error)
+    } finally {
+      this.#homey.ready({ height: document.body.scrollHeight })
+    }
   }
 
   #addEventListeners(): void {
@@ -112,13 +117,23 @@ class WidgetApp {
       await this.#fetchAndAnimate()
     }
   }
+
+  async #run(): Promise<void> {
+    translateAriaLabels((key) => this.#homey.__(key))
+    await Promise.all([
+      setDocumentLanguage(this.#homey),
+      this.#ataValueManager.fetchCapabilities(),
+    ])
+    await this.#initTargets()
+  }
 }
 
 // ── Entry point ──
 
-const onHomeyReady = async (homey: Homey<HomeySettings>): Promise<void> => {
-  const app = new WidgetApp(homey)
-  await app.init()
+const start = async (): Promise<void> => {
+  const homey = await resolveHomey<Homey<HomeySettings>>()
+  await new WidgetApp(homey).init()
 }
 
-Object.assign(globalThis, { onHomeyReady })
+// eslint-disable-next-line unicorn/prefer-top-level-await -- a top-level await would need an es2022 bundle target and could deadlock: the module would suspend on `homeyReady` while the SDK may wait for module evaluation before dispatching it
+fireAndForget(start())

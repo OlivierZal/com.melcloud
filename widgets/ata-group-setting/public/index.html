@@ -4,17 +4,29 @@
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>Air-to-air device values</title>
-        <link href="styles/layout.css" rel="stylesheet">
-        <link href="styles/zone-select.css" rel="stylesheet">
-        <link href="styles/flame.css" rel="stylesheet">
-        <link href="styles/leaf.css" rel="stylesheet">
-        <link href="styles/smoke.css" rel="stylesheet">
-        <link href="styles/snowflake.css" rel="stylesheet">
-        <link href="styles/sun.css" rel="stylesheet">
-        <script type="module" src="index.mjs"></script>
+        <script>
+            // Registered at parse time: the Homey SDK may dispatch
+            // onHomeyReady before the module bundle below has loaded.
+            window.homeyReady = new Promise((resolve) => {
+                window.onHomeyReady = resolve
+            })
+        </script>
+        <link href="styles/layout.css?v=1af1e2c4" rel="stylesheet">
+        <link href="styles/zone-select.css?v=2cded214" rel="stylesheet">
+        <link href="styles/flame.css?v=dfc29c4e" rel="stylesheet">
+        <link href="styles/leaf.css?v=f5b9d664" rel="stylesheet">
+        <link href="styles/smoke.css?v=a17bb95c" rel="stylesheet">
+        <link href="styles/snowflake.css?v=06f4b14b" rel="stylesheet">
+        <link href="styles/sun.css?v=da326d17" rel="stylesheet">
+        <script type="module" src="index.mjs?v=9bde7ec3"></script>
         <meta content="MELCloud air-to-air device setting" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">
+        <p
+            id="init_error"
+            class="homey-text-small"
+            hidden
+        ></p>
         <select
             id="zones"
             class="zone-select"

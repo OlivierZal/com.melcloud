@@ -26,14 +26,17 @@ import {
   createOption,
   getDiv,
   getSelect,
+  showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
 import {
   type Homey,
   fireAndForget,
   homeyApiGet,
+  resolveHomey,
   setDocumentLanguage,
   surfaceError,
+  withInitTimeout,
 } from '../../../public/homey-api.mts'
 import { getZoneId, getZonePath } from '../../../public/zones.mts'
 import {
@@ -601,13 +604,16 @@ class ChartWidget {
     this.#zoneSelect = getSelect('zones')
   }
 
+  // `ready()` always fires — an unbounded await here would hold Homey's
+  // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
-    translateAriaLabels((key) => this.#homey.__(key))
-    // Sequenced, not parallel: the day picker labels are formatted with
-    // the app language, so it must land before the pickers are populated.
-    await setDocumentLanguage(this.#homey)
-    await this.#initControls()
-    this.#homey.ready({ height: document.body.scrollHeight })
+    try {
+      await withInitTimeout(this.#run())
+    } catch (error) {
+      showInitError(error)
+    } finally {
+      this.#homey.ready({ height: document.body.scrollHeight })
+    }
   }
 
   #addEventListeners(
@@ -840,6 +846,14 @@ class ChartWidget {
   // shifts so a stale index cannot hide the wrong slice. A type flip
   // (line <-> pie, reachable from the chart picker) always recreates:
   // a live Chart.js instance keeps the type it was constructed with.
+  async #run(): Promise<void> {
+    translateAriaLabels((key) => this.#homey.__(key))
+    // Sequenced, not parallel: the day picker labels are formatted with
+    // the app language, so it must land before the pickers are populated.
+    await setDocumentLanguage(this.#homey)
+    await this.#initControls()
+  }
+
   #shouldRecreateChart({ data, type }: WidgetChartConfig): boolean {
     if (this.#config === null) {
       return false
@@ -867,9 +881,10 @@ class ChartWidget {
 
 // ── Entry point ──
 
-const onHomeyReady = async (homey: Homey<HomeySettings>): Promise<void> => {
-  const widget = new ChartWidget(homey)
-  await widget.init()
+const start = async (): Promise<void> => {
+  const homey = await resolveHomey<Homey<HomeySettings>>()
+  await new ChartWidget(homey).init()
 }
 
-Object.assign(globalThis, { onHomeyReady })
+// eslint-disable-next-line unicorn/prefer-top-level-await -- a top-level await would need an es2022 bundle target and could deadlock: the module would suspend on `homeyReady` while the SDK may wait for module evaluation before dispatching it
+fireAndForget(start())

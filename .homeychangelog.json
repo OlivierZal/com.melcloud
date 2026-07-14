@@ -391,5 +391,20 @@
     "pl": "Widżet klimatyzacji obsługuje teraz budynki MELCloud Home i pojedyncze urządzenia, goście mają pełną kontrolę nad pompą ciepła, a widżet wykresów zyskuje wbudowane selektory.",
     "ru": "Виджет кондиционера теперь управляет зданиями MELCloud Home и отдельными устройствами, гости получают полный контроль над тепловым насосом, а виджет графиков — встроенные селекторы.",
     "sv": "Klimat-widgeten styr nu MELCloud Home-byggnader och enskilda enheter, gäster får full kontroll över sin värmepump, och diagram-widgeten får inbyggda väljare."
+  },
+  "45.2.1": {
+    "ar": "إصلاح شاشة التحميل اللانهائية التي كانت تظهر أحيانًا في الأدوات وصفحة الإعدادات.",
+    "da": "Retter den uendelige indlæsningsskærm, der nogle gange viste sig i widgets og på indstillingssiden.",
+    "de": "Behebt den endlosen Ladebildschirm, der manchmal in Widgets und auf der Einstellungsseite erschien.",
+    "en": "Fixes the endless loading screen that sometimes appeared in widgets and on the settings page.",
+    "es": "Corrige la pantalla de carga infinita que a veces aparecía en los widgets y en la página de ajustes.",
+    "fr": "Corrige l'écran de chargement sans fin qui apparaissait parfois dans les widgets et la page de réglages.",
+    "it": "Corregge la schermata di caricamento infinita che a volte compariva nei widget e nella pagina delle impostazioni.",
+    "ko": "위젯과 설정 페이지에서 가끔 나타나던 무한 로딩 화면을 수정했습니다.",
+    "nl": "Verhelpt het eindeloze laadscherm dat soms verscheen in widgets en op de instellingenpagina.",
+    "no": "Fikser den endeløse lasteskjermen som noen ganger dukket opp i widgeter og på innstillingssiden.",
+    "pl": "Naprawia niekończący się ekran ładowania, który czasami pojawiał się w widżetach i na stronie ustawień.",
+    "ru": "Исправлен бесконечный экран загрузки, который иногда появлялся в виджетах и на странице настроек.",
+    "sv": "Åtgärdar den oändliga laddningsskärmen som ibland visades i widgetar och på inställningssidan."
   }
 }

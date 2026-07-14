@@ -4,12 +4,24 @@
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>MELCloud charts</title>
-        <link href="styles/layout.css" rel="stylesheet">
-        <link href="styles/zone-select.css" rel="stylesheet">
-        <script type="module" src="index.mjs"></script>
+        <script>
+            // Registered at parse time: the Homey SDK may dispatch
+            // onHomeyReady before the module bundle below has loaded.
+            window.homeyReady = new Promise((resolve) => {
+                window.onHomeyReady = resolve
+            })
+        </script>
+        <link href="styles/layout.css?v=a2e4374e" rel="stylesheet">
+        <link href="styles/zone-select.css?v=2cded214" rel="stylesheet">
+        <script type="module" src="index.mjs?v=d8b12fda"></script>
         <meta content="MELCloud charts" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">
+        <p
+            id="init_error"
+            class="homey-text-small"
+            hidden
+        ></p>
         <select
             id="charts"
             class="zone-select chart-select"
