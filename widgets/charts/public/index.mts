@@ -22,10 +22,6 @@ import {
 } from 'chart.js'
 import { Temporal } from 'temporal-polyfill'
 
-import type {
-  DaysQuery,
-  ChartsWidgetSettings as HomeySettings,
-} from '../../../types/widgets.mts'
 import {
   createOption,
   getDiv,
@@ -40,6 +36,11 @@ import {
   surfaceError,
 } from '../../../public/homey-api.mts'
 import { getZoneId, getZonePath } from '../../../public/zones.mts'
+import {
+  type DaysQuery,
+  type ChartsWidgetSettings as HomeySettings,
+  DAYS_MAX,
+} from '../../../types/widgets.mts'
 
 // Register only what the two chart types use so esbuild tree-shakes the rest.
 Chart.register(
@@ -190,12 +191,14 @@ const applySelectValue = (select: HTMLSelectElement, value: string): void => {
   }
 }
 
-// The integer filter shields the picker from a value the wire may carry
+// The bounds filter shields the picker from a value the wire may carry
 // despite the manifest bounds: a pre-rename instance (no stored value) or
-// a default saved before the bounds existed.
+// a default saved before the bounds existed, e.g. above the API cap.
 const getDayValues = (defaultDays: number): number[] =>
   [...new Set([...DAY_CHOICES.map(Number), defaultDays])]
-    .filter((days) => Number.isSafeInteger(days) && days > 0)
+    .filter(
+      (days) => Number.isSafeInteger(days) && days > 0 && days <= DAYS_MAX,
+    )
     .toSorted((first, second) => first - second)
 
 const isChart = (value: string): value is HomeySettings['default_chart'] => {
