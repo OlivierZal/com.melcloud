@@ -1,6 +1,7 @@
 import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
+import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
 import type { DriverSetting } from './types/driver-settings.mts'
@@ -25,6 +26,24 @@ const collectClassicDeviceIds = (
       ...floor.areas.flatMap(({ devices }) => devices),
     ]),
   ].map(({ id }) => String(id))
+
+// Home buildings can own units of both types; the per-type registry views
+// are merged by building id so a mixed building yields a single group.
+const collectHomeGroups = (registry: Home.Registry): DeviceGroup[] => {
+  const groups = new Map<string, DeviceGroup>()
+  for (const type of Object.values(Home.DeviceType)) {
+    for (const { devices, id, name } of registry.getBuildingsByType(type)) {
+      groups.set(id, {
+        deviceIds: [
+          ...(groups.get(id)?.deviceIds ?? []),
+          ...devices.map((device) => device.id),
+        ],
+        name,
+      })
+    }
+  }
+  return groups.values().toArray()
+}
 
 const toNumber = (value: string | undefined): number | undefined => {
   if (value === undefined) {
@@ -81,29 +100,19 @@ const api = {
   /**
    * Lists the MELCloud buildings of both dialects with the device ids
    * they own, for the extension app's per-building settings grouping.
-   * Home buildings come from the live context (owned and guest); a
-   * failed Home fetch simply yields no Home entries.
+   * Both dialects are served from the in-memory registries — no wire
+   * call, no sync-cycle interference; entries (owned and guest alike)
+   * reflect the latest sync.
    * @param options - Homey API context.
    * @param options.homey - Homey instance carrying the app.
    * @returns One entry per non-empty building, sorted by name.
    */
-  getDeviceGroups: async ({
-    homey: { app },
-  }: {
-    homey: Homey
-  }): Promise<DeviceGroup[]> => {
+  getDeviceGroups: ({ homey: { app } }: { homey: Homey }): DeviceGroup[] => {
     const classicGroups = getClassicBuildings().map((building) => ({
       deviceIds: collectClassicDeviceIds(building),
       name: building.name,
     }))
-    const homeBuildings = await app.homeApi.list()
-    const homeGroups = homeBuildings.map(
-      ({ airToAirUnits, airToWaterUnits, name }) => ({
-        deviceIds: [...airToAirUnits, ...airToWaterUnits].map(({ id }) => id),
-        name,
-      }),
-    )
-    return [...classicGroups, ...homeGroups]
+    return [...classicGroups, ...collectHomeGroups(app.homeApi.registry)]
       .filter(({ deviceIds }) => deviceIds.length > 0)
       .toSorted((group1, group2) => group1.name.localeCompare(group2.name))
   },
