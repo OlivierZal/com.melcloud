@@ -76,6 +76,14 @@
     "dashboard": "Forlat enheten og gå tilbake for å oppdatere dashbordet ditt."
   },
   "widgets": {
-    "zones": "Soner"
+    "zones": "Soner",
+    "chart": "Diagram",
+    "charts": {
+      "hourly_temperatures": "Temperaturer siden siste time",
+      "operation_modes": "Driftstilstander",
+      "signal": "Signalstyrke siden siste time",
+      "temperatures": "Temperaturer"
+    },
+    "days": "Antall dager"
   }
 }

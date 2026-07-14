@@ -71,5 +71,16 @@
   },
   "warnings": {
     "dashboard": "Lämna enheten och gå tillbaka för att uppdatera din instrumentpanel."
+  },
+  "widgets": {
+    "chart": "Diagram",
+    "charts": {
+      "hourly_temperatures": "Temperaturer sedan den senaste timmen",
+      "operation_modes": "Drifttillstånd",
+      "signal": "Signalstyrka sedan den senaste timmen",
+      "temperatures": "Temperaturer"
+    },
+    "days": "Antal dagar",
+    "zones": "Zoner"
   }
 }

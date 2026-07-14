@@ -10544,6 +10544,22 @@
           "method": "GET",
           "path": "/classic/buildings"
         },
+        "getHomeAtaState": {
+          "method": "GET",
+          "path": "/home/devices/:deviceId/ata"
+        },
+        "getHomeAtaTargets": {
+          "method": "GET",
+          "path": "/home/targets/ata"
+        },
+        "getHomeBuildingAtaModes": {
+          "method": "GET",
+          "path": "/home/buildings/:buildingId/ata/modes"
+        },
+        "getHomeBuildingAtaState": {
+          "method": "GET",
+          "path": "/home/buildings/:buildingId/ata"
+        },
         "getLanguage": {
           "method": "GET",
           "path": "/language"
@@ -10551,6 +10567,14 @@
         "updateClassicAtaState": {
           "method": "PUT",
           "path": "/classic/zones/:zoneType/:zoneId/ata"
+        },
+        "updateHomeAtaState": {
+          "method": "PUT",
+          "path": "/home/devices/:deviceId/ata"
+        },
+        "updateHomeBuildingAtaState": {
+          "method": "PUT",
+          "path": "/home/buildings/:buildingId/ata"
         }
       },
       "name": {
@@ -10566,13 +10590,13 @@
         {
           "id": "default_zone",
           "title": {
-            "da": "Standardzone",
-            "en": "Default zone",
-            "es": "Zona predeterminada",
-            "fr": "Zone par défaut",
-            "nl": "Standaardzone",
-            "no": "Standardsone",
-            "sv": "Standardzon"
+            "da": "Standardzone eller -enhed",
+            "en": "Default zone or device",
+            "es": "Zona o dispositivo predeterminado",
+            "fr": "Zone ou appareil par défaut",
+            "nl": "Standaardzone of -apparaat",
+            "no": "Standardsone eller -enhet",
+            "sv": "Standardzon eller -enhet"
           },
           "type": "autocomplete"
         }
@@ -10620,13 +10644,13 @@
         {
           "id": "chart",
           "title": {
-            "da": "Diagram",
-            "en": "Chart",
-            "es": "Gráfico",
-            "fr": "Graphique",
-            "nl": "Grafiek",
-            "no": "Diagram",
-            "sv": "Diagram"
+            "da": "Standarddiagram",
+            "en": "Default chart",
+            "es": "Gráfico predeterminado",
+            "fr": "Graphique par défaut",
+            "nl": "Standaardgrafiek",
+            "no": "Standarddiagram",
+            "sv": "Standarddiagram"
           },
           "type": "dropdown",
           "value": "operation_modes",
@@ -10692,15 +10716,16 @@
             "sv": "Endast för diagram där detta gäller."
           },
           "id": "days",
+          "max": 365,
           "min": 1,
           "title": {
-            "da": "Antal dage",
-            "en": "Number of days",
-            "es": "Número de días",
-            "fr": "Nombre de jours",
-            "nl": "Aantal dagen",
-            "no": "Antall dager",
-            "sv": "Antal dagar"
+            "da": "Standardantal dage",
+            "en": "Default number of days",
+            "es": "Número de días predeterminado",
+            "fr": "Nombre de jours par défaut",
+            "nl": "Standaardaantal dagen",
+            "no": "Standardantall dager",
+            "sv": "Standardantal dagar"
           },
           "type": "number",
           "value": 1

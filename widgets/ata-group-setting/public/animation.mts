@@ -638,7 +638,18 @@ export class AnimationController {
     return motion
   }
 
+  // A mixed Home building fetches its members' modes from the dedicated
+  // endpoint; Classic zones keep the detailed-states one. Home devices
+  // never reach here (a group of one cannot be mixed).
   async #getModes(): Promise<number[]> {
+    const { value } = getSelect('zones')
+    const separatorIndex = value.indexOf('_')
+    if (value.slice(0, separatorIndex) === 'homeBuildings') {
+      return homeyApiGet<number[]>(
+        this.#homey,
+        `/home/buildings/${encodeURIComponent(value.slice(separatorIndex + 1))}/ata/modes`,
+      )
+    }
     const detailedAtaStates = await homeyApiGet<GroupAtaStates>(
       this.#homey,
       `/classic/zones/${getZoneValue()}/ata/details?${new URLSearchParams({

@@ -76,6 +76,14 @@
     "dashboard": "Salga del dispositivo y regrese para actualizar su panel de control."
   },
   "widgets": {
-    "zones": "Zonas"
+    "zones": "Zonas",
+    "chart": "Gráfico",
+    "charts": {
+      "hourly_temperatures": "Temperaturas desde la última hora",
+      "operation_modes": "Estados operativos",
+      "signal": "Intensidad de la señal desde la última hora",
+      "temperatures": "Temperaturas"
+    },
+    "days": "Número de días"
   }
 }

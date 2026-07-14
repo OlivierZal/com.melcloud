@@ -5,12 +5,14 @@ import type {
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 
-import type { DaysQuery, HourQuery } from '../../types/widgets.mts'
 import { getClassicZones } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
 import { toHour, toNonNegativeInt } from '../../lib/validation.mts'
-
-const DAYS_MAX = 366
+import {
+  type DaysQuery,
+  type HourQuery,
+  DAYS_MAX,
+} from '../../types/widgets.mts'
 
 const api = {
   getClassicDevices: ({

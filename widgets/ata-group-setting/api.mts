@@ -4,10 +4,15 @@ import type { Homey } from 'homey/lib/Homey'
 import type { GroupAtaStates } from '../../types/classic-ata.mts'
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
 import type { GetAtaOptions } from '../../types/widgets.mts'
-import type { ZoneData } from '../../types/zone.mts'
+import type {
+  DeviceOrZoneData,
+  HomeBuildingZone,
+  HomeDeviceZone,
+  ZoneData,
+} from '../../types/zone.mts'
 import { getClassicBuildings } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
-import { toZoneData } from '../../lib/validation.mts'
+import { toDeviceOrZoneData, toZoneData } from '../../lib/validation.mts'
 
 const api = {
   getClassicAtaCapabilities: ({
@@ -31,8 +36,9 @@ const api = {
     params,
   }: {
     homey: Homey
-    params: ZoneData
-  }): Promise<Classic.GroupState> => app.getClassicAtaState(toZoneData(params)),
+    params: DeviceOrZoneData
+  }): Promise<Classic.GroupState> =>
+    app.getClassicAtaState(toDeviceOrZoneData(params)),
   getClassicBuildings: ({
     query: { type },
   }: {
@@ -41,6 +47,32 @@ const api = {
     getClassicBuildings({
       type: type === undefined ? undefined : toDeviceType(type),
     }),
+  getHomeAtaState: async ({
+    homey: { app },
+    params: { deviceId },
+  }: {
+    homey: Homey
+    params: { deviceId: string }
+  }): Promise<Classic.GroupState> => app.getHomeAtaState(deviceId),
+  getHomeAtaTargets: ({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): (HomeBuildingZone | HomeDeviceZone)[] => app.getHomeAtaTargets(),
+  getHomeBuildingAtaModes: ({
+    homey: { app },
+    params: { buildingId },
+  }: {
+    homey: Homey
+    params: { buildingId: string }
+  }): number[] => app.getHomeBuildingAtaModes(buildingId),
+  getHomeBuildingAtaState: async ({
+    homey: { app },
+    params: { buildingId },
+  }: {
+    homey: Homey
+    params: { buildingId: string }
+  }): Promise<Classic.GroupState> => app.getHomeBuildingAtaState(buildingId),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
   updateClassicAtaState: async ({
@@ -50,9 +82,28 @@ const api = {
   }: {
     body: Classic.GroupState
     homey: Homey
-    params: ZoneData
+    params: DeviceOrZoneData
   }): Promise<void> =>
-    app.updateClassicAtaState({ state: body, ...toZoneData(params) }),
+    app.updateClassicAtaState({ state: body, ...toDeviceOrZoneData(params) }),
+  updateHomeAtaState: async ({
+    body,
+    homey: { app },
+    params: { deviceId },
+  }: {
+    body: Classic.GroupState
+    homey: Homey
+    params: { deviceId: string }
+  }): Promise<void> => app.updateHomeAtaState({ deviceId, state: body }),
+  updateHomeBuildingAtaState: async ({
+    body,
+    homey: { app },
+    params: { buildingId },
+  }: {
+    body: Classic.GroupState
+    homey: Homey
+    params: { buildingId: string }
+  }): Promise<void> =>
+    app.updateHomeBuildingAtaState({ buildingId, state: body }),
 }
 
 export default api

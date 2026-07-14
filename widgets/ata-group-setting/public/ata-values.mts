@@ -7,6 +7,7 @@ import {
 import type { Settings } from '../../../types/device-settings.mts'
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import type { AtaGroupSettingWidgetSettings } from '../../../types/widgets.mts'
+import type { HomeBuildingZone, HomeDeviceZone } from '../../../types/zone.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
@@ -19,7 +20,9 @@ import {
   homeyApiGet,
   homeyApiPut,
 } from '../../../public/homey-api.mts'
-import { getZoneId, getZoneName, getZonePath } from '../../../public/zones.mts'
+import { getZoneId, getZoneName } from '../../../public/zones.mts'
+
+type TargetZone = Classic.Zone | HomeBuildingZone | HomeDeviceZone
 
 // ── DOM helpers ──
 
@@ -146,10 +149,25 @@ const parseFormValue = (
   return null
 }
 
-const getSubzones = (zone: Classic.Zone): Classic.Zone[] => [
+const getSubzones = (zone: TargetZone): TargetZone[] => [
+  ...('devices' in zone ? zone.devices : []),
   ...('areas' in zone ? zone.areas : []),
   ...('floors' in zone ? zone.floors : []),
 ]
+
+// Routes a `${model}_${id}` option value to its state endpoint. Split at the
+// FIRST underscore only: Home ids may themselves contain underscores.
+const getAtaStatePath = (value: string): string => {
+  const separatorIndex = value.indexOf('_')
+  const model = value.slice(0, separatorIndex)
+  const id = value.slice(separatorIndex + 1)
+  if (model === 'homeBuildings') {
+    return `/home/buildings/${encodeURIComponent(id)}/ata`
+  }
+  return model === 'homeDevices' ?
+      `/home/devices/${encodeURIComponent(id)}/ata`
+    : `/classic/zones/${model}/${id}/ata`
+}
 
 // ── AtaValueManager class ──
 
@@ -219,14 +237,14 @@ export class AtaValueManager {
   public async fetchValues(): Promise<Classic.GroupState> {
     const values = await homeyApiGet<Classic.GroupState>(
       this.#homey,
-      `/classic/zones/${this.#getZoneValue()}/ata`,
+      getAtaStatePath(this.#zone.value),
     )
     this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
     this.#syncAtaValues()
     return values
   }
 
-  public populateZoneOptions(zones: Classic.Zone[] = []): void {
+  public populateZoneOptions(zones: TargetZone[] = []): void {
     if (zones.length > 0) {
       for (const zone of zones) {
         const { id, level, model, name } = zone
@@ -244,7 +262,7 @@ export class AtaValueManager {
     if (Object.keys(body).length > 0) {
       await homeyApiPut(
         this.#homey,
-        `/classic/zones/${this.#getZoneValue()}/ata`,
+        getAtaStatePath(this.#zone.value),
         body satisfies Classic.GroupState,
       )
     }
@@ -286,10 +304,6 @@ export class AtaValueManager {
       })
     }
     return null
-  }
-
-  #getZoneValue(): string {
-    return getZonePath(this.#zone.value)
   }
 
   #isGroupAtaState(value: string): value is keyof Classic.GroupState {
