@@ -56,10 +56,11 @@ export const toHomeGuestThermostatMode = (
   mode: Home.AtwZoneMode,
 ): HomeGuestAtwThermostatMode => (mode.endsWith('cool') ? 'cool' : 'heat')
 
-// Family-preserving projection of a guest side onto the precise modes:
-// room ↔ room_cool and flow ↔ flow_cool; curve is heat-only, so its cool
-// side lands on flow_cool (the nearest variant, matching the captured
-// guest writes), and an unknown current mode defaults to the flow family.
+// Family-preserving projection of a guest side onto the precise modes,
+// live-verified for both families (guest captures with readback:
+// room ↔ room_cool and flow ↔ flow_cool); curve is heat-only, so its
+// cool side lands on flow_cool (the nearest variant — unobserved,
+// documented choice), and an unknown current mode defaults to flow.
 export const fromHomeGuestThermostatMode = (
   side: HomeGuestAtwThermostatMode,
   family: Home.AtwZoneMode = 'flow',

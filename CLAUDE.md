@@ -83,12 +83,16 @@ coverage.
   never gated), and only by the power toggle (`onoff`): guests get every
   measure, both zones' setpoints, the hot-water controls AND the zone
   thermostat modes, whose VALUES `homeGetCapabilitiesOptionsAtw` narrows
-  to the coarse pair the guest app writes — `flow`/`flow_cool` (its
-  heating/cooling switch is no separate API: a Charles capture of the
-  accepted ZEV62 guest, 2026-07-14, shows plain PUTs of
-  `operationModeZone1: Heat|CoolFlowTemperature` with the change
-  confirmed by `/context` readback). Owners keep the full precise set
-  (room/flow/curve plus the cool variants).
+  to the abstract heat/cool sides, which the device converter projects
+  onto the pump's CURRENT mode family at write time — the guest switch
+  is family-preserving and is no separate API: Charles captures of the
+  accepted ZEV62 guest (2026-07-14) show plain PUTs of
+  `operationModeZone1: Heat|CoolFlowTemperature` on a flow-configured
+  pump AND `Heat|CoolRoomTemperature` after the family moved to room,
+  each confirmed by `/context` readback. Curve is unobserved: its heat
+  side keeps curve, its cool side lands on flow_cool (documented
+  choice). Owners keep the full precise set (room/flow/curve plus the
+  cool variants).
 - New FTC vocabulary must never crash a sync — and that tolerance lives
   in melcloud-api, not here: the Home ATW facade getters normalize the
   wire dialect (`HomeAtwZoneMode`, `operationalState`), degrading
