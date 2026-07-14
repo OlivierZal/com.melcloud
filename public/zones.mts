@@ -1,4 +1,4 @@
-export const getZoneId = (id: number, model: string): string =>
+export const getZoneId = (id: number | string, model: string): string =>
   `${model}_${String(id)}`
 
 export const getZonePath = (value: string): string => value.replace('_', '/')
