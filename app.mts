@@ -606,9 +606,15 @@ export default class MELCloudApp extends App {
     deviceId: string
     state: Classic.GroupState
   }): Promise<void> {
+    const values = toHomeAtaValues(state)
+    // An all-null delta translates to an empty payload: nothing to push, and
+    // calling updateValues with it would only raise a swallowed NoChangesError.
+    if (Object.keys(values).length === 0) {
+      return
+    }
     try {
       await this.getHomeFacade(deviceId, Home.DeviceType.Ata).updateValues(
-        toHomeAtaValues(state),
+        values,
       )
     } catch (error) {
       if (!(error instanceof NoChangesError)) {

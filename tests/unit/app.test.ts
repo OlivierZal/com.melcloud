@@ -1094,6 +1094,20 @@ describe('melCloudApp', () => {
       })
     })
 
+    it('should skip the write when the delta translates to nothing', async () => {
+      const mockUpdateValues = vi
+        .fn<(values: unknown) => Promise<void>>()
+        .mockResolvedValue()
+      setupHomeAtaFacade(
+        mock<Home.DeviceAtaFacade>({ updateValues: mockUpdateValues }),
+      )
+      await app.onInit()
+
+      await app.updateHomeAtaState({ deviceId: 'device-1', state: {} })
+
+      expect(mockUpdateValues).not.toHaveBeenCalled()
+    })
+
     it('should swallow a no-changes rejection', async () => {
       setupHomeAtaFacade(
         mock<Home.DeviceAtaFacade>({
@@ -1105,7 +1119,10 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       await expect(
-        app.updateHomeAtaState({ deviceId: 'device-1', state: {} }),
+        app.updateHomeAtaState({
+          deviceId: 'device-1',
+          state: { Power: true },
+        }),
       ).resolves.toBeUndefined()
     })
 
@@ -1120,7 +1137,10 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       await expect(
-        app.updateHomeAtaState({ deviceId: 'device-1', state: {} }),
+        app.updateHomeAtaState({
+          deviceId: 'device-1',
+          state: { Power: true },
+        }),
       ).rejects.toThrow('BFF failure')
     })
   })
