@@ -76,6 +76,14 @@
     "dashboard": "Sortez de l'appareil et revenez pour mettre à jour votre tableau de bord."
   },
   "widgets": {
-    "zones": "Zones"
+    "zones": "Zones",
+    "chart": "Graphique",
+    "charts": {
+      "hourly_temperatures": "Températures depuis la dernière heure",
+      "operation_modes": "États opérationnels",
+      "signal": "Intensité du signal depuis la dernière heure",
+      "temperatures": "Températures"
+    },
+    "days": "Nombre de jours"
   }
 }
