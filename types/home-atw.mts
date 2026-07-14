@@ -29,49 +29,13 @@ export type HomeCapabilitiesAtw = HomeGetCapabilitiesAtw &
   HomeListCapabilitiesAtw &
   HomeSetCapabilitiesAtw
 
-// The abstract heat/cool sides the guest thermostat toggles between.
-export type HomeGuestAtwThermostatMode = 'cool' | 'heat'
-
 export interface HomeSetCapabilitiesAtw extends BaseSetCapabilities {
   readonly hot_water_mode: keyof typeof HotWaterMode
   readonly target_temperature: number
   readonly 'target_temperature.tank_water': number
   readonly 'target_temperature.zone2': number
-  readonly thermostat_mode: Home.AtwZoneMode | HomeGuestAtwThermostatMode
-  readonly 'thermostat_mode.zone2':
-    Home.AtwZoneMode | HomeGuestAtwThermostatMode
-}
-
-const GUEST_THERMOSTAT_MODES: ReadonlySet<
-  Home.AtwZoneMode | HomeGuestAtwThermostatMode
-> = new Set(['cool', 'heat'])
-
-export const isHomeGuestThermostatMode = (
-  value: Home.AtwZoneMode | HomeGuestAtwThermostatMode,
-): value is HomeGuestAtwThermostatMode => GUEST_THERMOSTAT_MODES.has(value)
-
-// The side a precise zone mode sits on: the cool variants read as cool,
-// everything else (room, flow, curve) as heat.
-export const toHomeGuestThermostatMode = (
-  mode: Home.AtwZoneMode,
-): HomeGuestAtwThermostatMode => (mode.endsWith('cool') ? 'cool' : 'heat')
-
-// Family-preserving projection of a guest side onto the precise modes,
-// live-verified for both families (guest captures with readback:
-// room ↔ room_cool and flow ↔ flow_cool); curve is heat-only, so its
-// cool side lands on flow_cool (the nearest variant — unobserved,
-// documented choice), and an unknown current mode defaults to flow.
-export const fromHomeGuestThermostatMode = (
-  side: HomeGuestAtwThermostatMode,
-  family: Home.AtwZoneMode = 'flow',
-): Home.AtwZoneMode => {
-  if (side === 'cool') {
-    return family.startsWith('room') ? 'room_cool' : 'flow_cool'
-  }
-  if (family === 'room_cool') {
-    return 'room'
-  }
-  return family === 'flow_cool' ? 'flow' : family
+  readonly thermostat_mode: Home.AtwZoneMode
+  readonly 'thermostat_mode.zone2': Home.AtwZoneMode
 }
 
 const homeSetCapabilityTagMappingAtw: Record<
@@ -97,72 +61,24 @@ export const homeTagMappingsAtw: {
 /**
  * Structural slice of {@link Home.DeviceAtwFacade} driving which capabilities
  * a Home ATW device gets and their options. Satisfied by the facade itself;
- * guests get everything but the power toggle, with the zone thermostat modes
- * narrowed to the abstract heat/cool sides the MELCloud Home app offers them
- * (family-preserving writes, live-captured with `/context` readback on both
- * the room and flow families, 2026-07-14); owners get the full precise set.
+ * guests get the exact owner surface — the app's guest UI hides the power
+ * toggle and the precise modes, but the BFF enforces nothing (guest `curve`
+ * write and a full power round-trip both `/context`-readback-verified,
+ * 2026-07-14), so nothing is gated on ownership.
  */
 export type HomeAtwDeviceProfile = Pick<
   Home.DeviceAtwFacade,
-  'capabilities' | 'hasCoolingMode' | 'isOwner'
+  'capabilities' | 'hasCoolingMode'
 >
 
 export interface HomeCapabilitiesOptionsAtw {
   readonly thermostat_mode: {
-    readonly values: readonly CapabilitiesOptionsValues<
-      Home.AtwZoneMode | HomeGuestAtwThermostatMode
-    >[]
+    readonly values: readonly CapabilitiesOptionsValues<Home.AtwZoneMode>[]
   }
   readonly 'thermostat_mode.zone2': {
     readonly title: LocalizedStrings
-    readonly values: readonly CapabilitiesOptionsValues<
-      Home.AtwZoneMode | HomeGuestAtwThermostatMode
-    >[]
+    readonly values: readonly CapabilitiesOptionsValues<Home.AtwZoneMode>[]
   }
-}
-
-// The guest app's coarse switch, labeled with the neutral heat/cool
-// wording (node-homey-lib's thermostat_mode values, the vocabulary the
-// ATA drivers show). The ids are abstract sides — the device converter
-// projects them onto the pump's CURRENT mode family at write time
-// (room ↔ room_cool, flow ↔ flow_cool), so an owner-side family change
-// never strands the guest toggle.
-const guestHeat: CapabilitiesOptionsValues<'heat'> = {
-  id: 'heat',
-  title: {
-    ar: 'تسخين',
-    da: 'Opvarm',
-    de: 'Heizen',
-    en: 'Heat',
-    es: 'Calentar',
-    fr: 'Chauffer',
-    it: 'Calore',
-    ko: '난방',
-    nl: 'Verhitten',
-    no: 'Varme',
-    pl: 'Ogrzewanie',
-    ru: 'Обогрев',
-    sv: 'Värme',
-  },
-}
-
-const guestCool: CapabilitiesOptionsValues<'cool'> = {
-  id: 'cool',
-  title: {
-    ar: 'تبريد',
-    da: 'Køl ned',
-    de: 'Kühlen',
-    en: 'Cool',
-    es: 'Enfriar',
-    fr: 'Refroidir',
-    it: 'Raffreddamento',
-    ko: '냉방',
-    nl: 'Koelen',
-    no: 'Avkjøle',
-    pl: 'Chłodzenie',
-    ru: 'Охлаждение',
-    sv: 'Kyla',
-  },
 }
 
 // Only complete option objects, and only for capabilities the device will
@@ -173,12 +89,8 @@ const guestCool: CapabilitiesOptionsValues<'cool'> = {
 export const homeGetCapabilitiesOptionsAtw = ({
   capabilities: { hasZone2 },
   hasCoolingMode,
-  isOwner,
 }: HomeAtwDeviceProfile): Partial<HomeCapabilitiesOptionsAtw> => {
-  const values =
-    isOwner ? getThermostatModeValuesAtw(hasCoolingMode)
-    : hasCoolingMode ? [guestHeat, guestCool]
-    : [guestHeat]
+  const values = getThermostatModeValuesAtw(hasCoolingMode)
   return {
     thermostat_mode: { values },
     ...(hasZone2 && {

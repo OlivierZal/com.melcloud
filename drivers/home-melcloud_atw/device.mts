@@ -1,47 +1,26 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 
 import type {
+  HomeCapabilitiesAtw,
+  HomeSetCapabilitiesAtw,
+} from '../../types/home-atw.mts'
+import type {
   HomeConvertFromDevice,
   HomeConvertToDevice,
 } from '../../types/home.mts'
 import { HotWaterMode } from '../../types/atw.mts'
-import {
-  type HomeCapabilitiesAtw,
-  type HomeSetCapabilitiesAtw,
-  fromHomeGuestThermostatMode,
-  isHomeGuestThermostatMode,
-  toHomeGuestThermostatMode,
-} from '../../types/home-atw.mts'
 import { HomeMELCloudDevice } from '../home-device.mts'
 
 type AtwType = typeof Home.DeviceType.Atw
 
 export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
-  // The operational states need no conversion (the facade exposes the
-  // normalized vocabularies); the zone modes only convert for guests,
-  // whose abstract heat/cool side is projected onto the pump's CURRENT
-  // mode family at write time, and read back as that side.
+  // The zone modes and operational states need no conversion: the facade
+  // already exposes the normalized vocabularies the capabilities use.
   protected readonly capabilityToDevice: Partial<
     Record<keyof HomeSetCapabilitiesAtw, HomeConvertToDevice<AtwType>>
   > = {
     hot_water_mode: (value: keyof typeof HotWaterMode) =>
       HotWaterMode[value] === HotWaterMode.forced,
-    thermostat_mode: (value: HomeSetCapabilitiesAtw['thermostat_mode']) =>
-      isHomeGuestThermostatMode(value) ?
-        fromHomeGuestThermostatMode(
-          value,
-          this.cachedFacade?.operationModeZone1,
-        )
-      : value,
-    'thermostat_mode.zone2': (
-      value: HomeSetCapabilitiesAtw['thermostat_mode.zone2'],
-    ) =>
-      isHomeGuestThermostatMode(value) ?
-        fromHomeGuestThermostatMode(
-          value,
-          this.cachedFacade?.operationModeZone2 ?? undefined,
-        )
-      : value,
   }
 
   protected readonly deviceToCapability: Record<
@@ -70,17 +49,7 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     }) => temperature,
     'target_temperature.zone2': ({ setTemperatureZone2: temperature }) =>
       temperature,
-    thermostat_mode: ({ isOwner, operationModeZone1 }) =>
-      isOwner ? operationModeZone1 : (
-        toHomeGuestThermostatMode(operationModeZone1)
-      ),
-    'thermostat_mode.zone2': ({ isOwner, operationModeZone2 }) => {
-      if (operationModeZone2 === null) {
-        return null
-      }
-      return isOwner ? operationModeZone2 : (
-          toHomeGuestThermostatMode(operationModeZone2)
-        )
-    },
+    thermostat_mode: ({ operationModeZone1 }) => operationModeZone1,
+    'thermostat_mode.zone2': ({ operationModeZone2 }) => operationModeZone2,
   }
 }

@@ -35,16 +35,10 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
   ]
 
   readonly #zone1ControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
+    'onoff',
     'thermostat_mode',
     'target_temperature',
   ]
-
-  // The power toggle is the one owner-only capability: the MELCloud Home
-  // app gives guests every setpoint, the hot-water controls and the zone
-  // thermostat modes (narrowed by `getCapabilitiesOptions` to the coarse
-  // flow pair its heating/cooling switch writes — live-captured with
-  // `/context` readback, 2026-07-14), but never the unit master on/off.
-  readonly #zone1OwnerCapabilities: (keyof HomeCapabilitiesAtw)[] = ['onoff']
 
   readonly #zone2ControlCapabilities: (keyof HomeCapabilitiesAtw)[] = [
     'thermostat_mode.zone2',
@@ -56,16 +50,16 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
     'operational_state.zone2',
   ]
 
-  // Only `isOwner` narrows the ATW surface (ATA is never gated), and only
-  // by the power toggle; the guest thermostat-mode narrowing happens in
-  // the capabilities options, not here.
+  // Ownership gates NOTHING: the app's guest UI hides the power toggle and
+  // the precise modes, but the BFF enforces no owner/guest distinction —
+  // guest `curve` write and a full power round-trip both readback-verified
+  // (2026-07-14) — so guests get the exact owner surface.
   public override getRequiredCapabilities(
     profile?: HomeAtwDeviceProfile,
   ): string[] {
-    const { capabilities, isOwner = false } = profile ?? {}
+    const { capabilities } = profile ?? {}
     return [
       ...this.#measureCapabilities,
-      ...(isOwner ? this.#zone1OwnerCapabilities : []),
       ...this.#zone1ControlCapabilities,
       ...(capabilities?.hasHotWater === true ?
         [
