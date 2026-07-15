@@ -144,15 +144,21 @@ coverage.
   versions. Webview code must stick to es2020-era runtime APIs (no
   `Object.groupBy` & co.): esbuild lowers syntax only, and old iOS
   engines are real. The inline `onHomeyReady` + dynamic `import()` is
-  mandatory, not stylistic: a static `<script type="module" src>` (tried
-  in 45.2.5, reverted in 45.2.6) is NOT executed in Homey's webview
-  injection context — on-device every webview span forever with zero
-  `homey.api` activity and no `onerror` (proven from live `homey app run`
-  logs). The inline classic script always runs and its `import()` fetch
-  works; a parser-discovered external module does not. Never reintroduce
-  static module loading. The open Android "Failed to fetch dynamically
-  imported module" issue needs a different fix (e.g. inline the whole
-  bundle into the HTML), not a static tag.
+  mandatory, not stylistic. A static `<script type="module" src>` (tried
+  in 45.2.5, reverted in 45.2.6) couples the whole boot to an early
+  fetch: the module is requested during parse, before the webview↔local
+  origin network is ready, so on a COLD open its fetch stalls — and since
+  the SDK dispatches `onHomeyReady` only after `load`, that stalled fetch
+  blocks `onHomeyReady` too. Proven with breadcrumbs over `homey app run`:
+  a cold open fires NEITHER `onHomeyReady` NOR the module (spinner
+  forever, and no `onerror` since a hang is not an error); a warm reopen
+  (module now cached) fires both ~60 ms apart and loads. The dynamic
+  `import()` fires late, inside `onHomeyReady` (post-`load`, network
+  warm), so it neither stalls nor blocks the SDK — which is why it has
+  always worked. Never reintroduce static module loading. The open
+  Android "Failed to fetch dynamically imported module" wants the
+  separate fetch removed entirely — inline the bundle into the HTML —
+  not a static tag.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`
