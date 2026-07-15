@@ -860,7 +860,17 @@ export default class MELCloudApp extends App {
       settingManager: this.#createSettingManager('home'),
     })
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
-    await this.#homeApi.list()
+    // Only fetch (which also arms the recurring sync) once `create()`'s
+    // resumeSession has actually restored a session — the melcloud-api
+    // contract is to check `isAuthenticated()` after `create()`. A
+    // Classic-only user has no Home credentials, so an unconditional
+    // `list()` would 401 and `runSyncCycle` would then reschedule that
+    // 401 on every cycle. Classic needs no such guard: it never forces a
+    // fetch, so its sync stays disarmed until a session exists. A later
+    // Home login re-arms the sync through the settings authenticate flow.
+    if (this.#homeApi.isAuthenticated()) {
+      await this.#homeApi.list()
+    }
   }
 
   #registerFlowListeners(): void {

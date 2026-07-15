@@ -95,6 +95,7 @@ const mockHomeRegistry = {
 const mockHomeApiInstance = {
   authenticate: vi.fn<() => Promise<void>>(),
   clearSync: vi.fn<() => void>(),
+  isAuthenticated: vi.fn<() => boolean>().mockReturnValue(true),
   list: vi.fn<() => Promise<unknown[]>>(),
   registry: mockHomeRegistry,
 }
@@ -487,6 +488,20 @@ describe('melCloudApp', () => {
       )
       expect(Classic.FacadeManager).toHaveBeenCalledTimes(1)
       expect(mockSetFacadeManager).toHaveBeenCalledTimes(1)
+    })
+
+    it('should fetch Home devices when Home is authenticated', async () => {
+      await app.onInit()
+
+      expect(mockHomeApiInstance.list).toHaveBeenCalledTimes(1)
+    })
+
+    it('should not fetch Home devices when Home is unauthenticated (Classic-only user)', async () => {
+      mockHomeApiInstance.isAuthenticated.mockReturnValue(false)
+
+      await app.onInit()
+
+      expect(mockHomeApiInstance.list).not.toHaveBeenCalled()
     })
 
     it('should pass logger callbacks that delegate to app.log and app.error', async () => {
