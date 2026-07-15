@@ -24,6 +24,7 @@ vi.mock(
 const { default: api } = await import('../../widgets/charts/api.mts')
 
 const mockApp = {
+  error: vi.fn<(...args: readonly unknown[]) => void>(),
   getClassicHourlyTemperatures: vi.fn<() => Promise<ReportChartLineOptions>>(),
   getClassicOperationModes: vi.fn<() => Promise<ReportChartPieOptions>>(),
   getClassicSignal: vi.fn<() => Promise<ReportChartLineOptions>>(),
@@ -37,6 +38,14 @@ const homey = mock<Homey>({ app: mockApp, i18n: mockI18n })
 describe('charts api', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  describe('webview boot logging', () => {
+    it('should log the boot failure body via app.error', () => {
+      api.logWebviewBoot({ body: { message: 'boom' }, homey })
+
+      expect(mockApp.error).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('device retrieval', () => {

@@ -38,6 +38,7 @@ const mockApp = {
     authenticate: mockClassicAuthenticate,
     isAuthenticated: mockIsAuthenticated,
   },
+  error: vi.fn<(...args: readonly unknown[]) => void>(),
   getClassicErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
   getClassicFrostProtection:
     vi.fn<() => Promise<Classic.FrostProtectionData>>(),
@@ -259,6 +260,14 @@ describe('api', () => {
 
       expect(result).toBe(holidayMode)
       expect(mockApp.getClassicHolidayMode).toHaveBeenCalledWith(params)
+    })
+  })
+
+  describe('webview boot logging', () => {
+    it('should log the boot failure body via app.error', () => {
+      api.logWebviewBoot({ body: { message: 'boom' }, homey })
+
+      expect(mockApp.error).toHaveBeenCalledTimes(1)
     })
   })
 

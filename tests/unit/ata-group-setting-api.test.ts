@@ -25,6 +25,7 @@ vi.mock(
 const { default: api } = await import('../../widgets/ata-group-setting/api.mts')
 
 const mockApp = {
+  error: vi.fn<(...args: readonly unknown[]) => void>(),
   getClassicAtaCapabilities:
     vi.fn<() => [keyof Classic.GroupState, DriverCapabilitiesOptions][]>(),
   getClassicAtaDetailedStates: vi.fn<() => GroupAtaStates>(),
@@ -45,6 +46,14 @@ const homey = mock<Homey>({ app: mockApp, i18n: mockI18n })
 describe('ata-group-setting api', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  describe('webview boot logging', () => {
+    it('should log the boot failure body via app.error', () => {
+      api.logWebviewBoot({ body: { message: 'boom' }, homey })
+
+      expect(mockApp.error).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('ata capability retrieval', () => {

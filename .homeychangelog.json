@@ -436,5 +436,20 @@
     "pl": "Strona ustawień otwiera się teraz szybciej.",
     "ru": "Страница настроек теперь открывается быстрее.",
     "sv": "Inställningssidan öppnas nu snabbare."
+  },
+  "45.2.4": {
+    "ar": "تشخيصات أفضل عند فشل تحميل الأداة أو صفحة الإعدادات.",
+    "da": "Bedre diagnostik når en widget eller indstillingssiden ikke kan indlæses.",
+    "de": "Bessere Diagnose, wenn ein Widget oder die Einstellungsseite nicht lädt.",
+    "en": "Better diagnostics when a widget or the settings page fails to load.",
+    "es": "Mejores diagnósticos cuando un widget o la página de ajustes no carga.",
+    "fr": "Meilleurs diagnostics lorsqu'un widget ou la page de réglages ne se charge pas.",
+    "it": "Diagnostica migliore quando un widget o la pagina delle impostazioni non si carica.",
+    "ko": "위젯이나 설정 페이지 로드에 실패할 때의 진단 기능이 개선되었습니다.",
+    "nl": "Betere diagnostiek wanneer een widget of de instellingenpagina niet laadt.",
+    "no": "Bedre diagnostikk når en widget eller innstillingssiden ikke lastes.",
+    "pl": "Lepsza diagnostyka, gdy widżet lub strona ustawień się nie ładuje.",
+    "ru": "Улучшена диагностика, когда виджет или страница настроек не загружается.",
+    "sv": "Bättre diagnostik när en widget eller inställningssidan inte laddas."
   }
 }

@@ -49,6 +49,10 @@
       "method": "GET",
       "path": "/home/sessions"
     },
+    "logWebviewBoot": {
+      "method": "POST",
+      "path": "/boot-error"
+    },
     "updateClassicFrostProtection": {
       "method": "PUT",
       "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"
@@ -271,7 +275,7 @@
       "värmeåtervinning"
     ]
   },
-  "version": "45.2.3",
+  "version": "45.2.4",
   "flow": {
     "triggers": [
       {
@@ -10564,6 +10568,10 @@
           "method": "GET",
           "path": "/language"
         },
+        "logWebviewBoot": {
+          "method": "POST",
+          "path": "/boot-error"
+        },
         "updateClassicAtaState": {
           "method": "PUT",
           "path": "/classic/zones/:zoneType/:zoneId/ata"
@@ -10629,6 +10637,10 @@
         "getLanguage": {
           "method": "GET",
           "path": "/language"
+        },
+        "logWebviewBoot": {
+          "method": "POST",
+          "path": "/boot-error"
         }
       },
       "name": {
