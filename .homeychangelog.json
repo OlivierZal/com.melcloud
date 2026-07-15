@@ -406,5 +406,20 @@
     "pl": "Naprawia niekończący się ekran ładowania, który czasami pojawiał się w widżetach i na stronie ustawień.",
     "ru": "Исправлен бесконечный экран загрузки, который иногда появлялся в виджетах и на странице настроек.",
     "sv": "Åtgärdar den oändliga laddningsskärmen som ibland visades i widgetar och på inställningssidan."
+  },
+  "45.2.2": {
+    "ar": "تحسين التشخيصات لصفحة الإعدادات.",
+    "da": "Forbedret diagnostik for indstillingssiden.",
+    "de": "Verbesserte Diagnose für die Einstellungsseite.",
+    "en": "Improved diagnostics for the settings page.",
+    "es": "Diagnósticos mejorados para la página de ajustes.",
+    "fr": "Diagnostics améliorés pour la page de réglages.",
+    "it": "Diagnostica migliorata per la pagina delle impostazioni.",
+    "ko": "설정 페이지의 진단 기능이 개선되었습니다.",
+    "nl": "Verbeterde diagnostiek voor de instellingenpagina.",
+    "no": "Forbedret diagnostikk for innstillingssiden.",
+    "pl": "Ulepszona diagnostyka strony ustawień.",
+    "ru": "Улучшена диагностика страницы настроек.",
+    "sv": "Förbättrad diagnostik för inställningssidan."
   }
 }

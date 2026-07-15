@@ -50,6 +50,7 @@ const mockApp = {
     list: mockHomeList,
     registry: { getBuildingsByType: mockGetBuildingsByType },
   },
+  log: vi.fn<(...args: readonly unknown[]) => void>(),
   updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
   updateClassicHolidayMode: vi.fn<() => Promise<void>>(),
   updateDeviceSettings: vi.fn<() => Promise<void>>(),
