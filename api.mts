@@ -45,6 +45,14 @@ const collectHomeGroups = (registry: Home.Registry): DeviceGroup[] => {
   return groups.values().toArray()
 }
 
+// Diagnostics breadcrumb: the settings webview is otherwise invisible in
+// diagnostic reports (its routes never touch MELCloud), which made
+// "settings fail to load" reports undecidable — no line = the page's JS
+// never ran; lines without a completed sequence = where it stopped.
+const logSettingsRoute = (app: Homey['app'], route: string): void => {
+  app.log({ dataType: 'Settings page', route })
+}
+
 const toNumber = (value: string | undefined): number | undefined => {
   if (value === undefined) {
     return undefined
@@ -116,13 +124,18 @@ const api = {
       .filter(({ deviceIds }) => deviceIds.length > 0)
       .toSorted((group1, group2) => group1.name.localeCompare(group2.name))
   },
-  getDeviceSettings: ({ homey: { app } }: { homey: Homey }): DeviceSettings =>
-    app.getDeviceSettings(),
+  getDeviceSettings: ({ homey: { app } }: { homey: Homey }): DeviceSettings => {
+    logSettingsRoute(app, '/settings/devices')
+    return app.getDeviceSettings()
+  },
   getDriverSettings: ({
     homey: { app },
   }: {
     homey: Homey
-  }): Partial<Record<string, DriverSetting[]>> => app.getDriverSettings(),
+  }): Partial<Record<string, DriverSetting[]>> => {
+    logSettingsRoute(app, '/settings/drivers')
+    return app.getDriverSettings()
+  },
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
   homeAuthenticate: async ({
@@ -132,8 +145,10 @@ const api = {
     body: LoginCredentials
     homey: Homey
   }): Promise<void> => app.homeApi.authenticate(body),
-  isClassicAuthenticated: ({ homey: { app } }: { homey: Homey }): boolean =>
-    app.classicApi.isAuthenticated(),
+  isClassicAuthenticated: ({ homey: { app } }: { homey: Homey }): boolean => {
+    logSettingsRoute(app, '/classic/sessions')
+    return app.classicApi.isAuthenticated()
+  },
   // Home authentication is only "restored" once a /context fetch has
   // succeeded. That boot-time fetch can fail transiently (e.g. the box
   // network is not ready right after an app restart) even though the
@@ -145,6 +160,7 @@ const api = {
   }: {
     homey: Homey
   }): Promise<boolean> {
+    logSettingsRoute(app, '/home/sessions')
     if (!app.homeApi.isAuthenticated()) {
       await app.homeApi.list()
     }
