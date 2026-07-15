@@ -167,6 +167,12 @@ coverage.
   violation (a rule's own documented exception like a sequential-by-design
   loop, a protocol-imposed form, a rule-pair conflict), the documented
   disable IS the honest form — simplicity outranks disable-count golf.
+- A config-level `'off'` with a one-line reason is not a disable: it
+  is the triage ledger for opt-in rules that were evaluated and
+  refused (tool-ownership overlap, platform floor, absent domain).
+  Disables suppress an adopted rule; ledger entries record a verdict —
+  re-evaluate one when its stated reason expires (target bump, new
+  tooling).
 - Zero-warning policy: every enabled rule is at `error`.
 - Metric caps (`complexity`, `max-statements` 10, `max-depth`,
   `unicorn/try-complexity` 1…) are measured codebase ceilings: exceeding

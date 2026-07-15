@@ -10,8 +10,8 @@ import type { ManifestDriver } from '../types/manifest.mts'
 import { type Homey, Driver } from '../lib/homey.mts'
 
 const getArg = (capability: string): string => {
-  const [arg = capability] = capability.split('.', 1)
-  return arg
+  const dot = capability.indexOf('.')
+  return dot === -1 ? capability : capability.slice(0, dot)
 }
 
 const tryRegisterFlowCard = (register: () => void): void => {
