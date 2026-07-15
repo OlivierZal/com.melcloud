@@ -129,29 +129,21 @@ coverage.
 ## Widgets
 
 - Webview lifecycle (settings page included): the SDK dispatches
-  `onHomeyReady` on its own schedule, before the bundle has loaded, so
-  each HTML registers the handler in a parse-time inline bootstrap that
-  resolves `globalThis.homeyReady`. The bundle loads as a
-  **parser-discovered static `<script type="module" src>`**, NOT a
-  JS-initiated dynamic `import()`: on Android the dynamic import fails to
-  fetch against Homey's local `.homeylocal.com` origin while
-  parser-discovered resources (the same path as the stylesheets) load —
-  diagnosed from a v45.2.4 boot-error report. A static module can only
-  self-boot, so each entry module ends with `fireAndForget(boot())`
-  where `boot` awaits `globalThis.homeyReady` and calls the (now
-  non-exported) `start`. Two documented disables per entry are the
-  honest cost: the SDK-handoff cast (parse boundary) and
-  `unicorn/prefer-top-level-await` — a top-level await would force an
-  es2022 target, and esbuild would then emit private fields natively
-  instead of lowering them, breaking older webview engines (the exact
-  class of the `Object.groupBy` breakage). The `<script onerror>` +
-  runWebview keep `Homey.ready()` guaranteed and surface a boot failure
-  (`#init_error` / post-ready alert) to a `/boot-error` route
-  (`app.error`), so a diagnostic report shows WHY a bundle failed to
-  load. `scripts/bundle.mjs` stamps every local asset reference with a
-  content hash (`?v=`): phone webviews cache assets across app versions.
-  Webview code must stick to es2020-era runtime APIs (no `Object.groupBy`
-  & co.): esbuild lowers syntax only, and old iOS engines are real.
+  `onHomeyReady` on its own schedule — the widget SDK is injected by the
+  host app at a time the page does not control — so each HTML declares
+  the docs' canonical global `function onHomeyReady(homey)` inline (it
+  must exist at parse time; a bundle only exists after its fetch), whose
+  body `import()`s the ESM bundle and hands the instance to its exported
+  `start(homey)`; the inline `.catch` ends the overlay even when the
+  bundle itself fails to load. Init work is time-bounded
+  (`withInitTimeout`) and `Homey.ready()` fires in a `finally`: a hung
+  or failed fetch surfaces an error (`#init_error` / post-ready alert),
+  never an endless loading overlay. `scripts/bundle.mjs` stamps every
+  local asset reference — attributes and the inline `import()` alike —
+  with a content hash (`?v=`): phone webviews cache assets across app
+  versions. Webview code must stick to es2020-era runtime APIs (no
+  `Object.groupBy` & co.): esbuild lowers syntax only, and old iOS
+  engines are real.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`
