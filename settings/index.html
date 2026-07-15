@@ -5,31 +5,31 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>MELCloud Settings</title>
         <script>
-            // Registered at parse time: the SDK dispatches onHomeyReady on
-            // its own schedule, before the module bundle has loaded. The
-            // bundle loads as a parser-discovered static module (same fetch
-            // path as the stylesheets) rather than a JS-initiated dynamic
-            // import(), whose fetch fails on Android against Homey's local
-            // .homeylocal.com origin (diagnosed from a v45.2.4 boot-error
-            // report).
-            window.homeyReady = new Promise((resolve) => {
-                window.onHomeyReady = resolve
-            })
-            // onerror only fires if the module script itself fails to load;
-            // once it loads, its own init ends the overlay.
-            function reportSettingsBootFailure() {
-                window.homeyReady.then((homey) => {
-                    homey.api('POST', '/boot-error', { message: 'Failed to load the settings module script', name: 'BootError', stack: '' }, () => {})
-                    homey.ready()
-                    homey.alert(homey.__('settings.loadFailed')).catch((error) => {
-                        globalThis.reportError?.(error)
-                    })
-                })
+            // The page bundle loads as a classic defer script, not an ES
+            // module: module fetches (import()/type=module) stall on a
+            // cold webview open against Homey's local origin (the #1404
+            // spinner), while classic resource fetches — like the
+            // stylesheet — load cold. The poll hands the instance to the
+            // bundle's start once it is up, or ends the overlay if it
+            // never arrives.
+            function onHomeyReady(homey) {
+                const deadline = Date.now() + 10000
+                const waitForBundle = () => {
+                    if (globalThis.MELCloudWebview) {
+                        globalThis.MELCloudWebview.start(homey)
+                    } else if (Date.now() > deadline) {
+                        homey.ready()
+                        homey.alert(homey.__('settings.loadFailed')).catch(() => {})
+                    } else {
+                        setTimeout(waitForBundle, 50)
+                    }
+                }
+                waitForBundle()
             }
         </script>
         <link href="index.css?v=b7fc840a" rel="stylesheet">
+        <script defer src="index.js?v=00b6237e"></script>
         <script data-origin="settings" defer src="/homey.js"></script>
-        <script type="module" onerror="reportSettingsBootFailure()" src="index.mjs?v=e1bfaba5"></script>
         <meta content="MELCloud settings" name="description">
     </head>
     <body>

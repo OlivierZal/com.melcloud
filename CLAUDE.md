@@ -128,30 +128,39 @@ coverage.
 
 ## Widgets
 
-- Webview lifecycle (settings page included): the SDK dispatches
-  `onHomeyReady` on its own schedule, before the bundle has loaded, so
-  each HTML registers the handler in a parse-time inline bootstrap that
-  resolves `globalThis.homeyReady`. The bundle loads as a
-  **parser-discovered static `<script type="module" src>`**, NOT a
-  JS-initiated dynamic `import()`: on Android the dynamic import fails to
-  fetch against Homey's local `.homeylocal.com` origin while
-  parser-discovered resources (the same path as the stylesheets) load —
-  diagnosed from a v45.2.4 boot-error report. A static module can only
-  self-boot, so each entry module ends with `fireAndForget(boot())`
-  where `boot` awaits `globalThis.homeyReady` and calls the (now
-  non-exported) `start`. Two documented disables per entry are the
-  honest cost: the SDK-handoff cast (parse boundary) and
-  `unicorn/prefer-top-level-await` — a top-level await would force an
-  es2022 target, and esbuild would then emit private fields natively
-  instead of lowering them, breaking older webview engines (the exact
-  class of the `Object.groupBy` breakage). The `<script onerror>` +
-  runWebview keep `Homey.ready()` guaranteed and surface a boot failure
-  (`#init_error` / post-ready alert) to a `/boot-error` route
-  (`app.error`), so a diagnostic report shows WHY a bundle failed to
-  load. `scripts/bundle.mjs` stamps every local asset reference with a
-  content hash (`?v=`): phone webviews cache assets across app versions.
-  Webview code must stick to es2020-era runtime APIs (no `Object.groupBy`
-  & co.): esbuild lowers syntax only, and old iOS engines are real.
+- Webview lifecycle (settings page included): the bundle is a CLASSIC
+  IIFE (esbuild `format: 'iife'`, `globalName: MELCloudWebview`), loaded
+  via `<script defer src="index.js">` — NOT an ES module. Only the JS
+  module loader fails: both `import()` and `<script type="module">` stall
+  on a COLD webview open against Homey's local origin (the #1404 spinner
+  — and since the SDK fires `onHomeyReady` only after `load`, a stalled
+  module fetch blocks even that, so nothing runs at all), while classic
+  resource fetches — the stylesheet, a classic `<script src>` — load
+  cold. So each HTML declares the docs' canonical global
+  `function onHomeyReady(homey)` inline (it must exist at parse time),
+  which polls `globalThis.MELCloudWebview` and calls its `start(homey)`
+  once the bundle is up. `defer` (not `async`) is the right fit for an
+  app bundle that reads the DOM: it runs ordered, after `<body>` parses
+  and before DOMContentLoaded, so there is never a top-level-DOM race and
+  the poll finds the global on its first tick. (This leans on classic
+  fetches loading cold — the whole point of the fix; a stalled `defer`
+  would block the SDK too, but classic fetches do not stall.) Two
+  guarantees keep the overlay finite,
+  for two distinct phases (no overlap): the `onHomeyReady` poll's 10 s
+  timeout ends it if the bundle never loads (`#init_error` / post-ready
+  alert), and `runWebview`/`withInitTimeout` end it if a DATA fetch hangs
+  during init (`Homey.ready()` in a `finally`). `scripts/bundle.mjs`
+  stamps every local asset reference — only inside an attribute/import
+  context, never a comment — with a content hash (`?v=`): phone webviews
+  cache assets across app versions. Webview code must stick to es2020-era
+  runtime APIs (no `Object.groupBy` & co.): esbuild lowers syntax only,
+  and old iOS engines are real. NEVER load the bundle as an ES module:
+  dynamic `import()` worked on iOS but failed to fetch on Android (the
+  original #1404), and a static `<script type="module">` (45.2.5) spun
+  EVERY webview forever on a cold open (a stalled module fetch also
+  blocks `onHomeyReady`; proven with breadcrumbs over `homey app run`) —
+  both reverted. Classic `defer` is the proven, on-device-cold-verified
+  form.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`

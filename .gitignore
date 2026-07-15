@@ -4,6 +4,6 @@
 /coverage/
 /env.json
 node_modules/
-/settings/index.mjs
-/widgets/*/public/index.mjs
+/settings/index.js
+/widgets/*/public/index.js
 /.claude/

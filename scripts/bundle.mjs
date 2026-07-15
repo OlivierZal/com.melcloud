@@ -1,13 +1,21 @@
 // Bundles each browser entry point (widgets, settings page) into a single
-// self-contained ES module served statically by Homey. This replaces the
-// former copy-based pipeline (shared helpers and vendored constants were
-// duplicated into every widget) and inlines npm dependencies (Chart.js)
-// so widgets work offline with versions pinned by the lockfile.
+// self-contained CLASSIC script served statically by Homey, inlining npm
+// dependencies (Chart.js) so widgets work offline with versions pinned by
+// the lockfile. The output is an IIFE (format: 'iife', not 'esm') exposing
+// `start` on a global, loaded via a plain `<script src>` — NOT an ES
+// module. Module fetches (`import()` / `<script type=module>`) stall on a
+// cold webview open against Homey's local origin (the #1404 spinner);
+// classic resource fetches, like the page's stylesheet, load cold.
 import { createHash } from 'node:crypto'
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { build } from 'esbuild'
+
+// The IIFE global each page's inline `onHomeyReady` reads `start` from.
+// One name is safe: every webview is its own document loading only its
+// own bundle.
+const GLOBAL_NAME = 'MELCloudWebview'
 
 const entryPoints = [
   'widgets/ata-group-setting/public/index.mts',
@@ -20,11 +28,12 @@ await Promise.all(
     build({
       bundle: true,
       entryPoints: [entryPoint],
-      format: 'esm',
+      format: 'iife',
+      globalName: GLOBAL_NAME,
       legalComments: 'none',
       logLevel: 'info',
       minify: true,
-      outfile: entryPoint.replace(/\.mts$/u, '.mjs'),
+      outfile: entryPoint.replace(/\.mts$/u, '.js'),
       target: ['es2020'],
     }),
   ),
@@ -41,24 +50,24 @@ const hashOf = async (filePath) => {
 const stampHtml = async (htmlPath) => {
   const html = await readFile(htmlPath, 'utf8')
   const directory = path.dirname(htmlPath)
-  // Local files referenced from attributes (href/src) or the inline
-  // entry point's dynamic import — every occurrence gets the same stamp.
-  const files = new Set(
-    [
-      ...html.matchAll(
-        /(?:href="|src="|import\('\.\/)(?<file>[^"':?/][^"':?]*)(?:\?v=[0-9a-f]+)?["')]/gu,
-      ),
-    ].map((match) => match.groups.file),
-  )
-  let stamped = html
-  for (const file of files) {
-    const hash = await hashOf(path.join(directory, file))
-    const escaped = file.replaceAll('.', String.raw`\.`)
-    stamped = stamped.replaceAll(
-      new RegExp(String.raw`${escaped}(?:\?v=[0-9a-f]+)?`, 'gu'),
-      `${file}?v=${hash}`,
-    )
+  // A local asset reference: an attribute value (href/src) or a dynamic
+  // import specifier, with an optional existing stamp.
+  const reference =
+    /(href="|src="|import\('\.\/)([^"':?/][^"':?]*)(?:\?v=[0-9a-f]+)?(["')])/gu
+  // Hash each referenced asset up front — the replace below is sync.
+  const hashes = new Map()
+  for (const [, , file] of html.matchAll(reference)) {
+    if (!hashes.has(file)) {
+      hashes.set(file, await hashOf(path.join(directory, file)))
+    }
   }
+  // Stamp only within a reference context, so the same filename written
+  // elsewhere (e.g. a comment) is never rewritten.
+  const stamped = html.replaceAll(
+    reference,
+    (_match, prefix, file, suffix) =>
+      `${prefix}${file}?v=${hashes.get(file)}${suffix}`,
+  )
   if (stamped !== html) {
     await writeFile(htmlPath, stamped)
   }

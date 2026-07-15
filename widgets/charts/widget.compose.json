@@ -23,10 +23,6 @@
     "getLanguage": {
       "method": "GET",
       "path": "/language"
-    },
-    "logWebviewBoot": {
-      "method": "POST",
-      "path": "/boot-error"
     }
   },
   "name": {

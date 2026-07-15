@@ -5,35 +5,35 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>MELCloud charts</title>
         <script>
-            // Registered at parse time: the SDK dispatches onHomeyReady on
-            // its own schedule, before the module bundle has loaded. The
-            // bundle loads as a parser-discovered static module (same fetch
-            // path as the stylesheets) rather than a JS-initiated dynamic
-            // import(), whose fetch fails on Android against Homey's local
-            // .homeylocal.com origin (diagnosed from a v45.2.4 boot-error
-            // report).
-            window.homeyReady = new Promise((resolve) => {
-                window.onHomeyReady = resolve
-            })
-            // onerror only fires if the module script itself fails to load;
-            // once it loads, its own init ends the overlay.
-            function reportWidgetBootFailure() {
-                window.homeyReady.then((homey) => {
-                    homey
-                        .api('POST', '/boot-error', { message: 'Failed to load the widget module script', name: 'BootError', stack: '' })
-                        .catch(() => {})
-                    const message = document.querySelector('#init_error')
-                    if (message) {
-                        message.hidden = false
-                        message.textContent = homey.__('widgets.loadFailed')
+            // Classic defer bundle, not an ES module: module fetches
+            // (import()/type=module) stall on a cold webview open
+            // against Homey's local origin (the #1404 spinner), while
+            // classic resource fetches — like the stylesheets — load cold.
+            // The poll hands the instance to the bundle's start once it is
+            // up, or shows the inline error and ends the overlay if it
+            // never arrives.
+            function onHomeyReady(homey) {
+                const deadline = Date.now() + 10000
+                const waitForBundle = () => {
+                    if (globalThis.MELCloudWebview) {
+                        globalThis.MELCloudWebview.start(homey)
+                    } else if (Date.now() > deadline) {
+                        const message = document.querySelector('#init_error')
+                        if (message) {
+                            message.hidden = false
+                            message.textContent = homey.__('widgets.loadFailed')
+                        }
+                        homey.ready()
+                    } else {
+                        setTimeout(waitForBundle, 50)
                     }
-                    homey.ready()
-                })
+                }
+                waitForBundle()
             }
         </script>
         <link href="styles/layout.css?v=b98ed57e" rel="stylesheet">
         <link href="styles/zone-select.css?v=2cded214" rel="stylesheet">
-        <script type="module" onerror="reportWidgetBootFailure()" src="index.mjs?v=16aa2a29"></script>
+        <script defer src="index.js?v=b4cb97e4"></script>
         <meta content="MELCloud charts" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">

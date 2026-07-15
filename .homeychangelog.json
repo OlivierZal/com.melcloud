@@ -452,19 +452,19 @@
     "ru": "Улучшена диагностика, когда виджет или страница настроек не загружается.",
     "sv": "Bättre diagnostik när en widget eller inställningssidan inte laddas."
   },
-  "45.2.5": {
-    "ar": "إصلاح فشل تحميل الأدوات وصفحة الإعدادات على أندرويد.",
-    "da": "Retter widgets og indstillingssiden, der ikke kunne indlæses på Android.",
-    "de": "Behebt das Nichtladen von Widgets und der Einstellungsseite auf Android.",
-    "en": "Fixes widgets and the settings page failing to load on Android.",
-    "es": "Corrige los widgets y la página de ajustes que no cargaban en Android.",
-    "fr": "Corrige les widgets et la page de réglages qui ne se chargeaient pas sur Android.",
-    "it": "Corregge i widget e la pagina delle impostazioni che non si caricavano su Android.",
-    "ko": "Android에서 위젯과 설정 페이지가 로드되지 않던 문제를 수정했습니다.",
-    "nl": "Verhelpt widgets en de instellingenpagina die niet laadden op Android.",
-    "no": "Fikser widgeter og innstillingssiden som ikke lastet på Android.",
-    "pl": "Naprawia widżety i stronę ustawień, które nie ładowały się na Androidzie.",
-    "ru": "Исправлена загрузка виджетов и страницы настроек на Android.",
-    "sv": "Åtgärdar widgetar och inställningssidan som inte laddades på Android."
+  "45.2.6": {
+    "ar": "إصلاح صفحة الإعدادات والأدوات التي كانت لا تفتح.",
+    "da": "Retter indstillingssiden og widgets, der ikke kunne åbnes.",
+    "de": "Behebt das Nichtöffnen der Einstellungsseite und der Widgets.",
+    "en": "Fixes the settings page and widgets that would not open.",
+    "es": "Corrige la página de ajustes y los widgets que no se abrían.",
+    "fr": "Corrige la page de réglages et les widgets qui ne s'ouvraient pas.",
+    "it": "Corregge la pagina delle impostazioni e i widget che non si aprivano.",
+    "ko": "열리지 않던 설정 페이지와 위젯을 수정했습니다.",
+    "nl": "Verhelpt de instellingenpagina en widgets die niet openden.",
+    "no": "Fikser innstillingssiden og widgeter som ikke åpnet.",
+    "pl": "Naprawia stronę ustawień i widżety, które się nie otwierały.",
+    "ru": "Исправлены страница настроек и виджеты, которые не открывались.",
+    "sv": "Åtgärdar inställningssidan och widgetar som inte öppnades."
   }
 }
