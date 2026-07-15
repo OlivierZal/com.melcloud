@@ -75,7 +75,12 @@ vi.mock(import('homey'), async () => {
     public log = vi.fn<(...args: readonly unknown[]) => void>()
 
     public manifest = {
-      capabilities: ['onoff', 'thermostat_mode', 'measure_temperature'],
+      capabilities: [
+        'onoff',
+        'thermostat_mode',
+        'thermostat_mode.zone2',
+        'measure_temperature',
+      ],
     }
   }
 
@@ -140,7 +145,7 @@ describe(ClassicMELCloudDriver, () => {
 
       expect(devices).toStrictEqual([
         {
-          capabilities: ['onoff', 'thermostat_mode'],
+          capabilities: ['onoff', 'thermostat_mode', 'thermostat_mode.zone2'],
           capabilitiesOptions: {},
           data: { id: 1 },
           name: 'Device 1',
@@ -291,6 +296,21 @@ describe(ClassicMELCloudDriver, () => {
 
       expect(resultTrue).toBe(true)
       expect(resultFalse).toBe(false)
+
+      const zoneListener = conditionListeners['thermostat_mode.zone2_condition']
+      assertDefined(zoneListener)
+
+      // The dotted variant's card compares against the base arg name.
+      expect(
+        zoneListener({
+          device: {
+            getCapabilityValue: vi
+              .fn<(capability: string) => unknown>()
+              .mockReturnValue('heat'),
+          },
+          thermostat_mode: 'heat',
+        }),
+      ).toBe(true)
     })
 
     it('should silently catch when condition card does not exist', async () => {
