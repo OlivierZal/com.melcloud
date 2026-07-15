@@ -125,7 +125,7 @@ const api = {
       .toSorted((group1, group2) => group1.name.localeCompare(group2.name))
   },
   getDeviceSettings: ({ homey: { app } }: { homey: Homey }): DeviceSettings => {
-    logSettingsRoute(app, 'devices/settings')
+    logSettingsRoute(app, '/settings/devices')
     return app.getDeviceSettings()
   },
   getDriverSettings: ({
@@ -133,7 +133,7 @@ const api = {
   }: {
     homey: Homey
   }): Partial<Record<string, DriverSetting[]>> => {
-    logSettingsRoute(app, 'drivers/settings')
+    logSettingsRoute(app, '/settings/drivers')
     return app.getDriverSettings()
   },
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
@@ -146,7 +146,7 @@ const api = {
     homey: Homey
   }): Promise<void> => app.homeApi.authenticate(body),
   isClassicAuthenticated: ({ homey: { app } }: { homey: Homey }): boolean => {
-    logSettingsRoute(app, 'classic/sessions')
+    logSettingsRoute(app, '/classic/sessions')
     return app.classicApi.isAuthenticated()
   },
   // Home authentication is only "restored" once a /context fetch has
@@ -160,7 +160,7 @@ const api = {
   }: {
     homey: Homey
   }): Promise<boolean> {
-    logSettingsRoute(app, 'home/sessions')
+    logSettingsRoute(app, '/home/sessions')
     if (!app.homeApi.isAuthenticated()) {
       await app.homeApi.list()
     }
