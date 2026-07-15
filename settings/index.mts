@@ -425,7 +425,7 @@ class AuthManager {
     // Programmatic `.value` assignment does not fire `change`, so the
     // `#syncInputsFromCredentials` call below covers what the listener
     // would miss when we redirect to the first available API.
-    if (!allowed.has(this.#apiSelect.value) && firstAllowed !== '') {
+    if (firstAllowed !== '' && !allowed.has(this.#apiSelect.value)) {
       this.#apiSelect.value = firstAllowed
     }
     this.#syncInputsFromCredentials()
@@ -1276,7 +1276,7 @@ class ZoneSettingsManager {
         return null
       }
     })
-    if (errors.length > 0 || min === null || max === null) {
+    if (min === null || max === null || errors.length > 0) {
       const message = errors.join('\n')
       throw new Error(message === '' ? 'Unknown error' : message)
     }
@@ -1567,5 +1567,6 @@ class SettingsApp {
  */
 export const start = async (homey: Homey): Promise<void> => {
   translateAriaLabels((key) => homey.__(key))
-  await new SettingsApp(homey).init()
+  const app = new SettingsApp(homey)
+  await app.init()
 }

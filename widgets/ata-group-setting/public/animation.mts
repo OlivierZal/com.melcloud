@@ -128,7 +128,7 @@ const generateDelay = (delay: number, speed: number): number => {
         (ClassicFanSpeed.very_fast - ClassicFanSpeed.very_slow))
   return (
     (randomFraction() * delay) /
-    (Number.isNaN(speedFactor) || speedFactor === 0 ? 1 : speedFactor)
+    (speedFactor === 0 || Number.isNaN(speedFactor) ? 1 : speedFactor)
   )
 }
 
@@ -143,7 +143,7 @@ const parseStateParams = (
     isSomethingOn: isOn !== false,
     newMode: Number(mode ?? null),
     newSpeed:
-      Number.isNaN(numberSpeed) || numberSpeed === 0 ?
+      numberSpeed === 0 || Number.isNaN(numberSpeed) ?
         ClassicFanSpeed.moderate
       : numberSpeed,
   }
@@ -545,7 +545,7 @@ export class AnimationController {
     applyStyles: (element: HTMLDivElement) => void
   }): void {
     const element = this.#createAnimatedElement(name)
-    const [elementName, index] = element.id.split('-')
+    const [elementName, index] = element.id.split('-', 2)
     if (elementName !== undefined) {
       const previousElement = getPreviousElement(elementName, index)
       const previousPosition =

@@ -9,9 +9,11 @@ import type { AuthenticationAPI } from '../types/api.mts'
 import type { ManifestDriver } from '../types/manifest.mts'
 import { type Homey, Driver } from '../lib/homey.mts'
 
+const NOT_FOUND = -1
+
 const getArg = (capability: string): string => {
-  const [arg = capability] = capability.split('.')
-  return arg
+  const dot = capability.indexOf('.')
+  return dot === NOT_FOUND ? capability : capability.slice(0, dot)
 }
 
 const tryRegisterFlowCard = (register: () => void): void => {

@@ -145,5 +145,6 @@ class WidgetApp {
  * @param homey - The Homey instance handed to `onHomeyReady`.
  */
 export const start = async (homey: Homey<HomeySettings>): Promise<void> => {
-  await new WidgetApp(homey).init()
+  const app = new WidgetApp(homey)
+  await app.init()
 }
