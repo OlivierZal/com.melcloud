@@ -143,7 +143,16 @@ coverage.
   with a content hash (`?v=`): phone webviews cache assets across app
   versions. Webview code must stick to es2020-era runtime APIs (no
   `Object.groupBy` & co.): esbuild lowers syntax only, and old iOS
-  engines are real.
+  engines are real. The inline `onHomeyReady` + dynamic `import()` is
+  mandatory, not stylistic: a static `<script type="module" src>` (tried
+  in 45.2.5, reverted in 45.2.6) is NOT executed in Homey's webview
+  injection context — on-device every webview span forever with zero
+  `homey.api` activity and no `onerror` (proven from live `homey app run`
+  logs). The inline classic script always runs and its `import()` fetch
+  works; a parser-discovered external module does not. Never reintroduce
+  static module loading. The open Android "Failed to fetch dynamically
+  imported module" issue needs a different fix (e.g. inline the whole
+  bundle into the HTML), not a static tag.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`
