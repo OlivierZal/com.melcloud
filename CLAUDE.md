@@ -130,7 +130,7 @@ coverage.
 
 - Webview lifecycle (settings page included): the bundle is a CLASSIC
   IIFE (esbuild `format: 'iife'`, `globalName: MELCloudWebview`), loaded
-  via `<script async src="index.js">` — NOT an ES module. Only the JS
+  via `<script defer src="index.js">` — NOT an ES module. Only the JS
   module loader fails: both `import()` and `<script type="module">` stall
   on a COLD webview open against Homey's local origin (the #1404 spinner
   — and since the SDK fires `onHomeyReady` only after `load`, a stalled
@@ -139,9 +139,13 @@ coverage.
   cold. So each HTML declares the docs' canonical global
   `function onHomeyReady(homey)` inline (it must exist at parse time),
   which polls `globalThis.MELCloudWebview` and calls its `start(homey)`
-  once the async bundle is up. `async` (not `defer`) is deliberate: a
-  slow/stalled bundle must never block `onHomeyReady` from firing, or the
-  fallback below could not run. Two guarantees keep the overlay finite,
+  once the bundle is up. `defer` (not `async`) is the right fit for an
+  app bundle that reads the DOM: it runs ordered, after `<body>` parses
+  and before DOMContentLoaded, so there is never a top-level-DOM race and
+  the poll finds the global on its first tick. (This leans on classic
+  fetches loading cold — the whole point of the fix; a stalled `defer`
+  would block the SDK too, but classic fetches do not stall.) Two
+  guarantees keep the overlay finite,
   for two distinct phases (no overlap): the `onHomeyReady` poll's 10 s
   timeout ends it if the bundle never loads (`#init_error` / post-ready
   alert), and `runWebview`/`withInitTimeout` end it if a DATA fetch hangs
@@ -155,7 +159,7 @@ coverage.
   original #1404), and a static `<script type="module">` (45.2.5) spun
   EVERY webview forever on a cold open (a stalled module fetch also
   blocks `onHomeyReady`; proven with breadcrumbs over `homey app run`) —
-  both reverted. Classic async is the proven, on-device-cold-verified
+  both reverted. Classic `defer` is the proven, on-device-cold-verified
   form.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical

@@ -4,9 +4,8 @@
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>MELCloud charts</title>
-        <script async src="index.js?v=b4cb97e4"></script>
         <script>
-            // Classic async bundle, not an ES module: module fetches
+            // Classic defer bundle, not an ES module: module fetches
             // (import()/type=module) stall on a cold webview open
             // against Homey's local origin (the #1404 spinner), while
             // classic resource fetches — like the stylesheets — load cold.
@@ -34,6 +33,7 @@
         </script>
         <link href="styles/layout.css?v=b98ed57e" rel="stylesheet">
         <link href="styles/zone-select.css?v=2cded214" rel="stylesheet">
+        <script defer src="index.js?v=b4cb97e4"></script>
         <meta content="MELCloud charts" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">

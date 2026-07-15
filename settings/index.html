@@ -4,16 +4,14 @@
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>MELCloud Settings</title>
-        <script async src="index.js?v=00b6237e"></script>
         <script>
-            // The page bundle loads as a classic async script, not an ES
-            // module: module fetches (import()/type=module)
-            // stall on a cold webview open against Homey's local origin
-            // (the #1404 spinner), while classic resource fetches — like
-            // the stylesheet — load cold. async keeps a slow load from
-            // blocking the SDK's onHomeyReady; the poll hands the instance
-            // to the bundle's start once it is up, or ends the overlay if
-            // it never arrives.
+            // The page bundle loads as a classic defer script, not an ES
+            // module: module fetches (import()/type=module) stall on a
+            // cold webview open against Homey's local origin (the #1404
+            // spinner), while classic resource fetches — like the
+            // stylesheet — load cold. The poll hands the instance to the
+            // bundle's start once it is up, or ends the overlay if it
+            // never arrives.
             function onHomeyReady(homey) {
                 const deadline = Date.now() + 10000
                 const waitForBundle = () => {
@@ -30,6 +28,7 @@
             }
         </script>
         <link href="index.css?v=b7fc840a" rel="stylesheet">
+        <script defer src="index.js?v=00b6237e"></script>
         <script data-origin="settings" defer src="/homey.js"></script>
         <meta content="MELCloud settings" name="description">
     </head>
