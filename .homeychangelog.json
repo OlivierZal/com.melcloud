@@ -421,5 +421,20 @@
     "pl": "Ulepszona diagnostyka strony ustawień.",
     "ru": "Улучшена диагностика страницы настроек.",
     "sv": "Förbättrad diagnostik för inställningssidan."
+  },
+  "45.2.3": {
+    "ar": "صفحة الإعدادات تُفتح الآن بشكل أسرع.",
+    "da": "Indstillingssiden åbner nu hurtigere.",
+    "de": "Die Einstellungsseite öffnet jetzt schneller.",
+    "en": "The settings page now opens faster.",
+    "es": "La página de ajustes ahora se abre más rápido.",
+    "fr": "La page de réglages s’ouvre désormais plus vite.",
+    "it": "La pagina delle impostazioni ora si apre più velocemente.",
+    "ko": "설정 페이지가 이제 더 빠르게 열립니다.",
+    "nl": "De instellingenpagina opent nu sneller.",
+    "no": "Innstillingssiden åpnes nå raskere.",
+    "pl": "Strona ustawień otwiera się teraz szybciej.",
+    "ru": "Страница настроек теперь открывается быстрее.",
+    "sv": "Inställningssidan öppnas nu snabbare."
   }
 }

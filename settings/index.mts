@@ -1422,10 +1422,13 @@ class SettingsApp {
       throw new NoClassicDeviceError(this.#homey)
     }
     this.#zoneSettingsManager.populateZoneOptions(buildings)
-    await Promise.all([
-      this.#errorLogManager.fetchErrorLog(),
-      this.#zoneSettingsManager.fetchZoneSettings(),
-    ])
+    // Not awaited, so it no longer blocks `ready()`: this only fills the
+    // zone panel's initial values (silent, default fallback) and the zone
+    // selector re-fetches on change anyway. The error log is left to its
+    // on-demand "See" button — prefetching it blocked first paint on a
+    // MELCloud cloud round-trip (~350 ms on a Homey Pro 2019) and its
+    // alert-on-failure would surface unprompted.
+    fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
   }
 
   // A failed probe reads as "not verified" rather than throwing: the
