@@ -11,10 +11,45 @@ export interface Homey<
 const INIT_TIMEOUT_MS = 10_000
 
 /**
- * Bounds a webview init chain: `Homey.ready()` must always end the
- * loading overlay, so a hung transport call cannot be allowed to hold it
- * open forever. The underlying work is not cancelled — a late success
- * simply repaints over the error state.
+ * Runs a webview's init chain with the guarantees every page shares:
+ * `Homey.ready()` always fires (a hung or failed init can never hold the
+ * loading overlay open), the work is time-bounded, and a failure is
+ * surfaced through `onError` (called in the `catch`, before `ready`, so a
+ * widget can size its error message).
+ * @param homey - The Homey instance.
+ * @param work - The page's init work (already started).
+ * @param options - The failure surface and optional widget height.
+ * @param options.onError - Surfaces an init failure before `ready`.
+ * @param options.height - Optional widget height supplier for `ready`.
+ * @returns The caught error and whether init failed (read after `ready`).
+ */
+export const runWebview = async (
+  homey: Pick<HomeyWidget, 'ready'>,
+  work: Promise<void>,
+  {
+    height,
+    onError,
+  }: { height?: () => number; onError?: (error: unknown) => void } = {},
+): Promise<{ error: unknown; hasFailed: boolean }> => {
+  let error: unknown
+  let hasFailed = false
+  try {
+    await withInitTimeout(work)
+  } catch (error_) {
+    error = error_
+    hasFailed = true
+    onError?.(error_)
+  } finally {
+    homey.ready(height === undefined ? undefined : { height: height() })
+  }
+  return { error, hasFailed }
+}
+
+/**
+ * Bounds a webview init chain against a hung transport call, so
+ * `runWebview`'s `finally` can always reach `Homey.ready()`. The
+ * underlying work is not cancelled — a late success repaints over the
+ * error state.
  * @template T - Result type of the bounded work.
  * @param work - The init chain to bound.
  * @returns The work's result, or a rejection once the deadline passes.

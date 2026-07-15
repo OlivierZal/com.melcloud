@@ -14,9 +14,9 @@ import {
   type Homey,
   fireAndForget,
   homeyApiGet,
+  runWebview,
   surfaceError,
   trySetDocumentLanguage,
-  withInitTimeout,
 } from '../../../public/homey-api.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
@@ -57,14 +57,11 @@ class WidgetApp {
   // `ready()` always fires — an unbounded await here would hold Homey's
   // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
-    try {
-      await withInitTimeout(this.#run())
-    } catch (error) {
-      showInitError(error)
-    } finally {
-      this.#homey.ready({ height: document.body.scrollHeight })
-      this.#isReady = true
-    }
+    await runWebview(this.#homey, this.#run(), {
+      onError: showInitError,
+      height: () => document.body.scrollHeight,
+    })
+    this.#isReady = true
   }
 
   #addEventListeners(): void {

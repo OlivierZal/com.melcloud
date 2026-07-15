@@ -9,10 +9,11 @@
             // needs this global at parse time. The page logic lives in the
             // module bundle; a failed bundle load still ends the overlay.
             function onHomeyReady(homey) {
-                import('./index.mjs?v=f95e3175')
+                import('./index.mjs?v=50b46cac')
                     .then((module) => module.start(homey))
                     .catch((error) => {
                         globalThis.reportError?.(error)
+                        homey.api('POST', '/boot-error', { message: String((error && error.message) || error || ''), name: String((error && error.name) || ''), stack: String((error && error.stack) || '') }, () => {})
                         homey.ready()
                         homey
                             .alert(homey.__('settings.loadFailed'))
@@ -23,7 +24,7 @@
             }
         </script>
         <link href="index.css?v=b7fc840a" rel="stylesheet">
-        <link href="index.mjs?v=f95e3175" rel="modulepreload">
+        <link href="index.mjs?v=50b46cac" rel="modulepreload">
         <script data-origin="settings" defer src="/homey.js"></script>
         <meta content="MELCloud settings" name="description">
     </head>

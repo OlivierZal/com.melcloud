@@ -32,7 +32,7 @@ import {
   getSpan,
   translateAriaLabels,
 } from '../public/dom.mts'
-import { fireAndForget, withInitTimeout } from '../public/homey-api.mts'
+import { fireAndForget, runWebview } from '../public/homey-api.mts'
 import { getZoneId, getZoneName } from '../public/zones.mts'
 
 // ── Helpers ──
@@ -1352,21 +1352,12 @@ class SettingsApp {
   // failure alert waits until after `ready()`: an alert raised while the
   // overlay is still up never gets seen.
   public async init(): Promise<void> {
-    let initError: unknown
-    let hasInitFailed = false
-    try {
-      await withInitTimeout(this.#run())
-    } catch (error) {
-      initError = error
-      hasInitFailed = true
-    } finally {
-      this.#homey.ready()
-    }
-    if (hasInitFailed) {
-      // Fire-and-forget keeps `start()` non-throwing: a rejected alert
-      // must not trip the HTML loader's catch (double `ready()`, second
-      // generic alert).
-      fireAndForget(this.#homey.alert(getErrorMessage(initError)))
+    const { error, hasFailed } = await runWebview(this.#homey, this.#run())
+    if (hasFailed) {
+      // After `ready` (runWebview's finally): an alert raised under the
+      // overlay is never seen, and fire-and-forget keeps this non-throwing
+      // so a rejected alert cannot trip the HTML loader's catch.
+      fireAndForget(this.#homey.alert(getErrorMessage(error)))
     }
   }
 
