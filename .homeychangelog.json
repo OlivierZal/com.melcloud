@@ -451,5 +451,20 @@
     "pl": "Lepsza diagnostyka, gdy widżet lub strona ustawień się nie ładuje.",
     "ru": "Улучшена диагностика, когда виджет или страница настроек не загружается.",
     "sv": "Bättre diagnostik när en widget eller inställningssidan inte laddas."
+  },
+  "45.2.6": {
+    "ar": "إصلاح صفحة الإعدادات والأدوات التي كانت لا تفتح.",
+    "da": "Retter indstillingssiden og widgets, der ikke kunne åbnes.",
+    "de": "Behebt das Nichtöffnen der Einstellungsseite und der Widgets.",
+    "en": "Fixes the settings page and widgets that would not open.",
+    "es": "Corrige la página de ajustes y los widgets que no se abrían.",
+    "fr": "Corrige la page de réglages et les widgets qui ne s'ouvraient pas.",
+    "it": "Corregge la pagina delle impostazioni e i widget che non si aprivano.",
+    "ko": "열리지 않던 설정 페이지와 위젯을 수정했습니다.",
+    "nl": "Verhelpt de instellingenpagina en widgets die niet openden.",
+    "no": "Fikser innstillingssiden og widgeter som ikke åpnet.",
+    "pl": "Naprawia stronę ustawień i widżety, które się nie otwierały.",
+    "ru": "Исправлены страница настроек и виджеты, которые не открывались.",
+    "sv": "Åtgärdar inställningssidan och widgetar som inte öppnades."
   }
 }
