@@ -5,27 +5,31 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>MELCloud Settings</title>
         <script>
-            // Canonical entry point from the app-settings docs: the SDK
-            // needs this global at parse time. The page logic lives in the
-            // module bundle; a failed bundle load still ends the overlay.
-            function onHomeyReady(homey) {
-                import('./index.mjs?v=50b46cac')
-                    .then((module) => module.start(homey))
-                    .catch((error) => {
+            // Registered at parse time: the SDK dispatches onHomeyReady on
+            // its own schedule, before the module bundle has loaded. The
+            // bundle loads as a parser-discovered static module (same fetch
+            // path as the stylesheets) rather than a JS-initiated dynamic
+            // import(), whose fetch fails on Android against Homey's local
+            // .homeylocal.com origin (diagnosed from a v45.2.4 boot-error
+            // report).
+            window.homeyReady = new Promise((resolve) => {
+                window.onHomeyReady = resolve
+            })
+            // onerror only fires if the module script itself fails to load;
+            // once it loads, its own init ends the overlay.
+            function reportSettingsBootFailure() {
+                window.homeyReady.then((homey) => {
+                    homey.api('POST', '/boot-error', { message: 'Failed to load the settings module script', name: 'BootError', stack: '' }, () => {})
+                    homey.ready()
+                    homey.alert(homey.__('settings.loadFailed')).catch((error) => {
                         globalThis.reportError?.(error)
-                        homey.api('POST', '/boot-error', { message: String((error && error.message) || error || ''), name: String((error && error.name) || ''), stack: String((error && error.stack) || '') }, () => {})
-                        homey.ready()
-                        homey
-                            .alert(homey.__('settings.loadFailed'))
-                            .catch((alertError) => {
-                                globalThis.reportError?.(alertError)
-                            })
                     })
+                })
             }
         </script>
         <link href="index.css?v=b7fc840a" rel="stylesheet">
-        <link href="index.mjs?v=50b46cac" rel="modulepreload">
         <script data-origin="settings" defer src="/homey.js"></script>
+        <script type="module" onerror="reportSettingsBootFailure()" src="index.mjs?v=e1bfaba5"></script>
         <meta content="MELCloud settings" name="description">
     </head>
     <body>

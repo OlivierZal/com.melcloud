@@ -1559,8 +1559,24 @@ class SettingsApp {
  * the SDK has dispatched (see the inline script in the page head).
  * @param homey - The Homey instance handed to `onHomeyReady`.
  */
-export const start = async (homey: Homey): Promise<void> => {
+const start = async (homey: Homey): Promise<void> => {
   translateAriaLabels((key) => homey.__(key))
   const app = new SettingsApp(homey)
   await app.init()
 }
+
+// Entry module: the SDK hands over Homey via the parse-time
+// bootstrap in the page <head>. This file boots on that handoff
+// rather than exporting a start() for the HTML to call, because
+// the bundle now loads as a parser-discovered static
+// <script type="module"> (a JS-initiated dynamic import fails to
+// fetch on Android against Homey's local origin) and a static
+// module can only self-boot.
+const boot = async (): Promise<void> => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- the SDK passes an untyped instance to onHomeyReady; this is that parse boundary
+  const homey = (await globalThis.homeyReady) as Homey
+  await start(homey)
+}
+
+// eslint-disable-next-line unicorn/prefer-top-level-await -- a top-level await would force an es2022 bundle target; esbuild then emits private fields natively instead of lowering them, breaking the older webview engines this static-load change exists to keep working
+fireAndForget(boot())
