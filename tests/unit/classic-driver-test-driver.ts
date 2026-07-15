@@ -35,9 +35,6 @@ export class TestDriver extends ClassicMELCloudDriver<TestDriverType> {
     set: mock<SetCapabilityTagMapping<TestDriverType>>({
       onoff: 'Power',
       thermostat_mode: 'OperationMode',
-      // Dotted variant: its flow cards reuse the base capability's arg
-      // name (see `getArg` in base-driver.mts).
-      'thermostat_mode.zone2': 'OperationModeZone2',
     }),
   }
 

@@ -145,7 +145,7 @@ describe(ClassicMELCloudDriver, () => {
 
       expect(devices).toStrictEqual([
         {
-          capabilities: ['onoff', 'thermostat_mode', 'thermostat_mode.zone2'],
+          capabilities: ['onoff', 'thermostat_mode'],
           capabilitiesOptions: {},
           data: { id: 1 },
           name: 'Device 1',
