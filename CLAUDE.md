@@ -128,37 +128,35 @@ coverage.
 
 ## Widgets
 
-- Webview lifecycle (settings page included): the SDK dispatches
-  `onHomeyReady` on its own schedule — the widget SDK is injected by the
-  host app at a time the page does not control — so each HTML declares
-  the docs' canonical global `function onHomeyReady(homey)` inline (it
-  must exist at parse time; a bundle only exists after its fetch), whose
-  body `import()`s the ESM bundle and hands the instance to its exported
-  `start(homey)`; the inline `.catch` ends the overlay even when the
-  bundle itself fails to load. Init work is time-bounded
-  (`withInitTimeout`) and `Homey.ready()` fires in a `finally`: a hung
-  or failed fetch surfaces an error (`#init_error` / post-ready alert),
-  never an endless loading overlay. `scripts/bundle.mjs` stamps every
-  local asset reference — attributes and the inline `import()` alike —
-  with a content hash (`?v=`): phone webviews cache assets across app
-  versions. Webview code must stick to es2020-era runtime APIs (no
-  `Object.groupBy` & co.): esbuild lowers syntax only, and old iOS
-  engines are real. The inline `onHomeyReady` + dynamic `import()` is
-  mandatory, not stylistic. A static `<script type="module" src>` (tried
-  in 45.2.5, reverted in 45.2.6) couples the whole boot to an early
-  fetch: the module is requested during parse, before the webview↔local
-  origin network is ready, so on a COLD open its fetch stalls — and since
-  the SDK dispatches `onHomeyReady` only after `load`, that stalled fetch
-  blocks `onHomeyReady` too. Proven with breadcrumbs over `homey app run`:
-  a cold open fires NEITHER `onHomeyReady` NOR the module (spinner
-  forever, and no `onerror` since a hang is not an error); a warm reopen
-  (module now cached) fires both ~60 ms apart and loads. The dynamic
-  `import()` fires late, inside `onHomeyReady` (post-`load`, network
-  warm), so it neither stalls nor blocks the SDK — which is why it has
-  always worked. Never reintroduce static module loading. The open
-  Android "Failed to fetch dynamically imported module" wants the
-  separate fetch removed entirely — inline the bundle into the HTML —
-  not a static tag.
+- Webview lifecycle (settings page included): the bundle is a CLASSIC
+  IIFE (esbuild `format: 'iife'`, `globalName: MELCloudWebview`), loaded
+  via `<script async src="index.js">` — NOT an ES module. Only the JS
+  module loader fails: both `import()` and `<script type="module">` stall
+  on a COLD webview open against Homey's local origin (the #1404 spinner
+  — and since the SDK fires `onHomeyReady` only after `load`, a stalled
+  module fetch blocks even that, so nothing runs at all), while classic
+  resource fetches — the stylesheet, a classic `<script src>` — load
+  cold. So each HTML declares the docs' canonical global
+  `function onHomeyReady(homey)` inline (it must exist at parse time),
+  which polls `globalThis.MELCloudWebview` and calls its `start(homey)`
+  once the async bundle is up. `async` (not `defer`) is deliberate: a
+  slow/stalled bundle must never block `onHomeyReady` from firing, or the
+  fallback below could not run. Two guarantees keep the overlay finite,
+  for two distinct phases (no overlap): the `onHomeyReady` poll's 10 s
+  timeout ends it if the bundle never loads (`#init_error` / post-ready
+  alert), and `runWebview`/`withInitTimeout` end it if a DATA fetch hangs
+  during init (`Homey.ready()` in a `finally`). `scripts/bundle.mjs`
+  stamps every local asset reference — only inside an attribute/import
+  context, never a comment — with a content hash (`?v=`): phone webviews
+  cache assets across app versions. Webview code must stick to es2020-era
+  runtime APIs (no `Object.groupBy` & co.): esbuild lowers syntax only,
+  and old iOS engines are real. NEVER load the bundle as an ES module:
+  dynamic `import()` worked on iOS but failed to fetch on Android (the
+  original #1404), and a static `<script type="module">` (45.2.5) spun
+  EVERY webview forever on a cold open (a stalled module fetch also
+  blocks `onHomeyReady`; proven with breadcrumbs over `homey app run`) —
+  both reverted. Classic async is the proven, on-device-cold-verified
+  form.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`

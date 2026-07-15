@@ -75,15 +75,6 @@ const api = {
   }): Promise<Classic.GroupState> => app.getHomeBuildingAtaState(buildingId),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
-  logWebviewBoot: ({
-    body,
-    homey: { app },
-  }: {
-    body: unknown
-    homey: Homey
-  }): void => {
-    app.error('Widget boot failed:', JSON.stringify(body))
-  },
   updateClassicAtaState: async ({
     body,
     homey: { app },

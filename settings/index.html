@@ -4,27 +4,32 @@
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>MELCloud Settings</title>
+        <script async src="index.js?v=00b6237e"></script>
         <script>
-            // Canonical entry point from the app-settings docs: the SDK
-            // needs this global at parse time. The page logic lives in the
-            // module bundle; a failed bundle load still ends the overlay.
+            // The page bundle loads as a classic async script, not an ES
+            // module: module fetches (import()/type=module)
+            // stall on a cold webview open against Homey's local origin
+            // (the #1404 spinner), while classic resource fetches — like
+            // the stylesheet — load cold. async keeps a slow load from
+            // blocking the SDK's onHomeyReady; the poll hands the instance
+            // to the bundle's start once it is up, or ends the overlay if
+            // it never arrives.
             function onHomeyReady(homey) {
-                import('./index.mjs?v=50b46cac')
-                    .then((module) => module.start(homey))
-                    .catch((error) => {
-                        globalThis.reportError?.(error)
-                        homey.api('POST', '/boot-error', { message: String((error && error.message) || error || ''), name: String((error && error.name) || ''), stack: String((error && error.stack) || '') }, () => {})
+                const deadline = Date.now() + 10000
+                const waitForBundle = () => {
+                    if (globalThis.MELCloudWebview) {
+                        globalThis.MELCloudWebview.start(homey)
+                    } else if (Date.now() > deadline) {
                         homey.ready()
-                        homey
-                            .alert(homey.__('settings.loadFailed'))
-                            .catch((alertError) => {
-                                globalThis.reportError?.(alertError)
-                            })
-                    })
+                        homey.alert(homey.__('settings.loadFailed')).catch(() => {})
+                    } else {
+                        setTimeout(waitForBundle, 50)
+                    }
+                }
+                waitForBundle()
             }
         </script>
         <link href="index.css?v=b7fc840a" rel="stylesheet">
-        <link href="index.mjs?v=50b46cac" rel="modulepreload">
         <script data-origin="settings" defer src="/homey.js"></script>
         <meta content="MELCloud settings" name="description">
     </head>

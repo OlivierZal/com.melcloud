@@ -48,10 +48,6 @@
       "method": "GET",
       "path": "/home/sessions"
     },
-    "logWebviewBoot": {
-      "method": "POST",
-      "path": "/boot-error"
-    },
     "updateClassicFrostProtection": {
       "method": "PUT",
       "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"

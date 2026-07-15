@@ -36,10 +36,6 @@
       "method": "GET",
       "path": "/language"
     },
-    "logWebviewBoot": {
-      "method": "POST",
-      "path": "/boot-error"
-    },
     "updateClassicAtaState": {
       "method": "PUT",
       "path": "/classic/zones/:zoneType/:zoneId/ata"

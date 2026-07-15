@@ -4,25 +4,32 @@
         <meta charset="utf-8">
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>Air-to-air device values</title>
+        <script async src="index.js?v=6c9968ba"></script>
         <script>
-            // Canonical entry point from the widget docs: the SDK needs
-            // this global at parse time. The page logic lives in the
-            // module bundle; a failed bundle load still ends the overlay.
+            // Classic async bundle, not an ES module: module fetches
+            // (import()/type=module) stall on a cold webview open
+            // against Homey's local origin (the #1404 spinner), while
+            // classic resource fetches — like the stylesheets — load cold.
+            // The poll hands the instance to the bundle's start once it is
+            // up, or shows the inline error and ends the overlay if it
+            // never arrives.
             function onHomeyReady(homey) {
-                import('./index.mjs?v=943d5a32')
-                    .then((module) => module.start(homey))
-                    .catch((error) => {
-                        globalThis.reportError?.(error)
-                        homey
-                            .api('POST', '/boot-error', { message: String((error && error.message) || error || ''), name: String((error && error.name) || ''), stack: String((error && error.stack) || '') })
-                            .catch(() => {})
+                const deadline = Date.now() + 10000
+                const waitForBundle = () => {
+                    if (globalThis.MELCloudWebview) {
+                        globalThis.MELCloudWebview.start(homey)
+                    } else if (Date.now() > deadline) {
                         const message = document.querySelector('#init_error')
                         if (message) {
                             message.hidden = false
                             message.textContent = homey.__('widgets.loadFailed')
                         }
                         homey.ready()
-                    })
+                    } else {
+                        setTimeout(waitForBundle, 50)
+                    }
+                }
+                waitForBundle()
             }
         </script>
         <link href="styles/layout.css?v=7d7e3bf5" rel="stylesheet">
@@ -32,7 +39,6 @@
         <link href="styles/smoke.css?v=a17bb95c" rel="stylesheet">
         <link href="styles/snowflake.css?v=06f4b14b" rel="stylesheet">
         <link href="styles/sun.css?v=da326d17" rel="stylesheet">
-        <link href="index.mjs?v=943d5a32" rel="modulepreload">
         <meta content="MELCloud air-to-air device setting" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">

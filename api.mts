@@ -166,15 +166,6 @@ const api = {
     }
     return app.homeApi.isAuthenticated()
   },
-  logWebviewBoot: ({
-    body,
-    homey: { app },
-  }: {
-    body: unknown
-    homey: Homey
-  }): void => {
-    app.error('Settings webview boot failed:', JSON.stringify(body))
-  },
   updateClassicFrostProtection: async ({
     body,
     homey: { app },
