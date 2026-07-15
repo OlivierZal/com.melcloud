@@ -473,8 +473,12 @@ const getChartPieConfig = ({
 
 const getChartConfig = (
   data: ReportChartLineOptions | ReportChartPieOptions,
-): WidgetChartConfig =>
-  'unit' in data ? getChartLineConfig(data) : getChartPieConfig(data)
+): WidgetChartConfig => {
+  if ('unit' in data) {
+    return getChartLineConfig(data)
+  }
+  return getChartPieConfig(data)
+}
 
 // ── Chart data fetching ──
 
@@ -896,5 +900,6 @@ export const start = async (homey: Homey<HomeySettings>): Promise<void> => {
     Title,
     Tooltip,
   )
-  await new ChartWidget(homey).init()
+  const widget = new ChartWidget(homey)
+  await widget.init()
 }

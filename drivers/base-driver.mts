@@ -10,7 +10,7 @@ import type { ManifestDriver } from '../types/manifest.mts'
 import { type Homey, Driver } from '../lib/homey.mts'
 
 const getArg = (capability: string): string => {
-  const [arg = capability] = capability.split('.')
+  const [arg = capability] = capability.split('.', 1)
   return arg
 }
 
