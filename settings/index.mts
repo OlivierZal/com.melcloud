@@ -1422,10 +1422,16 @@ class SettingsApp {
       throw new NoClassicDeviceError(this.#homey)
     }
     this.#zoneSettingsManager.populateZoneOptions(buildings)
-    await Promise.all([
-      this.#errorLogManager.fetchErrorLog(),
-      this.#zoneSettingsManager.fetchZoneSettings(),
-    ])
+    // Deferred past `ready()`: these populate panels the user opens later
+    // (the error log is a MELCloud cloud round-trip), so blocking first
+    // paint on them cost ~350 ms on a Homey Pro 2019. Each already falls
+    // back on its own error.
+    fireAndForget(
+      Promise.all([
+        this.#errorLogManager.fetchErrorLog(),
+        this.#zoneSettingsManager.fetchZoneSettings(),
+      ]),
+    )
   }
 
   // A failed probe reads as "not verified" rather than throwing: the
