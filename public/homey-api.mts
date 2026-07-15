@@ -6,6 +6,12 @@ export interface Homey<
   readonly getSettings: () => TSettings
 }
 
+declare global {
+  // Resolved by each page's inline bootstrap with the instance the SDK
+  // hands to onHomeyReady (see the <script> in every webview <head>).
+  var homeyReady: Promise<unknown>
+}
+
 // Give slow transports a real chance while keeping the loading overlay
 // finite: past this point the page surfaces the failure instead.
 const INIT_TIMEOUT_MS = 10_000

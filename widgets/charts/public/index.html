@@ -5,29 +5,35 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>MELCloud charts</title>
         <script>
-            // Canonical entry point from the widget docs: the SDK needs
-            // this global at parse time. The page logic lives in the
-            // module bundle; a failed bundle load still ends the overlay.
-            function onHomeyReady(homey) {
-                import('./index.mjs?v=29e2a468')
-                    .then((module) => module.start(homey))
-                    .catch((error) => {
-                        globalThis.reportError?.(error)
-                        homey
-                            .api('POST', '/boot-error', { message: String((error && error.message) || error || ''), name: String((error && error.name) || ''), stack: String((error && error.stack) || '') })
-                            .catch(() => {})
-                        const message = document.querySelector('#init_error')
-                        if (message) {
-                            message.hidden = false
-                            message.textContent = homey.__('widgets.loadFailed')
-                        }
-                        homey.ready()
-                    })
+            // Registered at parse time: the SDK dispatches onHomeyReady on
+            // its own schedule, before the module bundle has loaded. The
+            // bundle loads as a parser-discovered static module (same fetch
+            // path as the stylesheets) rather than a JS-initiated dynamic
+            // import(), whose fetch fails on Android against Homey's local
+            // .homeylocal.com origin (diagnosed from a v45.2.4 boot-error
+            // report).
+            window.homeyReady = new Promise((resolve) => {
+                window.onHomeyReady = resolve
+            })
+            // onerror only fires if the module script itself fails to load;
+            // once it loads, its own init ends the overlay.
+            function reportWidgetBootFailure() {
+                window.homeyReady.then((homey) => {
+                    homey
+                        .api('POST', '/boot-error', { message: 'Failed to load the widget module script', name: 'BootError', stack: '' })
+                        .catch(() => {})
+                    const message = document.querySelector('#init_error')
+                    if (message) {
+                        message.hidden = false
+                        message.textContent = homey.__('widgets.loadFailed')
+                    }
+                    homey.ready()
+                })
             }
         </script>
         <link href="styles/layout.css?v=b98ed57e" rel="stylesheet">
         <link href="styles/zone-select.css?v=2cded214" rel="stylesheet">
-        <link href="index.mjs?v=29e2a468" rel="modulepreload">
+        <script type="module" onerror="reportWidgetBootFailure()" src="index.mjs?v=16aa2a29"></script>
         <meta content="MELCloud charts" name="description">
     </head>
     <body class="homey-widget-full homey-text-align-center">
