@@ -4,6 +4,12 @@
     "invalidDuration": "La duración debe ser un número entero de días entre 0 y 365.",
     "zoneNotFound": "Zona no encontrada."
   },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "Tu cuenta de MELCloud ya no tiene la sesión iniciada. Abre los ajustes de la app MELCloud para volver a iniciar sesión.",
+      "home": "Tu cuenta de MELCloud Home ya no tiene la sesión iniciada. Abre los ajustes de la app MELCloud para volver a iniciar sesión."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Iniciar sesión",

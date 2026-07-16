@@ -87,5 +87,11 @@
     "days": "일수",
     "loadFailed": "로드에 실패했습니다",
     "zones": "구역"
+  },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "MELCloud 계정의 로그인이 해제되었습니다. MELCloud 앱 설정에서 다시 로그인하세요.",
+      "home": "MELCloud Home 계정의 로그인이 해제되었습니다. MELCloud 앱 설정에서 다시 로그인하세요."
+    }
   }
 }

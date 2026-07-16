@@ -4,6 +4,12 @@
     "invalidDuration": "يجب أن تكون المدة عددًا صحيحًا من الأيام بين 0 و365.",
     "zoneNotFound": "لم يتم العثور على المنطقة."
   },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "لم يعد حساب MELCloud الخاص بك مسجلاً للدخول. افتح إعدادات تطبيق MELCloud لتسجيل الدخول مجددًا.",
+      "home": "لم يعد حساب MELCloud Home الخاص بك مسجلاً للدخول. افتح إعدادات تطبيق MELCloud لتسجيل الدخول مجددًا."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "تسجيل الدخول",

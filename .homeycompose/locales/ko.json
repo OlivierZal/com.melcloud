@@ -4,6 +4,12 @@
     "invalidDuration": "기간은 0에서 365 사이의 정수(일)여야 합니다.",
     "zoneNotFound": "구역을 찾을 수 없습니다."
   },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "MELCloud 계정의 로그인이 해제되었습니다. MELCloud 앱 설정에서 다시 로그인하세요.",
+      "home": "MELCloud Home 계정의 로그인이 해제되었습니다. MELCloud 앱 설정에서 다시 로그인하세요."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "로그인",

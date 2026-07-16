@@ -489,6 +489,34 @@ describe('melCloudApp', () => {
       expect(mockSetFacadeManager).toHaveBeenCalledTimes(1)
     })
 
+    it.each([
+      ['classic', (): typeof mockCreate => mockCreate],
+      ['home', (): typeof mockHomeCreate => mockHomeCreate],
+    ])(
+      'should turn a lost %s session into a Homey notification',
+      async (api, getCreateMock) => {
+        await app.onInit()
+        const { events } = getMockCallArg<{
+          events: { onAuthenticationLost?: () => void }
+        }>(getCreateMock(), 0, 0)
+
+        events.onAuthenticationLost?.()
+        // The notification is deferred through homey.setTimeout
+        // (best-effort, off the event callstack): run the scheduled
+        // callback to observe it.
+        const scheduled = getMockCallArg<() => Promise<void>>(
+          mockSetTimeout,
+          mockSetTimeout.mock.calls.length - 1,
+          0,
+        )
+        await scheduled()
+
+        expect(mockCreateNotification).toHaveBeenCalledWith({
+          excerpt: `notifications.sessionExpired.${api}`,
+        })
+      },
+    )
+
     it('should not fetch Home devices itself (the API create contract owns it)', async () => {
       await app.onInit()
 

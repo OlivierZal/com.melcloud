@@ -4,6 +4,12 @@
     "invalidDuration": "Die Dauer muss eine ganze Zahl von Tagen zwischen 0 und 365 sein.",
     "zoneNotFound": "Zone nicht gefunden."
   },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "Dein MELCloud-Konto ist nicht mehr angemeldet. Öffne die Einstellungen der MELCloud-App, um dich erneut anzumelden.",
+      "home": "Dein MELCloud-Home-Konto ist nicht mehr angemeldet. Öffne die Einstellungen der MELCloud-App, um dich erneut anzumelden."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Anmelden",

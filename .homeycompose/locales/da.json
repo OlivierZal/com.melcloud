@@ -4,6 +4,12 @@
     "invalidDuration": "Varigheden skal være et helt antal dage mellem 0 og 365.",
     "zoneNotFound": "Zone ikke fundet."
   },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "Din MELCloud-konto er ikke længere logget ind. Åbn MELCloud-appens indstillinger for at logge ind igen.",
+      "home": "Din MELCloud Home-konto er ikke længere logget ind. Åbn MELCloud-appens indstillinger for at logge ind igen."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Log ind",

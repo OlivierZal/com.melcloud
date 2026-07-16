@@ -541,5 +541,20 @@
     "pl": "Wydanie serwisowe: wewnętrzne ulepszenia pakowania.",
     "ru": "Сервисный выпуск: внутренние улучшения сборки пакета.",
     "sv": "Underhållsversion: interna förbättringar av paketeringen."
+  },
+  "45.3.0": {
+    "ar": "يصلك إشعار عندما يحتاج حساب MELCloud إلى تسجيل دخول جديد، مع تهدئة المحاولات عندما يقيّد MELCloud تسجيلات الدخول.",
+    "da": "Få besked, når din MELCloud-konto kræver et nyt login, og logins sættes på pause, når MELCloud begrænser dem.",
+    "de": "Benachrichtigung, wenn dein MELCloud-Konto eine neue Anmeldung benötigt; Anmeldeversuche pausieren, wenn MELCloud sie drosselt.",
+    "en": "Get notified when your MELCloud account needs a new login, and sign-in attempts back off when MELCloud throttles them.",
+    "es": "Recibe un aviso cuando tu cuenta de MELCloud necesite iniciar sesión de nuevo; los intentos se pausan si MELCloud los limita.",
+    "fr": "Soyez averti lorsque votre compte MELCloud nécessite une reconnexion ; les tentatives se mettent en pause si MELCloud les limite.",
+    "it": "Ricevi una notifica quando il tuo account MELCloud richiede un nuovo accesso; i tentativi si sospendono se MELCloud li limita.",
+    "ko": "MELCloud 계정에 재로그인이 필요하면 알림을 받고, MELCloud가 로그인을 제한하면 시도를 자동으로 늦춥니다.",
+    "nl": "Krijg een melding wanneer je MELCloud-account opnieuw moet inloggen; pogingen pauzeren wanneer MELCloud ze beperkt.",
+    "no": "Få varsel når MELCloud-kontoen din trenger ny pålogging, og påloggingsforsøk settes på pause når MELCloud begrenser dem.",
+    "pl": "Otrzymuj powiadomienie, gdy konto MELCloud wymaga ponownego logowania; próby są wstrzymywane, gdy MELCloud je ogranicza.",
+    "ru": "Получайте уведомление, когда учётной записи MELCloud требуется повторный вход; попытки входа приостанавливаются при ограничениях MELCloud.",
+    "sv": "Få en avisering när ditt MELCloud-konto behöver en ny inloggning, och inloggningsförsök pausas när MELCloud begränsar dem."
   }
 }
