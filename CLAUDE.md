@@ -53,6 +53,13 @@ typescript`; it validates `outDir: .homeybuild`) — but only AFTER
   drift test in `tests/unit/capability-definitions.test.ts` fails when
   the copies fall behind.
 - `npm run homey:start` — `homey app run --remote` for on-device testing.
+  The `homey:install`/`homey:start`/`homey:publish` wrappers run
+  `build:assets` first: the CLI's pre-process copies the app BEFORE its
+  own `npm run build` runs, so bundles must already sit in the source
+  tree to be packed (same pre-copy pattern as publish.yml). `build`
+  keeps `build:assets` inside it on purpose — it is both the CLI hook
+  (contract: tsc into `.homeybuild`; extras tolerated) and the dev entry
+  point whose run keeps the committed `?v=` stamps in sync.
 
 Check real exit codes; never pipe a check's output through `tail`/`grep`
 to judge success. Remove any `.claude/worktrees/**` leftovers before
