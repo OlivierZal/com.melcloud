@@ -18,9 +18,16 @@ caught real failures that the others miss:
 - `npm test` / `npm run test:coverage` — vitest; branches are at 100%,
   keep them there.
 - `npm run build` — esbuild bundles (`scripts/bundle.mjs`) + `tsc` emit.
-  `settings/index.mjs` and `widgets/*/public/index.mjs` are gitignored
-  build outputs, never checked in; the Homey CLI regenerates them on
-  validate/install/run.
+  `settings/index.{js,mjs}` and `widgets/*/public/index.{js,mjs}` are
+  gitignored build outputs, never checked in. The Homey CLI does NOT
+  regenerate them — its pre-process runs only its own TypeScript
+  compile and copies everything else as-is (proven from a pristine
+  checkout and the publish CI logs). Anything that packs the app
+  (install, publish) ships whatever bundles sit in the working tree:
+  local installs work because the pre-push suite has built them, and
+  publish.yml MUST run `build:assets` before the publish action — a
+  store package without it 404s every webview script (the #1404 root
+  cause).
 - Cache-busting `?v=` — the build also stamps every local asset reference
   in the tracked `*/index.html` with a content hash (`?v=<hash>`), so
   phone webviews (which cache assets across app versions) refetch an
