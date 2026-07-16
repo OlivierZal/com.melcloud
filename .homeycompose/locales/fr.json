@@ -4,6 +4,12 @@
     "invalidDuration": "La durée doit être un nombre entier de jours entre 0 et 365.",
     "zoneNotFound": "Zone introuvable."
   },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "Votre compte MELCloud n'est plus connecté. Ouvrez les réglages de l'app MELCloud pour vous reconnecter.",
+      "home": "Votre compte MELCloud Home n'est plus connecté. Ouvrez les réglages de l'app MELCloud pour vous reconnecter."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Se connecter",

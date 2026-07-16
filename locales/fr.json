@@ -87,5 +87,11 @@
     "days": "Nombre de jours",
     "loadFailed": "Le chargement a échoué",
     "zones": "Zones"
+  },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "Votre compte MELCloud n'est plus connecté. Ouvrez les réglages de l'app MELCloud pour vous reconnecter.",
+      "home": "Votre compte MELCloud Home n'est plus connecté. Ouvrez les réglages de l'app MELCloud pour vous reconnecter."
+    }
   }
 }

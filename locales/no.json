@@ -87,5 +87,11 @@
     "days": "Antall dager",
     "loadFailed": "Innlasting mislyktes",
     "zones": "Soner"
+  },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "MELCloud-kontoen din er ikke lenger pålogget. Åpne innstillingene i MELCloud-appen for å logge på igjen.",
+      "home": "MELCloud Home-kontoen din er ikke lenger pålogget. Åpne innstillingene i MELCloud-appen for å logge på igjen."
+    }
   }
 }

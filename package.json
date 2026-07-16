@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "45.2.11",
+  "version": "45.3.0",
   "description": "MELCloud for Homey",
   "homepage": "https://github.com/OlivierZal/com.melcloud/",
   "bugs": {
@@ -31,7 +31,7 @@
     "typecheck": "node ./node_modules/@typescript/native/bin/tsc --noEmit"
   },
   "dependencies": {
-    "@olivierzal/melcloud-api": "^41.1.0",
+    "@olivierzal/melcloud-api": "^41.2.0",
     "source-map-support": "^0.5.21",
     "temporal-polyfill": "^1.0.1"
   },

@@ -4,6 +4,12 @@
     "invalidDuration": "Czas trwania musi być całkowitą liczbą dni od 0 do 365.",
     "zoneNotFound": "Nie znaleziono strefy."
   },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "Twoje konto MELCloud nie jest już zalogowane. Otwórz ustawienia aplikacji MELCloud, aby zalogować się ponownie.",
+      "home": "Twoje konto MELCloud Home nie jest już zalogowane. Otwórz ustawienia aplikacji MELCloud, aby zalogować się ponownie."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Zaloguj się",

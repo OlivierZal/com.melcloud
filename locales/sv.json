@@ -87,5 +87,11 @@
     "days": "Antal dagar",
     "loadFailed": "Inläsningen misslyckades",
     "zones": "Zoner"
+  },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "Ditt MELCloud-konto är inte längre inloggat. Öppna MELCloud-appens inställningar för att logga in igen.",
+      "home": "Ditt MELCloud Home-konto är inte längre inloggat. Öppna MELCloud-appens inställningar för att logga in igen."
+    }
   }
 }

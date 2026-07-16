@@ -842,7 +842,12 @@ export default class MELCloudApp extends App {
   }): Promise<void> {
     this.#classicApi = await Classic.API.create({
       ...config,
-      events: { onSyncComplete: this.#onSync },
+      events: {
+        onSyncComplete: this.#onSync,
+        onAuthenticationLost: () => {
+          this.#notifySessionLost('classic')
+        },
+      },
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager(),
     })
@@ -863,11 +868,34 @@ export default class MELCloudApp extends App {
   // every cycle, since `runSyncCycle` reschedules from its `finally`.
   async #initHomeApi(): Promise<void> {
     this.#homeApi = await Home.API.create({
-      events: { onSyncComplete: this.#onSync },
+      events: {
+        onSyncComplete: this.#onSync,
+        onAuthenticationLost: () => {
+          this.#notifySessionLost('home')
+        },
+      },
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager('home'),
     })
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
+  }
+
+  // User-facing half of melcloud-api's onAuthenticationLost contract:
+  // nothing else can surface a background session loss (widgets have no
+  // alert API and no webview is open when a sync loses the session).
+  // The library fires once per loss episode, so no dedup is needed
+  // here; the deferral mirrors #createNotification (off the event
+  // callstack, best-effort).
+  #notifySessionLost(api: Api): void {
+    this.homey.setTimeout(async () => {
+      try {
+        await this.homey.notifications.createNotification({
+          excerpt: this.homey.__(`notifications.sessionExpired.${api}`),
+        })
+      } catch {
+        // Non-critical: notification display is best-effort
+      }
+    }, 0)
   }
 
   #registerFlowListeners(): void {

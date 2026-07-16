@@ -87,5 +87,11 @@
     "days": "Anzahl der Tage",
     "loadFailed": "Laden fehlgeschlagen",
     "zones": "Zonen"
+  },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "Dein MELCloud-Konto ist nicht mehr angemeldet. Öffne die Einstellungen der MELCloud-App, um dich erneut anzumelden.",
+      "home": "Dein MELCloud-Home-Konto ist nicht mehr angemeldet. Öffne die Einstellungen der MELCloud-App, um dich erneut anzumelden."
+    }
   }
 }

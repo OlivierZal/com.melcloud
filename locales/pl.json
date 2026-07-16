@@ -87,5 +87,11 @@
     "days": "Liczba dni",
     "loadFailed": "Ładowanie nie powiodło się",
     "zones": "Strefy"
+  },
+  "notifications": {
+    "sessionExpired": {
+      "classic": "Twoje konto MELCloud nie jest już zalogowane. Otwórz ustawienia aplikacji MELCloud, aby zalogować się ponownie.",
+      "home": "Twoje konto MELCloud Home nie jest już zalogowane. Otwórz ustawienia aplikacji MELCloud, aby zalogować się ponownie."
+    }
   }
 }
