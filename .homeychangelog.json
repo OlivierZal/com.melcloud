@@ -466,5 +466,20 @@
     "pl": "Naprawia stronę ustawień i widżety, które się nie otwierały.",
     "ru": "Исправлены страница настроек и виджеты, которые не открывались.",
     "sv": "Åtgärdar inställningssidan och widgetar som inte öppnades."
+  },
+  "45.2.7": {
+    "ar": "إيقاف محاولات تسجيل الدخول غير المجدية إلى MELCloud Home لمستخدمي Classic فقط.",
+    "da": "Stopper unødvendige MELCloud Home-loginforsøg for brugere med kun Classic.",
+    "de": "Stoppt unnötige MELCloud-Home-Anmeldeversuche bei reinen Classic-Nutzern.",
+    "en": "Stops needless MELCloud Home login attempts for Classic-only users.",
+    "es": "Detiene los intentos de inicio de sesión innecesarios en MELCloud Home para usuarios solo de Classic.",
+    "fr": "Arrête les tentatives de connexion inutiles à MELCloud Home pour les utilisateurs Classic uniquement.",
+    "it": "Interrompe i tentativi di accesso inutili a MELCloud Home per gli utenti solo Classic.",
+    "ko": "Classic 전용 사용자의 불필요한 MELCloud Home 로그인 시도를 중단합니다.",
+    "nl": "Stopt onnodige MELCloud Home-inlogpogingen voor gebruikers met alleen Classic.",
+    "no": "Stopper unødvendige MELCloud Home-innloggingsforsøk for brukere med kun Classic.",
+    "pl": "Zatrzymuje niepotrzebne próby logowania do MELCloud Home dla użytkowników korzystających tylko z Classic.",
+    "ru": "Прекращает ненужные попытки входа в MELCloud Home для пользователей только Classic.",
+    "sv": "Stoppar onödiga inloggningsförsök till MELCloud Home för användare med enbart Classic."
   }
 }

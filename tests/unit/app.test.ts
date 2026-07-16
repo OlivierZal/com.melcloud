@@ -489,6 +489,16 @@ describe('melCloudApp', () => {
       expect(mockSetFacadeManager).toHaveBeenCalledTimes(1)
     })
 
+    it('should not fetch Home devices itself (the API create contract owns it)', async () => {
+      await app.onInit()
+
+      // Boot-time fetch + auto-sync arming live in melcloud-api's
+      // `create()`, identically for both APIs: an app-side `list()`
+      // would duplicate the fetch when authenticated and, for a
+      // Classic-only user, 401 on every rescheduled cycle.
+      expect(mockHomeApiInstance.list).not.toHaveBeenCalled()
+    })
+
     it('should pass logger callbacks that delegate to app.log and app.error', async () => {
       const logMock = vi.fn<(...args: unknown[]) => void>()
       const errorMock = vi.fn<(...args: unknown[]) => void>()
@@ -928,9 +938,8 @@ describe('melCloudApp', () => {
   })
 
   describe('home device listing by type', () => {
-    it('should delegate to registry getByType after syncing', async () => {
+    it('should delegate to registry getByType', async () => {
       const mockModels = [{ id: 'device-1', name: 'Living Room' }]
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getByType.mockReturnValue(mockModels)
       await app.onInit()
 
@@ -962,7 +971,6 @@ describe('melCloudApp', () => {
 
     it('should return an ATA facade for a matching ATA device', async () => {
       const mockFacade = mock<Home.DeviceAtaFacade>()
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getById.mockReturnValue(mockAtaModel)
       mockHomeFacadeManagerGet.mockReturnValue(mockFacade)
       await app.onInit()
@@ -976,7 +984,6 @@ describe('melCloudApp', () => {
 
     it('should return an ATW facade for a matching ATW device', async () => {
       const mockFacade = mock<Home.DeviceAtwFacade>()
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getById.mockReturnValue(mockAtwModel)
       mockHomeFacadeManagerGet.mockReturnValue(mockFacade)
       await app.onInit()
@@ -988,7 +995,6 @@ describe('melCloudApp', () => {
     })
 
     it('should throw when device is not found in registry', async () => {
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getById.mockReset()
       await app.onInit()
 
@@ -999,7 +1005,6 @@ describe('melCloudApp', () => {
     })
 
     it('should throw when the device type does not match', async () => {
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getById.mockReturnValue(mockAtwModel)
       await app.onInit()
 
@@ -1009,7 +1014,6 @@ describe('melCloudApp', () => {
     })
 
     it('should throw when the model matches neither ATA nor ATW', async () => {
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getById.mockReturnValue({
         ...mockAtaModel,
         isAta: (): boolean => false,
@@ -1024,7 +1028,6 @@ describe('melCloudApp', () => {
 
   describe('home ata targets', () => {
     it('should nest alpha-sorted devices under their alpha-sorted building', async () => {
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getBuildingsByType.mockReturnValue([
         {
           devices: [
@@ -1084,7 +1087,6 @@ describe('melCloudApp', () => {
     }
 
     const setupHomeAtaFacade = (facade: Home.DeviceAtaFacade): void => {
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeRegistry.getById.mockReturnValue(mockAtaModel)
       mockHomeFacadeManagerGet.mockReturnValue(facade)
     }
@@ -1165,7 +1167,6 @@ describe('melCloudApp', () => {
     const groupState = { Power: true }
 
     it('should return the building group state', async () => {
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeFacadeManagerGetBuilding.mockReturnValue(
         mock<Home.BuildingAtaFacade>({
           getGroup: vi
@@ -1187,7 +1188,6 @@ describe('melCloudApp', () => {
       const mockUpdateGroupState = vi
         .fn<(state: unknown) => Promise<unknown>>()
         .mockResolvedValue({ AttributeErrors: null, Success: true })
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeFacadeManagerGetBuilding.mockReturnValue(
         mock<Home.BuildingAtaFacade>({
           updateGroupState: mockUpdateGroupState,
@@ -1205,7 +1205,6 @@ describe('melCloudApp', () => {
 
     it('should list the member modes in the classic vocabulary', async () => {
       const member = { id: 'device-1' }
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeFacadeManagerGetBuilding.mockReturnValue(
         mock<Home.BuildingAtaFacade>({ devices: [member] }),
       )
@@ -1221,7 +1220,6 @@ describe('melCloudApp', () => {
     })
 
     it('should throw not-found for an unknown building', async () => {
-      mockHomeApiInstance.list.mockResolvedValue([])
       mockHomeFacadeManagerGetBuilding.mockReturnValue(null)
       await app.onInit()
 
@@ -2018,7 +2016,6 @@ describe('melCloudApp', () => {
         [mock<ClassicMELCloudDevice>({ syncFromDevice: syncMock })],
         'home-melcloud',
       )
-      mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
       await getHomeSyncCallback()()
@@ -2042,7 +2039,6 @@ describe('melCloudApp', () => {
         ],
         'home-melcloud',
       )
-      mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
       await getHomeSyncCallback()({
@@ -2056,7 +2052,6 @@ describe('melCloudApp', () => {
     it('should silently skip sync when driver is not yet registered', async () => {
       const syncMock = vi.fn<() => Promise<void>>().mockResolvedValue()
       mockGetDrivers.mockReturnValue({})
-      mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
       await getHomeSyncCallback()()
@@ -2065,7 +2060,6 @@ describe('melCloudApp', () => {
     })
 
     it('should wire the same onSync callback on both Classic and Home APIs', async () => {
-      mockHomeApiInstance.list.mockResolvedValue([])
       await app.onInit()
 
       expect(getSyncCallback()).toBe(getHomeSyncCallback())

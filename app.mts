@@ -853,6 +853,14 @@ export default class MELCloudApp extends App {
     setClassicFacadeManager(this.#facadeManager)
   }
 
+  // Mirrors #initClassicApi: create + facade wiring, no fetch. The
+  // boot-time registry contract lives in melcloud-api, identically for
+  // both APIs — `create()` populates the registry and arms the auto-sync
+  // whenever a session or credentials are available, `authenticate()`
+  // enforces a post-auth sync, and no credentials means total silence.
+  // An app-side `list()` here would duplicate that fetch when
+  // authenticated and, for a Classic-only user, 401 — and keep 401ing
+  // every cycle, since `runSyncCycle` reschedules from its `finally`.
   async #initHomeApi(): Promise<void> {
     this.#homeApi = await Home.API.create({
       events: { onSyncComplete: this.#onSync },
@@ -860,7 +868,6 @@ export default class MELCloudApp extends App {
       settingManager: this.#createSettingManager('home'),
     })
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
-    await this.#homeApi.list()
   }
 
   #registerFlowListeners(): void {
