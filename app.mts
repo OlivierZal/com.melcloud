@@ -853,6 +853,14 @@ export default class MELCloudApp extends App {
     setClassicFacadeManager(this.#facadeManager)
   }
 
+  // Mirrors #initClassicApi: create + facade wiring, no fetch. The
+  // boot-time registry contract lives in melcloud-api, identically for
+  // both APIs — `create()` populates the registry and arms the auto-sync
+  // whenever a session or credentials are available, `authenticate()`
+  // enforces a post-auth sync, and no credentials means total silence.
+  // An app-side `list()` here would duplicate that fetch when
+  // authenticated and, for a Classic-only user, 401 — and keep 401ing
+  // every cycle, since `runSyncCycle` reschedules from its `finally`.
   async #initHomeApi(): Promise<void> {
     this.#homeApi = await Home.API.create({
       events: { onSyncComplete: this.#onSync },
@@ -860,17 +868,6 @@ export default class MELCloudApp extends App {
       settingManager: this.#createSettingManager('home'),
     })
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
-    // Only fetch (which also arms the recurring sync) once `create()`'s
-    // resumeSession has actually restored a session — the melcloud-api
-    // contract is to check `isAuthenticated()` after `create()`. A
-    // Classic-only user has no Home credentials, so an unconditional
-    // `list()` would 401 and `runSyncCycle` would then reschedule that
-    // 401 on every cycle. Classic needs no such guard: it never forces a
-    // fetch, so its sync stays disarmed until a session exists. A later
-    // Home login re-arms the sync through the settings authenticate flow.
-    if (this.#homeApi.isAuthenticated()) {
-      await this.#homeApi.list()
-    }
   }
 
   #registerFlowListeners(): void {
