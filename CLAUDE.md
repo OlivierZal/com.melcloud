@@ -15,6 +15,13 @@ caught real failures that the others miss:
 - `npm run lint` / `npm run lint:fix` — ESLint (needs its 8 GB heap; also
   lints CSS and HTML via the css/html plugins).
 - `npm run typecheck` — `tsc` from `@typescript/native` (TypeScript 7).
+  The classic `typescript` devDependency stays pinned to the newest line
+  typescript-eslint supports (`~6.0.x`; its peer range excludes TS 7):
+  it exists ONLY for typescript-eslint's type-aware linting — and as the
+  Homey CLI's `usesTypeScript` gate, whose mere PRESENCE makes the CLI
+  run `npm run build` at packaging (removing it would ship bundle-less
+  packages again). Dependabot ignores its majors; move the pin when
+  typescript-eslint announces TypeScript 7 support.
 - `npm test` / `npm run test:coverage` — vitest; branches are at 100%,
   keep them there.
 - `npm run build` — esbuild bundles (`scripts/bundle.mjs`) + `tsc`

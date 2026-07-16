@@ -41,6 +41,14 @@ updates:
         patterns:
           - '@vitest/*'
           - vitest
+    # The classic `typescript` package intentionally trails on the
+    # newest line typescript-eslint supports (its peer range excludes
+    # TS 7); the real compiler is `@typescript/native`. Re-evaluate
+    # when typescript-eslint announces TypeScript 7 support.
+    ignore:
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
     package-ecosystem: npm
     registries:
       - npm-github
