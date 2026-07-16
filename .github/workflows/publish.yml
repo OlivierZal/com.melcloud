@@ -18,24 +18,6 @@ jobs:
           cache: none
           npm-token: ${{ secrets.GITHUB_TOKEN }}
       - run: cp "$NPM_CONFIG_USERCONFIG" "$GITHUB_WORKSPACE/.npmrc"
-      # The webview bundles are gitignored esbuild outputs: without this
-      # step the packed app ships settings/widget pages whose script src
-      # 404s on every store install ("Loading failed" — the #1404 root
-      # cause; dev-installs mask it because the working tree holds local
-      # builds).
-      - name: Build webview bundles
-        run: npm run build:assets
-      - name: Assert the bundles are in the package
-        run: |
-          for file in settings/index.js settings/index.mjs \
-            widgets/ata-group-setting/public/index.js \
-            widgets/ata-group-setting/public/index.mjs \
-            widgets/charts/public/index.js widgets/charts/public/index.mjs; do
-            if [ ! -s "$file" ]; then
-              echo "::error::Missing webview bundle: $file"
-              exit 1
-            fi
-          done
       - id: publish
         name: Publish
         uses: athombv/github-action-homey-app-publish@0642b483f1eb66fbceb0c91b73df35d45fd2f3db
@@ -43,6 +25,26 @@ jobs:
           personal_access_token: ${{ secrets.HOMEY_PAT }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # The CLI's own `npm run build` (post-copy) must have emitted the
+      # webview bundles into .homeybuild and stamped the packaged pages —
+      # a silent regression here is the #1404 class. Post-hoc by
+      # necessity (packing happens inside the action), so a failure here
+      # fails the workflow loudly right after the upload.
+      - name: Assert the packaged bundles
+        run: |
+          for file in settings/index.js settings/index.mjs \
+            widgets/ata-group-setting/public/index.js \
+            widgets/ata-group-setting/public/index.mjs \
+            widgets/charts/public/index.js widgets/charts/public/index.mjs; do
+            if [ ! -s ".homeybuild/$file" ]; then
+              echo "::error::Missing packaged bundle: .homeybuild/$file"
+              exit 1
+            fi
+          done
+          if ! grep -q 'index\.js?v=' .homeybuild/settings/index.html; then
+            echo "::error::Packaged settings HTML is unstamped"
+            exit 1
+          fi
       - name: URL
         env:
           URL: ${{ steps.publish.outputs.url }}

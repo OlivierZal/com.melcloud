@@ -17,34 +17,27 @@ caught real failures that the others miss:
 - `npm run typecheck` — `tsc` from `@typescript/native` (TypeScript 7).
 - `npm test` / `npm run test:coverage` — vitest; branches are at 100%,
   keep them there.
-- `npm run build` — esbuild bundles (`scripts/bundle.mjs`) + `tsc` emit.
-  `settings/index.{js,mjs}` and `widgets/*/public/index.{js,mjs}` are
-  gitignored build outputs, never checked in. The Homey CLI DOES run
-  `npm run build` when it detects TypeScript (`devDependencies.
-typescript`; it validates `outDir: .homeybuild`) — but only AFTER
-  its pre-process copy into `.homeybuild`. The tsc emit lands in
-  `.homeybuild` (contract respected, the app code ships); esbuild's
-  outputs land in the SOURCE tree, too late to be copied, so a package
-  built from a pristine checkout ships the webview HTML without its
-  scripts — the #1404 root cause: every store install 404s the
-  bundles. Local installs work because the pre-push suite builds the
-  bundles into the source tree BEFORE the copy. publish.yml therefore
-  runs `build:assets` before the publish action (the same pre-copy
-  pattern as the local flow) and asserts every bundle exists.
-- Cache-busting `?v=` — the build also stamps every local asset reference
-  in the tracked `*/index.html` with a content hash (`?v=<hash>`), so
-  phone webviews (which cache assets across app versions) refetch an
-  asset exactly when its bytes change. **Never hand-edit a `?v=` or bump
-  it "for a release": it is a content hash, not a version** — the build
-  sets it, and it moves automatically iff the asset content changes
-  (identical bytes → identical hash → no diff; a release that touches no
-  webview asset leaves every `?v=` untouched, which is correct). Because
-  the HTML is committed, any change to a bundled webview source
-  (`settings/**`, `widgets/*/public/**`, their CSS) must be followed by
-  `npm run build` and a commit of the re-stamped HTML. The mandatory
-  pre-push suite runs the build, so following it keeps the stamp in sync;
-  skipping it ships a stale `?v=` and phones keep serving the old cached
-  bundle — the exact staleness `?v=` exists to prevent.
+- `npm run build` — esbuild bundles (`scripts/bundle.mjs`) + `tsc`
+  emit, BOTH into `.homeybuild`. The Homey CLI runs `npm run build`
+  when it detects TypeScript (`devDependencies.typescript`; it
+  validates `outDir: .homeybuild`) — but only AFTER its pre-process
+  copy into `.homeybuild`, so the source tree stays sources-only and
+  everything the package needs must be emitted there: tsc does it via
+  `outDir`, and `bundle.mjs` emits the webview bundles there too (its
+  former source-tree outfiles landed too late to be copied — the #1404
+  root cause: every store install 404'd the bundles). The CLI's own
+  build invocation is therefore sufficient for install, run, validate
+  and publish alike; a standalone suite run (no `.homeybuild` page
+  copies) still proves the bundles compile.
+- Cache-busting `?v=` — a PACKAGE-TIME transform: `bundle.mjs` stamps
+  every local asset reference of the `.homeybuild` page copies with a
+  content hash (`?v=<hash>`), so phone webviews (which cache assets
+  across app versions) refetch an asset exactly when its bytes change.
+  The committed source HTML carries NO stamps — never hand-add a `?v=`
+  there, and nothing needs re-committing when a webview source changes
+  (the old re-stamp-and-commit dance is gone). Stamps exist only in the
+  packaged app, and only within attribute/import reference contexts,
+  never comments.
 - `npm run homey:validate` — Homey validation at publish level; may
   rewrite files (see locales below), re-stage if it does.
 - `node scripts/sync-capability-definitions.mjs` — refreshes the
@@ -53,13 +46,9 @@ typescript`; it validates `outDir: .homeybuild`) — but only AFTER
   drift test in `tests/unit/capability-definitions.test.ts` fails when
   the copies fall behind.
 - `npm run homey:start` — `homey app run --remote` for on-device testing.
-  The `homey:install`/`homey:start`/`homey:publish` wrappers run
-  `build:assets` first: the CLI's pre-process copies the app BEFORE its
-  own `npm run build` runs, so bundles must already sit in the source
-  tree to be packed (same pre-copy pattern as publish.yml). `build`
-  keeps `build:assets` inside it on purpose — it is both the CLI hook
-  (contract: tsc into `.homeybuild`; extras tolerated) and the dev entry
-  point whose run keeps the committed `?v=` stamps in sync.
+  The `homey:*` wrappers are plain CLI calls: the CLI's own
+  `npm run build` (post-copy) emits everything the package needs into
+  `.homeybuild`, so no pre-build step is required anywhere.
 
 Check real exit codes; never pipe a check's output through `tail`/`grep`
 to judge success. Remove any `.claude/worktrees/**` leftovers before
@@ -171,9 +160,10 @@ coverage.
   timeout ends it if the bundle never loads (`#init_error` / post-ready
   alert), and `runWebview`/`withInitTimeout` end it if a DATA fetch hangs
   during init (`Homey.ready()` in a `finally`). `scripts/bundle.mjs`
-  stamps every local asset reference — only inside an attribute/import
-  context, never a comment — with a content hash (`?v=`): phone webviews
-  cache assets across app versions. Webview code must stick to es2020-era
+  stamps the PACKAGED `.homeybuild` page copies — only inside an
+  attribute/import context, never a comment — with a content hash
+  (`?v=`): phone webviews cache assets across app versions; the source
+  HTML stays unstamped. Webview code must stick to es2020-era
   runtime APIs (no `Object.groupBy` & co.): esbuild lowers syntax only,
   and old iOS engines are real. Never load the bundle as a STATIC
   `<script type="module">`: 45.2.5 shipped that and every webview spun
