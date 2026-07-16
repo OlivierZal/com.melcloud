@@ -526,5 +526,20 @@
     "pl": "Naprawia datę ostatniego cyklu antylegionellowego, która nie wyświetlała się na urządzeniach powietrze-woda.",
     "ru": "Исправлено отображение даты последнего цикла легионеллы на устройствах воздух-вода.",
     "sv": "Åtgärdar datumet för den senaste legionellacykeln som inte visades på luft-till-vatten-enheter."
+  },
+  "45.2.11": {
+    "ar": "إصدار صيانة: تحسينات داخلية في تجميع التطبيق.",
+    "da": "Vedligeholdelsesudgivelse: interne forbedringer af app-pakningen.",
+    "de": "Wartungsversion: interne Verbesserungen der App-Paketierung.",
+    "en": "Maintenance release: internal packaging improvements.",
+    "es": "Versión de mantenimiento: mejoras internas del empaquetado.",
+    "fr": "Version de maintenance : améliorations internes de l'empaquetage.",
+    "it": "Versione di manutenzione: miglioramenti interni del packaging.",
+    "ko": "유지 보수 릴리스: 내부 패키징 개선.",
+    "nl": "Onderhoudsrelease: interne verbeteringen van de verpakking.",
+    "no": "Vedlikeholdsutgivelse: interne forbedringer av pakkingen.",
+    "pl": "Wydanie serwisowe: wewnętrzne ulepszenia pakowania.",
+    "ru": "Сервисный выпуск: внутренние улучшения сборки пакета.",
+    "sv": "Underhållsversion: interna förbättringar av paketeringen."
   }
 }
