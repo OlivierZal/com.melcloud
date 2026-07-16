@@ -246,9 +246,17 @@ coverage.
 
 - `main` is protected (PRs only, squash merges, 6 required contexts,
   `strict=false`); merge queue is impossible (user-owned repo, org-only
-  feature). Copilot reviews every PR — answer every comment, and verify
-  its claims against sources before acting: it has been wrong about
-  library semantics.
+  feature).
+- After every push, monitor the triggered pipelines to completion — the
+  PR checks after a push, the publish run after a release tag — and act
+  on the outcome: rerun transient infra failures (a SonarCloud 504 is
+  not a finding), fix real ones. Work is not done while its pipeline is
+  red or unwatched.
+- Copilot reviews every PR, and every review thread (Copilot or human)
+  must end RESOLVED: with a code change when the point holds, or with a
+  reasoned reply when it does not — verify claims against sources
+  before acting either way (Copilot has been wrong about library
+  semantics). Resolve the thread once settled; none left dangling.
 - Verify claimed library behavior empirically (headless chromium against
   the real dist/bundle in the scratchpad) rather than from memory — this
   repo's PRs document several review claims refuted that way.
