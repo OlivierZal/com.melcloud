@@ -147,13 +147,17 @@ coverage.
 
 - Webview lifecycle (settings page included): the bundle is a CLASSIC
   IIFE (esbuild `format: 'iife'`, `globalName: MELCloudWebview`), loaded
-  via `<script defer src="index.js">` — NOT an ES module. Only the JS
-  module loader fails: both `import()` and `<script type="module">` stall
-  on a COLD webview open against Homey's local origin (the #1404 spinner
-  — and since the SDK fires `onHomeyReady` only after `load`, a stalled
-  module fetch blocks even that, so nothing runs at all), while classic
-  resource fetches — the stylesheet, a classic `<script src>` — load
-  cold. So each HTML declares the docs' canonical global
+  via `<script defer src="index.js">` — NOT an ES module. What is proven
+  on-device: a STATIC `<script type="module">` stalls the whole boot on
+  a cold open (and since the SDK fires `onHomeyReady` only after `load`,
+  the stalled module fetch blocks even that, so nothing runs at all),
+  while classic scripts — like the stylesheets — load cold. Dynamic
+  `import()` (the docs' canonical form) also works when the bundle
+  exists: its supposed Android fetch failures were #1404's real cause,
+  store packages shipping no bundles at all. The classic form stays
+  because it is strictly more robust — bounded boot plus in-band beacon
+  — not because `import()` is broken. Each HTML declares the docs'
+  canonical global
   `function onHomeyReady(homey)` inline (it must exist at parse time),
   which polls `globalThis.MELCloudWebview` and calls its `start(homey)`
   once the bundle is up. `defer` (not `async`) is the right fit for an
@@ -171,13 +175,15 @@ coverage.
   context, never a comment — with a content hash (`?v=`): phone webviews
   cache assets across app versions. Webview code must stick to es2020-era
   runtime APIs (no `Object.groupBy` & co.): esbuild lowers syntax only,
-  and old iOS engines are real. NEVER load the bundle as an ES module:
-  dynamic `import()` worked on iOS but failed to fetch on Android (the
-  original #1404), and a static `<script type="module">` (45.2.5) spun
-  EVERY webview forever on a cold open (a stalled module fetch also
-  blocks `onHomeyReady`; proven with breadcrumbs over `homey app run`) —
-  both reverted. Classic `defer` is the proven, on-device-cold-verified
-  form. Phone webviews also cache the HTML ITSELF across app versions
+  and old iOS engines are real. Never load the bundle as a STATIC
+  `<script type="module">`: 45.2.5 shipped that and every webview spun
+  forever on a cold open (proven with breadcrumbs over `homey app run`;
+  reverted). Dynamic `import()` is merely unnecessary, not broken — its
+  supposed Android fetch failures were the missing-bundle 404s — but do
+  not churn the loading mechanism again without new on-device evidence:
+  classic `defer` is the cold-verified form and carries the bounded
+  boot plus beacon. Phone webviews also cache the HTML ITSELF across app
+  versions
   (proven in the wild: a cached dynamic-import-era HTML requested
   `index.mjs?v=…` against a 45.2.6 app shipping only `index.js` → 404 →
   "Loading failed"), so shipped bundle filenames are a COMPAT CONTRACT:

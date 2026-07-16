@@ -511,5 +511,20 @@
     "pl": "Naprawia stronę ustawień i widżety, które nie ładowały się po instalacji z App Store.",
     "ru": "Исправлена загрузка страницы настроек и виджетов при установке из App Store.",
     "sv": "Åtgärdar inställningssidan och widgetar som inte laddades vid installation från App Store."
+  },
+  "45.2.10": {
+    "ar": "إصلاح تاريخ آخر دورة ليجيونيلا الذي لم يكن يظهر على أجهزة الهواء-الماء.",
+    "da": "Retter datoen for seneste legionella-cyklus, der ikke blev vist på luft-til-vand-enheder.",
+    "de": "Behebt die fehlende Anzeige des Datums des letzten Legionellen-Zyklus bei Luft-Wasser-Geräten.",
+    "en": "Fixes the last legionella cycle date failing to display on air-to-water devices.",
+    "es": "Corrige la fecha del último ciclo de legionela que no se mostraba en los equipos aire-agua.",
+    "fr": "Corrige la date du dernier cycle anti-légionellose qui ne s'affichait pas sur les appareils air-eau.",
+    "it": "Corregge la data dell'ultimo ciclo antilegionella che non veniva visualizzata sui dispositivi aria-acqua.",
+    "ko": "공기-물 장치에서 마지막 레지오넬라 사이클 날짜가 표시되지 않던 문제를 수정했습니다.",
+    "nl": "Verhelpt de datum van de laatste legionella-cyclus die niet werd weergegeven op lucht-water-apparaten.",
+    "no": "Fikser datoen for siste legionella-syklus som ikke ble vist på luft-til-vann-enheter.",
+    "pl": "Naprawia datę ostatniego cyklu antylegionellowego, która nie wyświetlała się na urządzeniach powietrze-woda.",
+    "ru": "Исправлено отображение даты последнего цикла легионеллы на устройствах воздух-вода.",
+    "sv": "Åtgärdar datumet för den senaste legionellacykeln som inte visades på luft-till-vatten-enheter."
   }
 }

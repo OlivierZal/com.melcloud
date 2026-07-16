@@ -5,12 +5,13 @@
         <meta content="width=device-width, initial-scale=1.0" name="viewport">
         <title>Air-to-air device values</title>
         <script>
-            // Classic defer bundle, not an ES module: module fetches
-            // (import()/type=module) stall on a cold webview open
-            // against Homey's local origin (the #1404 spinner), while
-            // classic resource fetches — like the stylesheets — load cold.
-            // The poll hands the instance to the bundle's start once it is
-            // up, or shows the inline error and ends the overlay if it
+            // Classic defer bundle, not an ES module: a static module
+            // script stalls the whole boot on a cold webview open (a
+            // stalled module fetch also blocks onHomeyReady — proven
+            // on-device), while classic scripts, like the stylesheets,
+            // load cold. The poll keeps the boot bounded: it hands the
+            // instance to the bundle's start once it is up, or reports
+            // why, shows the inline error and ends the overlay if it
             // never arrives.
             function onHomeyReady(homey) {
                 const deadline = Date.now() + 10000

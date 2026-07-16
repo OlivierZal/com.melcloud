@@ -1,5 +1,4 @@
 import { hasClassicZone2, isClassicAtwFacade } from '@olivierzal/melcloud-api'
-import { Temporal } from 'temporal-polyfill'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {
@@ -10,7 +9,7 @@ import type {
 } from '../../types/capabilities.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
 import { KILOWATT_TO_WATT } from '../../lib/constants.mts'
-import { getLocale } from '../../lib/temporal.mts'
+import { getLocale, getTimeZone, toPlainDate } from '../../lib/temporal.mts'
 import { HotWaterMode } from '../../types/atw.mts'
 import {
   type TargetTemperatureFlowCapabilities,
@@ -86,12 +85,17 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
     'alarm_generic.defrost': ({ DefrostMode: mode }) => Boolean(mode),
     hot_water_mode: ({ ForcedHotWaterMode: isForced }) =>
       isForced ? HotWaterMode.forced : HotWaterMode.auto,
+    // MELCloud reports the timestamp either as a UTC instant (Z suffix)
+    // or as a wall-clock time — the same dialect split as the error log.
     legionella: ({ LastLegionellaActivationTime: time }) =>
-      Temporal.PlainDate.from(time).toLocaleString(getLocale(this.homey), {
-        day: 'numeric',
-        month: 'short',
-        weekday: 'short',
-      }),
+      toPlainDate(time, getTimeZone(this.homey)).toLocaleString(
+        getLocale(this.homey),
+        {
+          day: 'numeric',
+          month: 'short',
+          weekday: 'short',
+        },
+      ),
     operational_state: ({ OperationMode: state }) =>
       operationModeStateFromDevice[state],
   }
