@@ -160,7 +160,19 @@ coverage.
   EVERY webview forever on a cold open (a stalled module fetch also
   blocks `onHomeyReady`; proven with breadcrumbs over `homey app run`) —
   both reverted. Classic `defer` is the proven, on-device-cold-verified
-  form.
+  form. Phone webviews also cache the HTML ITSELF across app versions
+  (proven in the wild: a cached dynamic-import-era HTML requested
+  `index.mjs?v=…` against a 45.2.6 app shipping only `index.js` → 404 →
+  "Loading failed"), so shipped bundle filenames are a COMPAT CONTRACT:
+  `scripts/bundle.mjs` builds every entry twice — `index.js` (IIFE) for
+  the current HTML, `index.mjs` (ESM) for every cached ESM-era HTML,
+  which is why the entries keep `export const start`. Never rename or
+  drop a shipped bundle filename; add alongside. When a bundle still
+  fails to boot, the `onHomeyReady` poll's timeout beacon POSTs the
+  `userAgent` plus a `fetch` probe of the bundle to `/boot-error`
+  (`app.error`) before degrading, so a diagnostic report distinguishes
+  a fetch failure (probe error / non-200) from a parse-or-runtime crash
+  (probe 200, global absent — think pre-es2020 engines).
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`

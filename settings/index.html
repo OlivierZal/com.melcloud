@@ -18,8 +18,20 @@
                     if (globalThis.MELCloudWebview) {
                         globalThis.MELCloudWebview.start(homey)
                     } else if (Date.now() > deadline) {
-                        homey.ready()
-                        homey.alert(homey.__('settings.loadFailed')).catch(() => {})
+                        // Boot beacon: the bundle never booted — report WHY
+                        // before degrading. A 200 probe with no global means
+                        // the script fetched but failed to parse/run (old
+                        // engine); a probe error means the fetch itself
+                        // fails on this device.
+                        const script = document.querySelector('script[src*="index.js"]')
+                        const report = (probe) => {
+                            homey.api('POST', '/boot-error', { message: 'The settings bundle did not boot within 10s', name: 'BootTimeout', probe, stack: '', userAgent: navigator.userAgent }, () => {})
+                            homey.ready()
+                            homey.alert(homey.__('settings.loadFailed')).catch(() => {})
+                        }
+                        fetch(script ? script.src : 'index.js')
+                            .then((response) => { report('fetch ' + String(response.status)) })
+                            .catch((error) => { report('fetch failed: ' + String(error)) })
                     } else {
                         setTimeout(waitForBundle, 50)
                     }

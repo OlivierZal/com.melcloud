@@ -23,20 +23,38 @@ const entryPoints = [
   'settings/index.mts',
 ]
 
+const sharedOptions = {
+  bundle: true,
+  legalComments: 'none',
+  logLevel: 'info',
+  minify: true,
+  target: ['es2020'],
+}
+
+// Each entry builds TWICE. Phone webviews cache the HTML itself across
+// app versions (observed in the wild: a cached dynamic-import HTML
+// requesting index.mjs?v=… against an app shipping only index.js → 404 →
+// "Loading failed"), so previously-shipped bundle filenames are a compat
+// contract: index.js serves the current classic-defer HTML, index.mjs
+// keeps every cached ESM-era HTML working (their import('./index.mjs')
+// finds the exported `start`). Never rename or drop a shipped bundle
+// filename — add alongside instead.
 await Promise.all(
-  entryPoints.map(async (entryPoint) =>
+  entryPoints.flatMap((entryPoint) => [
     build({
-      bundle: true,
+      ...sharedOptions,
       entryPoints: [entryPoint],
       format: 'iife',
       globalName: GLOBAL_NAME,
-      legalComments: 'none',
-      logLevel: 'info',
-      minify: true,
       outfile: entryPoint.replace(/\.mts$/u, '.js'),
-      target: ['es2020'],
     }),
-  ),
+    build({
+      ...sharedOptions,
+      entryPoints: [entryPoint],
+      format: 'esm',
+      outfile: entryPoint.replace(/\.mts$/u, '.mjs'),
+    }),
+  ]),
 )
 
 // Cache-bust the static references: the phone webviews cache assets
