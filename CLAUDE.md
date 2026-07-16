@@ -19,15 +19,18 @@ caught real failures that the others miss:
   keep them there.
 - `npm run build` — esbuild bundles (`scripts/bundle.mjs`) + `tsc` emit.
   `settings/index.{js,mjs}` and `widgets/*/public/index.{js,mjs}` are
-  gitignored build outputs, never checked in. The Homey CLI does NOT
-  regenerate them — its pre-process runs only its own TypeScript
-  compile and copies everything else as-is (proven from a pristine
-  checkout and the publish CI logs). Anything that packs the app
-  (install, publish) ships whatever bundles sit in the working tree:
-  local installs work because the pre-push suite has built them, and
-  publish.yml MUST run `build:assets` before the publish action — a
-  store package without it 404s every webview script (the #1404 root
-  cause).
+  gitignored build outputs, never checked in. The Homey CLI DOES run
+  `npm run build` when it detects TypeScript (`devDependencies.
+  typescript`; it validates `outDir: .homeybuild`) — but only AFTER
+  its pre-process copy into `.homeybuild`. The tsc emit lands in
+  `.homeybuild` (contract respected, the app code ships); esbuild's
+  outputs land in the SOURCE tree, too late to be copied, so a package
+  built from a pristine checkout ships the webview HTML without its
+  scripts — the #1404 root cause: every store install 404s the
+  bundles. Local installs work because the pre-push suite builds the
+  bundles into the source tree BEFORE the copy. publish.yml therefore
+  runs `build:assets` before the publish action (the same pre-copy
+  pattern as the local flow) and asserts every bundle exists.
 - Cache-busting `?v=` — the build also stamps every local asset reference
   in the tracked `*/index.html` with a content hash (`?v=<hash>`), so
   phone webviews (which cache assets across app versions) refetch an
