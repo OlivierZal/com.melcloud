@@ -6,12 +6,13 @@
         <title>MELCloud Settings</title>
         <script>
             // The page bundle loads as a classic defer script, not an ES
-            // module: module fetches (import()/type=module) stall on a
-            // cold webview open against Homey's local origin (the #1404
-            // spinner), while classic resource fetches — like the
-            // stylesheet — load cold. The poll hands the instance to the
-            // bundle's start once it is up, or ends the overlay if it
-            // never arrives.
+            // module: a static module script stalls the whole boot on a
+            // cold webview open (a stalled module fetch also blocks
+            // onHomeyReady — proven on-device), while classic scripts,
+            // like the stylesheet, load cold. The poll keeps the boot
+            // bounded: it hands the instance to the bundle's start once
+            // it is up, or reports why and ends the overlay if it never
+            // arrives.
             function onHomeyReady(homey) {
                 const deadline = Date.now() + 10000
                 const waitForBundle = () => {

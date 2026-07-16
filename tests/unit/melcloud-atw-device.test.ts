@@ -177,6 +177,23 @@ describe(ClassicMELCloudDeviceAtw, () => {
       expect(result).toBeDefined()
       expect(result).toBeTypeOf('string')
     })
+
+    it('should convert legionella from a UTC instant (Z suffix) too', () => {
+      const {
+        deviceToCapability: { legionella: converter },
+      } = device
+
+      // Regression: MELCloud also sends the instant dialect, which
+      // Temporal.PlainDate.from rejects outright (user report).
+      const result = converter?.(
+        mock<Classic.ListDeviceDataAtw>({
+          LastLegionellaActivationTime: '2026-07-07T13:01:00Z',
+        }),
+      )
+
+      expect(result).toBeDefined()
+      expect(result).toBeTypeOf('string')
+    })
   })
 
   describe('capability-to-device conversions', () => {
