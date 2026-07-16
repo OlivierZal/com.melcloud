@@ -21,7 +21,7 @@ caught real failures that the others miss:
   `settings/index.{js,mjs}` and `widgets/*/public/index.{js,mjs}` are
   gitignored build outputs, never checked in. The Homey CLI DOES run
   `npm run build` when it detects TypeScript (`devDependencies.
-  typescript`; it validates `outDir: .homeybuild`) — but only AFTER
+typescript`; it validates `outDir: .homeybuild`) — but only AFTER
   its pre-process copy into `.homeybuild`. The tsc emit lands in
   `.homeybuild` (contract respected, the app code ships); esbuild's
   outputs land in the SOURCE tree, too late to be copied, so a package
