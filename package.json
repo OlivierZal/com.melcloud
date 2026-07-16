@@ -1,6 +1,6 @@
 {
   "name": "com.melcloud",
-  "version": "45.2.8",
+  "version": "45.2.9",
   "description": "MELCloud for Homey",
   "homepage": "https://github.com/OlivierZal/com.melcloud/",
   "bugs": {
@@ -20,9 +20,9 @@
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
     "github:push": "npm run homey:validate && npm run lint:fix && npm run format:fix && git push",
-    "homey:install": "npx homey app install",
-    "homey:publish": "npx homey app publish",
-    "homey:start": "npx homey app run --remote",
+    "homey:install": "npm run build:assets && npx homey app install",
+    "homey:publish": "npm run build:assets && npx homey app publish",
+    "homey:start": "npm run build:assets && npx homey app run --remote",
     "homey:validate": "npx homey app validate --level=publish",
     "lint": "node --max-old-space-size=8192 ./node_modules/eslint/bin/eslint.js .",
     "lint:fix": "npm run lint -- --fix",

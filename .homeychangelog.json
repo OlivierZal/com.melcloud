@@ -496,5 +496,20 @@
     "pl": "Lepsza diagnostyka, gdy strona lub widżet się nie ładuje.",
     "ru": "Улучшена диагностика, когда страница или виджет не загружается.",
     "sv": "Bättre diagnostik när en sida eller widget inte laddas."
+  },
+  "45.2.9": {
+    "ar": "إصلاح صفحة الإعدادات والأدوات التي كانت لا تُحمَّل عند التثبيت من المتجر.",
+    "da": "Retter indstillingssiden og widgets, der ikke kunne indlæses ved installation fra App Store.",
+    "de": "Behebt das Nichtladen der Einstellungsseite und der Widgets bei Installation aus dem App Store.",
+    "en": "Fixes the settings page and widgets failing to load when installed from the App Store.",
+    "es": "Corrige la página de ajustes y los widgets que no cargaban al instalar desde la App Store.",
+    "fr": "Corrige la page de réglages et les widgets qui ne se chargeaient pas lors d'une installation depuis l'App Store.",
+    "it": "Corregge la pagina delle impostazioni e i widget che non si caricavano se installati dall'App Store.",
+    "ko": "App Store에서 설치할 때 설정 페이지와 위젯이 로드되지 않던 문제를 수정했습니다.",
+    "nl": "Verhelpt de instellingenpagina en widgets die niet laadden bij installatie uit de App Store.",
+    "no": "Fikser innstillingssiden og widgeter som ikke lastet ved installasjon fra App Store.",
+    "pl": "Naprawia stronę ustawień i widżety, które nie ładowały się po instalacji z App Store.",
+    "ru": "Исправлена загрузка страницы настроек и виджетов при установке из App Store.",
+    "sv": "Åtgärdar inställningssidan och widgetar som inte laddades vid installation från App Store."
   }
 }

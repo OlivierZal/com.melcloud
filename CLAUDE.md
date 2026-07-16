@@ -18,9 +18,19 @@ caught real failures that the others miss:
 - `npm test` / `npm run test:coverage` — vitest; branches are at 100%,
   keep them there.
 - `npm run build` — esbuild bundles (`scripts/bundle.mjs`) + `tsc` emit.
-  `settings/index.mjs` and `widgets/*/public/index.mjs` are gitignored
-  build outputs, never checked in; the Homey CLI regenerates them on
-  validate/install/run.
+  `settings/index.{js,mjs}` and `widgets/*/public/index.{js,mjs}` are
+  gitignored build outputs, never checked in. The Homey CLI DOES run
+  `npm run build` when it detects TypeScript (`devDependencies.
+typescript`; it validates `outDir: .homeybuild`) — but only AFTER
+  its pre-process copy into `.homeybuild`. The tsc emit lands in
+  `.homeybuild` (contract respected, the app code ships); esbuild's
+  outputs land in the SOURCE tree, too late to be copied, so a package
+  built from a pristine checkout ships the webview HTML without its
+  scripts — the #1404 root cause: every store install 404s the
+  bundles. Local installs work because the pre-push suite builds the
+  bundles into the source tree BEFORE the copy. publish.yml therefore
+  runs `build:assets` before the publish action (the same pre-copy
+  pattern as the local flow) and asserts every bundle exists.
 - Cache-busting `?v=` — the build also stamps every local asset reference
   in the tracked `*/index.html` with a content hash (`?v=<hash>`), so
   phone webviews (which cache assets across app versions) refetch an
@@ -43,6 +53,13 @@ caught real failures that the others miss:
   drift test in `tests/unit/capability-definitions.test.ts` fails when
   the copies fall behind.
 - `npm run homey:start` — `homey app run --remote` for on-device testing.
+  The `homey:install`/`homey:start`/`homey:publish` wrappers run
+  `build:assets` first: the CLI's pre-process copies the app BEFORE its
+  own `npm run build` runs, so bundles must already sit in the source
+  tree to be packed (same pre-copy pattern as publish.yml). `build`
+  keeps `build:assets` inside it on purpose — it is both the CLI hook
+  (contract: tsc into `.homeybuild`; extras tolerated) and the dev entry
+  point whose run keeps the committed `?v=` stamps in sync.
 
 Check real exit codes; never pipe a check's output through `tail`/`grep`
 to judge success. Remove any `.claude/worktrees/**` leftovers before
