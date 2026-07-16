@@ -40,6 +40,14 @@ describe('charts api', () => {
     vi.clearAllMocks()
   })
 
+  describe('webview boot logging', () => {
+    it('should log the boot failure body via app.error', () => {
+      api.logWebviewBoot({ body: { message: 'boom' }, homey })
+
+      expect(mockApp.error).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('device retrieval', () => {
     it('should return only device zones without type filter', () => {
       const zones = [

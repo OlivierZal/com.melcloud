@@ -263,6 +263,14 @@ describe('api', () => {
     })
   })
 
+  describe('webview boot logging', () => {
+    it('should log the boot failure body via app.error', () => {
+      api.logWebviewBoot({ body: { message: 'boom' }, homey })
+
+      expect(mockApp.error).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('language retrieval', () => {
     it('should return the language from i18n', () => {
       mockI18n.getLanguage.mockReturnValue('en')

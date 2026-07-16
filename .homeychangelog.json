@@ -481,5 +481,20 @@
     "pl": "Zatrzymuje niepotrzebne próby logowania do MELCloud Home dla użytkowników korzystających tylko z Classic.",
     "ru": "Прекращает ненужные попытки входа в MELCloud Home для пользователей только Classic.",
     "sv": "Stoppar onödiga inloggningsförsök till MELCloud Home för användare med enbart Classic."
+  },
+  "45.2.8": {
+    "ar": "تشخيصات أفضل عندما تفشل صفحة أو أداة في التحميل.",
+    "da": "Bedre diagnostik når en side eller widget ikke kan indlæses.",
+    "de": "Bessere Diagnose, wenn eine Seite oder ein Widget nicht lädt.",
+    "en": "Better diagnostics when a page or widget fails to load.",
+    "es": "Mejores diagnósticos cuando una página o un widget no carga.",
+    "fr": "Meilleurs diagnostics lorsqu'une page ou un widget ne se charge pas.",
+    "it": "Diagnostica migliore quando una pagina o un widget non si carica.",
+    "ko": "페이지나 위젯이 로드되지 않을 때의 진단 기능이 개선되었습니다.",
+    "nl": "Betere diagnostiek wanneer een pagina of widget niet laadt.",
+    "no": "Bedre diagnostikk når en side eller widget ikke lastes.",
+    "pl": "Lepsza diagnostyka, gdy strona lub widżet się nie ładuje.",
+    "ru": "Улучшена диагностика, когда страница или виджет не загружается.",
+    "sv": "Bättre diagnostik när en sida eller widget inte laddas."
   }
 }
