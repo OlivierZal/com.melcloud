@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Autojustera luftkonditioneringstemperaturen",
       "configure": "Konfigurera",
-      "legend": "Luft-til-luft enhetsinställningar (Classic)"
+      "legend": "Inställningar för alla luft-till-luft-enheter (Classic och Home)"
     },
     "devicesAtw": {
       "legend": "Luft-til-vatten enhetsinställningar (Classic)"

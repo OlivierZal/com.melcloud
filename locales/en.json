@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Auto-adjust air conditioning temperature",
       "configure": "Configure",
-      "legend": "Air-to-air device settings (Classic)"
+      "legend": "All air-to-air device settings (Classic and Home)"
     },
     "devicesAtw": {
       "legend": "Air-to-water device settings (Classic)"

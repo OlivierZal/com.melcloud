@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Autoajustar la temperatura del enfriamiento",
       "configure": "Configurar",
-      "legend": "Configuración de los dispositivos aire-aire (Classic)"
+      "legend": "Ajustes de todos los dispositivos aire-aire (Classic y Home)"
     },
     "devicesAtw": {
       "legend": "Configuración de los dispositivos aire-agua (Classic)"

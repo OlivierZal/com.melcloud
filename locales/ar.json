@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "ضبط تلقائي لدرجة حرارة المكيف",
       "configure": "تكوين",
-      "legend": "إعدادات جهاز هواء-هواء (Classic)"
+      "legend": "إعدادات جميع أجهزة الهواء-هواء (Classic وHome)"
     },
     "devicesAtw": {
       "legend": "إعدادات جهاز هواء-ماء (Classic)"

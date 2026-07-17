@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "에어컨 온도 자동 조절",
       "configure": "구성",
-      "legend": "공기 대 공기 기기 설정 (Classic)"
+      "legend": "모든 공기-공기 기기 설정(Classic 및 Home)"
     },
     "devicesAtw": {
       "legend": "공기 대 물 기기 설정 (Classic)"

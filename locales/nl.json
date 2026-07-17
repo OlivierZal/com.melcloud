@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Auto-afstellen airco-temperatuur",
       "configure": "Configureren",
-      "legend": "Lucht-lucht apparaatinstellingen (Classic)"
+      "legend": "Instellingen van alle lucht-lucht-apparaten (Classic en Home)"
     },
     "devicesAtw": {
       "legend": "Lucht-water apparaatinstellingen (Classic)"

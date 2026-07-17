@@ -32,7 +32,7 @@
     "devicesAta": {
       "autoAdjust": "ضبط تلقائي لدرجة حرارة المكيف",
       "configure": "تكوين",
-      "legend": "إعدادات جهاز هواء-هواء (Classic)"
+      "legend": "إعدادات جميع أجهزة الهواء-هواء (Classic وHome)"
     },
     "errorLog": {
       "columns": {

@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Auto-ajuster la température de la climatisation",
       "configure": "Configurer",
-      "legend": "Paramètres des appareils air-air (Classic)"
+      "legend": "Paramètres de tous les appareils air-air (Classic et Home)"
     },
     "devicesAtw": {
       "legend": "Paramètres des appareils air-eau (Classic)"

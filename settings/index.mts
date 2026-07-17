@@ -246,9 +246,10 @@ const createLegend = (fieldSet: HTMLFieldSetElement, text?: string): void => {
 // so generation and lookup never drift.
 const toSectionId = (driverId: string): string => driverId.replaceAll('-', '_')
 
-// The Classic air-to-air driver is the only one with the temperature
-// auto-adjust link; its section is shown from its device presence.
-const CLASSIC_ATA_DRIVER_ID = 'melcloud'
+// The temperature auto-adjust link (the companion extension app) covers
+// both air-to-air drivers — the extension targets the Classic and the Home
+// ATA driver ids alike — so its section shows when either has devices.
+const ATA_DRIVER_IDS = ['melcloud', 'home-melcloud']
 
 const createSettingsButton = (
   homey: Homey,
@@ -762,7 +763,11 @@ class DeviceSettingsManager {
     for (const driverId of Object.keys(this.#deviceSettings)) {
       this.#createDriverSettingSection(driverSettings, driverId)
     }
-    if (Object.hasOwn(this.#deviceSettings, CLASSIC_ATA_DRIVER_ID)) {
+    if (
+      ATA_DRIVER_IDS.some((driverId) =>
+        Object.hasOwn(this.#deviceSettings, driverId),
+      )
+    ) {
       hide(getDiv('auto_adjust_section'), false)
     }
   }
