@@ -241,9 +241,60 @@ const createLegend = (fieldSet: HTMLFieldSetElement, text?: string): void => {
   fieldSet.append(legend)
 }
 
-// Static section ids must be snake_case (html lint), driver ids are not:
-// the Home drivers carry a hyphen.
+// The generated buttons carry snake_case ids (html lint) while driver ids
+// may carry a hyphen (the Home drivers): the two are kept in lockstep here,
+// so generation and lookup never drift.
 const toSectionId = (driverId: string): string => driverId.replaceAll('-', '_')
+
+// The Classic air-to-air driver is the only one with the temperature
+// auto-adjust link; its section is shown from its device presence.
+const CLASSIC_ATA_DRIVER_ID = 'melcloud'
+
+const createSettingsButton = (
+  homey: Homey,
+  action: 'apply' | 'refresh',
+  sectionId: string,
+): HTMLButtonElement => {
+  const button = document.createElement('button')
+  button.type = 'button'
+  button.id = `${action}_settings_${sectionId}`
+  button.classList.add(
+    action === 'apply' ?
+      'homey-button-danger-shadow'
+    : 'homey-button-secondary-shadow',
+  )
+  button.textContent = homey.__(
+    action === 'apply' ? 'settings.update' : 'settings.refresh',
+  )
+  return button
+}
+
+const createSectionShell = (
+  legendText: string,
+): { controls: HTMLDivElement; section: HTMLFieldSetElement } => {
+  const section = document.createElement('fieldset')
+  section.classList.add('homey-form-fieldset')
+  const legend = document.createElement('legend')
+  legend.classList.add('homey-form-legend')
+  legend.textContent = legendText
+  const controls = document.createElement('div')
+  controls.classList.add('homey-form-group')
+  section.append(legend, controls)
+  return { controls, section }
+}
+
+const createSettingsButtonRow = (
+  homey: Homey,
+  sectionId: string,
+): HTMLDivElement => {
+  const buttons = document.createElement('div')
+  buttons.classList.add('homey-form-group', 'container')
+  buttons.append(
+    createSettingsButton(homey, 'refresh', sectionId),
+    createSettingsButton(homey, 'apply', sectionId),
+  )
+  return buttons
+}
 
 const createCheckbox = (id: string, driverId: string): HTMLInputElement => {
   const checkbox = document.createElement('input')
@@ -623,6 +674,13 @@ class DeviceSettingsManager {
     return settings
   }
 
+  #createCheckboxSet(driverSetting: DriverSetting[]): HTMLFieldSetElement {
+    const checkboxSet = document.createElement('fieldset')
+    checkboxSet.classList.add('homey-form-checkbox-set')
+    this.#createDriverSettingControls(driverSetting, checkboxSet)
+    return checkboxSet
+  }
+
   #createCommonSettingControls(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
   ): void {
@@ -673,27 +731,28 @@ class DeviceSettingsManager {
     }
   }
 
+  // One section per driver that has devices, built from the driver's own
+  // settings — legend is the driver's manifest name, so adding a driver
+  // needs no markup. The buttons' snake_case ids match what the apply and
+  // refresh listeners look up through `toSectionId`.
   #createDriverSettingSection(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     driverId: string,
   ): void {
     const driverSetting = driverSettings[driverId]
-    if (driverSetting !== undefined) {
-      const settingsContainer = document.querySelector(
-        `#settings_${toSectionId(driverId)}`,
-      )
-      if (settingsContainer !== null) {
-        const fieldSet = document.createElement('fieldset')
-        fieldSet.classList.add('homey-form-checkbox-set')
-        this.#createDriverSettingControls(driverSetting, fieldSet)
-        settingsContainer.append(fieldSet)
-        this.#addSettingsEventListeners(
-          [...fieldSet.querySelectorAll('input')],
-          driverId,
-        )
-        hide(getDiv(`has_devices_${toSectionId(driverId)}`), false)
-      }
+    const [firstSetting] = driverSetting ?? []
+    if (driverSetting === undefined || firstSetting === undefined) {
+      return
     }
+    const { controls, section } = createSectionShell(firstSetting.driverLabel)
+    const checkboxSet = this.#createCheckboxSet(driverSetting)
+    controls.append(checkboxSet)
+    section.append(createSettingsButtonRow(this.#homey, toSectionId(driverId)))
+    getDiv('device_settings').append(section)
+    this.#addSettingsEventListeners(
+      [...checkboxSet.querySelectorAll('input')],
+      driverId,
+    )
   }
 
   #createSettingControls(
@@ -702,6 +761,9 @@ class DeviceSettingsManager {
     this.#createCommonSettingControls(driverSettings)
     for (const driverId of Object.keys(this.#deviceSettings)) {
       this.#createDriverSettingSection(driverSettings, driverId)
+    }
+    if (Object.hasOwn(this.#deviceSettings, CLASSIC_ATA_DRIVER_ID)) {
+      hide(getDiv('auto_adjust_section'), false)
     }
   }
 

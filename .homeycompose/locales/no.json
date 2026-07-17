@@ -26,22 +26,13 @@
         "button": "Bruk på alle enheter",
         "nothing": "Ingen endring å bruke."
       },
-      "legend": "Enhetsinnstillinger",
+      "legend": "Innstillinger for alle enheter (Classic og Home)",
       "none": "Legg til en enhet for å låse opp alle appinnstillingene!"
     },
     "devicesAta": {
       "autoAdjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
       "legend": "Luft-til-luft enhetsinnstillinger (Classic)"
-    },
-    "devicesAtaHome": {
-      "legend": "Luft-til-luft enhetsinnstillinger (Home)"
-    },
-    "devicesAtw": {
-      "legend": "Luft-til-vann enhetsinnstillinger (Classic)"
-    },
-    "devicesAtwHome": {
-      "legend": "Luft-til-vann enhetsinnstillinger (Home)"
     },
     "errorLog": {
       "columns": {

@@ -26,22 +26,13 @@
         "button": "Appliquer à tous les appareils",
         "nothing": "Aucun changement à appliquer."
       },
-      "legend": "Paramètres des appareils",
+      "legend": "Paramètres de tous les appareils (Classic et Home)",
       "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !"
     },
     "devicesAta": {
       "autoAdjust": "Auto-ajuster la température de la climatisation",
       "configure": "Configurer",
       "legend": "Paramètres des appareils air-air (Classic)"
-    },
-    "devicesAtaHome": {
-      "legend": "Paramètres des appareils air-air (Home)"
-    },
-    "devicesAtw": {
-      "legend": "Paramètres des appareils air-eau (Classic)"
-    },
-    "devicesAtwHome": {
-      "legend": "Paramètres des appareils air-eau (Home)"
     },
     "errorLog": {
       "columns": {

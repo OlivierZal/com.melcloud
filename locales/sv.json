@@ -17,7 +17,7 @@
       "true": "Ja"
     },
     "devices": {
-      "legend": "Enhetsinställningar",
+      "legend": "Inställningar för alla enheter (Classic och Home)",
       "none": "Lägg till en enhet för att låsa upp alla appens inställningar!",
       "nothing": "Ingen ändring att tillämpa.",
       "apply": {

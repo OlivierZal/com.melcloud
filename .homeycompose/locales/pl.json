@@ -26,22 +26,13 @@
         "button": "Zastosuj do wszystkich urządzeń",
         "nothing": "Brak zmian do zastosowania."
       },
-      "legend": "Ustawienia urządzenia",
+      "legend": "Ustawienia wszystkich urządzeń (Classic i Home)",
       "none": "Dodaj urządzenie, aby odblokować wszystkie ustawienia aplikacji!"
     },
     "devicesAta": {
       "autoAdjust": "Automatyczna regulacja temperatury klimatyzacji",
       "configure": "Konfiguruj",
       "legend": "Ustawienia urządzenia powietrze-powietrze (Classic)"
-    },
-    "devicesAtaHome": {
-      "legend": "Ustawienia urządzenia powietrze-powietrze (Home)"
-    },
-    "devicesAtw": {
-      "legend": "Ustawienia urządzenia powietrze-woda (Classic)"
-    },
-    "devicesAtwHome": {
-      "legend": "Ustawienia urządzenia powietrze-woda (Home)"
     },
     "errorLog": {
       "columns": {

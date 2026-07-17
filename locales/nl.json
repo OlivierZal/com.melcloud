@@ -17,7 +17,7 @@
       "true": "Ja"
     },
     "devices": {
-      "legend": "Apparaatinstellingen",
+      "legend": "Instellingen van alle apparaten (Classic en Home)",
       "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!",
       "nothing": "Geen wijziging om toe te passen.",
       "apply": {
