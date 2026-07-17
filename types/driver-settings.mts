@@ -13,6 +13,7 @@ export interface DriverCapabilitiesOptions {
 
 export interface DriverSetting {
   readonly driverId: string
+  readonly driverLabel: string
   readonly id: string
   readonly title: string
   readonly type: string

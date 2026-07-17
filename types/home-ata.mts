@@ -6,6 +6,7 @@ import type {
   BaseListCapabilities,
   BaseSetCapabilities,
 } from './bases.mts'
+import type { HomeEnergyMeasureName } from './device.mts'
 
 type HomeGetCapabilitiesAta = BaseGetCapabilities
 
@@ -42,8 +43,19 @@ const homeSetCapabilityTagMappingAta: Record<
 }
 
 export const homeTagMappingsAta: {
-  readonly energy: Readonly<Record<string, readonly string[]>>
+  readonly energy: Readonly<Record<string, readonly HomeEnergyMeasureName[]>>
   readonly get: Readonly<Record<string, string>>
   readonly list: Readonly<Record<string, string>>
   readonly set: typeof homeSetCapabilityTagMappingAta
-} = { energy: {}, get: {}, list: {}, set: homeSetCapabilityTagMappingAta }
+} = {
+  // Values name the telemetry measure each capability reads; behavior is
+  // keyed on the capability name (measure_power*/*daily*/cop) like Classic.
+  energy: {
+    measure_power: ['consumed'],
+    meter_power: ['consumed'],
+    'meter_power.daily': ['consumed'],
+  },
+  get: {},
+  list: {},
+  set: homeSetCapabilityTagMappingAta,
+}

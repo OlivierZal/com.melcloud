@@ -17,7 +17,7 @@
       "true": "Ja"
     },
     "devices": {
-      "legend": "Geräteeinstellungen",
+      "legend": "Einstellungen aller Geräte (Classic und Home)",
       "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!",
       "nothing": "Keine Änderung zum Anwenden.",
       "apply": {
@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Klimaanlagen-Temperatur automatisch anpassen",
       "configure": "Konfigurieren",
-      "legend": "Luft-Luft-Geräteeinstellungen (Classic)"
+      "legend": "Einstellungen aller Luft-Luft-Geräte (Classic und Home)"
     },
     "devicesAtw": {
       "legend": "Luft-Wasser-Geräteeinstellungen (Classic)"
@@ -71,6 +71,12 @@
     "zones": {
       "legend": "Zoneneinstellungen (Classic)",
       "update": "Aktualisieren"
+    },
+    "devicesAtaHome": {
+      "legend": "Luft-Luft-Geräteeinstellungen (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "Luft-Wasser-Geräteeinstellungen (Home)"
     }
   },
   "warnings": {

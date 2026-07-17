@@ -14,6 +14,13 @@ export abstract class HomeMELCloudDevice<
 > extends BaseMELCloudDevice<HomeDeviceFacade<T>, string> {
   declare public readonly driver: HomeMELCloudDriver & { readonly type: T }
 
+  declare public readonly getStoreValue: (key: string) => unknown
+
+  declare public readonly setStoreValue: (
+    key: string,
+    value: unknown,
+  ) => Promise<void>
+
   protected abstract override readonly capabilityToDevice: Partial<
     Record<string, HomeConvertToDevice<T>>
   >

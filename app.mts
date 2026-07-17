@@ -17,6 +17,7 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { Api } from './types/api.mts'
+import type { LocalizedStrings } from './types/bases.mts'
 import type { GroupAtaStates } from './types/classic-ata.mts'
 import type {
   DeviceSetting,
@@ -106,32 +107,40 @@ const mergeDeviceSettings = (
   }
 }
 
-const getDriverSettings = (
-  { id: driverId, settings }: ManifestDriver,
-  language: string,
-): DriverSetting[] =>
-  (settings ?? []).flatMap(({ children, id: groupId, label: groupLabel }) =>
-    (children ?? []).map(({ id, label, max, min, type, units, values }) => ({
-      driverId,
-      groupId,
-      groupLabel: groupLabel[language] ?? groupLabel.en,
-      id,
-      max,
-      min,
-      title: label[language] ?? label.en,
-      type,
-      units,
-      values: values?.map(({ id: valueId, label: valueLabel }) => ({
-        id: valueId,
-        label: valueLabel[language] ?? valueLabel.en,
-      })),
-    })),
-  )
+const localize = (strings: LocalizedStrings, language: string): string =>
+  strings[language] ?? strings.en
 
-const getDriverLoginSetting = (
-  { id: driverId, pair }: ManifestDriver,
+const getDriverSettings = (
+  { id: driverId, name, settings }: ManifestDriver,
   language: string,
 ): DriverSetting[] => {
+  const driverLabel = localize(name, language)
+  return (settings ?? []).flatMap(
+    ({ children, id: groupId, label: groupLabel }) =>
+      (children ?? []).map(({ id, label, max, min, type, units, values }) => ({
+        driverId,
+        driverLabel,
+        groupId,
+        groupLabel: localize(groupLabel, language),
+        id,
+        max,
+        min,
+        title: localize(label, language),
+        type,
+        units,
+        values: values?.map(({ id: valueId, label: valueLabel }) => ({
+          id: valueId,
+          label: localize(valueLabel, language),
+        })),
+      })),
+  )
+}
+
+const getDriverLoginSetting = (
+  { id: driverId, name, pair }: ManifestDriver,
+  language: string,
+): DriverSetting[] => {
+  const driverLabel = localize(name, language)
   const driverLoginSetting: Record<string, DriverSetting> = {}
   const loginOptions =
     pair?.find(
@@ -142,6 +151,7 @@ const getDriverLoginSetting = (
     const key = isPassword ? 'password' : 'username'
     driverLoginSetting[key] ??= {
       driverId,
+      driverLabel,
       groupId: 'login',
       id: key,
       title: '',
@@ -149,8 +159,10 @@ const getDriverLoginSetting = (
     }
     driverLoginSetting[key] = {
       ...driverLoginSetting[key],
-      [option.endsWith('Placeholder') ? 'placeholder' : 'title']:
-        label[language] ?? label.en,
+      [option.endsWith('Placeholder') ? 'placeholder' : 'title']: localize(
+        label,
+        language,
+      ),
     }
   }
   return Object.values(driverLoginSetting)

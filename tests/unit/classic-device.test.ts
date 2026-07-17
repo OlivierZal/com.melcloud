@@ -3,8 +3,8 @@ import type HomeyModule from 'homey'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type * as BaseReportModule from '../../drivers/base-report.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
+import type * as BaseReportModule from '../../drivers/classic-report.mts'
 import type {
   EnergyCapabilityTagMapping,
   GetCapabilityTagMapping,
@@ -76,7 +76,7 @@ const { energyReportStartMock } = vi.hoisted(() => ({
 // driven per test (e.g. a rejected restart). The implementation is a
 // `new`-able function expression (arrows are not constructible): its
 // returned object becomes the constructed report.
-vi.mock(import('../../drivers/base-report.mts'), async () => {
+vi.mock(import('../../drivers/classic-report.mts'), async () => {
   const { mock: mockModule } = await import('../helpers.ts')
   const newEnergyReportMock = function newEnergyReportMock(): {
     start: () => Promise<void>
@@ -588,14 +588,35 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('energy report handling', () => {
+    it('should skip energy reports without a factory', async () => {
+      const { EnergyReport } = await import('../../drivers/classic-report.mts')
+      const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
+      const deviceWithoutFactory = new TestDevice()
+      Object.defineProperties(deviceWithoutFactory, {
+        createEnergyReport: { value: null },
+        energyReportRegular: {
+          value: {
+            duration: { hours: 1 },
+            mode: 'regular' as const,
+            values: { millisecond: 0, minute: 5, second: 0 },
+          },
+        },
+      })
+      setDriver(deviceWithoutFactory)
+      await deviceWithoutFactory.onInit()
+
+      expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
+        0,
+      )
+    })
+
     it('should create energy report for regular config', async () => {
-      const { EnergyReport } = await import('../../drivers/base-report.mts')
+      const { EnergyReport } = await import('../../drivers/classic-report.mts')
       const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
       const deviceWithRegular = new TestDevice()
       Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
         value: {
           duration: { hours: 1 },
-          interval: { hours: 1 },
           minus: { hours: 1 },
           mode: 'regular' as const,
           values: { millisecond: 0, minute: 5, second: 0 },
@@ -610,13 +631,12 @@ describe(ClassicMELCloudDevice, () => {
     })
 
     it('should create energy report for total config', async () => {
-      const { EnergyReport } = await import('../../drivers/base-report.mts')
+      const { EnergyReport } = await import('../../drivers/classic-report.mts')
       const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
       const deviceWithTotal = new TestDevice()
       Object.defineProperty(deviceWithTotal, 'energyReportTotal', {
         value: {
           duration: { days: 1 },
-          interval: { days: 1 },
           minus: { days: 1 },
           mode: 'total' as const,
           values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
@@ -636,7 +656,6 @@ describe(ClassicMELCloudDevice, () => {
       Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
         value: {
           duration: { hours: 1 },
-          interval: { hours: 1 },
           minus: { hours: 1 },
           mode: 'regular' as const,
           values: { millisecond: 0, minute: 5, second: 0 },

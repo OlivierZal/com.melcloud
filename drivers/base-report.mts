@@ -1,222 +1,108 @@
-import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/Homey'
 import type { Temporal } from 'temporal-polyfill'
 
-import type {
-  Capabilities,
-  EnergyCapabilities,
-  EnergyCapabilityTagEntry,
-} from '../types/capabilities.mts'
 import type { EnergyReportMode } from '../types/device.mts'
-import { KILOWATT_TO_WATT } from '../lib/constants.mts'
-import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { getNow } from '../lib/temporal.mts'
-import { typedEntries } from '../lib/typed-object.mts'
-import { unwrapResult } from '../lib/unwrap-result.mts'
-import type { ClassicMELCloudDevice } from './classic-device.mts'
-import type { ClassicMELCloudDriver } from './classic-driver.mts'
 
-// Non-finite tag values (missing field, non-numeric payload) count as 0 so a
-// single bad tag cannot poison energy, power and COP capability values.
-const sumTags = <T extends Classic.DeviceType>(
-  data: Classic.EnergyData<T>,
-  tags: readonly (keyof Classic.EnergyData<T>)[],
-): number => {
-  let sum = 0
-  for (const tag of tags) {
-    const value = Number(data[tag])
-    if (Number.isFinite(value)) {
-      sum += value
-    }
-  }
-  return sum
+interface ReportDevice {
+  readonly homey: Homey.Homey
+  readonly error: (...args: unknown[]) => void
+  readonly log: (...args: unknown[]) => void
+  readonly setTimeout: (
+    callback: () => Promise<void>,
+    interval: Temporal.DurationLike,
+    actionType: string,
+  ) => NodeJS.Timeout
 }
 
 export interface EnergyReportConfig {
   readonly duration: Temporal.DurationLike
-  readonly interval: Temporal.DurationLike
-  readonly minus: Temporal.DurationLike
   readonly mode: EnergyReportMode
   readonly values: Temporal.TimeLikeObject
+  readonly minus?: Temporal.DurationLike
 }
 
-export class EnergyReport<T extends Classic.DeviceType> {
+// Wall-clock-anchored report scheduler: every fire recomputes the next delay
+// from the current zoned time (duration + values alignment), so a DST
+// transition shifts nothing — a fixed-milliseconds interval would drift by
+// the offset delta until the app restarts.
+export abstract class ScheduledEnergyReport {
+  protected get mode(): EnergyReportMode {
+    return this.#config.mode
+  }
+
   readonly #config: EnergyReportConfig
 
-  readonly #device: ClassicMELCloudDevice<T>
-
-  readonly #homey: Homey.Homey
-
-  #linkedDeviceCount = 1
-
-  #reportInterval?: NodeJS.Timeout
+  readonly #device: ReportDevice
 
   #reportTimeout: NodeJS.Timeout | null = null
 
-  private readonly driver: ClassicMELCloudDriver<T>
-
-  get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
-    const cleaned = this.#device.cleanMapping(this.driver.tagMappings.energy)
-    return typedEntries<
-      string & keyof EnergyCapabilities<T>,
-      readonly (keyof Classic.EnergyData<T>)[]
-    >(cleaned).filter(
-      ([capability]) =>
-        isTotalEnergyKey(capability) === (this.#config.mode === 'total'),
-    )
+  get #actionType(): string {
+    return `${this.#config.mode} energy report`
   }
 
-  public constructor(
-    device: ClassicMELCloudDevice<T>,
-    config: EnergyReportConfig,
-  ) {
+  protected constructor(device: ReportDevice, config: EnergyReportConfig) {
     this.#device = device
     this.#config = config
-    this.driver = device.driver
-    this.#homey = device.homey
   }
 
+  protected abstract fetchAndApply(): Promise<void>
+
+  protected abstract hasEnabledCapabilities(): boolean
+
   public async start(): Promise<void> {
-    if (this.#energyCapabilityTagEntries.length === 0) {
+    if (!this.hasEnabledCapabilities()) {
       this.unschedule()
       return
     }
-    await this.#get()
-    this.#schedule()
+    await this.#fetchSafely()
+    if (this.#reportTimeout === null) {
+      this.#armNext()
+    }
   }
 
   public unschedule(): void {
-    this.#homey.clearTimeout(this.#reportTimeout)
+    this.#device.homey.clearTimeout(this.#reportTimeout)
     this.#reportTimeout = null
-    this.#homey.clearInterval(this.#reportInterval)
     this.#device.log(`${this.#config.mode} energy report has been cancelled`)
   }
 
-  // COP (Coefficient of Performance) = produced energy / consumed energy.
-  // Falls back to divisor of 1 to avoid division by zero when no energy consumed
-  #calculateCopValue(
-    data: Classic.EnergyData<T>,
-    capability: string & keyof EnergyCapabilities<T>,
-  ): number {
-    const { consumedTagMapping, producedTagMapping } = this.driver
-    const consumedTags = consumedTagMapping[capability] ?? []
-    const producedTags = producedTagMapping[capability] ?? []
-    const consumed = sumTags(data, consumedTags)
-    return sumTags(data, producedTags) / (consumed === 0 ? 1 : consumed)
+  // Fetch offset used by implementations reading a previous period. The
+  // subtraction is guarded: Temporal rejects an empty duration-like.
+  protected reportDateTime(): Temporal.ZonedDateTime {
+    const now = getNow(this.#device.homey)
+    const { minus } = this.#config
+    return minus === undefined ? now : now.subtract(minus)
   }
 
-  #calculateEnergyValue(
-    data: Classic.EnergyData<T>,
-    tags: readonly (keyof Classic.EnergyData<T>)[],
-  ): number {
-    return sumTags(data, tags) / this.#linkedDeviceCount
-  }
-
-  // Power values are stored as 24-element arrays (one per hour).
-  // Multiply by KILOWATT_TO_WATT to convert from kW to W
-  #calculatePowerValue(
-    data: Classic.EnergyData<T>,
-    tags: readonly (keyof Classic.EnergyData<T>)[],
-    hour: number,
-  ): number {
-    let total = 0
-    for (const tag of tags) {
-      const tagData = data[tag]
-      if (Array.isArray(tagData)) {
-        total += (tagData[hour] ?? 0) * KILOWATT_TO_WATT
-      }
-    }
-
-    return total / this.#linkedDeviceCount
+  #armNext(): void {
+    this.#reportTimeout = this.#device.setTimeout(
+      async () => {
+        if (!this.hasEnabledCapabilities()) {
+          this.unschedule()
+          return
+        }
+        await this.#fetchSafely()
+        // Unschedule during the await nulls the handle: stop the chain.
+        if (this.#reportTimeout !== null) {
+          this.#armNext()
+        }
+      },
+      this.#computeNextFireDelay(),
+      this.#actionType,
+    )
   }
 
   #computeNextFireDelay(): Temporal.Duration {
-    const now = getNow(this.#homey)
+    const now = getNow(this.#device.homey)
     return now.add(this.#config.duration).with(this.#config.values).since(now)
   }
 
-  async #get(): Promise<void> {
-    const device = await this.#device.ensureDevice()
-    if (device === null) {
-      return
-    }
-    // Fetch energy data from the previous period (offset by config.minus)
-    const toDateTime = getNow(this.#homey).subtract(this.#config.minus)
-    const to = toDateTime.toPlainDate().toString()
-    // Total mode reports from the epoch: omitting `from` lets the API
-    // default to its full-history lower bound.
-    const query = this.#config.mode === 'total' ? { to } : { from: to, to }
+  async #fetchSafely(): Promise<void> {
     try {
-      await this.#set(
-        unwrapResult(await device.getEnergy(query)),
-        toDateTime.hour,
-      )
+      await this.fetchAndApply()
     } catch (error) {
       this.#device.error('Energy report fetch failed:', error)
     }
-  }
-
-  #schedule(): void {
-    if (this.#reportTimeout !== null) {
-      return
-    }
-    const actionType = `${this.#config.mode} energy report`
-    this.#reportTimeout = this.#device.setTimeout(
-      async () => {
-        await this.start()
-        this.#reportInterval = this.#device.setInterval(
-          async () => this.start(),
-          this.#config.interval,
-          actionType,
-        )
-      },
-      this.#computeNextFireDelay(),
-      actionType,
-    )
-  }
-
-  async #set(data: Classic.EnergyData<T>, hour: number): Promise<void> {
-    if ('UsageDisclaimerPercentages' in data) {
-      this.#linkedDeviceCount =
-        data.UsageDisclaimerPercentages.split(',').length
-    }
-    await Promise.all(
-      this.#energyCapabilityTagEntries.map(
-        async ([capability, tags]: [
-          string & keyof EnergyCapabilities<T>,
-          readonly (keyof Classic.EnergyData<T>)[],
-        ]) => {
-          if (capability.includes('cop')) {
-            await this.#device.setCapabilityValue(
-              capability,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
-              this.#calculateCopValue(
-                data,
-                capability,
-              ) as Capabilities<T>[string & keyof EnergyCapabilities<T>],
-            )
-            return
-          }
-          if (capability.startsWith('measure_power')) {
-            await this.#device.setCapabilityValue(
-              capability,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
-              this.#calculatePowerValue(
-                data,
-                tags,
-                hour,
-              ) as Capabilities<T>[string & keyof EnergyCapabilities<T>],
-            )
-            return
-          }
-          await this.#device.setCapabilityValue(
-            capability,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
-            this.#calculateEnergyValue(data, tags) as Capabilities<T>[string &
-              keyof EnergyCapabilities<T>],
-          )
-        },
-      ),
-    )
   }
 }

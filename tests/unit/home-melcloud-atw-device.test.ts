@@ -3,6 +3,7 @@ import type HomeyModule from 'homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { InteropModule } from '../helpers.ts'
+import { HomeEnergyReportAtw } from '../../drivers/home-report-atw.mts'
 import { NotFoundError } from '../../lib/errors.mts'
 import { homeTagMappingsAtw } from '../../types/home-atw.mts'
 import {
@@ -112,6 +113,49 @@ const mockFacade = (
     ...overrides,
   }) as unknown as Home.DeviceAtwFacade
 
+const defineEnergyContext = (
+  device: object,
+  flags?: Partial<Record<string, boolean>>,
+): void => {
+  Object.defineProperties(device, {
+    cachedFacade: {
+      configurable: true,
+      get: () =>
+        flags === undefined ? undefined : (
+          {
+            capabilities: {
+              hasEstimatedEnergyConsumption: false,
+              hasEstimatedEnergyProduction: false,
+              hasMeasuredEnergyConsumption: false,
+              hasMeasuredEnergyProduction: false,
+              ...flags,
+            },
+          }
+        ),
+    },
+    driver: {
+      configurable: true,
+      value: {
+        manifest: {
+          capabilities: [
+            'measure_power',
+            'measure_power.produced',
+            'meter_power.cop',
+            'measure_temperature',
+          ],
+        },
+        tagMappings: {
+          energy: {
+            measure_power: ['consumed'],
+            'measure_power.produced': ['produced'],
+            'meter_power.cop': ['consumed', 'produced'],
+          },
+        },
+      },
+    },
+  })
+}
+
 describe(HomeMELCloudDeviceAtw, () => {
   let device: any
 
@@ -130,9 +174,17 @@ describe(HomeMELCloudDeviceAtw, () => {
 
   testThermostatMode(() => device as object, null)
 
-  testEnergyReportConfig(() => device as object, 'energyReportRegular', null)
+  testEnergyReportConfig(() => device as object, 'energyReportRegular', {
+    duration: { minutes: 5 },
+    mode: 'regular',
+    values: { millisecond: 0, second: 0 },
+  })
 
-  testEnergyReportConfig(() => device as object, 'energyReportTotal', null)
+  testEnergyReportConfig(() => device as object, 'energyReportTotal', {
+    duration: { hours: 1 },
+    mode: 'total',
+    values: { millisecond: 0, minute: 5, second: 0 },
+  })
 
   describe('device synchronization', () => {
     it('should set every capability value from the facade', async () => {
@@ -296,6 +348,61 @@ describe(HomeMELCloudDeviceAtw, () => {
         expect.any(Function),
         expect.any(Number),
       )
+    })
+  })
+
+  describe('energy support gating', () => {
+    it('should serve consumed-side capabilities from an estimate alone', () => {
+      defineEnergyContext(device as object, {
+        hasEstimatedEnergyConsumption: true,
+      })
+
+      expect(device.isCapabilitySupported('measure_power')).toBe(true)
+      expect(device.isCapabilitySupported('measure_power.produced')).toBe(false)
+      expect(device.isCapabilitySupported('meter_power.cop')).toBe(false)
+    })
+
+    it('should serve produced-side capabilities from a meter alone', () => {
+      defineEnergyContext(device as object, {
+        hasMeasuredEnergyProduction: true,
+      })
+
+      expect(device.isCapabilitySupported('measure_power.produced')).toBe(true)
+      expect(device.isCapabilitySupported('measure_power')).toBe(false)
+    })
+
+    it('should require both directions for the CoP', () => {
+      defineEnergyContext(device as object, {
+        hasEstimatedEnergyConsumption: true,
+        hasEstimatedEnergyProduction: true,
+      })
+
+      expect(device.isCapabilitySupported('meter_power.cop')).toBe(true)
+    })
+
+    it('should trust the manifest before the facade is cached', () => {
+      defineEnergyContext(device as object)
+
+      expect(device.isCapabilitySupported('measure_power')).toBe(true)
+    })
+
+    it('should keep non-energy capabilities on manifest membership alone', () => {
+      defineEnergyContext(device as object, {})
+
+      expect(device.isCapabilitySupported('measure_temperature')).toBe(true)
+      expect(device.isCapabilitySupported('unknown')).toBe(false)
+    })
+  })
+
+  describe('createEnergyReport', () => {
+    it('should build a Home ATW energy report', () => {
+      expect(
+        device.createEnergyReport({
+          duration: { minutes: 5 },
+          mode: 'regular',
+          values: { millisecond: 0, second: 0 },
+        }),
+      ).toBeInstanceOf(HomeEnergyReportAtw)
     })
   })
 })

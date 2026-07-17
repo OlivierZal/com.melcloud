@@ -132,8 +132,10 @@
                     >Update</button>
                 </div>
             </fieldset>
-            <!-- Shown when air-to-air devices exist -->
-            <div id="has_devices_melcloud" hidden>
+            <!-- Air-to-air temperature auto-adjust: a Classic-ATA-only link
+                to the companion extension app, shown when such devices
+                exist. Not part of the generated per-driver sections. -->
+            <div id="auto_adjust_section" hidden>
                 <fieldset class="homey-form-fieldset">
                     <legend class="homey-form-legend" data-i18n="settings.devicesAta.legend">Air-to-air device settings (Classic)</legend>
                     <div class="homey-form-group">
@@ -151,44 +153,12 @@
                             data-i18n="settings.devicesAta.configure"
                         >Configure</button>
                     </div>
-                    <div id="settings_melcloud" class="homey-form-group"></div>
-                    <div class="homey-form-group container">
-                        <button
-                            id="refresh_settings_melcloud"
-                            type="button"
-                            class="homey-button-secondary-shadow"
-                            data-i18n="settings.refresh"
-                        >Refresh</button>
-                        <button
-                            id="apply_settings_melcloud"
-                            type="button"
-                            class="homey-button-danger-shadow"
-                            data-i18n="settings.update"
-                        >Update</button>
-                    </div>
                 </fieldset>
             </div>
-            <!-- Shown when air-to-water devices exist -->
-            <div id="has_devices_melcloud_atw" hidden>
-                <fieldset class="homey-form-fieldset">
-                    <legend class="homey-form-legend" data-i18n="settings.devicesAtw.legend">Air-to-water device settings (Classic)</legend>
-                    <div id="settings_melcloud_atw" class="homey-form-group"></div>
-                    <div class="homey-form-group container">
-                        <button
-                            id="refresh_settings_melcloud_atw"
-                            type="button"
-                            class="homey-button-secondary-shadow"
-                            data-i18n="settings.refresh"
-                        >Refresh</button>
-                        <button
-                            id="apply_settings_melcloud_atw"
-                            type="button"
-                            class="homey-button-danger-shadow"
-                            data-i18n="settings.update"
-                        >Update</button>
-                    </div>
-                </fieldset>
-            </div>
+            <!-- One section per driver that has devices is generated here at
+                runtime (legend = the driver's own name); no markup is
+                duplicated per driver, so a new driver needs nothing added. -->
+            <div id="device_settings"></div>
             <fieldset class="homey-form-fieldset classic-only">
                 <legend class="homey-form-legend" data-i18n="settings.zones.legend">Zone settings (Classic)</legend>
                 <div class="homey-form-group">

@@ -9,8 +9,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { InteropModule } from '../helpers.ts'
+import { HomeEnergyReportAta } from '../../drivers/home-report-ata.mts'
 import { ThermostatModeAta } from '../../types/ata.mts'
-import { testThermostatMode } from '../device-descriptors.ts'
+import {
+  testEnergyReportConfig,
+  testThermostatMode,
+} from '../device-descriptors.ts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -33,6 +37,30 @@ vi.mock(import('homey'), async () => {
 const mockFacade = (
   overrides: Partial<Home.DeviceAtaFacade>,
 ): Home.DeviceAtaFacade => overrides as Home.DeviceAtaFacade
+
+const defineEnergyContext = (
+  device: object,
+  hasEnergyConsumedMeter?: boolean,
+): void => {
+  Object.defineProperties(device, {
+    cachedFacade: {
+      configurable: true,
+      get: () =>
+        hasEnergyConsumedMeter === undefined ? undefined : (
+          { capabilities: { hasEnergyConsumedMeter } }
+        ),
+    },
+    driver: {
+      configurable: true,
+      value: {
+        manifest: {
+          capabilities: ['meter_power', 'measure_temperature'],
+        },
+        tagMappings: { energy: { meter_power: ['consumed'] } },
+      },
+    },
+  })
+}
 
 describe(HomeMELCloudDeviceAta, () => {
   let device: any
@@ -195,6 +223,57 @@ describe(HomeMELCloudDeviceAta, () => {
       expect(converter?.('auto')).toBe('Automatic')
       expect(converter?.('dry')).toBe('Dry')
       expect(converter?.('fan')).toBe('Fan')
+    })
+  })
+
+  testEnergyReportConfig(() => device as object, 'energyReportRegular', {
+    duration: { hours: 1 },
+    mode: 'regular',
+    values: { millisecond: 0, minute: 5, second: 0 },
+  })
+
+  testEnergyReportConfig(() => device as object, 'energyReportTotal', {
+    duration: { hours: 1 },
+    mode: 'total',
+    values: { millisecond: 0, minute: 5, second: 0 },
+  })
+
+  describe('energy support gating', () => {
+    it('should veto energy capabilities without a consumption meter', () => {
+      defineEnergyContext(device as object, false)
+
+      expect(device.isCapabilitySupported('meter_power')).toBe(false)
+    })
+
+    it('should serve energy capabilities when the meter is present', () => {
+      defineEnergyContext(device as object, true)
+
+      expect(device.isCapabilitySupported('meter_power')).toBe(true)
+    })
+
+    it('should trust the manifest before the facade is cached', () => {
+      defineEnergyContext(device as object)
+
+      expect(device.isCapabilitySupported('meter_power')).toBe(true)
+    })
+
+    it('should keep non-energy capabilities on manifest membership alone', () => {
+      defineEnergyContext(device as object, false)
+
+      expect(device.isCapabilitySupported('measure_temperature')).toBe(true)
+      expect(device.isCapabilitySupported('unknown')).toBe(false)
+    })
+  })
+
+  describe('createEnergyReport', () => {
+    it('should build a Home ATA energy report', () => {
+      expect(
+        device.createEnergyReport({
+          duration: { hours: 1 },
+          mode: 'regular',
+          values: { millisecond: 0, minute: 5, second: 0 },
+        }),
+      ).toBeInstanceOf(HomeEnergyReportAta)
     })
   })
 })

@@ -17,7 +17,7 @@
       "true": "Ja"
     },
     "devices": {
-      "legend": "Enhetsinställningar",
+      "legend": "Inställningar för alla enheter (Classic och Home)",
       "none": "Lägg till en enhet för att låsa upp alla appens inställningar!",
       "nothing": "Ingen ändring att tillämpa.",
       "apply": {
@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Autojustera luftkonditioneringstemperaturen",
       "configure": "Konfigurera",
-      "legend": "Luft-til-luft enhetsinställningar (Classic)"
+      "legend": "Inställningar för alla luft-till-luft-enheter (Classic och Home)"
     },
     "devicesAtw": {
       "legend": "Luft-til-vatten enhetsinställningar (Classic)"
@@ -71,6 +71,12 @@
     "zones": {
       "legend": "Zonsinställningar (Classic)",
       "update": "Uppdatera"
+    },
+    "devicesAtaHome": {
+      "legend": "Luft-til-luft enhetsinställningar (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "Luft-til-vatten enhetsinställningar (Home)"
     }
   },
   "warnings": {

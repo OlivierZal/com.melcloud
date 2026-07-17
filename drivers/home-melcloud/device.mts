@@ -19,6 +19,7 @@ import type {
   HomeConvertFromDevice,
   HomeConvertToDevice,
 } from '../../types/home.mts'
+import type { EnergyReportConfig } from '../base-report.mts'
 import {
   horizontalFromDevice,
   operationModeFromDevice,
@@ -26,6 +27,7 @@ import {
   verticalFromDevice,
 } from '../../types/ata.mts'
 import { HomeMELCloudDevice } from '../home-device.mts'
+import { HomeEnergyReportAta } from '../home-report-ata.mts'
 
 type AtaType = typeof Home.DeviceType.Ata
 
@@ -61,6 +63,39 @@ export default class HomeMELCloudDeviceAta extends HomeMELCloudDevice<AtaType> {
       verticalFromDevice[verticalToClassic[vaneVerticalDirection]],
   }
 
+  protected override readonly energyReportRegular: EnergyReportConfig = {
+    duration: { hours: 1 },
+    mode: 'regular',
+    values: { millisecond: 0, minute: 5, second: 0 },
+  }
+
+  protected override readonly energyReportTotal: EnergyReportConfig = {
+    duration: { hours: 1 },
+    mode: 'total',
+    values: { millisecond: 0, minute: 5, second: 0 },
+  }
+
   protected override readonly thermostatMode: typeof ThermostatModeAta =
     ThermostatModeAta
+
+  protected override readonly createEnergyReport = (
+    config: EnergyReportConfig,
+  ): HomeEnergyReportAta => new HomeEnergyReportAta(this, config)
+
+  // The energy capabilities are only served when the unit reports a
+  // consumption meter. Before the facade is cached (first minute after a
+  // restart) the manifest decides — failing closed there silently swallows
+  // a user toggle from the device settings; init reconciles with the real
+  // flags once the facade exists.
+  protected override isCapabilitySupported(capability: string): boolean {
+    if (!super.isCapabilitySupported(capability)) {
+      return false
+    }
+    const capabilities = this.cachedFacade?.capabilities
+    return (
+      !this.isEnergyCapability(capability) ||
+      capabilities === undefined ||
+      capabilities.hasEnergyConsumedMeter
+    )
+  }
 }

@@ -41,6 +41,7 @@ export interface Manifest {
 export interface ManifestDriver {
   readonly capabilities: readonly string[]
   readonly id: string
+  readonly name: LocalizedStrings
   readonly capabilitiesOptions?: Record<
     string,
     ManifestDriverCapabilitiesOptions

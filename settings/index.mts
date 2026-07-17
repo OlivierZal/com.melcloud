@@ -241,6 +241,62 @@ const createLegend = (fieldSet: HTMLFieldSetElement, text?: string): void => {
   fieldSet.append(legend)
 }
 
+// The generated buttons carry snake_case ids (html lint) while driver ids
+// may carry a hyphen (the Home drivers): the two are kept in lockstep here,
+// so generation and lookup never drift.
+const toSectionId = (driverId: string): string => driverId.replaceAll('-', '_')
+
+// The temperature auto-adjust link (the companion extension app) covers
+// both air-to-air drivers — the extension targets the Classic and the Home
+// ATA driver ids alike — so its section shows when either has devices.
+const ATA_DRIVER_IDS = ['melcloud', 'home-melcloud']
+
+const createSettingsButton = (
+  homey: Homey,
+  action: 'apply' | 'refresh',
+  sectionId: string,
+): HTMLButtonElement => {
+  const button = document.createElement('button')
+  button.type = 'button'
+  button.id = `${action}_settings_${sectionId}`
+  button.classList.add(
+    action === 'apply' ?
+      'homey-button-danger-shadow'
+    : 'homey-button-secondary-shadow',
+  )
+  button.textContent = homey.__(
+    action === 'apply' ? 'settings.update' : 'settings.refresh',
+  )
+  return button
+}
+
+const createSectionShell = (
+  legendText: string,
+): { controls: HTMLDivElement; section: HTMLFieldSetElement } => {
+  const section = document.createElement('fieldset')
+  section.classList.add('homey-form-fieldset')
+  const legend = document.createElement('legend')
+  legend.classList.add('homey-form-legend')
+  legend.textContent = legendText
+  const controls = document.createElement('div')
+  controls.classList.add('homey-form-group')
+  section.append(legend, controls)
+  return { controls, section }
+}
+
+const createSettingsButtonRow = (
+  homey: Homey,
+  sectionId: string,
+): HTMLDivElement => {
+  const buttons = document.createElement('div')
+  buttons.classList.add('homey-form-group', 'container')
+  buttons.append(
+    createSettingsButton(homey, 'refresh', sectionId),
+    createSettingsButton(homey, 'apply', sectionId),
+  )
+  return buttons
+}
+
 const createCheckbox = (id: string, driverId: string): HTMLInputElement => {
   const checkbox = document.createElement('input')
   checkbox.classList.add('homey-form-checkbox-input')
@@ -545,7 +601,7 @@ class DeviceSettingsManager {
     elements: HTMLValueElement[],
     driverId?: string,
   ): void {
-    const settings = `settings_${driverId ?? 'common'}`
+    const settings = `settings_${toSectionId(driverId ?? 'common')}`
     const button = getButton(`apply_${settings}`)
     button.addEventListener('click', () => {
       fireAndForget(this.#submitDeviceSettings(elements, driverId))
@@ -556,7 +612,7 @@ class DeviceSettingsManager {
     elements: HTMLValueElement[],
     driverId?: string,
   ): void {
-    const settings = `settings_${driverId ?? 'common'}`
+    const settings = `settings_${toSectionId(driverId ?? 'common')}`
     const button = getButton(`refresh_${settings}`)
     button.addEventListener('click', () => {
       if (driverId !== undefined) {
@@ -619,6 +675,13 @@ class DeviceSettingsManager {
     return settings
   }
 
+  #createCheckboxSet(driverSetting: DriverSetting[]): HTMLFieldSetElement {
+    const checkboxSet = document.createElement('fieldset')
+    checkboxSet.classList.add('homey-form-checkbox-set')
+    this.#createDriverSettingControls(driverSetting, checkboxSet)
+    return checkboxSet
+  }
+
   #createCommonSettingControls(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
   ): void {
@@ -669,25 +732,28 @@ class DeviceSettingsManager {
     }
   }
 
+  // One section per driver that has devices, built from the driver's own
+  // settings — legend is the driver's manifest name, so adding a driver
+  // needs no markup. The buttons' snake_case ids match what the apply and
+  // refresh listeners look up through `toSectionId`.
   #createDriverSettingSection(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     driverId: string,
   ): void {
     const driverSetting = driverSettings[driverId]
-    if (driverSetting !== undefined) {
-      const settingsContainer = document.querySelector(`#settings_${driverId}`)
-      if (settingsContainer !== null) {
-        const fieldSet = document.createElement('fieldset')
-        fieldSet.classList.add('homey-form-checkbox-set')
-        this.#createDriverSettingControls(driverSetting, fieldSet)
-        settingsContainer.append(fieldSet)
-        this.#addSettingsEventListeners(
-          [...fieldSet.querySelectorAll('input')],
-          driverId,
-        )
-        hide(getDiv(`has_devices_${driverId}`), false)
-      }
+    const [firstSetting] = driverSetting ?? []
+    if (driverSetting === undefined || firstSetting === undefined) {
+      return
     }
+    const { controls, section } = createSectionShell(firstSetting.driverLabel)
+    const checkboxSet = this.#createCheckboxSet(driverSetting)
+    controls.append(checkboxSet)
+    section.append(createSettingsButtonRow(this.#homey, toSectionId(driverId)))
+    getDiv('device_settings').append(section)
+    this.#addSettingsEventListeners(
+      [...checkboxSet.querySelectorAll('input')],
+      driverId,
+    )
   }
 
   #createSettingControls(
@@ -696,6 +762,13 @@ class DeviceSettingsManager {
     this.#createCommonSettingControls(driverSettings)
     for (const driverId of Object.keys(this.#deviceSettings)) {
       this.#createDriverSettingSection(driverSettings, driverId)
+    }
+    if (
+      ATA_DRIVER_IDS.some((driverId) =>
+        Object.hasOwn(this.#deviceSettings, driverId),
+      )
+    ) {
+      hide(getDiv('auto_adjust_section'), false)
     }
   }
 
@@ -708,7 +781,10 @@ class DeviceSettingsManager {
       disableButton(`${action}_${id}`, isDisabled)
       if (isCommon) {
         for (const driverId of Object.keys(this.#deviceSettings)) {
-          disableButton(`${action}_${driverIdPrefix}${driverId}`, isDisabled)
+          disableButton(
+            `${action}_${driverIdPrefix}${toSectionId(driverId)}`,
+            isDisabled,
+          )
         }
       }
     }
@@ -778,7 +854,7 @@ class DeviceSettingsManager {
       this.#alertNoChanges(elements, driverId)
       return
     }
-    const settingsId = `settings_${driverId ?? 'common'}`
+    const settingsId = `settings_${toSectionId(driverId ?? 'common')}`
     this.#disableButtons(settingsId)
     try {
       await this.#applyDeviceSettings(body, driverId)

@@ -26,16 +26,13 @@
         "button": "تطبيق على جميع الأجهزة",
         "nothing": "لا توجد تغييرات للتطبيق."
       },
-      "legend": "إعدادات الجهاز",
+      "legend": "إعدادات جميع الأجهزة (Classic وHome)",
       "none": "أضف جهازًا لفتح جميع إعدادات التطبيق!"
     },
     "devicesAta": {
       "autoAdjust": "ضبط تلقائي لدرجة حرارة المكيف",
       "configure": "تكوين",
-      "legend": "إعدادات جهاز هواء-هواء (Classic)"
-    },
-    "devicesAtw": {
-      "legend": "إعدادات جهاز هواء-ماء (Classic)"
+      "legend": "إعدادات جميع أجهزة الهواء-هواء (Classic وHome)"
     },
     "errorLog": {
       "columns": {

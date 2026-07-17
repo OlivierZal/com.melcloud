@@ -8,6 +8,7 @@ import type {
   CapabilitiesOptionsValues,
   LocalizedStrings,
 } from './bases.mts'
+import type { HomeEnergyMeasureName } from './device.mts'
 import {
   type HotWaterMode,
   getThermostatModeValuesAtw,
@@ -52,11 +53,29 @@ const homeSetCapabilityTagMappingAtw: Record<
 }
 
 export const homeTagMappingsAtw: {
-  readonly energy: Readonly<Record<string, readonly string[]>>
+  readonly energy: Readonly<Record<string, readonly HomeEnergyMeasureName[]>>
   readonly get: Readonly<Record<string, string>>
   readonly list: Readonly<Record<string, string>>
   readonly set: typeof homeSetCapabilityTagMappingAtw
-} = { energy: {}, get: {}, list: {}, set: homeSetCapabilityTagMappingAtw }
+} = {
+  // Values name the telemetry measure(s) each capability reads; behavior is
+  // keyed on the capability name (measure_power*/*daily*/cop) like Classic.
+  // No per-usage split (cooling/heating/hot water): the Home API only
+  // serves whole-unit consumed and produced measures.
+  energy: {
+    measure_power: ['consumed'],
+    'measure_power.produced': ['produced'],
+    meter_power: ['consumed'],
+    'meter_power.cop': ['consumed', 'produced'],
+    'meter_power.cop_daily': ['consumed', 'produced'],
+    'meter_power.daily': ['consumed'],
+    'meter_power.produced': ['produced'],
+    'meter_power.produced_daily': ['produced'],
+  },
+  get: {},
+  list: {},
+  set: homeSetCapabilityTagMappingAtw,
+}
 
 /**
  * Structural slice of {@link Home.DeviceAtwFacade} driving which capabilities

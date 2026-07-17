@@ -26,16 +26,13 @@
         "button": "Auf alle Geräte anwenden",
         "nothing": "Keine Änderung zum Anwenden."
       },
-      "legend": "Geräteeinstellungen",
+      "legend": "Einstellungen aller Geräte (Classic und Home)",
       "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!"
     },
     "devicesAta": {
       "autoAdjust": "Klimaanlagen-Temperatur automatisch anpassen",
       "configure": "Konfigurieren",
-      "legend": "Luft-Luft-Geräteeinstellungen (Classic)"
-    },
-    "devicesAtw": {
-      "legend": "Luft-Wasser-Geräteeinstellungen (Classic)"
+      "legend": "Einstellungen aller Luft-Luft-Geräte (Classic und Home)"
     },
     "errorLog": {
       "columns": {

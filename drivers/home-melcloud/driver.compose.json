@@ -8,6 +8,9 @@
     "fan_speed",
     "vertical",
     "horizontal",
+    "measure_power",
+    "meter_power",
+    "meter_power.daily",
     "measure_signal_strength"
   ],
   "capabilitiesOptions": {

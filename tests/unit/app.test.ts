@@ -205,6 +205,7 @@ const mockManifestDrivers: ManifestDriver[] = [
       },
     },
     id: 'melcloud',
+    name: { en: 'melcloud' },
     settings: [
       {
         children: [
@@ -222,6 +223,7 @@ const mockManifestDrivers: ManifestDriver[] = [
   {
     capabilities: [],
     id: 'melcloud-login',
+    name: { en: 'melcloud-login' },
     pair: [
       {
         id: 'login',
@@ -237,6 +239,7 @@ const mockManifestDrivers: ManifestDriver[] = [
   {
     capabilities: [],
     id: 'melcloud-odd',
+    name: { en: 'melcloud-odd' },
     settings: [
       {
         children: [
@@ -1787,6 +1790,7 @@ describe('melCloudApp', () => {
         {
           capabilities: [],
           id: 'melcloud',
+          name: { en: 'melcloud' },
           pair: Object.assign(
             [
               {
@@ -2100,6 +2104,7 @@ describe('melCloudApp', () => {
         {
           capabilities: [],
           id: 'melcloud',
+          name: { en: 'melcloud' },
           settings: [
             {
               children: [
