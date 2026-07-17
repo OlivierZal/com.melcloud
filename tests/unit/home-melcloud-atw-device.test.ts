@@ -380,10 +380,10 @@ describe(HomeMELCloudDeviceAtw, () => {
       expect(device.isCapabilitySupported('meter_power.cop')).toBe(true)
     })
 
-    it('should veto energy capabilities before the facade is cached', () => {
+    it('should trust the manifest before the facade is cached', () => {
       defineEnergyContext(device as object)
 
-      expect(device.isCapabilitySupported('measure_power')).toBe(false)
+      expect(device.isCapabilitySupported('measure_power')).toBe(true)
     })
 
     it('should keep non-energy capabilities on manifest membership alone', () => {

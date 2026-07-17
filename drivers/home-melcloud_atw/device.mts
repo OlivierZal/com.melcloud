@@ -88,10 +88,12 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     )
   }
 
+  // Before the facade is cached the manifest decides (see the ATA note):
+  // failing closed would silently swallow a device-settings toggle.
   #supportsMeasure(measure: HomeEnergyMeasureName): boolean {
     const capabilities = this.cachedFacade?.capabilities
     if (capabilities === undefined) {
-      return false
+      return true
     }
     return measure === 'consumed' ?
         capabilities.hasEstimatedEnergyConsumption ||

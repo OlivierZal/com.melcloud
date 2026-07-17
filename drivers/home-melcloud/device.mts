@@ -83,12 +83,19 @@ export default class HomeMELCloudDeviceAta extends HomeMELCloudDevice<AtaType> {
   ): HomeEnergyReportAta => new HomeEnergyReportAta(this, config)
 
   // The energy capabilities are only served when the unit reports a
-  // consumption meter.
+  // consumption meter. Before the facade is cached (first minute after a
+  // restart) the manifest decides — failing closed there silently swallows
+  // a user toggle from the device settings; init reconciles with the real
+  // flags once the facade exists.
   protected override isCapabilitySupported(capability: string): boolean {
+    if (!super.isCapabilitySupported(capability)) {
+      return false
+    }
+    const capabilities = this.cachedFacade?.capabilities
     return (
-      super.isCapabilitySupported(capability) &&
-      (!this.isEnergyCapability(capability) ||
-        this.cachedFacade?.capabilities.hasEnergyConsumedMeter === true)
+      !this.isEnergyCapability(capability) ||
+      capabilities === undefined ||
+      capabilities.hasEnergyConsumedMeter
     )
   }
 }
