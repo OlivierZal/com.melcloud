@@ -9,6 +9,9 @@ import type { HomeBuildingZone, HomeDeviceZone } from './zone.mts'
 export const DAYS_MAX = 365
 
 export interface AtaGroupSettingWidgetSettings extends BaseSettings {
+  // Explicit false is the only opt-out: instances placed before this setting
+  // existed report null and must keep animating.
+  readonly animations: boolean | null
   // Classic zone collections and devices, plus the Home buildings
   // (account-level groups) and their devices.
   readonly default_zone: Classic.Zone | HomeBuildingZone | HomeDeviceZone | null

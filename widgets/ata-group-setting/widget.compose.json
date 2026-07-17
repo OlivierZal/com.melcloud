@@ -75,6 +75,20 @@
         "sv": "Standardzon eller -enhet"
       },
       "type": "autocomplete"
+    },
+    {
+      "id": "animations",
+      "title": {
+        "da": "Animationer",
+        "en": "Animations",
+        "es": "Animaciones",
+        "fr": "Animations",
+        "nl": "Animaties",
+        "no": "Animasjoner",
+        "sv": "Animationer"
+      },
+      "type": "checkbox",
+      "value": true
     }
   ],
   "transparent": true
