@@ -71,6 +71,12 @@
     "zones": {
       "legend": "Zonesinstellingen (Classic)",
       "update": "Updaten"
+    },
+    "devicesAtaHome": {
+      "legend": "Lucht-lucht apparaatinstellingen (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "Lucht-water apparaatinstellingen (Home)"
     }
   },
   "warnings": {

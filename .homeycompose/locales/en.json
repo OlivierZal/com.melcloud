@@ -34,8 +34,14 @@
       "configure": "Configure",
       "legend": "Air-to-air device settings (Classic)"
     },
+    "devicesAtaHome": {
+      "legend": "Air-to-air device settings (Home)"
+    },
     "devicesAtw": {
       "legend": "Air-to-water device settings (Classic)"
+    },
+    "devicesAtwHome": {
+      "legend": "Air-to-water device settings (Home)"
     },
     "errorLog": {
       "columns": {

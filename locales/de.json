@@ -71,6 +71,12 @@
     "zones": {
       "legend": "Zoneneinstellungen (Classic)",
       "update": "Aktualisieren"
+    },
+    "devicesAtaHome": {
+      "legend": "Luft-Luft-Geräteeinstellungen (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "Luft-Wasser-Geräteeinstellungen (Home)"
     }
   },
   "warnings": {

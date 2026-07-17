@@ -71,6 +71,12 @@
     "zones": {
       "legend": "Configuración de las zonas (Classic)",
       "update": "Actualizar"
+    },
+    "devicesAtaHome": {
+      "legend": "Configuración de los dispositivos aire-aire (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "Configuración de los dispositivos aire-agua (Home)"
     }
   },
   "warnings": {

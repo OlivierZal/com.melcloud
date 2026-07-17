@@ -34,8 +34,14 @@
       "configure": "Настроить",
       "legend": "Настройки устройства воздух-воздух (Classic)"
     },
+    "devicesAtaHome": {
+      "legend": "Настройки устройства воздух-воздух (Home)"
+    },
     "devicesAtw": {
       "legend": "Настройки устройства воздух-вода (Classic)"
+    },
+    "devicesAtwHome": {
+      "legend": "Настройки устройства воздух-вода (Home)"
     },
     "errorLog": {
       "columns": {

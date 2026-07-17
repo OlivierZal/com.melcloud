@@ -34,8 +34,14 @@
       "configure": "Configureren",
       "legend": "Lucht-lucht apparaatinstellingen (Classic)"
     },
+    "devicesAtaHome": {
+      "legend": "Lucht-lucht apparaatinstellingen (Home)"
+    },
     "devicesAtw": {
       "legend": "Lucht-water apparaatinstellingen (Classic)"
+    },
+    "devicesAtwHome": {
+      "legend": "Lucht-water apparaatinstellingen (Home)"
     },
     "errorLog": {
       "columns": {

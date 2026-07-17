@@ -34,8 +34,14 @@
       "configure": "Configurar",
       "legend": "Configuración de los dispositivos aire-aire (Classic)"
     },
+    "devicesAtaHome": {
+      "legend": "Configuración de los dispositivos aire-aire (Home)"
+    },
     "devicesAtw": {
       "legend": "Configuración de los dispositivos aire-agua (Classic)"
+    },
+    "devicesAtwHome": {
+      "legend": "Configuración de los dispositivos aire-agua (Home)"
     },
     "errorLog": {
       "columns": {

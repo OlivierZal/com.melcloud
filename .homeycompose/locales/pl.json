@@ -34,8 +34,14 @@
       "configure": "Konfiguruj",
       "legend": "Ustawienia urządzenia powietrze-powietrze (Classic)"
     },
+    "devicesAtaHome": {
+      "legend": "Ustawienia urządzenia powietrze-powietrze (Home)"
+    },
     "devicesAtw": {
       "legend": "Ustawienia urządzenia powietrze-woda (Classic)"
+    },
+    "devicesAtwHome": {
+      "legend": "Ustawienia urządzenia powietrze-woda (Home)"
     },
     "errorLog": {
       "columns": {

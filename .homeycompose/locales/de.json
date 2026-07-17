@@ -34,8 +34,14 @@
       "configure": "Konfigurieren",
       "legend": "Luft-Luft-Geräteeinstellungen (Classic)"
     },
+    "devicesAtaHome": {
+      "legend": "Luft-Luft-Geräteeinstellungen (Home)"
+    },
     "devicesAtw": {
       "legend": "Luft-Wasser-Geräteeinstellungen (Classic)"
+    },
+    "devicesAtwHome": {
+      "legend": "Luft-Wasser-Geräteeinstellungen (Home)"
     },
     "errorLog": {
       "columns": {

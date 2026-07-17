@@ -71,6 +71,12 @@
     "zones": {
       "legend": "Impostazioni zona (Classic)",
       "update": "Aggiorna"
+    },
+    "devicesAtaHome": {
+      "legend": "Impostazioni dispositivo aria-aria (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "Impostazioni dispositivo aria-acqua (Home)"
     }
   },
   "warnings": {

@@ -71,6 +71,12 @@
     "zones": {
       "legend": "Paramètres des zones (Classic)",
       "update": "Mettre à jour"
+    },
+    "devicesAtaHome": {
+      "legend": "Paramètres des appareils air-air (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "Paramètres des appareils air-eau (Home)"
     }
   },
   "warnings": {

@@ -71,6 +71,12 @@
     "zones": {
       "legend": "Ustawienia strefy (Classic)",
       "update": "Aktualizuj"
+    },
+    "devicesAtaHome": {
+      "legend": "Ustawienia urządzenia powietrze-powietrze (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "Ustawienia urządzenia powietrze-woda (Home)"
     }
   },
   "warnings": {

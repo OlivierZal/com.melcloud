@@ -241,6 +241,10 @@ const createLegend = (fieldSet: HTMLFieldSetElement, text?: string): void => {
   fieldSet.append(legend)
 }
 
+// Static section ids must be snake_case (html lint), driver ids are not:
+// the Home drivers carry a hyphen.
+const toSectionId = (driverId: string): string => driverId.replaceAll('-', '_')
+
 const createCheckbox = (id: string, driverId: string): HTMLInputElement => {
   const checkbox = document.createElement('input')
   checkbox.classList.add('homey-form-checkbox-input')
@@ -545,7 +549,7 @@ class DeviceSettingsManager {
     elements: HTMLValueElement[],
     driverId?: string,
   ): void {
-    const settings = `settings_${driverId ?? 'common'}`
+    const settings = `settings_${toSectionId(driverId ?? 'common')}`
     const button = getButton(`apply_${settings}`)
     button.addEventListener('click', () => {
       fireAndForget(this.#submitDeviceSettings(elements, driverId))
@@ -556,7 +560,7 @@ class DeviceSettingsManager {
     elements: HTMLValueElement[],
     driverId?: string,
   ): void {
-    const settings = `settings_${driverId ?? 'common'}`
+    const settings = `settings_${toSectionId(driverId ?? 'common')}`
     const button = getButton(`refresh_${settings}`)
     button.addEventListener('click', () => {
       if (driverId !== undefined) {
@@ -675,7 +679,9 @@ class DeviceSettingsManager {
   ): void {
     const driverSetting = driverSettings[driverId]
     if (driverSetting !== undefined) {
-      const settingsContainer = document.querySelector(`#settings_${driverId}`)
+      const settingsContainer = document.querySelector(
+        `#settings_${toSectionId(driverId)}`,
+      )
       if (settingsContainer !== null) {
         const fieldSet = document.createElement('fieldset')
         fieldSet.classList.add('homey-form-checkbox-set')
@@ -685,7 +691,7 @@ class DeviceSettingsManager {
           [...fieldSet.querySelectorAll('input')],
           driverId,
         )
-        hide(getDiv(`has_devices_${driverId}`), false)
+        hide(getDiv(`has_devices_${toSectionId(driverId)}`), false)
       }
     }
   }

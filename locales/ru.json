@@ -71,6 +71,12 @@
     "zones": {
       "legend": "Настройки зоны (Classic)",
       "update": "Обновить"
+    },
+    "devicesAtaHome": {
+      "legend": "Настройки устройства воздух-воздух (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "Настройки устройства воздух-вода (Home)"
     }
   },
   "warnings": {

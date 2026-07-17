@@ -34,8 +34,14 @@
       "configure": "Konfigurera",
       "legend": "Luft-til-luft enhetsinställningar (Classic)"
     },
+    "devicesAtaHome": {
+      "legend": "Luft-til-luft enhetsinställningar (Home)"
+    },
     "devicesAtw": {
       "legend": "Luft-til-vatten enhetsinställningar (Classic)"
+    },
+    "devicesAtwHome": {
+      "legend": "Luft-til-vatten enhetsinställningar (Home)"
     },
     "errorLog": {
       "columns": {

@@ -34,8 +34,14 @@
       "configure": "تكوين",
       "legend": "إعدادات جهاز هواء-هواء (Classic)"
     },
+    "devicesAtaHome": {
+      "legend": "إعدادات جهاز هواء-هواء (Home)"
+    },
     "devicesAtw": {
       "legend": "إعدادات جهاز هواء-ماء (Classic)"
+    },
+    "devicesAtwHome": {
+      "legend": "إعدادات جهاز هواء-ماء (Home)"
     },
     "errorLog": {
       "columns": {

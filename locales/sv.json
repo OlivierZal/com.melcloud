@@ -71,6 +71,12 @@
     "zones": {
       "legend": "Zonsinställningar (Classic)",
       "update": "Uppdatera"
+    },
+    "devicesAtaHome": {
+      "legend": "Luft-til-luft enhetsinställningar (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "Luft-til-vatten enhetsinställningar (Home)"
     }
   },
   "warnings": {

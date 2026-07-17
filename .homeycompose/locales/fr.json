@@ -34,8 +34,14 @@
       "configure": "Configurer",
       "legend": "Paramètres des appareils air-air (Classic)"
     },
+    "devicesAtaHome": {
+      "legend": "Paramètres des appareils air-air (Home)"
+    },
     "devicesAtw": {
       "legend": "Paramètres des appareils air-eau (Classic)"
+    },
+    "devicesAtwHome": {
+      "legend": "Paramètres des appareils air-eau (Home)"
     },
     "errorLog": {
       "columns": {

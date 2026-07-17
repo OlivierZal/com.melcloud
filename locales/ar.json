@@ -71,6 +71,12 @@
     "zones": {
       "legend": "إعدادات المنطقة (Classic)",
       "update": "تحديث"
+    },
+    "devicesAtaHome": {
+      "legend": "إعدادات جهاز هواء-هواء (Home)"
+    },
+    "devicesAtwHome": {
+      "legend": "إعدادات جهاز هواء-ماء (Home)"
     }
   },
   "warnings": {
