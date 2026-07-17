@@ -3139,6 +3139,125 @@
         "measure_power": {
           "approximated": true
         },
+        "measure_power.auto": {
+          "title": {
+            "ar": "الطاقة - تلقائي",
+            "da": "Effekt - automatisk",
+            "de": "Leistung - automatisch",
+            "en": "Power - automatic",
+            "es": "Potencia - automático",
+            "fr": "Puissance - automatique",
+            "it": "Potenza - automatica",
+            "ko": "전력 - 자동",
+            "nl": "Vermogen - automatische",
+            "no": "Effekt - automatisk",
+            "pl": "Moc - automatyczny",
+            "ru": "Мощность - авто",
+            "sv": "Effekt - automatiskt"
+          }
+        },
+        "measure_power.cooling": {
+          "title": {
+            "ar": "الطاقة - تبريد",
+            "da": "Effekt - køling",
+            "de": "Leistung - Kühlung",
+            "en": "Power - cooling",
+            "es": "Potencia - enfriamiento",
+            "fr": "Puissance - refroidissement",
+            "it": "Potenza - raffreddamento",
+            "ko": "전력 - 냉방",
+            "nl": "Vermogen - koeling",
+            "no": "Effekt - kjøling",
+            "pl": "Moc - chłodzenie",
+            "ru": "Мощность - охлаждение",
+            "sv": "Effekt - kylning"
+          }
+        },
+        "measure_power.dry": {
+          "title": {
+            "ar": "الطاقة - إزالة الرطوبة",
+            "da": "Effekt - affugtning",
+            "de": "Leistung - Entfeuchtung",
+            "en": "Power - dry",
+            "es": "Potencia - desumidificación",
+            "fr": "Puissance - déshumidification",
+            "it": "Potenza - deumidificazione",
+            "ko": "전력 - 제습",
+            "nl": "Vermogen - ontvochtiging",
+            "no": "Effekt - avfukting",
+            "pl": "Moc - osuszanie",
+            "ru": "Мощность - осушение",
+            "sv": "Effekt - avfuktning"
+          }
+        },
+        "measure_power.fan": {
+          "title": {
+            "ar": "الطاقة - مروحة",
+            "da": "Effekt - blæser",
+            "de": "Leistung - Lüfter",
+            "en": "Power - fan",
+            "es": "Potencia - ventilador",
+            "fr": "Puissance - ventilateur",
+            "it": "Potenza - ventilazione",
+            "ko": "전력 - 팬",
+            "nl": "Vermogen - ventilator",
+            "no": "Effekt - vifte",
+            "pl": "Moc - wentylator",
+            "ru": "Мощность - вентилятор",
+            "sv": "Effekt - fläkt"
+          }
+        },
+        "measure_power.heating": {
+          "title": {
+            "ar": "الطاقة - تدفئة",
+            "da": "Effekt - opvarmning",
+            "de": "Leistung - Heizung",
+            "en": "Power - heating",
+            "es": "Potencia - calefacción",
+            "fr": "Puissance - chauffage",
+            "it": "Potenza - riscaldamento",
+            "ko": "전력 - 난방",
+            "nl": "Vermogen - verwarming",
+            "no": "Effekt - oppvarming",
+            "pl": "Moc - ogrzewanie",
+            "ru": "Мощность - отопление",
+            "sv": "Effekt - uppvärmning"
+          }
+        },
+        "measure_power.other": {
+          "title": {
+            "ar": "الطاقة - أخرى",
+            "da": "Effekt - andet",
+            "de": "Leistung - Sonstiges",
+            "en": "Power - other",
+            "es": "Potencia - otro",
+            "fr": "Puissance - autre",
+            "it": "Potenza - altro",
+            "ko": "전력 - 기타",
+            "nl": "Vermogen - andere",
+            "no": "Effekt - annet",
+            "pl": "Moc - inne",
+            "ru": "Мощность - прочее",
+            "sv": "Effekt - övrigt"
+          }
+        },
+        "measure_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret effekt",
+            "de": "Erzeugte Leistung",
+            "en": "Produced power",
+            "es": "Potencia producida",
+            "fr": "Puissance produite",
+            "it": "Potenza prodotta",
+            "ko": "생산 전력",
+            "nl": "Geproduceerd vermogen",
+            "no": "Produsert effekt",
+            "pl": "Moc wytworzona",
+            "ru": "Произведённая мощность",
+            "sv": "Producerad effekt"
+          }
+        },
         "measure_temperature.outdoor": {
           "title": {
             "ar": "درجة الحرارة الخارجية",
@@ -3188,6 +3307,541 @@
             "pl": "Temperatura - strefa 2",
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
+          }
+        },
+        "meter_power.auto": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تلقائي",
+            "da": "Energi - automatisk",
+            "de": "Energie - automatisch",
+            "en": "Energy - automatic",
+            "es": "Energía - automático",
+            "fr": "Énergie - automatique",
+            "it": "Energia - automatica",
+            "ko": "에너지 - 자동",
+            "nl": "Energie - automatische",
+            "no": "Energi - automatisk",
+            "pl": "Energia - automatyczny",
+            "ru": "Энергия - авто",
+            "sv": "Energi - automatiskt"
+          }
+        },
+        "meter_power.cooling": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تبريد",
+            "da": "Energi - køling",
+            "de": "Energie - Kühlung",
+            "en": "Energy - cooling",
+            "es": "Energía - enfriamiento",
+            "fr": "Énergie - refroidissement",
+            "it": "Energia - raffreddamento",
+            "ko": "에너지 - 냉방",
+            "nl": "Energie - koeling",
+            "no": "Energi - kjøling",
+            "pl": "Energia - chłodzenie",
+            "ru": "Энергия - охлаждение",
+            "sv": "Energi - kylning"
+          }
+        },
+        "meter_power.cop": {
+          "title": {
+            "ar": "CoP",
+            "da": "CoP",
+            "de": "CoP",
+            "en": "CoP",
+            "es": "CoP",
+            "fr": "CoP",
+            "it": "CoP",
+            "ko": "CoP",
+            "nl": "CoP",
+            "no": "CoP",
+            "pl": "CoP",
+            "ru": "CoP",
+            "sv": "CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_cooling": {
+          "title": {
+            "ar": "CoP - تبريد",
+            "da": "CoP - køling",
+            "de": "CoP - Kühlung",
+            "en": "CoP - cooling",
+            "es": "CoP - enfriamiento",
+            "fr": "CoP - refroidissement",
+            "it": "CoP - raffreddamento",
+            "ko": "CoP - 냉방",
+            "nl": "CoP - koeling",
+            "no": "CoP - kjøling",
+            "pl": "CoP - chłodzenie",
+            "ru": "CoP - охлаждение",
+            "sv": "CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily": {
+          "title": {
+            "ar": "CoP يومي",
+            "da": "Daglig CoP",
+            "de": "Täglicher CoP",
+            "en": "Daily CoP",
+            "es": "CoP diario",
+            "fr": "CoP quotidien",
+            "it": "CoP giornaliero",
+            "ko": "일일 CoP",
+            "nl": "Dagelijkse CoP",
+            "no": "Daglig CoP",
+            "pl": "Dzienny CoP",
+            "ru": "CoP за день",
+            "sv": "Daglig CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_cooling": {
+          "title": {
+            "ar": "CoP يومي - تبريد",
+            "da": "Daglig CoP - køling",
+            "de": "Täglicher CoP - Kühlung",
+            "en": "Daily CoP - cooling",
+            "es": "CoP diario - enfriamiento",
+            "fr": "CoP quotidien - refroidissement",
+            "it": "CoP giornaliero - raffreddamento",
+            "ko": "일일 CoP - 냉방",
+            "nl": "Dagelijkse CoP - koeling",
+            "no": "Daglig CoP - kjøling",
+            "pl": "Dzienny CoP - chłodzenie",
+            "ru": "CoP за день - охлаждение",
+            "sv": "Daglig CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_heating": {
+          "title": {
+            "ar": "CoP يومي - تدفئة",
+            "da": "Daglig CoP - opvarmning",
+            "de": "Täglicher CoP - Heizung",
+            "en": "Daily CoP - heating",
+            "es": "CoP diario - calefacción",
+            "fr": "CoP quotidien - chauffage",
+            "it": "CoP giornaliero - riscaldamento",
+            "ko": "일일 CoP - 난방",
+            "nl": "Dagelijkse CoP - verwarming",
+            "no": "Daglig CoP - oppvarming",
+            "pl": "Dzienny CoP - ogrzewanie",
+            "ru": "CoP за день - отопление",
+            "sv": "Daglig CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_hotwater": {
+          "title": {
+            "ar": "CoP يومي - مياه ساخنة صحية",
+            "da": "Daglig CoP - varmtvandslastning",
+            "de": "Täglicher CoP - Brauchwarmwasser",
+            "en": "Daily CoP - domestic hot water",
+            "es": "CoP diario - agua caliente sanitaria",
+            "fr": "CoP quotidien - eau chaude sanitaire",
+            "it": "CoP giornaliero - acqua calda sanitaria",
+            "ko": "일일 CoP - 생활 온수",
+            "nl": "Dagelijkse CoP - sanitair warm water",
+            "no": "Daglig CoP - varmvannslastning",
+            "pl": "Dzienny CoP - ciepła woda użytkowa",
+            "ru": "CoP за день - ГВС",
+            "sv": "Daglig CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_heating": {
+          "title": {
+            "ar": "CoP - تدفئة",
+            "da": "CoP - opvarmning",
+            "de": "CoP - Heizung",
+            "en": "CoP - heating",
+            "es": "CoP - calefacción",
+            "fr": "CoP - chauffage",
+            "it": "CoP - riscaldamento",
+            "ko": "CoP - 난방",
+            "nl": "CoP - verwarming",
+            "no": "CoP - oppvarming",
+            "pl": "CoP - ogrzewanie",
+            "ru": "CoP - отопление",
+            "sv": "CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_hotwater": {
+          "title": {
+            "ar": "CoP - مياه ساخنة صحية",
+            "da": "CoP - varmtvandsindlæsning",
+            "de": "CoP - Brauchwarmwasser",
+            "en": "CoP - domestic hot water",
+            "es": "CoP - agua caliente sanitaria",
+            "fr": "CoP - eau chaude sanitaire",
+            "it": "CoP - acqua calda sanitaria",
+            "ko": "CoP - 생활 온수",
+            "nl": "CoP - sanitair warm water",
+            "no": "CoP - varmvannslastning",
+            "pl": "CoP - ciepła woda użytkowa",
+            "ru": "CoP - ГВС",
+            "sv": "CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.daily": {
+          "title": {
+            "ar": "الطاقة اليومية",
+            "da": "Daglig energi",
+            "de": "Tägliche Energie",
+            "en": "Daily energy",
+            "es": "Energía diaria",
+            "fr": "Énergie quotidienne",
+            "it": "Energia giornaliera",
+            "ko": "일일 에너지",
+            "nl": "Dagelijkse energie",
+            "no": "Daglig energi",
+            "pl": "Energia dzienna",
+            "ru": "Энергия за день",
+            "sv": "Daglig energi"
+          }
+        },
+        "meter_power.daily_auto": {
+          "title": {
+            "ar": "الطاقة اليومية - تلقائي",
+            "da": "Daglig energi - automatisk",
+            "de": "Tägliche Energie - automatisch",
+            "en": "Daily energy - automatic",
+            "es": "Energía diaria - automático",
+            "fr": "Énergie quotidienne - automatique",
+            "it": "Energia giornaliera - automatica",
+            "ko": "일일 에너지 - 자동",
+            "nl": "Dagelijkse energie - automatische",
+            "no": "Daglig energi - automatisk",
+            "pl": "Energia dzienna - automatyczny",
+            "ru": "Энергия за день - авто",
+            "sv": "Daglig energi - automatiskt"
+          }
+        },
+        "meter_power.daily_cooling": {
+          "title": {
+            "ar": "الطاقة اليومية - تبريد",
+            "da": "Daglig energi - køling",
+            "de": "Tägliche Energie - Kühlung",
+            "en": "Daily energy - cooling",
+            "es": "Energía diaria - enfriamiento",
+            "fr": "Énergie quotidienne - refroidissement",
+            "it": "Energia giornaliera - raffreddamento",
+            "ko": "일일 에너지 - 냉방",
+            "nl": "Dagelijkse energie - koeling",
+            "no": "Daglig energi - kjøling",
+            "pl": "Energia dzienna - chłodzenie",
+            "ru": "Энергия за день - охлаждение",
+            "sv": "Daglig energi - kylning"
+          }
+        },
+        "meter_power.daily_dry": {
+          "title": {
+            "ar": "الطاقة اليومية - إزالة الرطوبة",
+            "da": "Daglig energi - affugtning",
+            "de": "Tägliche Energie - Entfeuchtung",
+            "en": "Daily energy - dry",
+            "es": "Energía diaria - desumidificación",
+            "fr": "Énergie quotidienne - déshumidification",
+            "it": "Energia giornaliera - deumidificazione",
+            "ko": "일일 에너지 - 제습",
+            "nl": "Dagelijkse energie - ontvochtiging",
+            "no": "Daglig energi - avfukting",
+            "pl": "Energia dzienna - osuszanie",
+            "ru": "Энергия за день - осушение",
+            "sv": "Daglig energi - avfuktning"
+          }
+        },
+        "meter_power.daily_fan": {
+          "title": {
+            "ar": "الطاقة اليومية - مروحة",
+            "da": "Daglig energi - blæser",
+            "de": "Tägliche Energie - Lüfter",
+            "en": "Daily energy - fan",
+            "es": "Energía diaria - ventilación",
+            "fr": "Énergie quotidienne - ventilateur",
+            "it": "Energia giornaliera - ventilazione",
+            "ko": "일일 에너지 - 팬",
+            "nl": "Dagelijkse energie - ventilator",
+            "no": "Daglig energi - vifte",
+            "pl": "Energia dzienna - wentylator",
+            "ru": "Энергия за день - вентилятор",
+            "sv": "Daglig energi - fläkt"
+          }
+        },
+        "meter_power.daily_heating": {
+          "title": {
+            "ar": "الطاقة اليومية - تدفئة",
+            "da": "Daglig energi - opvarmning",
+            "de": "Tägliche Energie - Heizung",
+            "en": "Daily energy - heating",
+            "es": "Energía diaria - calefacción",
+            "fr": "Énergie quotidienne - chauffage",
+            "it": "Energia giornaliera - riscaldamento",
+            "ko": "일일 에너지 - 난방",
+            "nl": "Dagelijkse energie - verwarming",
+            "no": "Daglig energi - oppvarming",
+            "pl": "Energia dzienna - ogrzewanie",
+            "ru": "Энергия за день - отопление",
+            "sv": "Daglig energi - uppvärmning"
+          }
+        },
+        "meter_power.daily_hotwater": {
+          "title": {
+            "ar": "الطاقة اليومية - مياه ساخنة صحية",
+            "da": "Daglig energi - varmtvandslastning",
+            "de": "Tägliche Energie - Brauchwarmwasser",
+            "en": "Daily energy - domestic hot water",
+            "es": "Energía diaria - agua caliente sanitaria",
+            "fr": "Énergie quotidienne - eau chaude sanitaire",
+            "it": "Energia giornaliera - acqua calda sanitaria",
+            "ko": "일일 에너지 - 생활 온수",
+            "nl": "Dagelijkse energie - sanitair warm water",
+            "no": "Daglig energi - varmvannslastning",
+            "pl": "Energia dzienna - ciepła woda użytkowa",
+            "ru": "Энергия за день - ГВС",
+            "sv": "Daglig energi - varmvattenladdning"
+          }
+        },
+        "meter_power.daily_other": {
+          "title": {
+            "ar": "الطاقة اليومية - أخرى",
+            "da": "Daglig energi - andet",
+            "de": "Tägliche Energie - Sonstiges",
+            "en": "Daily energy - other",
+            "es": "Energía diaria - otro",
+            "fr": "Énergie quotidienne - autre",
+            "it": "Energia giornaliera - altro",
+            "ko": "일일 에너지 - 기타",
+            "nl": "Dagelijkse energie - andere",
+            "no": "Daglig energi - annet",
+            "pl": "Energia dzienna - inne",
+            "ru": "Энергия за день - прочее",
+            "sv": "Daglig energi - övrigt"
+          }
+        },
+        "meter_power.dry": {
+          "title": {
+            "ar": "الطاقة المستهلكة - إزالة الرطوبة",
+            "da": "Energi - affugtning",
+            "de": "Energie - Entfeuchtung",
+            "en": "Energy - dry",
+            "es": "Energía - desumidificación",
+            "fr": "Énergie - déshumidification",
+            "it": "Energia - deumidificazione",
+            "ko": "에너지 - 제습",
+            "nl": "Energie - ontvochtiging",
+            "no": "Energi - avfukting",
+            "pl": "Energia - osuszanie",
+            "ru": "Энергия - осушение",
+            "sv": "Energi - avfuktning"
+          }
+        },
+        "meter_power.fan": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مروحة",
+            "da": "Energi - blæser",
+            "de": "Energie - Lüfter",
+            "en": "Energy - fan",
+            "es": "Energía - ventilador",
+            "fr": "Énergie - ventilateur",
+            "it": "Energia - ventilazione",
+            "ko": "에너지 - 팬",
+            "nl": "Energie - ventilator",
+            "no": "Energi - vifte",
+            "pl": "Energia - wentylator",
+            "ru": "Энергия - вентилятор",
+            "sv": "Energi - fläkt"
+          }
+        },
+        "meter_power.heating": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تدفئة",
+            "da": "Energi - opvarmning",
+            "de": "Energie - Heizung",
+            "en": "Energy - heating",
+            "es": "Energía - calefacción",
+            "fr": "Énergie - chauffage",
+            "it": "Energia - riscaldamento",
+            "ko": "에너지 - 난방",
+            "nl": "Energie - verwarming",
+            "no": "Energi - oppvarming",
+            "pl": "Energia - ogrzewanie",
+            "ru": "Энергия - отопление",
+            "sv": "Energi - uppvärmning"
+          }
+        },
+        "meter_power.hotwater": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مياه ساخنة صحية",
+            "da": "Energi - varmtvandsindlæsning",
+            "de": "Energie - Brauchwarmwasser",
+            "en": "Energy - domestic hot water",
+            "es": "Energía - agua caliente sanitaria",
+            "fr": "Énergie - eau chaude sanitaire",
+            "it": "Energia - acqua calda sanitaria",
+            "ko": "에너지 - 생활 온수",
+            "nl": "Energie - sanitair warm water",
+            "no": "Energi - varmvannslastning",
+            "pl": "Energia - ciepła woda użytkowa",
+            "ru": "Энергия - ГВС",
+            "sv": "Energi - varmvattenladdning"
+          }
+        },
+        "meter_power.other": {
+          "title": {
+            "ar": "الطاقة المستهلكة - أخرى",
+            "da": "Energi - andet",
+            "de": "Energie - Sonstiges",
+            "en": "Energy - other",
+            "es": "Energía - otro",
+            "fr": "Énergie - autre",
+            "it": "Energia - altro",
+            "ko": "에너지 - 기타",
+            "nl": "Energie - andere",
+            "no": "Energi - annet",
+            "pl": "Energia - inne",
+            "ru": "Энергия - прочее",
+            "sv": "Energi - övrigt"
+          }
+        },
+        "meter_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret energi",
+            "de": "Erzeugte Energie",
+            "en": "Produced energy",
+            "es": "Energía producida",
+            "fr": "Énergie produite",
+            "it": "Energia prodotta",
+            "ko": "생산 에너지",
+            "nl": "Geproduceerde energie",
+            "no": "Produsert energi",
+            "pl": "Energia wytworzona",
+            "ru": "Произведённая энергия",
+            "sv": "Producerad energi"
+          }
+        },
+        "meter_power.produced_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة - تبريد",
+            "da": "Produceret energi - køling",
+            "de": "Erzeugte Energie - Kühlung",
+            "en": "Produced energy - cooling",
+            "es": "Energía producida - enfriamiento",
+            "fr": "Énergie produite - refroidissement",
+            "it": "Energia prodotta - raffreddamento",
+            "ko": "생산 에너지 - 냉방",
+            "nl": "Geproduceerde energie - koeling",
+            "no": "Produsert energi - kjøling",
+            "pl": "Energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия - охлаждение",
+            "sv": "Producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية",
+            "da": "Daglig produceret energi",
+            "de": "Tägliche erzeugte Energie",
+            "en": "Daily produced energy",
+            "es": "Energía producida diaria",
+            "fr": "Énergie produite quotidienne",
+            "it": "Energia prodotta giornaliera",
+            "ko": "일일 생산 에너지",
+            "nl": "Dagelijkse geproduceerde energie",
+            "no": "Daglig produsert energi",
+            "pl": "Dzienna energia wytworzona",
+            "ru": "Произведённая энергия за день",
+            "sv": "Daglig producerad energi"
+          }
+        },
+        "meter_power.produced_daily_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تبريد",
+            "da": "Daglig produceret energi - køling",
+            "de": "Tägliche erzeugte Energie - Kühlung",
+            "en": "Daily produced energy - cooling",
+            "es": "Energía producida diaria - enfriamiento",
+            "fr": "Énergie produite quotidienne - refroidissement",
+            "it": "Energia prodotta giornaliera - raffreddamento",
+            "ko": "일일 생산 에너지 - 냉방",
+            "nl": "Dagelijkse geproduceerde energie - koeling",
+            "no": "Daglig produsert energi - kjøling",
+            "pl": "Dzienna energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия за день - охлаждение",
+            "sv": "Daglig producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تدفئة",
+            "da": "Daglig produceret energi - opvarmning",
+            "de": "Tägliche erzeugte Energie - Heizung",
+            "en": "Daily produced energy - heating",
+            "es": "Energía producida diaria - calefacción",
+            "fr": "Énergie produite quotidienne - chauffage",
+            "it": "Energia prodotta giornaliera - riscaldamento",
+            "ko": "일일 생산 에너지 - 난방",
+            "nl": "Dagelijkse geproduceerde energie - verwarming",
+            "no": "Daglig produsert energi - oppvarming",
+            "pl": "Dzienna energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия за день - отопление",
+            "sv": "Daglig producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_daily_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - مياه ساخنة صحية",
+            "da": "Daglig produceret energi - varmtvandslastning",
+            "de": "Tägliche erzeugte Energie - Brauchwarmwasser",
+            "en": "Daily produced energy - domestic hot water",
+            "es": "Energía producida diaria - agua caliente sanitaria",
+            "fr": "Énergie produite quotidienne - eau chaude sanitaire",
+            "it": "Energia prodotta giornaliera - acqua calda sanitaria",
+            "ko": "일일 생산 에너지 - 생활 온수",
+            "nl": "Dagelijkse geproduceerde energie - sanitair warm water",
+            "no": "Daglig produsert energi - varmvannslastning",
+            "pl": "Dzienna energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия за день - ГВС",
+            "sv": "Daglig producerad energi - varmvattenladdning"
+          }
+        },
+        "meter_power.produced_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة - تدفئة",
+            "da": "Produceret energi - opvarmning",
+            "de": "Erzeugte Energie - Heizung",
+            "en": "Produced energy - heating",
+            "es": "Energía producida - calefacción",
+            "fr": "Énergie produite - chauffage",
+            "it": "Energia prodotta - riscaldamento",
+            "ko": "생산 에너지 - 난방",
+            "nl": "Geproduceerde energie - verwarming",
+            "no": "Produsert energi - oppvarming",
+            "pl": "Energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия - отопление",
+            "sv": "Producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة - مياه ساخنة صحية",
+            "da": "Produceret energi - varmtvandsindlæsning",
+            "de": "Erzeugte Energie - Brauchwarmwasser",
+            "en": "Produced energy - domestic hot water",
+            "es": "Energía producida - agua caliente sanitaria",
+            "fr": "Énergie produite - eau chaude sanitaire",
+            "it": "Energia prodotta - acqua calda sanitaria",
+            "ko": "생산 에너지 - 생활 온수",
+            "nl": "Geproduceerde energie - sanitair warm water",
+            "no": "Produsert energi - varmvannslastning",
+            "pl": "Energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия - ГВС",
+            "sv": "Producerad energi - varmvattenladdning"
           }
         },
         "operational_state": {
@@ -4094,6 +4748,125 @@
         "measure_power": {
           "approximated": true
         },
+        "measure_power.auto": {
+          "title": {
+            "ar": "الطاقة - تلقائي",
+            "da": "Effekt - automatisk",
+            "de": "Leistung - automatisch",
+            "en": "Power - automatic",
+            "es": "Potencia - automático",
+            "fr": "Puissance - automatique",
+            "it": "Potenza - automatica",
+            "ko": "전력 - 자동",
+            "nl": "Vermogen - automatische",
+            "no": "Effekt - automatisk",
+            "pl": "Moc - automatyczny",
+            "ru": "Мощность - авто",
+            "sv": "Effekt - automatiskt"
+          }
+        },
+        "measure_power.cooling": {
+          "title": {
+            "ar": "الطاقة - تبريد",
+            "da": "Effekt - køling",
+            "de": "Leistung - Kühlung",
+            "en": "Power - cooling",
+            "es": "Potencia - enfriamiento",
+            "fr": "Puissance - refroidissement",
+            "it": "Potenza - raffreddamento",
+            "ko": "전력 - 냉방",
+            "nl": "Vermogen - koeling",
+            "no": "Effekt - kjøling",
+            "pl": "Moc - chłodzenie",
+            "ru": "Мощность - охлаждение",
+            "sv": "Effekt - kylning"
+          }
+        },
+        "measure_power.dry": {
+          "title": {
+            "ar": "الطاقة - إزالة الرطوبة",
+            "da": "Effekt - affugtning",
+            "de": "Leistung - Entfeuchtung",
+            "en": "Power - dry",
+            "es": "Potencia - desumidificación",
+            "fr": "Puissance - déshumidification",
+            "it": "Potenza - deumidificazione",
+            "ko": "전력 - 제습",
+            "nl": "Vermogen - ontvochtiging",
+            "no": "Effekt - avfukting",
+            "pl": "Moc - osuszanie",
+            "ru": "Мощность - осушение",
+            "sv": "Effekt - avfuktning"
+          }
+        },
+        "measure_power.fan": {
+          "title": {
+            "ar": "الطاقة - مروحة",
+            "da": "Effekt - blæser",
+            "de": "Leistung - Lüfter",
+            "en": "Power - fan",
+            "es": "Potencia - ventilador",
+            "fr": "Puissance - ventilateur",
+            "it": "Potenza - ventilazione",
+            "ko": "전력 - 팬",
+            "nl": "Vermogen - ventilator",
+            "no": "Effekt - vifte",
+            "pl": "Moc - wentylator",
+            "ru": "Мощность - вентилятор",
+            "sv": "Effekt - fläkt"
+          }
+        },
+        "measure_power.heating": {
+          "title": {
+            "ar": "الطاقة - تدفئة",
+            "da": "Effekt - opvarmning",
+            "de": "Leistung - Heizung",
+            "en": "Power - heating",
+            "es": "Potencia - calefacción",
+            "fr": "Puissance - chauffage",
+            "it": "Potenza - riscaldamento",
+            "ko": "전력 - 난방",
+            "nl": "Vermogen - verwarming",
+            "no": "Effekt - oppvarming",
+            "pl": "Moc - ogrzewanie",
+            "ru": "Мощность - отопление",
+            "sv": "Effekt - uppvärmning"
+          }
+        },
+        "measure_power.other": {
+          "title": {
+            "ar": "الطاقة - أخرى",
+            "da": "Effekt - andet",
+            "de": "Leistung - Sonstiges",
+            "en": "Power - other",
+            "es": "Potencia - otro",
+            "fr": "Puissance - autre",
+            "it": "Potenza - altro",
+            "ko": "전력 - 기타",
+            "nl": "Vermogen - andere",
+            "no": "Effekt - annet",
+            "pl": "Moc - inne",
+            "ru": "Мощность - прочее",
+            "sv": "Effekt - övrigt"
+          }
+        },
+        "measure_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret effekt",
+            "de": "Erzeugte Leistung",
+            "en": "Produced power",
+            "es": "Potencia producida",
+            "fr": "Puissance produite",
+            "it": "Potenza prodotta",
+            "ko": "생산 전력",
+            "nl": "Geproduceerd vermogen",
+            "no": "Produsert effekt",
+            "pl": "Moc wytworzona",
+            "ru": "Произведённая мощность",
+            "sv": "Producerad effekt"
+          }
+        },
         "measure_temperature.outdoor": {
           "title": {
             "ar": "درجة الحرارة الخارجية",
@@ -4143,6 +4916,541 @@
             "pl": "Temperatura - strefa 2",
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
+          }
+        },
+        "meter_power.auto": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تلقائي",
+            "da": "Energi - automatisk",
+            "de": "Energie - automatisch",
+            "en": "Energy - automatic",
+            "es": "Energía - automático",
+            "fr": "Énergie - automatique",
+            "it": "Energia - automatica",
+            "ko": "에너지 - 자동",
+            "nl": "Energie - automatische",
+            "no": "Energi - automatisk",
+            "pl": "Energia - automatyczny",
+            "ru": "Энергия - авто",
+            "sv": "Energi - automatiskt"
+          }
+        },
+        "meter_power.cooling": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تبريد",
+            "da": "Energi - køling",
+            "de": "Energie - Kühlung",
+            "en": "Energy - cooling",
+            "es": "Energía - enfriamiento",
+            "fr": "Énergie - refroidissement",
+            "it": "Energia - raffreddamento",
+            "ko": "에너지 - 냉방",
+            "nl": "Energie - koeling",
+            "no": "Energi - kjøling",
+            "pl": "Energia - chłodzenie",
+            "ru": "Энергия - охлаждение",
+            "sv": "Energi - kylning"
+          }
+        },
+        "meter_power.cop": {
+          "title": {
+            "ar": "CoP",
+            "da": "CoP",
+            "de": "CoP",
+            "en": "CoP",
+            "es": "CoP",
+            "fr": "CoP",
+            "it": "CoP",
+            "ko": "CoP",
+            "nl": "CoP",
+            "no": "CoP",
+            "pl": "CoP",
+            "ru": "CoP",
+            "sv": "CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_cooling": {
+          "title": {
+            "ar": "CoP - تبريد",
+            "da": "CoP - køling",
+            "de": "CoP - Kühlung",
+            "en": "CoP - cooling",
+            "es": "CoP - enfriamiento",
+            "fr": "CoP - refroidissement",
+            "it": "CoP - raffreddamento",
+            "ko": "CoP - 냉방",
+            "nl": "CoP - koeling",
+            "no": "CoP - kjøling",
+            "pl": "CoP - chłodzenie",
+            "ru": "CoP - охлаждение",
+            "sv": "CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily": {
+          "title": {
+            "ar": "CoP يومي",
+            "da": "Daglig CoP",
+            "de": "Täglicher CoP",
+            "en": "Daily CoP",
+            "es": "CoP diario",
+            "fr": "CoP quotidien",
+            "it": "CoP giornaliero",
+            "ko": "일일 CoP",
+            "nl": "Dagelijkse CoP",
+            "no": "Daglig CoP",
+            "pl": "Dzienny CoP",
+            "ru": "CoP за день",
+            "sv": "Daglig CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_cooling": {
+          "title": {
+            "ar": "CoP يومي - تبريد",
+            "da": "Daglig CoP - køling",
+            "de": "Täglicher CoP - Kühlung",
+            "en": "Daily CoP - cooling",
+            "es": "CoP diario - enfriamiento",
+            "fr": "CoP quotidien - refroidissement",
+            "it": "CoP giornaliero - raffreddamento",
+            "ko": "일일 CoP - 냉방",
+            "nl": "Dagelijkse CoP - koeling",
+            "no": "Daglig CoP - kjøling",
+            "pl": "Dzienny CoP - chłodzenie",
+            "ru": "CoP за день - охлаждение",
+            "sv": "Daglig CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_heating": {
+          "title": {
+            "ar": "CoP يومي - تدفئة",
+            "da": "Daglig CoP - opvarmning",
+            "de": "Täglicher CoP - Heizung",
+            "en": "Daily CoP - heating",
+            "es": "CoP diario - calefacción",
+            "fr": "CoP quotidien - chauffage",
+            "it": "CoP giornaliero - riscaldamento",
+            "ko": "일일 CoP - 난방",
+            "nl": "Dagelijkse CoP - verwarming",
+            "no": "Daglig CoP - oppvarming",
+            "pl": "Dzienny CoP - ogrzewanie",
+            "ru": "CoP за день - отопление",
+            "sv": "Daglig CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_hotwater": {
+          "title": {
+            "ar": "CoP يومي - مياه ساخنة صحية",
+            "da": "Daglig CoP - varmtvandslastning",
+            "de": "Täglicher CoP - Brauchwarmwasser",
+            "en": "Daily CoP - domestic hot water",
+            "es": "CoP diario - agua caliente sanitaria",
+            "fr": "CoP quotidien - eau chaude sanitaire",
+            "it": "CoP giornaliero - acqua calda sanitaria",
+            "ko": "일일 CoP - 생활 온수",
+            "nl": "Dagelijkse CoP - sanitair warm water",
+            "no": "Daglig CoP - varmvannslastning",
+            "pl": "Dzienny CoP - ciepła woda użytkowa",
+            "ru": "CoP за день - ГВС",
+            "sv": "Daglig CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_heating": {
+          "title": {
+            "ar": "CoP - تدفئة",
+            "da": "CoP - opvarmning",
+            "de": "CoP - Heizung",
+            "en": "CoP - heating",
+            "es": "CoP - calefacción",
+            "fr": "CoP - chauffage",
+            "it": "CoP - riscaldamento",
+            "ko": "CoP - 난방",
+            "nl": "CoP - verwarming",
+            "no": "CoP - oppvarming",
+            "pl": "CoP - ogrzewanie",
+            "ru": "CoP - отопление",
+            "sv": "CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_hotwater": {
+          "title": {
+            "ar": "CoP - مياه ساخنة صحية",
+            "da": "CoP - varmtvandsindlæsning",
+            "de": "CoP - Brauchwarmwasser",
+            "en": "CoP - domestic hot water",
+            "es": "CoP - agua caliente sanitaria",
+            "fr": "CoP - eau chaude sanitaire",
+            "it": "CoP - acqua calda sanitaria",
+            "ko": "CoP - 생활 온수",
+            "nl": "CoP - sanitair warm water",
+            "no": "CoP - varmvannslastning",
+            "pl": "CoP - ciepła woda użytkowa",
+            "ru": "CoP - ГВС",
+            "sv": "CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.daily": {
+          "title": {
+            "ar": "الطاقة اليومية",
+            "da": "Daglig energi",
+            "de": "Tägliche Energie",
+            "en": "Daily energy",
+            "es": "Energía diaria",
+            "fr": "Énergie quotidienne",
+            "it": "Energia giornaliera",
+            "ko": "일일 에너지",
+            "nl": "Dagelijkse energie",
+            "no": "Daglig energi",
+            "pl": "Energia dzienna",
+            "ru": "Энергия за день",
+            "sv": "Daglig energi"
+          }
+        },
+        "meter_power.daily_auto": {
+          "title": {
+            "ar": "الطاقة اليومية - تلقائي",
+            "da": "Daglig energi - automatisk",
+            "de": "Tägliche Energie - automatisch",
+            "en": "Daily energy - automatic",
+            "es": "Energía diaria - automático",
+            "fr": "Énergie quotidienne - automatique",
+            "it": "Energia giornaliera - automatica",
+            "ko": "일일 에너지 - 자동",
+            "nl": "Dagelijkse energie - automatische",
+            "no": "Daglig energi - automatisk",
+            "pl": "Energia dzienna - automatyczny",
+            "ru": "Энергия за день - авто",
+            "sv": "Daglig energi - automatiskt"
+          }
+        },
+        "meter_power.daily_cooling": {
+          "title": {
+            "ar": "الطاقة اليومية - تبريد",
+            "da": "Daglig energi - køling",
+            "de": "Tägliche Energie - Kühlung",
+            "en": "Daily energy - cooling",
+            "es": "Energía diaria - enfriamiento",
+            "fr": "Énergie quotidienne - refroidissement",
+            "it": "Energia giornaliera - raffreddamento",
+            "ko": "일일 에너지 - 냉방",
+            "nl": "Dagelijkse energie - koeling",
+            "no": "Daglig energi - kjøling",
+            "pl": "Energia dzienna - chłodzenie",
+            "ru": "Энергия за день - охлаждение",
+            "sv": "Daglig energi - kylning"
+          }
+        },
+        "meter_power.daily_dry": {
+          "title": {
+            "ar": "الطاقة اليومية - إزالة الرطوبة",
+            "da": "Daglig energi - affugtning",
+            "de": "Tägliche Energie - Entfeuchtung",
+            "en": "Daily energy - dry",
+            "es": "Energía diaria - desumidificación",
+            "fr": "Énergie quotidienne - déshumidification",
+            "it": "Energia giornaliera - deumidificazione",
+            "ko": "일일 에너지 - 제습",
+            "nl": "Dagelijkse energie - ontvochtiging",
+            "no": "Daglig energi - avfukting",
+            "pl": "Energia dzienna - osuszanie",
+            "ru": "Энергия за день - осушение",
+            "sv": "Daglig energi - avfuktning"
+          }
+        },
+        "meter_power.daily_fan": {
+          "title": {
+            "ar": "الطاقة اليومية - مروحة",
+            "da": "Daglig energi - blæser",
+            "de": "Tägliche Energie - Lüfter",
+            "en": "Daily energy - fan",
+            "es": "Energía diaria - ventilación",
+            "fr": "Énergie quotidienne - ventilateur",
+            "it": "Energia giornaliera - ventilazione",
+            "ko": "일일 에너지 - 팬",
+            "nl": "Dagelijkse energie - ventilator",
+            "no": "Daglig energi - vifte",
+            "pl": "Energia dzienna - wentylator",
+            "ru": "Энергия за день - вентилятор",
+            "sv": "Daglig energi - fläkt"
+          }
+        },
+        "meter_power.daily_heating": {
+          "title": {
+            "ar": "الطاقة اليومية - تدفئة",
+            "da": "Daglig energi - opvarmning",
+            "de": "Tägliche Energie - Heizung",
+            "en": "Daily energy - heating",
+            "es": "Energía diaria - calefacción",
+            "fr": "Énergie quotidienne - chauffage",
+            "it": "Energia giornaliera - riscaldamento",
+            "ko": "일일 에너지 - 난방",
+            "nl": "Dagelijkse energie - verwarming",
+            "no": "Daglig energi - oppvarming",
+            "pl": "Energia dzienna - ogrzewanie",
+            "ru": "Энергия за день - отопление",
+            "sv": "Daglig energi - uppvärmning"
+          }
+        },
+        "meter_power.daily_hotwater": {
+          "title": {
+            "ar": "الطاقة اليومية - مياه ساخنة صحية",
+            "da": "Daglig energi - varmtvandslastning",
+            "de": "Tägliche Energie - Brauchwarmwasser",
+            "en": "Daily energy - domestic hot water",
+            "es": "Energía diaria - agua caliente sanitaria",
+            "fr": "Énergie quotidienne - eau chaude sanitaire",
+            "it": "Energia giornaliera - acqua calda sanitaria",
+            "ko": "일일 에너지 - 생활 온수",
+            "nl": "Dagelijkse energie - sanitair warm water",
+            "no": "Daglig energi - varmvannslastning",
+            "pl": "Energia dzienna - ciepła woda użytkowa",
+            "ru": "Энергия за день - ГВС",
+            "sv": "Daglig energi - varmvattenladdning"
+          }
+        },
+        "meter_power.daily_other": {
+          "title": {
+            "ar": "الطاقة اليومية - أخرى",
+            "da": "Daglig energi - andet",
+            "de": "Tägliche Energie - Sonstiges",
+            "en": "Daily energy - other",
+            "es": "Energía diaria - otro",
+            "fr": "Énergie quotidienne - autre",
+            "it": "Energia giornaliera - altro",
+            "ko": "일일 에너지 - 기타",
+            "nl": "Dagelijkse energie - andere",
+            "no": "Daglig energi - annet",
+            "pl": "Energia dzienna - inne",
+            "ru": "Энергия за день - прочее",
+            "sv": "Daglig energi - övrigt"
+          }
+        },
+        "meter_power.dry": {
+          "title": {
+            "ar": "الطاقة المستهلكة - إزالة الرطوبة",
+            "da": "Energi - affugtning",
+            "de": "Energie - Entfeuchtung",
+            "en": "Energy - dry",
+            "es": "Energía - desumidificación",
+            "fr": "Énergie - déshumidification",
+            "it": "Energia - deumidificazione",
+            "ko": "에너지 - 제습",
+            "nl": "Energie - ontvochtiging",
+            "no": "Energi - avfukting",
+            "pl": "Energia - osuszanie",
+            "ru": "Энергия - осушение",
+            "sv": "Energi - avfuktning"
+          }
+        },
+        "meter_power.fan": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مروحة",
+            "da": "Energi - blæser",
+            "de": "Energie - Lüfter",
+            "en": "Energy - fan",
+            "es": "Energía - ventilador",
+            "fr": "Énergie - ventilateur",
+            "it": "Energia - ventilazione",
+            "ko": "에너지 - 팬",
+            "nl": "Energie - ventilator",
+            "no": "Energi - vifte",
+            "pl": "Energia - wentylator",
+            "ru": "Энергия - вентилятор",
+            "sv": "Energi - fläkt"
+          }
+        },
+        "meter_power.heating": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تدفئة",
+            "da": "Energi - opvarmning",
+            "de": "Energie - Heizung",
+            "en": "Energy - heating",
+            "es": "Energía - calefacción",
+            "fr": "Énergie - chauffage",
+            "it": "Energia - riscaldamento",
+            "ko": "에너지 - 난방",
+            "nl": "Energie - verwarming",
+            "no": "Energi - oppvarming",
+            "pl": "Energia - ogrzewanie",
+            "ru": "Энергия - отопление",
+            "sv": "Energi - uppvärmning"
+          }
+        },
+        "meter_power.hotwater": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مياه ساخنة صحية",
+            "da": "Energi - varmtvandsindlæsning",
+            "de": "Energie - Brauchwarmwasser",
+            "en": "Energy - domestic hot water",
+            "es": "Energía - agua caliente sanitaria",
+            "fr": "Énergie - eau chaude sanitaire",
+            "it": "Energia - acqua calda sanitaria",
+            "ko": "에너지 - 생활 온수",
+            "nl": "Energie - sanitair warm water",
+            "no": "Energi - varmvannslastning",
+            "pl": "Energia - ciepła woda użytkowa",
+            "ru": "Энергия - ГВС",
+            "sv": "Energi - varmvattenladdning"
+          }
+        },
+        "meter_power.other": {
+          "title": {
+            "ar": "الطاقة المستهلكة - أخرى",
+            "da": "Energi - andet",
+            "de": "Energie - Sonstiges",
+            "en": "Energy - other",
+            "es": "Energía - otro",
+            "fr": "Énergie - autre",
+            "it": "Energia - altro",
+            "ko": "에너지 - 기타",
+            "nl": "Energie - andere",
+            "no": "Energi - annet",
+            "pl": "Energia - inne",
+            "ru": "Энергия - прочее",
+            "sv": "Energi - övrigt"
+          }
+        },
+        "meter_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret energi",
+            "de": "Erzeugte Energie",
+            "en": "Produced energy",
+            "es": "Energía producida",
+            "fr": "Énergie produite",
+            "it": "Energia prodotta",
+            "ko": "생산 에너지",
+            "nl": "Geproduceerde energie",
+            "no": "Produsert energi",
+            "pl": "Energia wytworzona",
+            "ru": "Произведённая энергия",
+            "sv": "Producerad energi"
+          }
+        },
+        "meter_power.produced_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة - تبريد",
+            "da": "Produceret energi - køling",
+            "de": "Erzeugte Energie - Kühlung",
+            "en": "Produced energy - cooling",
+            "es": "Energía producida - enfriamiento",
+            "fr": "Énergie produite - refroidissement",
+            "it": "Energia prodotta - raffreddamento",
+            "ko": "생산 에너지 - 냉방",
+            "nl": "Geproduceerde energie - koeling",
+            "no": "Produsert energi - kjøling",
+            "pl": "Energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия - охлаждение",
+            "sv": "Producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية",
+            "da": "Daglig produceret energi",
+            "de": "Tägliche erzeugte Energie",
+            "en": "Daily produced energy",
+            "es": "Energía producida diaria",
+            "fr": "Énergie produite quotidienne",
+            "it": "Energia prodotta giornaliera",
+            "ko": "일일 생산 에너지",
+            "nl": "Dagelijkse geproduceerde energie",
+            "no": "Daglig produsert energi",
+            "pl": "Dzienna energia wytworzona",
+            "ru": "Произведённая энергия за день",
+            "sv": "Daglig producerad energi"
+          }
+        },
+        "meter_power.produced_daily_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تبريد",
+            "da": "Daglig produceret energi - køling",
+            "de": "Tägliche erzeugte Energie - Kühlung",
+            "en": "Daily produced energy - cooling",
+            "es": "Energía producida diaria - enfriamiento",
+            "fr": "Énergie produite quotidienne - refroidissement",
+            "it": "Energia prodotta giornaliera - raffreddamento",
+            "ko": "일일 생산 에너지 - 냉방",
+            "nl": "Dagelijkse geproduceerde energie - koeling",
+            "no": "Daglig produsert energi - kjøling",
+            "pl": "Dzienna energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия за день - охлаждение",
+            "sv": "Daglig producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تدفئة",
+            "da": "Daglig produceret energi - opvarmning",
+            "de": "Tägliche erzeugte Energie - Heizung",
+            "en": "Daily produced energy - heating",
+            "es": "Energía producida diaria - calefacción",
+            "fr": "Énergie produite quotidienne - chauffage",
+            "it": "Energia prodotta giornaliera - riscaldamento",
+            "ko": "일일 생산 에너지 - 난방",
+            "nl": "Dagelijkse geproduceerde energie - verwarming",
+            "no": "Daglig produsert energi - oppvarming",
+            "pl": "Dzienna energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия за день - отопление",
+            "sv": "Daglig producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_daily_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - مياه ساخنة صحية",
+            "da": "Daglig produceret energi - varmtvandslastning",
+            "de": "Tägliche erzeugte Energie - Brauchwarmwasser",
+            "en": "Daily produced energy - domestic hot water",
+            "es": "Energía producida diaria - agua caliente sanitaria",
+            "fr": "Énergie produite quotidienne - eau chaude sanitaire",
+            "it": "Energia prodotta giornaliera - acqua calda sanitaria",
+            "ko": "일일 생산 에너지 - 생활 온수",
+            "nl": "Dagelijkse geproduceerde energie - sanitair warm water",
+            "no": "Daglig produsert energi - varmvannslastning",
+            "pl": "Dzienna energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия за день - ГВС",
+            "sv": "Daglig producerad energi - varmvattenladdning"
+          }
+        },
+        "meter_power.produced_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة - تدفئة",
+            "da": "Produceret energi - opvarmning",
+            "de": "Erzeugte Energie - Heizung",
+            "en": "Produced energy - heating",
+            "es": "Energía producida - calefacción",
+            "fr": "Énergie produite - chauffage",
+            "it": "Energia prodotta - riscaldamento",
+            "ko": "생산 에너지 - 난방",
+            "nl": "Geproduceerde energie - verwarming",
+            "no": "Produsert energi - oppvarming",
+            "pl": "Energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия - отопление",
+            "sv": "Producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة - مياه ساخنة صحية",
+            "da": "Produceret energi - varmtvandsindlæsning",
+            "de": "Erzeugte Energie - Brauchwarmwasser",
+            "en": "Produced energy - domestic hot water",
+            "es": "Energía producida - agua caliente sanitaria",
+            "fr": "Énergie produite - eau chaude sanitaire",
+            "it": "Energia prodotta - acqua calda sanitaria",
+            "ko": "생산 에너지 - 생활 온수",
+            "nl": "Geproduceerde energie - sanitair warm water",
+            "no": "Produsert energi - varmvannslastning",
+            "pl": "Energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия - ГВС",
+            "sv": "Producerad energi - varmvattenladdning"
           }
         },
         "operational_state": {
@@ -4944,6 +6252,125 @@
         "measure_power": {
           "approximated": true
         },
+        "measure_power.auto": {
+          "title": {
+            "ar": "الطاقة - تلقائي",
+            "da": "Effekt - automatisk",
+            "de": "Leistung - automatisch",
+            "en": "Power - automatic",
+            "es": "Potencia - automático",
+            "fr": "Puissance - automatique",
+            "it": "Potenza - automatica",
+            "ko": "전력 - 자동",
+            "nl": "Vermogen - automatische",
+            "no": "Effekt - automatisk",
+            "pl": "Moc - automatyczny",
+            "ru": "Мощность - авто",
+            "sv": "Effekt - automatiskt"
+          }
+        },
+        "measure_power.cooling": {
+          "title": {
+            "ar": "الطاقة - تبريد",
+            "da": "Effekt - køling",
+            "de": "Leistung - Kühlung",
+            "en": "Power - cooling",
+            "es": "Potencia - enfriamiento",
+            "fr": "Puissance - refroidissement",
+            "it": "Potenza - raffreddamento",
+            "ko": "전력 - 냉방",
+            "nl": "Vermogen - koeling",
+            "no": "Effekt - kjøling",
+            "pl": "Moc - chłodzenie",
+            "ru": "Мощность - охлаждение",
+            "sv": "Effekt - kylning"
+          }
+        },
+        "measure_power.dry": {
+          "title": {
+            "ar": "الطاقة - إزالة الرطوبة",
+            "da": "Effekt - affugtning",
+            "de": "Leistung - Entfeuchtung",
+            "en": "Power - dry",
+            "es": "Potencia - desumidificación",
+            "fr": "Puissance - déshumidification",
+            "it": "Potenza - deumidificazione",
+            "ko": "전력 - 제습",
+            "nl": "Vermogen - ontvochtiging",
+            "no": "Effekt - avfukting",
+            "pl": "Moc - osuszanie",
+            "ru": "Мощность - осушение",
+            "sv": "Effekt - avfuktning"
+          }
+        },
+        "measure_power.fan": {
+          "title": {
+            "ar": "الطاقة - مروحة",
+            "da": "Effekt - blæser",
+            "de": "Leistung - Lüfter",
+            "en": "Power - fan",
+            "es": "Potencia - ventilador",
+            "fr": "Puissance - ventilateur",
+            "it": "Potenza - ventilazione",
+            "ko": "전력 - 팬",
+            "nl": "Vermogen - ventilator",
+            "no": "Effekt - vifte",
+            "pl": "Moc - wentylator",
+            "ru": "Мощность - вентилятор",
+            "sv": "Effekt - fläkt"
+          }
+        },
+        "measure_power.heating": {
+          "title": {
+            "ar": "الطاقة - تدفئة",
+            "da": "Effekt - opvarmning",
+            "de": "Leistung - Heizung",
+            "en": "Power - heating",
+            "es": "Potencia - calefacción",
+            "fr": "Puissance - chauffage",
+            "it": "Potenza - riscaldamento",
+            "ko": "전력 - 난방",
+            "nl": "Vermogen - verwarming",
+            "no": "Effekt - oppvarming",
+            "pl": "Moc - ogrzewanie",
+            "ru": "Мощность - отопление",
+            "sv": "Effekt - uppvärmning"
+          }
+        },
+        "measure_power.other": {
+          "title": {
+            "ar": "الطاقة - أخرى",
+            "da": "Effekt - andet",
+            "de": "Leistung - Sonstiges",
+            "en": "Power - other",
+            "es": "Potencia - otro",
+            "fr": "Puissance - autre",
+            "it": "Potenza - altro",
+            "ko": "전력 - 기타",
+            "nl": "Vermogen - andere",
+            "no": "Effekt - annet",
+            "pl": "Moc - inne",
+            "ru": "Мощность - прочее",
+            "sv": "Effekt - övrigt"
+          }
+        },
+        "measure_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret effekt",
+            "de": "Erzeugte Leistung",
+            "en": "Produced power",
+            "es": "Potencia producida",
+            "fr": "Puissance produite",
+            "it": "Potenza prodotta",
+            "ko": "생산 전력",
+            "nl": "Geproduceerd vermogen",
+            "no": "Produsert effekt",
+            "pl": "Moc wytworzona",
+            "ru": "Произведённая мощность",
+            "sv": "Producerad effekt"
+          }
+        },
         "measure_temperature.outdoor": {
           "title": {
             "ar": "درجة الحرارة الخارجية",
@@ -4993,6 +6420,541 @@
             "pl": "Temperatura - strefa 2",
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
+          }
+        },
+        "meter_power.auto": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تلقائي",
+            "da": "Energi - automatisk",
+            "de": "Energie - automatisch",
+            "en": "Energy - automatic",
+            "es": "Energía - automático",
+            "fr": "Énergie - automatique",
+            "it": "Energia - automatica",
+            "ko": "에너지 - 자동",
+            "nl": "Energie - automatische",
+            "no": "Energi - automatisk",
+            "pl": "Energia - automatyczny",
+            "ru": "Энергия - авто",
+            "sv": "Energi - automatiskt"
+          }
+        },
+        "meter_power.cooling": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تبريد",
+            "da": "Energi - køling",
+            "de": "Energie - Kühlung",
+            "en": "Energy - cooling",
+            "es": "Energía - enfriamiento",
+            "fr": "Énergie - refroidissement",
+            "it": "Energia - raffreddamento",
+            "ko": "에너지 - 냉방",
+            "nl": "Energie - koeling",
+            "no": "Energi - kjøling",
+            "pl": "Energia - chłodzenie",
+            "ru": "Энергия - охлаждение",
+            "sv": "Energi - kylning"
+          }
+        },
+        "meter_power.cop": {
+          "title": {
+            "ar": "CoP",
+            "da": "CoP",
+            "de": "CoP",
+            "en": "CoP",
+            "es": "CoP",
+            "fr": "CoP",
+            "it": "CoP",
+            "ko": "CoP",
+            "nl": "CoP",
+            "no": "CoP",
+            "pl": "CoP",
+            "ru": "CoP",
+            "sv": "CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_cooling": {
+          "title": {
+            "ar": "CoP - تبريد",
+            "da": "CoP - køling",
+            "de": "CoP - Kühlung",
+            "en": "CoP - cooling",
+            "es": "CoP - enfriamiento",
+            "fr": "CoP - refroidissement",
+            "it": "CoP - raffreddamento",
+            "ko": "CoP - 냉방",
+            "nl": "CoP - koeling",
+            "no": "CoP - kjøling",
+            "pl": "CoP - chłodzenie",
+            "ru": "CoP - охлаждение",
+            "sv": "CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily": {
+          "title": {
+            "ar": "CoP يومي",
+            "da": "Daglig CoP",
+            "de": "Täglicher CoP",
+            "en": "Daily CoP",
+            "es": "CoP diario",
+            "fr": "CoP quotidien",
+            "it": "CoP giornaliero",
+            "ko": "일일 CoP",
+            "nl": "Dagelijkse CoP",
+            "no": "Daglig CoP",
+            "pl": "Dzienny CoP",
+            "ru": "CoP за день",
+            "sv": "Daglig CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_cooling": {
+          "title": {
+            "ar": "CoP يومي - تبريد",
+            "da": "Daglig CoP - køling",
+            "de": "Täglicher CoP - Kühlung",
+            "en": "Daily CoP - cooling",
+            "es": "CoP diario - enfriamiento",
+            "fr": "CoP quotidien - refroidissement",
+            "it": "CoP giornaliero - raffreddamento",
+            "ko": "일일 CoP - 냉방",
+            "nl": "Dagelijkse CoP - koeling",
+            "no": "Daglig CoP - kjøling",
+            "pl": "Dzienny CoP - chłodzenie",
+            "ru": "CoP за день - охлаждение",
+            "sv": "Daglig CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_heating": {
+          "title": {
+            "ar": "CoP يومي - تدفئة",
+            "da": "Daglig CoP - opvarmning",
+            "de": "Täglicher CoP - Heizung",
+            "en": "Daily CoP - heating",
+            "es": "CoP diario - calefacción",
+            "fr": "CoP quotidien - chauffage",
+            "it": "CoP giornaliero - riscaldamento",
+            "ko": "일일 CoP - 난방",
+            "nl": "Dagelijkse CoP - verwarming",
+            "no": "Daglig CoP - oppvarming",
+            "pl": "Dzienny CoP - ogrzewanie",
+            "ru": "CoP за день - отопление",
+            "sv": "Daglig CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_hotwater": {
+          "title": {
+            "ar": "CoP يومي - مياه ساخنة صحية",
+            "da": "Daglig CoP - varmtvandslastning",
+            "de": "Täglicher CoP - Brauchwarmwasser",
+            "en": "Daily CoP - domestic hot water",
+            "es": "CoP diario - agua caliente sanitaria",
+            "fr": "CoP quotidien - eau chaude sanitaire",
+            "it": "CoP giornaliero - acqua calda sanitaria",
+            "ko": "일일 CoP - 생활 온수",
+            "nl": "Dagelijkse CoP - sanitair warm water",
+            "no": "Daglig CoP - varmvannslastning",
+            "pl": "Dzienny CoP - ciepła woda użytkowa",
+            "ru": "CoP за день - ГВС",
+            "sv": "Daglig CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_heating": {
+          "title": {
+            "ar": "CoP - تدفئة",
+            "da": "CoP - opvarmning",
+            "de": "CoP - Heizung",
+            "en": "CoP - heating",
+            "es": "CoP - calefacción",
+            "fr": "CoP - chauffage",
+            "it": "CoP - riscaldamento",
+            "ko": "CoP - 난방",
+            "nl": "CoP - verwarming",
+            "no": "CoP - oppvarming",
+            "pl": "CoP - ogrzewanie",
+            "ru": "CoP - отопление",
+            "sv": "CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_hotwater": {
+          "title": {
+            "ar": "CoP - مياه ساخنة صحية",
+            "da": "CoP - varmtvandsindlæsning",
+            "de": "CoP - Brauchwarmwasser",
+            "en": "CoP - domestic hot water",
+            "es": "CoP - agua caliente sanitaria",
+            "fr": "CoP - eau chaude sanitaire",
+            "it": "CoP - acqua calda sanitaria",
+            "ko": "CoP - 생활 온수",
+            "nl": "CoP - sanitair warm water",
+            "no": "CoP - varmvannslastning",
+            "pl": "CoP - ciepła woda użytkowa",
+            "ru": "CoP - ГВС",
+            "sv": "CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.daily": {
+          "title": {
+            "ar": "الطاقة اليومية",
+            "da": "Daglig energi",
+            "de": "Tägliche Energie",
+            "en": "Daily energy",
+            "es": "Energía diaria",
+            "fr": "Énergie quotidienne",
+            "it": "Energia giornaliera",
+            "ko": "일일 에너지",
+            "nl": "Dagelijkse energie",
+            "no": "Daglig energi",
+            "pl": "Energia dzienna",
+            "ru": "Энергия за день",
+            "sv": "Daglig energi"
+          }
+        },
+        "meter_power.daily_auto": {
+          "title": {
+            "ar": "الطاقة اليومية - تلقائي",
+            "da": "Daglig energi - automatisk",
+            "de": "Tägliche Energie - automatisch",
+            "en": "Daily energy - automatic",
+            "es": "Energía diaria - automático",
+            "fr": "Énergie quotidienne - automatique",
+            "it": "Energia giornaliera - automatica",
+            "ko": "일일 에너지 - 자동",
+            "nl": "Dagelijkse energie - automatische",
+            "no": "Daglig energi - automatisk",
+            "pl": "Energia dzienna - automatyczny",
+            "ru": "Энергия за день - авто",
+            "sv": "Daglig energi - automatiskt"
+          }
+        },
+        "meter_power.daily_cooling": {
+          "title": {
+            "ar": "الطاقة اليومية - تبريد",
+            "da": "Daglig energi - køling",
+            "de": "Tägliche Energie - Kühlung",
+            "en": "Daily energy - cooling",
+            "es": "Energía diaria - enfriamiento",
+            "fr": "Énergie quotidienne - refroidissement",
+            "it": "Energia giornaliera - raffreddamento",
+            "ko": "일일 에너지 - 냉방",
+            "nl": "Dagelijkse energie - koeling",
+            "no": "Daglig energi - kjøling",
+            "pl": "Energia dzienna - chłodzenie",
+            "ru": "Энергия за день - охлаждение",
+            "sv": "Daglig energi - kylning"
+          }
+        },
+        "meter_power.daily_dry": {
+          "title": {
+            "ar": "الطاقة اليومية - إزالة الرطوبة",
+            "da": "Daglig energi - affugtning",
+            "de": "Tägliche Energie - Entfeuchtung",
+            "en": "Daily energy - dry",
+            "es": "Energía diaria - desumidificación",
+            "fr": "Énergie quotidienne - déshumidification",
+            "it": "Energia giornaliera - deumidificazione",
+            "ko": "일일 에너지 - 제습",
+            "nl": "Dagelijkse energie - ontvochtiging",
+            "no": "Daglig energi - avfukting",
+            "pl": "Energia dzienna - osuszanie",
+            "ru": "Энергия за день - осушение",
+            "sv": "Daglig energi - avfuktning"
+          }
+        },
+        "meter_power.daily_fan": {
+          "title": {
+            "ar": "الطاقة اليومية - مروحة",
+            "da": "Daglig energi - blæser",
+            "de": "Tägliche Energie - Lüfter",
+            "en": "Daily energy - fan",
+            "es": "Energía diaria - ventilación",
+            "fr": "Énergie quotidienne - ventilateur",
+            "it": "Energia giornaliera - ventilazione",
+            "ko": "일일 에너지 - 팬",
+            "nl": "Dagelijkse energie - ventilator",
+            "no": "Daglig energi - vifte",
+            "pl": "Energia dzienna - wentylator",
+            "ru": "Энергия за день - вентилятор",
+            "sv": "Daglig energi - fläkt"
+          }
+        },
+        "meter_power.daily_heating": {
+          "title": {
+            "ar": "الطاقة اليومية - تدفئة",
+            "da": "Daglig energi - opvarmning",
+            "de": "Tägliche Energie - Heizung",
+            "en": "Daily energy - heating",
+            "es": "Energía diaria - calefacción",
+            "fr": "Énergie quotidienne - chauffage",
+            "it": "Energia giornaliera - riscaldamento",
+            "ko": "일일 에너지 - 난방",
+            "nl": "Dagelijkse energie - verwarming",
+            "no": "Daglig energi - oppvarming",
+            "pl": "Energia dzienna - ogrzewanie",
+            "ru": "Энергия за день - отопление",
+            "sv": "Daglig energi - uppvärmning"
+          }
+        },
+        "meter_power.daily_hotwater": {
+          "title": {
+            "ar": "الطاقة اليومية - مياه ساخنة صحية",
+            "da": "Daglig energi - varmtvandslastning",
+            "de": "Tägliche Energie - Brauchwarmwasser",
+            "en": "Daily energy - domestic hot water",
+            "es": "Energía diaria - agua caliente sanitaria",
+            "fr": "Énergie quotidienne - eau chaude sanitaire",
+            "it": "Energia giornaliera - acqua calda sanitaria",
+            "ko": "일일 에너지 - 생활 온수",
+            "nl": "Dagelijkse energie - sanitair warm water",
+            "no": "Daglig energi - varmvannslastning",
+            "pl": "Energia dzienna - ciepła woda użytkowa",
+            "ru": "Энергия за день - ГВС",
+            "sv": "Daglig energi - varmvattenladdning"
+          }
+        },
+        "meter_power.daily_other": {
+          "title": {
+            "ar": "الطاقة اليومية - أخرى",
+            "da": "Daglig energi - andet",
+            "de": "Tägliche Energie - Sonstiges",
+            "en": "Daily energy - other",
+            "es": "Energía diaria - otro",
+            "fr": "Énergie quotidienne - autre",
+            "it": "Energia giornaliera - altro",
+            "ko": "일일 에너지 - 기타",
+            "nl": "Dagelijkse energie - andere",
+            "no": "Daglig energi - annet",
+            "pl": "Energia dzienna - inne",
+            "ru": "Энергия за день - прочее",
+            "sv": "Daglig energi - övrigt"
+          }
+        },
+        "meter_power.dry": {
+          "title": {
+            "ar": "الطاقة المستهلكة - إزالة الرطوبة",
+            "da": "Energi - affugtning",
+            "de": "Energie - Entfeuchtung",
+            "en": "Energy - dry",
+            "es": "Energía - desumidificación",
+            "fr": "Énergie - déshumidification",
+            "it": "Energia - deumidificazione",
+            "ko": "에너지 - 제습",
+            "nl": "Energie - ontvochtiging",
+            "no": "Energi - avfukting",
+            "pl": "Energia - osuszanie",
+            "ru": "Энергия - осушение",
+            "sv": "Energi - avfuktning"
+          }
+        },
+        "meter_power.fan": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مروحة",
+            "da": "Energi - blæser",
+            "de": "Energie - Lüfter",
+            "en": "Energy - fan",
+            "es": "Energía - ventilador",
+            "fr": "Énergie - ventilateur",
+            "it": "Energia - ventilazione",
+            "ko": "에너지 - 팬",
+            "nl": "Energie - ventilator",
+            "no": "Energi - vifte",
+            "pl": "Energia - wentylator",
+            "ru": "Энергия - вентилятор",
+            "sv": "Energi - fläkt"
+          }
+        },
+        "meter_power.heating": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تدفئة",
+            "da": "Energi - opvarmning",
+            "de": "Energie - Heizung",
+            "en": "Energy - heating",
+            "es": "Energía - calefacción",
+            "fr": "Énergie - chauffage",
+            "it": "Energia - riscaldamento",
+            "ko": "에너지 - 난방",
+            "nl": "Energie - verwarming",
+            "no": "Energi - oppvarming",
+            "pl": "Energia - ogrzewanie",
+            "ru": "Энергия - отопление",
+            "sv": "Energi - uppvärmning"
+          }
+        },
+        "meter_power.hotwater": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مياه ساخنة صحية",
+            "da": "Energi - varmtvandsindlæsning",
+            "de": "Energie - Brauchwarmwasser",
+            "en": "Energy - domestic hot water",
+            "es": "Energía - agua caliente sanitaria",
+            "fr": "Énergie - eau chaude sanitaire",
+            "it": "Energia - acqua calda sanitaria",
+            "ko": "에너지 - 생활 온수",
+            "nl": "Energie - sanitair warm water",
+            "no": "Energi - varmvannslastning",
+            "pl": "Energia - ciepła woda użytkowa",
+            "ru": "Энергия - ГВС",
+            "sv": "Energi - varmvattenladdning"
+          }
+        },
+        "meter_power.other": {
+          "title": {
+            "ar": "الطاقة المستهلكة - أخرى",
+            "da": "Energi - andet",
+            "de": "Energie - Sonstiges",
+            "en": "Energy - other",
+            "es": "Energía - otro",
+            "fr": "Énergie - autre",
+            "it": "Energia - altro",
+            "ko": "에너지 - 기타",
+            "nl": "Energie - andere",
+            "no": "Energi - annet",
+            "pl": "Energia - inne",
+            "ru": "Энергия - прочее",
+            "sv": "Energi - övrigt"
+          }
+        },
+        "meter_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret energi",
+            "de": "Erzeugte Energie",
+            "en": "Produced energy",
+            "es": "Energía producida",
+            "fr": "Énergie produite",
+            "it": "Energia prodotta",
+            "ko": "생산 에너지",
+            "nl": "Geproduceerde energie",
+            "no": "Produsert energi",
+            "pl": "Energia wytworzona",
+            "ru": "Произведённая энергия",
+            "sv": "Producerad energi"
+          }
+        },
+        "meter_power.produced_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة - تبريد",
+            "da": "Produceret energi - køling",
+            "de": "Erzeugte Energie - Kühlung",
+            "en": "Produced energy - cooling",
+            "es": "Energía producida - enfriamiento",
+            "fr": "Énergie produite - refroidissement",
+            "it": "Energia prodotta - raffreddamento",
+            "ko": "생산 에너지 - 냉방",
+            "nl": "Geproduceerde energie - koeling",
+            "no": "Produsert energi - kjøling",
+            "pl": "Energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия - охлаждение",
+            "sv": "Producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية",
+            "da": "Daglig produceret energi",
+            "de": "Tägliche erzeugte Energie",
+            "en": "Daily produced energy",
+            "es": "Energía producida diaria",
+            "fr": "Énergie produite quotidienne",
+            "it": "Energia prodotta giornaliera",
+            "ko": "일일 생산 에너지",
+            "nl": "Dagelijkse geproduceerde energie",
+            "no": "Daglig produsert energi",
+            "pl": "Dzienna energia wytworzona",
+            "ru": "Произведённая энергия за день",
+            "sv": "Daglig producerad energi"
+          }
+        },
+        "meter_power.produced_daily_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تبريد",
+            "da": "Daglig produceret energi - køling",
+            "de": "Tägliche erzeugte Energie - Kühlung",
+            "en": "Daily produced energy - cooling",
+            "es": "Energía producida diaria - enfriamiento",
+            "fr": "Énergie produite quotidienne - refroidissement",
+            "it": "Energia prodotta giornaliera - raffreddamento",
+            "ko": "일일 생산 에너지 - 냉방",
+            "nl": "Dagelijkse geproduceerde energie - koeling",
+            "no": "Daglig produsert energi - kjøling",
+            "pl": "Dzienna energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия за день - охлаждение",
+            "sv": "Daglig producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تدفئة",
+            "da": "Daglig produceret energi - opvarmning",
+            "de": "Tägliche erzeugte Energie - Heizung",
+            "en": "Daily produced energy - heating",
+            "es": "Energía producida diaria - calefacción",
+            "fr": "Énergie produite quotidienne - chauffage",
+            "it": "Energia prodotta giornaliera - riscaldamento",
+            "ko": "일일 생산 에너지 - 난방",
+            "nl": "Dagelijkse geproduceerde energie - verwarming",
+            "no": "Daglig produsert energi - oppvarming",
+            "pl": "Dzienna energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия за день - отопление",
+            "sv": "Daglig producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_daily_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - مياه ساخنة صحية",
+            "da": "Daglig produceret energi - varmtvandslastning",
+            "de": "Tägliche erzeugte Energie - Brauchwarmwasser",
+            "en": "Daily produced energy - domestic hot water",
+            "es": "Energía producida diaria - agua caliente sanitaria",
+            "fr": "Énergie produite quotidienne - eau chaude sanitaire",
+            "it": "Energia prodotta giornaliera - acqua calda sanitaria",
+            "ko": "일일 생산 에너지 - 생활 온수",
+            "nl": "Dagelijkse geproduceerde energie - sanitair warm water",
+            "no": "Daglig produsert energi - varmvannslastning",
+            "pl": "Dzienna energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия за день - ГВС",
+            "sv": "Daglig producerad energi - varmvattenladdning"
+          }
+        },
+        "meter_power.produced_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة - تدفئة",
+            "da": "Produceret energi - opvarmning",
+            "de": "Erzeugte Energie - Heizung",
+            "en": "Produced energy - heating",
+            "es": "Energía producida - calefacción",
+            "fr": "Énergie produite - chauffage",
+            "it": "Energia prodotta - riscaldamento",
+            "ko": "생산 에너지 - 난방",
+            "nl": "Geproduceerde energie - verwarming",
+            "no": "Produsert energi - oppvarming",
+            "pl": "Energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия - отопление",
+            "sv": "Producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة - مياه ساخنة صحية",
+            "da": "Produceret energi - varmtvandsindlæsning",
+            "de": "Erzeugte Energie - Brauchwarmwasser",
+            "en": "Produced energy - domestic hot water",
+            "es": "Energía producida - agua caliente sanitaria",
+            "fr": "Énergie produite - eau chaude sanitaire",
+            "it": "Energia prodotta - acqua calda sanitaria",
+            "ko": "생산 에너지 - 생활 온수",
+            "nl": "Geproduceerde energie - sanitair warm water",
+            "no": "Produsert energi - varmvannslastning",
+            "pl": "Energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия - ГВС",
+            "sv": "Producerad energi - varmvattenladdning"
           }
         },
         "operational_state": {
@@ -5541,329 +7503,6 @@
           },
           "uiComponent": "sensor",
           "units": ""
-        },
-        "measure_power.auto": {
-          "title": {
-            "ar": "الطاقة - تلقائي",
-            "da": "Effekt - automatisk",
-            "de": "Leistung - automatisch",
-            "en": "Power - automatic",
-            "es": "Potencia - automático",
-            "fr": "Puissance - automatique",
-            "it": "Potenza - automatica",
-            "ko": "전력 - 자동",
-            "nl": "Vermogen - automatische",
-            "no": "Effekt - automatisk",
-            "pl": "Moc - automatyczny",
-            "ru": "Мощность - авто",
-            "sv": "Effekt - automatiskt"
-          }
-        },
-        "measure_power.cooling": {
-          "title": {
-            "ar": "الطاقة - تبريد",
-            "da": "Effekt - køling",
-            "de": "Leistung - Kühlung",
-            "en": "Power - cooling",
-            "es": "Potencia - enfriamiento",
-            "fr": "Puissance - refroidissement",
-            "it": "Potenza - raffreddamento",
-            "ko": "전력 - 냉방",
-            "nl": "Vermogen - koeling",
-            "no": "Effekt - kjøling",
-            "pl": "Moc - chłodzenie",
-            "ru": "Мощность - охлаждение",
-            "sv": "Effekt - kylning"
-          }
-        },
-        "measure_power.dry": {
-          "title": {
-            "ar": "الطاقة - إزالة الرطوبة",
-            "da": "Effekt - affugtning",
-            "de": "Leistung - Entfeuchtung",
-            "en": "Power - dry",
-            "es": "Potencia - desumidificación",
-            "fr": "Puissance - déshumidification",
-            "it": "Potenza - deumidificazione",
-            "ko": "전력 - 제습",
-            "nl": "Vermogen - ontvochtiging",
-            "no": "Effekt - avfukting",
-            "pl": "Moc - osuszanie",
-            "ru": "Мощность - осушение",
-            "sv": "Effekt - avfuktning"
-          }
-        },
-        "measure_power.fan": {
-          "title": {
-            "ar": "الطاقة - مروحة",
-            "da": "Effekt - blæser",
-            "de": "Leistung - Lüfter",
-            "en": "Power - fan",
-            "es": "Potencia - ventilador",
-            "fr": "Puissance - ventilateur",
-            "it": "Potenza - ventilazione",
-            "ko": "전력 - 팬",
-            "nl": "Vermogen - ventilator",
-            "no": "Effekt - vifte",
-            "pl": "Moc - wentylator",
-            "ru": "Мощность - вентилятор",
-            "sv": "Effekt - fläkt"
-          }
-        },
-        "measure_power.heating": {
-          "title": {
-            "ar": "الطاقة - تدفئة",
-            "da": "Effekt - opvarmning",
-            "de": "Leistung - Heizung",
-            "en": "Power - heating",
-            "es": "Potencia - calefacción",
-            "fr": "Puissance - chauffage",
-            "it": "Potenza - riscaldamento",
-            "ko": "전력 - 난방",
-            "nl": "Vermogen - verwarming",
-            "no": "Effekt - oppvarming",
-            "pl": "Moc - ogrzewanie",
-            "ru": "Мощность - отопление",
-            "sv": "Effekt - uppvärmning"
-          }
-        },
-        "measure_power.other": {
-          "title": {
-            "ar": "الطاقة - أخرى",
-            "da": "Effekt - andet",
-            "de": "Leistung - Sonstiges",
-            "en": "Power - other",
-            "es": "Potencia - otro",
-            "fr": "Puissance - autre",
-            "it": "Potenza - altro",
-            "ko": "전력 - 기타",
-            "nl": "Vermogen - andere",
-            "no": "Effekt - annet",
-            "pl": "Moc - inne",
-            "ru": "Мощность - прочее",
-            "sv": "Effekt - övrigt"
-          }
-        },
-        "meter_power.auto": {
-          "title": {
-            "ar": "الطاقة المستهلكة - تلقائي",
-            "da": "Energi - automatisk",
-            "de": "Energie - automatisch",
-            "en": "Energy - automatic",
-            "es": "Energía - automático",
-            "fr": "Énergie - automatique",
-            "it": "Energia - automatica",
-            "ko": "에너지 - 자동",
-            "nl": "Energie - automatische",
-            "no": "Energi - automatisk",
-            "pl": "Energia - automatyczny",
-            "ru": "Энергия - авто",
-            "sv": "Energi - automatiskt"
-          }
-        },
-        "meter_power.cooling": {
-          "title": {
-            "ar": "الطاقة المستهلكة - تبريد",
-            "da": "Energi - køling",
-            "de": "Energie - Kühlung",
-            "en": "Energy - cooling",
-            "es": "Energía - enfriamiento",
-            "fr": "Énergie - refroidissement",
-            "it": "Energia - raffreddamento",
-            "ko": "에너지 - 냉방",
-            "nl": "Energie - koeling",
-            "no": "Energi - kjøling",
-            "pl": "Energia - chłodzenie",
-            "ru": "Энергия - охлаждение",
-            "sv": "Energi - kylning"
-          }
-        },
-        "meter_power.daily": {
-          "title": {
-            "ar": "الطاقة اليومية",
-            "da": "Daglig energi",
-            "de": "Tägliche Energie",
-            "en": "Daily energy",
-            "es": "Energía diaria",
-            "fr": "Énergie quotidienne",
-            "it": "Energia giornaliera",
-            "ko": "일일 에너지",
-            "nl": "Dagelijkse energie",
-            "no": "Daglig energi",
-            "pl": "Energia dzienna",
-            "ru": "Энергия за день",
-            "sv": "Daglig energi"
-          }
-        },
-        "meter_power.daily_auto": {
-          "title": {
-            "ar": "الطاقة اليومية - تلقائي",
-            "da": "Daglig energi - automatisk",
-            "de": "Tägliche Energie - automatisch",
-            "en": "Daily energy - automatic",
-            "es": "Energía diaria - automático",
-            "fr": "Énergie quotidienne - automatique",
-            "it": "Energia giornaliera - automatica",
-            "ko": "일일 에너지 - 자동",
-            "nl": "Dagelijkse energie - automatische",
-            "no": "Daglig energi - automatisk",
-            "pl": "Energia dzienna - automatyczny",
-            "ru": "Энергия за день - авто",
-            "sv": "Daglig energi - automatiskt"
-          }
-        },
-        "meter_power.daily_cooling": {
-          "title": {
-            "ar": "الطاقة اليومية - تبريد",
-            "da": "Daglig energi - køling",
-            "de": "Tägliche Energie - Kühlung",
-            "en": "Daily energy - cooling",
-            "es": "Energía diaria - enfriamiento",
-            "fr": "Énergie quotidienne - refroidissement",
-            "it": "Energia giornaliera - raffreddamento",
-            "ko": "일일 에너지 - 냉방",
-            "nl": "Dagelijkse energie - koeling",
-            "no": "Daglig energi - kjøling",
-            "pl": "Energia dzienna - chłodzenie",
-            "ru": "Энергия за день - охлаждение",
-            "sv": "Daglig energi - kylning"
-          }
-        },
-        "meter_power.daily_dry": {
-          "title": {
-            "ar": "الطاقة اليومية - إزالة الرطوبة",
-            "da": "Daglig energi - affugtning",
-            "de": "Tägliche Energie - Entfeuchtung",
-            "en": "Daily energy - dry",
-            "es": "Energía diaria - desumidificación",
-            "fr": "Énergie quotidienne - déshumidification",
-            "it": "Energia giornaliera - deumidificazione",
-            "ko": "일일 에너지 - 제습",
-            "nl": "Dagelijkse energie - ontvochtiging",
-            "no": "Daglig energi - avfukting",
-            "pl": "Energia dzienna - osuszanie",
-            "ru": "Энергия за день - осушение",
-            "sv": "Daglig energi - avfuktning"
-          }
-        },
-        "meter_power.daily_fan": {
-          "title": {
-            "ar": "الطاقة اليومية - مروحة",
-            "da": "Daglig energi - blæser",
-            "de": "Tägliche Energie - Lüfter",
-            "en": "Daily energy - fan",
-            "es": "Energía diaria - ventilación",
-            "fr": "Énergie quotidienne - ventilateur",
-            "it": "Energia giornaliera - ventilazione",
-            "ko": "일일 에너지 - 팬",
-            "nl": "Dagelijkse energie - ventilator",
-            "no": "Daglig energi - vifte",
-            "pl": "Energia dzienna - wentylator",
-            "ru": "Энергия за день - вентилятор",
-            "sv": "Daglig energi - fläkt"
-          }
-        },
-        "meter_power.daily_heating": {
-          "title": {
-            "ar": "الطاقة اليومية - تدفئة",
-            "da": "Daglig energi - opvarmning",
-            "de": "Tägliche Energie - Heizung",
-            "en": "Daily energy - heating",
-            "es": "Energía diaria - calefacción",
-            "fr": "Énergie quotidienne - chauffage",
-            "it": "Energia giornaliera - riscaldamento",
-            "ko": "일일 에너지 - 난방",
-            "nl": "Dagelijkse energie - verwarming",
-            "no": "Daglig energi - oppvarming",
-            "pl": "Energia dzienna - ogrzewanie",
-            "ru": "Энергия за день - отопление",
-            "sv": "Daglig energi - uppvärmning"
-          }
-        },
-        "meter_power.daily_other": {
-          "title": {
-            "ar": "الطاقة اليومية - أخرى",
-            "da": "Daglig energi - andet",
-            "de": "Tägliche Energie - Sonstiges",
-            "en": "Daily energy - other",
-            "es": "Energía diaria - otro",
-            "fr": "Énergie quotidienne - autre",
-            "it": "Energia giornaliera - altro",
-            "ko": "일일 에너지 - 기타",
-            "nl": "Dagelijkse energie - andere",
-            "no": "Daglig energi - annet",
-            "pl": "Energia dzienna - inne",
-            "ru": "Энергия за день - прочее",
-            "sv": "Daglig energi - övrigt"
-          }
-        },
-        "meter_power.dry": {
-          "title": {
-            "ar": "الطاقة المستهلكة - إزالة الرطوبة",
-            "da": "Energi - affugtning",
-            "de": "Energie - Entfeuchtung",
-            "en": "Energy - dry",
-            "es": "Energía - desumidificación",
-            "fr": "Énergie - déshumidification",
-            "it": "Energia - deumidificazione",
-            "ko": "에너지 - 제습",
-            "nl": "Energie - ontvochtiging",
-            "no": "Energi - avfukting",
-            "pl": "Energia - osuszanie",
-            "ru": "Энергия - осушение",
-            "sv": "Energi - avfuktning"
-          }
-        },
-        "meter_power.fan": {
-          "title": {
-            "ar": "الطاقة المستهلكة - مروحة",
-            "da": "Energi - blæser",
-            "de": "Energie - Lüfter",
-            "en": "Energy - fan",
-            "es": "Energía - ventilador",
-            "fr": "Énergie - ventilateur",
-            "it": "Energia - ventilazione",
-            "ko": "에너지 - 팬",
-            "nl": "Energie - ventilator",
-            "no": "Energi - vifte",
-            "pl": "Energia - wentylator",
-            "ru": "Энергия - вентилятор",
-            "sv": "Energi - fläkt"
-          }
-        },
-        "meter_power.heating": {
-          "title": {
-            "ar": "الطاقة المستهلكة - تدفئة",
-            "da": "Energi - opvarmning",
-            "de": "Energie - Heizung",
-            "en": "Energy - heating",
-            "es": "Energía - calefacción",
-            "fr": "Énergie - chauffage",
-            "it": "Energia - riscaldamento",
-            "ko": "에너지 - 난방",
-            "nl": "Energie - verwarming",
-            "no": "Energi - oppvarming",
-            "pl": "Energia - ogrzewanie",
-            "ru": "Энергия - отопление",
-            "sv": "Energi - uppvärmning"
-          }
-        },
-        "meter_power.other": {
-          "title": {
-            "ar": "الطاقة المستهلكة - أخرى",
-            "da": "Energi - andet",
-            "de": "Energie - Sonstiges",
-            "en": "Energy - other",
-            "es": "Energía - otro",
-            "fr": "Énergie - autre",
-            "it": "Energia - altro",
-            "ko": "에너지 - 기타",
-            "nl": "Energie - andere",
-            "no": "Energi - annet",
-            "pl": "Energia - inne",
-            "ru": "Энергия - прочее",
-            "sv": "Energi - övrigt"
-          }
         },
         "target_temperature": {
           "max": 31,
@@ -6795,6 +8434,125 @@
         "measure_power": {
           "approximated": true
         },
+        "measure_power.auto": {
+          "title": {
+            "ar": "الطاقة - تلقائي",
+            "da": "Effekt - automatisk",
+            "de": "Leistung - automatisch",
+            "en": "Power - automatic",
+            "es": "Potencia - automático",
+            "fr": "Puissance - automatique",
+            "it": "Potenza - automatica",
+            "ko": "전력 - 자동",
+            "nl": "Vermogen - automatische",
+            "no": "Effekt - automatisk",
+            "pl": "Moc - automatyczny",
+            "ru": "Мощность - авто",
+            "sv": "Effekt - automatiskt"
+          }
+        },
+        "measure_power.cooling": {
+          "title": {
+            "ar": "الطاقة - تبريد",
+            "da": "Effekt - køling",
+            "de": "Leistung - Kühlung",
+            "en": "Power - cooling",
+            "es": "Potencia - enfriamiento",
+            "fr": "Puissance - refroidissement",
+            "it": "Potenza - raffreddamento",
+            "ko": "전력 - 냉방",
+            "nl": "Vermogen - koeling",
+            "no": "Effekt - kjøling",
+            "pl": "Moc - chłodzenie",
+            "ru": "Мощность - охлаждение",
+            "sv": "Effekt - kylning"
+          }
+        },
+        "measure_power.dry": {
+          "title": {
+            "ar": "الطاقة - إزالة الرطوبة",
+            "da": "Effekt - affugtning",
+            "de": "Leistung - Entfeuchtung",
+            "en": "Power - dry",
+            "es": "Potencia - desumidificación",
+            "fr": "Puissance - déshumidification",
+            "it": "Potenza - deumidificazione",
+            "ko": "전력 - 제습",
+            "nl": "Vermogen - ontvochtiging",
+            "no": "Effekt - avfukting",
+            "pl": "Moc - osuszanie",
+            "ru": "Мощность - осушение",
+            "sv": "Effekt - avfuktning"
+          }
+        },
+        "measure_power.fan": {
+          "title": {
+            "ar": "الطاقة - مروحة",
+            "da": "Effekt - blæser",
+            "de": "Leistung - Lüfter",
+            "en": "Power - fan",
+            "es": "Potencia - ventilador",
+            "fr": "Puissance - ventilateur",
+            "it": "Potenza - ventilazione",
+            "ko": "전력 - 팬",
+            "nl": "Vermogen - ventilator",
+            "no": "Effekt - vifte",
+            "pl": "Moc - wentylator",
+            "ru": "Мощность - вентилятор",
+            "sv": "Effekt - fläkt"
+          }
+        },
+        "measure_power.heating": {
+          "title": {
+            "ar": "الطاقة - تدفئة",
+            "da": "Effekt - opvarmning",
+            "de": "Leistung - Heizung",
+            "en": "Power - heating",
+            "es": "Potencia - calefacción",
+            "fr": "Puissance - chauffage",
+            "it": "Potenza - riscaldamento",
+            "ko": "전력 - 난방",
+            "nl": "Vermogen - verwarming",
+            "no": "Effekt - oppvarming",
+            "pl": "Moc - ogrzewanie",
+            "ru": "Мощность - отопление",
+            "sv": "Effekt - uppvärmning"
+          }
+        },
+        "measure_power.other": {
+          "title": {
+            "ar": "الطاقة - أخرى",
+            "da": "Effekt - andet",
+            "de": "Leistung - Sonstiges",
+            "en": "Power - other",
+            "es": "Potencia - otro",
+            "fr": "Puissance - autre",
+            "it": "Potenza - altro",
+            "ko": "전력 - 기타",
+            "nl": "Vermogen - andere",
+            "no": "Effekt - annet",
+            "pl": "Moc - inne",
+            "ru": "Мощность - прочее",
+            "sv": "Effekt - övrigt"
+          }
+        },
+        "measure_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret effekt",
+            "de": "Erzeugte Leistung",
+            "en": "Produced power",
+            "es": "Potencia producida",
+            "fr": "Puissance produite",
+            "it": "Potenza prodotta",
+            "ko": "생산 전력",
+            "nl": "Geproduceerd vermogen",
+            "no": "Produsert effekt",
+            "pl": "Moc wytworzona",
+            "ru": "Произведённая мощность",
+            "sv": "Producerad effekt"
+          }
+        },
         "measure_temperature.outdoor": {
           "title": {
             "ar": "درجة الحرارة الخارجية",
@@ -6844,6 +8602,541 @@
             "pl": "Temperatura - strefa 2",
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
+          }
+        },
+        "meter_power.auto": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تلقائي",
+            "da": "Energi - automatisk",
+            "de": "Energie - automatisch",
+            "en": "Energy - automatic",
+            "es": "Energía - automático",
+            "fr": "Énergie - automatique",
+            "it": "Energia - automatica",
+            "ko": "에너지 - 자동",
+            "nl": "Energie - automatische",
+            "no": "Energi - automatisk",
+            "pl": "Energia - automatyczny",
+            "ru": "Энергия - авто",
+            "sv": "Energi - automatiskt"
+          }
+        },
+        "meter_power.cooling": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تبريد",
+            "da": "Energi - køling",
+            "de": "Energie - Kühlung",
+            "en": "Energy - cooling",
+            "es": "Energía - enfriamiento",
+            "fr": "Énergie - refroidissement",
+            "it": "Energia - raffreddamento",
+            "ko": "에너지 - 냉방",
+            "nl": "Energie - koeling",
+            "no": "Energi - kjøling",
+            "pl": "Energia - chłodzenie",
+            "ru": "Энергия - охлаждение",
+            "sv": "Energi - kylning"
+          }
+        },
+        "meter_power.cop": {
+          "title": {
+            "ar": "CoP",
+            "da": "CoP",
+            "de": "CoP",
+            "en": "CoP",
+            "es": "CoP",
+            "fr": "CoP",
+            "it": "CoP",
+            "ko": "CoP",
+            "nl": "CoP",
+            "no": "CoP",
+            "pl": "CoP",
+            "ru": "CoP",
+            "sv": "CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_cooling": {
+          "title": {
+            "ar": "CoP - تبريد",
+            "da": "CoP - køling",
+            "de": "CoP - Kühlung",
+            "en": "CoP - cooling",
+            "es": "CoP - enfriamiento",
+            "fr": "CoP - refroidissement",
+            "it": "CoP - raffreddamento",
+            "ko": "CoP - 냉방",
+            "nl": "CoP - koeling",
+            "no": "CoP - kjøling",
+            "pl": "CoP - chłodzenie",
+            "ru": "CoP - охлаждение",
+            "sv": "CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily": {
+          "title": {
+            "ar": "CoP يومي",
+            "da": "Daglig CoP",
+            "de": "Täglicher CoP",
+            "en": "Daily CoP",
+            "es": "CoP diario",
+            "fr": "CoP quotidien",
+            "it": "CoP giornaliero",
+            "ko": "일일 CoP",
+            "nl": "Dagelijkse CoP",
+            "no": "Daglig CoP",
+            "pl": "Dzienny CoP",
+            "ru": "CoP за день",
+            "sv": "Daglig CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_cooling": {
+          "title": {
+            "ar": "CoP يومي - تبريد",
+            "da": "Daglig CoP - køling",
+            "de": "Täglicher CoP - Kühlung",
+            "en": "Daily CoP - cooling",
+            "es": "CoP diario - enfriamiento",
+            "fr": "CoP quotidien - refroidissement",
+            "it": "CoP giornaliero - raffreddamento",
+            "ko": "일일 CoP - 냉방",
+            "nl": "Dagelijkse CoP - koeling",
+            "no": "Daglig CoP - kjøling",
+            "pl": "Dzienny CoP - chłodzenie",
+            "ru": "CoP за день - охлаждение",
+            "sv": "Daglig CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_heating": {
+          "title": {
+            "ar": "CoP يومي - تدفئة",
+            "da": "Daglig CoP - opvarmning",
+            "de": "Täglicher CoP - Heizung",
+            "en": "Daily CoP - heating",
+            "es": "CoP diario - calefacción",
+            "fr": "CoP quotidien - chauffage",
+            "it": "CoP giornaliero - riscaldamento",
+            "ko": "일일 CoP - 난방",
+            "nl": "Dagelijkse CoP - verwarming",
+            "no": "Daglig CoP - oppvarming",
+            "pl": "Dzienny CoP - ogrzewanie",
+            "ru": "CoP за день - отопление",
+            "sv": "Daglig CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_hotwater": {
+          "title": {
+            "ar": "CoP يومي - مياه ساخنة صحية",
+            "da": "Daglig CoP - varmtvandslastning",
+            "de": "Täglicher CoP - Brauchwarmwasser",
+            "en": "Daily CoP - domestic hot water",
+            "es": "CoP diario - agua caliente sanitaria",
+            "fr": "CoP quotidien - eau chaude sanitaire",
+            "it": "CoP giornaliero - acqua calda sanitaria",
+            "ko": "일일 CoP - 생활 온수",
+            "nl": "Dagelijkse CoP - sanitair warm water",
+            "no": "Daglig CoP - varmvannslastning",
+            "pl": "Dzienny CoP - ciepła woda użytkowa",
+            "ru": "CoP за день - ГВС",
+            "sv": "Daglig CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_heating": {
+          "title": {
+            "ar": "CoP - تدفئة",
+            "da": "CoP - opvarmning",
+            "de": "CoP - Heizung",
+            "en": "CoP - heating",
+            "es": "CoP - calefacción",
+            "fr": "CoP - chauffage",
+            "it": "CoP - riscaldamento",
+            "ko": "CoP - 난방",
+            "nl": "CoP - verwarming",
+            "no": "CoP - oppvarming",
+            "pl": "CoP - ogrzewanie",
+            "ru": "CoP - отопление",
+            "sv": "CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_hotwater": {
+          "title": {
+            "ar": "CoP - مياه ساخنة صحية",
+            "da": "CoP - varmtvandsindlæsning",
+            "de": "CoP - Brauchwarmwasser",
+            "en": "CoP - domestic hot water",
+            "es": "CoP - agua caliente sanitaria",
+            "fr": "CoP - eau chaude sanitaire",
+            "it": "CoP - acqua calda sanitaria",
+            "ko": "CoP - 생활 온수",
+            "nl": "CoP - sanitair warm water",
+            "no": "CoP - varmvannslastning",
+            "pl": "CoP - ciepła woda użytkowa",
+            "ru": "CoP - ГВС",
+            "sv": "CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.daily": {
+          "title": {
+            "ar": "الطاقة اليومية",
+            "da": "Daglig energi",
+            "de": "Tägliche Energie",
+            "en": "Daily energy",
+            "es": "Energía diaria",
+            "fr": "Énergie quotidienne",
+            "it": "Energia giornaliera",
+            "ko": "일일 에너지",
+            "nl": "Dagelijkse energie",
+            "no": "Daglig energi",
+            "pl": "Energia dzienna",
+            "ru": "Энергия за день",
+            "sv": "Daglig energi"
+          }
+        },
+        "meter_power.daily_auto": {
+          "title": {
+            "ar": "الطاقة اليومية - تلقائي",
+            "da": "Daglig energi - automatisk",
+            "de": "Tägliche Energie - automatisch",
+            "en": "Daily energy - automatic",
+            "es": "Energía diaria - automático",
+            "fr": "Énergie quotidienne - automatique",
+            "it": "Energia giornaliera - automatica",
+            "ko": "일일 에너지 - 자동",
+            "nl": "Dagelijkse energie - automatische",
+            "no": "Daglig energi - automatisk",
+            "pl": "Energia dzienna - automatyczny",
+            "ru": "Энергия за день - авто",
+            "sv": "Daglig energi - automatiskt"
+          }
+        },
+        "meter_power.daily_cooling": {
+          "title": {
+            "ar": "الطاقة اليومية - تبريد",
+            "da": "Daglig energi - køling",
+            "de": "Tägliche Energie - Kühlung",
+            "en": "Daily energy - cooling",
+            "es": "Energía diaria - enfriamiento",
+            "fr": "Énergie quotidienne - refroidissement",
+            "it": "Energia giornaliera - raffreddamento",
+            "ko": "일일 에너지 - 냉방",
+            "nl": "Dagelijkse energie - koeling",
+            "no": "Daglig energi - kjøling",
+            "pl": "Energia dzienna - chłodzenie",
+            "ru": "Энергия за день - охлаждение",
+            "sv": "Daglig energi - kylning"
+          }
+        },
+        "meter_power.daily_dry": {
+          "title": {
+            "ar": "الطاقة اليومية - إزالة الرطوبة",
+            "da": "Daglig energi - affugtning",
+            "de": "Tägliche Energie - Entfeuchtung",
+            "en": "Daily energy - dry",
+            "es": "Energía diaria - desumidificación",
+            "fr": "Énergie quotidienne - déshumidification",
+            "it": "Energia giornaliera - deumidificazione",
+            "ko": "일일 에너지 - 제습",
+            "nl": "Dagelijkse energie - ontvochtiging",
+            "no": "Daglig energi - avfukting",
+            "pl": "Energia dzienna - osuszanie",
+            "ru": "Энергия за день - осушение",
+            "sv": "Daglig energi - avfuktning"
+          }
+        },
+        "meter_power.daily_fan": {
+          "title": {
+            "ar": "الطاقة اليومية - مروحة",
+            "da": "Daglig energi - blæser",
+            "de": "Tägliche Energie - Lüfter",
+            "en": "Daily energy - fan",
+            "es": "Energía diaria - ventilación",
+            "fr": "Énergie quotidienne - ventilateur",
+            "it": "Energia giornaliera - ventilazione",
+            "ko": "일일 에너지 - 팬",
+            "nl": "Dagelijkse energie - ventilator",
+            "no": "Daglig energi - vifte",
+            "pl": "Energia dzienna - wentylator",
+            "ru": "Энергия за день - вентилятор",
+            "sv": "Daglig energi - fläkt"
+          }
+        },
+        "meter_power.daily_heating": {
+          "title": {
+            "ar": "الطاقة اليومية - تدفئة",
+            "da": "Daglig energi - opvarmning",
+            "de": "Tägliche Energie - Heizung",
+            "en": "Daily energy - heating",
+            "es": "Energía diaria - calefacción",
+            "fr": "Énergie quotidienne - chauffage",
+            "it": "Energia giornaliera - riscaldamento",
+            "ko": "일일 에너지 - 난방",
+            "nl": "Dagelijkse energie - verwarming",
+            "no": "Daglig energi - oppvarming",
+            "pl": "Energia dzienna - ogrzewanie",
+            "ru": "Энергия за день - отопление",
+            "sv": "Daglig energi - uppvärmning"
+          }
+        },
+        "meter_power.daily_hotwater": {
+          "title": {
+            "ar": "الطاقة اليومية - مياه ساخنة صحية",
+            "da": "Daglig energi - varmtvandslastning",
+            "de": "Tägliche Energie - Brauchwarmwasser",
+            "en": "Daily energy - domestic hot water",
+            "es": "Energía diaria - agua caliente sanitaria",
+            "fr": "Énergie quotidienne - eau chaude sanitaire",
+            "it": "Energia giornaliera - acqua calda sanitaria",
+            "ko": "일일 에너지 - 생활 온수",
+            "nl": "Dagelijkse energie - sanitair warm water",
+            "no": "Daglig energi - varmvannslastning",
+            "pl": "Energia dzienna - ciepła woda użytkowa",
+            "ru": "Энергия за день - ГВС",
+            "sv": "Daglig energi - varmvattenladdning"
+          }
+        },
+        "meter_power.daily_other": {
+          "title": {
+            "ar": "الطاقة اليومية - أخرى",
+            "da": "Daglig energi - andet",
+            "de": "Tägliche Energie - Sonstiges",
+            "en": "Daily energy - other",
+            "es": "Energía diaria - otro",
+            "fr": "Énergie quotidienne - autre",
+            "it": "Energia giornaliera - altro",
+            "ko": "일일 에너지 - 기타",
+            "nl": "Dagelijkse energie - andere",
+            "no": "Daglig energi - annet",
+            "pl": "Energia dzienna - inne",
+            "ru": "Энергия за день - прочее",
+            "sv": "Daglig energi - övrigt"
+          }
+        },
+        "meter_power.dry": {
+          "title": {
+            "ar": "الطاقة المستهلكة - إزالة الرطوبة",
+            "da": "Energi - affugtning",
+            "de": "Energie - Entfeuchtung",
+            "en": "Energy - dry",
+            "es": "Energía - desumidificación",
+            "fr": "Énergie - déshumidification",
+            "it": "Energia - deumidificazione",
+            "ko": "에너지 - 제습",
+            "nl": "Energie - ontvochtiging",
+            "no": "Energi - avfukting",
+            "pl": "Energia - osuszanie",
+            "ru": "Энергия - осушение",
+            "sv": "Energi - avfuktning"
+          }
+        },
+        "meter_power.fan": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مروحة",
+            "da": "Energi - blæser",
+            "de": "Energie - Lüfter",
+            "en": "Energy - fan",
+            "es": "Energía - ventilador",
+            "fr": "Énergie - ventilateur",
+            "it": "Energia - ventilazione",
+            "ko": "에너지 - 팬",
+            "nl": "Energie - ventilator",
+            "no": "Energi - vifte",
+            "pl": "Energia - wentylator",
+            "ru": "Энергия - вентилятор",
+            "sv": "Energi - fläkt"
+          }
+        },
+        "meter_power.heating": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تدفئة",
+            "da": "Energi - opvarmning",
+            "de": "Energie - Heizung",
+            "en": "Energy - heating",
+            "es": "Energía - calefacción",
+            "fr": "Énergie - chauffage",
+            "it": "Energia - riscaldamento",
+            "ko": "에너지 - 난방",
+            "nl": "Energie - verwarming",
+            "no": "Energi - oppvarming",
+            "pl": "Energia - ogrzewanie",
+            "ru": "Энергия - отопление",
+            "sv": "Energi - uppvärmning"
+          }
+        },
+        "meter_power.hotwater": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مياه ساخنة صحية",
+            "da": "Energi - varmtvandsindlæsning",
+            "de": "Energie - Brauchwarmwasser",
+            "en": "Energy - domestic hot water",
+            "es": "Energía - agua caliente sanitaria",
+            "fr": "Énergie - eau chaude sanitaire",
+            "it": "Energia - acqua calda sanitaria",
+            "ko": "에너지 - 생활 온수",
+            "nl": "Energie - sanitair warm water",
+            "no": "Energi - varmvannslastning",
+            "pl": "Energia - ciepła woda użytkowa",
+            "ru": "Энергия - ГВС",
+            "sv": "Energi - varmvattenladdning"
+          }
+        },
+        "meter_power.other": {
+          "title": {
+            "ar": "الطاقة المستهلكة - أخرى",
+            "da": "Energi - andet",
+            "de": "Energie - Sonstiges",
+            "en": "Energy - other",
+            "es": "Energía - otro",
+            "fr": "Énergie - autre",
+            "it": "Energia - altro",
+            "ko": "에너지 - 기타",
+            "nl": "Energie - andere",
+            "no": "Energi - annet",
+            "pl": "Energia - inne",
+            "ru": "Энергия - прочее",
+            "sv": "Energi - övrigt"
+          }
+        },
+        "meter_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret energi",
+            "de": "Erzeugte Energie",
+            "en": "Produced energy",
+            "es": "Energía producida",
+            "fr": "Énergie produite",
+            "it": "Energia prodotta",
+            "ko": "생산 에너지",
+            "nl": "Geproduceerde energie",
+            "no": "Produsert energi",
+            "pl": "Energia wytworzona",
+            "ru": "Произведённая энергия",
+            "sv": "Producerad energi"
+          }
+        },
+        "meter_power.produced_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة - تبريد",
+            "da": "Produceret energi - køling",
+            "de": "Erzeugte Energie - Kühlung",
+            "en": "Produced energy - cooling",
+            "es": "Energía producida - enfriamiento",
+            "fr": "Énergie produite - refroidissement",
+            "it": "Energia prodotta - raffreddamento",
+            "ko": "생산 에너지 - 냉방",
+            "nl": "Geproduceerde energie - koeling",
+            "no": "Produsert energi - kjøling",
+            "pl": "Energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия - охлаждение",
+            "sv": "Producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية",
+            "da": "Daglig produceret energi",
+            "de": "Tägliche erzeugte Energie",
+            "en": "Daily produced energy",
+            "es": "Energía producida diaria",
+            "fr": "Énergie produite quotidienne",
+            "it": "Energia prodotta giornaliera",
+            "ko": "일일 생산 에너지",
+            "nl": "Dagelijkse geproduceerde energie",
+            "no": "Daglig produsert energi",
+            "pl": "Dzienna energia wytworzona",
+            "ru": "Произведённая энергия за день",
+            "sv": "Daglig producerad energi"
+          }
+        },
+        "meter_power.produced_daily_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تبريد",
+            "da": "Daglig produceret energi - køling",
+            "de": "Tägliche erzeugte Energie - Kühlung",
+            "en": "Daily produced energy - cooling",
+            "es": "Energía producida diaria - enfriamiento",
+            "fr": "Énergie produite quotidienne - refroidissement",
+            "it": "Energia prodotta giornaliera - raffreddamento",
+            "ko": "일일 생산 에너지 - 냉방",
+            "nl": "Dagelijkse geproduceerde energie - koeling",
+            "no": "Daglig produsert energi - kjøling",
+            "pl": "Dzienna energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия за день - охлаждение",
+            "sv": "Daglig producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تدفئة",
+            "da": "Daglig produceret energi - opvarmning",
+            "de": "Tägliche erzeugte Energie - Heizung",
+            "en": "Daily produced energy - heating",
+            "es": "Energía producida diaria - calefacción",
+            "fr": "Énergie produite quotidienne - chauffage",
+            "it": "Energia prodotta giornaliera - riscaldamento",
+            "ko": "일일 생산 에너지 - 난방",
+            "nl": "Dagelijkse geproduceerde energie - verwarming",
+            "no": "Daglig produsert energi - oppvarming",
+            "pl": "Dzienna energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия за день - отопление",
+            "sv": "Daglig producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_daily_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - مياه ساخنة صحية",
+            "da": "Daglig produceret energi - varmtvandslastning",
+            "de": "Tägliche erzeugte Energie - Brauchwarmwasser",
+            "en": "Daily produced energy - domestic hot water",
+            "es": "Energía producida diaria - agua caliente sanitaria",
+            "fr": "Énergie produite quotidienne - eau chaude sanitaire",
+            "it": "Energia prodotta giornaliera - acqua calda sanitaria",
+            "ko": "일일 생산 에너지 - 생활 온수",
+            "nl": "Dagelijkse geproduceerde energie - sanitair warm water",
+            "no": "Daglig produsert energi - varmvannslastning",
+            "pl": "Dzienna energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия за день - ГВС",
+            "sv": "Daglig producerad energi - varmvattenladdning"
+          }
+        },
+        "meter_power.produced_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة - تدفئة",
+            "da": "Produceret energi - opvarmning",
+            "de": "Erzeugte Energie - Heizung",
+            "en": "Produced energy - heating",
+            "es": "Energía producida - calefacción",
+            "fr": "Énergie produite - chauffage",
+            "it": "Energia prodotta - riscaldamento",
+            "ko": "생산 에너지 - 난방",
+            "nl": "Geproduceerde energie - verwarming",
+            "no": "Produsert energi - oppvarming",
+            "pl": "Energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия - отопление",
+            "sv": "Producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة - مياه ساخنة صحية",
+            "da": "Produceret energi - varmtvandsindlæsning",
+            "de": "Erzeugte Energie - Brauchwarmwasser",
+            "en": "Produced energy - domestic hot water",
+            "es": "Energía producida - agua caliente sanitaria",
+            "fr": "Énergie produite - eau chaude sanitaire",
+            "it": "Energia prodotta - acqua calda sanitaria",
+            "ko": "생산 에너지 - 생활 온수",
+            "nl": "Geproduceerde energie - sanitair warm water",
+            "no": "Produsert energi - varmvannslastning",
+            "pl": "Energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия - ГВС",
+            "sv": "Producerad energi - varmvattenladdning"
           }
         },
         "operational_state": {
@@ -7606,23 +9899,6 @@
             "sv": "Doppvärmare"
           }
         },
-        "measure_power.produced": {
-          "title": {
-            "ar": "الطاقة المنتجة",
-            "da": "Produceret effekt",
-            "de": "Erzeugte Leistung",
-            "en": "Produced power",
-            "es": "Potencia producida",
-            "fr": "Puissance produite",
-            "it": "Potenza prodotta",
-            "ko": "생산 전력",
-            "nl": "Geproduceerd vermogen",
-            "no": "Produsert effekt",
-            "pl": "Moc wytworzona",
-            "ru": "Произведённая мощность",
-            "sv": "Producerad effekt"
-          }
-        },
         "measure_temperature.condensing": {
           "title": {
             "ar": "درجة حرارة التكثيف",
@@ -7791,405 +10067,6 @@
             "pl": "Temperatura docelowa krzywej pogodowej - strefa 2",
             "ru": "Целевая температура погодозависимой кривой - зона 2",
             "sv": "Måltemperatur för värmekurva - zon 2"
-          }
-        },
-        "meter_power.cooling": {
-          "title": {
-            "ar": "الطاقة المستهلكة - تبريد",
-            "da": "Energi - køling",
-            "de": "Energie - Kühlung",
-            "en": "Energy - cooling",
-            "es": "Energía - enfriamiento",
-            "fr": "Énergie - refroidissement",
-            "it": "Energia - raffreddamento",
-            "ko": "에너지 - 냉방",
-            "nl": "Energie - koeling",
-            "no": "Energi - kjøling",
-            "pl": "Energia - chłodzenie",
-            "ru": "Энергия - охлаждение",
-            "sv": "Energi - kylning"
-          }
-        },
-        "meter_power.cop": {
-          "title": {
-            "ar": "CoP",
-            "da": "CoP",
-            "de": "CoP",
-            "en": "CoP",
-            "es": "CoP",
-            "fr": "CoP",
-            "it": "CoP",
-            "ko": "CoP",
-            "nl": "CoP",
-            "no": "CoP",
-            "pl": "CoP",
-            "ru": "CoP",
-            "sv": "CoP"
-          },
-          "units": ""
-        },
-        "meter_power.cop_cooling": {
-          "title": {
-            "ar": "CoP - تبريد",
-            "da": "CoP - køling",
-            "de": "CoP - Kühlung",
-            "en": "CoP - cooling",
-            "es": "CoP - enfriamiento",
-            "fr": "CoP - refroidissement",
-            "it": "CoP - raffreddamento",
-            "ko": "CoP - 냉방",
-            "nl": "CoP - koeling",
-            "no": "CoP - kjøling",
-            "pl": "CoP - chłodzenie",
-            "ru": "CoP - охлаждение",
-            "sv": "CoP - kylning"
-          },
-          "units": ""
-        },
-        "meter_power.cop_daily": {
-          "title": {
-            "ar": "CoP يومي",
-            "da": "Daglig CoP",
-            "de": "Täglicher CoP",
-            "en": "Daily CoP",
-            "es": "CoP diario",
-            "fr": "CoP quotidien",
-            "it": "CoP giornaliero",
-            "ko": "일일 CoP",
-            "nl": "Dagelijkse CoP",
-            "no": "Daglig CoP",
-            "pl": "Dzienny CoP",
-            "ru": "CoP за день",
-            "sv": "Daglig CoP"
-          },
-          "units": ""
-        },
-        "meter_power.cop_daily_cooling": {
-          "title": {
-            "ar": "CoP يومي - تبريد",
-            "da": "Daglig CoP - køling",
-            "de": "Täglicher CoP - Kühlung",
-            "en": "Daily CoP - cooling",
-            "es": "CoP diario - enfriamiento",
-            "fr": "CoP quotidien - refroidissement",
-            "it": "CoP giornaliero - raffreddamento",
-            "ko": "일일 CoP - 냉방",
-            "nl": "Dagelijkse CoP - koeling",
-            "no": "Daglig CoP - kjøling",
-            "pl": "Dzienny CoP - chłodzenie",
-            "ru": "CoP за день - охлаждение",
-            "sv": "Daglig CoP - kylning"
-          },
-          "units": ""
-        },
-        "meter_power.cop_daily_heating": {
-          "title": {
-            "ar": "CoP يومي - تدفئة",
-            "da": "Daglig CoP - opvarmning",
-            "de": "Täglicher CoP - Heizung",
-            "en": "Daily CoP - heating",
-            "es": "CoP diario - calefacción",
-            "fr": "CoP quotidien - chauffage",
-            "it": "CoP giornaliero - riscaldamento",
-            "ko": "일일 CoP - 난방",
-            "nl": "Dagelijkse CoP - verwarming",
-            "no": "Daglig CoP - oppvarming",
-            "pl": "Dzienny CoP - ogrzewanie",
-            "ru": "CoP за день - отопление",
-            "sv": "Daglig CoP - uppvärmning"
-          },
-          "units": ""
-        },
-        "meter_power.cop_daily_hotwater": {
-          "title": {
-            "ar": "CoP يومي - مياه ساخنة صحية",
-            "da": "Daglig CoP - varmtvandslastning",
-            "de": "Täglicher CoP - Brauchwarmwasser",
-            "en": "Daily CoP - domestic hot water",
-            "es": "CoP diario - agua caliente sanitaria",
-            "fr": "CoP quotidien - eau chaude sanitaire",
-            "it": "CoP giornaliero - acqua calda sanitaria",
-            "ko": "일일 CoP - 생활 온수",
-            "nl": "Dagelijkse CoP - sanitair warm water",
-            "no": "Daglig CoP - varmvannslastning",
-            "pl": "Dzienny CoP - ciepła woda użytkowa",
-            "ru": "CoP за день - ГВС",
-            "sv": "Daglig CoP - varmvattenladdning"
-          },
-          "units": ""
-        },
-        "meter_power.cop_heating": {
-          "title": {
-            "ar": "CoP - تدفئة",
-            "da": "CoP - opvarmning",
-            "de": "CoP - Heizung",
-            "en": "CoP - heating",
-            "es": "CoP - calefacción",
-            "fr": "CoP - chauffage",
-            "it": "CoP - riscaldamento",
-            "ko": "CoP - 난방",
-            "nl": "CoP - verwarming",
-            "no": "CoP - oppvarming",
-            "pl": "CoP - ogrzewanie",
-            "ru": "CoP - отопление",
-            "sv": "CoP - uppvärmning"
-          },
-          "units": ""
-        },
-        "meter_power.cop_hotwater": {
-          "title": {
-            "ar": "CoP - مياه ساخنة صحية",
-            "da": "CoP - varmtvandsindlæsning",
-            "de": "CoP - Brauchwarmwasser",
-            "en": "CoP - domestic hot water",
-            "es": "CoP - agua caliente sanitaria",
-            "fr": "CoP - eau chaude sanitaire",
-            "it": "CoP - acqua calda sanitaria",
-            "ko": "CoP - 생활 온수",
-            "nl": "CoP - sanitair warm water",
-            "no": "CoP - varmvannslastning",
-            "pl": "CoP - ciepła woda użytkowa",
-            "ru": "CoP - ГВС",
-            "sv": "CoP - varmvattenladdning"
-          },
-          "units": ""
-        },
-        "meter_power.daily": {
-          "title": {
-            "ar": "الطاقة اليومية",
-            "da": "Daglig energi",
-            "de": "Tägliche Energie",
-            "en": "Daily energy",
-            "es": "Energía diaria",
-            "fr": "Énergie quotidienne",
-            "it": "Energia giornaliera",
-            "ko": "일일 에너지",
-            "nl": "Dagelijkse energie",
-            "no": "Daglig energi",
-            "pl": "Energia dzienna",
-            "ru": "Энергия за день",
-            "sv": "Daglig energi"
-          }
-        },
-        "meter_power.daily_cooling": {
-          "title": {
-            "ar": "الطاقة اليومية - تبريد",
-            "da": "Daglig energi - køling",
-            "de": "Tägliche Energie - Kühlung",
-            "en": "Daily energy - cooling",
-            "es": "Energía diaria - enfriamiento",
-            "fr": "Énergie quotidienne - refroidissement",
-            "it": "Energia giornaliera - raffreddamento",
-            "ko": "일일 에너지 - 냉방",
-            "nl": "Dagelijkse energie - koeling",
-            "no": "Daglig energi - kjøling",
-            "pl": "Energia dzienna - chłodzenie",
-            "ru": "Энергия за день - охлаждение",
-            "sv": "Daglig energi - kylning"
-          }
-        },
-        "meter_power.daily_heating": {
-          "title": {
-            "ar": "الطاقة اليومية - تدفئة",
-            "da": "Daglig energi - opvarmning",
-            "de": "Tägliche Energie - Heizung",
-            "en": "Daily energy - heating",
-            "es": "Energía diaria - calefacción",
-            "fr": "Énergie quotidienne - chauffage",
-            "it": "Energia giornaliera - riscaldamento",
-            "ko": "일일 에너지 - 난방",
-            "nl": "Dagelijkse energie - verwarming",
-            "no": "Daglig energi - oppvarming",
-            "pl": "Energia dzienna - ogrzewanie",
-            "ru": "Энергия за день - отопление",
-            "sv": "Daglig energi - uppvärmning"
-          }
-        },
-        "meter_power.daily_hotwater": {
-          "title": {
-            "ar": "الطاقة اليومية - مياه ساخنة صحية",
-            "da": "Daglig energi - varmtvandslastning",
-            "de": "Tägliche Energie - Brauchwarmwasser",
-            "en": "Daily energy - domestic hot water",
-            "es": "Energía diaria - agua caliente sanitaria",
-            "fr": "Énergie quotidienne - eau chaude sanitaire",
-            "it": "Energia giornaliera - acqua calda sanitaria",
-            "ko": "일일 에너지 - 생활 온수",
-            "nl": "Dagelijkse energie - sanitair warm water",
-            "no": "Daglig energi - varmvannslastning",
-            "pl": "Energia dzienna - ciepła woda użytkowa",
-            "ru": "Энергия за день - ГВС",
-            "sv": "Daglig energi - varmvattenladdning"
-          }
-        },
-        "meter_power.heating": {
-          "title": {
-            "ar": "الطاقة المستهلكة - تدفئة",
-            "da": "Energi - opvarmning",
-            "de": "Energie - Heizung",
-            "en": "Energy - heating",
-            "es": "Energía - calefacción",
-            "fr": "Énergie - chauffage",
-            "it": "Energia - riscaldamento",
-            "ko": "에너지 - 난방",
-            "nl": "Energie - verwarming",
-            "no": "Energi - oppvarming",
-            "pl": "Energia - ogrzewanie",
-            "ru": "Энергия - отопление",
-            "sv": "Energi - uppvärmning"
-          }
-        },
-        "meter_power.hotwater": {
-          "title": {
-            "ar": "الطاقة المستهلكة - مياه ساخنة صحية",
-            "da": "Energi - varmtvandsindlæsning",
-            "de": "Energie - Brauchwarmwasser",
-            "en": "Energy - domestic hot water",
-            "es": "Energía - agua caliente sanitaria",
-            "fr": "Énergie - eau chaude sanitaire",
-            "it": "Energia - acqua calda sanitaria",
-            "ko": "에너지 - 생활 온수",
-            "nl": "Energie - sanitair warm water",
-            "no": "Energi - varmvannslastning",
-            "pl": "Energia - ciepła woda użytkowa",
-            "ru": "Энергия - ГВС",
-            "sv": "Energi - varmvattenladdning"
-          }
-        },
-        "meter_power.produced": {
-          "title": {
-            "ar": "الطاقة المنتجة",
-            "da": "Produceret energi",
-            "de": "Erzeugte Energie",
-            "en": "Produced energy",
-            "es": "Energía producida",
-            "fr": "Énergie produite",
-            "it": "Energia prodotta",
-            "ko": "생산 에너지",
-            "nl": "Geproduceerde energie",
-            "no": "Produsert energi",
-            "pl": "Energia wytworzona",
-            "ru": "Произведённая энергия",
-            "sv": "Producerad energi"
-          }
-        },
-        "meter_power.produced_cooling": {
-          "title": {
-            "ar": "الطاقة المنتجة - تبريد",
-            "da": "Produceret energi - køling",
-            "de": "Erzeugte Energie - Kühlung",
-            "en": "Produced energy - cooling",
-            "es": "Energía producida - enfriamiento",
-            "fr": "Énergie produite - refroidissement",
-            "it": "Energia prodotta - raffreddamento",
-            "ko": "생산 에너지 - 냉방",
-            "nl": "Geproduceerde energie - koeling",
-            "no": "Produsert energi - kjøling",
-            "pl": "Energia wytworzona - chłodzenie",
-            "ru": "Произведённая энергия - охлаждение",
-            "sv": "Producerad energi - kylning"
-          }
-        },
-        "meter_power.produced_daily": {
-          "title": {
-            "ar": "الطاقة المنتجة اليومية",
-            "da": "Daglig produceret energi",
-            "de": "Tägliche erzeugte Energie",
-            "en": "Daily produced energy",
-            "es": "Energía producida diaria",
-            "fr": "Énergie produite quotidienne",
-            "it": "Energia prodotta giornaliera",
-            "ko": "일일 생산 에너지",
-            "nl": "Dagelijkse geproduceerde energie",
-            "no": "Daglig produsert energi",
-            "pl": "Dzienna energia wytworzona",
-            "ru": "Произведённая энергия за день",
-            "sv": "Daglig producerad energi"
-          }
-        },
-        "meter_power.produced_daily_cooling": {
-          "title": {
-            "ar": "الطاقة المنتجة اليومية - تبريد",
-            "da": "Daglig produceret energi - køling",
-            "de": "Tägliche erzeugte Energie - Kühlung",
-            "en": "Daily produced energy - cooling",
-            "es": "Energía producida diaria - enfriamiento",
-            "fr": "Énergie produite quotidienne - refroidissement",
-            "it": "Energia prodotta giornaliera - raffreddamento",
-            "ko": "일일 생산 에너지 - 냉방",
-            "nl": "Dagelijkse geproduceerde energie - koeling",
-            "no": "Daglig produsert energi - kjøling",
-            "pl": "Dzienna energia wytworzona - chłodzenie",
-            "ru": "Произведённая энергия за день - охлаждение",
-            "sv": "Daglig producerad energi - kylning"
-          }
-        },
-        "meter_power.produced_daily_heating": {
-          "title": {
-            "ar": "الطاقة المنتجة اليومية - تدفئة",
-            "da": "Daglig produceret energi - opvarmning",
-            "de": "Tägliche erzeugte Energie - Heizung",
-            "en": "Daily produced energy - heating",
-            "es": "Energía producida diaria - calefacción",
-            "fr": "Énergie produite quotidienne - chauffage",
-            "it": "Energia prodotta giornaliera - riscaldamento",
-            "ko": "일일 생산 에너지 - 난방",
-            "nl": "Dagelijkse geproduceerde energie - verwarming",
-            "no": "Daglig produsert energi - oppvarming",
-            "pl": "Dzienna energia wytworzona - ogrzewanie",
-            "ru": "Произведённая энергия за день - отопление",
-            "sv": "Daglig producerad energi - uppvärmning"
-          }
-        },
-        "meter_power.produced_daily_hotwater": {
-          "title": {
-            "ar": "الطاقة المنتجة اليومية - مياه ساخنة صحية",
-            "da": "Daglig produceret energi - varmtvandslastning",
-            "de": "Tägliche erzeugte Energie - Brauchwarmwasser",
-            "en": "Daily produced energy - domestic hot water",
-            "es": "Energía producida diaria - agua caliente sanitaria",
-            "fr": "Énergie produite quotidienne - eau chaude sanitaire",
-            "it": "Energia prodotta giornaliera - acqua calda sanitaria",
-            "ko": "일일 생산 에너지 - 생활 온수",
-            "nl": "Dagelijkse geproduceerde energie - sanitair warm water",
-            "no": "Daglig produsert energi - varmvannslastning",
-            "pl": "Dzienna energia wytworzona - ciepła woda użytkowa",
-            "ru": "Произведённая энергия за день - ГВС",
-            "sv": "Daglig producerad energi - varmvattenladdning"
-          }
-        },
-        "meter_power.produced_heating": {
-          "title": {
-            "ar": "الطاقة المنتجة - تدفئة",
-            "da": "Produceret energi - opvarmning",
-            "de": "Erzeugte Energie - Heizung",
-            "en": "Produced energy - heating",
-            "es": "Energía producida - calefacción",
-            "fr": "Énergie produite - chauffage",
-            "it": "Energia prodotta - riscaldamento",
-            "ko": "생산 에너지 - 난방",
-            "nl": "Geproduceerde energie - verwarming",
-            "no": "Produsert energi - oppvarming",
-            "pl": "Energia wytworzona - ogrzewanie",
-            "ru": "Произведённая энергия - отопление",
-            "sv": "Producerad energi - uppvärmning"
-          }
-        },
-        "meter_power.produced_hotwater": {
-          "title": {
-            "ar": "الطاقة المنتجة - مياه ساخنة صحية",
-            "da": "Produceret energi - varmtvandsindlæsning",
-            "de": "Erzeugte Energie - Brauchwarmwasser",
-            "en": "Produced energy - domestic hot water",
-            "es": "Energía producida - agua caliente sanitaria",
-            "fr": "Énergie produite - eau chaude sanitaire",
-            "it": "Energia prodotta - acqua calda sanitaria",
-            "ko": "생산 에너지 - 생활 온수",
-            "nl": "Geproduceerde energie - sanitair warm water",
-            "no": "Produsert energi - varmvannslastning",
-            "pl": "Energia wytworzona - ciepła woda użytkowa",
-            "ru": "Произведённая энергия - ГВС",
-            "sv": "Producerad energi - varmvattenladdning"
           }
         },
         "target_temperature": {
@@ -9658,6 +11535,125 @@
         "measure_power": {
           "approximated": true
         },
+        "measure_power.auto": {
+          "title": {
+            "ar": "الطاقة - تلقائي",
+            "da": "Effekt - automatisk",
+            "de": "Leistung - automatisch",
+            "en": "Power - automatic",
+            "es": "Potencia - automático",
+            "fr": "Puissance - automatique",
+            "it": "Potenza - automatica",
+            "ko": "전력 - 자동",
+            "nl": "Vermogen - automatische",
+            "no": "Effekt - automatisk",
+            "pl": "Moc - automatyczny",
+            "ru": "Мощность - авто",
+            "sv": "Effekt - automatiskt"
+          }
+        },
+        "measure_power.cooling": {
+          "title": {
+            "ar": "الطاقة - تبريد",
+            "da": "Effekt - køling",
+            "de": "Leistung - Kühlung",
+            "en": "Power - cooling",
+            "es": "Potencia - enfriamiento",
+            "fr": "Puissance - refroidissement",
+            "it": "Potenza - raffreddamento",
+            "ko": "전력 - 냉방",
+            "nl": "Vermogen - koeling",
+            "no": "Effekt - kjøling",
+            "pl": "Moc - chłodzenie",
+            "ru": "Мощность - охлаждение",
+            "sv": "Effekt - kylning"
+          }
+        },
+        "measure_power.dry": {
+          "title": {
+            "ar": "الطاقة - إزالة الرطوبة",
+            "da": "Effekt - affugtning",
+            "de": "Leistung - Entfeuchtung",
+            "en": "Power - dry",
+            "es": "Potencia - desumidificación",
+            "fr": "Puissance - déshumidification",
+            "it": "Potenza - deumidificazione",
+            "ko": "전력 - 제습",
+            "nl": "Vermogen - ontvochtiging",
+            "no": "Effekt - avfukting",
+            "pl": "Moc - osuszanie",
+            "ru": "Мощность - осушение",
+            "sv": "Effekt - avfuktning"
+          }
+        },
+        "measure_power.fan": {
+          "title": {
+            "ar": "الطاقة - مروحة",
+            "da": "Effekt - blæser",
+            "de": "Leistung - Lüfter",
+            "en": "Power - fan",
+            "es": "Potencia - ventilador",
+            "fr": "Puissance - ventilateur",
+            "it": "Potenza - ventilazione",
+            "ko": "전력 - 팬",
+            "nl": "Vermogen - ventilator",
+            "no": "Effekt - vifte",
+            "pl": "Moc - wentylator",
+            "ru": "Мощность - вентилятор",
+            "sv": "Effekt - fläkt"
+          }
+        },
+        "measure_power.heating": {
+          "title": {
+            "ar": "الطاقة - تدفئة",
+            "da": "Effekt - opvarmning",
+            "de": "Leistung - Heizung",
+            "en": "Power - heating",
+            "es": "Potencia - calefacción",
+            "fr": "Puissance - chauffage",
+            "it": "Potenza - riscaldamento",
+            "ko": "전력 - 난방",
+            "nl": "Vermogen - verwarming",
+            "no": "Effekt - oppvarming",
+            "pl": "Moc - ogrzewanie",
+            "ru": "Мощность - отопление",
+            "sv": "Effekt - uppvärmning"
+          }
+        },
+        "measure_power.other": {
+          "title": {
+            "ar": "الطاقة - أخرى",
+            "da": "Effekt - andet",
+            "de": "Leistung - Sonstiges",
+            "en": "Power - other",
+            "es": "Potencia - otro",
+            "fr": "Puissance - autre",
+            "it": "Potenza - altro",
+            "ko": "전력 - 기타",
+            "nl": "Vermogen - andere",
+            "no": "Effekt - annet",
+            "pl": "Moc - inne",
+            "ru": "Мощность - прочее",
+            "sv": "Effekt - övrigt"
+          }
+        },
+        "measure_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret effekt",
+            "de": "Erzeugte Leistung",
+            "en": "Produced power",
+            "es": "Potencia producida",
+            "fr": "Puissance produite",
+            "it": "Potenza prodotta",
+            "ko": "생산 전력",
+            "nl": "Geproduceerd vermogen",
+            "no": "Produsert effekt",
+            "pl": "Moc wytworzona",
+            "ru": "Произведённая мощность",
+            "sv": "Producerad effekt"
+          }
+        },
         "measure_temperature.outdoor": {
           "title": {
             "ar": "درجة الحرارة الخارجية",
@@ -9707,6 +11703,541 @@
             "pl": "Temperatura - strefa 2",
             "ru": "Температура - зона 2",
             "sv": "Temperatur - zon 2"
+          }
+        },
+        "meter_power.auto": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تلقائي",
+            "da": "Energi - automatisk",
+            "de": "Energie - automatisch",
+            "en": "Energy - automatic",
+            "es": "Energía - automático",
+            "fr": "Énergie - automatique",
+            "it": "Energia - automatica",
+            "ko": "에너지 - 자동",
+            "nl": "Energie - automatische",
+            "no": "Energi - automatisk",
+            "pl": "Energia - automatyczny",
+            "ru": "Энергия - авто",
+            "sv": "Energi - automatiskt"
+          }
+        },
+        "meter_power.cooling": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تبريد",
+            "da": "Energi - køling",
+            "de": "Energie - Kühlung",
+            "en": "Energy - cooling",
+            "es": "Energía - enfriamiento",
+            "fr": "Énergie - refroidissement",
+            "it": "Energia - raffreddamento",
+            "ko": "에너지 - 냉방",
+            "nl": "Energie - koeling",
+            "no": "Energi - kjøling",
+            "pl": "Energia - chłodzenie",
+            "ru": "Энергия - охлаждение",
+            "sv": "Energi - kylning"
+          }
+        },
+        "meter_power.cop": {
+          "title": {
+            "ar": "CoP",
+            "da": "CoP",
+            "de": "CoP",
+            "en": "CoP",
+            "es": "CoP",
+            "fr": "CoP",
+            "it": "CoP",
+            "ko": "CoP",
+            "nl": "CoP",
+            "no": "CoP",
+            "pl": "CoP",
+            "ru": "CoP",
+            "sv": "CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_cooling": {
+          "title": {
+            "ar": "CoP - تبريد",
+            "da": "CoP - køling",
+            "de": "CoP - Kühlung",
+            "en": "CoP - cooling",
+            "es": "CoP - enfriamiento",
+            "fr": "CoP - refroidissement",
+            "it": "CoP - raffreddamento",
+            "ko": "CoP - 냉방",
+            "nl": "CoP - koeling",
+            "no": "CoP - kjøling",
+            "pl": "CoP - chłodzenie",
+            "ru": "CoP - охлаждение",
+            "sv": "CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily": {
+          "title": {
+            "ar": "CoP يومي",
+            "da": "Daglig CoP",
+            "de": "Täglicher CoP",
+            "en": "Daily CoP",
+            "es": "CoP diario",
+            "fr": "CoP quotidien",
+            "it": "CoP giornaliero",
+            "ko": "일일 CoP",
+            "nl": "Dagelijkse CoP",
+            "no": "Daglig CoP",
+            "pl": "Dzienny CoP",
+            "ru": "CoP за день",
+            "sv": "Daglig CoP"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_cooling": {
+          "title": {
+            "ar": "CoP يومي - تبريد",
+            "da": "Daglig CoP - køling",
+            "de": "Täglicher CoP - Kühlung",
+            "en": "Daily CoP - cooling",
+            "es": "CoP diario - enfriamiento",
+            "fr": "CoP quotidien - refroidissement",
+            "it": "CoP giornaliero - raffreddamento",
+            "ko": "일일 CoP - 냉방",
+            "nl": "Dagelijkse CoP - koeling",
+            "no": "Daglig CoP - kjøling",
+            "pl": "Dzienny CoP - chłodzenie",
+            "ru": "CoP за день - охлаждение",
+            "sv": "Daglig CoP - kylning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_heating": {
+          "title": {
+            "ar": "CoP يومي - تدفئة",
+            "da": "Daglig CoP - opvarmning",
+            "de": "Täglicher CoP - Heizung",
+            "en": "Daily CoP - heating",
+            "es": "CoP diario - calefacción",
+            "fr": "CoP quotidien - chauffage",
+            "it": "CoP giornaliero - riscaldamento",
+            "ko": "일일 CoP - 난방",
+            "nl": "Dagelijkse CoP - verwarming",
+            "no": "Daglig CoP - oppvarming",
+            "pl": "Dzienny CoP - ogrzewanie",
+            "ru": "CoP за день - отопление",
+            "sv": "Daglig CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_daily_hotwater": {
+          "title": {
+            "ar": "CoP يومي - مياه ساخنة صحية",
+            "da": "Daglig CoP - varmtvandslastning",
+            "de": "Täglicher CoP - Brauchwarmwasser",
+            "en": "Daily CoP - domestic hot water",
+            "es": "CoP diario - agua caliente sanitaria",
+            "fr": "CoP quotidien - eau chaude sanitaire",
+            "it": "CoP giornaliero - acqua calda sanitaria",
+            "ko": "일일 CoP - 생활 온수",
+            "nl": "Dagelijkse CoP - sanitair warm water",
+            "no": "Daglig CoP - varmvannslastning",
+            "pl": "Dzienny CoP - ciepła woda użytkowa",
+            "ru": "CoP за день - ГВС",
+            "sv": "Daglig CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_heating": {
+          "title": {
+            "ar": "CoP - تدفئة",
+            "da": "CoP - opvarmning",
+            "de": "CoP - Heizung",
+            "en": "CoP - heating",
+            "es": "CoP - calefacción",
+            "fr": "CoP - chauffage",
+            "it": "CoP - riscaldamento",
+            "ko": "CoP - 난방",
+            "nl": "CoP - verwarming",
+            "no": "CoP - oppvarming",
+            "pl": "CoP - ogrzewanie",
+            "ru": "CoP - отопление",
+            "sv": "CoP - uppvärmning"
+          },
+          "units": ""
+        },
+        "meter_power.cop_hotwater": {
+          "title": {
+            "ar": "CoP - مياه ساخنة صحية",
+            "da": "CoP - varmtvandsindlæsning",
+            "de": "CoP - Brauchwarmwasser",
+            "en": "CoP - domestic hot water",
+            "es": "CoP - agua caliente sanitaria",
+            "fr": "CoP - eau chaude sanitaire",
+            "it": "CoP - acqua calda sanitaria",
+            "ko": "CoP - 생활 온수",
+            "nl": "CoP - sanitair warm water",
+            "no": "CoP - varmvannslastning",
+            "pl": "CoP - ciepła woda użytkowa",
+            "ru": "CoP - ГВС",
+            "sv": "CoP - varmvattenladdning"
+          },
+          "units": ""
+        },
+        "meter_power.daily": {
+          "title": {
+            "ar": "الطاقة اليومية",
+            "da": "Daglig energi",
+            "de": "Tägliche Energie",
+            "en": "Daily energy",
+            "es": "Energía diaria",
+            "fr": "Énergie quotidienne",
+            "it": "Energia giornaliera",
+            "ko": "일일 에너지",
+            "nl": "Dagelijkse energie",
+            "no": "Daglig energi",
+            "pl": "Energia dzienna",
+            "ru": "Энергия за день",
+            "sv": "Daglig energi"
+          }
+        },
+        "meter_power.daily_auto": {
+          "title": {
+            "ar": "الطاقة اليومية - تلقائي",
+            "da": "Daglig energi - automatisk",
+            "de": "Tägliche Energie - automatisch",
+            "en": "Daily energy - automatic",
+            "es": "Energía diaria - automático",
+            "fr": "Énergie quotidienne - automatique",
+            "it": "Energia giornaliera - automatica",
+            "ko": "일일 에너지 - 자동",
+            "nl": "Dagelijkse energie - automatische",
+            "no": "Daglig energi - automatisk",
+            "pl": "Energia dzienna - automatyczny",
+            "ru": "Энергия за день - авто",
+            "sv": "Daglig energi - automatiskt"
+          }
+        },
+        "meter_power.daily_cooling": {
+          "title": {
+            "ar": "الطاقة اليومية - تبريد",
+            "da": "Daglig energi - køling",
+            "de": "Tägliche Energie - Kühlung",
+            "en": "Daily energy - cooling",
+            "es": "Energía diaria - enfriamiento",
+            "fr": "Énergie quotidienne - refroidissement",
+            "it": "Energia giornaliera - raffreddamento",
+            "ko": "일일 에너지 - 냉방",
+            "nl": "Dagelijkse energie - koeling",
+            "no": "Daglig energi - kjøling",
+            "pl": "Energia dzienna - chłodzenie",
+            "ru": "Энергия за день - охлаждение",
+            "sv": "Daglig energi - kylning"
+          }
+        },
+        "meter_power.daily_dry": {
+          "title": {
+            "ar": "الطاقة اليومية - إزالة الرطوبة",
+            "da": "Daglig energi - affugtning",
+            "de": "Tägliche Energie - Entfeuchtung",
+            "en": "Daily energy - dry",
+            "es": "Energía diaria - desumidificación",
+            "fr": "Énergie quotidienne - déshumidification",
+            "it": "Energia giornaliera - deumidificazione",
+            "ko": "일일 에너지 - 제습",
+            "nl": "Dagelijkse energie - ontvochtiging",
+            "no": "Daglig energi - avfukting",
+            "pl": "Energia dzienna - osuszanie",
+            "ru": "Энергия за день - осушение",
+            "sv": "Daglig energi - avfuktning"
+          }
+        },
+        "meter_power.daily_fan": {
+          "title": {
+            "ar": "الطاقة اليومية - مروحة",
+            "da": "Daglig energi - blæser",
+            "de": "Tägliche Energie - Lüfter",
+            "en": "Daily energy - fan",
+            "es": "Energía diaria - ventilación",
+            "fr": "Énergie quotidienne - ventilateur",
+            "it": "Energia giornaliera - ventilazione",
+            "ko": "일일 에너지 - 팬",
+            "nl": "Dagelijkse energie - ventilator",
+            "no": "Daglig energi - vifte",
+            "pl": "Energia dzienna - wentylator",
+            "ru": "Энергия за день - вентилятор",
+            "sv": "Daglig energi - fläkt"
+          }
+        },
+        "meter_power.daily_heating": {
+          "title": {
+            "ar": "الطاقة اليومية - تدفئة",
+            "da": "Daglig energi - opvarmning",
+            "de": "Tägliche Energie - Heizung",
+            "en": "Daily energy - heating",
+            "es": "Energía diaria - calefacción",
+            "fr": "Énergie quotidienne - chauffage",
+            "it": "Energia giornaliera - riscaldamento",
+            "ko": "일일 에너지 - 난방",
+            "nl": "Dagelijkse energie - verwarming",
+            "no": "Daglig energi - oppvarming",
+            "pl": "Energia dzienna - ogrzewanie",
+            "ru": "Энергия за день - отопление",
+            "sv": "Daglig energi - uppvärmning"
+          }
+        },
+        "meter_power.daily_hotwater": {
+          "title": {
+            "ar": "الطاقة اليومية - مياه ساخنة صحية",
+            "da": "Daglig energi - varmtvandslastning",
+            "de": "Tägliche Energie - Brauchwarmwasser",
+            "en": "Daily energy - domestic hot water",
+            "es": "Energía diaria - agua caliente sanitaria",
+            "fr": "Énergie quotidienne - eau chaude sanitaire",
+            "it": "Energia giornaliera - acqua calda sanitaria",
+            "ko": "일일 에너지 - 생활 온수",
+            "nl": "Dagelijkse energie - sanitair warm water",
+            "no": "Daglig energi - varmvannslastning",
+            "pl": "Energia dzienna - ciepła woda użytkowa",
+            "ru": "Энергия за день - ГВС",
+            "sv": "Daglig energi - varmvattenladdning"
+          }
+        },
+        "meter_power.daily_other": {
+          "title": {
+            "ar": "الطاقة اليومية - أخرى",
+            "da": "Daglig energi - andet",
+            "de": "Tägliche Energie - Sonstiges",
+            "en": "Daily energy - other",
+            "es": "Energía diaria - otro",
+            "fr": "Énergie quotidienne - autre",
+            "it": "Energia giornaliera - altro",
+            "ko": "일일 에너지 - 기타",
+            "nl": "Dagelijkse energie - andere",
+            "no": "Daglig energi - annet",
+            "pl": "Energia dzienna - inne",
+            "ru": "Энергия за день - прочее",
+            "sv": "Daglig energi - övrigt"
+          }
+        },
+        "meter_power.dry": {
+          "title": {
+            "ar": "الطاقة المستهلكة - إزالة الرطوبة",
+            "da": "Energi - affugtning",
+            "de": "Energie - Entfeuchtung",
+            "en": "Energy - dry",
+            "es": "Energía - desumidificación",
+            "fr": "Énergie - déshumidification",
+            "it": "Energia - deumidificazione",
+            "ko": "에너지 - 제습",
+            "nl": "Energie - ontvochtiging",
+            "no": "Energi - avfukting",
+            "pl": "Energia - osuszanie",
+            "ru": "Энергия - осушение",
+            "sv": "Energi - avfuktning"
+          }
+        },
+        "meter_power.fan": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مروحة",
+            "da": "Energi - blæser",
+            "de": "Energie - Lüfter",
+            "en": "Energy - fan",
+            "es": "Energía - ventilador",
+            "fr": "Énergie - ventilateur",
+            "it": "Energia - ventilazione",
+            "ko": "에너지 - 팬",
+            "nl": "Energie - ventilator",
+            "no": "Energi - vifte",
+            "pl": "Energia - wentylator",
+            "ru": "Энергия - вентилятор",
+            "sv": "Energi - fläkt"
+          }
+        },
+        "meter_power.heating": {
+          "title": {
+            "ar": "الطاقة المستهلكة - تدفئة",
+            "da": "Energi - opvarmning",
+            "de": "Energie - Heizung",
+            "en": "Energy - heating",
+            "es": "Energía - calefacción",
+            "fr": "Énergie - chauffage",
+            "it": "Energia - riscaldamento",
+            "ko": "에너지 - 난방",
+            "nl": "Energie - verwarming",
+            "no": "Energi - oppvarming",
+            "pl": "Energia - ogrzewanie",
+            "ru": "Энергия - отопление",
+            "sv": "Energi - uppvärmning"
+          }
+        },
+        "meter_power.hotwater": {
+          "title": {
+            "ar": "الطاقة المستهلكة - مياه ساخنة صحية",
+            "da": "Energi - varmtvandsindlæsning",
+            "de": "Energie - Brauchwarmwasser",
+            "en": "Energy - domestic hot water",
+            "es": "Energía - agua caliente sanitaria",
+            "fr": "Énergie - eau chaude sanitaire",
+            "it": "Energia - acqua calda sanitaria",
+            "ko": "에너지 - 생활 온수",
+            "nl": "Energie - sanitair warm water",
+            "no": "Energi - varmvannslastning",
+            "pl": "Energia - ciepła woda użytkowa",
+            "ru": "Энергия - ГВС",
+            "sv": "Energi - varmvattenladdning"
+          }
+        },
+        "meter_power.other": {
+          "title": {
+            "ar": "الطاقة المستهلكة - أخرى",
+            "da": "Energi - andet",
+            "de": "Energie - Sonstiges",
+            "en": "Energy - other",
+            "es": "Energía - otro",
+            "fr": "Énergie - autre",
+            "it": "Energia - altro",
+            "ko": "에너지 - 기타",
+            "nl": "Energie - andere",
+            "no": "Energi - annet",
+            "pl": "Energia - inne",
+            "ru": "Энергия - прочее",
+            "sv": "Energi - övrigt"
+          }
+        },
+        "meter_power.produced": {
+          "title": {
+            "ar": "الطاقة المنتجة",
+            "da": "Produceret energi",
+            "de": "Erzeugte Energie",
+            "en": "Produced energy",
+            "es": "Energía producida",
+            "fr": "Énergie produite",
+            "it": "Energia prodotta",
+            "ko": "생산 에너지",
+            "nl": "Geproduceerde energie",
+            "no": "Produsert energi",
+            "pl": "Energia wytworzona",
+            "ru": "Произведённая энергия",
+            "sv": "Producerad energi"
+          }
+        },
+        "meter_power.produced_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة - تبريد",
+            "da": "Produceret energi - køling",
+            "de": "Erzeugte Energie - Kühlung",
+            "en": "Produced energy - cooling",
+            "es": "Energía producida - enfriamiento",
+            "fr": "Énergie produite - refroidissement",
+            "it": "Energia prodotta - raffreddamento",
+            "ko": "생산 에너지 - 냉방",
+            "nl": "Geproduceerde energie - koeling",
+            "no": "Produsert energi - kjøling",
+            "pl": "Energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия - охлаждение",
+            "sv": "Producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية",
+            "da": "Daglig produceret energi",
+            "de": "Tägliche erzeugte Energie",
+            "en": "Daily produced energy",
+            "es": "Energía producida diaria",
+            "fr": "Énergie produite quotidienne",
+            "it": "Energia prodotta giornaliera",
+            "ko": "일일 생산 에너지",
+            "nl": "Dagelijkse geproduceerde energie",
+            "no": "Daglig produsert energi",
+            "pl": "Dzienna energia wytworzona",
+            "ru": "Произведённая энергия за день",
+            "sv": "Daglig producerad energi"
+          }
+        },
+        "meter_power.produced_daily_cooling": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تبريد",
+            "da": "Daglig produceret energi - køling",
+            "de": "Tägliche erzeugte Energie - Kühlung",
+            "en": "Daily produced energy - cooling",
+            "es": "Energía producida diaria - enfriamiento",
+            "fr": "Énergie produite quotidienne - refroidissement",
+            "it": "Energia prodotta giornaliera - raffreddamento",
+            "ko": "일일 생산 에너지 - 냉방",
+            "nl": "Dagelijkse geproduceerde energie - koeling",
+            "no": "Daglig produsert energi - kjøling",
+            "pl": "Dzienna energia wytworzona - chłodzenie",
+            "ru": "Произведённая энергия за день - охлаждение",
+            "sv": "Daglig producerad energi - kylning"
+          }
+        },
+        "meter_power.produced_daily_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - تدفئة",
+            "da": "Daglig produceret energi - opvarmning",
+            "de": "Tägliche erzeugte Energie - Heizung",
+            "en": "Daily produced energy - heating",
+            "es": "Energía producida diaria - calefacción",
+            "fr": "Énergie produite quotidienne - chauffage",
+            "it": "Energia prodotta giornaliera - riscaldamento",
+            "ko": "일일 생산 에너지 - 난방",
+            "nl": "Dagelijkse geproduceerde energie - verwarming",
+            "no": "Daglig produsert energi - oppvarming",
+            "pl": "Dzienna energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия за день - отопление",
+            "sv": "Daglig producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_daily_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة اليومية - مياه ساخنة صحية",
+            "da": "Daglig produceret energi - varmtvandslastning",
+            "de": "Tägliche erzeugte Energie - Brauchwarmwasser",
+            "en": "Daily produced energy - domestic hot water",
+            "es": "Energía producida diaria - agua caliente sanitaria",
+            "fr": "Énergie produite quotidienne - eau chaude sanitaire",
+            "it": "Energia prodotta giornaliera - acqua calda sanitaria",
+            "ko": "일일 생산 에너지 - 생활 온수",
+            "nl": "Dagelijkse geproduceerde energie - sanitair warm water",
+            "no": "Daglig produsert energi - varmvannslastning",
+            "pl": "Dzienna energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия за день - ГВС",
+            "sv": "Daglig producerad energi - varmvattenladdning"
+          }
+        },
+        "meter_power.produced_heating": {
+          "title": {
+            "ar": "الطاقة المنتجة - تدفئة",
+            "da": "Produceret energi - opvarmning",
+            "de": "Erzeugte Energie - Heizung",
+            "en": "Produced energy - heating",
+            "es": "Energía producida - calefacción",
+            "fr": "Énergie produite - chauffage",
+            "it": "Energia prodotta - riscaldamento",
+            "ko": "생산 에너지 - 난방",
+            "nl": "Geproduceerde energie - verwarming",
+            "no": "Produsert energi - oppvarming",
+            "pl": "Energia wytworzona - ogrzewanie",
+            "ru": "Произведённая энергия - отопление",
+            "sv": "Producerad energi - uppvärmning"
+          }
+        },
+        "meter_power.produced_hotwater": {
+          "title": {
+            "ar": "الطاقة المنتجة - مياه ساخنة صحية",
+            "da": "Produceret energi - varmtvandsindlæsning",
+            "de": "Erzeugte Energie - Brauchwarmwasser",
+            "en": "Produced energy - domestic hot water",
+            "es": "Energía producida - agua caliente sanitaria",
+            "fr": "Énergie produite - eau chaude sanitaire",
+            "it": "Energia prodotta - acqua calda sanitaria",
+            "ko": "생산 에너지 - 생활 온수",
+            "nl": "Geproduceerde energie - sanitair warm water",
+            "no": "Produsert energi - varmvannslastning",
+            "pl": "Energia wytworzona - ciepła woda użytkowa",
+            "ru": "Произведённая энергия - ГВС",
+            "sv": "Producerad energi - varmvattenladdning"
           }
         },
         "operational_state": {
