@@ -120,3 +120,14 @@ input.homey-form-checkbox-input:indeterminate
   position: absolute;
   transform: translate(-50%, -50%);
 }
+
+/* The SDK's shadow/full button classes carry no disabled state of their
+   own — surface an in-flight action (a settings update running until its
+   success or failure alert) as greyed and non-interactive. */
+.homey-button-danger-shadow:disabled,
+.homey-button-primary-full:disabled,
+.homey-button-secondary-shadow:disabled,
+.homey-button-secondary-shadow-full:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

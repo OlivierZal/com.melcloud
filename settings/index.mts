@@ -714,7 +714,10 @@ class DeviceSettingsManager {
       disableButton(`${action}_${id}`, isDisabled)
       if (isCommon) {
         for (const driverId of Object.keys(this.#deviceSettings)) {
-          disableButton(`${action}_${driverIdPrefix}${driverId}`, isDisabled)
+          disableButton(
+            `${action}_${driverIdPrefix}${toSectionId(driverId)}`,
+            isDisabled,
+          )
         }
       }
     }
@@ -784,7 +787,7 @@ class DeviceSettingsManager {
       this.#alertNoChanges(elements, driverId)
       return
     }
-    const settingsId = `settings_${driverId ?? 'common'}`
+    const settingsId = `settings_${toSectionId(driverId ?? 'common')}`
     this.#disableButtons(settingsId)
     try {
       await this.#applyDeviceSettings(body, driverId)
