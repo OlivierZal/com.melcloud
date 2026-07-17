@@ -6,7 +6,10 @@ import {
 } from '@olivierzal/melcloud-api/constants'
 
 import type { GroupAtaStates } from '../../../types/classic-ata.mts'
-import type { GetAtaOptions } from '../../../types/widgets.mts'
+import type {
+  GetAtaOptions,
+  AtaGroupSettingWidgetSettings as HomeySettings,
+} from '../../../types/widgets.mts'
 import { getSelect } from '../../../public/dom.mts'
 import {
   type Homey,
@@ -111,6 +114,11 @@ const resolveMemberScene = (
   modes: readonly number[],
 ): ReadonlySet<SceneElement> =>
   new Set(modes.flatMap((mode) => MODE_SCENES[mode] ?? []))
+
+// Explicit false is the only opt-out: instances placed before this setting
+// existed report null and must keep animating.
+const areAnimationsEnabled = (homey: Homey<HomeySettings>): boolean =>
+  homey.getSettings().animations !== false
 
 // Queried lazily so module evaluation stays side-effect-free, and so each
 // animation pass reads the current OS preference.
@@ -433,7 +441,7 @@ export class AnimationController {
 
   #generation = 0
 
-  readonly #homey: Homey
+  readonly #homey: Homey<HomeySettings>
 
   #isFireActive = false
 
@@ -445,7 +453,10 @@ export class AnimationController {
 
   #sunShine: Animation | null = null
 
-  public constructor(homey: Homey, animationElement: HTMLDivElement) {
+  public constructor(
+    homey: Homey<HomeySettings>,
+    animationElement: HTMLDivElement,
+  ) {
     this.#homey = homey
     this.#animation = animationElement
     this.#animationMapping = createAnimationMapping()
@@ -743,7 +754,11 @@ export class AnimationController {
     state: Classic.GroupState,
   ): Promise<ReadonlySet<SceneElement> | null> {
     const { isSomethingOn, newMode } = parseStateParams(state)
-    if (!isSomethingOn || prefersReducedMotion()) {
+    if (
+      !isSomethingOn ||
+      !areAnimationsEnabled(this.#homey) ||
+      prefersReducedMotion()
+    ) {
       return new Set()
     }
     if (newMode !== CLASSIC_OPERATION_MODE_MIXED) {

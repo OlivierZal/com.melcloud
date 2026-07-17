@@ -556,5 +556,20 @@
     "pl": "Otrzymuj powiadomienie, gdy konto MELCloud wymaga ponownego logowania; próby są wstrzymywane, gdy MELCloud je ogranicza.",
     "ru": "Получайте уведомление, когда учётной записи MELCloud требуется повторный вход; попытки входа приостанавливаются при ограничениях MELCloud.",
     "sv": "Få en avisering när ditt MELCloud-konto behöver en ny inloggning, och inloggningsförsök pausas när MELCloud begränsar dem."
+  },
+  "45.4.0": {
+    "ar": "أصبحت أداة مجموعة الهواء-هواء تتضمن إعداد الرسوم المتحركة لإيقاف المؤثرات المرئية.",
+    "da": "Luft-til-luft-gruppewidgetten har nu en animationsindstilling, så du kan slå de visuelle effekter fra.",
+    "de": "Das Luft-Luft-Gruppen-Widget hat jetzt eine Animationseinstellung, mit der sich die visuellen Effekte abschalten lassen.",
+    "en": "The air-to-air group widget now has an Animations setting, so you can turn the visual effects off.",
+    "es": "El widget de grupo aire-aire ahora tiene un ajuste de animaciones para desactivar los efectos visuales.",
+    "fr": "Le widget de groupe air-air propose désormais un réglage Animations pour désactiver les effets visuels.",
+    "it": "Il widget del gruppo aria-aria ora ha un'impostazione per le animazioni, così puoi disattivare gli effetti visivi.",
+    "ko": "공기-공기 그룹 위젯에 애니메이션 설정이 추가되어 시각 효과를 끌 수 있습니다.",
+    "nl": "De lucht-lucht-groepswidget heeft nu een animatie-instelling, zodat je de visuele effecten kunt uitschakelen.",
+    "no": "Luft-til-luft-gruppewidgeten har nå en animasjonsinnstilling, slik at du kan slå av de visuelle effektene.",
+    "pl": "Widżet grupy powietrze-powietrze ma teraz ustawienie animacji, dzięki któremu można wyłączyć efekty wizualne.",
+    "ru": "У виджета группы «воздух-воздух» появилась настройка анимации, позволяющая отключить визуальные эффекты.",
+    "sv": "Luft-till-luft-gruppwidgeten har nu en animationsinställning så att du kan stänga av de visuella effekterna."
   }
 }
