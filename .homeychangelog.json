@@ -586,5 +586,20 @@
     "pl": "Urządzenia Home raportują teraz energię i moc: liczniki całkowite i dzienne oraz energię wyprodukowaną i CoP dla pomp ciepła — wszystko włączane w ustawieniach urządzenia.",
     "ru": "Устройства Home теперь сообщают энергию и мощность: общие и суточные счётчики, а также выработанную энергию и CoP для тепловых насосов — всё включается в настройках устройства.",
     "sv": "Home-enheter rapporterar nu energi och effekt: total- och dagmätare samt producerad energi och CoP för värmepumpar — allt kan aktiveras i enhetens inställningar."
+  },
+  "45.6.0": {
+    "ar": "أصبح سجل الأخطاء في إعدادات التطبيق يجمع الآن أجهزة Classic وHome معاً، مرتباً زمنياً.",
+    "da": "Fejlhistorikken i appindstillingerne samler nu Classic- og Home-enheder, sorteret kronologisk.",
+    "de": "Der Fehlerverlauf in den App-Einstellungen fasst jetzt Classic- und Home-Geräte zusammen, chronologisch sortiert.",
+    "en": "The error history in the app settings now aggregates Classic and Home devices, sorted chronologically.",
+    "es": "El historial de errores en los ajustes de la app ahora agrupa los dispositivos Classic y Home, ordenado cronológicamente.",
+    "fr": "L'historique des erreurs des réglages de l'app agrège désormais les appareils Classic et Home, trié chronologiquement.",
+    "it": "La cronologia degli errori nelle impostazioni della app ora aggrega i dispositivi Classic e Home, in ordine cronologico.",
+    "ko": "앱 설정의 오류 기록이 이제 Classic 및 Home 기기를 시간순으로 통합해 보여줍니다.",
+    "nl": "De foutgeschiedenis in de app-instellingen bundelt nu Classic- en Home-apparaten, chronologisch gesorteerd.",
+    "no": "Feilhistorikken i appinnstillingene samler nå Classic- og Home-enheter, sortert kronologisk.",
+    "pl": "Historia błędów w ustawieniach aplikacji łączy teraz urządzenia Classic i Home, posortowana chronologicznie.",
+    "ru": "История ошибок в настройках приложения теперь объединяет устройства Classic и Home в хронологическом порядке.",
+    "sv": "Felhistoriken i appinställningarna samlar nu Classic- och Home-enheter, kronologiskt sorterade."
   }
 }

@@ -2,8 +2,9 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 // Shared between settings/index.mts (URLSearchParams source) and api.mts
 // (Homey-routed query receiver). Defined as strings because URL query params
-// are inherently strings — api.mts converts to numbers for ClassicErrorLogQuery.
-export interface ClassicErrorLogQueryParams {
+// are inherently strings — api.mts converts to numbers for the Classic
+// query that drives the aggregated log's pagination window.
+export interface ErrorLogQueryParams {
   readonly from: string
   readonly offset: string
   readonly period: string

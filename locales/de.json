@@ -46,7 +46,7 @@
         "234": "Fehler",
         "plural": "Fehler"
       },
-      "legend": "Fehlerprotokoll (Classic)",
+      "legend": "Fehlerprotokoll (Classic und Home)",
       "period": "Seit __from__:",
       "see": "Alle Fehler anzeigen",
       "since": "seit"

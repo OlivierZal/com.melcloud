@@ -46,7 +46,7 @@
         "234": "أخطاء",
         "plural": "أخطاء"
       },
-      "legend": "سجل الأخطاء (Classic)",
+      "legend": "سجل الأخطاء (Classic وHome)",
       "period": "منذ __from__:",
       "see": "عرض جميع الأخطاء",
       "since": "منذ"

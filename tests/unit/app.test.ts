@@ -4,6 +4,7 @@ import {
   type ReportChartPieOptions,
   type Result,
   type SyncCallback,
+  err,
   NoChangesError,
   ok,
 } from '@olivierzal/melcloud-api'
@@ -75,6 +76,7 @@ const mockApiInstance = {
   authenticate: vi.fn<() => Promise<void>>(),
   clearSync: vi.fn<() => void>(),
   getErrorLog: vi.fn<() => Promise<Result<Classic.ErrorLog>>>(),
+  isAuthenticated: vi.fn<() => boolean>().mockReturnValue(true),
   registry: {
     areas: { getById: vi.fn<(id: number) => unknown>() },
     buildings: { getById: vi.fn<(id: number) => unknown>() },
@@ -89,7 +91,7 @@ const mockApiInstance = {
 const mockHomeRegistry = {
   getBuildingsByType: vi.fn<(type: Home.DeviceType) => unknown[]>(),
   getById: vi.fn<(id: string) => unknown>(),
-  getByType: vi.fn<(type: Home.DeviceType) => unknown[]>(),
+  getByType: vi.fn<(type: Home.DeviceType) => unknown[]>().mockReturnValue([]),
 }
 
 const mockHomeApiInstance = {
@@ -461,6 +463,7 @@ describe('melCloudApp', () => {
     mockSettingsGet.mockReturnValue(null)
     mockGetDrivers.mockReturnValue({})
     mockFacadeManagerGetZones.mockReturnValue([])
+    mockApiInstance.isAuthenticated.mockReturnValue(true)
     mockHomeRegistry.getByType.mockReturnValue([])
     app = createApp()
   })
@@ -863,6 +866,162 @@ describe('melCloudApp', () => {
   })
 
   describe('error retrieval', () => {
+    const homeAtaDevice = {
+      id: 'home-1',
+      name: 'Studeerkamer',
+      type: Home.DeviceType.Ata,
+    }
+
+    const stubHomeAtaDevice = (
+      entries: {
+        clearedTimestamp: string | null
+        errorCode: string
+        errorReason: string | null
+        timestamp: string
+      }[],
+    ): void => {
+      mockHomeRegistry.getByType.mockImplementation((type) =>
+        type === Home.DeviceType.Ata ? [homeAtaDevice] : [],
+      )
+      mockHomeRegistry.getById.mockReturnValue({
+        type: Home.DeviceType.Ata,
+        isAta: () => true,
+        isAtw: () => false,
+      })
+      mockHomeFacadeManagerGet.mockReturnValue({
+        getErrorLog: vi
+          .fn<() => Promise<unknown>>()
+          .mockResolvedValue(ok(entries)),
+      })
+    }
+
+    it('should merge Home errors chronologically into the Classic window', async () => {
+      mockApiInstance.getErrorLog.mockResolvedValue(
+        ok({
+          errors: [
+            { date: '2026-03-28T14:30:00.000Z', deviceId: 42, error: 'test' },
+          ],
+          fromDate: '2026-03-01',
+          nextFromDate: '2026-03-15',
+          nextToDate: '2026-03-31',
+        }),
+      )
+      mockApiInstance.registry.devices.getById.mockReturnValue({
+        name: 'Living Room',
+      })
+      stubHomeAtaDevice([
+        {
+          clearedTimestamp: null,
+          errorCode: 'E101',
+          errorReason: 'Sensor failure',
+          timestamp: '2026-03-20T10:00:00Z',
+        },
+        {
+          clearedTimestamp: null,
+          errorCode: 'E202',
+          errorReason: null,
+          timestamp: '2026-03-25T08:00:00Z',
+        },
+        {
+          clearedTimestamp: null,
+          errorCode: 'E303',
+          errorReason: 'Too old',
+          timestamp: '2026-02-15T10:00:00Z',
+        },
+      ])
+      await app.onInit()
+
+      const errorLog = await app.getErrorLog(mock<Classic.ErrorLogQuery>())
+
+      expect(errorLog.errors.map(({ error }) => error)).toStrictEqual([
+        'test',
+        'E202',
+        'Sensor failure',
+      ])
+      expect(errorLog.errors[1]?.device).toBe('Studeerkamer')
+    })
+
+    it('should keep the log when a Home device fails to answer', async () => {
+      mockApiInstance.getErrorLog.mockResolvedValue(
+        ok({
+          errors: [
+            { date: '2026-03-28T14:30:00.000Z', deviceId: 42, error: 'test' },
+          ],
+          fromDate: '2026-03-01',
+          nextFromDate: '2026-03-15',
+          nextToDate: '2026-03-31',
+        }),
+      )
+      mockApiInstance.registry.devices.getById.mockReturnValue({
+        name: 'Living Room',
+      })
+      mockHomeRegistry.getByType.mockImplementation((type) =>
+        type === Home.DeviceType.Ata ? [homeAtaDevice] : [],
+      )
+      mockHomeRegistry.getById.mockReturnValue({
+        type: Home.DeviceType.Ata,
+        isAta: () => true,
+        isAtw: () => false,
+      })
+      mockHomeFacadeManagerGet.mockReturnValue({
+        getErrorLog: vi
+          .fn<() => Promise<unknown>>()
+          .mockResolvedValue(err({ kind: 'network' })),
+      })
+      const errorSpy = vi.fn<(...args: unknown[]) => void>()
+      await app.onInit()
+      Object.defineProperty(app, 'error', {
+        configurable: true,
+        value: errorSpy,
+      })
+
+      const errorLog = await app.getErrorLog(mock<Classic.ErrorLogQuery>())
+
+      expect(errorLog.errors).toHaveLength(1)
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Home error log fetch failed:',
+        'Studeerkamer',
+        { kind: 'network' },
+      )
+    })
+
+    it('should serve a synthetic window with Home errors when Classic is signed out', async () => {
+      mockApiInstance.isAuthenticated.mockReturnValue(false)
+      stubHomeAtaDevice([
+        {
+          clearedTimestamp: null,
+          errorCode: 'E101',
+          errorReason: 'Sensor failure',
+          timestamp: '2026-03-15T10:00:00Z',
+        },
+      ])
+      await app.onInit()
+
+      const errorLog = await app.getErrorLog(
+        mock<Classic.ErrorLogQuery>({ period: 29, to: '2026-03-31' }),
+      )
+
+      expect(mockApiInstance.getErrorLog).not.toHaveBeenCalled()
+      expect(errorLog.errors.map(({ device }) => device)).toStrictEqual([
+        'Studeerkamer',
+      ])
+      expect(errorLog.nextToDate).toBe('2026-03-01')
+      expect(errorLog.nextFromDate).toBe('2026-01-31')
+    })
+
+    it('should anchor the synthetic window on today when no upper bound is given', async () => {
+      mockApiInstance.isAuthenticated.mockReturnValue(false)
+      await app.onInit()
+
+      const errorLog = await app.getErrorLog(
+        mock<Classic.ErrorLogQuery>({ to: '' }),
+      )
+
+      expect(mockApiInstance.getErrorLog).not.toHaveBeenCalled()
+      expect(errorLog.errors).toStrictEqual([])
+      expect(errorLog.nextToDate).toMatch(/^\d{4}-\d{2}-\d{2}$/v)
+    })
+
     it('should format dates and resolve device names from api error log', async () => {
       const deviceName = 'Living Room'
       mockApiInstance.getErrorLog.mockResolvedValue(
@@ -881,7 +1040,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       const query = mock<Classic.ErrorLogQuery>()
-      const errorLog = await app.getClassicErrorLog(query)
+      const errorLog = await app.getErrorLog(query)
 
       expect(mockApiInstance.getErrorLog).toHaveBeenCalledWith(query)
       expect(errorLog).toStrictEqual({
@@ -913,7 +1072,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       const query = mock<Classic.ErrorLogQuery>()
-      const errorLog = await app.getClassicErrorLog(query)
+      const errorLog = await app.getErrorLog(query)
 
       expect(errorLog.errors[0]?.device).toBe('')
     })

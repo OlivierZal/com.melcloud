@@ -46,7 +46,7 @@
         "234": "errori",
         "plural": "errori"
       },
-      "legend": "Cronologia errori (Classic)",
+      "legend": "Cronologia errori (Classic e Home)",
       "period": "Dal __from__:",
       "see": "Visualizza tutti gli errori",
       "since": "dal"

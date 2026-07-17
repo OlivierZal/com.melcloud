@@ -47,7 +47,7 @@
         "234": "fel",
         "plural": "fel"
       },
-      "legend": "Felhistorik (Classic)",
+      "legend": "Felhistorik (Classic och Home)",
       "period": "Sedan __from__:",
       "see": "Se alla fel",
       "since": "sedan"

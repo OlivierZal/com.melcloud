@@ -47,7 +47,7 @@
         "234": "errors",
         "plural": "errors"
       },
-      "legend": "Error history (Classic)",
+      "legend": "Error history (Classic and Home)",
       "period": "Since __from__:",
       "see": "See all errors",
       "since": "since"

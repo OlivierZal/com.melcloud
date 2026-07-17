@@ -46,7 +46,7 @@
         "234": "개 오류",
         "plural": "개 오류"
       },
-      "legend": "오류 기록 (Classic)",
+      "legend": "오류 기록 (Classic 및 Home)",
       "period": "__from__ 이후:",
       "see": "모든 오류 보기",
       "since": "이후"

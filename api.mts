@@ -6,7 +6,7 @@ import * as Home from '@olivierzal/melcloud-api/home'
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
 import type { DriverSetting } from './types/driver-settings.mts'
 import type {
-  ClassicErrorLogQueryParams,
+  ErrorLogQueryParams,
   FormattedErrorLog,
 } from './types/error-log.mts'
 import type { DeviceGroup, DeviceOrZoneData } from './types/zone.mts'
@@ -73,22 +73,6 @@ const api = {
     homey: Homey
   }): Promise<void> => app.classicApi.authenticate(body),
   getClassicBuildings: (): Classic.BuildingZone[] => getClassicBuildings(),
-  getClassicErrorLog: async ({
-    homey: { app },
-    query: { from, offset, period, to },
-  }: {
-    homey: Homey
-    query: Partial<ClassicErrorLogQueryParams>
-  }): Promise<FormattedErrorLog> => {
-    const parsedOffset = toNumber(offset)
-    const parsedPeriod = toNumber(period)
-    return app.getClassicErrorLog({
-      from,
-      offset: parsedOffset,
-      period: parsedPeriod,
-      to,
-    })
-  },
   getClassicFrostProtection: async ({
     homey: { app },
     params,
@@ -135,6 +119,22 @@ const api = {
   }): Partial<Record<string, DriverSetting[]>> => {
     logSettingsRoute(app, '/settings/drivers')
     return app.getDriverSettings()
+  },
+  getErrorLog: async ({
+    homey: { app },
+    query: { from, offset, period, to },
+  }: {
+    homey: Homey
+    query: Partial<ErrorLogQueryParams>
+  }): Promise<FormattedErrorLog> => {
+    const parsedOffset = toNumber(offset)
+    const parsedPeriod = toNumber(period)
+    return app.getErrorLog({
+      from,
+      offset: parsedOffset,
+      period: parsedPeriod,
+      to,
+    })
   },
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),

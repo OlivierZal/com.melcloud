@@ -46,7 +46,7 @@
         "234": "błędy",
         "plural": "błędów"
       },
-      "legend": "Historia błędów (Classic)",
+      "legend": "Historia błędów (Classic i Home)",
       "period": "Od __from__:",
       "see": "Pokaż wszystkie błędy",
       "since": "od"

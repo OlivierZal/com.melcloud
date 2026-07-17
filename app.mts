@@ -28,7 +28,10 @@ import type {
   DriverCapabilitiesOptions,
   DriverSetting,
 } from './types/driver-settings.mts'
-import type { FormattedErrorLog } from './types/error-log.mts'
+import type {
+  FormattedErrorDetails,
+  FormattedErrorLog,
+} from './types/error-log.mts'
 import type { HomeDeviceFacade } from './types/home.mts'
 import type {
   LoginSetting,
@@ -234,6 +237,84 @@ const parseErrorDate = (date: string, timeZone: string): Temporal.Instant => {
   }
 }
 
+// The webview always asks for 29-day pages; mirrored here for the synthetic
+// window served when Classic is signed out.
+const DEFAULT_ERROR_LOG_PERIOD_DAYS = 29
+const HOME_ERROR_DEVICE_TYPES: readonly Home.DeviceType[] = [
+  Home.DeviceType.Ata,
+  Home.DeviceType.Atw,
+]
+
+interface RawErrorEntry {
+  readonly device: string
+  readonly error: string
+  readonly instant: Temporal.Instant
+}
+
+// Mirrors the Classic pagination tiling (a page spans `period` days, the
+// next one ends the day before it starts) so a Home-only account still
+// browses windows when Classic is signed out.
+const syntheticErrorLogWindow = (
+  { period, to }: Classic.ErrorLogQuery,
+  timeZone: string,
+): Omit<Classic.ErrorLog, 'errors'> => {
+  const periodDays = period ?? DEFAULT_ERROR_LOG_PERIOD_DAYS
+  const toDate =
+    to !== undefined && to !== '' ?
+      Temporal.PlainDate.from(to)
+    : Temporal.Now.plainDateISO(timeZone)
+  const fromDate = toDate.subtract({ days: periodDays })
+  const nextToDate = fromDate.subtract({ days: 1 })
+  return {
+    fromDate: fromDate.toString(),
+    nextFromDate: nextToDate.subtract({ days: periodDays }).toString(),
+    nextToDate: nextToDate.toString(),
+  }
+}
+
+const isWithinErrorLogWindow = (
+  instant: Temporal.Instant,
+  {
+    from,
+    timeZone,
+    to,
+  }: {
+    readonly from: Temporal.PlainDate
+    readonly timeZone: string
+    readonly to: Temporal.PlainDate | null
+  },
+): boolean => {
+  const day = instant.toZonedDateTimeISO(timeZone).toPlainDate()
+  return (
+    Temporal.PlainDate.compare(day, from) >= 0 &&
+    (to === null || Temporal.PlainDate.compare(day, to) <= 0)
+  )
+}
+
+const formatErrorEntries = (
+  entries: readonly RawErrorEntry[],
+  { locale, timeZone }: { locale: string; timeZone: string },
+): FormattedErrorDetails[] => {
+  // Reused across all entries instead of rebuilding a formatter per call.
+  const dateTimeMedFormat = new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    month: 'short',
+    timeZone,
+    year: 'numeric',
+  })
+  return entries
+    .toSorted((first, second) =>
+      Temporal.Instant.compare(second.instant, first.instant),
+    )
+    .map(({ device, error, instant }) => ({
+      date: dateTimeMedFormat.format(instant),
+      device,
+      error,
+    }))
+}
+
 export default class MELCloudApp extends App {
   declare public readonly homey: Homey.Homey
 
@@ -337,38 +418,6 @@ export default class MELCloudApp extends App {
     return unwrapResult(
       await this.#getClassicAtaGroupFacade({ zoneId, zoneType }).getGroup(),
     )
-  }
-
-  public async getClassicErrorLog(
-    query: Classic.ErrorLogQuery,
-  ): Promise<FormattedErrorLog> {
-    const { errors, fromDate, ...rest } = unwrapResult(
-      await this.#classicApi.getErrorLog(query),
-    )
-    const locale = this.homey.i18n.getLanguage()
-    const timeZone = getTimeZone(this.homey)
-    // Reused across all entries instead of rebuilding a DateTime + formatter per call.
-    const dateTimeMedFormat = new Intl.DateTimeFormat(locale, {
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      month: 'short',
-      timeZone,
-      year: 'numeric',
-    })
-    return {
-      ...rest,
-      errors: errors.map(({ date, deviceId, ...errorRest }) => ({
-        ...errorRest,
-        date: dateTimeMedFormat.format(parseErrorDate(date, timeZone)),
-        device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
-      })),
-      fromDateHuman: Temporal.PlainDate.from(fromDate).toLocaleString(locale, {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }),
-    }
   }
 
   public getClassicFacade<T extends Classic.DeviceType>(
@@ -499,6 +548,51 @@ export default class MELCloudApp extends App {
       ]),
       ({ driverId, groupId }) => groupId ?? driverId,
     )
+  }
+
+  // One chronological log across both accounts: the Classic page drives the
+  // window (its tiling is authoritative), Home entries are fetched per
+  // device and filtered into that window so pages never overlap.
+  public async getErrorLog(
+    query: Classic.ErrorLogQuery,
+  ): Promise<FormattedErrorLog> {
+    const locale = this.homey.i18n.getLanguage()
+    const timeZone = getTimeZone(this.homey)
+    const { errors, fromDate, ...rest } = await this.#getClassicErrorLogPage(
+      query,
+      timeZone,
+    )
+    const window = {
+      from: Temporal.PlainDate.from(fromDate),
+      timeZone,
+      to:
+        query.to !== undefined && query.to !== '' ?
+          Temporal.PlainDate.from(query.to)
+        : null,
+    }
+    const allHomeEntries = await this.#getHomeErrorEntries(timeZone)
+    const homeEntries = allHomeEntries.filter((entry) =>
+      isWithinErrorLogWindow(entry.instant, window),
+    )
+    const classicEntries = errors.map(
+      ({ date, deviceId, error }): RawErrorEntry => ({
+        device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
+        error,
+        instant: parseErrorDate(date, timeZone),
+      }),
+    )
+    return {
+      ...rest,
+      errors: formatErrorEntries([...classicEntries, ...homeEntries], {
+        locale,
+        timeZone,
+      }),
+      fromDateHuman: Temporal.PlainDate.from(fromDate).toLocaleString(locale, {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }),
+    }
   }
 
   public async getHomeAtaState(deviceId: string): Promise<Classic.GroupState> {
@@ -806,6 +900,16 @@ export default class MELCloudApp extends App {
     return facade
   }
 
+  async #getClassicErrorLogPage(
+    query: Classic.ErrorLogQuery,
+    timeZone: string,
+  ): Promise<Classic.ErrorLog> {
+    if (!this.classicApi.isAuthenticated()) {
+      return { errors: [], ...syntheticErrorLogWindow(query, timeZone) }
+    }
+    return unwrapResult(await this.#classicApi.getErrorLog(query))
+  }
+
   #getDevices({
     driverId,
     ids,
@@ -845,6 +949,35 @@ export default class MELCloudApp extends App {
       throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
     }
     return facade
+  }
+
+  // Best-effort per device: one unreachable unit must not empty the log.
+  async #getHomeDeviceErrorEntries(
+    device: Home.Device,
+    timeZone: string,
+  ): Promise<RawErrorEntry[]> {
+    const { id, name, type } = device
+    const result = await this.getHomeFacade(id, type).getErrorLog()
+    if (!result.ok) {
+      this.error('Home error log fetch failed:', name, result.error)
+      return []
+    }
+    return result.value.map(({ errorCode, errorReason, timestamp }) => ({
+      device: name,
+      error: errorReason ?? errorCode,
+      instant: parseErrorDate(timestamp, timeZone),
+    }))
+  }
+
+  async #getHomeErrorEntries(timeZone: string): Promise<RawErrorEntry[]> {
+    const logs = await Promise.all(
+      HOME_ERROR_DEVICE_TYPES.flatMap((type) =>
+        this.getHomeDevicesByType(type),
+      ).map(async (device) =>
+        this.#getHomeDeviceErrorEntries(device, timeZone),
+      ),
+    )
+    return logs.flat()
   }
 
   async #initClassicApi(config: {
