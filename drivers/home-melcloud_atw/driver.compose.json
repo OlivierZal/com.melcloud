@@ -15,6 +15,14 @@
     "operational_state.zone2",
     "thermostat_mode",
     "thermostat_mode.zone2",
+    "measure_power",
+    "measure_power.produced",
+    "meter_power",
+    "meter_power.produced",
+    "meter_power.cop",
+    "meter_power.daily",
+    "meter_power.produced_daily",
+    "meter_power.cop_daily",
     "measure_signal_strength"
   ],
   "capabilitiesOptions": {

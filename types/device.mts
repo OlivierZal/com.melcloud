@@ -22,3 +22,6 @@ export interface EnergyReportOperation {
   readonly start: () => Promise<void>
   readonly unschedule: () => void
 }
+
+/** Telemetry direction a Home energy capability reads. */
+export type HomeEnergyMeasureName = 'consumed' | 'produced'

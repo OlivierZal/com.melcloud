@@ -571,5 +571,20 @@
     "pl": "Widżet grupy powietrze-powietrze ma teraz ustawienie animacji, dzięki któremu można wyłączyć efekty wizualne.",
     "ru": "У виджета группы «воздух-воздух» появилась настройка анимации, позволяющая отключить визуальные эффекты.",
     "sv": "Luft-till-luft-gruppwidgeten har nu en animationsinställning så att du kan stänga av de visuella effekterna."
+  },
+  "45.5.0": {
+    "ar": "أصبحت أجهزة Home تُبلغ الآن عن الطاقة والقدرة: عدادات إجمالية ويومية، إضافة إلى الطاقة المنتجة ومعامل الأداء لمضخات الحرارة — وكلها قابلة للتفعيل من إعدادات الجهاز.",
+    "da": "Home-enheder rapporterer nu energi og effekt: total- og dagmålere samt produceret energi og CoP for varmepumper — alt kan slås til i enhedens indstillinger.",
+    "de": "Home-Geräte melden jetzt Energie und Leistung: Gesamt- und Tageszähler, dazu erzeugte Energie und CoP für Wärmepumpen — alles in den Geräteeinstellungen schaltbar.",
+    "en": "Home devices now report energy and power: total and daily meters, plus produced energy and CoP for heat pumps — each toggleable from the device settings.",
+    "es": "Los dispositivos Home ahora informan energía y potencia: contadores totales y diarios, más energía producida y CoP para bombas de calor — todo activable desde los ajustes del dispositivo.",
+    "fr": "Les appareils Home remontent désormais énergie et puissance : compteurs totaux et journaliers, plus énergie produite et CoP pour les pompes à chaleur — chacun activable depuis les réglages de l'appareil.",
+    "it": "I dispositivi Home ora riportano energia e potenza: contatori totali e giornalieri, più energia prodotta e CoP per le pompe di calore — tutto attivabile dalle impostazioni del dispositivo.",
+    "ko": "Home 기기가 이제 에너지와 전력을 보고합니다: 총·일별 계량기, 히트펌프의 생산 에너지와 CoP — 모두 기기 설정에서 켜고 끌 수 있습니다.",
+    "nl": "Home-apparaten rapporteren nu energie en vermogen: totaal- en dagmeters, plus geproduceerde energie en CoP voor warmtepompen — allemaal schakelbaar via de apparaatinstellingen.",
+    "no": "Home-enheter rapporterer nå energi og effekt: total- og dagmålere, pluss produsert energi og CoP for varmepumper — alt kan slås på i enhetens innstillinger.",
+    "pl": "Urządzenia Home raportują teraz energię i moc: liczniki całkowite i dzienne oraz energię wyprodukowaną i CoP dla pomp ciepła — wszystko włączane w ustawieniach urządzenia.",
+    "ru": "Устройства Home теперь сообщают энергию и мощность: общие и суточные счётчики, а также выработанную энергию и CoP для тепловых насосов — всё включается в настройках устройства.",
+    "sv": "Home-enheter rapporterar nu energi och effekt: total- och dagmätare samt producerad energi och CoP för värmepumpar — allt kan aktiveras i enhetens inställningar."
   }
 }

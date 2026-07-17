@@ -275,7 +275,7 @@
       "värmeåtervinning"
     ]
   },
-  "version": "45.4.0",
+  "version": "45.5.0",
   "flow": {
     "triggers": [
       {
@@ -4606,6 +4606,9 @@
         "fan_speed",
         "vertical",
         "horizontal",
+        "measure_power",
+        "meter_power",
+        "meter_power.daily",
         "measure_signal_strength"
       ],
       "name": {
@@ -4698,6 +4701,126 @@
             "pl": "Opcje",
             "ru": "Параметры",
             "sv": "Alternativ"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "measure_power",
+              "label": {
+                "ar": "جميع الأوضاع",
+                "da": "Alle tilstande",
+                "de": "Alle Modi",
+                "en": "All modes",
+                "es": "Todos los modos",
+                "fr": "Tous modes",
+                "it": "Tutte le modalità",
+                "ko": "모든 모드",
+                "nl": "Alle modi",
+                "no": "Alle moduser",
+                "pl": "Wszystkie tryby",
+                "ru": "Все режимы",
+                "sv": "Alla lägen"
+              },
+              "type": "checkbox",
+              "value": true
+            }
+          ],
+          "label": {
+            "ar": "عرض الطاقة",
+            "da": "Effektvisning",
+            "de": "Leistungsanzeige",
+            "en": "Power display",
+            "es": "Visualización de la potencia",
+            "fr": "Affichage de la puissance",
+            "it": "Visualizzazione potenza",
+            "ko": "전력 표시",
+            "nl": "Vermogensweergave",
+            "no": "Effektvisning",
+            "pl": "Wyświetlanie mocy",
+            "ru": "Отображение мощности",
+            "sv": "Effektvisning"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "meter_power",
+              "label": {
+                "ar": "جميع الأوضاع",
+                "da": "Alle tilstande",
+                "de": "Alle Modi",
+                "en": "All modes",
+                "es": "Todos los modos",
+                "fr": "Tous modes",
+                "it": "Tutte le modalità",
+                "ko": "모든 모드",
+                "nl": "Alle modi",
+                "no": "Alle moduser",
+                "pl": "Wszystkie tryby",
+                "ru": "Все режимы",
+                "sv": "Alla lägen"
+              },
+              "type": "checkbox",
+              "value": true
+            }
+          ],
+          "label": {
+            "ar": "عرض الطاقة",
+            "da": "Energivisning",
+            "de": "Energieanzeige",
+            "en": "Energy display",
+            "es": "Visualización de la energía",
+            "fr": "Affichage de l'énergie",
+            "it": "Visualizzazione energia",
+            "ko": "에너지 표시",
+            "nl": "Energieweergave",
+            "no": "Energivisning",
+            "pl": "Wyświetlanie energii",
+            "ru": "Отображение энергии",
+            "sv": "Energivisning"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "meter_power.daily",
+              "label": {
+                "ar": "جميع الأوضاع",
+                "da": "Alle tilstande",
+                "de": "Alle Modi",
+                "en": "All modes",
+                "es": "Todos los modos",
+                "fr": "Tous modes",
+                "it": "Tutte le modalità",
+                "ko": "모든 모드",
+                "nl": "Alle modi",
+                "no": "Alle moduser",
+                "pl": "Wszystkie tryby",
+                "ru": "Все режимы",
+                "sv": "Alla lägen"
+              },
+              "type": "checkbox",
+              "value": false
+            }
+          ],
+          "label": {
+            "ar": "عرض الطاقة اليومية",
+            "da": "Daglig energivisning",
+            "de": "Tägliche Energieanzeige",
+            "en": "Daily energy display",
+            "es": "Visualización de la energía diaria",
+            "fr": "Affichage de l'énergie quotidienne",
+            "it": "Visualizzazione energia giornaliera",
+            "ko": "일일 에너지 표시",
+            "nl": "Dagelijkse energieweergave",
+            "no": "Daglig energivisning",
+            "pl": "Dzienne wyświetlanie energii",
+            "ru": "Ежедневное отображение энергии",
+            "sv": "Daglig energivisning"
           },
           "type": "group"
         }
@@ -6110,6 +6233,14 @@
         "operational_state.zone2",
         "thermostat_mode",
         "thermostat_mode.zone2",
+        "measure_power",
+        "measure_power.produced",
+        "meter_power",
+        "meter_power.produced",
+        "meter_power.cop",
+        "meter_power.daily",
+        "meter_power.produced_daily",
+        "meter_power.cop_daily",
         "measure_signal_strength"
       ],
       "name": {
@@ -6202,6 +6333,306 @@
             "pl": "Opcje",
             "ru": "Параметры",
             "sv": "Alternativ"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "measure_power",
+              "label": {
+                "ar": "جميع الأوضاع",
+                "da": "Alle tilstande",
+                "de": "Alle Modi",
+                "en": "All modes",
+                "es": "Todos los modos",
+                "fr": "Tous modes",
+                "it": "Tutte le modalità",
+                "ko": "모든 모드",
+                "nl": "Alle modi",
+                "no": "Alle moduser",
+                "pl": "Wszystkie tryby",
+                "ru": "Все режимы",
+                "sv": "Alla lägen"
+              },
+              "type": "checkbox",
+              "value": true
+            },
+            {
+              "id": "measure_power.produced",
+              "label": {
+                "ar": "الطاقة المنتجة",
+                "da": "Produceret effekt",
+                "de": "Erzeugte Leistung",
+                "en": "Produced power",
+                "es": "Potencia producida",
+                "fr": "Puissance produite",
+                "it": "Potenza prodotta",
+                "ko": "생산 전력",
+                "nl": "Geproduceerd vermogen",
+                "no": "Produsert effekt",
+                "pl": "Moc wytworzona",
+                "ru": "Произведённая мощность",
+                "sv": "Producerad effekt"
+              },
+              "type": "checkbox",
+              "value": true
+            }
+          ],
+          "label": {
+            "ar": "عرض الطاقة",
+            "da": "Effektvisning",
+            "de": "Leistungsanzeige",
+            "en": "Power display",
+            "es": "Visualización de la potencia",
+            "fr": "Affichage de la puissance",
+            "it": "Visualizzazione potenza",
+            "ko": "전력 표시",
+            "nl": "Vermogensweergave",
+            "no": "Effektvisning",
+            "pl": "Wyświetlanie mocy",
+            "ru": "Отображение мощности",
+            "sv": "Effektvisning"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "meter_power",
+              "label": {
+                "ar": "جميع الأوضاع",
+                "da": "Alle tilstande",
+                "de": "Alle Modi",
+                "en": "All modes",
+                "es": "Todos los modos",
+                "fr": "Tous modes",
+                "it": "Tutte le modalità",
+                "ko": "모든 모드",
+                "nl": "Alle modi",
+                "no": "Alle moduser",
+                "pl": "Wszystkie tryby",
+                "ru": "Все режимы",
+                "sv": "Alla lägen"
+              },
+              "type": "checkbox",
+              "value": true
+            }
+          ],
+          "label": {
+            "ar": "عرض الطاقة",
+            "da": "Energivisning",
+            "de": "Energieanzeige",
+            "en": "Energy display",
+            "es": "Visualización de la energía",
+            "fr": "Affichage de l'énergie",
+            "it": "Visualizzazione energia",
+            "ko": "에너지 표시",
+            "nl": "Energieweergave",
+            "no": "Energivisning",
+            "pl": "Wyświetlanie energii",
+            "ru": "Отображение энергии",
+            "sv": "Energivisning"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "meter_power.produced",
+              "label": {
+                "ar": "جميع الأوضاع",
+                "da": "Alle tilstande",
+                "de": "Alle Modi",
+                "en": "All modes",
+                "es": "Todos los modos",
+                "fr": "Tous modes",
+                "it": "Tutte le modalità",
+                "ko": "모든 모드",
+                "nl": "Alle modi",
+                "no": "Alle moduser",
+                "pl": "Wszystkie tryby",
+                "ru": "Все режимы",
+                "sv": "Alla lägen"
+              },
+              "type": "checkbox",
+              "value": true
+            }
+          ],
+          "label": {
+            "ar": "عرض الطاقة المنتجة",
+            "da": "Visning af produceret energi",
+            "de": "Anzeige der erzeugten Energie",
+            "en": "Produced energy display",
+            "es": "Visualización de la energía producida",
+            "fr": "Affichage de l'énergie produite",
+            "it": "Visualizzazione energia prodotta",
+            "ko": "생산 에너지 표시",
+            "nl": "Weergave van geproduceerde energie",
+            "no": "Visning av produsert energi",
+            "pl": "Wyświetlanie wyprodukowanej energii",
+            "ru": "Отображение произведённой энергии",
+            "sv": "Visning av producerad energi"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "meter_power.cop",
+              "label": {
+                "ar": "جميع الأوضاع",
+                "da": "Alle tilstande",
+                "de": "Alle Modi",
+                "en": "All modes",
+                "es": "Todos los modos",
+                "fr": "Tous modes",
+                "it": "Tutte le modalità",
+                "ko": "모든 모드",
+                "nl": "Alle modi",
+                "no": "Alle moduser",
+                "pl": "Wszystkie tryby",
+                "ru": "Все режимы",
+                "sv": "Alla lägen"
+              },
+              "type": "checkbox",
+              "value": true
+            }
+          ],
+          "label": {
+            "ar": "عرض معامل الأداء",
+            "da": "CoP-visning",
+            "de": "CoP-Anzeige",
+            "en": "CoP display",
+            "es": "Visualización del CoP",
+            "fr": "Affichage du CoP",
+            "it": "Visualizzazione CoP",
+            "ko": "CoP 표시",
+            "nl": "CoP-weergeven",
+            "no": "CoP-visning",
+            "pl": "Wyświetlanie CoP",
+            "ru": "Отображение CoP",
+            "sv": "CoP-visning"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "meter_power.daily",
+              "label": {
+                "ar": "جميع الأوضاع",
+                "da": "Alle tilstande",
+                "de": "Alle Modi",
+                "en": "All modes",
+                "es": "Todos los modos",
+                "fr": "Tous modes",
+                "it": "Tutte le modalità",
+                "ko": "모든 모드",
+                "nl": "Alle modi",
+                "no": "Alle moduser",
+                "pl": "Wszystkie tryby",
+                "ru": "Все режимы",
+                "sv": "Alla lägen"
+              },
+              "type": "checkbox",
+              "value": false
+            }
+          ],
+          "label": {
+            "ar": "عرض الطاقة اليومية",
+            "da": "Daglig energivisning",
+            "de": "Tägliche Energieanzeige",
+            "en": "Daily energy display",
+            "es": "Visualización de la energía diaria",
+            "fr": "Affichage de l'énergie quotidienne",
+            "it": "Visualizzazione energia giornaliera",
+            "ko": "일일 에너지 표시",
+            "nl": "Dagelijkse energieweergave",
+            "no": "Daglig energivisning",
+            "pl": "Dzienne wyświetlanie energii",
+            "ru": "Ежедневное отображение энергии",
+            "sv": "Daglig energivisning"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "meter_power.produced_daily",
+              "label": {
+                "ar": "جميع الأوضاع",
+                "da": "Alle tilstande",
+                "de": "Alle Modi",
+                "en": "All modes",
+                "es": "Todos los modos",
+                "fr": "Tous modes",
+                "it": "Tutte le modalità",
+                "ko": "모든 모드",
+                "nl": "Alle modi",
+                "no": "Alle moduser",
+                "pl": "Wszystkie tryby",
+                "ru": "Все режимы",
+                "sv": "Alla lägen"
+              },
+              "type": "checkbox",
+              "value": false
+            }
+          ],
+          "label": {
+            "ar": "عرض الطاقة المنتجة اليومية",
+            "da": "Daglig produceret energivisning",
+            "de": "Tägliche Anzeige der erzeugten Energie",
+            "en": "Daily produced energy display",
+            "es": "Visualización de la energía producida diaria",
+            "fr": "Affichage de l'énergie produite quotidienne",
+            "it": "Visualizzazione energia prodotta giornaliera",
+            "ko": "일일 생산 에너지 표시",
+            "nl": "Weergave van dagelijks geproduceerde energie",
+            "no": "Daglig produsert energivisning",
+            "pl": "Dzienne wyświetlanie wyprodukowanej energii",
+            "ru": "Ежедневное отображение произведённой энергии",
+            "sv": "Daglig producerad energivisning"
+          },
+          "type": "group"
+        },
+        {
+          "children": [
+            {
+              "id": "meter_power.cop_daily",
+              "label": {
+                "ar": "جميع الأوضاع",
+                "da": "Alle tilstande",
+                "de": "Alle Modi",
+                "en": "All modes",
+                "es": "Todos los modos",
+                "fr": "Tous modes",
+                "it": "Tutte le modalità",
+                "ko": "모든 모드",
+                "nl": "Alle modi",
+                "no": "Alle moduser",
+                "pl": "Wszystkie tryby",
+                "ru": "Все режимы",
+                "sv": "Alla lägen"
+              },
+              "type": "checkbox",
+              "value": true
+            }
+          ],
+          "label": {
+            "ar": "عرض معامل الأداء اليومي",
+            "da": "Daglig CoP-visning",
+            "de": "Tägliche CoP-Anzeige",
+            "en": "Daily CoP display",
+            "es": "Visualización del CoP diario",
+            "fr": "Affichage du CoP quotidien",
+            "it": "Visualizzazione CoP giornaliero",
+            "ko": "일일 CoP 표시",
+            "nl": "Dagelijkse CoP-weergeven",
+            "no": "Daglig CoP-visning",
+            "pl": "Dzienne wyświetlanie CoP",
+            "ru": "Ежедневное отображение CoP",
+            "sv": "Daglig CoP-visning"
           },
           "type": "group"
         }

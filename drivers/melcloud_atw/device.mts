@@ -102,7 +102,6 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
 
   protected override readonly energyReportRegular: EnergyReportConfig = {
     duration: { days: 1 },
-    interval: { days: 1 },
     minus: { days: 1 },
     mode: 'regular',
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
@@ -110,7 +109,6 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
 
   protected override readonly energyReportTotal: EnergyReportConfig = {
     duration: { days: 1 },
-    interval: { days: 1 },
     minus: { days: 1 },
     mode: 'total',
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },

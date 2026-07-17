@@ -11,9 +11,10 @@ import type {
   SetCapabilities,
 } from '../types/capabilities.mts'
 import type { Settings } from '../types/device-settings.mts'
+import type { EnergyReportConfig } from './base-report.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
-import { type EnergyReportConfig, EnergyReport } from './base-report.mts'
+import { EnergyReport } from './classic-report.mts'
 
 export abstract class ClassicMELCloudDevice<
   T extends Classic.DeviceType,

@@ -109,7 +109,7 @@ export abstract class BaseMELCloudDevice<
   }): Promise<void> {
     const changedCapabilities = changedKeys.filter(
       (setting) =>
-        this.isManifestCapability(setting) &&
+        this.isCapabilitySupported(setting) &&
         typeof newSettings[setting] === 'boolean',
     )
     await this.#updateDeviceOnSettings(
@@ -246,6 +246,12 @@ export abstract class BaseMELCloudDevice<
     this.#reports.total?.unschedule()
   }
 
+  // Manifest membership plus device-level support: subclasses veto
+  // capabilities the hardware cannot serve (e.g. energy without a meter).
+  protected isCapabilitySupported(capability: string): boolean {
+    return this.isManifestCapability(capability)
+  }
+
   protected isEnergyCapability(setting: string): boolean {
     return Object.hasOwn(this.driver.tagMappings.energy, setting)
   }
@@ -377,7 +383,7 @@ export abstract class BaseMELCloudDevice<
           (setting) => settings[setting] === true,
         ),
         ...this.getRequiredCapabilities(),
-      ].filter((capability) => this.isManifestCapability(capability)),
+      ].filter((capability) => this.isCapabilitySupported(capability)),
     )
 
     await sequential(

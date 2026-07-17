@@ -1,10 +1,20 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 
+import type { HomeEnergyMeasureName } from '../types/device.mts'
 import type { HomeDeviceDetails, HomeMELCloudDevice } from '../types/home.mts'
 import { BaseMELCloudDriver } from './base-driver.mts'
 
 export abstract class HomeMELCloudDriver extends BaseMELCloudDriver {
   declare public readonly getDevices: () => HomeMELCloudDevice[]
+
+  // Home energy mappings carry measure names (consumed/produced), not wire
+  // tags: redeclared so consumers see the narrowed value type.
+  public abstract override readonly tagMappings: {
+    readonly energy: Readonly<Record<string, readonly HomeEnergyMeasureName[]>>
+    readonly get: Readonly<Record<string, string>>
+    readonly list: Readonly<Record<string, string>>
+    readonly set: Readonly<Record<string, string>>
+  }
 
   public abstract override readonly type: Home.DeviceType
 

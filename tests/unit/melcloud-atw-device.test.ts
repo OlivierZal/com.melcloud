@@ -113,7 +113,6 @@ describe(ClassicMELCloudDeviceAtw, () => {
 
   testEnergyReportConfig(() => device as object, 'energyReportRegular', {
     duration: { days: 1 },
-    interval: { days: 1 },
     minus: { days: 1 },
     mode: 'regular',
     values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
@@ -121,7 +120,6 @@ describe(ClassicMELCloudDeviceAtw, () => {
 
   testEnergyReportConfig(() => device as object, 'energyReportTotal', {
     duration: { days: 1 },
-    interval: { days: 1 },
     minus: { days: 1 },
     mode: 'total',
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },

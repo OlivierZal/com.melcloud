@@ -19,6 +19,7 @@ import type {
   HomeConvertFromDevice,
   HomeConvertToDevice,
 } from '../../types/home.mts'
+import type { EnergyReportConfig } from '../base-report.mts'
 import {
   horizontalFromDevice,
   operationModeFromDevice,
@@ -26,6 +27,7 @@ import {
   verticalFromDevice,
 } from '../../types/ata.mts'
 import { HomeMELCloudDevice } from '../home-device.mts'
+import { HomeEnergyReportAta } from '../home-report-ata.mts'
 
 type AtaType = typeof Home.DeviceType.Ata
 
@@ -61,6 +63,32 @@ export default class HomeMELCloudDeviceAta extends HomeMELCloudDevice<AtaType> {
       verticalFromDevice[verticalToClassic[vaneVerticalDirection]],
   }
 
+  protected override readonly energyReportRegular: EnergyReportConfig = {
+    duration: { hours: 1 },
+    mode: 'regular',
+    values: { millisecond: 0, minute: 5, second: 0 },
+  }
+
+  protected override readonly energyReportTotal: EnergyReportConfig = {
+    duration: { hours: 1 },
+    mode: 'total',
+    values: { millisecond: 0, minute: 5, second: 0 },
+  }
+
   protected override readonly thermostatMode: typeof ThermostatModeAta =
     ThermostatModeAta
+
+  protected override readonly createEnergyReport = (
+    config: EnergyReportConfig,
+  ): HomeEnergyReportAta => new HomeEnergyReportAta(this, config)
+
+  // The energy capabilities are only served when the unit reports a
+  // consumption meter.
+  protected override isCapabilitySupported(capability: string): boolean {
+    return (
+      super.isCapabilitySupported(capability) &&
+      (!this.isEnergyCapability(capability) ||
+        this.cachedFacade?.capabilities.hasEnergyConsumedMeter === true)
+    )
+  }
 }

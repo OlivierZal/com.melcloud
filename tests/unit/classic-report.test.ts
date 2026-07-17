@@ -11,14 +11,12 @@ import {
   vi,
 } from 'vitest'
 
+import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type { Homey } from '../../lib/homey.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/capabilities.mts'
-import {
-  type EnergyReportConfig,
-  EnergyReport,
-} from '../../drivers/base-report.mts'
+import { EnergyReport } from '../../drivers/classic-report.mts'
 import { getMockCallArg, mock } from '../helpers.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
@@ -57,7 +55,6 @@ const errorMock = vi.fn<(...args: unknown[]) => void>()
 
 const regularConfig = {
   duration: { hours: 1 },
-  interval: { hours: 1 },
   minus: { hours: 1 },
   mode: 'regular',
   values: { millisecond: 0, minute: 5, second: 0 },
@@ -65,7 +62,6 @@ const regularConfig = {
 
 const totalConfig = {
   duration: { days: 1 },
-  interval: { days: 1 },
   minus: { hours: 1 },
   mode: 'total',
   values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
@@ -147,18 +143,22 @@ const createCopMocks = (
   })
 }
 
+// Faking Date is not enough since temporal-polyfill v1: on runtimes
+// shipping native Temporal it delegates to it, and the native clock
+// does not consult the mocked Date. Pin Temporal.Now directly
+const pinNow = (epochMilliseconds: number): void => {
+  vi.spyOn(Temporal.Now, 'zonedDateTimeISO').mockImplementation(
+    (timeZone = 'UTC') =>
+      Temporal.Instant.fromEpochMilliseconds(
+        epochMilliseconds,
+      ).toZonedDateTimeISO(timeZone),
+  )
+}
+
 describe(EnergyReport, () => {
   beforeAll(() => {
     vi.useFakeTimers({ now: FAKE_NOW, toFake: ['Date'] })
-    // Faking Date is not enough since temporal-polyfill v1: on runtimes
-    // shipping native Temporal it delegates to it, and the native clock
-    // does not consult the mocked Date. Pin Temporal.Now directly
-    vi.spyOn(Temporal.Now, 'zonedDateTimeISO').mockImplementation(
-      (timeZone = 'UTC') =>
-        Temporal.Instant.fromEpochMilliseconds(FAKE_NOW).toZonedDateTimeISO(
-          timeZone,
-        ),
-    )
+    pinNow(FAKE_NOW)
   })
 
   beforeEach(() => {
@@ -256,7 +256,7 @@ describe(EnergyReport, () => {
   })
 
   describe('unscheduling', () => {
-    it('should clear timeout and interval', () => {
+    it('should clear the timeout', () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       report.unschedule()
 
@@ -355,7 +355,6 @@ describe(EnergyReport, () => {
       )
       const report = new EnergyReport(mockDevice, {
         duration: { hours: 1 },
-        interval: { hours: 1 },
         minus: { hours: 1 },
         mode: 'total',
         values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
@@ -377,7 +376,6 @@ describe(EnergyReport, () => {
       )
       const report = new EnergyReport(mockDevice, {
         duration: { hours: 1 },
-        interval: { hours: 1 },
         minus: { hours: 1 },
         mode: 'total',
         values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
@@ -385,6 +383,25 @@ describe(EnergyReport, () => {
       await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 100)
+    })
+  })
+
+  describe('offset-free configs', () => {
+    it('should anchor on now when minus is omitted', async () => {
+      const getEnergyMock = mockEnergyFetch({
+        Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+        Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
+      })
+      const report = new EnergyReport(mockDevice, {
+        duration: { hours: 1 },
+        mode: 'regular',
+        values: { millisecond: 0, minute: 5, second: 0 },
+      })
+      await report.start()
+
+      expect(getEnergyMock).toHaveBeenCalledWith(
+        expect.objectContaining({ from: '2026-03-18', to: '2026-03-18' }),
+      )
     })
   })
 
@@ -405,8 +422,8 @@ describe(EnergyReport, () => {
     })
   })
 
-  describe('interval scheduling', () => {
-    it('should call setInterval inside setTimeout callback', async () => {
+  describe('wall-clock re-anchoring', () => {
+    it('should re-arm a fresh timeout after each fire instead of a fixed interval', async () => {
       mockEnergyFetch({
         Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
         Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
@@ -421,20 +438,93 @@ describe(EnergyReport, () => {
       )
       await timeoutCallback()
 
-      expect(setIntervalMock).toHaveBeenCalledWith(
+      expect(setIntervalMock).not.toHaveBeenCalled()
+      expect(setTimeoutMock).toHaveBeenCalledTimes(2)
+      expect(setTimeoutMock).toHaveBeenLastCalledWith(
         expect.any(Function),
-        { hours: 1 },
+        expect.anything(),
         'regular energy report',
       )
 
-      const intervalCallback = getMockCallArg<() => Promise<void>>(
-        setIntervalMock,
+      const secondCallback = getMockCallArg<() => Promise<void>>(
+        setTimeoutMock,
+        1,
+        0,
+      )
+      await secondCallback()
+
+      expect(ensureDeviceMock).toHaveBeenCalledTimes(3)
+    })
+
+    it('should recompute each delay from the wall clock across a DST transition', async () => {
+      // Spring forward in Europe/Paris: 2026-03-29 02:00 CET → 03:00 CEST.
+      pinNow(
+        Temporal.Instant.from('2026-03-29T01:30:00+01:00').epochMilliseconds,
+      )
+      mockEnergyFetch({ Auto: [0], Cooling: [0] })
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      // 01:30 CET + 1 h = 03:30 CEST, aligned to hh:05 → 03:05 CEST = 35 min.
+      const firstDelay = getMockCallArg<Temporal.Duration>(setTimeoutMock, 0, 1)
+
+      expect(firstDelay.total({ unit: 'minutes' })).toBe(35)
+
+      pinNow(
+        Temporal.Instant.from('2026-03-29T03:05:00+02:00').epochMilliseconds,
+      )
+      const timeoutCallback = getMockCallArg<() => Promise<void>>(
+        setTimeoutMock,
         0,
         0,
       )
-      await intervalCallback()
+      await timeoutCallback()
 
-      expect(ensureDeviceMock).toHaveBeenCalledWith()
+      // Re-anchored on the new wall clock: next fire at 04:05 CEST, a full hour.
+      const secondDelay = getMockCallArg<Temporal.Duration>(
+        setTimeoutMock,
+        1,
+        1,
+      )
+
+      expect(secondDelay.total({ unit: 'minutes' })).toBe(60)
+
+      pinNow(FAKE_NOW)
+    })
+
+    it('should stop the chain when unscheduled during a fire', async () => {
+      mockEnergyFetch({ Auto: [0], Cooling: [0] })
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      const timeoutCallback = getMockCallArg<() => Promise<void>>(
+        setTimeoutMock,
+        0,
+        0,
+      )
+      report.unschedule()
+      await timeoutCallback()
+
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('should unschedule from a fire once every energy capability is disabled', async () => {
+      mockEnergyFetch({ Auto: [0], Cooling: [0] })
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      cleanMappingMock.mockReturnValue({})
+      const timeoutCallback = getMockCallArg<() => Promise<void>>(
+        setTimeoutMock,
+        0,
+        0,
+      )
+      await timeoutCallback()
+
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
+      expect(logMock).toHaveBeenCalledWith(
+        'regular energy report has been cancelled',
+      )
     })
   })
 
