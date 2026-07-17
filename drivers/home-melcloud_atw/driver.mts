@@ -8,6 +8,29 @@ import {
 } from '../../types/home-atw.mts'
 import { HomeMELCloudDriver } from '../home-driver.mts'
 
+// Power (like Classic ATW's always-present measure_power/produced) is not a
+// user toggle: it appears when the unit can report the direction. Consumed
+// power needs a consumption estimate or meter; produced power a production
+// one — the same flags that gate the energy meters.
+const powerCapabilities = (
+  capabilities: HomeAtwDeviceProfile['capabilities'] | undefined,
+): string[] => {
+  const caps: string[] = []
+  if (
+    capabilities?.hasEstimatedEnergyConsumption === true ||
+    capabilities?.hasMeasuredEnergyConsumption === true
+  ) {
+    caps.push('measure_power')
+  }
+  if (
+    capabilities?.hasEstimatedEnergyProduction === true ||
+    capabilities?.hasMeasuredEnergyProduction === true
+  ) {
+    caps.push('measure_power.produced')
+  }
+  return caps
+}
+
 export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
   public override readonly getCapabilitiesOptions: typeof homeGetCapabilitiesOptionsAtw =
     homeGetCapabilitiesOptionsAtw
@@ -60,6 +83,7 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
     const { capabilities } = profile ?? {}
     return [
       ...this.#measureCapabilities,
+      ...powerCapabilities(capabilities),
       ...this.#zone1ControlCapabilities,
       ...(capabilities?.hasHotWater === true ?
         [

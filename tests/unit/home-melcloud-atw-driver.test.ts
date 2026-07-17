@@ -57,10 +57,21 @@ vi.mock(import('homey'), async () => {
 
 const createProfile = ({
   hasCoolingMode = false,
+  hasEstimatedEnergyConsumption = false,
+  hasEstimatedEnergyProduction = false,
   hasHotWater = true,
+  hasMeasuredEnergyConsumption = false,
+  hasMeasuredEnergyProduction = false,
   hasZone2 = false,
 } = {}): HomeAtwDeviceProfile => ({
-  capabilities: mock<Home.AtwDeviceCapabilities>({ hasHotWater, hasZone2 }),
+  capabilities: mock<Home.AtwDeviceCapabilities>({
+    hasEstimatedEnergyConsumption,
+    hasEstimatedEnergyProduction,
+    hasHotWater,
+    hasMeasuredEnergyConsumption,
+    hasMeasuredEnergyProduction,
+    hasZone2,
+  }),
   hasCoolingMode,
 })
 
@@ -99,13 +110,19 @@ describe(HomeMELCloudDriverAtw, () => {
   describe('required capabilities', () => {
     it('should return every capability for a full-featured owned device', () => {
       const capabilities = driver.getRequiredCapabilities(
-        createProfile({ hasZone2: true }),
+        createProfile({
+          hasEstimatedEnergyConsumption: true,
+          hasEstimatedEnergyProduction: true,
+          hasZone2: true,
+        }),
       )
 
       expect(capabilities).toStrictEqual([
         'measure_temperature',
         'operational_state',
         'operational_state.zone1',
+        'measure_power',
+        'measure_power.produced',
         'onoff',
         'thermostat_mode',
         'target_temperature',
@@ -150,6 +167,31 @@ describe(HomeMELCloudDriverAtw, () => {
       expect(
         driver.getRequiredCapabilities(createProfile({ hasZone2: true })),
       ).not.toContain('measure_signal_strength')
+    })
+
+    it('should require consumed power alone from a consumption source', () => {
+      const capabilities = driver.getRequiredCapabilities(
+        createProfile({ hasMeasuredEnergyConsumption: true }),
+      )
+
+      expect(capabilities).toContain('measure_power')
+      expect(capabilities).not.toContain('measure_power.produced')
+    })
+
+    it('should require produced power alone from a production source', () => {
+      const capabilities = driver.getRequiredCapabilities(
+        createProfile({ hasEstimatedEnergyProduction: true }),
+      )
+
+      expect(capabilities).toContain('measure_power.produced')
+      expect(capabilities).not.toContain('measure_power')
+    })
+
+    it('should require no power without any energy source', () => {
+      const capabilities = driver.getRequiredCapabilities(createProfile())
+
+      expect(capabilities).not.toContain('measure_power')
+      expect(capabilities).not.toContain('measure_power.produced')
     })
   })
 
