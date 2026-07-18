@@ -507,7 +507,12 @@ const getLineScalesConfig = (
         ...ticksStyle,
         // Keeps the historical ~5 y-axis intervals.
         maxTicksLimit: 6,
-        callback: (value) => Number(value).toFixed(0),
+        // Rounds off float artifacts without collapsing sub-unit axes
+        // (a 0-0.5 kWh hourly report showed nothing but zeros).
+        callback: (value) =>
+          new Intl.NumberFormat(document.documentElement.lang, {
+            maximumFractionDigits: 2,
+          }).format(Number(value)),
       },
       ...(unit === 'dBm' && { max: 0, min: -100 }),
     },
