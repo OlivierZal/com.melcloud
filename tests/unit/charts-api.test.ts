@@ -2,29 +2,16 @@ import type {
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
-import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { mock } from '../helpers.js'
 
-const mockGetClassicZones =
-  vi.fn<
-    (options?: { type?: Classic.DeviceType | undefined }) => Classic.Zone[]
-  >()
-
-vi.mock(
-  import('../../lib/classic-facade-manager.mts'),
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    getClassicZones: mockGetClassicZones,
-  }),
-)
-
 const { default: api } = await import('../../widgets/charts/api.mts')
 
 const mockApp = {
   error: vi.fn<(...args: readonly unknown[]) => void>(),
+  getClassicDeviceZones: vi.fn<() => unknown[]>(),
   getClassicEnergyReport: vi.fn<() => Promise<ReportChartLineOptions>>(),
   getClassicHourlyTemperatures: vi.fn<() => Promise<ReportChartLineOptions>>(),
   getClassicOperationModes: vi.fn<() => Promise<ReportChartPieOptions>>(),
@@ -56,62 +43,30 @@ describe('charts api', () => {
   })
 
   describe('device retrieval', () => {
-    it('should return only device zones without type filter', () => {
+    it('should list the Classic device zones without a type filter', () => {
       const zones = [
-        {
-          id: 1,
-          level: 0,
-          model: 'buildings' as const,
-          name: 'ClassicBuilding 1',
-        },
-        { id: 2, level: 1, model: 'devices' as const, name: 'Device 1' },
-        { id: 3, level: 1, model: 'devices' as const, name: 'Device 2' },
-      ] as unknown as Classic.Zone[]
-      mockGetClassicZones.mockReturnValue(zones)
+        { id: 2, level: 1, model: 'devices', name: 'Device 1 (Casa)' },
+      ]
+      mockApp.getClassicDeviceZones.mockReturnValue(zones)
 
-      const result = api.getClassicDevices({ query: {} })
+      const result = api.getClassicDevices({ homey, query: {} })
 
-      expect(result).toStrictEqual([
-        { id: 2, level: 1, model: 'devices', name: 'Device 1' },
-        { id: 3, level: 1, model: 'devices', name: 'Device 2' },
-      ])
-      expect(mockGetClassicZones).toHaveBeenCalledWith({ type: undefined })
+      expect(result).toBe(zones)
+      expect(mockApp.getClassicDeviceZones).toHaveBeenCalledWith(undefined)
     })
 
-    it('should pass numeric type filter', () => {
-      const zones = [
-        { id: 2, level: 1, model: 'devices' as const, name: 'Device 1' },
-      ] as unknown as Classic.Zone[]
-      mockGetClassicZones.mockReturnValue(zones)
+    it('should pass the numeric type filter through', () => {
+      mockApp.getClassicDeviceZones.mockReturnValue([])
 
-      const result = api.getClassicDevices({ query: { type: '0' } })
+      api.getClassicDevices({ homey, query: { type: '0' } })
 
-      expect(result).toStrictEqual([
-        { id: 2, level: 1, model: 'devices', name: 'Device 1' },
-      ])
-      expect(mockGetClassicZones).toHaveBeenCalledWith({ type: 0 })
+      expect(mockApp.getClassicDeviceZones).toHaveBeenCalledWith(0)
     })
 
     it('should throw on invalid device type', () => {
       expect(() =>
-        api.getClassicDevices({ query: { type: '99' as '0' } }),
+        api.getClassicDevices({ homey, query: { type: '99' as '0' } }),
       ).toThrow(RangeError)
-    })
-
-    it('should return empty array when no device zones exist', () => {
-      const zones = [
-        {
-          id: 1,
-          level: 0,
-          model: 'buildings' as const,
-          name: 'ClassicBuilding 1',
-        },
-      ] as unknown as Classic.Zone[]
-      mockGetClassicZones.mockReturnValue(zones)
-
-      const result = api.getClassicDevices({ query: {} })
-
-      expect(result).toStrictEqual([])
     })
   })
 

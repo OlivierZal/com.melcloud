@@ -7,7 +7,6 @@ import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
 
 import type { HomeDeviceZone } from '../../types/zone.mts'
-import { getClassicZones } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType, toHomeDeviceType } from '../../lib/to-device-type.mts'
 import { toHour, toNonNegativeInt } from '../../lib/validation.mts'
 import {
@@ -18,13 +17,15 @@ import {
 
 const api = {
   getClassicDevices: ({
+    homey: { app },
     query: { type },
   }: {
+    homey: Homey
     query: { type?: `${Classic.DeviceType}` }
-  }): Classic.DeviceZone[] =>
-    getClassicZones({
-      type: type === undefined ? undefined : toDeviceType(type),
-    }).filter((zone) => zone.model === 'devices'),
+  }): Classic.Zone[] =>
+    app.getClassicDeviceZones(
+      type === undefined ? undefined : toDeviceType(type),
+    ),
   getClassicEnergyReport: async ({
     homey: { app },
     params: { deviceId },

@@ -195,9 +195,16 @@ type ClassicAtaGroupFacade = Pick<
   'getGroup' | 'updateGroupState'
 >
 
-// `devices` = individual units only; omitting the kind serves the zone
-// collections (areas, buildings, floors) and the devices alike.
-type ZoneKind = 'devices'
+// Devices flat-listed outside their zone tree (chart pickers, device
+// autocompletes) carry their building name, so same-named devices on
+// different buildings stay tellable apart; tree-shaped lists keep the
+// bare name — the hierarchy already locates the device.
+const toFlatDeviceName = (name: string, buildingName?: string): string => {
+  const trimmed = name.trim()
+  return buildingName === undefined ? trimmed : (
+      `${trimmed} (${buildingName.trim()})`
+    )
+}
 
 const filterZonesByName = <T extends { readonly name: string }>(
   zones: readonly T[],
@@ -206,11 +213,6 @@ const filterZonesByName = <T extends { readonly name: string }>(
   const lowerCaseQuery = query.toLowerCase()
   return zones.filter(({ name }) => name.toLowerCase().includes(lowerCaseQuery))
 }
-
-const matchesZoneKind = (
-  model: Classic.Zone['model'],
-  kind?: ZoneKind,
-): boolean => kind === undefined || model === 'devices'
 
 // Flow autocomplete items over the given zones (including single devices,
 // which the holiday mode endpoints also accept). The zone target is
@@ -437,6 +439,24 @@ export default class MELCloudApp extends App {
     return unwrapResult(
       await this.#getClassicAtaGroupFacade({ zoneId, zoneType }).getGroup(),
     )
+  }
+
+  public getClassicDeviceZones(type?: Classic.DeviceType): Classic.Zone[] {
+    const devices =
+      type === undefined ?
+        this.#classicRegistry.getDevices()
+      : this.#classicRegistry.getDevicesByType(type)
+    return devices
+      .map((device) => ({
+        id: device.id,
+        level: 1,
+        model: 'devices' as const,
+        name: toFlatDeviceName(
+          device.name,
+          this.#classicRegistry.buildings.getById(device.buildingId)?.name,
+        ),
+      }))
+      .toSorted((zone, other) => zone.name.localeCompare(other.name))
   }
 
   public async getClassicEnergyReport({
@@ -695,7 +715,7 @@ export default class MELCloudApp extends App {
         id: device.id,
         level: 1,
         model: 'homeDevices',
-        name: device.name,
+        name: toFlatDeviceName(device.name, device.building.name),
       }))
       .toSorted((zone, other) => zone.name.localeCompare(other.name))
   }
@@ -1266,7 +1286,7 @@ export default class MELCloudApp extends App {
     this.homey.dashboards
       .getWidget('charts')
       .registerSettingAutocompleteListener('default_zone', (query) => [
-        ...this.#searchZones(query, { kind: 'devices' }),
+        ...filterZonesByName(this.getClassicDeviceZones(), query),
         ...filterZonesByName(this.getHomeDeviceZones(), query),
       ])
   }
@@ -1282,15 +1302,16 @@ export default class MELCloudApp extends App {
     ]
   }
 
-  // One zone-search pipeline for every autocomplete surface: registry
-  // fetch (instance state), kind/type narrowing, then query filtering.
+  // One zone-search pipeline for the tree-shaped autocomplete surfaces
+  // (flow zones, ATA group targets): registry fetch (instance state),
+  // optional type narrowing, then query filtering.
   #searchZones(
     query: string,
-    { kind, type }: { kind?: ZoneKind; type?: Classic.DeviceType } = {},
+    { type }: { type?: Classic.DeviceType } = {},
   ): Classic.Zone[] {
-    const zones = this.#facadeManager
-      .getZones(type === undefined ? {} : { type })
-      .filter(({ model }) => matchesZoneKind(model, kind))
+    const zones = this.#facadeManager.getZones(
+      type === undefined ? {} : { type },
+    )
     return filterZonesByName(zones, query)
   }
 }

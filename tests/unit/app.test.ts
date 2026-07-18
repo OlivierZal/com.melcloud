@@ -82,6 +82,7 @@ const mockApiInstance = {
     buildings: { getById: vi.fn<(id: number) => unknown>() },
     devices: { getById: vi.fn<(id: number) => unknown>() },
     floors: { getById: vi.fn<(id: number) => unknown>() },
+    getDevices: vi.fn<() => unknown[]>().mockReturnValue([]),
     getDevicesByType: vi
       .fn<(type: Classic.DeviceType) => unknown[]>()
       .mockReturnValue([]),
@@ -1720,30 +1721,75 @@ describe('melCloudApp', () => {
   })
 
   describe('home device zones', () => {
-    it('should map and sort the registry devices for the charts picker', async () => {
+    it('should suffix the building and sort for the flat pickers', async () => {
       mockHomeRegistry.getAll.mockReturnValue([
-        { id: 'b', name: 'Woonkamer' },
-        { id: 'a', name: 'Garage' },
+        { building: { name: 'Vinkenstraat 22' }, id: 'b', name: 'Garage' },
+        { building: { name: 'Verkstan' }, id: 'a', name: 'Garage ' },
       ])
       await app.onInit()
 
+      // Same-named devices on different buildings stay tellable apart;
+      // wire names are trimmed before suffixing.
       expect(app.getHomeDeviceZones()).toStrictEqual([
-        { id: 'a', level: 1, model: 'homeDevices', name: 'Garage' },
-        { id: 'b', level: 1, model: 'homeDevices', name: 'Woonkamer' },
+        { id: 'a', level: 1, model: 'homeDevices', name: 'Garage (Verkstan)' },
+        {
+          id: 'b',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Garage (Vinkenstraat 22)',
+        },
       ])
     })
 
     it('should filter by device type when one is given', async () => {
       mockHomeRegistry.getByType.mockReturnValue([
-        { id: 'atw-1', name: 'Warmtepomp' },
+        { building: { name: 'Huis' }, id: 'atw-1', name: 'Warmtepomp' },
       ])
       await app.onInit()
 
       expect(app.getHomeDeviceZones(Home.DeviceType.Atw)).toStrictEqual([
-        { id: 'atw-1', level: 1, model: 'homeDevices', name: 'Warmtepomp' },
+        {
+          id: 'atw-1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Warmtepomp (Huis)',
+        },
       ])
       expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
         Home.DeviceType.Atw,
+      )
+    })
+  })
+
+  describe('classic device zones', () => {
+    it('should suffix the building and sort for the flat pickers', async () => {
+      mockApiInstance.registry.getDevices.mockReturnValue([
+        { buildingId: 2, id: 20, name: 'Garage' },
+        { buildingId: 1, id: 10, name: 'Hydrobox' },
+      ])
+      mockApiInstance.registry.buildings.getById.mockImplementation(
+        (id: number) => (id === 1 ? { name: 'Casa' } : { name: 'Verkstan' }),
+      )
+      await app.onInit()
+
+      expect(app.getClassicDeviceZones()).toStrictEqual([
+        { id: 20, level: 1, model: 'devices', name: 'Garage (Verkstan)' },
+        { id: 10, level: 1, model: 'devices', name: 'Hydrobox (Casa)' },
+      ])
+    })
+
+    it('should keep the bare name when the building is unknown', async () => {
+      mockApiInstance.registry.getDevicesByType.mockReturnValue([
+        { buildingId: 9, id: 30, name: 'Orphan' },
+      ])
+      mockApiInstance.registry.buildings.getById.mockReturnValue(undefined)
+      await app.onInit()
+
+      expect(app.getClassicDeviceZones(Classic.DeviceType.Ata)).toStrictEqual([
+        { id: 30, level: 1, model: 'devices', name: 'Orphan' },
+      ])
+      expect(mockApiInstance.registry.getDevicesByType).toHaveBeenCalledWith(
+        Classic.DeviceType.Ata,
       )
     })
   })
@@ -2337,12 +2383,17 @@ describe('melCloudApp', () => {
       })
     })
 
-    it('should serve only matching device zones to the charts widget', async () => {
+    it('should serve building-suffixed device zones to the charts widget', async () => {
       const { mockRegisterCharts } = setupWidgetListeners()
-      mockFacadeManagerGetZones.mockReturnValue([
-        { model: 'buildings', name: 'Device room' },
-        { model: 'devices', name: 'Device 1' },
-        { model: 'devices', name: 'Device 2' },
+      mockApiInstance.registry.getDevices.mockReturnValue([
+        { buildingId: 1, id: 10, name: 'Device 1' },
+        { buildingId: 1, id: 11, name: 'Device 2' },
+      ])
+      mockApiInstance.registry.buildings.getById.mockReturnValue({
+        name: 'Casa',
+      })
+      mockHomeRegistry.getAll.mockReturnValue([
+        { building: { name: 'Verkstan' }, id: 'guid-1', name: 'Device 1' },
       ])
       await app.onInit()
 
@@ -2353,10 +2404,16 @@ describe('melCloudApp', () => {
       )
       const result = chartsCallback('device 1')
 
-      expect(result).toStrictEqual([{ model: 'devices', name: 'Device 1' }])
-      expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
-        type: undefined,
-      })
+      // Classic first, then Home; the query matches the suffixed names.
+      expect(result).toStrictEqual([
+        { id: 10, level: 1, model: 'devices', name: 'Device 1 (Casa)' },
+        {
+          id: 'guid-1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Device 1 (Verkstan)',
+        },
+      ])
     })
   })
 
