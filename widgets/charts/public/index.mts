@@ -183,6 +183,21 @@ const getFontWeight = (property: string): FontWeight => {
 const normalizeSeriesName = (name: string): string =>
   name.replace('Temperature', '')
 
+type SeriesLocalizer = (name: string, fallback: string) => string
+
+const SERIES_I18N_PREFIX = 'widgets.charts.series.'
+
+// Legend labels in the widget language, keyed by the wire series
+// vocabulary; names without a translation (e.g. the device name on the
+// signal chart) keep their cleaned form.
+const createSeriesLocalizer =
+  (homey: Homey): SeriesLocalizer =>
+  (name, fallback) => {
+    const key = `${SERIES_I18N_PREFIX}${name}`
+    const translated = homey.__(key)
+    return translated === '' || translated === key ? fallback : translated
+  }
+
 const toRadians = (degrees: number): number =>
   (degrees * Math.PI) / HALF_TURN_DEGREES
 
@@ -259,10 +274,19 @@ const bandColors: Record<string, string> = {
 const getBandColor = (label: string): string =>
   bandColors[label] ?? FALLBACK_BAND_COLOR
 
+// A band ready to draw: grid range plus the resolved color and the
+// localized legend label its ghost dataset shares.
+interface RenderBand {
+  readonly color: string
+  readonly from: number
+  readonly label: string
+  readonly to: number
+}
+
 // Bands ride outside the Chart.js config type: keyed per built config,
 // then re-keyed onto the live chart on every create/update.
-const configModeBands = new WeakMap<object, readonly ReportChartBand[]>()
-const chartModeBands = new WeakMap<object, readonly ReportChartBand[]>()
+const configModeBands = new WeakMap<object, readonly RenderBand[]>()
+const chartModeBands = new WeakMap<object, readonly RenderBand[]>()
 
 const getHiddenModes = (chart: Chart<WidgetChartType>): Set<string> =>
   new Set(
@@ -275,11 +299,11 @@ const getHiddenModes = (chart: Chart<WidgetChartType>): Set<string> =>
 const HALF_BUCKET = 0.5
 
 const drawModeBand = ({
-  band: { from, label, to },
+  band: { color, from, to },
   chart: { chartArea, ctx },
   scale,
 }: {
-  band: ReportChartBand
+  band: RenderBand
   chart: Chart<WidgetChartType>
   scale: Scale
 }): void => {
@@ -291,7 +315,7 @@ const drawModeBand = ({
     scale.getPixelForValue(to + HALF_BUCKET),
     chartArea.right,
   )
-  ctx.fillStyle = getBandColor(label)
+  ctx.fillStyle = color
   ctx.fillRect(
     left,
     chartArea.top,
@@ -429,6 +453,7 @@ const getLegendConfig = (
 
 const getLineDatasets = (
   series: ReportChartLineOptions['series'],
+  localize: SeriesLocalizer,
 ): WidgetChartConfig['data']['datasets'] =>
   series.map(({ data, name }, index) => {
     const seriesName = normalizeSeriesName(name)
@@ -437,8 +462,10 @@ const getLineDatasets = (
       backgroundColor: color,
       borderColor: color,
       data: [...data],
+      // Default visibility keys on the wire vocabulary, not the
+      // language-dependent display label.
       hidden: hidden.has(seriesName),
-      label: seriesName,
+      label: localize(name, seriesName),
       xAxisID: 'xAxis',
       yAxisID: 'yAxis',
     }
@@ -491,26 +518,43 @@ const getLineScalesConfig = (
 // legend and lets its toggle hide the band (the plugin skips hidden
 // mode labels).
 const getModeLegendDatasets = (
-  bands: readonly ReportChartBand[],
-): WidgetChartConfig['data']['datasets'] =>
-  [...new Set(bands.map(({ label }) => label))].map((label) => ({
-    backgroundColor: getBandColor(label),
-    borderColor: getBandColor(label),
+  bands: readonly RenderBand[],
+): WidgetChartConfig['data']['datasets'] => {
+  const byLabel = new Map(bands.map((band) => [band.label, band.color]))
+  return [...byLabel].map(([label, color]) => ({
+    backgroundColor: color,
+    borderColor: color,
     data: [],
     label,
     xAxisID: 'xAxis',
     yAxisID: 'yAxis',
   }))
+}
 
-const getChartLineConfig = ({
-  bands = [],
-  labels,
-  series,
-  unit,
-}: ReportChartLineOptions): WidgetChartConfig => {
+// Resolve wire bands once per config: color from the mode vocabulary,
+// label in the widget language (shared with the ghost legend entry).
+const toRenderBands = (
+  bands: readonly ReportChartBand[],
+  localize: SeriesLocalizer,
+): RenderBand[] =>
+  bands.map(({ from, label, to }) => ({
+    color: getBandColor(label),
+    from,
+    label: localize(label, label),
+    to,
+  }))
+
+const getChartLineConfig = (
+  { bands = [], labels, series, unit }: ReportChartLineOptions,
+  localize: SeriesLocalizer,
+): WidgetChartConfig => {
+  const renderBands = toRenderBands(bands, localize)
   const config: WidgetChartConfig = {
     data: {
-      datasets: [...getLineDatasets(series), ...getModeLegendDatasets(bands)],
+      datasets: [
+        ...getLineDatasets(series, localize),
+        ...getModeLegendDatasets(renderBands),
+      ],
       labels: [...labels],
     },
     options: {
@@ -543,18 +587,17 @@ const getChartLineConfig = ({
     plugins: [modeBandsPlugin],
     type: 'line',
   }
-  configModeBands.set(config, bands)
+  configModeBands.set(config, renderBands)
   return config
 }
 
 // The energy report renders as stacked bars: consumed series in one
 // stack, produced series (`Produced*`) in another, so an ATW's output
 // stands next to its input instead of summing with it.
-const getChartBarConfig = ({
-  labels,
-  series,
-  unit,
-}: ReportChartLineOptions): WidgetChartConfig => ({
+const getChartBarConfig = (
+  { labels, series, unit }: ReportChartLineOptions,
+  localize: SeriesLocalizer,
+): WidgetChartConfig => ({
   data: {
     datasets: series.map(({ data, name }, index) => {
       const color = colors[index % colors.length]
@@ -562,7 +605,8 @@ const getChartBarConfig = ({
         backgroundColor: color,
         borderColor: color,
         data: [...data],
-        label: name,
+        label: localize(name, name),
+        // The stack split keys on the wire vocabulary, not the label.
         stack: name.startsWith('Produced') ? 'produced' : 'consumed',
         xAxisID: 'xAxis',
         yAxisID: 'yAxis',
@@ -597,35 +641,37 @@ const getBarScalesConfig = (
   }
 }
 
-const getChartPieConfig = ({
-  labels,
-  series,
-}: ReportChartPieOptions): WidgetChartConfig => ({
+// Clean up MELCloud operation mode labels for display
+// (e.g., 'CoolingMode' -> 'Cooling') — the fallback for wire modes
+// missing from the series i18n table.
+const cleanPieLabel = (label: string): string => {
+  const cleaned = label
+    .replace('Actual', '')
+    .replace('FansStopped', 'Stop')
+    .replace('Mode', '')
+    .replace('Operation', '')
+    .replace('PowerOff', 'Off')
+    .replace('Power', 'Off')
+    .replace('Prevention', '')
+  // Plain suffix strip — a `/(.+)Ventilation$/` regex would backtrack.
+  // The length check preserves a label that is exactly 'Ventilation',
+  // matching the old regex which required at least one leading char.
+  return (
+      cleaned.length > 'Ventilation'.length && cleaned.endsWith('Ventilation')
+    ) ?
+      cleaned.slice(0, -'Ventilation'.length)
+    : cleaned
+}
+
+const getChartPieConfig = (
+  { labels, series }: ReportChartPieOptions,
+  localize: SeriesLocalizer,
+): WidgetChartConfig => ({
   data: {
     datasets: [
       { backgroundColor: [...colors], borderWidth: 0, data: [...series] },
     ],
-    // Clean up MELCloud operation mode labels for display
-    // (e.g., 'CoolingMode' -> 'Cooling')
-    labels: labels.map((label) => {
-      const cleaned = label
-        .replace('Actual', '')
-        .replace('FansStopped', 'Stop')
-        .replace('Mode', '')
-        .replace('Operation', '')
-        .replace('PowerOff', 'Off')
-        .replace('Power', 'Off')
-        .replace('Prevention', '')
-      // Plain suffix strip — a `/(.+)Ventilation$/` regex would backtrack.
-      // The length check preserves a label that is exactly 'Ventilation',
-      // matching the old regex which required at least one leading char.
-      return (
-          cleaned.length > 'Ventilation'.length &&
-            cleaned.endsWith('Ventilation')
-        ) ?
-          cleaned.slice(0, -'Ventilation'.length)
-        : cleaned
-    }),
+    labels: labels.map((label) => localize(label, cleanPieLabel(label))),
   },
   options: {
     maintainAspectRatio: false,
@@ -642,11 +688,15 @@ const getChartPieConfig = ({
 const getChartConfig = (
   data: ReportChartLineOptions | ReportChartPieOptions,
   chart: HomeySettings['chart'],
+  localize: SeriesLocalizer,
 ): WidgetChartConfig => {
   if (!('unit' in data)) {
-    return getChartPieConfig(data)
+    return getChartPieConfig(data, localize)
   }
-  return (chart === 'report' ? getChartBarConfig : getChartLineConfig)(data)
+  return (chart === 'report' ? getChartBarConfig : getChartLineConfig)(
+    data,
+    localize,
+  )
 }
 
 // ── Chart data fetching ──
@@ -891,6 +941,7 @@ class ChartWidget {
     const config = getChartConfig(
       await fetchChartData(this.#homey, selection),
       selection.chart,
+      createSeriesLocalizer(this.#homey),
     )
     return isSameSelection(selection, this.#readSelection()) ? config : null
   }
