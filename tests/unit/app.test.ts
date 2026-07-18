@@ -89,6 +89,7 @@ const mockApiInstance = {
 }
 
 const mockHomeRegistry = {
+  getAll: vi.fn<() => unknown[]>().mockReturnValue([]),
   getBuildingsByType: vi.fn<(type: Home.DeviceType) => unknown[]>(),
   getById: vi.fn<(id: string) => unknown>(),
   getByType: vi.fn<(type: Home.DeviceType) => unknown[]>().mockReturnValue([]),
@@ -354,6 +355,33 @@ const initWithDeviceFacade = async (
     }),
   )
   mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
+  await app.onInit()
+}
+
+const initWithHomeDeviceFacade = async ({
+  app,
+  method,
+  mockData,
+  type = Home.DeviceType.Ata,
+}: {
+  app: InstanceType<typeof MelCloudApp>
+  method: string
+  mockData: unknown
+  type?: Home.DeviceType
+}): Promise<void> => {
+  mockHomeFacadeManagerGet.mockReturnValue(
+    mock({
+      [method]: vi
+        .fn<() => Promise<Result<unknown>>>()
+        .mockResolvedValue(ok(mockData)),
+    }),
+  )
+  mockHomeRegistry.getById.mockReturnValue({
+    id: 'guid-1',
+    type,
+    isAta: (): boolean => type === Home.DeviceType.Ata,
+    isAtw: (): boolean => type === Home.DeviceType.Atw,
+  })
   await app.onInit()
 }
 
@@ -1554,6 +1582,169 @@ describe('melCloudApp', () => {
       })
 
       expect(temperatures).toBe(mockData)
+    })
+  })
+
+  describe('energy report retrieval', () => {
+    it('should delegate the Classic report to the device facade', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithDeviceFacade(app, 'getEnergyReport', mockData)
+
+      const report = await app.getClassicEnergyReport({
+        days: 7,
+        deviceId: '1',
+      })
+
+      expect(report).toBe(mockData)
+    })
+
+    it('should delegate the Home report to the device facade', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getEnergyReport',
+        mockData,
+      })
+
+      const report = await app.getHomeEnergyReport({
+        days: 7,
+        deviceId: 'guid-1',
+      })
+
+      expect(report).toBe(mockData)
+    })
+  })
+
+  describe('home chart retrieval', () => {
+    it('should delegate temperatures to any Home device facade', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getTemperatures',
+        mockData,
+      })
+
+      const temperatures = await app.getHomeTemperatures({
+        days: 1,
+        deviceId: 'guid-1',
+      })
+
+      expect(temperatures).toBe(mockData)
+    })
+
+    it('should delegate the signal chart to any Home device facade', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getSignalStrength',
+        mockData,
+      })
+
+      const signal = await app.getHomeSignal({ deviceId: 'guid-1', hour: 5 })
+
+      expect(signal).toBe(mockData)
+    })
+
+    it('should route an ATW device through the shared chart surface', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getTemperatures',
+        mockData,
+        type: Home.DeviceType.Atw,
+      })
+
+      const temperatures = await app.getHomeTemperatures({
+        days: 1,
+        deviceId: 'guid-1',
+      })
+
+      expect(temperatures).toBe(mockData)
+    })
+
+    it('should reject an unknown Home device', async () => {
+      mockHomeRegistry.getById.mockReturnValue(undefined)
+      await app.onInit()
+
+      await expect(app.getHomeSignal({ deviceId: 'missing' })).rejects.toThrow(
+        'errors.deviceNotFound',
+      )
+    })
+
+    it('should delegate hourly temperatures to the ATW facade', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getHourlyTemperatures',
+        mockData,
+        type: Home.DeviceType.Atw,
+      })
+
+      const temperatures = await app.getHomeHourlyTemperatures({
+        deviceId: 'guid-1',
+        hour: 10,
+      })
+
+      expect(temperatures).toBe(mockData)
+    })
+
+    it('should delegate operation modes to the ATW facade', async () => {
+      const mockData = mock<ReportChartPieOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getOperationModes',
+        mockData,
+        type: Home.DeviceType.Atw,
+      })
+
+      const operationModes = await app.getHomeOperationModes({
+        days: 7,
+        deviceId: 'guid-1',
+      })
+
+      expect(operationModes).toBe(mockData)
+    })
+
+    it('should reject an ATW-only chart for an ATA device', async () => {
+      const mockData = mock<ReportChartPieOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getOperationModes',
+        mockData,
+      })
+
+      await expect(
+        app.getHomeOperationModes({ days: 7, deviceId: 'guid-1' }),
+      ).rejects.toThrow('errors.deviceNotFound')
+    })
+  })
+
+  describe('home device zones', () => {
+    it('should map and sort the registry devices for the charts picker', async () => {
+      mockHomeRegistry.getAll.mockReturnValue([
+        { id: 'b', name: 'Woonkamer' },
+        { id: 'a', name: 'Garage' },
+      ])
+      await app.onInit()
+
+      expect(app.getHomeDeviceZones()).toStrictEqual([
+        { id: 'a', level: 1, model: 'homeDevices', name: 'Garage' },
+        { id: 'b', level: 1, model: 'homeDevices', name: 'Woonkamer' },
+      ])
+    })
+
+    it('should filter by device type when one is given', async () => {
+      mockHomeRegistry.getByType.mockReturnValue([
+        { id: 'atw-1', name: 'Warmtepomp' },
+      ])
+      await app.onInit()
+
+      expect(app.getHomeDeviceZones(Home.DeviceType.Atw)).toStrictEqual([
+        { id: 'atw-1', level: 1, model: 'homeDevices', name: 'Warmtepomp' },
+      ])
+      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
+        Home.DeviceType.Atw,
+      )
     })
   })
 

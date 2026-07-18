@@ -87,6 +87,7 @@
     "charts": {
       "hourly_temperatures": "지난 1시간 동안의 온도",
       "operation_modes": "작동 상태",
+      "report": "에너지 리포트",
       "signal": "지난 1시간 동안의 신호 강도",
       "temperatures": "온도"
     },

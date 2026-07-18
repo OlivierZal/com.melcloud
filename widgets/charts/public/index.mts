@@ -1,14 +1,22 @@
 import type {
+  ReportChartBand,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-import { ClassicDeviceType } from '@olivierzal/melcloud-api/constants'
+import type * as Home from '@olivierzal/melcloud-api/home'
+import {
+  ClassicDeviceType,
+  HomeDeviceType,
+} from '@olivierzal/melcloud-api/constants'
 import {
   type ChartConfiguration,
   type ChartOptions,
   type Plugin as ChartPlugin,
+  type Scale,
   ArcElement,
+  BarController,
+  BarElement,
   CategoryScale,
   Chart,
   Legend,
@@ -22,6 +30,7 @@ import {
 } from 'chart.js'
 import { Temporal } from 'temporal-polyfill'
 
+import type { HomeDeviceZone } from '../../../types/zone.mts'
 import {
   createOption,
   getDiv,
@@ -60,6 +69,8 @@ const PERCENT_FACTOR = 100
 const PIE_LABEL_MIN_ANGLE_DEGREES = 10
 const PIE_LABEL_RADIUS_RATIO = 0.8
 
+type ChartDeviceZone = Classic.DeviceZone | HomeDeviceZone
+
 interface ChartSelection {
   readonly chart: HomeySettings['chart']
   readonly days: number
@@ -76,7 +87,7 @@ type WidgetChartConfig = ChartConfiguration<
 
 type WidgetChartOptions = ChartOptions<WidgetChartType>
 
-type WidgetChartType = 'line' | 'pie'
+type WidgetChartType = 'bar' | 'line' | 'pie'
 
 // Picker line-up, in the order the widget settings dropdown lists them.
 const CHARTS: readonly HomeySettings['chart'][] = [
@@ -84,6 +95,7 @@ const CHARTS: readonly HomeySettings['chart'][] = [
   'temperatures',
   'hourly_temperatures',
   'signal',
+  'report',
 ]
 
 // Curated day counts offered by the picker, string-typed because they feed
@@ -108,6 +120,7 @@ const DAY_CHOICES: readonly `${number}`[] = [
 
 const chartsWithDays = new Set<HomeySettings['chart']>([
   'operation_modes',
+  'report',
   'temperatures',
 ])
 const hourlyCharts = new Set<HomeySettings['chart']>([
@@ -224,6 +237,84 @@ const isSameSelection = (
   first.chart === second.chart &&
   first.days === second.days &&
   first.zoneValue === second.zoneValue
+
+// ── Operation-mode bands plugin ──
+// The Home ATW temperature charts carry `bands`: operation-mode spans as
+// inclusive index ranges on the label grid. Rectangles paint behind the
+// series; a ghost legend entry per mode names the color and toggles it.
+
+const FALLBACK_BAND_COLOR = 'rgba(127, 127, 127, 0.2)'
+
+const bandColors: Record<string, string> = {
+  Cooling: 'rgba(23, 190, 207, 0.25)',
+  FreezeStat: 'rgba(199, 221, 238, 0.4)',
+  Heating: 'rgba(214, 39, 40, 0.2)',
+  HotWater: 'rgba(255, 127, 14, 0.25)',
+  LegionellaPrevention: 'rgba(148, 103, 189, 0.25)',
+}
+
+const getBandColor = (label: string): string =>
+  bandColors[label] ?? FALLBACK_BAND_COLOR
+
+// Bands ride outside the Chart.js config type: keyed per built config,
+// then re-keyed onto the live chart on every create/update.
+const configModeBands = new WeakMap<object, readonly ReportChartBand[]>()
+const chartModeBands = new WeakMap<object, readonly ReportChartBand[]>()
+
+const getHiddenModes = (chart: Chart<WidgetChartType>): Set<string> =>
+  new Set(
+    chart.data.datasets.flatMap(({ label }, index) =>
+      label !== undefined && !chart.isDatasetVisible(index) ? [label] : [],
+    ),
+  )
+
+// Half-a-category margins make a band cover its buckets fully.
+const HALF_BUCKET = 0.5
+
+const drawModeBand = ({
+  band: { from, label, to },
+  chart: { chartArea, ctx },
+  scale,
+}: {
+  band: ReportChartBand
+  chart: Chart<WidgetChartType>
+  scale: Scale
+}): void => {
+  const left = Math.max(
+    scale.getPixelForValue(from - HALF_BUCKET),
+    chartArea.left,
+  )
+  const right = Math.min(
+    scale.getPixelForValue(to + HALF_BUCKET),
+    chartArea.right,
+  )
+  ctx.fillStyle = getBandColor(label)
+  ctx.fillRect(
+    left,
+    chartArea.top,
+    right - left,
+    chartArea.bottom - chartArea.top,
+  )
+}
+
+const modeBandsPlugin: ChartPlugin<WidgetChartType> = {
+  id: 'modeBands',
+  beforeDatasetsDraw: (chart): void => {
+    const scale = chart.scales.xAxis
+    const bands = chartModeBands.get(chart) ?? []
+    if (scale === undefined || bands.length === 0) {
+      return
+    }
+    const hiddenModes = getHiddenModes(chart)
+    chart.ctx.save()
+    for (const band of bands) {
+      if (!hiddenModes.has(band.label)) {
+        drawModeBand({ band, chart, scale })
+      }
+    }
+    chart.ctx.restore()
+  },
+}
 
 // ── Pie data labels plugin ──
 // Chart.js has no built-in data labels; this plugin draws each slice's
@@ -393,26 +484,92 @@ const getLineScalesConfig = (
   }
 }
 
+// One empty dataset per distinct band mode: names the band color in the
+// legend and lets its toggle hide the band (the plugin skips hidden
+// mode labels).
+const getModeLegendDatasets = (
+  bands: readonly ReportChartBand[],
+): WidgetChartConfig['data']['datasets'] =>
+  [...new Set(bands.map(({ label }) => label))].map((label) => ({
+    backgroundColor: getBandColor(label),
+    borderColor: getBandColor(label),
+    data: [],
+    label,
+    xAxisID: 'xAxis',
+    yAxisID: 'yAxis',
+  }))
+
 const getChartLineConfig = ({
+  bands = [],
+  labels,
+  series,
+  unit,
+}: ReportChartLineOptions): WidgetChartConfig => {
+  const config: WidgetChartConfig = {
+    data: {
+      datasets: [...getLineDatasets(series), ...getModeLegendDatasets(bands)],
+      labels: [...labels],
+    },
+    options: {
+      elements: {
+        // Monotone interpolation smooths the line without overshooting data
+        // points (and ignores `tension`).
+        line: { borderWidth: LINE_WIDTH, cubicInterpolationMode: 'monotone' },
+        point: { radius: 0 },
+      },
+      interaction: { intersect: false, mode: 'index' },
+      maintainAspectRatio: false,
+      plugins: {
+        // Single-series charts do not need a legend.
+        legend: {
+          ...getLegendConfig('bottom'),
+          display: series.length + bands.length > 1,
+        },
+        title: {
+          align: 'start',
+          color: getStyle('--homey-text-color-light'),
+          display: true,
+          font: getFontConfig(),
+          text: unit,
+        },
+      },
+      scales: getLineScalesConfig(unit),
+      // Break the line at missing data points instead of bridging them.
+      spanGaps: false,
+    },
+    plugins: [modeBandsPlugin],
+    type: 'line',
+  }
+  configModeBands.set(config, bands)
+  return config
+}
+
+// The energy report renders as stacked bars: consumed series in one
+// stack, produced series (`Produced*`) in another, so an ATW's output
+// stands next to its input instead of summing with it.
+const getChartBarConfig = ({
   labels,
   series,
   unit,
 }: ReportChartLineOptions): WidgetChartConfig => ({
   data: {
-    datasets: getLineDatasets(series),
+    datasets: series.map(({ data, name }, index) => {
+      const color = colors[index % colors.length]
+      return {
+        backgroundColor: color,
+        borderColor: color,
+        data: [...data],
+        label: name,
+        stack: name.startsWith('Produced') ? 'produced' : 'consumed',
+        xAxisID: 'xAxis',
+        yAxisID: 'yAxis',
+      }
+    }),
     labels: [...labels],
   },
   options: {
-    elements: {
-      // Monotone interpolation smooths the line without overshooting data
-      // points (and ignores `tension`).
-      line: { borderWidth: LINE_WIDTH, cubicInterpolationMode: 'monotone' },
-      point: { radius: 0 },
-    },
-    interaction: { intersect: false, mode: 'index' },
     maintainAspectRatio: false,
     plugins: {
-      // Single-series charts do not need a legend.
       legend: { ...getLegendConfig('bottom'), display: series.length > 1 },
       title: {
         align: 'start',
@@ -422,12 +579,20 @@ const getChartLineConfig = ({
         text: unit,
       },
     },
-    scales: getLineScalesConfig(unit),
-    // Break the line at missing data points instead of bridging them.
-    spanGaps: false,
+    scales: getBarScalesConfig(unit),
   },
-  type: 'line',
+  type: 'bar',
 })
+
+const getBarScalesConfig = (
+  unit: string,
+): NonNullable<WidgetChartOptions['scales']> => {
+  const scales = getLineScalesConfig(unit)
+  return {
+    xAxis: { ...scales.xAxis, stacked: true },
+    yAxis: { ...scales.yAxis, stacked: true },
+  }
+}
 
 const getChartPieConfig = ({
   labels,
@@ -473,14 +638,17 @@ const getChartPieConfig = ({
 
 const getChartConfig = (
   data: ReportChartLineOptions | ReportChartPieOptions,
+  chart: HomeySettings['chart'],
 ): WidgetChartConfig => {
-  if ('unit' in data) {
-    return getChartLineConfig(data)
+  if (!('unit' in data)) {
+    return getChartPieConfig(data)
   }
-  return getChartPieConfig(data)
+  return (chart === 'report' ? getChartBarConfig : getChartLineConfig)(data)
 }
 
 // ── Chart data fetching ──
+
+const HOME_DEVICES_PATH_PREFIX = 'homeDevices/'
 
 const fetchChartData = async (
   homey: Homey,
@@ -490,9 +658,14 @@ const fetchChartData = async (
     chartsWithDays.has(chart) ?
       `?${new URLSearchParams({ days: String(days) } satisfies DaysQuery)}`
     : ''
+  const isHome = zoneValue.startsWith(HOME_DEVICES_PATH_PREFIX)
+  const path =
+    isHome ?
+      `home/devices/${zoneValue.slice(HOME_DEVICES_PATH_PREFIX.length)}`
+    : `classic/${zoneValue}`
   return homeyApiGet<ReportChartLineOptions | ReportChartPieOptions>(
     homey,
-    `/classic/${zoneValue}/logs/${chart.replaceAll('_', '-')}${daysQuery}`,
+    `/${path}/logs/${chart.replaceAll('_', '-')}${daysQuery}`,
   )
 }
 
@@ -606,9 +779,7 @@ class ChartWidget {
     this.#isReady = true
   }
 
-  #addEventListeners(
-    devicesForChart: () => readonly Classic.DeviceZone[],
-  ): void {
+  #addEventListeners(devicesForChart: () => readonly ChartDeviceZone[]): void {
     this.#chartSelect.addEventListener('change', () => {
       fitSelectToSelection(this.#chartSelect)
       this.#repopulateZoneOptions(devicesForChart())
@@ -664,6 +835,7 @@ class ChartWidget {
     const canvas = document.createElement('canvas')
     container.replaceChildren(canvas)
     const chart = new Chart(canvas, config)
+    chartModeBands.set(chart, configModeBands.get(config) ?? [])
     this.#chart = chart
     if (config.type === 'pie') {
       applyPieHiddenByLabel(chart, config, hiddenByLabel)
@@ -711,8 +883,20 @@ class ChartWidget {
   // renders the new selection.
   async #fetchFreshConfig(): Promise<WidgetChartConfig | null> {
     const selection = this.#readSelection()
-    const config = getChartConfig(await fetchChartData(this.#homey, selection))
+    const config = getChartConfig(
+      await fetchChartData(this.#homey, selection),
+      selection.chart,
+    )
     return isSameSelection(selection, this.#readSelection()) ? config : null
+  }
+
+  async #fetchHomeDevices(type?: Home.DeviceType): Promise<HomeDeviceZone[]> {
+    const typeQuery =
+      type === undefined ? '' : `?${new URLSearchParams({ type })}`
+    return homeyApiGet<HomeDeviceZone[]>(
+      this.#homey,
+      `/home/devices${typeQuery}`,
+    )
   }
 
   // The picker only ever holds ids from `CHARTS`; the fallback is
@@ -723,26 +907,49 @@ class ChartWidget {
   }
 
   async #initControls(): Promise<void> {
-    const [devices, atwDevices] = await Promise.all([
-      this.#fetchDevices(),
-      this.#fetchDevices(ClassicDeviceType.Atw),
-    ])
-    if (devices.length > 0) {
-      this.#populateChartOptions(atwDevices.length > 0)
+    const [classicAll, classicAta, classicAtw, homeAll, homeAtw] =
+      await Promise.all([
+        this.#fetchDevices(),
+        this.#fetchDevices(ClassicDeviceType.Ata),
+        this.#fetchDevices(ClassicDeviceType.Atw),
+        this.#fetchHomeDevices(),
+        this.#fetchHomeDevices(HomeDeviceType.Atw),
+      ])
+    // Per-chart device line-up: temperature and signal history exist for
+    // every device; the hourly temperatures and the operation modes are
+    // ATW-only on the Home side (comfort-graph) and, for the hourly one,
+    // on the Classic side too; the energy report skips Classic ERV
+    // (no energy data).
+    const devicesByChart: Record<
+      HomeySettings['chart'],
+      readonly ChartDeviceZone[]
+    > = {
+      hourly_temperatures: [...classicAtw, ...homeAtw],
+      operation_modes: [...classicAll, ...homeAtw],
+      report: [...classicAta, ...classicAtw, ...homeAll],
+      signal: [...classicAll, ...homeAll],
+      temperatures: [...classicAll, ...homeAll],
+    }
+    if (Object.values(devicesByChart).some((list) => list.length > 0)) {
+      this.#populateChartOptions(devicesByChart)
       this.#populateDayOptions()
-      const devicesForChart = (): Classic.DeviceZone[] =>
-        this.#getChart() === 'hourly_temperatures' ? atwDevices : devices
+      const devicesForChart = (): readonly ChartDeviceZone[] =>
+        devicesByChart[this.#getChart()]
       this.#repopulateZoneOptions(devicesForChart())
       this.#addEventListeners(devicesForChart)
       await this.#draw()
     }
   }
 
-  // ATW-only charts are omitted when no ATW device exists; the picker then
-  // falls back to its first option if the configured default was omitted.
-  #populateChartOptions(hasAtwDevices: boolean): void {
+  // A chart is only offered when at least one device supports it (e.g. no
+  // hourly temperatures without an ATW device, no operation modes on a
+  // Home-only ATA account); the picker then falls back to its first option
+  // if the configured default was omitted.
+  #populateChartOptions(
+    devicesByChart: Record<HomeySettings['chart'], readonly ChartDeviceZone[]>,
+  ): void {
     for (const chart of CHARTS) {
-      if (chart !== 'hourly_temperatures' || hasAtwDevices) {
+      if (devicesByChart[chart].length > 0) {
         createOption(this.#chartSelect, {
           id: chart,
           label: this.#homey.__(`widgets.charts.${chart}`),
@@ -807,6 +1014,7 @@ class ChartWidget {
       this.#createChart(config, hiddenByLabel)
       return
     }
+    chartModeBands.set(this.#chart, configModeBands.get(config) ?? [])
     this.#chart.data = config.data
     this.#chart.options = config.options
     this.#chart.update()
@@ -816,7 +1024,7 @@ class ChartWidget {
   // temperatures), so the options are rebuilt on every chart change: the
   // previous selection wins, then the configured default, then the first
   // option as the final fallback.
-  #repopulateZoneOptions(devices: readonly Classic.DeviceZone[]): void {
+  #repopulateZoneOptions(devices: readonly ChartDeviceZone[]): void {
     const previous = this.#zoneSelect.value
     this.#zoneSelect.replaceChildren()
     for (const { id, model, name } of devices) {
@@ -887,6 +1095,8 @@ export const start = async (homey: Homey<HomeySettings>): Promise<void> => {
   // Register only what the two chart types use so esbuild tree-shakes the rest.
   Chart.register(
     ArcElement,
+    BarController,
+    BarElement,
     CategoryScale,
     Legend,
     LinearScale,

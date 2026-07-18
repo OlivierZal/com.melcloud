@@ -87,6 +87,7 @@
     "charts": {
       "hourly_temperatures": "Temperaturer siden siste time",
       "operation_modes": "Driftstilstander",
+      "report": "Energirapport",
       "signal": "Signalstyrke siden siste time",
       "temperatures": "Temperaturer"
     },

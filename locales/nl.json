@@ -87,6 +87,7 @@
     "charts": {
       "hourly_temperatures": "Temperaturen sinds het afgelopen uur",
       "operation_modes": "Operationele staten",
+      "report": "Energierapport",
       "signal": "Signaalsterkte sinds het afgelopen uur",
       "temperatures": "Temperaturen"
     },

@@ -275,7 +275,7 @@
       "värmeåtervinning"
     ]
   },
-  "version": "45.6.1",
+  "version": "45.7.0",
   "flow": {
     "triggers": [
       {
@@ -13534,6 +13534,10 @@
           "method": "GET",
           "path": "/classic/devices"
         },
+        "getClassicEnergyReport": {
+          "method": "GET",
+          "path": "/classic/devices/:deviceId/logs/report"
+        },
         "getClassicHourlyTemperatures": {
           "method": "GET",
           "path": "/classic/devices/:deviceId/logs/hourly-temperatures"
@@ -13549,6 +13553,30 @@
         "getClassicTemperatures": {
           "method": "GET",
           "path": "/classic/devices/:deviceId/logs/temperatures"
+        },
+        "getHomeDevices": {
+          "method": "GET",
+          "path": "/home/devices"
+        },
+        "getHomeEnergyReport": {
+          "method": "GET",
+          "path": "/home/devices/:deviceId/logs/report"
+        },
+        "getHomeHourlyTemperatures": {
+          "method": "GET",
+          "path": "/home/devices/:deviceId/logs/hourly-temperatures"
+        },
+        "getHomeOperationModes": {
+          "method": "GET",
+          "path": "/home/devices/:deviceId/logs/operation-modes"
+        },
+        "getHomeSignal": {
+          "method": "GET",
+          "path": "/home/devices/:deviceId/logs/signal"
+        },
+        "getHomeTemperatures": {
+          "method": "GET",
+          "path": "/home/devices/:deviceId/logs/temperatures"
         },
         "getLanguage": {
           "method": "GET",
@@ -13630,6 +13658,18 @@
                 "no": "Signalstyrke siden siste time",
                 "sv": "Signalstyrka sedan den senaste timmen"
               }
+            },
+            {
+              "id": "report",
+              "title": {
+                "da": "Energirapport",
+                "en": "Energy report",
+                "es": "Informe de energía",
+                "fr": "Rapport d'énergie",
+                "nl": "Energierapport",
+                "no": "Energirapport",
+                "sv": "Energirapport"
+              }
             }
           ]
         },
@@ -13659,15 +13699,24 @@
           "value": 1
         },
         {
+          "hint": {
+            "da": "Nogle enheder er ikke tilgængelige for alle diagrammer.",
+            "en": "Some devices are not available for all charts.",
+            "es": "Algunos dispositivos no están disponibles para todos los gráficos.",
+            "fr": "Certains appareils ne sont pas disponibles pour tous les graphiques.",
+            "nl": "Sommige apparaten zijn niet beschikbaar voor alle grafieken.",
+            "no": "Noen enheter er ikke tilgjengelige for alle diagrammer.",
+            "sv": "Vissa enheter är inte tillgängliga för alla diagram."
+          },
           "id": "default_zone",
           "title": {
-            "da": "Standardzone",
-            "en": "Default zone",
-            "es": "Zona predeterminada",
-            "fr": "Zone par défaut",
-            "nl": "Standaardzone",
-            "no": "Standardsone",
-            "sv": "Standardzon"
+            "da": "Standardenhed",
+            "en": "Default device",
+            "es": "Dispositivo predeterminado",
+            "fr": "Appareil par défaut",
+            "nl": "Standaardapparaat",
+            "no": "Standardenhet",
+            "sv": "Standardenhet"
           },
           "type": "autocomplete"
         },

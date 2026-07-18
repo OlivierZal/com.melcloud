@@ -87,6 +87,7 @@
     "charts": {
       "hourly_temperatures": "Températures depuis la dernière heure",
       "operation_modes": "États opérationnels",
+      "report": "Rapport d'énergie",
       "signal": "Intensité du signal depuis la dernière heure",
       "temperatures": "Températures"
     },

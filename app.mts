@@ -439,6 +439,21 @@ export default class MELCloudApp extends App {
     )
   }
 
+  public async getClassicEnergyReport({
+    days,
+    deviceId,
+  }: {
+    days: number
+    deviceId: string
+  }): Promise<ReportChartLineOptions> {
+    const from = daysAgo(days, getTimeZone(this.homey))
+    return unwrapResult(
+      await this.getClassicFacade('devices', deviceId).getEnergyReport({
+        from,
+      }),
+    )
+  }
+
   public getClassicFacade<T extends Classic.DeviceType>(
     zoneType: 'devices',
     id: number | string,
@@ -668,6 +683,36 @@ export default class MELCloudApp extends App {
     return this.#homeRegistry.getByType(type)
   }
 
+  // The charts widget vocabulary: Home devices as flat selectable
+  // entries (no building nodes), alpha-sorted, both types by default.
+  public getHomeDeviceZones(type?: Home.DeviceType): HomeDeviceZone[] {
+    const devices =
+      type === undefined ?
+        this.#homeRegistry.getAll()
+      : this.#homeRegistry.getByType(type)
+    return devices
+      .map((device): HomeDeviceZone => ({
+        id: device.id,
+        level: 1,
+        model: 'homeDevices',
+        name: device.name,
+      }))
+      .toSorted((zone, other) => zone.name.localeCompare(other.name))
+  }
+
+  public async getHomeEnergyReport({
+    days,
+    deviceId,
+  }: {
+    days: number
+    deviceId: string
+  }): Promise<ReportChartLineOptions> {
+    const from = daysAgo(days, getTimeZone(this.homey))
+    return unwrapResult(
+      await this.#getHomeDeviceFacade(deviceId).getEnergyReport({ from }),
+    )
+  }
+
   public getHomeFacade<T extends Home.DeviceType>(
     deviceId: string,
     type: T,
@@ -686,6 +731,61 @@ export default class MELCloudApp extends App {
       }
     }
     throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+  }
+
+  public async getHomeHourlyTemperatures({
+    deviceId,
+    hour,
+  }: {
+    deviceId: string
+    hour?: Hour | undefined
+  }): Promise<ReportChartLineOptions> {
+    return unwrapResult(
+      await this.getHomeFacade(
+        deviceId,
+        Home.DeviceType.Atw,
+      ).getHourlyTemperatures(hour),
+    )
+  }
+
+  public async getHomeOperationModes({
+    days,
+    deviceId,
+  }: {
+    days: number
+    deviceId: string
+  }): Promise<ReportChartPieOptions> {
+    const from = daysAgo(days, getTimeZone(this.homey))
+    return unwrapResult(
+      await this.getHomeFacade(deviceId, Home.DeviceType.Atw).getOperationModes(
+        { from },
+      ),
+    )
+  }
+
+  public async getHomeSignal({
+    deviceId,
+    hour,
+  }: {
+    deviceId: string
+    hour?: Hour | undefined
+  }): Promise<ReportChartLineOptions> {
+    return unwrapResult(
+      await this.#getHomeDeviceFacade(deviceId).getSignalStrength(hour),
+    )
+  }
+
+  public async getHomeTemperatures({
+    days,
+    deviceId,
+  }: {
+    days: number
+    deviceId: string
+  }): Promise<ReportChartLineOptions> {
+    const from = daysAgo(days, getTimeZone(this.homey))
+    return unwrapResult(
+      await this.#getHomeDeviceFacade(deviceId).getTemperatures({ from }),
+    )
   }
 
   public async updateClassicAtaState({
@@ -988,6 +1088,21 @@ export default class MELCloudApp extends App {
     }))
   }
 
+  // Type-agnostic device facade lookup for the chart surfaces shared by
+  // both Home device types (temperatures, signal, energy report).
+  #getHomeDeviceFacade(
+    deviceId: string,
+  ): Home.DeviceAtaFacade | Home.DeviceAtwFacade {
+    const model = this.#homeRegistry.getById(deviceId)
+    if (model?.isAta() === true) {
+      return this.#homeFacadeManager.get(model)
+    }
+    if (model?.isAtw() === true) {
+      return this.#homeFacadeManager.get(model)
+    }
+    throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+  }
+
   async #getHomeErrorEntries(timeZone: string): Promise<RawErrorEntry[]> {
     const logs = await Promise.all(
       HOME_ERROR_DEVICE_TYPES.flatMap((type) =>
@@ -1037,6 +1152,7 @@ export default class MELCloudApp extends App {
   // authenticated and, for a Classic-only user, 401 — and keep 401ing
   // every cycle, since `runSyncCycle` reschedules from its `finally`.
   async #initHomeApi(): Promise<void> {
+    const language = this.homey.i18n.getLanguage()
     this.#homeApi = await Home.API.create({
       abortSignal: this.#abortController.signal,
       events: {
@@ -1045,9 +1161,11 @@ export default class MELCloudApp extends App {
           this.#notifySessionLost('home')
         },
       },
+      locale: language,
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager('home'),
       shouldResumeSessionInBackground: true,
+      timezone: getTimeZone(this.homey),
     })
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
   }
@@ -1147,9 +1265,10 @@ export default class MELCloudApp extends App {
       )
     this.homey.dashboards
       .getWidget('charts')
-      .registerSettingAutocompleteListener('default_zone', (query) =>
-        this.#searchZones(query, { kind: 'devices' }),
-      )
+      .registerSettingAutocompleteListener('default_zone', (query) => [
+        ...this.#searchZones(query, { kind: 'devices' }),
+        ...filterZonesByName(this.getHomeDeviceZones(), query),
+      ])
   }
 
   // Everything the ATA group widget can target: the Classic zones and
