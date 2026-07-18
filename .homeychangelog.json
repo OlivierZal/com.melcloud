@@ -601,5 +601,20 @@
     "pl": "Historia błędów w ustawieniach aplikacji łączy teraz urządzenia Classic i Home, posortowana chronologicznie.",
     "ru": "История ошибок в настройках приложения теперь объединяет устройства Classic и Home в хронологическом порядке.",
     "sv": "Felhistoriken i appinställningarna samlar nu Classic- och Home-enheter, kronologiskt sorterade."
+  },
+  "45.6.1": {
+    "ar": "أصبح التطبيق يبدأ فوراً حتى عندما يستجيب MELCloud ببطء — إصلاح مهلات بدء التشغيل على أجهزة Homey الأقدم.",
+    "da": "Appen starter nu med det samme, selv når MELCloud svarer langsomt — det retter opstarts-timeouts på ældre Homeys.",
+    "de": "Die App startet jetzt sofort, auch wenn MELCloud langsam antwortet — behebt Start-Timeouts auf älteren Homeys.",
+    "en": "The app now starts instantly even when MELCloud responds slowly — fixing startup timeouts on older Homeys.",
+    "es": "La app ahora se inicia al instante aunque MELCloud responda lento — corrige los tiempos de espera de arranque en Homeys antiguos.",
+    "fr": "L'app démarre désormais instantanément même quand MELCloud répond lentement — corrige les délais d'attente au démarrage sur les anciens Homey.",
+    "it": "L'app ora si avvia istantaneamente anche quando MELCloud risponde lentamente — risolve i timeout di avvio sui Homey meno recenti.",
+    "ko": "MELCloud 응답이 느려도 앱이 즉시 시작됩니다 — 구형 Homey의 시작 시간 초과 문제를 해결합니다.",
+    "nl": "De app start nu direct, ook wanneer MELCloud traag reageert — dit verhelpt opstart-time-outs op oudere Homeys.",
+    "no": "Appen starter nå umiddelbart selv når MELCloud svarer tregt — retter oppstarts-tidsavbrudd på eldre Homeyer.",
+    "pl": "Aplikacja uruchamia się teraz natychmiast, nawet gdy MELCloud odpowiada wolno — naprawia przekroczenia czasu uruchamiania na starszych Homey.",
+    "ru": "Приложение теперь запускается мгновенно, даже если MELCloud отвечает медленно — исправляет тайм-ауты запуска на старых Homey.",
+    "sv": "Appen startar nu direkt även när MELCloud svarar långsamt — åtgärdar starttimeouts på äldre Homey-enheter."
   }
 }
