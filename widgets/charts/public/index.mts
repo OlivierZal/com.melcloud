@@ -476,6 +476,11 @@ const getLineScalesConfig = (
 ): NonNullable<WidgetChartOptions['scales']> => {
   const colorLight = getStyle('--homey-text-color-light')
   const ticksStyle = { color: colorLight, font: getFontConfig() }
+  // Rounds off float artifacts without collapsing sub-unit axes
+  // (a 0-0.5 kWh hourly report showed nothing but zeros).
+  const tickFormatter = new Intl.NumberFormat(document.documentElement.lang, {
+    maximumFractionDigits: 2,
+  })
   return {
     // Chart.js infers the axis from the leading `x`/`y` of the scale id.
     xAxis: {
@@ -507,12 +512,7 @@ const getLineScalesConfig = (
         ...ticksStyle,
         // Keeps the historical ~5 y-axis intervals.
         maxTicksLimit: 6,
-        // Rounds off float artifacts without collapsing sub-unit axes
-        // (a 0-0.5 kWh hourly report showed nothing but zeros).
-        callback: (value) =>
-          new Intl.NumberFormat(document.documentElement.lang, {
-            maximumFractionDigits: 2,
-          }).format(Number(value)),
+        callback: (value) => tickFormatter.format(Number(value)),
       },
       ...(unit === 'dBm' && { max: 0, min: -100 }),
     },
