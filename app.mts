@@ -291,6 +291,16 @@ const isWithinErrorLogWindow = (
   )
 }
 
+// MELCloud marks unrecorded error timestamps with a year-1 sentinel:
+// anything before this floor is noise, shown as an em dash (the tabular
+// missing-value convention — language-neutral, unlike an N/A) while the
+// row itself is kept: the error is real even without its moment. The
+// descending sort naturally sinks these entries to the end.
+const MIN_PLAUSIBLE_ERROR_INSTANT = Temporal.Instant.from(
+  '2000-01-01T00:00:00Z',
+)
+const UNKNOWN_DATE_PLACEHOLDER = '—'
+
 const formatErrorEntries = (
   entries: readonly RawErrorEntry[],
   { locale, timeZone }: { locale: string; timeZone: string },
@@ -309,7 +319,10 @@ const formatErrorEntries = (
       Temporal.Instant.compare(second.instant, first.instant),
     )
     .map(({ device, error, instant }) => ({
-      date: dateTimeMedFormat.format(instant),
+      date:
+        Temporal.Instant.compare(instant, MIN_PLAUSIBLE_ERROR_INSTANT) < 0 ?
+          UNKNOWN_DATE_PLACEHOLDER
+        : dateTimeMedFormat.format(instant),
       device,
       error,
     }))

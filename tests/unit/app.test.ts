@@ -941,6 +941,34 @@ describe('melCloudApp', () => {
       expect(errorLog.errors[1]?.device).toBe('Studeerkamer')
     })
 
+    it('should show an em dash for sentinel dates and sink them last', async () => {
+      mockApiInstance.getErrorLog.mockResolvedValue(
+        ok({
+          errors: [
+            {
+              date: '0001-01-01T00:09:00',
+              deviceId: 42,
+              error: 'Unknown Error',
+            },
+            { date: '2026-03-28T14:30:00.000Z', deviceId: 42, error: 'test' },
+          ],
+          fromDate: '2026-03-01',
+          nextFromDate: '2026-03-15',
+          nextToDate: '2026-03-31',
+        }),
+      )
+      mockApiInstance.registry.devices.getById.mockReturnValue({
+        name: 'Hydrobox',
+      })
+      await app.onInit()
+
+      const errorLog = await app.getErrorLog(mock<Classic.ErrorLogQuery>())
+
+      expect(errorLog.errors[0]?.date).not.toBe('—')
+      expect(errorLog.errors[1]?.date).toBe('—')
+      expect(errorLog.errors[1]?.error).toBe('Unknown Error')
+    })
+
     it('should keep the log when a Home device fails to answer', async () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
