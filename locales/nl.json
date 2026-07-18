@@ -17,7 +17,7 @@
       "true": "Ja"
     },
     "devices": {
-      "legend": "Instellingen van alle apparaten (Classic en Home)",
+      "legend": "Instellingen van alle apparaten",
       "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!",
       "nothing": "Geen wijziging om toe te passen.",
       "apply": {
@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Auto-afstellen airco-temperatuur",
       "configure": "Configureren",
-      "legend": "Instellingen van alle lucht-lucht-apparaten (Classic en Home)"
+      "legend": "Instellingen van alle lucht-lucht-apparaten"
     },
     "devicesAtw": {
       "legend": "Lucht-water apparaatinstellingen (Classic)"
@@ -46,7 +46,7 @@
         "234": "fouten",
         "plural": "fouten"
       },
-      "legend": "Foutenoverzicht (Classic en Home)",
+      "legend": "Foutenoverzicht",
       "period": "Sinds __from__:",
       "see": "Bekijk alle fouten",
       "since": "sinds"

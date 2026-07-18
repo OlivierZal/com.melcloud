@@ -17,7 +17,7 @@
       "true": "Yes"
     },
     "devices": {
-      "legend": "All device settings (Classic and Home)",
+      "legend": "All device settings",
       "none": "Add a device to unlock all the app's settings!",
       "nothing": "No change to apply.",
       "apply": {
@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Auto-adjust air conditioning temperature",
       "configure": "Configure",
-      "legend": "All air-to-air device settings (Classic and Home)"
+      "legend": "All air-to-air device settings"
     },
     "devicesAtw": {
       "legend": "Air-to-water device settings (Classic)"
@@ -46,7 +46,7 @@
         "234": "errors",
         "plural": "errors"
       },
-      "legend": "Error history (Classic and Home)",
+      "legend": "Error history",
       "period": "Since __from__:",
       "see": "See all errors",
       "since": "since"

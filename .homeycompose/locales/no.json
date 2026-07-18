@@ -26,13 +26,13 @@
         "button": "Bruk på alle enheter",
         "nothing": "Ingen endring å bruke."
       },
-      "legend": "Innstillinger for alle enheter (Classic og Home)",
+      "legend": "Innstillinger for alle enheter",
       "none": "Legg til en enhet for å låse opp alle appinnstillingene!"
     },
     "devicesAta": {
       "autoAdjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
-      "legend": "Innstillinger for alle luft-til-luft-enheter (Classic og Home)"
+      "legend": "Innstillinger for alle luft-til-luft-enheter"
     },
     "errorLog": {
       "columns": {
@@ -47,7 +47,7 @@
         "234": "feil",
         "plural": "feil"
       },
-      "legend": "Feilhistorikk (Classic og Home)",
+      "legend": "Feilhistorikk",
       "period": "Siden __from__:",
       "see": "Se alle feil",
       "since": "siden"

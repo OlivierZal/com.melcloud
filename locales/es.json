@@ -17,7 +17,7 @@
       "true": "Sí"
     },
     "devices": {
-      "legend": "Ajustes de todos los dispositivos (Classic y Home)",
+      "legend": "Ajustes de todos los dispositivos",
       "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!",
       "nothing": "No hay cambios que aplicar.",
       "apply": {
@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Autoajustar la temperatura del enfriamiento",
       "configure": "Configurar",
-      "legend": "Ajustes de todos los dispositivos aire-aire (Classic y Home)"
+      "legend": "Ajustes de todos los dispositivos aire-aire"
     },
     "devicesAtw": {
       "legend": "Configuración de los dispositivos aire-agua (Classic)"
@@ -46,7 +46,7 @@
         "234": "errores",
         "plural": "errores"
       },
-      "legend": "Historial de errores (Classic y Home)",
+      "legend": "Historial de errores",
       "period": "Desde __from__:",
       "see": "Ver los errores",
       "since": "desde el"

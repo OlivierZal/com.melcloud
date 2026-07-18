@@ -17,7 +17,7 @@
       "true": "Ja"
     },
     "devices": {
-      "legend": "Indstillinger for alle enheder (Classic og Home)",
+      "legend": "Indstillinger for alle enheder",
       "none": "Tilføj en enhed for at låse alle appens indstillinger op!",
       "nothing": "Ingen ændringer at anvende.",
       "apply": {
@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Autojuster aircondition-temperaturen",
       "configure": "Konfigurer",
-      "legend": "Indstillinger for alle luft-til-luft-enheder (Classic og Home)"
+      "legend": "Indstillinger for alle luft-til-luft-enheder"
     },
     "devicesAtw": {
       "legend": "Luft-til-vand enhedsindstillinger (Classic)"
@@ -46,7 +46,7 @@
         "234": "fejl",
         "plural": "fejl"
       },
-      "legend": "Fejlhistorik (Classic og Home)",
+      "legend": "Fejlhistorik",
       "period": "Siden __from__:",
       "see": "Se alle fejl",
       "since": "siden den"
