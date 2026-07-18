@@ -64,6 +64,7 @@ const GRID_LINE_DASH_PX = 3
 const HALF_TURN_DEGREES = 180
 const HOURLY_CHART_REFRESH_MS = 60_000
 const LINE_WIDTH = 5
+const MIN_WIDGET_HEIGHT = 400
 const PERCENT_FACTOR = 100
 // Slices narrower than this angle get no percentage label.
 const PIE_LABEL_MIN_ANGLE_DEGREES = 10
@@ -177,8 +178,10 @@ const getFontWeight = (property: string): FontWeight => {
   }
 }
 
+// Strip the noise word so legends stay scannable ('TankWaterTemperature'
+// → 'TankWater') — also what the default-hidden set is keyed on.
 const normalizeSeriesName = (name: string): string =>
-  name.replace('ClassicTemperature', '')
+  name.replace('Temperature', '')
 
 const toRadians = (degrees: number): number =>
   (degrees * Math.PI) / HALF_TURN_DEGREES
@@ -763,7 +766,9 @@ class ChartWidget {
     this.#defaultChart = defaultChart
     this.#defaultDays = defaultDays
     this.#defaultZone = defaultZone
-    this.#height = Number(height)
+    // Instances saved before the small size was retired clamp up to the
+    // smallest offered height: its canvas cannot fit multi-series legends.
+    this.#height = Math.max(MIN_WIDGET_HEIGHT, Number(height))
     this.#chartSelect = getSelect('charts')
     this.#daySelect = getSelect('days')
     this.#zoneSelect = getSelect('zones')

@@ -13732,20 +13732,8 @@
             "sv": "Widgetstorlek"
           },
           "type": "dropdown",
-          "value": "300",
+          "value": "400",
           "values": [
-            {
-              "id": "300",
-              "title": {
-                "da": "Lille",
-                "en": "Small",
-                "es": "Pequeño",
-                "fr": "Petite",
-                "nl": "Klein",
-                "no": "Liten",
-                "sv": "Liten"
-              }
-            },
             {
               "id": "400",
               "title": {
