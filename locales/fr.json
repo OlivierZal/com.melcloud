@@ -17,7 +17,7 @@
       "true": "Oui"
     },
     "devices": {
-      "legend": "Paramètres de tous les appareils (Classic et Home)",
+      "legend": "Paramètres de tous les appareils",
       "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !",
       "nothing": "Aucun changement à appliquer.",
       "apply": {
@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Auto-ajuster la température de la climatisation",
       "configure": "Configurer",
-      "legend": "Paramètres de tous les appareils air-air (Classic et Home)"
+      "legend": "Paramètres de tous les appareils air-air"
     },
     "devicesAtw": {
       "legend": "Paramètres des appareils air-eau (Classic)"
@@ -46,7 +46,7 @@
         "234": "erreurs",
         "plural": "erreurs"
       },
-      "legend": "Historique des erreurs (Classic)",
+      "legend": "Historique des erreurs",
       "period": "Depuis le __from__ :",
       "see": "Voir les erreurs",
       "since": "depuis le"

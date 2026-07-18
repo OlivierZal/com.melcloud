@@ -7,7 +7,7 @@ import * as Home from '@olivierzal/melcloud-api/home'
 import type { DeviceSettings, Settings } from '../../types/device-settings.mts'
 import type { DriverSetting } from '../../types/driver-settings.mts'
 import type {
-  ClassicErrorLogQueryParams,
+  ErrorLogQueryParams,
   FormattedErrorLog,
 } from '../../types/error-log.mts'
 import type { ZoneData } from '../../types/zone.mts'
@@ -39,12 +39,12 @@ const mockApp = {
     isAuthenticated: mockIsAuthenticated,
   },
   error: vi.fn<(...args: readonly unknown[]) => void>(),
-  getClassicErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
   getClassicFrostProtection:
     vi.fn<() => Promise<Classic.FrostProtectionData>>(),
   getClassicHolidayMode: vi.fn<() => Promise<Classic.HolidayModeData>>(),
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
+  getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
   homeApi: {
     authenticate: mockHomeAuthenticate,
     isAuthenticated: mockIsHomeAuthenticated,
@@ -171,20 +171,20 @@ describe('api', () => {
   })
 
   describe('error retrieval', () => {
-    it('should parse numeric query params before delegating to app.getClassicErrorLog', async () => {
+    it('should parse numeric query params before delegating to app.getErrorLog', async () => {
       const errorLog = mock<FormattedErrorLog>()
-      const query = mock<ClassicErrorLogQueryParams>({
+      const query = mock<ErrorLogQueryParams>({
         from: '2026-01-01',
         offset: '2',
         period: '7',
         to: '2026-01-31',
       })
-      mockApp.getClassicErrorLog.mockResolvedValue(errorLog)
+      mockApp.getErrorLog.mockResolvedValue(errorLog)
 
-      const result = await api.getClassicErrorLog({ homey, query })
+      const result = await api.getErrorLog({ homey, query })
 
       expect(result).toBe(errorLog)
-      expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith({
+      expect(mockApp.getErrorLog).toHaveBeenCalledWith({
         from: '2026-01-01',
         offset: 2,
         period: 7,
@@ -194,46 +194,46 @@ describe('api', () => {
 
     it('should omit missing numeric query params', async () => {
       const errorLog = mock<FormattedErrorLog>()
-      mockApp.getClassicErrorLog.mockResolvedValue(errorLog)
+      mockApp.getErrorLog.mockResolvedValue(errorLog)
 
-      await api.getClassicErrorLog({
+      await api.getErrorLog({
         homey,
-        query: mock<Partial<ClassicErrorLogQueryParams>>(),
+        query: mock<Partial<ErrorLogQueryParams>>(),
       })
 
-      expect(mockApp.getClassicErrorLog).toHaveBeenCalledWith({})
+      expect(mockApp.getErrorLog).toHaveBeenCalledWith({})
     })
 
     it('should throw on empty string numeric query param', async () => {
       await expect(
-        api.getClassicErrorLog({
+        api.getErrorLog({
           homey,
-          query: mock<Partial<ClassicErrorLogQueryParams>>({ offset: '' }),
+          query: mock<Partial<ErrorLogQueryParams>>({ offset: '' }),
         }),
       ).rejects.toThrow('Invalid numeric query param: ""')
-      expect(mockApp.getClassicErrorLog).not.toHaveBeenCalled()
+      expect(mockApp.getErrorLog).not.toHaveBeenCalled()
     })
 
     it('should throw on non-numeric query param', async () => {
       await expect(
-        api.getClassicErrorLog({
+        api.getErrorLog({
           homey,
-          query: mock<Partial<ClassicErrorLogQueryParams>>({ period: 'abc' }),
+          query: mock<Partial<ErrorLogQueryParams>>({ period: 'abc' }),
         }),
       ).rejects.toThrow('Invalid numeric query param: "abc"')
-      expect(mockApp.getClassicErrorLog).not.toHaveBeenCalled()
+      expect(mockApp.getErrorLog).not.toHaveBeenCalled()
     })
 
     it('should throw on infinite query param', async () => {
       await expect(
-        api.getClassicErrorLog({
+        api.getErrorLog({
           homey,
-          query: mock<Partial<ClassicErrorLogQueryParams>>({
+          query: mock<Partial<ErrorLogQueryParams>>({
             period: 'Infinity',
           }),
         }),
       ).rejects.toThrow('Invalid numeric query param: "Infinity"')
-      expect(mockApp.getClassicErrorLog).not.toHaveBeenCalled()
+      expect(mockApp.getErrorLog).not.toHaveBeenCalled()
     })
   })
 

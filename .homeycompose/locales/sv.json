@@ -26,13 +26,13 @@
         "button": "Tillämpa på alla enheter",
         "nothing": "Ingen ändring att tillämpa."
       },
-      "legend": "Inställningar för alla enheter (Classic och Home)",
+      "legend": "Inställningar för alla enheter",
       "none": "Lägg till en enhet för att låsa upp alla appens inställningar!"
     },
     "devicesAta": {
       "autoAdjust": "Autojustera luftkonditioneringstemperaturen",
       "configure": "Konfigurera",
-      "legend": "Inställningar för alla luft-till-luft-enheter (Classic och Home)"
+      "legend": "Inställningar för alla luft-till-luft-enheter"
     },
     "errorLog": {
       "columns": {
@@ -47,7 +47,7 @@
         "234": "fel",
         "plural": "fel"
       },
-      "legend": "Felhistorik (Classic)",
+      "legend": "Felhistorik",
       "period": "Sedan __from__:",
       "see": "Se alla fel",
       "since": "sedan"

@@ -26,13 +26,13 @@
         "button": "Applica a tutti i dispositivi",
         "nothing": "Nessuna modifica da applicare."
       },
-      "legend": "Impostazioni di tutti i dispositivi (Classic e Home)",
+      "legend": "Impostazioni di tutti i dispositivi",
       "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!"
     },
     "devicesAta": {
       "autoAdjust": "Regolazione automatica della temperatura del condizionatore",
       "configure": "Configura",
-      "legend": "Impostazioni di tutti i dispositivi aria-aria (Classic e Home)"
+      "legend": "Impostazioni di tutti i dispositivi aria-aria"
     },
     "errorLog": {
       "columns": {
@@ -47,7 +47,7 @@
         "234": "errori",
         "plural": "errori"
       },
-      "legend": "Cronologia errori (Classic)",
+      "legend": "Cronologia errori",
       "period": "Dal __from__:",
       "see": "Visualizza tutti gli errori",
       "since": "dal"

@@ -26,13 +26,13 @@
         "button": "Toepassen op alle apparaten",
         "nothing": "Geen wijziging om toe te passen."
       },
-      "legend": "Instellingen van alle apparaten (Classic en Home)",
+      "legend": "Instellingen van alle apparaten",
       "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!"
     },
     "devicesAta": {
       "autoAdjust": "Auto-afstellen airco-temperatuur",
       "configure": "Configureren",
-      "legend": "Instellingen van alle lucht-lucht-apparaten (Classic en Home)"
+      "legend": "Instellingen van alle lucht-lucht-apparaten"
     },
     "errorLog": {
       "columns": {
@@ -47,7 +47,7 @@
         "234": "fouten",
         "plural": "fouten"
       },
-      "legend": "Foutenoverzicht (Classic)",
+      "legend": "Foutenoverzicht",
       "period": "Sinds __from__:",
       "see": "Bekijk alle fouten",
       "since": "sinds"

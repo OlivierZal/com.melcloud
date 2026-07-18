@@ -15,7 +15,7 @@ import type {
   LoginDriverSetting,
 } from '../types/driver-settings.mts'
 import type {
-  ClassicErrorLogQueryParams,
+  ErrorLogQueryParams,
   FormattedErrorDetails,
   FormattedErrorLog,
 } from '../types/error-log.mts'
@@ -112,6 +112,14 @@ class NoClassicDeviceError extends NoDeviceError {
 // of silently reintroducing double submission.
 const disableButton = (id: string, isDisabled = true): void => {
   getButton(id).disabled = isDisabled
+}
+
+// The error log aggregates both accounts, so it is not disabled here.
+const disableClassicZoneButtons = (): void => {
+  for (const id of ['frost_protection', 'holiday_mode']) {
+    disableButton(`apply_${id}`)
+    disableButton(`refresh_${id}`)
+  }
 }
 
 const withDisablingButton = async (
@@ -990,12 +998,12 @@ class ErrorLogManager {
       try {
         const data = await homeyApiGet<FormattedErrorLog>(
           this.#homey,
-          `/classic/logs/errors?${new URLSearchParams({
+          `/logs/errors?${new URLSearchParams({
             from: this.#sinceInput.value,
             offset: '0',
             period: '29',
             to: this.#to,
-          } satisfies ClassicErrorLogQueryParams)}`,
+          } satisfies ErrorLogQueryParams)}`,
         )
         this.#updateErrorLogElements(data)
         this.#appendErrorLogRows(data.errors)
@@ -1448,14 +1456,6 @@ class SettingsApp {
     })
   }
 
-  #disableClassicButtons(): void {
-    this.#errorLogManager.disable()
-    for (const id of ['frost_protection', 'holiday_mode']) {
-      disableButton(`apply_${id}`)
-      disableButton(`refresh_${id}`)
-    }
-  }
-
   #disableCommonButtonsIfNoDevices(): void {
     if (Object.keys(this.#deviceSettingsManager.deviceSettings).length > 0) {
       return
@@ -1467,7 +1467,7 @@ class SettingsApp {
 
   #disableForError(error: NoDeviceError): void {
     if (error instanceof NoClassicDeviceError) {
-      this.#disableClassicButtons()
+      disableClassicZoneButtons()
     }
     this.#disableCommonButtonsIfNoDevices()
   }

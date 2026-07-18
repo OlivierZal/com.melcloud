@@ -17,7 +17,7 @@
       "true": "Sì"
     },
     "devices": {
-      "legend": "Impostazioni di tutti i dispositivi (Classic e Home)",
+      "legend": "Impostazioni di tutti i dispositivi",
       "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!",
       "nothing": "Nessuna modifica da applicare.",
       "apply": {
@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Regolazione automatica della temperatura del condizionatore",
       "configure": "Configura",
-      "legend": "Impostazioni di tutti i dispositivi aria-aria (Classic e Home)"
+      "legend": "Impostazioni di tutti i dispositivi aria-aria"
     },
     "devicesAtw": {
       "legend": "Impostazioni dispositivo aria-acqua (Classic)"
@@ -46,7 +46,7 @@
         "234": "errori",
         "plural": "errori"
       },
-      "legend": "Cronologia errori (Classic)",
+      "legend": "Cronologia errori",
       "period": "Dal __from__:",
       "see": "Visualizza tutti gli errori",
       "since": "dal"

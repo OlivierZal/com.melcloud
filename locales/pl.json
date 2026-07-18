@@ -17,7 +17,7 @@
       "true": "Tak"
     },
     "devices": {
-      "legend": "Ustawienia wszystkich urządzeń (Classic i Home)",
+      "legend": "Ustawienia wszystkich urządzeń",
       "none": "Dodaj urządzenie, aby odblokować wszystkie ustawienia aplikacji!",
       "nothing": "Brak zmian do zastosowania.",
       "apply": {
@@ -28,7 +28,7 @@
     "devicesAta": {
       "autoAdjust": "Automatyczna regulacja temperatury klimatyzacji",
       "configure": "Konfiguruj",
-      "legend": "Ustawienia wszystkich urządzeń powietrze-powietrze (Classic i Home)"
+      "legend": "Ustawienia wszystkich urządzeń powietrze-powietrze"
     },
     "devicesAtw": {
       "legend": "Ustawienia urządzenia powietrze-woda (Classic)"
@@ -46,7 +46,7 @@
         "234": "błędy",
         "plural": "błędów"
       },
-      "legend": "Historia błędów (Classic)",
+      "legend": "Historia błędów",
       "period": "Od __from__:",
       "see": "Pokaż wszystkie błędy",
       "since": "od"
