@@ -474,13 +474,16 @@ describe('melCloudApp', () => {
 
       expect(mockCreate).toHaveBeenCalledWith(
         expect.objectContaining({
+          abortSignal: expect.any(AbortSignal) as unknown,
           language: 'en',
           locale: 'en',
+          shouldResumeSessionInBackground: true,
           timezone: 'Europe/Paris',
         }),
       )
       expect(mockHomeCreate).toHaveBeenCalledWith(
         expect.objectContaining({
+          abortSignal: expect.any(AbortSignal) as unknown,
           logger: expect.objectContaining({
             error: expect.any(Function) as unknown,
             log: expect.any(Function) as unknown,
@@ -489,6 +492,7 @@ describe('melCloudApp', () => {
             get: expect.any(Function) as unknown,
             set: expect.any(Function) as unknown,
           }),
+          shouldResumeSessionInBackground: true,
         }),
       )
       expect(Classic.FacadeManager).toHaveBeenCalledTimes(1)
@@ -590,6 +594,21 @@ describe('melCloudApp', () => {
 
       expect(mockApiInstance.clearSync).toHaveBeenCalledTimes(1)
       expect(mockHomeApiInstance.clearSync).toHaveBeenCalledTimes(1)
+    })
+
+    it('should abort the shutdown signal shared with the API clients', async () => {
+      await app.onInit()
+      const signal = getMockCallArg<{ abortSignal: AbortSignal }>(
+        mockCreate,
+        0,
+        0,
+      ).abortSignal
+
+      expect(signal.aborted).toBe(false)
+
+      await app.onUninit()
+
+      expect(signal.aborted).toBe(true)
     })
   })
 

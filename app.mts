@@ -339,6 +339,11 @@ export default class MELCloudApp extends App {
     return this.#homeApi
   }
 
+  // One shutdown signal for both API clients: onUninit aborts it so
+  // in-flight requests cannot outlive the app instance (the SDK's
+  // post-destroy accesses came from exactly those danglers).
+  readonly #abortController = new AbortController()
+
   #classicApi!: Classic.API
 
   #facadeManager!: Classic.FacadeManager
@@ -369,6 +374,7 @@ export default class MELCloudApp extends App {
   }
 
   public override async onUninit(): Promise<void> {
+    this.#abortController.abort()
     this.#classicApi.clearSync()
     this.#homeApi.clearSync()
     await Promise.resolve()
@@ -1000,6 +1006,7 @@ export default class MELCloudApp extends App {
   }): Promise<void> {
     this.#classicApi = await Classic.API.create({
       ...config,
+      abortSignal: this.#abortController.signal,
       events: {
         onSyncComplete: this.#onSync,
         onAuthenticationLost: () => {
@@ -1008,6 +1015,7 @@ export default class MELCloudApp extends App {
       },
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager(),
+      shouldResumeSessionInBackground: true,
     })
     this.#facadeManager = new Classic.FacadeManager(
       this.#classicApi,
@@ -1018,14 +1026,19 @@ export default class MELCloudApp extends App {
 
   // Mirrors #initClassicApi: create + facade wiring, no fetch. The
   // boot-time registry contract lives in melcloud-api, identically for
-  // both APIs — `create()` populates the registry and arms the auto-sync
-  // whenever a session or credentials are available, `authenticate()`
-  // enforces a post-auth sync, and no credentials means total silence.
+  // both APIs — the session restore runs in the BACKGROUND
+  // (`shouldResumeSessionInBackground`), so `create()` returns
+  // immediately and `onInit` stays within the SDK's 30-second ready
+  // budget on slow devices and networks; the restore then populates the
+  // registry and arms the auto-sync whenever a session or credentials
+  // are available, `authenticate()` enforces a post-auth sync, and no
+  // credentials means total silence.
   // An app-side `list()` here would duplicate that fetch when
   // authenticated and, for a Classic-only user, 401 — and keep 401ing
   // every cycle, since `runSyncCycle` reschedules from its `finally`.
   async #initHomeApi(): Promise<void> {
     this.#homeApi = await Home.API.create({
+      abortSignal: this.#abortController.signal,
       events: {
         onSyncComplete: this.#onSync,
         onAuthenticationLost: () => {
@@ -1034,6 +1047,7 @@ export default class MELCloudApp extends App {
       },
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager('home'),
+      shouldResumeSessionInBackground: true,
     })
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
   }
