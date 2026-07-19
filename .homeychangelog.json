@@ -631,5 +631,20 @@
     "pl": "Widżet wykresów obejmuje teraz także urządzenia MELCloud Home i dodaje wykres raportu energii dla wszystkich urządzeń.",
     "ru": "Виджет графиков теперь охватывает и устройства MELCloud Home, а для всех устройств добавлен график отчёта об энергии.",
     "sv": "Diagramwidgeten täcker nu även MELCloud Home-enheter och lägger till ett energirapportdiagram för alla enheter."
+  },
+  "45.7.1": {
+    "ar": "فترات الرسوم البيانية تتبع الأيام التقويمية، وألوان السلاسل متناسقة بين الرسوم، والنطاقات الواسعة تُحمَّل بشكل موثوق.",
+    "da": "Diagramperioder følger kalenderdage, seriefarver er ensartede på tværs af diagrammer, og brede visninger indlæses pålideligt.",
+    "de": "Diagrammzeiträume folgen Kalendertagen, Serienfarben sind diagrammübergreifend einheitlich, und breite Ansichten laden zuverlässig.",
+    "en": "Chart periods follow calendar days, series colors are consistent across charts, and wide views load reliably.",
+    "es": "Los períodos de los gráficos siguen días naturales, los colores de las series son coherentes entre gráficos y las vistas amplias cargan de forma fiable.",
+    "fr": "Les périodes des graphiques suivent les jours calendaires, les couleurs des séries sont cohérentes d'un graphique à l'autre, et les vues larges se chargent de manière fiable.",
+    "it": "I periodi dei grafici seguono i giorni di calendario, i colori delle serie sono coerenti tra i grafici e le viste ampie si caricano in modo affidabile.",
+    "ko": "차트 기간이 달력 일자를 따르고, 시리즈 색상이 차트 간에 일관되며, 넓은 범위도 안정적으로 로드됩니다.",
+    "nl": "Grafiekperiodes volgen kalenderdagen, seriekleuren zijn consistent tussen grafieken, en brede weergaven laden betrouwbaar.",
+    "no": "Diagramperioder følger kalenderdager, seriefarger er konsistente på tvers av diagrammer, og brede visninger lastes pålitelig.",
+    "pl": "Okresy wykresów odpowiadają dniom kalendarzowym, kolory serii są spójne między wykresami, a szerokie widoki ładują się niezawodnie.",
+    "ru": "Периоды графиков соответствуют календарным дням, цвета серий согласованы между графиками, а широкие диапазоны загружаются надёжно.",
+    "sv": "Diagramperioder följer kalenderdagar, seriefärger är konsekventa mellan diagram, och breda vyer laddas tillförlitligt."
   }
 }

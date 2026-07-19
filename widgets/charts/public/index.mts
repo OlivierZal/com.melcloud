@@ -904,14 +904,16 @@ class ChartWidget {
     applySelectValue(this.#zoneSelect, getZoneId(id, model))
   }
 
-  // «24 h» exists only where hourly energy buckets do — every report
-  // device except Classic ATW, whose wire never buckets under a day.
+  // «24 h» is the rolling intra-day view every day chart offers —
+  // midnight-anchored windows start near-empty each morning. The one
+  // exception is the Classic ATW report, whose wire never buckets
+  // energy under a day.
   #buildLast24HoursGate(classicAtw: readonly ChartDeviceZone[]): () => boolean {
     const dailyOnlyZones = new Set(
       classicAtw.map(({ id, model }) => getZoneId(id, model)),
     )
     return () =>
-      this.#getChart() === 'report' &&
+      this.#getChart() !== 'report' ||
       !dailyOnlyZones.has(this.#zoneSelect.value)
   }
 
