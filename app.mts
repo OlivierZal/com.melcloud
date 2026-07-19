@@ -80,10 +80,12 @@ const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
 const daysAgo = (days: number, timezone: string): string =>
   Temporal.Now.plainDateTimeISO(timezone).subtract({ days }).toString()
 
-// Energy-report windows anchor on local midnight so "N days" reads as
-// N calendar days ending today; `days` 0 is the rolling last-24-hours
-// choice the widget offers when hourly buckets exist.
-const energyReportStart = (days: number, timezone: string): string =>
+// Day-chart windows anchor on local midnight so "N days" reads as N
+// calendar days ending today, consistently across the report, the
+// temperatures and the operation-modes charts; `days` 0 is the rolling
+// last-24-hours choice the report picker offers when hourly buckets
+// exist.
+const chartDaysStart = (days: number, timezone: string): string =>
   days === 0 ?
     daysAgo(1, timezone)
   : Temporal.Now.zonedDateTimeISO(timezone)
@@ -478,7 +480,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = energyReportStart(days, getTimeZone(this.homey))
+    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getEnergyReport({
         from,
@@ -552,7 +554,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
-    const from = daysAgo(days, getTimeZone(this.homey))
+    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getOperationModes({
         from,
@@ -579,7 +581,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = daysAgo(days, getTimeZone(this.homey))
+    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getTemperatures({
         from,
@@ -739,7 +741,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = energyReportStart(days, getTimeZone(this.homey))
+    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.#getHomeDeviceFacade(deviceId).getEnergyReport({ from }),
     )
@@ -787,7 +789,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
-    const from = daysAgo(days, getTimeZone(this.homey))
+    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getHomeFacade(deviceId, Home.DeviceType.Atw).getOperationModes(
         { from },
@@ -814,7 +816,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = daysAgo(days, getTimeZone(this.homey))
+    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.#getHomeDeviceFacade(deviceId).getTemperatures({ from }),
     )
