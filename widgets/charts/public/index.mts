@@ -206,26 +206,6 @@ const applySelectValue = (select: HTMLSelectElement, value: string): void => {
   }
 }
 
-// A select is intrinsically as wide as its WIDEST option, which strands
-// the chevron at the far edge when the selected label is shorter (the
-// chart names differ a lot in length). Measure the selected option alone
-// through an invisible clone and fit the select to it; `max-inline-size`
-// from the stylesheet still clamps overlong labels to the widget width.
-const fitSelectToSelection = (select: HTMLSelectElement): void => {
-  const [selected] = select.selectedOptions
-  const probe = select.cloneNode(false)
-  if (selected === undefined || !(probe instanceof HTMLSelectElement)) {
-    return
-  }
-  probe.removeAttribute('id')
-  probe.append(new Option(selected.text))
-  probe.style.cssText =
-    'display: inline-block; inline-size: auto; position: absolute; visibility: hidden'
-  document.body.append(probe)
-  select.style.inlineSize = `${String(probe.offsetWidth)}px`
-  probe.remove()
-}
-
 // The bounds filter shields the picker from a value the wire may carry
 // despite the manifest bounds: a pre-rename instance (no stored value) or
 // a default saved before the bounds existed, e.g. above the API cap.
@@ -817,7 +797,6 @@ class ChartWidget {
 
   #addEventListeners(devicesForChart: () => readonly ChartDeviceZone[]): void {
     this.#chartSelect.addEventListener('change', () => {
-      fitSelectToSelection(this.#chartSelect)
       this.#repopulateZoneOptions(devicesForChart())
       this.#syncDayVisibility()
       this.#redraw()
@@ -994,7 +973,6 @@ class ChartWidget {
       }
     }
     applySelectValue(this.#chartSelect, this.#defaultChart)
-    fitSelectToSelection(this.#chartSelect)
   }
 
   #populateDayOptions(): void {

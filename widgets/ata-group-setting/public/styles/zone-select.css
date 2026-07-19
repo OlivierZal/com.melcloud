@@ -21,6 +21,7 @@
   font-family: inherit;
   font-size: var(--homey-font-size-default);
   font-weight: var(--homey-font-weight-bold);
+  inline-size: 100%;
   line-height: var(--homey-line-height-default);
   padding: var(--homey-su-1);
   padding-inline-end: 1.5rem;
