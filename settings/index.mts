@@ -105,6 +105,10 @@ const commonElementTypes = new Set(['checkbox', 'dropdown'])
 /** Currently the only Home driver; expand to a readonly array if more are added. */
 const HOME_DRIVER_ID = 'home-melcloud'
 
+// The two APIs, in the order the picker offers them; also the priority
+// order when auto-selecting an account whose credentials are missing.
+const API_VALUES: readonly Api[] = ['classic', 'home']
+
 // Persisted keys per API, mirroring melcloud-api's `@setting` accessors
 // (base: username/password/expiry; Classic adds contextKey; Home adds
 // accessToken/refreshToken) plus the login-backoff deadline, all through
@@ -493,7 +497,16 @@ class AuthManager {
       'password',
       driverSettings,
     )
+    // Open on the account that needs attention (e.g. the one just
+    // reset) so its empty fields are what the user sees first.
+    this.#selectFirstIncompleteApi()
     this.#syncInputsFromCredentials()
+  }
+
+  // APIs whose stored credentials are missing a username or password —
+  // the accounts the app cannot sign back in to.
+  public getIncompleteApis(): Api[] {
+    return API_VALUES.filter((api) => !this.#hasCompleteCredentials(api))
   }
 
   /** @alerts Displays authentication errors to the user. */
@@ -560,6 +573,18 @@ class AuthManager {
       return formControl
     }
     return null
+  }
+
+  #hasCompleteCredentials(api: Api): boolean {
+    const { password, username } = this.#credentialsByApi[api]
+    return (username ?? '') !== '' && (password ?? '') !== ''
+  }
+
+  #selectFirstIncompleteApi(): void {
+    const [firstIncomplete] = this.getIncompleteApis()
+    if (firstIncomplete !== undefined) {
+      this.#apiSelect.value = firstIncomplete
+    }
   }
 
   #syncInputsFromCredentials(): void {
@@ -1603,8 +1628,14 @@ class SettingsApp {
   #refreshVisibility(): void {
     const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
       this.#authState
+    // Fold only when nothing needs attention: both accounts signed in
+    // AND both still hold complete credentials. A cleared account (its
+    // session outlives the reset until the next app restart) keeps the
+    // panel open on the empty fields.
     this.#authManager.collapseAuthenticationSection(
-      isClassicAuthenticated && isHomeAuthenticated,
+      isClassicAuthenticated &&
+        isHomeAuthenticated &&
+        this.#authManager.getIncompleteApis().length === 0,
     )
     hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
     toggleClassicOnlySections(isClassicAuthenticated)
