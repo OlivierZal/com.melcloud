@@ -64,7 +64,7 @@ const GRID_LINE_DASH_PX = 3
 const HALF_TURN_DEGREES = 180
 const HOURLY_CHART_REFRESH_MS = 60_000
 const HOURS_PER_DAY = 24
-const LINE_WIDTH = 5
+const LINE_WIDTH = 3
 const MIN_WIDGET_HEIGHT = 400
 const PERCENT_FACTOR = 100
 // Slices narrower than this angle get no percentage label.
@@ -153,6 +153,59 @@ const hidden: ReadonlySet<string> = new Set([
   'ReturnTemperatureZone1',
   'ReturnTemperatureZone2',
 ])
+
+// One color per wire series/mode name, stable across charts and
+// devices, semantic where a convention exists (cooling blue, heating
+// red, hot water orange); set-point and produced series take the
+// pastel pair of their measured/consumed counterpart. Unknown names
+// (the signal chart's device name) fall back to the palette above.
+const seriesColors: Record<string, string> = {
+  ActualRecovery: '#2CA02C',
+  Auto: '#2CA02C',
+  AutoMode: '#2CA02C',
+  Consumed: '#1F77B4',
+  Cooling: '#1F77B4',
+  CoolMode: '#1F77B4',
+  Dry: '#E7BA52',
+  DryMode: '#E7BA52',
+  Fan: '#17BECF',
+  FansStopped: '#C7C7C7',
+  FlowTemperature: '#FFDB58',
+  FlowTemperatureBoiler: '#8C564B',
+  FlowTemperatureZone1: '#E377C2',
+  FlowTemperatureZone2: '#E7BA52',
+  FreezeStat: '#AEC7E8',
+  Heating: '#D62728',
+  HeatMode: '#D62728',
+  HotWater: '#FF7F0E',
+  LegionellaPrevention: '#9467BD',
+  MixingTankWaterTemperature: '#C7C7C7',
+  Other: '#7F7F7F',
+  OutdoorTemperature: '#2CA02C',
+  Power: '#393B79',
+  PowerOff: '#393B79',
+  Produced: '#2CA02C',
+  ProducedCooling: '#AEC7E8',
+  ProducedHeating: '#FF9896',
+  ProducedHotWater: '#FFBB78',
+  ReturnTemperature: '#17BECF',
+  ReturnTemperatureBoiler: '#C49C94',
+  ReturnTemperatureZone1: '#7F7F7F',
+  ReturnTemperatureZone2: '#393B79',
+  RoomTemperature: '#D62728',
+  RoomTemperatureZone1: '#D62728',
+  RoomTemperatureZone2: '#9467BD',
+  SetRoomTemperatureZone1: '#FF9896',
+  SetRoomTemperatureZone2: '#C5B0D5',
+  SetTankWaterTemperature: '#FFBB78',
+  SetTemperature: '#FF9896',
+  Stop: '#7F7F7F',
+  TankWaterTemperature: '#FF7F0E',
+  VentilationMode: '#17BECF',
+}
+
+const colorForSeries = (name: string, index: number): string =>
+  seriesColors[name] ?? colors[index % colors.length] ?? '#7F7F7F'
 const styleCache: Record<string, string> = {}
 
 // ── Style helpers ──
@@ -255,9 +308,11 @@ const isSameSelection = (
 
 const FALLBACK_BAND_COLOR = 'rgba(127, 127, 127, 0.2)'
 
+// Alpha versions of the `seriesColors` hues of the same modes, so a
+// band, its pie slice and its energy bars all read as one metric.
 const bandColors: Record<string, string> = {
-  Cooling: 'rgba(23, 190, 207, 0.25)',
-  FreezeStat: 'rgba(199, 221, 238, 0.4)',
+  Cooling: 'rgba(31, 119, 180, 0.2)',
+  FreezeStat: 'rgba(174, 199, 232, 0.4)',
   Heating: 'rgba(214, 39, 40, 0.2)',
   HotWater: 'rgba(255, 127, 14, 0.25)',
   LegionellaPrevention: 'rgba(148, 103, 189, 0.25)',
@@ -448,7 +503,7 @@ const getLineDatasets = (
   localize: SeriesLocalizer,
 ): WidgetChartConfig['data']['datasets'] =>
   series.map(({ data, name }, index) => {
-    const color = colors[index % colors.length]
+    const color = colorForSeries(name, index)
     return {
       backgroundColor: color,
       borderColor: color,
@@ -598,7 +653,7 @@ const getChartBarConfig = (
 ): WidgetChartConfig => ({
   data: {
     datasets: series.map(({ data, name }, index) => {
-      const color = colors[index % colors.length]
+      const color = colorForSeries(name, index)
       return {
         backgroundColor: color,
         borderColor: color,
@@ -645,7 +700,15 @@ const getChartPieConfig = (
 ): WidgetChartConfig => ({
   data: {
     datasets: [
-      { backgroundColor: [...colors], borderWidth: 0, data: [...series] },
+      {
+        // Slice colors key on the wire mode names, matching the band
+        // and bar colors of the same modes on the other charts.
+        backgroundColor: labels.map((label, index) =>
+          colorForSeries(label, index),
+        ),
+        borderWidth: 0,
+        data: [...series],
+      },
     ],
     // Every known wire mode has a series translation; an unknown one
     // shows its wire name untouched.
