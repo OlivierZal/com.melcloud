@@ -142,9 +142,10 @@ summary.homey-form-legend {
   font-weight: 700;
 }
 
-/* Mirror the disabled treatment of the other button variants for the
-   destructive reset. */
-.homey-button-danger-full:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+/* Destructive twin of the filled sign-in button: the injected sheet
+   ships no danger-full variant, so borrow the primary geometry and
+   repaint it with Homey's red (token first, hex fallback for sheets
+   without it). */
+.homey-button-primary-full.is-destructive {
+  background-color: var(--homey-color-red-500, #e0433d);
 }
