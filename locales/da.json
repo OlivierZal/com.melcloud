@@ -12,7 +12,7 @@
       "legend": "Brugernavn og adgangskode",
       "unverified": "Logget ind, men sessionen kunne ikke bekræftes — prøv igen.",
       "reset": "Nulstil",
-      "resetConfirm": "Dette rydder de gemte legitimationsoplysninger for den valgte konto; appen logger ikke længere ind på den efter næste genstart."
+      "resetConfirm": "Dette logger straks den valgte konto ud og rydder dens gemte legitimationsoplysninger."
     },
     "boolean": {
       "false": "Nej",

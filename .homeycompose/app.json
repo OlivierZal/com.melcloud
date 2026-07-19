@@ -4,6 +4,10 @@
       "method": "POST",
       "path": "/classic/sessions"
     },
+    "classicLogOut": {
+      "method": "DELETE",
+      "path": "/classic/sessions"
+    },
     "getClassicBuildings": {
       "method": "GET",
       "path": "/classic/buildings"
@@ -38,6 +42,10 @@
     },
     "homeAuthenticate": {
       "method": "POST",
+      "path": "/home/sessions"
+    },
+    "homeLogOut": {
+      "method": "DELETE",
       "path": "/home/sessions"
     },
     "isClassicAuthenticated": {
@@ -274,5 +282,5 @@
       "värmeåtervinning"
     ]
   },
-  "version": "45.7.2"
+  "version": "45.7.3"
 }

@@ -32,11 +32,14 @@ const mockHomeList = vi.fn<() => Promise<unknown[]>>()
 const mockGetBuildingsByType = vi.fn<Home.Registry['getBuildingsByType']>()
 const mockClassicAuthenticate = vi.fn<() => Promise<void>>()
 const mockHomeAuthenticate = vi.fn<() => Promise<void>>()
+const mockClassicLogOut = vi.fn<() => void>()
+const mockHomeLogOut = vi.fn<() => void>()
 
 const mockApp = {
   classicApi: {
     authenticate: mockClassicAuthenticate,
     isAuthenticated: mockIsAuthenticated,
+    logOut: mockClassicLogOut,
   },
   error: vi.fn<(...args: readonly unknown[]) => void>(),
   getClassicFrostProtection:
@@ -49,6 +52,7 @@ const mockApp = {
     authenticate: mockHomeAuthenticate,
     isAuthenticated: mockIsHomeAuthenticated,
     list: mockHomeList,
+    logOut: mockHomeLogOut,
     registry: { getBuildingsByType: mockGetBuildingsByType },
   },
   log: vi.fn<(...args: readonly unknown[]) => void>(),
@@ -307,6 +311,20 @@ describe('api', () => {
       await expect(
         api.homeAuthenticate({ body: mock<LoginCredentials>(), homey }),
       ).rejects.toThrow(error)
+    })
+  })
+
+  describe('logout', () => {
+    it('should delegate the Classic logout to app.classicApi.logOut', () => {
+      api.classicLogOut({ homey })
+
+      expect(mockClassicLogOut).toHaveBeenCalledTimes(1)
+    })
+
+    it('should delegate the Home logout to app.homeApi.logOut', () => {
+      api.homeLogOut({ homey })
+
+      expect(mockHomeLogOut).toHaveBeenCalledTimes(1)
     })
   })
 

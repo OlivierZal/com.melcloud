@@ -661,5 +661,20 @@
     "pl": "Pauza logowania po odrzuconych danych uwierzytelniających jest teraz zachowywana także po ponownym uruchomieniu aplikacji.",
     "ru": "Пауза входа после отклонённых учётных данных теперь соблюдается и после перезапуска приложения.",
     "sv": "Inloggningspausen efter avvisade autentiseringsuppgifter respekteras nu även efter en omstart av appen."
+  },
+  "45.7.3": {
+    "ar": "يعمل زر إعادة تعيين بيانات الاعتماد الآن على تسجيل خروج الحساب فورًا وحذف بياناته المحفوظة بالكامل.",
+    "da": "Knappen til nulstilling af legitimationsoplysninger logger nu kontoen ud med det samme og sletter dens gemte data helt.",
+    "de": "Die Schaltfläche zum Zurücksetzen der Zugangsdaten meldet das Konto jetzt sofort ab und löscht seine gespeicherten Daten vollständig.",
+    "en": "The credentials reset button now signs the account out immediately and fully deletes its stored data.",
+    "es": "El botón de restablecimiento de credenciales ahora cierra la sesión de la cuenta de inmediato y elimina por completo sus datos guardados.",
+    "fr": "Le bouton de réinitialisation des identifiants déconnecte désormais le compte immédiatement et supprime entièrement ses données enregistrées.",
+    "it": "Il pulsante di reimpostazione delle credenziali ora disconnette immediatamente l'account ed elimina completamente i suoi dati salvati.",
+    "ko": "자격 증명 재설정 버튼이 이제 계정을 즉시 로그아웃하고 저장된 데이터를 완전히 삭제합니다.",
+    "nl": "De knop voor het resetten van inloggegevens meldt het account nu direct af en verwijdert de opgeslagen gegevens volledig.",
+    "no": "Knappen for tilbakestilling av påloggingsopplysninger logger nå kontoen ut umiddelbart og sletter de lagrede dataene fullstendig.",
+    "pl": "Przycisk resetowania danych logowania natychmiast wylogowuje konto i całkowicie usuwa jego zapisane dane.",
+    "ru": "Кнопка сброса учётных данных теперь немедленно выполняет выход из учётной записи и полностью удаляет её сохранённые данные.",
+    "sv": "Knappen för att återställa autentiseringsuppgifter loggar nu ut kontot omedelbart och raderar dess sparade data helt."
   }
 }

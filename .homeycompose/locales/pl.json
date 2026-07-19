@@ -16,7 +16,7 @@
       "failure": "Uwierzytelnianie nie powiodło się.",
       "legend": "Dane logowania",
       "reset": "Resetuj",
-      "resetConfirm": "Spowoduje to usunięcie zapisanych danych logowania wybranego konta; po następnym uruchomieniu aplikacja przestanie się do niego logować.",
+      "resetConfirm": "Spowoduje to natychmiastowe wylogowanie wybranego konta i usunięcie jego zapisanych danych logowania.",
       "unverified": "Zalogowano, ale nie udało się zweryfikować sesji — spróbuj ponownie."
     },
     "boolean": {

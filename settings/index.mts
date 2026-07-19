@@ -75,14 +75,14 @@ const homeyApiPut = async <T,>(
     homey.api('PUT', path, body, createCallback(resolve, reject))
   })
 
+const homeyApiDelete = async (homey: Homey, path: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    homey.api('DELETE', path, createCallback(resolve, reject))
+  })
+
 const homeyConfirm = async (homey: Homey, message: string): Promise<boolean> =>
   new Promise((resolve, reject) => {
     homey.confirm(message, null, createCallback(resolve, reject))
-  })
-
-const homeyUnset = async (homey: Homey, key: string): Promise<void> =>
-  new Promise((resolve, reject) => {
-    homey.unset(key, createCallback(resolve, reject))
   })
 
 // ── DOM helpers ──
@@ -108,30 +108,6 @@ const HOME_DRIVER_ID = 'home-melcloud'
 // The two APIs, in the order the picker offers them; also the priority
 // order when auto-selecting an account whose credentials are missing.
 const API_VALUES: readonly Api[] = ['classic', 'home']
-
-// Persisted keys per API, mirroring melcloud-api's `@setting` accessors
-// (base: username/password/expiry; Classic adds contextKey; Home adds
-// accessToken/refreshToken) plus the login-backoff deadline, all through
-// the app's per-API key prefixing (Classic bare, Home-prefixed). The
-// running session survives until the next app restart — resetting only
-// clears what the app would use to sign back in.
-const CREDENTIAL_SETTING_KEYS: Record<Api, readonly string[]> = {
-  classic: [
-    'contextKey',
-    'expiry',
-    'loginBackoffUntil',
-    'password',
-    'username',
-  ],
-  home: [
-    'homeAccessToken',
-    'homeExpiry',
-    'homeLoginBackoffUntil',
-    'homePassword',
-    'homeRefreshToken',
-    'homeUsername',
-  ],
-}
 
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
@@ -443,6 +419,8 @@ class AuthManager {
 
   readonly #loginSection: HTMLDivElement
 
+  readonly #onLogOutCallback: (api: Api) => void
+
   #passwordInput: HTMLInputElement | null = null
 
   readonly #resetButton: HTMLButtonElement
@@ -456,9 +434,11 @@ class AuthManager {
   public constructor(
     homey: Homey,
     loadPostLoginCallback: (api: Api) => Promise<void>,
+    onLogOutCallback: (api: Api) => void,
   ) {
     this.#homey = homey
     this.#loadPostLoginCallback = loadPostLoginCallback
+    this.#onLogOutCallback = onLogOutCallback
     this.#apiSelect = getSelect('api')
     this.#authenticateButton = getButton('authenticate')
     this.#authenticationSection = getDetails('authentication')
@@ -546,13 +526,13 @@ class AuthManager {
     const api = this.#currentApi
     await withDisablingButton(this.#resetButton.id, async () => {
       try {
-        await Promise.all(
-          CREDENTIAL_SETTING_KEYS[api].map(async (key) =>
-            homeyUnset(this.#homey, key),
-          ),
-        )
+        // The app-side logout owns the teardown (session, credentials,
+        // backoff, sync timer, registry) — the webview never touches the
+        // library's persisted keys.
+        await homeyApiDelete(this.#homey, `/${api}/sessions`)
         this.#credentialsByApi[api] = {}
         this.#syncInputsFromCredentials()
+        this.#onLogOutCallback(api)
       } catch (error) {
         await this.#homey.alert(getErrorMessage(error))
       }
@@ -1462,8 +1442,12 @@ class SettingsApp {
     this.#deviceSettingsManager = new DeviceSettingsManager(homey)
     this.#zoneSettingsManager = new ZoneSettingsManager(homey)
     this.#errorLogManager = new ErrorLogManager(homey)
-    this.#authManager = new AuthManager(homey, async (api) =>
-      this.#onLogin(api),
+    this.#authManager = new AuthManager(
+      homey,
+      async (api) => this.#onLogin(api),
+      (api) => {
+        this.#onLogOut(api)
+      },
     )
   }
 
@@ -1622,6 +1606,14 @@ class SettingsApp {
         this.#homey.__('settings.authenticate.unverified'),
       )
     }
+    this.#refreshVisibility()
+  }
+
+  // The app-side logout already killed the session, so mark this API
+  // unauthenticated and re-render — the panel reopens on the now-empty
+  // account.
+  #onLogOut(api: Api): void {
+    this.#authState[api] = false
     this.#refreshVisibility()
   }
 
