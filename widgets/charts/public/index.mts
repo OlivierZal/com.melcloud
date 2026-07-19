@@ -216,6 +216,11 @@ const getDayValues = (defaultDays: number): number[] =>
     )
     .toSorted((first, second) => first - second)
 
+// The per-vendor device lists arrive sorted, their concatenation is
+// not: re-sort so Classic and Home read as one alphabetical list.
+const byDeviceName = (zone: ChartDeviceZone, other: ChartDeviceZone): number =>
+  zone.name.localeCompare(other.name)
+
 const isChart = (value: string): value is HomeySettings['chart'] => {
   // Widened, not asserted: `includes` on the union-typed array rejects a
   // plain string argument.
@@ -935,16 +940,17 @@ class ChartWidget {
     // every device; the hourly temperatures and the operation modes are
     // ATW-only on the Home side (comfort-graph) and, for the hourly one,
     // on the Classic side too; the energy report skips Classic ERV
-    // (no energy data).
+    // (no energy data). Classic and Home merge into one alphabetical
+    // list.
     const devicesByChart: Record<
       HomeySettings['chart'],
       readonly ChartDeviceZone[]
     > = {
-      hourly_temperatures: [...classicAtw, ...homeAtw],
-      operation_modes: [...classicAll, ...homeAtw],
-      report: [...classicAta, ...classicAtw, ...homeAll],
-      signal: [...classicAll, ...homeAll],
-      temperatures: [...classicAll, ...homeAll],
+      hourly_temperatures: [...classicAtw, ...homeAtw].toSorted(byDeviceName),
+      operation_modes: [...classicAll, ...homeAtw].toSorted(byDeviceName),
+      report: [...classicAta, ...classicAtw, ...homeAll].toSorted(byDeviceName),
+      signal: [...classicAll, ...homeAll].toSorted(byDeviceName),
+      temperatures: [...classicAll, ...homeAll].toSorted(byDeviceName),
     }
     if (Object.values(devicesByChart).some((list) => list.length > 0)) {
       this.#populateChartOptions(devicesByChart)

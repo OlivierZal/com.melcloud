@@ -1285,10 +1285,12 @@ export default class MELCloudApp extends App {
       )
     this.homey.dashboards
       .getWidget('charts')
-      .registerSettingAutocompleteListener('default_zone', (query) => [
-        ...filterZonesByName(this.getClassicDeviceZones(), query),
-        ...filterZonesByName(this.getHomeDeviceZones(), query),
-      ])
+      .registerSettingAutocompleteListener('default_zone', (query) =>
+        [
+          ...filterZonesByName(this.getClassicDeviceZones(), query),
+          ...filterZonesByName(this.getHomeDeviceZones(), query),
+        ].toSorted((zone, other) => zone.name.localeCompare(other.name)),
+      )
   }
 
   // Everything the ATA group widget can target: the Classic zones and

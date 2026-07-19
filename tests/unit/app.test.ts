@@ -2393,7 +2393,7 @@ describe('melCloudApp', () => {
         name: 'Casa',
       })
       mockHomeRegistry.getAll.mockReturnValue([
-        { building: { name: 'Verkstan' }, id: 'guid-1', name: 'Device 1' },
+        { building: { name: 'Antwerpen' }, id: 'guid-1', name: 'Device 1' },
       ])
       await app.onInit()
 
@@ -2404,15 +2404,16 @@ describe('melCloudApp', () => {
       )
       const result = chartsCallback('device 1')
 
-      // Classic first, then Home; the query matches the suffixed names.
+      // One alphabetical list across vendors (the Home entry sorts
+      // before the Classic one); the query matches the suffixed names.
       expect(result).toStrictEqual([
-        { id: 10, level: 1, model: 'devices', name: 'Device 1 (Casa)' },
         {
           id: 'guid-1',
           level: 1,
           model: 'homeDevices',
-          name: 'Device 1 (Verkstan)',
+          name: 'Device 1 (Antwerpen)',
         },
+        { id: 10, level: 1, model: 'devices', name: 'Device 1 (Casa)' },
       ])
     })
   })
