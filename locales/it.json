@@ -12,7 +12,7 @@
       "legend": "Credenziali",
       "unverified": "Accesso effettuato, ma non è stato possibile verificare la sessione: riprova.",
       "reset": "Reimposta",
-      "resetConfirm": "Questo cancella le credenziali salvate dell'account selezionato; l'app smetterà di accedervi dopo il prossimo riavvio."
+      "resetConfirm": "Questo disconnette immediatamente l'account selezionato e cancella le sue credenziali salvate."
     },
     "boolean": {
       "false": "No",

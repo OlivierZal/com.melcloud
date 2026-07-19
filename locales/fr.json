@@ -12,7 +12,7 @@
       "legend": "Identifiants",
       "unverified": "Connexion réussie, mais la session n'a pas pu être vérifiée — veuillez réessayer.",
       "reset": "Réinitialiser",
-      "resetConfirm": "Ceci efface les identifiants enregistrés du compte sélectionné ; l'app cessera de s'y connecter après son prochain redémarrage."
+      "resetConfirm": "Ceci déconnecte immédiatement le compte sélectionné et efface ses identifiants enregistrés."
     },
     "boolean": {
       "false": "Non",

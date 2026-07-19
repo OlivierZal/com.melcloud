@@ -12,7 +12,7 @@
       "legend": "Dane logowania",
       "unverified": "Zalogowano, ale nie udało się zweryfikować sesji — spróbuj ponownie.",
       "reset": "Resetuj",
-      "resetConfirm": "Spowoduje to usunięcie zapisanych danych logowania wybranego konta; po następnym uruchomieniu aplikacja przestanie się do niego logować."
+      "resetConfirm": "Spowoduje to natychmiastowe wylogowanie wybranego konta i usunięcie jego zapisanych danych logowania."
     },
     "boolean": {
       "false": "Nie",

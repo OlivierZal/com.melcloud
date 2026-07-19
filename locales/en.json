@@ -12,7 +12,7 @@
       "legend": "Credentials",
       "unverified": "Signed in, but the session could not be verified — please try again.",
       "reset": "Reset",
-      "resetConfirm": "This clears the saved credentials for the selected account; the app stops signing in to it after its next restart."
+      "resetConfirm": "This immediately signs out the selected account and clears its saved credentials."
     },
     "boolean": {
       "false": "No",

@@ -133,18 +133,23 @@ input.homey-form-checkbox-input:indeterminate
 }
 
 /* The collapsible credentials panel: the summary doubles as the
-   fieldset legend, but Homey's style library sizes legends through the
-   `legend` element, not the class — restate the title scale here, plus
-   the click affordance a legend lacks. */
+   fieldset legend, but Homey's `legend.homey-form-legend` rule is
+   tag-qualified and misses a `summary` — restate the legend's own
+   tokens so the title matches the adjacent legends exactly (the
+   extension's sibling panel hardcodes 1.375rem ≈ 22px, which is 2px
+   over the real `--homey-font-size-medium` of 20px; it goes unnoticed
+   there because its summary sits alone, not next to a legend). */
 summary.homey-form-legend {
   cursor: pointer;
-  font-size: 1.375rem;
-  font-weight: 700;
+  font-size: var(--homey-font-size-medium);
+  font-weight: var(--homey-font-weight-bold);
 }
 
-/* Mirror the disabled treatment of the other button variants for the
-   destructive reset. */
-.homey-button-danger-full:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+/* Destructive twin of the filled sign-in button: the injected sheet
+   ships no danger-full variant, and its filled background is a gradient
+   image driven by `--homey-button-background`, so repaint that variable
+   with Homey's red (hex fallback). The id selector clears the injected
+   `[class*='-primary']` rule that sets the same variable. */
+#reset_credentials {
+  --homey-button-background: var(--homey-color-red, rgb(216 28 29));
 }

@@ -12,7 +12,7 @@
       "legend": "Referenties",
       "unverified": "Aangemeld, maar de sessie kon niet worden geverifieerd — probeer het opnieuw.",
       "reset": "Opnieuw instellen",
-      "resetConfirm": "Dit wist de opgeslagen inloggegevens van het geselecteerde account; de app meldt zich er na de volgende herstart niet meer bij aan."
+      "resetConfirm": "Dit meldt het geselecteerde account onmiddellijk af en wist de opgeslagen inloggegevens."
     },
     "boolean": {
       "false": "Nee",

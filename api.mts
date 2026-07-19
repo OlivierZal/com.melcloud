@@ -72,6 +72,10 @@ const api = {
     body: LoginCredentials
     homey: Homey
   }): Promise<void> => app.classicApi.authenticate(body),
+  classicLogOut: ({ homey: { app } }: { homey: Homey }): void => {
+    logSettingsRoute(app, '/classic/sessions')
+    app.classicApi.logOut()
+  },
   getClassicBuildings: (): Classic.BuildingZone[] => getClassicBuildings(),
   getClassicFrostProtection: async ({
     homey: { app },
@@ -145,6 +149,10 @@ const api = {
     body: LoginCredentials
     homey: Homey
   }): Promise<void> => app.homeApi.authenticate(body),
+  homeLogOut: ({ homey: { app } }: { homey: Homey }): void => {
+    logSettingsRoute(app, '/home/sessions')
+    app.homeApi.logOut()
+  },
   isClassicAuthenticated: ({ homey: { app } }: { homey: Homey }): boolean => {
     logSettingsRoute(app, '/classic/sessions')
     return app.classicApi.isAuthenticated()

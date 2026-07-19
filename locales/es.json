@@ -12,7 +12,7 @@
       "legend": "Credenciales",
       "unverified": "Sesión iniciada, pero no se pudo verificar la sesión; inténtelo de nuevo.",
       "reset": "Restablecer",
-      "resetConfirm": "Esto borra las credenciales guardadas de la cuenta seleccionada; la aplicación dejará de iniciar sesión en ella tras su próximo reinicio."
+      "resetConfirm": "Esto cierra la sesión de la cuenta seleccionada de inmediato y borra sus credenciales guardadas."
     },
     "boolean": {
       "false": "No",

@@ -153,6 +153,7 @@ const mockGetTimezone = vi.fn<() => string>().mockReturnValue('Europe/Paris')
 // non-string values, so the mock mirrors that width.
 const mockSettingsGet = vi.fn<(key: string) => unknown>()
 const mockSettingsSet = vi.fn<(key: string, value: string) => void>()
+const mockSettingsUnset = vi.fn<(key: string) => void>()
 const mockSetTimeout =
   vi.fn<(callback: () => Promise<void> | void, ms: number) => void>()
 const mockCreateNotification = vi.fn<() => Promise<void>>()
@@ -328,6 +329,7 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
       settings: {
         get: mockSettingsGet,
         set: mockSettingsSet,
+        unset: mockSettingsUnset,
       },
     },
     writable: false,
@@ -1900,6 +1902,7 @@ describe('melCloudApp', () => {
         settingManager: {
           get: (key: string) => unknown
           set: (key: string, value: string) => void
+          unset: (key: string) => void
         }
       }>(mockHomeCreate, 0, 0)
       settingManager.get('username')
@@ -1909,6 +1912,10 @@ describe('melCloudApp', () => {
       settingManager.set('password', 'secret')
 
       expect(mockSettingsSet).toHaveBeenCalledWith('homePassword', 'secret')
+
+      settingManager.unset('accessToken')
+
+      expect(mockSettingsUnset).toHaveBeenCalledWith('homeAccessToken')
     })
 
     it('should create classic setting manager without key prefixing', async () => {
@@ -1918,6 +1925,7 @@ describe('melCloudApp', () => {
         settingManager: {
           get: (key: string) => unknown
           set: (key: string, value: string) => void
+          unset: (key: string) => void
         }
       }>(mockCreate, 0, 0)
       settingManager.get('contextKey')
@@ -1927,6 +1935,10 @@ describe('melCloudApp', () => {
       settingManager.set('expiry', '2026-12-31')
 
       expect(mockSettingsSet).toHaveBeenCalledWith('expiry', '2026-12-31')
+
+      settingManager.unset('contextKey')
+
+      expect(mockSettingsUnset).toHaveBeenCalledWith('contextKey')
     })
 
     it('should pass through string and null settings and coerce the rest to undefined', async () => {

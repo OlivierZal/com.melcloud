@@ -12,7 +12,7 @@
       "legend": "Inloggningsuppgifter",
       "unverified": "Inloggad, men sessionen kunde inte verifieras — försök igen.",
       "reset": "Återställ",
-      "resetConfirm": "Detta rensar de sparade autentiseringsuppgifterna för det valda kontot; appen loggar inte längre in på det efter nästa omstart."
+      "resetConfirm": "Detta loggar omedelbart ut det valda kontot och rensar dess sparade autentiseringsuppgifter."
     },
     "boolean": {
       "false": "Nej",

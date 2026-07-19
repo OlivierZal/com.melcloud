@@ -998,6 +998,9 @@ export default class MELCloudApp extends App {
       set: (key: string, value: string): void => {
         this.homey.settings.set(prefixKey(key), value)
       },
+      unset: (key: string): void => {
+        this.homey.settings.unset(prefixKey(key))
+      },
     }
   }
 

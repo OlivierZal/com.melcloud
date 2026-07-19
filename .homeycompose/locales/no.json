@@ -16,7 +16,7 @@
       "failure": "Autentisering mislyktes.",
       "legend": "Innloggingsinformasjon",
       "reset": "Tilbakestill",
-      "resetConfirm": "Dette sletter de lagrede påloggingsopplysningene for den valgte kontoen; appen logger ikke lenger på den etter neste omstart.",
+      "resetConfirm": "Dette logger den valgte kontoen ut umiddelbart og sletter de lagrede påloggingsopplysningene.",
       "unverified": "Logget inn, men økten kunne ikke bekreftes — prøv igjen."
     },
     "boolean": {

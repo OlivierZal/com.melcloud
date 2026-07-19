@@ -16,7 +16,7 @@
       "failure": "La autenticación falló.",
       "legend": "Credenciales",
       "reset": "Restablecer",
-      "resetConfirm": "Esto borra las credenciales guardadas de la cuenta seleccionada; la aplicación dejará de iniciar sesión en ella tras su próximo reinicio.",
+      "resetConfirm": "Esto cierra la sesión de la cuenta seleccionada de inmediato y borra sus credenciales guardadas.",
       "unverified": "Sesión iniciada, pero no se pudo verificar la sesión; inténtelo de nuevo."
     },
     "boolean": {
