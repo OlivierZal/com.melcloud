@@ -63,6 +63,7 @@ const FONT_SIZE_VERY_SMALL = 12
 const GRID_LINE_DASH_PX = 3
 const HALF_TURN_DEGREES = 180
 const HOURLY_CHART_REFRESH_MS = 60_000
+const HOURS_PER_DAY = 24
 const LINE_WIDTH = 5
 const MIN_WIDGET_HEIGHT = 400
 const PERCENT_FACTOR = 100
@@ -220,6 +221,17 @@ const getDayValues = (defaultDays: number): number[] =>
 // not: re-sort so Classic and Home read as one alphabetical list.
 const byDeviceName = (zone: ChartDeviceZone, other: ChartDeviceZone): number =>
   zone.name.localeCompare(other.name)
+
+// The rolling last-24-hours picker entry, localized like the day
+// counts (no locale files needed).
+const last24HoursLabel = (): string => {
+  const formatter = new Intl.NumberFormat(document.documentElement.lang, {
+    style: 'unit',
+    unit: 'hour',
+    unitDisplay: 'long',
+  })
+  return formatter.format(HOURS_PER_DAY)
+}
 
 const isChart = (value: string): value is HomeySettings['chart'] => {
   // Widened, not asserted: `includes` on the union-typed array rejects a
@@ -800,16 +812,23 @@ class ChartWidget {
     this.#isReady = true
   }
 
-  #addEventListeners(devicesForChart: () => readonly ChartDeviceZone[]): void {
+  #addEventListeners({
+    canUseLast24Hours,
+    devicesForChart,
+  }: {
+    canUseLast24Hours: () => boolean
+    devicesForChart: () => readonly ChartDeviceZone[]
+  }): void {
     this.#chartSelect.addEventListener('change', () => {
       this.#repopulateZoneOptions(devicesForChart())
-      this.#syncDayVisibility()
+      this.#populateDayOptions(canUseLast24Hours())
       this.#redraw()
     })
     this.#daySelect.addEventListener('change', () => {
       this.#redraw()
     })
     this.#zoneSelect.addEventListener('change', () => {
+      this.#populateDayOptions(canUseLast24Hours())
       this.#redraw()
     })
   }
@@ -820,6 +839,17 @@ class ChartWidget {
     }
     const { id, model } = this.#defaultZone
     applySelectValue(this.#zoneSelect, getZoneId(id, model))
+  }
+
+  // «24 h» exists only where hourly energy buckets do — every report
+  // device except Classic ATW, whose wire never buckets under a day.
+  #buildLast24HoursGate(classicAtw: readonly ChartDeviceZone[]): () => boolean {
+    const dailyOnlyZones = new Set(
+      classicAtw.map(({ id, model }) => getZoneId(id, model)),
+    )
+    return () =>
+      this.#getChart() === 'report' &&
+      !dailyOnlyZones.has(this.#zoneSelect.value)
   }
 
   // Chart.js keeps legend-toggle state where it does not survive this
@@ -953,12 +983,13 @@ class ChartWidget {
       temperatures: [...classicAll, ...homeAll].toSorted(byDeviceName),
     }
     if (Object.values(devicesByChart).some((list) => list.length > 0)) {
+      const canUseLast24Hours = this.#buildLast24HoursGate(classicAtw)
       this.#populateChartOptions(devicesByChart)
-      this.#populateDayOptions()
       const devicesForChart = (): readonly ChartDeviceZone[] =>
         devicesByChart[this.#getChart()]
       this.#repopulateZoneOptions(devicesForChart())
-      this.#addEventListeners(devicesForChart)
+      this.#populateDayOptions(canUseLast24Hours())
+      this.#addEventListeners({ canUseLast24Hours, devicesForChart })
       await this.#draw()
     }
   }
@@ -981,7 +1012,16 @@ class ChartWidget {
     applySelectValue(this.#chartSelect, this.#defaultChart)
   }
 
-  #populateDayOptions(): void {
+  // The rolling «24 h» choice (id `'0'`) tops the report day picker
+  // when the selected device buckets hourly; the day counts follow.
+  // Rebuilt on chart and device change: the previous selection wins,
+  // then the configured default.
+  #populateDayOptions(shouldOfferLast24Hours: boolean): void {
+    const previous = this.#daySelect.value
+    this.#daySelect.replaceChildren()
+    if (shouldOfferLast24Hours) {
+      createOption(this.#daySelect, { id: '0', label: last24HoursLabel() })
+    }
     const formatter = new Intl.NumberFormat(document.documentElement.lang, {
       style: 'unit',
       unit: 'day',
@@ -994,6 +1034,7 @@ class ChartWidget {
       })
     }
     applySelectValue(this.#daySelect, String(this.#defaultDays))
+    applySelectValue(this.#daySelect, previous)
     this.#syncDayVisibility()
   }
 

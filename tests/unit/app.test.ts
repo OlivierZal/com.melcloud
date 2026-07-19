@@ -8,6 +8,7 @@ import {
   NoChangesError,
   ok,
 } from '@olivierzal/melcloud-api'
+import { Temporal } from 'temporal-polyfill'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
@@ -1613,6 +1614,56 @@ describe('melCloudApp', () => {
       })
 
       expect(report).toBe(mockData)
+    })
+
+    it('should anchor an N-day report window on local midnight', async () => {
+      vi.spyOn(Temporal.Now, 'zonedDateTimeISO').mockReturnValue(
+        Temporal.ZonedDateTime.from('2026-07-19T08:30:00+02:00[Europe/Paris]'),
+      )
+      try {
+        const getEnergyReport = vi
+          .fn<() => Promise<Result<unknown>>>()
+          .mockResolvedValue(ok(mock<ReportChartLineOptions>()))
+        mockFacadeManagerGet.mockReturnValue(mock({ getEnergyReport }))
+        mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
+        await app.onInit()
+
+        await app.getClassicEnergyReport({ days: 2, deviceId: '1' })
+
+        // Two days: yesterday and today, from yesterday's local midnight.
+        expect(getEnergyReport).toHaveBeenCalledWith({
+          from: '2026-07-18T00:00:00',
+        })
+      } finally {
+        vi.mocked(Temporal.Now.zonedDateTimeISO).mockRestore()
+      }
+    })
+
+    it('should keep the last-24-hours report window rolling', async () => {
+      vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+        Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
+      )
+      try {
+        const getEnergyReport = vi
+          .fn<() => Promise<Result<unknown>>>()
+          .mockResolvedValue(ok(mock<ReportChartLineOptions>()))
+        mockHomeFacadeManagerGet.mockReturnValue(mock({ getEnergyReport }))
+        mockHomeRegistry.getById.mockReturnValue({
+          id: 'guid-1',
+          type: Home.DeviceType.Ata,
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
+        })
+        await app.onInit()
+
+        await app.getHomeEnergyReport({ days: 0, deviceId: 'guid-1' })
+
+        expect(getEnergyReport).toHaveBeenCalledWith({
+          from: '2026-07-18T08:30:00',
+        })
+      } finally {
+        vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+      }
     })
   })
 

@@ -80,6 +80,18 @@ const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
 const daysAgo = (days: number, timezone: string): string =>
   Temporal.Now.plainDateTimeISO(timezone).subtract({ days }).toString()
 
+// Energy-report windows anchor on local midnight so "N days" reads as
+// N calendar days ending today; `days` 0 is the rolling last-24-hours
+// choice the widget offers when hourly buckets exist.
+const energyReportStart = (days: number, timezone: string): string =>
+  days === 0 ?
+    daysAgo(1, timezone)
+  : Temporal.Now.zonedDateTimeISO(timezone)
+      .startOfDay()
+      .subtract({ days: days - 1 })
+      .toPlainDateTime()
+      .toString()
+
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
     .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
@@ -466,7 +478,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = daysAgo(days, getTimeZone(this.homey))
+    const from = energyReportStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getEnergyReport({
         from,
@@ -727,7 +739,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = daysAgo(days, getTimeZone(this.homey))
+    const from = energyReportStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.#getHomeDeviceFacade(deviceId).getEnergyReport({ from }),
     )
