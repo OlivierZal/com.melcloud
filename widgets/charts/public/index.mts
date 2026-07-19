@@ -144,13 +144,13 @@ const colors = [
   '#E7BA52',
 ]
 const hidden: ReadonlySet<string> = new Set([
-  'FlowBoiler',
-  'FlowZone1',
-  'FlowZone2',
-  'MixingTankWater',
-  'ReturnBoiler',
-  'ReturnZone1',
-  'ReturnZone2',
+  'FlowTemperatureBoiler',
+  'FlowTemperatureZone1',
+  'FlowTemperatureZone2',
+  'MixingTankWaterTemperature',
+  'ReturnTemperatureBoiler',
+  'ReturnTemperatureZone1',
+  'ReturnTemperatureZone2',
 ])
 const styleCache: Record<string, string> = {}
 
@@ -177,11 +177,6 @@ const getFontWeight = (property: string): FontWeight => {
     }
   }
 }
-
-// Strip the noise word so legends stay scannable ('TankWaterTemperature'
-// → 'TankWater') — also what the default-hidden set is keyed on.
-const normalizeSeriesName = (name: string): string =>
-  name.replace('Temperature', '')
 
 type SeriesLocalizer = (name: string, fallback: string) => string
 
@@ -456,7 +451,6 @@ const getLineDatasets = (
   localize: SeriesLocalizer,
 ): WidgetChartConfig['data']['datasets'] =>
   series.map(({ data, name }, index) => {
-    const seriesName = normalizeSeriesName(name)
     const color = colors[index % colors.length]
     return {
       backgroundColor: color,
@@ -464,8 +458,10 @@ const getLineDatasets = (
       data: [...data],
       // Default visibility keys on the wire vocabulary, not the
       // language-dependent display label.
-      hidden: hidden.has(seriesName),
-      label: localize(name, seriesName),
+      hidden: hidden.has(name),
+      // Untranslated names (the signal chart's device name, unknown
+      // wire series) pass through untouched.
+      label: localize(name, name),
       xAxisID: 'xAxis',
       yAxisID: 'yAxis',
     }
@@ -646,28 +642,6 @@ const getBarScalesConfig = (
   }
 }
 
-// Clean up MELCloud operation mode labels for display
-// (e.g., 'CoolingMode' -> 'Cooling') — the fallback for wire modes
-// missing from the series i18n table.
-const cleanPieLabel = (label: string): string => {
-  const cleaned = label
-    .replace('Actual', '')
-    .replace('FansStopped', 'Stop')
-    .replace('Mode', '')
-    .replace('Operation', '')
-    .replace('PowerOff', 'Off')
-    .replace('Power', 'Off')
-    .replace('Prevention', '')
-  // Plain suffix strip — a `/(.+)Ventilation$/` regex would backtrack.
-  // The length check preserves a label that is exactly 'Ventilation',
-  // matching the old regex which required at least one leading char.
-  return (
-      cleaned.length > 'Ventilation'.length && cleaned.endsWith('Ventilation')
-    ) ?
-      cleaned.slice(0, -'Ventilation'.length)
-    : cleaned
-}
-
 const getChartPieConfig = (
   { labels, series }: ReportChartPieOptions,
   localize: SeriesLocalizer,
@@ -676,7 +650,9 @@ const getChartPieConfig = (
     datasets: [
       { backgroundColor: [...colors], borderWidth: 0, data: [...series] },
     ],
-    labels: labels.map((label) => localize(label, cleanPieLabel(label))),
+    // Every known wire mode has a series translation; an unknown one
+    // shows its wire name untouched.
+    labels: labels.map((label) => localize(label, label)),
   },
   options: {
     maintainAspectRatio: false,
