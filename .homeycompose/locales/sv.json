@@ -15,6 +15,8 @@
       "button": "Logga in",
       "failure": "Autentisering misslyckades.",
       "legend": "Inloggningsuppgifter",
+      "reset": "Återställ",
+      "resetConfirm": "Detta rensar de sparade autentiseringsuppgifterna för det valda kontot; appen loggar inte längre in på det efter nästa omstart.",
       "unverified": "Inloggad, men sessionen kunde inte verifieras — försök igen."
     },
     "boolean": {

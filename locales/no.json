@@ -10,7 +10,9 @@
       "button": "Logg inn",
       "failure": "Autentisering mislyktes.",
       "legend": "Innloggingsinformasjon",
-      "unverified": "Logget inn, men økten kunne ikke bekreftes — prøv igjen."
+      "unverified": "Logget inn, men økten kunne ikke bekreftes — prøv igjen.",
+      "reset": "Tilbakestill",
+      "resetConfirm": "Dette sletter de lagrede påloggingsopplysningene for den valgte kontoen; appen logger ikke lenger på den etter neste omstart."
     },
     "boolean": {
       "false": "Nei",

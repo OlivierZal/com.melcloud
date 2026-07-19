@@ -26,6 +26,7 @@ import {
   configureNumericInput,
   createOption,
   getButton,
+  getDetails,
   getDiv,
   getInput,
   getSelect,
@@ -74,6 +75,16 @@ const homeyApiPut = async <T,>(
     homey.api('PUT', path, body, createCallback(resolve, reject))
   })
 
+const homeyConfirm = async (homey: Homey, message: string): Promise<boolean> =>
+  new Promise((resolve, reject) => {
+    homey.confirm(message, null, createCallback(resolve, reject))
+  })
+
+const homeyUnset = async (homey: Homey, key: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    homey.unset(key, createCallback(resolve, reject))
+  })
+
 // ── DOM helpers ──
 
 const Modulo = {
@@ -93,6 +104,30 @@ const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
 /** Currently the only Home driver; expand to a readonly array if more are added. */
 const HOME_DRIVER_ID = 'home-melcloud'
+
+// Persisted keys per API, mirroring melcloud-api's `@setting` accessors
+// (base: username/password/expiry; Classic adds contextKey; Home adds
+// accessToken/refreshToken) plus the login-backoff deadline, all through
+// the app's per-API key prefixing (Classic bare, Home-prefixed). The
+// running session survives until the next app restart — resetting only
+// clears what the app would use to sign back in.
+const CREDENTIAL_SETTING_KEYS: Record<Api, readonly string[]> = {
+  classic: [
+    'contextKey',
+    'expiry',
+    'loginBackoffUntil',
+    'password',
+    'username',
+  ],
+  home: [
+    'homeAccessToken',
+    'homeExpiry',
+    'homeLoginBackoffUntil',
+    'homePassword',
+    'homeRefreshToken',
+    'homeUsername',
+  ],
+}
 
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
@@ -387,13 +422,11 @@ const getSubzones = (zone: Classic.Zone): Classic.Zone[] => [
 // ── AuthManager ──
 
 class AuthManager {
-  readonly #apiOptions: readonly HTMLOptionElement[]
-
   readonly #apiSelect: HTMLSelectElement
 
   readonly #authenticateButton: HTMLButtonElement
 
-  readonly #authenticationSection: HTMLDivElement
+  readonly #authenticationSection: HTMLDetailsElement
 
   #credentialsByApi: Record<Api, Partial<LoginCredentials>> = {
     classic: {},
@@ -408,6 +441,8 @@ class AuthManager {
 
   #passwordInput: HTMLInputElement | null = null
 
+  readonly #resetButton: HTMLButtonElement
+
   #usernameInput: HTMLInputElement | null = null
 
   get #currentApi(): Api {
@@ -421,13 +456,10 @@ class AuthManager {
     this.#homey = homey
     this.#loadPostLoginCallback = loadPostLoginCallback
     this.#apiSelect = getSelect('api')
-    // Some webview runtimes ignore `hidden` on `<option>`, so unavailable
-    // APIs are detached from the DOM. Snapshot the original order to
-    // restore them.
-    this.#apiOptions = [...this.#apiSelect.options]
     this.#authenticateButton = getButton('authenticate')
-    this.#authenticationSection = getDiv('authentication')
+    this.#authenticationSection = getDetails('authentication')
     this.#loginSection = getDiv('login')
+    this.#resetButton = getButton('reset_credentials')
   }
 
   public addEventListeners(): void {
@@ -437,6 +469,15 @@ class AuthManager {
     this.#authenticateButton.addEventListener('click', () => {
       fireAndForget(this.login())
     })
+    this.#resetButton.addEventListener('click', () => {
+      fireAndForget(this.resetCredentials())
+    })
+  }
+
+  // Folded when the credentials are settled, expanded while attention
+  // is needed — same rule the section's visibility used to follow.
+  public collapseAuthenticationSection(isCollapsed: boolean): void {
+    this.#authenticationSection.open = !isCollapsed
   }
 
   public createCredentialFields(
@@ -453,10 +494,6 @@ class AuthManager {
       driverSettings,
     )
     this.#syncInputsFromCredentials()
-  }
-
-  public hideAuthenticationSection(isHidden: boolean): void {
-    hide(this.#authenticationSection, isHidden)
   }
 
   /** @alerts Displays authentication errors to the user. */
@@ -483,16 +520,30 @@ class AuthManager {
     })
   }
 
-  public setAvailableApis(apis: readonly Api[]): void {
-    const allowed = new Set<string>(apis)
-    const firstAllowed = this.#updateOptionVisibility(allowed)
-    // Programmatic `.value` assignment does not fire `change`, so the
-    // `#syncInputsFromCredentials` call below covers what the listener
-    // would miss when we redirect to the first available API.
-    if (firstAllowed !== '' && !allowed.has(this.#apiSelect.value)) {
-      this.#apiSelect.value = firstAllowed
+  /** @alerts Displays reset failures to the user. */
+  public async resetCredentials(): Promise<void> {
+    if (
+      !(await homeyConfirm(
+        this.#homey,
+        this.#homey.__('settings.authenticate.resetConfirm'),
+      ))
+    ) {
+      return
     }
-    this.#syncInputsFromCredentials()
+    const api = this.#currentApi
+    await withDisablingButton(this.#resetButton.id, async () => {
+      try {
+        await Promise.all(
+          CREDENTIAL_SETTING_KEYS[api].map(async (key) =>
+            homeyUnset(this.#homey, key),
+          ),
+        )
+        this.#credentialsByApi[api] = {}
+        this.#syncInputsFromCredentials()
+      } catch (error) {
+        await this.#homey.alert(getErrorMessage(error))
+      }
+    })
   }
 
   #createCredentialInput(
@@ -519,22 +570,6 @@ class AuthManager {
     if (this.#passwordInput !== null) {
       this.#passwordInput.value = password ?? ''
     }
-  }
-
-  #updateOptionVisibility(allowed: ReadonlySet<string>): string {
-    let firstAllowed = ''
-    this.#apiSelect.replaceChildren()
-    for (const option of this.#apiOptions) {
-      if (!allowed.has(option.value)) {
-        continue
-      }
-
-      this.#apiSelect.append(option)
-      if (firstAllowed === '') {
-        ;({ value: firstAllowed } = option)
-      }
-    }
-    return firstAllowed
   }
 }
 
@@ -1508,19 +1543,6 @@ class SettingsApp {
     }
   }
 
-  #getUnauthenticatedApis(): Api[] {
-    const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
-      this.#authState
-    const apis: Api[] = []
-    if (!isClassicAuthenticated) {
-      apis.push('classic')
-    }
-    if (!isHomeAuthenticated) {
-      apis.push('home')
-    }
-    return apis
-  }
-
   #hasHomeDevices(): boolean {
     return Object.hasOwn(
       this.#deviceSettingsManager.deviceSettings,
@@ -1581,12 +1603,11 @@ class SettingsApp {
   #refreshVisibility(): void {
     const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
       this.#authState
-    this.#authManager.hideAuthenticationSection(
+    this.#authManager.collapseAuthenticationSection(
       isClassicAuthenticated && isHomeAuthenticated,
     )
     hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
     toggleClassicOnlySections(isClassicAuthenticated)
-    this.#authManager.setAvailableApis(this.#getUnauthenticatedApis())
   }
 
   async #run(): Promise<void> {

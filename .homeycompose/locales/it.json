@@ -15,6 +15,8 @@
       "button": "Accedi",
       "failure": "Autenticazione fallita.",
       "legend": "Credenziali",
+      "reset": "Reimposta",
+      "resetConfirm": "Questo cancella le credenziali salvate dell'account selezionato; l'app smetterà di accedervi dopo il prossimo riavvio.",
       "unverified": "Accesso effettuato, ma non è stato possibile verificare la sessione: riprova."
     },
     "boolean": {

@@ -52,31 +52,38 @@
                 data-i18n="settings.title"
             >MELCloud settings</h1>
         </header>
-        <!-- Shown when at least one API is unauthenticated -->
-        <div id="authentication" hidden>
-            <fieldset class="homey-form-fieldset">
-                <legend class="homey-form-legend" data-i18n="settings.authenticate.legend">Credentials</legend>
-                <div class="homey-form-group">
-                    <select
-                        id="api"
-                        class="homey-form-select"
-                        aria-label="API"
-                    >
-                        <option value="classic">Classic</option>
-                        <option value="home">Home</option>
-                    </select>
-                </div>
-                <div id="login"></div>
-                <div class="homey-form-group">
-                    <button
-                        id="authenticate"
-                        type="button"
-                        class="homey-button-primary-full"
-                        data-i18n="settings.authenticate.button"
-                    >Log in</button>
-                </div>
-            </fieldset>
-        </div>
+        <!-- Collapsible: folded when both APIs are signed in (the
+            credentials are settled), expanded while at least one is not. -->
+        <details id="authentication" class="homey-form-fieldset">
+            <summary class="homey-form-legend" data-i18n="settings.authenticate.legend">Credentials</summary>
+            <div class="homey-form-group">
+                <select
+                    id="api"
+                    class="homey-form-select"
+                    aria-label="API"
+                >
+                    <option value="classic">Classic</option>
+                    <option value="home">Home</option>
+                </select>
+            </div>
+            <div id="login"></div>
+            <div class="homey-form-group">
+                <button
+                    id="authenticate"
+                    type="button"
+                    class="homey-button-primary-full"
+                    data-i18n="settings.authenticate.button"
+                >Log in</button>
+            </div>
+            <div class="homey-form-group">
+                <button
+                    id="reset_credentials"
+                    type="button"
+                    class="homey-button-danger-full"
+                    data-i18n="settings.authenticate.reset"
+                >Reset</button>
+            </div>
+        </details>
         <!-- Shown when at least one API is authenticated — hidden by default to prevent flash -->
         <div id="content" hidden>
             <fieldset class="homey-form-fieldset">
