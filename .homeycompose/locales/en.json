@@ -15,6 +15,8 @@
       "button": "Log in",
       "failure": "Authentication failed.",
       "legend": "Credentials",
+      "reset": "Reset",
+      "resetConfirm": "This clears the saved credentials for the selected account; the app stops signing in to it after its next restart.",
       "unverified": "Signed in, but the session could not be verified — please try again."
     },
     "boolean": {

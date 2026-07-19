@@ -15,6 +15,8 @@
       "button": "Se connecter",
       "failure": "L'authentification a échoué.",
       "legend": "Identifiants",
+      "reset": "Réinitialiser",
+      "resetConfirm": "Ceci efface les identifiants enregistrés du compte sélectionné ; l'app cessera de s'y connecter après son prochain redémarrage.",
       "unverified": "Connexion réussie, mais la session n'a pas pu être vérifiée — veuillez réessayer."
     },
     "boolean": {

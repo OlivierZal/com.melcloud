@@ -10,7 +10,9 @@
       "button": "Iniciar sesión",
       "failure": "La autenticación falló.",
       "legend": "Credenciales",
-      "unverified": "Sesión iniciada, pero no se pudo verificar la sesión; inténtelo de nuevo."
+      "unverified": "Sesión iniciada, pero no se pudo verificar la sesión; inténtelo de nuevo.",
+      "reset": "Restablecer",
+      "resetConfirm": "Esto borra las credenciales guardadas de la cuenta seleccionada; la aplicación dejará de iniciar sesión en ella tras su próximo reinicio."
     },
     "boolean": {
       "false": "No",

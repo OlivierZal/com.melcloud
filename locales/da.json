@@ -10,7 +10,9 @@
       "button": "Log ind",
       "failure": "Godkendelse mislykkedes.",
       "legend": "Brugernavn og adgangskode",
-      "unverified": "Logget ind, men sessionen kunne ikke bekræftes — prøv igen."
+      "unverified": "Logget ind, men sessionen kunne ikke bekræftes — prøv igen.",
+      "reset": "Nulstil",
+      "resetConfirm": "Dette rydder de gemte legitimationsoplysninger for den valgte konto; appen logger ikke længere ind på den efter næste genstart."
     },
     "boolean": {
       "false": "Nej",

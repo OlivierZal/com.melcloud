@@ -10,7 +10,9 @@
       "button": "Zaloguj się",
       "failure": "Uwierzytelnianie nie powiodło się.",
       "legend": "Dane logowania",
-      "unverified": "Zalogowano, ale nie udało się zweryfikować sesji — spróbuj ponownie."
+      "unverified": "Zalogowano, ale nie udało się zweryfikować sesji — spróbuj ponownie.",
+      "reset": "Resetuj",
+      "resetConfirm": "Spowoduje to usunięcie zapisanych danych logowania wybranego konta; po następnym uruchomieniu aplikacja przestanie się do niego logować."
     },
     "boolean": {
       "false": "Nie",

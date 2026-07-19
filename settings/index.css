@@ -131,3 +131,20 @@ input.homey-form-checkbox-input:indeterminate
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+/* The collapsible credentials panel: the summary doubles as the
+   fieldset legend, but Homey's style library sizes legends through the
+   `legend` element, not the class — restate the title scale here, plus
+   the click affordance a legend lacks. */
+summary.homey-form-legend {
+  cursor: pointer;
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+/* Mirror the disabled treatment of the other button variants for the
+   destructive reset. */
+.homey-button-danger-full:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}

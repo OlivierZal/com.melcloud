@@ -10,7 +10,9 @@
       "button": "Anmelden",
       "failure": "Authentifizierung fehlgeschlagen.",
       "legend": "Anmeldedaten",
-      "unverified": "Angemeldet, aber die Sitzung konnte nicht überprüft werden – bitte erneut versuchen."
+      "unverified": "Angemeldet, aber die Sitzung konnte nicht überprüft werden – bitte erneut versuchen.",
+      "reset": "Zurücksetzen",
+      "resetConfirm": "Dies löscht die gespeicherten Zugangsdaten des ausgewählten Kontos; die App meldet sich nach ihrem nächsten Neustart nicht mehr dort an."
     },
     "boolean": {
       "false": "Nein",
