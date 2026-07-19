@@ -646,5 +646,20 @@
     "pl": "Okresy wykresów odpowiadają dniom kalendarzowym, kolory serii są spójne między wykresami, a szerokie widoki ładują się niezawodnie.",
     "ru": "Периоды графиков соответствуют календарным дням, цвета серий согласованы между графиками, а широкие диапазоны загружаются надёжно.",
     "sv": "Diagramperioder följer kalenderdagar, seriefärger är konsekventa mellan diagram, och breda vyer laddas tillförlitligt."
+  },
+  "45.7.2": {
+    "ar": "يُحترم الآن إيقاف تسجيل الدخول المؤقت بعد رفض بيانات الاعتماد حتى بعد إعادة تشغيل التطبيق.",
+    "da": "Login-pausen efter afviste legitimationsoplysninger respekteres nu også efter en genstart af appen.",
+    "de": "Die Anmeldepause nach abgelehnten Zugangsdaten wird nun auch nach einem App-Neustart eingehalten.",
+    "en": "The sign-in pause after rejected credentials is now respected across app restarts.",
+    "es": "La pausa de inicio de sesión tras credenciales rechazadas ahora se respeta incluso tras reiniciar la aplicación.",
+    "fr": "La pause de connexion après des identifiants rejetés est désormais respectée même après un redémarrage de l'app.",
+    "it": "La pausa di accesso dopo credenziali rifiutate ora viene rispettata anche dopo un riavvio dell'app.",
+    "ko": "거부된 자격 증명 후의 로그인 일시 중지가 이제 앱 재시작 후에도 유지됩니다.",
+    "nl": "De aanmeldpauze na geweigerde inloggegevens wordt nu ook na een herstart van de app gerespecteerd.",
+    "no": "Påloggingspausen etter avviste påloggingsopplysninger respekteres nå også etter en omstart av appen.",
+    "pl": "Pauza logowania po odrzuconych danych uwierzytelniających jest teraz zachowywana także po ponownym uruchomieniu aplikacji.",
+    "ru": "Пауза входа после отклонённых учётных данных теперь соблюдается и после перезапуска приложения.",
+    "sv": "Inloggningspausen efter avvisade autentiseringsuppgifter respekteras nu även efter en omstart av appen."
   }
 }
