@@ -616,5 +616,20 @@
     "pl": "Aplikacja uruchamia się teraz natychmiast, nawet gdy MELCloud odpowiada wolno — naprawia przekroczenia czasu uruchamiania na starszych Homey.",
     "ru": "Приложение теперь запускается мгновенно, даже если MELCloud отвечает медленно — исправляет тайм-ауты запуска на старых Homey.",
     "sv": "Appen startar nu direkt även när MELCloud svarar långsamt — åtgärdar starttimeouts på äldre Homey-enheter."
+  },
+  "45.7.0": {
+    "ar": "يغطي الآن ودجت الرسوم البيانية أجهزة MELCloud Home أيضًا، مع رسم بياني جديد لتقرير الطاقة لجميع الأجهزة.",
+    "da": "Diagram-widgetten dækker nu også MELCloud Home-enheder og tilføjer et energirapportdiagram for alle enheder.",
+    "de": "Das Diagramm-Widget deckt jetzt auch MELCloud-Home-Geräte ab und erhält ein Energiebericht-Diagramm für alle Geräte.",
+    "en": "The charts widget now covers MELCloud Home devices too (temperatures with operation-mode shading, operational states, Wi-Fi signal) and adds an energy report chart for all devices.",
+    "es": "El widget de gráficos ahora también cubre los dispositivos MELCloud Home y añade un gráfico de informe de energía para todos los dispositivos.",
+    "fr": "Le widget graphiques couvre désormais aussi les appareils MELCloud Home (températures avec surlignage des modes, états opérationnels, signal Wi-Fi) et ajoute un graphique de rapport d'énergie pour tous les appareils.",
+    "it": "Il widget dei grafici ora copre anche i dispositivi MELCloud Home e aggiunge un grafico del rapporto energetico per tutti i dispositivi.",
+    "ko": "차트 위젯이 이제 MELCloud Home 기기도 지원하며, 모든 기기에 에너지 리포트 차트가 추가되었습니다.",
+    "nl": "De grafiekwidget dekt nu ook MELCloud Home-apparaten en voegt een energierapportgrafiek toe voor alle apparaten.",
+    "no": "Diagram-widgeten dekker nå også MELCloud Home-enheter og legger til et energirapportdiagram for alle enheter.",
+    "pl": "Widżet wykresów obejmuje teraz także urządzenia MELCloud Home i dodaje wykres raportu energii dla wszystkich urządzeń.",
+    "ru": "Виджет графиков теперь охватывает и устройства MELCloud Home, а для всех устройств добавлен график отчёта об энергии.",
+    "sv": "Diagramwidgeten täcker nu även MELCloud Home-enheter och lägger till ett energirapportdiagram för alla enheter."
   }
 }

@@ -8,6 +8,7 @@ import {
   NoChangesError,
   ok,
 } from '@olivierzal/melcloud-api'
+import { Temporal } from 'temporal-polyfill'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
@@ -82,6 +83,7 @@ const mockApiInstance = {
     buildings: { getById: vi.fn<(id: number) => unknown>() },
     devices: { getById: vi.fn<(id: number) => unknown>() },
     floors: { getById: vi.fn<(id: number) => unknown>() },
+    getDevices: vi.fn<() => unknown[]>().mockReturnValue([]),
     getDevicesByType: vi
       .fn<(type: Classic.DeviceType) => unknown[]>()
       .mockReturnValue([]),
@@ -89,6 +91,7 @@ const mockApiInstance = {
 }
 
 const mockHomeRegistry = {
+  getAll: vi.fn<() => unknown[]>().mockReturnValue([]),
   getBuildingsByType: vi.fn<(type: Home.DeviceType) => unknown[]>(),
   getById: vi.fn<(id: string) => unknown>(),
   getByType: vi.fn<(type: Home.DeviceType) => unknown[]>().mockReturnValue([]),
@@ -354,6 +357,33 @@ const initWithDeviceFacade = async (
     }),
   )
   mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
+  await app.onInit()
+}
+
+const initWithHomeDeviceFacade = async ({
+  app,
+  method,
+  mockData,
+  type = Home.DeviceType.Ata,
+}: {
+  app: InstanceType<typeof MelCloudApp>
+  method: string
+  mockData: unknown
+  type?: Home.DeviceType
+}): Promise<void> => {
+  mockHomeFacadeManagerGet.mockReturnValue(
+    mock({
+      [method]: vi
+        .fn<() => Promise<Result<unknown>>>()
+        .mockResolvedValue(ok(mockData)),
+    }),
+  )
+  mockHomeRegistry.getById.mockReturnValue({
+    id: 'guid-1',
+    type,
+    isAta: (): boolean => type === Home.DeviceType.Ata,
+    isAtw: (): boolean => type === Home.DeviceType.Atw,
+  })
   await app.onInit()
 }
 
@@ -1557,6 +1587,264 @@ describe('melCloudApp', () => {
     })
   })
 
+  describe('energy report retrieval', () => {
+    it('should delegate the Classic report to the device facade', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithDeviceFacade(app, 'getEnergyReport', mockData)
+
+      const report = await app.getClassicEnergyReport({
+        days: 7,
+        deviceId: '1',
+      })
+
+      expect(report).toBe(mockData)
+    })
+
+    it('should delegate the Home report to the device facade', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getEnergyReport',
+        mockData,
+      })
+
+      const report = await app.getHomeEnergyReport({
+        days: 7,
+        deviceId: 'guid-1',
+      })
+
+      expect(report).toBe(mockData)
+    })
+
+    it('should anchor an N-day report window on local midnight', async () => {
+      vi.spyOn(Temporal.Now, 'zonedDateTimeISO').mockReturnValue(
+        Temporal.ZonedDateTime.from('2026-07-19T08:30:00+02:00[Europe/Paris]'),
+      )
+      try {
+        const getEnergyReport = vi
+          .fn<() => Promise<Result<unknown>>>()
+          .mockResolvedValue(ok(mock<ReportChartLineOptions>()))
+        mockFacadeManagerGet.mockReturnValue(mock({ getEnergyReport }))
+        mockApiInstance.registry.devices.getById.mockReturnValue({ id: 1 })
+        await app.onInit()
+
+        await app.getClassicEnergyReport({ days: 2, deviceId: '1' })
+
+        // Two days: yesterday and today, from yesterday's local midnight.
+        expect(getEnergyReport).toHaveBeenCalledWith({
+          from: '2026-07-18T00:00:00',
+        })
+      } finally {
+        vi.mocked(Temporal.Now.zonedDateTimeISO).mockRestore()
+      }
+    })
+
+    it('should keep the last-24-hours report window rolling', async () => {
+      vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+        Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
+      )
+      try {
+        const getEnergyReport = vi
+          .fn<() => Promise<Result<unknown>>>()
+          .mockResolvedValue(ok(mock<ReportChartLineOptions>()))
+        mockHomeFacadeManagerGet.mockReturnValue(mock({ getEnergyReport }))
+        mockHomeRegistry.getById.mockReturnValue({
+          id: 'guid-1',
+          type: Home.DeviceType.Ata,
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
+        })
+        await app.onInit()
+
+        await app.getHomeEnergyReport({ days: 0, deviceId: 'guid-1' })
+
+        expect(getEnergyReport).toHaveBeenCalledWith({
+          from: '2026-07-18T08:30:00',
+        })
+      } finally {
+        vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+      }
+    })
+  })
+
+  describe('home chart retrieval', () => {
+    it('should delegate temperatures to any Home device facade', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getTemperatures',
+        mockData,
+      })
+
+      const temperatures = await app.getHomeTemperatures({
+        days: 1,
+        deviceId: 'guid-1',
+      })
+
+      expect(temperatures).toBe(mockData)
+    })
+
+    it('should delegate the signal chart to any Home device facade', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getSignalStrength',
+        mockData,
+      })
+
+      const signal = await app.getHomeSignal({ deviceId: 'guid-1', hour: 5 })
+
+      expect(signal).toBe(mockData)
+    })
+
+    it('should route an ATW device through the shared chart surface', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getTemperatures',
+        mockData,
+        type: Home.DeviceType.Atw,
+      })
+
+      const temperatures = await app.getHomeTemperatures({
+        days: 1,
+        deviceId: 'guid-1',
+      })
+
+      expect(temperatures).toBe(mockData)
+    })
+
+    it('should reject an unknown Home device', async () => {
+      mockHomeRegistry.getById.mockReturnValue(undefined)
+      await app.onInit()
+
+      await expect(app.getHomeSignal({ deviceId: 'missing' })).rejects.toThrow(
+        'errors.deviceNotFound',
+      )
+    })
+
+    it('should delegate hourly temperatures to the ATW facade', async () => {
+      const mockData = mock<ReportChartLineOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getHourlyTemperatures',
+        mockData,
+        type: Home.DeviceType.Atw,
+      })
+
+      const temperatures = await app.getHomeHourlyTemperatures({
+        deviceId: 'guid-1',
+        hour: 10,
+      })
+
+      expect(temperatures).toBe(mockData)
+    })
+
+    it('should delegate operation modes to the ATW facade', async () => {
+      const mockData = mock<ReportChartPieOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getOperationModes',
+        mockData,
+        type: Home.DeviceType.Atw,
+      })
+
+      const operationModes = await app.getHomeOperationModes({
+        days: 7,
+        deviceId: 'guid-1',
+      })
+
+      expect(operationModes).toBe(mockData)
+    })
+
+    it('should reject an ATW-only chart for an ATA device', async () => {
+      const mockData = mock<ReportChartPieOptions>()
+      await initWithHomeDeviceFacade({
+        app,
+        method: 'getOperationModes',
+        mockData,
+      })
+
+      await expect(
+        app.getHomeOperationModes({ days: 7, deviceId: 'guid-1' }),
+      ).rejects.toThrow('errors.deviceNotFound')
+    })
+  })
+
+  describe('home device zones', () => {
+    it('should suffix the building and sort for the flat pickers', async () => {
+      mockHomeRegistry.getAll.mockReturnValue([
+        { building: { name: 'Vinkenstraat 22' }, id: 'b', name: 'Garage' },
+        { building: { name: 'Verkstan' }, id: 'a', name: 'Garage ' },
+      ])
+      await app.onInit()
+
+      // Same-named devices on different buildings stay tellable apart;
+      // wire names are trimmed before suffixing.
+      expect(app.getHomeDeviceZones()).toStrictEqual([
+        { id: 'a', level: 1, model: 'homeDevices', name: 'Garage (Verkstan)' },
+        {
+          id: 'b',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Garage (Vinkenstraat 22)',
+        },
+      ])
+    })
+
+    it('should filter by device type when one is given', async () => {
+      mockHomeRegistry.getByType.mockReturnValue([
+        { building: { name: 'Huis' }, id: 'atw-1', name: 'Warmtepomp' },
+      ])
+      await app.onInit()
+
+      expect(app.getHomeDeviceZones(Home.DeviceType.Atw)).toStrictEqual([
+        {
+          id: 'atw-1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Warmtepomp (Huis)',
+        },
+      ])
+      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
+        Home.DeviceType.Atw,
+      )
+    })
+  })
+
+  describe('classic device zones', () => {
+    it('should suffix the building and sort for the flat pickers', async () => {
+      mockApiInstance.registry.getDevices.mockReturnValue([
+        { buildingId: 2, id: 20, name: 'Garage' },
+        { buildingId: 1, id: 10, name: 'Hydrobox' },
+      ])
+      mockApiInstance.registry.buildings.getById.mockImplementation(
+        (id: number) => (id === 1 ? { name: 'Casa' } : { name: 'Verkstan' }),
+      )
+      await app.onInit()
+
+      expect(app.getClassicDeviceZones()).toStrictEqual([
+        { id: 20, level: 1, model: 'devices', name: 'Garage (Verkstan)' },
+        { id: 10, level: 1, model: 'devices', name: 'Hydrobox (Casa)' },
+      ])
+    })
+
+    it('should keep the bare name when the building is unknown', async () => {
+      mockApiInstance.registry.getDevicesByType.mockReturnValue([
+        { buildingId: 9, id: 30, name: 'Orphan' },
+      ])
+      mockApiInstance.registry.buildings.getById.mockReturnValue(undefined)
+      await app.onInit()
+
+      expect(app.getClassicDeviceZones(Classic.DeviceType.Ata)).toStrictEqual([
+        { id: 30, level: 1, model: 'devices', name: 'Orphan' },
+      ])
+      expect(mockApiInstance.registry.getDevicesByType).toHaveBeenCalledWith(
+        Classic.DeviceType.Ata,
+      )
+    })
+  })
+
   describe('authentication', () => {
     it('should expose classicApi getter', async () => {
       await app.onInit()
@@ -2146,12 +2434,17 @@ describe('melCloudApp', () => {
       })
     })
 
-    it('should serve only matching device zones to the charts widget', async () => {
+    it('should serve building-suffixed device zones to the charts widget', async () => {
       const { mockRegisterCharts } = setupWidgetListeners()
-      mockFacadeManagerGetZones.mockReturnValue([
-        { model: 'buildings', name: 'Device room' },
-        { model: 'devices', name: 'Device 1' },
-        { model: 'devices', name: 'Device 2' },
+      mockApiInstance.registry.getDevices.mockReturnValue([
+        { buildingId: 1, id: 10, name: 'Device 1' },
+        { buildingId: 1, id: 11, name: 'Device 2' },
+      ])
+      mockApiInstance.registry.buildings.getById.mockReturnValue({
+        name: 'Casa',
+      })
+      mockHomeRegistry.getAll.mockReturnValue([
+        { building: { name: 'Antwerpen' }, id: 'guid-1', name: 'Device 1' },
       ])
       await app.onInit()
 
@@ -2162,10 +2455,17 @@ describe('melCloudApp', () => {
       )
       const result = chartsCallback('device 1')
 
-      expect(result).toStrictEqual([{ model: 'devices', name: 'Device 1' }])
-      expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
-        type: undefined,
-      })
+      // One alphabetical list across vendors (the Home entry sorts
+      // before the Classic one); the query matches the suffixed names.
+      expect(result).toStrictEqual([
+        {
+          id: 'guid-1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Device 1 (Antwerpen)',
+        },
+        { id: 10, level: 1, model: 'devices', name: 'Device 1 (Casa)' },
+      ])
     })
   })
 

@@ -13,23 +13,8 @@
   display: none;
 }
 
-.chart-select {
-  display: block;
-  margin-inline: auto;
-  max-inline-size: 100%;
-}
-
 .picker-row {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-}
-
-/* Flex children refuse to shrink below their content by default
-   (`min-inline-size: auto`), so a long device name would force the select
-   wider than the widget frame; the explicit `0` lets it shrink and the max
-   clamps it to the frame. */
-.picker-row .zone-select {
-  max-inline-size: 100%;
-  min-inline-size: 0;
 }

@@ -80,6 +80,20 @@ const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
 const daysAgo = (days: number, timezone: string): string =>
   Temporal.Now.plainDateTimeISO(timezone).subtract({ days }).toString()
 
+// Day-chart windows anchor on local midnight so "N days" reads as N
+// calendar days ending today, consistently across the report, the
+// temperatures and the operation-modes charts; `days` 0 is the rolling
+// last-24-hours choice the report picker offers when hourly buckets
+// exist.
+const chartDaysStart = (days: number, timezone: string): string =>
+  days === 0 ?
+    daysAgo(1, timezone)
+  : Temporal.Now.zonedDateTimeISO(timezone)
+      .startOfDay()
+      .subtract({ days: days - 1 })
+      .toPlainDateTime()
+      .toString()
+
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
     .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
@@ -195,9 +209,16 @@ type ClassicAtaGroupFacade = Pick<
   'getGroup' | 'updateGroupState'
 >
 
-// `devices` = individual units only; omitting the kind serves the zone
-// collections (areas, buildings, floors) and the devices alike.
-type ZoneKind = 'devices'
+// Devices flat-listed outside their zone tree (chart pickers, device
+// autocompletes) carry their building name, so same-named devices on
+// different buildings stay tellable apart; tree-shaped lists keep the
+// bare name — the hierarchy already locates the device.
+const toFlatDeviceName = (name: string, buildingName?: string): string => {
+  const trimmed = name.trim()
+  return buildingName === undefined ? trimmed : (
+      `${trimmed} (${buildingName.trim()})`
+    )
+}
 
 const filterZonesByName = <T extends { readonly name: string }>(
   zones: readonly T[],
@@ -206,11 +227,6 @@ const filterZonesByName = <T extends { readonly name: string }>(
   const lowerCaseQuery = query.toLowerCase()
   return zones.filter(({ name }) => name.toLowerCase().includes(lowerCaseQuery))
 }
-
-const matchesZoneKind = (
-  model: Classic.Zone['model'],
-  kind?: ZoneKind,
-): boolean => kind === undefined || model === 'devices'
 
 // Flow autocomplete items over the given zones (including single devices,
 // which the holiday mode endpoints also accept). The zone target is
@@ -439,6 +455,39 @@ export default class MELCloudApp extends App {
     )
   }
 
+  public getClassicDeviceZones(type?: Classic.DeviceType): Classic.Zone[] {
+    const devices =
+      type === undefined ?
+        this.#classicRegistry.getDevices()
+      : this.#classicRegistry.getDevicesByType(type)
+    return devices
+      .map((device) => ({
+        id: device.id,
+        level: 1,
+        model: 'devices' as const,
+        name: toFlatDeviceName(
+          device.name,
+          this.#classicRegistry.buildings.getById(device.buildingId)?.name,
+        ),
+      }))
+      .toSorted((zone, other) => zone.name.localeCompare(other.name))
+  }
+
+  public async getClassicEnergyReport({
+    days,
+    deviceId,
+  }: {
+    days: number
+    deviceId: string
+  }): Promise<ReportChartLineOptions> {
+    const from = chartDaysStart(days, getTimeZone(this.homey))
+    return unwrapResult(
+      await this.getClassicFacade('devices', deviceId).getEnergyReport({
+        from,
+      }),
+    )
+  }
+
   public getClassicFacade<T extends Classic.DeviceType>(
     zoneType: 'devices',
     id: number | string,
@@ -505,7 +554,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
-    const from = daysAgo(days, getTimeZone(this.homey))
+    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getOperationModes({
         from,
@@ -532,7 +581,7 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = daysAgo(days, getTimeZone(this.homey))
+    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getTemperatures({
         from,
@@ -668,6 +717,36 @@ export default class MELCloudApp extends App {
     return this.#homeRegistry.getByType(type)
   }
 
+  // The charts widget vocabulary: Home devices as flat selectable
+  // entries (no building nodes), alpha-sorted, both types by default.
+  public getHomeDeviceZones(type?: Home.DeviceType): HomeDeviceZone[] {
+    const devices =
+      type === undefined ?
+        this.#homeRegistry.getAll()
+      : this.#homeRegistry.getByType(type)
+    return devices
+      .map((device): HomeDeviceZone => ({
+        id: device.id,
+        level: 1,
+        model: 'homeDevices',
+        name: toFlatDeviceName(device.name, device.building.name),
+      }))
+      .toSorted((zone, other) => zone.name.localeCompare(other.name))
+  }
+
+  public async getHomeEnergyReport({
+    days,
+    deviceId,
+  }: {
+    days: number
+    deviceId: string
+  }): Promise<ReportChartLineOptions> {
+    const from = chartDaysStart(days, getTimeZone(this.homey))
+    return unwrapResult(
+      await this.#getHomeDeviceFacade(deviceId).getEnergyReport({ from }),
+    )
+  }
+
   public getHomeFacade<T extends Home.DeviceType>(
     deviceId: string,
     type: T,
@@ -686,6 +765,61 @@ export default class MELCloudApp extends App {
       }
     }
     throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+  }
+
+  public async getHomeHourlyTemperatures({
+    deviceId,
+    hour,
+  }: {
+    deviceId: string
+    hour?: Hour | undefined
+  }): Promise<ReportChartLineOptions> {
+    return unwrapResult(
+      await this.getHomeFacade(
+        deviceId,
+        Home.DeviceType.Atw,
+      ).getHourlyTemperatures(hour),
+    )
+  }
+
+  public async getHomeOperationModes({
+    days,
+    deviceId,
+  }: {
+    days: number
+    deviceId: string
+  }): Promise<ReportChartPieOptions> {
+    const from = chartDaysStart(days, getTimeZone(this.homey))
+    return unwrapResult(
+      await this.getHomeFacade(deviceId, Home.DeviceType.Atw).getOperationModes(
+        { from },
+      ),
+    )
+  }
+
+  public async getHomeSignal({
+    deviceId,
+    hour,
+  }: {
+    deviceId: string
+    hour?: Hour | undefined
+  }): Promise<ReportChartLineOptions> {
+    return unwrapResult(
+      await this.#getHomeDeviceFacade(deviceId).getSignalStrength(hour),
+    )
+  }
+
+  public async getHomeTemperatures({
+    days,
+    deviceId,
+  }: {
+    days: number
+    deviceId: string
+  }): Promise<ReportChartLineOptions> {
+    const from = chartDaysStart(days, getTimeZone(this.homey))
+    return unwrapResult(
+      await this.#getHomeDeviceFacade(deviceId).getTemperatures({ from }),
+    )
   }
 
   public async updateClassicAtaState({
@@ -988,6 +1122,21 @@ export default class MELCloudApp extends App {
     }))
   }
 
+  // Type-agnostic device facade lookup for the chart surfaces shared by
+  // both Home device types (temperatures, signal, energy report).
+  #getHomeDeviceFacade(
+    deviceId: string,
+  ): Home.DeviceAtaFacade | Home.DeviceAtwFacade {
+    const model = this.#homeRegistry.getById(deviceId)
+    if (model?.isAta() === true) {
+      return this.#homeFacadeManager.get(model)
+    }
+    if (model?.isAtw() === true) {
+      return this.#homeFacadeManager.get(model)
+    }
+    throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+  }
+
   async #getHomeErrorEntries(timeZone: string): Promise<RawErrorEntry[]> {
     const logs = await Promise.all(
       HOME_ERROR_DEVICE_TYPES.flatMap((type) =>
@@ -1037,6 +1186,7 @@ export default class MELCloudApp extends App {
   // authenticated and, for a Classic-only user, 401 — and keep 401ing
   // every cycle, since `runSyncCycle` reschedules from its `finally`.
   async #initHomeApi(): Promise<void> {
+    const language = this.homey.i18n.getLanguage()
     this.#homeApi = await Home.API.create({
       abortSignal: this.#abortController.signal,
       events: {
@@ -1045,9 +1195,11 @@ export default class MELCloudApp extends App {
           this.#notifySessionLost('home')
         },
       },
+      locale: language,
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager('home'),
       shouldResumeSessionInBackground: true,
+      timezone: getTimeZone(this.homey),
     })
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
   }
@@ -1148,7 +1300,10 @@ export default class MELCloudApp extends App {
     this.homey.dashboards
       .getWidget('charts')
       .registerSettingAutocompleteListener('default_zone', (query) =>
-        this.#searchZones(query, { kind: 'devices' }),
+        [
+          ...filterZonesByName(this.getClassicDeviceZones(), query),
+          ...filterZonesByName(this.getHomeDeviceZones(), query),
+        ].toSorted((zone, other) => zone.name.localeCompare(other.name)),
       )
   }
 
@@ -1163,15 +1318,16 @@ export default class MELCloudApp extends App {
     ]
   }
 
-  // One zone-search pipeline for every autocomplete surface: registry
-  // fetch (instance state), kind/type narrowing, then query filtering.
+  // One zone-search pipeline for the tree-shaped autocomplete surfaces
+  // (flow zones, ATA group targets): registry fetch (instance state),
+  // optional type narrowing, then query filtering.
   #searchZones(
     query: string,
-    { kind, type }: { kind?: ZoneKind; type?: Classic.DeviceType } = {},
+    { type }: { type?: Classic.DeviceType } = {},
   ): Classic.Zone[] {
-    const zones = this.#facadeManager
-      .getZones(type === undefined ? {} : { type })
-      .filter(({ model }) => matchesZoneKind(model, kind))
+    const zones = this.#facadeManager.getZones(
+      type === undefined ? {} : { type },
+    )
     return filterZonesByName(zones, query)
   }
 }
