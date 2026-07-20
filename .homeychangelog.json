@@ -798,18 +798,18 @@
     "sv": "Tydligare avgränsning: MELCloud Classic-enhetstyper är nu märkta [Classic], som en spegel av [Home]."
   },
   "45.8.3": {
-    "ar": "يُصنَّف جهاز التهوية (ERV) الآن كجهاز معالجة هواء بدلاً من مضخة حرارة — تُعاد تسمية الأجهزة الموجودة تلقائيًا.",
-    "da": "Ventilationsenheden (ERV) klassificeres nu som luftbehandling i stedet for varmepumpe — eksisterende enheder omklassificeres automatisk.",
-    "de": "Das Lüftungsgerät (ERV) wird jetzt als Luftbehandlung statt als Wärmepumpe klassifiziert — vorhandene Geräte werden automatisch umklassifiziert.",
-    "en": "The ventilation unit (ERV) is now classified as Air Treatment instead of Heat Pump — existing devices reclassify automatically.",
-    "es": "La unidad de ventilación (ERV) ahora se clasifica como tratamiento del aire en lugar de bomba de calor — los dispositivos existentes se reclasifican automáticamente.",
-    "fr": "Le ventilateur (ERV) est désormais classé « traitement de l’air » au lieu de « pompe à chaleur » — les appareils existants se reclassent automatiquement.",
-    "it": "L’unità di ventilazione (ERV) è ora classificata come trattamento dell’aria invece che pompa di calore — i dispositivi esistenti si riclassificano automaticamente.",
-    "ko": "환기 장치(ERV)가 이제 히트 펌프 대신 공기 관리로 분류됩니다 — 기존 기기는 자동으로 재분류됩니다.",
-    "nl": "De ventilatie-unit (ERV) wordt nu geclassificeerd als luchtbehandeling in plaats van warmtepomp — bestaande apparaten worden automatisch geherclassificeerd.",
-    "no": "Ventilasjonsenheten (ERV) klassifiseres nå som luftbehandling i stedet for varmepumpe — eksisterende enheter omklassifiseres automatisk.",
-    "pl": "Jednostka wentylacyjna (ERV) jest teraz klasyfikowana jako oczyszczanie powietrza zamiast pompy ciepła — istniejące urządzenia są automatycznie reklasyfikowane.",
-    "ru": "Вентиляционная установка (ERV) теперь классифицируется как обработка воздуха вместо теплового насоса — существующие устройства переклассифицируются автоматически.",
-    "sv": "Ventilationsenheten (ERV) klassificeras nu som luftbehandling i stället för värmepump — befintliga enheter omklassificeras automatiskt."
+    "ar": "يُصنَّف جهاز التهوية (ERV) الآن كجهاز معالجة هواء بدلاً من مضخة حرارة.",
+    "da": "Ventilationsenheden (ERV) klassificeres nu som luftbehandling i stedet for varmepumpe.",
+    "de": "Das Lüftungsgerät (ERV) wird jetzt als Luftbehandlung statt als Wärmepumpe klassifiziert.",
+    "en": "The ventilation unit (ERV) is now classified as Air Treatment instead of Heat Pump.",
+    "es": "La unidad de ventilación (ERV) ahora se clasifica como tratamiento del aire en lugar de bomba de calor.",
+    "fr": "Le ventilateur (ERV) est désormais classé « traitement de l’air » au lieu de « pompe à chaleur ».",
+    "it": "L’unità di ventilazione (ERV) è ora classificata come trattamento dell’aria invece che pompa di calore.",
+    "ko": "환기 장치(ERV)가 이제 히트 펌프 대신 공기 관리로 분류됩니다.",
+    "nl": "De ventilatie-unit (ERV) wordt nu geclassificeerd als luchtbehandeling in plaats van warmtepomp.",
+    "no": "Ventilasjonsenheten (ERV) klassifiseres nå som luftbehandling i stedet for varmepumpe.",
+    "pl": "Jednostka wentylacyjna (ERV) jest teraz klasyfikowana jako oczyszczanie powietrza zamiast pompy ciepła.",
+    "ru": "Вентиляционная установка (ERV) теперь классифицируется как обработка воздуха вместо теплового насоса.",
+    "sv": "Ventilationsenheten (ERV) klassificeras nu som luftbehandling i stället för värmepump."
   }
 }
