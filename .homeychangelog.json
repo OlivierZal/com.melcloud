@@ -691,5 +691,20 @@
     "pl": "Poprawki: konto Home z samymi urządzeniami ATW pokazuje swoje urządzenia w ustawieniach, kolory serii temperatur zadanych stref, data „od\" w dzienniku błędów i tłumaczenia widżetów w 13 językach.",
     "ru": "Исправления: учётная запись Home только с устройствами ATW показывает свои устройства в настройках, цвета серий заданной температуры зон, дата «с» в журнале ошибок и переводы виджетов на 13 языков.",
     "sv": "Rättelser: ett Home-konto med enbart ATW-enheter visar sina enheter i inställningarna, färger för zonbörvärdesserier, \"sedan\"-datumet i felloggen och widgetöversättningar på 13 språk."
+  },
+  "45.7.5": {
+    "ar": "تحسينات صفحة الإعدادات: مجموعات خيارات أصلية لكل مجموعة، وتلميحات مدير كلمات المرور لحقول الاعتماد.",
+    "da": "Forbedringer af indstillingssiden: korrekte grupper pr. sektion og adgangskodeadministrator-hint til loginfelterne.",
+    "de": "Verbesserungen der Einstellungsseite: korrekte Gruppen pro Abschnitt und Passwortmanager-Hinweise für die Anmeldefelder.",
+    "en": "Settings page refinements: proper per-group sections and password-manager hints on the credential fields.",
+    "es": "Mejoras de la página de ajustes: secciones correctas por grupo y sugerencias del gestor de contraseñas en los campos de acceso.",
+    "fr": "Améliorations de la page de réglages : sections correctes par groupe et aides du gestionnaire de mots de passe sur les champs d'identifiants.",
+    "it": "Miglioramenti della pagina delle impostazioni: sezioni corrette per gruppo e suggerimenti del gestore password sui campi delle credenziali.",
+    "ko": "설정 페이지 개선: 그룹별 올바른 섹션 및 자격 증명 필드의 비밀번호 관리자 힌트.",
+    "nl": "Verbeteringen aan de instellingenpagina: correcte secties per groep en wachtwoordmanager-hints voor de inlogvelden.",
+    "no": "Forbedringer av innstillingssiden: riktige seksjoner per gruppe og passordbehandler-hint for påloggingsfeltene.",
+    "pl": "Ulepszenia strony ustawień: poprawne sekcje dla każdej grupy i podpowiedzi menedżera haseł w polach logowania.",
+    "ru": "Улучшения страницы настроек: корректные секции по группам и подсказки менеджера паролей в полях учётных данных.",
+    "sv": "Förbättringar av inställningssidan: korrekta sektioner per grupp och lösenordshanterartips för inloggningsfälten."
   }
 }

@@ -163,9 +163,12 @@ coverage.
   stamps the PACKAGED `.homeybuild` page copies — only inside an
   attribute/import context, never a comment — with a content hash
   (`?v=`): phone webviews cache assets across app versions; the source
-  HTML stays unstamped. Webview code must stick to es2020-era
-  runtime APIs (no `Object.groupBy` & co.): esbuild lowers syntax only,
-  and old iOS engines are real. Never load the bundle as a STATIC
+  HTML stays unstamped. Webview runtime-API floor: es2023 array
+  methods are accepted (`toSorted`/`toReversed` — the lint mandates
+  them and they ship today), but nothing newer — no iterator helpers
+  (`.entries().map()`, 2025-era), no `Object.groupBy` & co.: esbuild
+  lowers syntax only, and old iOS engines are real. Never load the
+  bundle as a STATIC
   `<script type="module">`: 45.2.5 shipped that and every webview spun
   forever on a cold open (proven with breadcrumbs over `homey app run`;
   reverted). Dynamic `import()` is merely unnecessary, not broken — its

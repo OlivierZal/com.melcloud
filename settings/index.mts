@@ -38,23 +38,24 @@ import { getZoneId, getZoneName, getZonePath } from '../public/zones.mts'
 
 // ── Helpers ──
 
-// Wraps Homey's callback-based settings API in a Promise for async/await usage
-const createCallback =
-  <T,>(
-    resolve: (value: T) => void,
-    reject: (reason: Error) => void,
-  ): ((error: Error | null, data: T) => void) =>
-  (error, data) => {
-    if (error !== null) {
-      reject(error)
-      return
-    }
-    resolve(data)
-  }
+// Promisifies any error-first Homey settings callback (the extension's
+// idiom, aligned here so the two apps share one promisification form).
+const homeyCallback = async <T,>(
+  call: (callback: (error: Error | null, result: T) => void) => void,
+): Promise<T> =>
+  new Promise((resolve, reject) => {
+    call((error, result) => {
+      if (error !== null) {
+        reject(error)
+        return
+      }
+      resolve(result)
+    })
+  })
 
 const homeyApiGet = async <T,>(homey: Homey, path: string): Promise<T> =>
-  new Promise((resolve, reject) => {
-    homey.api('GET', path, createCallback(resolve, reject))
+  homeyCallback((callback) => {
+    homey.api('GET', path, callback)
   })
 
 const homeyApiPost = async <T,>(
@@ -62,8 +63,8 @@ const homeyApiPost = async <T,>(
   path: string,
   body: unknown,
 ): Promise<T> =>
-  new Promise((resolve, reject) => {
-    homey.api('POST', path, body, createCallback(resolve, reject))
+  homeyCallback((callback) => {
+    homey.api('POST', path, body, callback)
   })
 
 const homeyApiPut = async <T,>(
@@ -71,19 +72,66 @@ const homeyApiPut = async <T,>(
   path: string,
   body: unknown,
 ): Promise<T> =>
-  new Promise((resolve, reject) => {
-    homey.api('PUT', path, body, createCallback(resolve, reject))
+  homeyCallback((callback) => {
+    homey.api('PUT', path, body, callback)
   })
 
 const homeyApiDelete = async (homey: Homey, path: string): Promise<void> =>
-  new Promise((resolve, reject) => {
-    homey.api('DELETE', path, createCallback(resolve, reject))
+  homeyCallback((callback) => {
+    homey.api('DELETE', path, callback)
   })
 
 const homeyConfirm = async (homey: Homey, message: string): Promise<boolean> =>
-  new Promise((resolve, reject) => {
-    homey.confirm(message, null, createCallback(resolve, reject))
+  homeyCallback((callback) => {
+    homey.confirm(message, null, callback)
   })
+
+interface CheckboxGroup {
+  readonly label: string
+  readonly settings: DriverSetting[]
+}
+
+const openGroup = (groups: CheckboxGroup[], label: string): DriverSetting[] => {
+  const settings: DriverSetting[] = []
+  groups.push({ label, settings })
+  return settings
+}
+
+// Checkbox settings grouped by consecutive group label (a repeated
+// label later in the list deliberately opens a new group, matching the
+// manifest order).
+const groupCheckboxSettings = (
+  driverSetting: readonly DriverSetting[],
+): CheckboxGroup[] => {
+  const checkboxes = driverSetting.filter(({ type }) => type === 'checkbox')
+  const groups: CheckboxGroup[] = []
+  let current: DriverSetting[] = []
+  let currentLabel: string | null = null
+  for (const setting of checkboxes) {
+    if ((setting.groupLabel ?? '') !== currentLabel) {
+      currentLabel = setting.groupLabel ?? ''
+      current = openGroup(groups, currentLabel)
+    }
+    current.push(setting)
+  }
+  return groups
+}
+
+// Password-manager and keyboard hints: the username is an email
+// address, so iOS auto-capitalization and autocorrect only get in the
+// way.
+const applyCredentialHints = (
+  input: HTMLInputElement,
+  credentialKey: keyof LoginCredentials,
+): void => {
+  if (credentialKey === 'password') {
+    input.autocomplete = 'current-password'
+    return
+  }
+  input.autocomplete = 'username'
+  input.autocapitalize = 'none'
+  input.spellcheck = false
+}
 
 // ── DOM helpers ──
 
@@ -562,6 +610,7 @@ class AuthManager {
     if (loginSetting !== undefined) {
       const { id, placeholder, title, type } = loginSetting
       const formControl = createInput({ id, placeholder, type })
+      applyCredentialHints(formControl, credentialKey)
       appendFormControl(this.#loginSection, { formControl, title })
       return formControl
     }
@@ -736,11 +785,30 @@ class DeviceSettingsManager {
     return settings
   }
 
-  #createCheckboxSet(driverSetting: DriverSetting[]): HTMLFieldSetElement {
+  // One fieldset per checkbox group, its (single) legend as first
+  // child: several legends in one fieldset are invalid HTML and screen
+  // readers name the whole set after the first one only.
+  #createCheckboxSet(
+    label: string,
+    settings: DriverSetting[],
+  ): HTMLFieldSetElement {
     const checkboxSet = document.createElement('fieldset')
     checkboxSet.classList.add('homey-form-checkbox-set')
-    this.#createDriverSettingControls(driverSetting, checkboxSet)
+    if (label !== '') {
+      createLegend(checkboxSet, label)
+    }
+    for (const { driverId, id, title } of settings) {
+      const formControl = createCheckbox(id, driverId)
+      appendFormControl(checkboxSet, { formControl, title }, false)
+      this.#updateDriverSetting(formControl)
+    }
     return checkboxSet
+  }
+
+  #createCheckboxSets(driverSetting: DriverSetting[]): HTMLFieldSetElement[] {
+    return groupCheckboxSettings(driverSetting).map(({ label, settings }) =>
+      this.#createCheckboxSet(label, settings),
+    )
   }
 
   #createCommonSettingControls(
@@ -767,32 +835,6 @@ class DeviceSettingsManager {
     ])
   }
 
-  #createDriverSettingControls(
-    driverSetting: DriverSetting[],
-    fieldSet: HTMLFieldSetElement,
-  ): void {
-    let previousGroupLabel = ''
-    for (const {
-      driverId,
-      groupLabel = '',
-      id,
-      title,
-      type,
-    } of driverSetting) {
-      if (type !== 'checkbox') {
-        continue
-      }
-
-      if (groupLabel !== previousGroupLabel) {
-        previousGroupLabel = groupLabel
-        createLegend(fieldSet, groupLabel)
-      }
-      const formControl = createCheckbox(id, driverId)
-      appendFormControl(fieldSet, { formControl, title }, false)
-      this.#updateDriverSetting(formControl)
-    }
-  }
-
   // One section per driver that has devices, built from the driver's own
   // settings — legend is the driver's manifest name, so adding a driver
   // needs no markup. The buttons' snake_case ids match what the apply and
@@ -807,12 +849,14 @@ class DeviceSettingsManager {
       return
     }
     const { controls, section } = createSectionShell(firstSetting.driverLabel)
-    const checkboxSet = this.#createCheckboxSet(driverSetting)
-    controls.append(checkboxSet)
+    const checkboxSets = this.#createCheckboxSets(driverSetting)
+    controls.append(...checkboxSets)
     section.append(createSettingsButtonRow(this.#homey, toSectionId(driverId)))
     getDiv('device_settings').append(section)
     this.#addSettingsEventListeners(
-      [...checkboxSet.querySelectorAll('input')],
+      checkboxSets.flatMap((checkboxSet) => [
+        ...checkboxSet.querySelectorAll('input'),
+      ]),
       driverId,
     )
   }
@@ -1476,17 +1520,16 @@ class SettingsApp {
     )
   }
 
+  /** @alerts Falls back to an empty settings object on error. */
   static async #fetchHomeySettings(homey: Homey): Promise<HomeySettings> {
-    return new Promise((resolve) => {
-      homey.get(async (error: Error | null, settings: HomeySettings) => {
-        if (error !== null) {
-          await homey.alert(error.message)
-          resolve({})
-          return
-        }
-        resolve(settings)
+    try {
+      return await homeyCallback((callback) => {
+        homey.get(callback)
       })
-    })
+    } catch (error) {
+      await homey.alert(getErrorMessage(error))
+      return {}
+    }
   }
 
   static async #setDocumentLanguage(homey: Homey): Promise<void> {
