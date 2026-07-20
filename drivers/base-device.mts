@@ -8,6 +8,7 @@ import type {
   EnergyReportOperation,
 } from '../types/device.mts'
 import { NotFoundError } from '../lib/errors.mts'
+import { fireAndForget } from '../lib/fire-and-forget.mts'
 import { getErrorMessage } from '../lib/get-error-message.mts'
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
@@ -316,7 +317,18 @@ export abstract class BaseMELCloudDevice<
     await this.#setCapabilities()
     await this.applyCapabilitiesOptions()
     await this.syncFromDevice()
-    await this.scheduleEnergyReports()
+    // The initial energy fetches are network round-trips: detached so
+    // a slow MELCloud cannot hold Device#onInit past the SDK ready
+    // budget — an Early 2018 Homey with several metered devices hit
+    // `ready_timeout` exactly there. The settings path keeps awaiting
+    // its restarts; only boot is off the critical path.
+    fireAndForget(
+      this.scheduleEnergyReports(),
+      (...args: unknown[]) => {
+        this.error(...args)
+      },
+      'Energy report scheduling failed:',
+    )
   }
 
   #isThermostatModeSupportingOff(): boolean {
