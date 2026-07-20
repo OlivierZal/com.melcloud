@@ -100,6 +100,20 @@ const chartDaysStart = (days: number, timezone: string): string =>
       .toPlainDateTime()
       .toString()
 
+// The manifest min/max/step only constrain manual input: a flow token
+// dropped into the field can carry anything at runtime. Only numbers
+// and numeric strings are accepted — coercing other types (false,
+// null, '') would silently read as 0 and turn holiday mode off.
+const toDurationDays = (duration: unknown): number => {
+  if (typeof duration === 'number') {
+    return duration
+  }
+  if (typeof duration === 'string' && duration.trim() !== '') {
+    return Number(duration)
+  }
+  return Number.NaN
+}
+
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
     .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
@@ -1324,16 +1338,7 @@ export default class MELCloudApp extends App {
         duration: unknown
         zone: DeviceOrZoneData
       }) => {
-        // The manifest min/max/step only constrain manual input: a token
-        // dropped into the field can carry anything at runtime. Only
-        // numbers and numeric strings are accepted — coercing other types
-        // (false, null, '') would silently read as 0 and turn holiday
-        // mode off.
-        const days =
-          typeof duration === 'number' ? duration
-          : typeof duration === 'string' && duration.trim() !== '' ?
-            Number(duration)
-          : NaN
+        const days = toDurationDays(duration)
         if (
           !Number.isSafeInteger(days) ||
           days < HOLIDAY_MODE_OFF_DURATION ||

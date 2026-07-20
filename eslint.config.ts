@@ -813,6 +813,10 @@ const config = defineConfig([
       'unicorn/prefer-dispose': 'error',
       // Requires Node.js 24 (`Error.isError`).
       'unicorn/prefer-error-is-error': 'off',
+      // Mutually exclusive twin of `prefer-number-properties`'
+      // `checkNaN`: the repo picks `Number.NaN` (SonarCloud S7773 is a
+      // required gate, and it pairs with the mandated `Number.isNaN`).
+      'unicorn/prefer-global-number-constants': 'off',
       'unicorn/prefer-import-meta-properties': 'error',
       // Requires Node.js 24 (`Iterator.concat`).
       'unicorn/prefer-iterator-concat': 'off',
@@ -822,6 +826,15 @@ const config = defineConfig([
         'error',
         {
           checkVaryingBase: true,
+        },
+      ],
+      // Stricter than the v72 default (see `prefer-global-number-constants`
+      // above). Infinity stays free — the WAAPI `iterations: Infinity`
+      // idiom is canonical.
+      'unicorn/prefer-number-properties': [
+        'error',
+        {
+          checkNaN: true,
         },
       ],
       // Requires Node.js 24 (`RegExp.escape`).
