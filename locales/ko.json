@@ -130,7 +130,7 @@
   },
   "notifications": {
     "sessionExpired": {
-      "classic": "MELCloud 계정의 로그인이 해제되었습니다. MELCloud 앱 설정에서 다시 로그인하세요.",
+      "classic": "MELCloud Classic 계정의 로그인이 해제되었습니다. MELCloud 앱 설정에서 다시 로그인하세요.",
       "home": "MELCloud Home 계정의 로그인이 해제되었습니다. MELCloud 앱 설정에서 다시 로그인하세요."
     }
   }

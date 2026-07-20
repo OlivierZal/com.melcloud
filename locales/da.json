@@ -130,7 +130,7 @@
   },
   "notifications": {
     "sessionExpired": {
-      "classic": "Din MELCloud-konto er ikke længere logget ind. Åbn MELCloud-appens indstillinger for at logge ind igen.",
+      "classic": "Din MELCloud Classic-konto er ikke længere logget ind. Åbn MELCloud-appens indstillinger for at logge ind igen.",
       "home": "Din MELCloud Home-konto er ikke længere logget ind. Åbn MELCloud-appens indstillinger for at logge ind igen."
     }
   }

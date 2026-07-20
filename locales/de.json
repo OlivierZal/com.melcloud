@@ -130,7 +130,7 @@
   },
   "notifications": {
     "sessionExpired": {
-      "classic": "Dein MELCloud-Konto ist nicht mehr angemeldet. Öffne die Einstellungen der MELCloud-App, um dich erneut anzumelden.",
+      "classic": "Dein MELCloud Classic-Konto ist nicht mehr angemeldet. Öffne die Einstellungen der MELCloud-App, um dich erneut anzumelden.",
       "home": "Dein MELCloud-Home-Konto ist nicht mehr angemeldet. Öffne die Einstellungen der MELCloud-App, um dich erneut anzumelden."
     }
   }

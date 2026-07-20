@@ -130,7 +130,7 @@
   },
   "notifications": {
     "sessionExpired": {
-      "classic": "Je MELCloud-account is niet meer aangemeld. Open de instellingen van de MELCloud-app om opnieuw in te loggen.",
+      "classic": "Je MELCloud Classic-account is niet meer aangemeld. Open de instellingen van de MELCloud-app om opnieuw in te loggen.",
       "home": "Je MELCloud Home-account is niet meer aangemeld. Open de instellingen van de MELCloud-app om opnieuw in te loggen."
     }
   }

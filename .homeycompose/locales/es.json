@@ -6,7 +6,7 @@
   },
   "notifications": {
     "sessionExpired": {
-      "classic": "Tu cuenta de MELCloud ya no tiene la sesión iniciada. Abre los ajustes de la app MELCloud para volver a iniciar sesión.",
+      "classic": "Tu cuenta de MELCloud Classic ya no tiene la sesión iniciada. Abre los ajustes de la app MELCloud para volver a iniciar sesión.",
       "home": "Tu cuenta de MELCloud Home ya no tiene la sesión iniciada. Abre los ajustes de la app MELCloud para volver a iniciar sesión."
     }
   },
