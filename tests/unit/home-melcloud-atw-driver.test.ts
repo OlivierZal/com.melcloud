@@ -122,7 +122,13 @@ describe(HomeMELCloudDriverAtw, () => {
         'operational_state',
         'operational_state.zone1',
         'measure_power',
+        'meter_power',
+        'meter_power.daily',
         'measure_power.produced',
+        'meter_power.produced',
+        'meter_power.produced_daily',
+        'meter_power.cop',
+        'meter_power.cop_daily',
         'onoff',
         'thermostat_mode',
         'target_temperature',
@@ -169,29 +175,36 @@ describe(HomeMELCloudDriverAtw, () => {
       ).not.toContain('measure_signal_strength')
     })
 
-    it('should require consumed power alone from a consumption source', () => {
+    it('should require the consumed surface alone from a consumption source', () => {
       const capabilities = driver.getRequiredCapabilities(
         createProfile({ hasMeasuredEnergyConsumption: true }),
       )
 
       expect(capabilities).toContain('measure_power')
+      expect(capabilities).toContain('meter_power')
+      expect(capabilities).toContain('meter_power.daily')
       expect(capabilities).not.toContain('measure_power.produced')
+      expect(capabilities).not.toContain('meter_power.cop')
     })
 
-    it('should require produced power alone from a production source', () => {
+    it('should require the produced surface alone from a production source', () => {
       const capabilities = driver.getRequiredCapabilities(
         createProfile({ hasEstimatedEnergyProduction: true }),
       )
 
       expect(capabilities).toContain('measure_power.produced')
+      expect(capabilities).toContain('meter_power.produced')
+      expect(capabilities).toContain('meter_power.produced_daily')
       expect(capabilities).not.toContain('measure_power')
+      expect(capabilities).not.toContain('meter_power.cop')
     })
 
-    it('should require no power without any energy source', () => {
+    it('should require no energy surface without any energy source', () => {
       const capabilities = driver.getRequiredCapabilities(createProfile())
 
       expect(capabilities).not.toContain('measure_power')
       expect(capabilities).not.toContain('measure_power.produced')
+      expect(capabilities).not.toContain('meter_power')
     })
   })
 

@@ -759,6 +759,23 @@ class DeviceSettingsManager {
     fireAndForget(this.#homey.alert(this.#homey.__('settings.devices.nothing')))
   }
 
+  #appendDriverSection(
+    driverId: string,
+    driverLabel: string,
+    checkboxSets: HTMLFieldSetElement[],
+  ): void {
+    const { controls, section } = createSectionShell(driverLabel)
+    controls.append(...checkboxSets)
+    section.append(createSettingsButtonRow(this.#homey, toSectionId(driverId)))
+    getDiv('device_settings').append(section)
+    this.#addSettingsEventListeners(
+      checkboxSets.flatMap((checkboxSet) => [
+        ...checkboxSet.querySelectorAll('input'),
+      ]),
+      driverId,
+    )
+  }
+
   async #applyDeviceSettings(body: Settings, driverId?: string): Promise<void> {
     const driverQuery =
       driverId === undefined ? '' : (
@@ -853,17 +870,16 @@ class DeviceSettingsManager {
     if (driverSetting === undefined || firstSetting === undefined) {
       return
     }
-    const { controls, section } = createSectionShell(firstSetting.driverLabel)
+    // No checkbox settings, no section: an empty shell would still
+    // render its legend and buttons.
     const checkboxSets = this.#createCheckboxSets(driverSetting)
-    controls.append(...checkboxSets)
-    section.append(createSettingsButtonRow(this.#homey, toSectionId(driverId)))
-    getDiv('device_settings').append(section)
-    this.#addSettingsEventListeners(
-      checkboxSets.flatMap((checkboxSet) => [
-        ...checkboxSet.querySelectorAll('input'),
-      ]),
-      driverId,
-    )
+    if (checkboxSets.length > 0) {
+      this.#appendDriverSection(
+        driverId,
+        firstSetting.driverLabel,
+        checkboxSets,
+      )
+    }
   }
 
   #createSettingControls(
