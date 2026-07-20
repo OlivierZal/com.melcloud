@@ -130,8 +130,12 @@
   },
   "notifications": {
     "sessionExpired": {
-      "classic": "Your MELCloud account is no longer signed in. Open the MELCloud app settings to log in again.",
+      "classic": "Your MELCloud Classic account is no longer signed in. Open the MELCloud app settings to log in again.",
       "home": "Your MELCloud Home account is no longer signed in. Open the MELCloud app settings to log in again."
+    },
+    "sessionRestored": {
+      "classic": "Your MELCloud Classic account is signed in again — devices are updating again.",
+      "home": "Your MELCloud Home account is signed in again — devices are updating again."
     }
   }
 }

@@ -6,8 +6,12 @@
   },
   "notifications": {
     "sessionExpired": {
-      "classic": "Twoje konto MELCloud nie jest już zalogowane. Otwórz ustawienia aplikacji MELCloud, aby zalogować się ponownie.",
+      "classic": "Twoje konto MELCloud Classic nie jest już zalogowane. Otwórz ustawienia aplikacji MELCloud, aby zalogować się ponownie.",
       "home": "Twoje konto MELCloud Home nie jest już zalogowane. Otwórz ustawienia aplikacji MELCloud, aby zalogować się ponownie."
+    },
+    "sessionRestored": {
+      "classic": "Twoje konto MELCloud Classic jest ponownie zalogowane — urządzenia znów się aktualizują.",
+      "home": "Twoje konto MELCloud Home jest ponownie zalogowane — urządzenia znów się aktualizują."
     }
   },
   "settings": {

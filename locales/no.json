@@ -130,8 +130,12 @@
   },
   "notifications": {
     "sessionExpired": {
-      "classic": "MELCloud-kontoen din er ikke lenger pålogget. Åpne innstillingene i MELCloud-appen for å logge på igjen.",
+      "classic": "MELCloud Classic-kontoen din er ikke lenger pålogget. Åpne innstillingene i MELCloud-appen for å logge på igjen.",
       "home": "MELCloud Home-kontoen din er ikke lenger pålogget. Åpne innstillingene i MELCloud-appen for å logge på igjen."
+    },
+    "sessionRestored": {
+      "classic": "MELCloud Classic-kontoen din er pålogget igjen — enhetene oppdateres igjen.",
+      "home": "MELCloud Home-kontoen din er pålogget igjen — enhetene oppdateres igjen."
     }
   }
 }

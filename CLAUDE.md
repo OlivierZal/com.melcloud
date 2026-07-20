@@ -70,6 +70,14 @@ coverage.
   `homey-button-*` classes; `settings/index.css` only fills documented SDK
   gaps (date inputs, checkbox `:indeterminate`, `fieldset[hidden]`
   specificity) and app-specific design.
+- The injected sheet resets `fieldset.homey-form-checkbox-set` /
+  `-radio-set` with `all: unset`, which leaves `display: inline` — and
+  WebKit renders inline fieldsets atomically, so SIBLING sets tile side
+  by side (the 45.7.5 settings regression; a single set per section had
+  hidden it for years). `settings/index.css` restacks them with a
+  higher-specificity block rule. Any markup change that multiplies
+  `homey-form-*` elements needs an on-device cold-open check: the
+  injected sheet's resets make untested combinations render arbitrarily.
 
 ## Driver conventions
 
