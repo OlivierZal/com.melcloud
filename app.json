@@ -283,7 +283,7 @@
       "värmeåtervinning"
     ]
   },
-  "version": "45.8.2",
+  "version": "45.8.3",
   "flow": {
     "triggers": [
       {
@@ -10886,7 +10886,7 @@
           ]
         }
       },
-      "class": "heatpump",
+      "class": "airtreatment",
       "icon": "/drivers/melcloud_erv/assets/icon.svg",
       "images": {
         "large": "/drivers/melcloud_erv/assets/images/large.png",
