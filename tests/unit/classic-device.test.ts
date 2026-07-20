@@ -24,7 +24,7 @@ import {
   testUninitialisation,
   testWarningManagement,
 } from '../device-descriptors.ts'
-import { type InteropModule, mock } from '../helpers.ts'
+import { type InteropModule, mock, settleDetached } from '../helpers.ts'
 import {
   type TestDeviceType,
   TestDevice,
@@ -624,6 +624,7 @@ describe(ClassicMELCloudDevice, () => {
       })
       setDriver(deviceWithRegular)
       await deviceWithRegular.onInit()
+      await settleDetached()
 
       expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
         1,
@@ -644,6 +645,7 @@ describe(ClassicMELCloudDevice, () => {
       })
       setDriver(deviceWithTotal)
       await deviceWithTotal.onInit()
+      await settleDetached()
 
       expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
         1,
@@ -676,6 +678,7 @@ describe(ClassicMELCloudDevice, () => {
       })
       setDriver(deviceWithRegular, driverWithEnergy)
       await deviceWithRegular.onInit()
+      await settleDetached()
       energyReportStartMock.mockRejectedValueOnce(failure)
       await deviceWithRegular.onSettings({
         changedKeys: ['measure_power'],
@@ -706,6 +709,7 @@ describe(ClassicMELCloudDevice, () => {
       // must not depend on MELCloud latency (Early 2018 Homeys hit the
       // SDK ready_timeout exactly there).
       await deviceWithRegular.onInit()
+      await settleDetached()
 
       expect(energyReportStartMock).toHaveBeenCalledTimes(1)
 
@@ -725,12 +729,11 @@ describe(ClassicMELCloudDevice, () => {
       })
       setDriver(deviceWithRegular)
       await deviceWithRegular.onInit()
-      // The detached chain settles a couple of microtasks after init.
-      await Promise.resolve()
-      await Promise.resolve()
+      // The detached chain settles within one macrotask turn.
+      await settleDetached()
 
       expect(deviceWithRegular.error).toHaveBeenCalledWith(
-        'Energy report scheduling failed:',
+        'Deferred device init failed:',
         expect.any(Error),
       )
     })

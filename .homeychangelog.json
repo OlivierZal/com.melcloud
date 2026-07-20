@@ -766,5 +766,20 @@
     "pl": "Odczyty mocy i energii są teraz zawsze dostępne na urządzeniach MELCloud Home (gdy urządzenie je raportuje) — ich ustawienia wyświetlania zostały usunięte.",
     "ru": "Показания мощности и энергии теперь всегда доступны на устройствах MELCloud Home (когда устройство их передаёт) — их настройки отображения удалены.",
     "sv": "Effekt- och energivärden är nu alltid tillgängliga på MELCloud Home-enheter (när enheten rapporterar dem) — deras visningsinställningar är borttagna."
+  },
+  "45.8.1": {
+    "ar": "تشغيل أسرع على أجهزة Homey القديمة: لم تعد جاهزية الأجهزة تنتظر تحديث القيم، وتُسجَّل أوقات بدء التشغيل للتشخيص.",
+    "da": "Hurtigere opstart på ældre Homeys: enhedernes parathed venter ikke længere på værdiopdateringer, og opstartstider logges til diagnosticering.",
+    "de": "Schnellerer Start auf älteren Homeys: die Gerätebereitschaft wartet nicht mehr auf Wertaktualisierungen, und Startzeiten werden für die Diagnose protokolliert.",
+    "en": "Faster startup on older Homeys: device readiness no longer waits for value refreshes, and boot timings are logged for diagnostics.",
+    "es": "Arranque más rápido en Homeys antiguos: la disponibilidad de los dispositivos ya no espera las actualizaciones de valores, y los tiempos de arranque se registran para diagnóstico.",
+    "fr": "Démarrage plus rapide sur les anciens Homey : la disponibilité des appareils n’attend plus le rafraîchissement des valeurs, et les temps de démarrage sont journalisés pour le diagnostic.",
+    "it": "Avvio più rapido sui Homey meno recenti: la disponibilità dei dispositivi non attende più l’aggiornamento dei valori, e i tempi di avvio vengono registrati per la diagnostica.",
+    "ko": "구형 Homey에서 더 빠른 시작: 기기 준비가 더 이상 값 새로 고침을 기다리지 않으며, 진단을 위해 부팅 시간이 기록됩니다.",
+    "nl": "Sneller opstarten op oudere Homeys: apparaatgereedheid wacht niet langer op waardeverversingen, en opstarttijden worden gelogd voor diagnose.",
+    "no": "Raskere oppstart på eldre Homey-er: enhetsberedskap venter ikke lenger på verdier som oppdateres, og oppstartstider logges for diagnostikk.",
+    "pl": "Szybsze uruchamianie na starszych Homey: gotowość urządzeń nie czeka już na odświeżenie wartości, a czasy rozruchu są rejestrowane do diagnostyki.",
+    "ru": "Более быстрый запуск на старых Homey: готовность устройств больше не ждёт обновления значений, а время загрузки записывается для диагностики.",
+    "sv": "Snabbare start på äldre Homeys: enheternas beredskap väntar inte längre på värdeuppdateringar, och starttider loggas för diagnostik."
   }
 }
