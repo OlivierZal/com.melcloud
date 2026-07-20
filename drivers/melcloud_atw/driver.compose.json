@@ -849,18 +849,18 @@
     }
   },
   "name": {
-    "ar": "مضخة حرارية هواء-ماء",
-    "da": "Luft-til-vand varmepumpe",
-    "de": "Luft-Wasser-Wärmepumpe",
-    "en": "Air-to-water heat pump",
-    "es": "Bomba de calor aire-agua",
-    "fr": "Pompe à chaleur air-eau",
-    "it": "Pompa di calore aria-acqua",
-    "ko": "공기-물 히트펌프",
-    "nl": "Lucht-water warmtepomp",
-    "no": "Luft-til-vann varmepumpe",
-    "pl": "Pompa ciepła powietrze-woda",
-    "ru": "Воздушно-водяной тепловой насос",
-    "sv": "Luft-till-vatten värmepump"
+    "ar": "[Classic] مضخة حرارية هواء-ماء",
+    "da": "[Classic] Luft-til-vand varmepumpe",
+    "de": "[Classic] Luft-Wasser-Wärmepumpe",
+    "en": "[Classic] Air-to-water heat pump",
+    "es": "[Classic] Bomba de calor aire-agua",
+    "fr": "[Classic] Pompe à chaleur air-eau",
+    "it": "[Classic] Pompa di calore aria-acqua",
+    "ko": "[Classic] 공기-물 히트펌프",
+    "nl": "[Classic] Lucht-water warmtepomp",
+    "no": "[Classic] Luft-til-vann varmepumpe",
+    "pl": "[Classic] Pompa ciepła powietrze-woda",
+    "ru": "[Classic] Воздушно-водяной тепловой насос",
+    "sv": "[Classic] Luft-till-vatten värmepump"
   }
 }

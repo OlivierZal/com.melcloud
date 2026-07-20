@@ -781,5 +781,20 @@
     "pl": "Szybsze uruchamianie na starszych Homey: gotowość urządzeń nie czeka już na odświeżenie wartości, a czasy rozruchu są rejestrowane do diagnostyki.",
     "ru": "Более быстрый запуск на старых Homey: готовность устройств больше не ждёт обновления значений, а время загрузки записывается для диагностики.",
     "sv": "Snabbare start på äldre Homeys: enheternas beredskap väntar inte längre på värdeuppdateringar, och starttider loggas för diagnostik."
+  },
+  "45.8.2": {
+    "ar": "وضوح أكبر: أنواع أجهزة MELCloud Classic تحمل الآن البادئة [Classic]، على غرار [Home].",
+    "da": "Tydeligere afgrænsning: MELCloud Classic-enhedstyper er nu mærket [Classic], ligesom [Home].",
+    "de": "Klarere Abgrenzung: MELCloud-Classic-Gerätetypen tragen jetzt das Präfix [Classic], spiegelbildlich zu [Home].",
+    "en": "Clearer scope: MELCloud Classic device types are now labelled [Classic], mirroring [Home].",
+    "es": "Ámbito más claro: los tipos de dispositivos de MELCloud Classic ahora llevan la etiqueta [Classic], reflejando [Home].",
+    "fr": "Périmètre plus clair : les types d’appareils MELCloud Classic portent désormais le préfixe [Classic], en miroir de [Home].",
+    "it": "Ambito più chiaro: i tipi di dispositivi MELCloud Classic ora portano l’etichetta [Classic], in specchio con [Home].",
+    "ko": "더 명확한 구분: MELCloud Classic 기기 유형에 이제 [Home]과 대칭으로 [Classic] 접두사가 붙습니다.",
+    "nl": "Duidelijkere afbakening: MELCloud Classic-apparaattypen zijn nu gelabeld met [Classic], in spiegelbeeld van [Home].",
+    "no": "Tydeligere avgrensning: MELCloud Classic-enhetstyper er nå merket [Classic], i speil av [Home].",
+    "pl": "Wyraźniejszy zakres: typy urządzeń MELCloud Classic mają teraz prefiks [Classic], lustrzanie do [Home].",
+    "ru": "Более чёткое разграничение: типы устройств MELCloud Classic теперь помечены [Classic], зеркально [Home].",
+    "sv": "Tydligare avgränsning: MELCloud Classic-enhetstyper är nu märkta [Classic], som en spegel av [Home]."
   }
 }
