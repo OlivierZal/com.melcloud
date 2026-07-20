@@ -89,18 +89,18 @@
     }
   },
   "name": {
-    "ar": "مبادل حراري مع استرداد الطاقة (ERV)",
-    "da": "Ventilator med varmegenvinding (ERV)",
-    "de": "Lüftungsgerät mit Wärmerückgewinnung (ERV)",
-    "en": "Energy recovery ventilator (ERV)",
-    "es": "Ventilador con recuperación de calor (ERV)",
-    "fr": "Ventilateur avec récupération de chaleur (ERV)",
-    "it": "Ventilatore con recupero di calore (ERV)",
-    "ko": "에너지 회수 환기장치 (ERV)",
-    "nl": "Ventilator met warmteterugwinning (WTW)",
-    "no": "Ventilator med varmegjenvinning (ERV)",
-    "pl": "Wentylator z odzyskiem ciepła (ERV)",
-    "ru": "Вентиляция с рекуперацией энергии (ERV)",
-    "sv": "Ventilator med värmeåtervinning (ERV)"
+    "ar": "[Classic] مبادل حراري مع استرداد الطاقة (ERV)",
+    "da": "[Classic] Ventilator med varmegenvinding (ERV)",
+    "de": "[Classic] Lüftungsgerät mit Wärmerückgewinnung (ERV)",
+    "en": "[Classic] Energy recovery ventilator (ERV)",
+    "es": "[Classic] Ventilador con recuperación de calor (ERV)",
+    "fr": "[Classic] Ventilateur avec récupération de chaleur (ERV)",
+    "it": "[Classic] Ventilatore con recupero di calore (ERV)",
+    "ko": "[Classic] 에너지 회수 환기장치 (ERV)",
+    "nl": "[Classic] Ventilator met warmteterugwinning (WTW)",
+    "no": "[Classic] Ventilator med varmegjenvinning (ERV)",
+    "pl": "[Classic] Wentylator z odzyskiem ciepła (ERV)",
+    "ru": "[Classic] Вентиляция с рекуперацией энергии (ERV)",
+    "sv": "[Classic] Ventilator med värmeåtervinning (ERV)"
   }
 }

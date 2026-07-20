@@ -283,7 +283,7 @@
       "värmeåtervinning"
     ]
   },
-  "version": "45.8.1",
+  "version": "45.8.2",
   "flow": {
     "triggers": [
       {
@@ -6626,19 +6626,19 @@
         "measure_signal_strength"
       ],
       "name": {
-        "ar": "مضخة حرارية هواء-هواء",
-        "da": "Luft-til-luft varmepumpe",
-        "de": "Luft-Luft-Wärmepumpe",
-        "en": "Air-to-air heat pump",
-        "es": "Bomba de calor aire-aire",
-        "fr": "Pompe à chaleur air-air",
-        "it": "Pompa di calore aria-aria",
-        "ko": "공기-공기 히트펌프",
-        "nl": "Lucht-lucht warmtepomp",
-        "no": "Luft-til-luft varmepumpe",
-        "pl": "Pompa ciepła powietrze-powietrze",
-        "ru": "Воздушный тепловой насос",
-        "sv": "Luft-till-luft värmepump"
+        "ar": "[Classic] مضخة حرارية هواء-هواء",
+        "da": "[Classic] Luft-til-luft varmepumpe",
+        "de": "[Classic] Luft-Luft-Wärmepumpe",
+        "en": "[Classic] Air-to-air heat pump",
+        "es": "[Classic] Bomba de calor aire-aire",
+        "fr": "[Classic] Pompe à chaleur air-air",
+        "it": "[Classic] Pompa di calore aria-aria",
+        "ko": "[Classic] 공기-공기 히트펌프",
+        "nl": "[Classic] Lucht-lucht warmtepomp",
+        "no": "[Classic] Luft-til-luft varmepumpe",
+        "pl": "[Classic] Pompa ciepła powietrze-powietrze",
+        "ru": "[Classic] Воздушный тепловой насос",
+        "sv": "[Classic] Luft-till-luft värmepump"
       },
       "id": "melcloud",
       "settings": [
@@ -8953,19 +8953,19 @@
         "measure_signal_strength"
       ],
       "name": {
-        "ar": "مضخة حرارية هواء-ماء",
-        "da": "Luft-til-vand varmepumpe",
-        "de": "Luft-Wasser-Wärmepumpe",
-        "en": "Air-to-water heat pump",
-        "es": "Bomba de calor aire-agua",
-        "fr": "Pompe à chaleur air-eau",
-        "it": "Pompa di calore aria-acqua",
-        "ko": "공기-물 히트펌프",
-        "nl": "Lucht-water warmtepomp",
-        "no": "Luft-til-vann varmepumpe",
-        "pl": "Pompa ciepła powietrze-woda",
-        "ru": "Воздушно-водяной тепловой насос",
-        "sv": "Luft-till-vatten värmepump"
+        "ar": "[Classic] مضخة حرارية هواء-ماء",
+        "da": "[Classic] Luft-til-vand varmepumpe",
+        "de": "[Classic] Luft-Wasser-Wärmepumpe",
+        "en": "[Classic] Air-to-water heat pump",
+        "es": "[Classic] Bomba de calor aire-agua",
+        "fr": "[Classic] Pompe à chaleur air-eau",
+        "it": "[Classic] Pompa di calore aria-acqua",
+        "ko": "[Classic] 공기-물 히트펌프",
+        "nl": "[Classic] Lucht-water warmtepomp",
+        "no": "[Classic] Luft-til-vann varmepumpe",
+        "pl": "[Classic] Pompa ciepła powietrze-woda",
+        "ru": "[Classic] Воздушно-водяной тепловой насос",
+        "sv": "[Classic] Luft-till-vatten värmepump"
       },
       "id": "melcloud_atw",
       "settings": [
@@ -11056,19 +11056,19 @@
         "measure_signal_strength"
       ],
       "name": {
-        "ar": "مبادل حراري مع استرداد الطاقة (ERV)",
-        "da": "Ventilator med varmegenvinding (ERV)",
-        "de": "Lüftungsgerät mit Wärmerückgewinnung (ERV)",
-        "en": "Energy recovery ventilator (ERV)",
-        "es": "Ventilador con recuperación de calor (ERV)",
-        "fr": "Ventilateur avec récupération de chaleur (ERV)",
-        "it": "Ventilatore con recupero di calore (ERV)",
-        "ko": "에너지 회수 환기장치 (ERV)",
-        "nl": "Ventilator met warmteterugwinning (WTW)",
-        "no": "Ventilator med varmegjenvinning (ERV)",
-        "pl": "Wentylator z odzyskiem ciepła (ERV)",
-        "ru": "Вентиляция с рекуперацией энергии (ERV)",
-        "sv": "Ventilator med värmeåtervinning (ERV)"
+        "ar": "[Classic] مبادل حراري مع استرداد الطاقة (ERV)",
+        "da": "[Classic] Ventilator med varmegenvinding (ERV)",
+        "de": "[Classic] Lüftungsgerät mit Wärmerückgewinnung (ERV)",
+        "en": "[Classic] Energy recovery ventilator (ERV)",
+        "es": "[Classic] Ventilador con recuperación de calor (ERV)",
+        "fr": "[Classic] Ventilateur avec récupération de chaleur (ERV)",
+        "it": "[Classic] Ventilatore con recupero di calore (ERV)",
+        "ko": "[Classic] 에너지 회수 환기장치 (ERV)",
+        "nl": "[Classic] Ventilator met warmteterugwinning (WTW)",
+        "no": "[Classic] Ventilator med varmegjenvinning (ERV)",
+        "pl": "[Classic] Wentylator z odzyskiem ciepła (ERV)",
+        "ru": "[Classic] Вентиляция с рекуперацией энергии (ERV)",
+        "sv": "[Classic] Ventilator med värmeåtervinning (ERV)"
       },
       "id": "melcloud_erv",
       "settings": [
