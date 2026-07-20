@@ -313,21 +313,27 @@ export abstract class BaseMELCloudDevice<
     return this.#deviceFacade
   }
 
-  async #init(): Promise<void> {
-    await this.#setCapabilities()
+  // The per-capability IPC bulk (options reapplication, value sync)
+  // and the network energy fetches: detached from the ready path — an
+  // Early 2018 Homey burns the SDK's 30 s budget on serialized IPC
+  // alone (a v45.7.8 field report still hit `ready_timeout` after the
+  // fetches left). `#setCapabilities` stays awaited: its post-pairing
+  // delta is usually empty and the tag mappings must exist before the
+  // capability listeners fire.
+  async #finishInit(): Promise<void> {
     await this.applyCapabilitiesOptions()
     await this.syncFromDevice()
-    // The initial energy fetches are network round-trips: detached so
-    // a slow MELCloud cannot hold Device#onInit past the SDK ready
-    // budget — an Early 2018 Homey with several metered devices hit
-    // `ready_timeout` exactly there. The settings path keeps awaiting
-    // its restarts; only boot is off the critical path.
+    await this.scheduleEnergyReports()
+  }
+
+  async #init(): Promise<void> {
+    await this.#setCapabilities()
     fireAndForget(
-      this.scheduleEnergyReports(),
+      this.#finishInit(),
       (...args: unknown[]) => {
         this.error(...args)
       },
-      'Energy report scheduling failed:',
+      'Deferred device init failed:',
     )
   }
 

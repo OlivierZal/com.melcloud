@@ -40,5 +40,13 @@ export const createEnergyReportMock = (): {
     })),
 })
 
+// Drain the microtask chains a detached (fire-and-forget) device init
+// leaves behind: one macrotask turn settles them all when the mocks
+// resolve synchronously.
+export const settleDetached = async (): Promise<void> =>
+  new Promise((resolve) => {
+    setImmediate(resolve)
+  })
+
 export { createMockDeviceClass } from './mock-device-class.ts'
 export { createMockDriverClass } from './mock-driver-class.ts'

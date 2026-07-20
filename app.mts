@@ -57,6 +57,7 @@ import {
 } from './files.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { NotFoundError } from './lib/errors.mts'
+import { fireAndForget } from './lib/fire-and-forget.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { typedFromEntries } from './lib/typed-object.mts'
@@ -410,6 +411,11 @@ export default class MELCloudApp extends App {
   }
 
   public override async onInit(): Promise<void> {
+    // Boot marks: everything before the first line is module require +
+    // SDK handshake, and `ready` lands once every driver and device
+    // initialized — the discriminators for 2018-hardware
+    // `ready_timeout` diagnostics.
+    this.log('Boot: onInit after', process.uptime().toFixed(1), 's')
     const language = this.homey.i18n.getLanguage()
     await this.#initClassicApi({
       language,
@@ -420,6 +426,13 @@ export default class MELCloudApp extends App {
     this.#createNotification(language)
     this.#registerWidgetListeners()
     this.#registerFlowListeners()
+    fireAndForget(
+      this.#logBootReady(),
+      (...args: unknown[]) => {
+        this.error(...args)
+      },
+      'Boot readiness tracking failed:',
+    )
   }
 
   public override async onUninit(): Promise<void> {
@@ -1280,6 +1293,11 @@ export default class MELCloudApp extends App {
       timezone: getTimeZone(this.homey),
     })
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
+  }
+
+  async #logBootReady(): Promise<void> {
+    await this.homey.ready()
+    this.log('Boot: ready after', process.uptime().toFixed(1), 's')
   }
 
   // User-facing half of melcloud-api's onAuthenticationLost contract:

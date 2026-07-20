@@ -18,7 +18,7 @@ import type * as HomeyLib from '../../lib/homey.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
 import type { Settings } from '../../types/device-settings.mts'
 import type { ManifestDriver } from '../../types/manifest.mts'
-import { getMockCallArg, mock } from '../helpers.js'
+import { getMockCallArg, mock, settleDetached } from '../helpers.js'
 
 const mockSetFacadeManager = vi.fn<() => void>()
 
@@ -312,29 +312,41 @@ const setupMocks = (): void => {
 
 const createApp = (): InstanceType<typeof MelCloudApp> => {
   const app = new MelCloudApp()
-  Object.defineProperty(app, 'homey', {
-    configurable: true,
-    value: {
-      __: mockTranslate,
-      clock: { getTimezone: mockGetTimezone },
-      dashboards: { getWidget: mockGetWidget },
-      drivers: { getDrivers: mockGetDrivers },
-      flow: {
-        getActionCard: mockGetActionCard,
-        getConditionCard: mockGetConditionCard,
-      },
-      i18n: { getLanguage: mockGetLanguage },
-      manifest: { drivers: mockManifestDrivers, version: '1.0.0' },
-      notifications: { createNotification: mockCreateNotification },
-      ready: mockHomeyReady,
-      setTimeout: mockSetTimeout,
-      settings: {
-        get: mockSettingsGet,
-        set: mockSettingsSet,
-        unset: mockSettingsUnset,
-      },
+  // The mocked App base is a bare Function: give every instance the
+  // log/error methods the boot marks rely on (tests override at will).
+  Object.defineProperties(app, {
+    error: {
+      configurable: true,
+      value: vi.fn<(...args: unknown[]) => void>(),
     },
-    writable: false,
+    homey: {
+      configurable: true,
+      value: {
+        __: mockTranslate,
+        clock: { getTimezone: mockGetTimezone },
+        dashboards: { getWidget: mockGetWidget },
+        drivers: { getDrivers: mockGetDrivers },
+        flow: {
+          getActionCard: mockGetActionCard,
+          getConditionCard: mockGetConditionCard,
+        },
+        i18n: { getLanguage: mockGetLanguage },
+        manifest: { drivers: mockManifestDrivers, version: '1.0.0' },
+        notifications: { createNotification: mockCreateNotification },
+        ready: mockHomeyReady,
+        setTimeout: mockSetTimeout,
+        settings: {
+          get: mockSettingsGet,
+          set: mockSettingsSet,
+          unset: mockSettingsUnset,
+        },
+      },
+      writable: false,
+    },
+    log: {
+      configurable: true,
+      value: vi.fn<(...args: unknown[]) => void>(),
+    },
   })
   return app
 }
@@ -760,6 +772,33 @@ describe('melCloudApp', () => {
 
       expect(mockSetTimeout).toHaveBeenCalledTimes(scheduledCalls)
       expect(mockCreateNotification).toHaveBeenCalledTimes(1)
+    })
+
+    it('should log the boot marks around init and readiness', async () => {
+      await app.onInit()
+      await settleDetached()
+
+      expect(app.log).toHaveBeenCalledWith(
+        'Boot: onInit after',
+        expect.any(String),
+        's',
+      )
+      expect(app.log).toHaveBeenCalledWith(
+        'Boot: ready after',
+        expect.any(String),
+        's',
+      )
+    })
+
+    it('should log a boot readiness tracking failure', async () => {
+      mockHomeyReady.mockRejectedValueOnce(new Error('never ready'))
+      await app.onInit()
+      await settleDetached()
+
+      expect(app.error).toHaveBeenCalledWith(
+        'Boot readiness tracking failed:',
+        expect.any(Error),
+      )
     })
 
     it('should not fetch Home devices itself (the API create contract owns it)', async () => {
