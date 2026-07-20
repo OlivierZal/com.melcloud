@@ -13,7 +13,24 @@ interface ReportDevice {
     interval: Temporal.DurationLike,
     actionType: string,
   ) => NodeJS.Timeout
+  readonly setWarning: (warning: string | null) => Promise<void>
 }
+
+// Repeated failures earn a device warning; hourly reports make this
+// roughly three hours of silence before the user is told.
+const FAILURE_WARNING_THRESHOLD = 3
+
+const APPLIED_VALUE_DECIMALS = 3
+
+// Compact `capability=value` pairs so a diagnostics report shows what
+// landed without dumping payloads; three decimals cover kWh readings.
+const formatApplied = (applied: Record<string, number>): string =>
+  Object.entries(applied)
+    .map(
+      ([capability, value]) =>
+        `${capability}=${String(Number(value.toFixed(APPLIED_VALUE_DECIMALS)))}`,
+    )
+    .join(', ')
 
 export interface EnergyReportConfig {
   readonly duration: Temporal.DurationLike
@@ -33,7 +50,11 @@ export abstract class ScheduledEnergyReport {
 
   readonly #config: EnergyReportConfig
 
+  #consecutiveFailures = 0
+
   readonly #device: ReportDevice
+
+  #hasWarned = false
 
   #reportTimeout: NodeJS.Timeout | null = null
 
@@ -46,7 +67,10 @@ export abstract class ScheduledEnergyReport {
     this.#config = config
   }
 
-  protected abstract fetchAndApply(): Promise<void>
+  // Returns the applied `capability → value` map, or `null` when the
+  // run was skipped (unreachable device — `ensureDevice` already
+  // warned it).
+  protected abstract fetchAndApply(): Promise<Record<string, number> | null>
 
   protected abstract hasEnabledCapabilities(): boolean
 
@@ -99,10 +123,57 @@ export abstract class ScheduledEnergyReport {
   }
 
   async #fetchSafely(): Promise<void> {
+    let applied: Record<string, number> | null
     try {
-      await this.fetchAndApply()
+      applied = await this.fetchAndApply()
     } catch (error) {
       this.#device.error('Energy report fetch failed:', error)
+      await this.#registerFailure()
+      return
+    }
+    if (applied !== null) {
+      this.#device.log(
+        `${this.#config.mode} energy report applied:`,
+        formatApplied(applied),
+      )
+    }
+    await this.#registerSuccess()
+  }
+
+  // Mirror of `ensureDevice`'s warning pattern: repeated report
+  // failures surface on the device tile once, the next success clears
+  // them. Skipped runs (`null`) count as neither — the device warning
+  // for an unreachable unit is `ensureDevice`'s to manage.
+  async #registerFailure(): Promise<void> {
+    this.#consecutiveFailures += 1
+    if (
+      this.#consecutiveFailures < FAILURE_WARNING_THRESHOLD ||
+      this.#hasWarned
+    ) {
+      return
+    }
+    this.#hasWarned = true
+    await this.#setWarningSafely(
+      this.#device.homey.__('errors.energyReportsFailing'),
+    )
+  }
+
+  async #registerSuccess(): Promise<void> {
+    this.#consecutiveFailures = 0
+    if (!this.#hasWarned) {
+      return
+    }
+    this.#hasWarned = false
+    await this.#setWarningSafely(null)
+  }
+
+  // The warning update is IPC: its own failure must not break the
+  // report chain.
+  async #setWarningSafely(warning: string | null): Promise<void> {
+    try {
+      await this.#device.setWarning(warning)
+    } catch (error) {
+      this.#device.error('Failed to update the device warning:', error)
     }
   }
 }

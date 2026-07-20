@@ -150,14 +150,17 @@ export abstract class HomeEnergyReport<
     this.#strategy = strategy
   }
 
-  protected override async fetchAndApply(): Promise<void> {
+  protected override async fetchAndApply(): Promise<Record<
+    string,
+    number
+  > | null> {
     const facade = await this.#device.ensureDevice()
     if (facade === null) {
-      return
+      return null
     }
-    await (this.mode === 'total' ?
-      this.#applyTotals(facade)
-    : this.#applyRegular(facade))
+    return this.mode === 'total' ?
+        this.#applyTotals(facade)
+      : this.#applyRegular(facade)
   }
 
   protected override hasEnabledCapabilities(): boolean {
@@ -184,7 +187,9 @@ export abstract class HomeEnergyReport<
     return total
   }
 
-  async #applyRegular(facade: HomeDeviceFacade<T>): Promise<void> {
+  async #applyRegular(
+    facade: HomeDeviceFacade<T>,
+  ): Promise<Record<string, number>> {
     const entries = this.#enabledEntries
     const now = getNow(this.#device.homey)
     const nowInstant = now.toInstant()
@@ -198,20 +203,27 @@ export abstract class HomeEnergyReport<
       from,
       to: nowInstant,
     })
-    await Promise.all(
-      entries.map(async (entry) =>
-        this.#device.setCapabilityValue(
+    const applied = entries.map(
+      (entry) =>
+        [
           entry[0],
           this.#regularValue(entry, points, {
             dayStart,
             now: nowInstant,
           }),
-        ),
+        ] as const,
+    )
+    await Promise.all(
+      applied.map(async ([capability, value]) =>
+        this.#device.setCapabilityValue(capability, value),
       ),
     )
+    return Object.fromEntries(applied)
   }
 
-  async #applyTotals(facade: HomeDeviceFacade<T>): Promise<void> {
+  async #applyTotals(
+    facade: HomeDeviceFacade<T>,
+  ): Promise<Record<string, number>> {
     const entries = this.#enabledEntries
     const upTo = getNow(this.#device.homey).toInstant().subtract(CURSOR_SAFETY)
     const totals = typedFromEntries(
@@ -222,11 +234,15 @@ export abstract class HomeEnergyReport<
         ),
       ),
     )
+    const applied = entries.map(
+      (entry) => [entry[0], totalValue(entry, totals)] as const,
+    )
     await Promise.all(
-      entries.map(async (entry) =>
-        this.#device.setCapabilityValue(entry[0], totalValue(entry, totals)),
+      applied.map(async ([capability, value]) =>
+        this.#device.setCapabilityValue(capability, value),
       ),
     )
+    return Object.fromEntries(applied)
   }
 
   async #fetchAccrual(

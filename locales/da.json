@@ -2,7 +2,8 @@
   "errors": {
     "deviceNotFound": "Enhed ikke fundet.",
     "zoneNotFound": "Zone ikke fundet.",
-    "invalidDuration": "Varigheden skal være et helt antal dage mellem 0 og 365."
+    "invalidDuration": "Varigheden skal være et helt antal dage mellem 0 og 365.",
+    "energyReportsFailing": "Energirapporterne er fejlet flere gange i træk — energiværdierne kan være forældede."
   },
   "settings": {
     "authenticate": {

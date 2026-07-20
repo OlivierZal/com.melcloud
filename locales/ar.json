@@ -2,7 +2,8 @@
   "errors": {
     "deviceNotFound": "لم يتم العثور على الجهاز.",
     "zoneNotFound": "لم يتم العثور على المنطقة.",
-    "invalidDuration": "يجب أن تكون المدة عددًا صحيحًا من الأيام بين 0 و365."
+    "invalidDuration": "يجب أن تكون المدة عددًا صحيحًا من الأيام بين 0 و365.",
+    "energyReportsFailing": "فشلت تقارير الطاقة عدة مرات متتالية — قد تكون قيم الطاقة قديمة."
   },
   "settings": {
     "authenticate": {

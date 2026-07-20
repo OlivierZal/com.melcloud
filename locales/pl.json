@@ -2,7 +2,8 @@
   "errors": {
     "deviceNotFound": "Nie znaleziono urządzenia.",
     "zoneNotFound": "Nie znaleziono strefy.",
-    "invalidDuration": "Czas trwania musi być całkowitą liczbą dni od 0 do 365."
+    "invalidDuration": "Czas trwania musi być całkowitą liczbą dni od 0 do 365.",
+    "energyReportsFailing": "Raporty energii nie powiodły się kilka razy z rzędu — wartości energii mogą być nieaktualne."
   },
   "settings": {
     "authenticate": {

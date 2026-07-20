@@ -721,5 +721,20 @@
     "pl": "Naprawiono układ strony ustawień (grupy opcji nie ustawiają się już obok siebie). Czytelniejsze błędy logowania: odrzucone dane, tymczasowa blokada MELCloud lub problem z siecią — a adres e-mail jest oczyszczany z przypadkowych spacji. Powiadomienie « sesja wygasła » pojawia się tylko dla kont ze sparowanymi urządzeniami. Po ponownym zalogowaniu konta pojawia się potwierdzenie.",
     "ru": "Исправлена вёрстка страницы настроек (группы параметров больше не встают рядом друг с другом). Понятнее ошибки входа: отклонённые данные, временная блокировка MELCloud или проблема с сетью — а адрес электронной почты очищается от случайных пробелов. Уведомление « сессия истекла » показывается только для учётных записей с сопряжёнными устройствами. При повторном входе в учётную запись появляется подтверждение.",
     "sv": "Inställningssidans layout är rättad (alternativgrupper hamnar inte längre sida vid sida). Tydligare inloggningsfel: avvisade uppgifter, tillfällig MELCloud-blockering eller nätverksproblem — och e-postadressen rensas från oavsiktliga mellanslag. Aviseringen « sessionen har löpt ut » visas bara för konton med parkopplade enheter. En bekräftelse visas när kontot är inloggat igen."
+  },
+  "45.7.7": {
+    "ar": "تعرض الأجهزة الآن تحذيرًا عندما تستمر تقارير الطاقة في الفشل (يُمسح عند أول نجاح)، ويسجل كل تقرير القيم التي طبقها.",
+    "da": "Enheder viser nu en advarsel, når deres energirapporter bliver ved med at fejle (fjernes ved næste succes), og hver rapport logger de anvendte værdier.",
+    "de": "Geräte zeigen jetzt eine Warnung, wenn ihre Energieberichte wiederholt fehlschlagen (beim nächsten Erfolg gelöscht), und jeder Bericht protokolliert die angewendeten Werte.",
+    "en": "Devices now show a warning when their energy reports keep failing (cleared on the next success), and each report logs the values it applied.",
+    "es": "Los dispositivos ahora muestran una advertencia cuando sus informes de energía fallan repetidamente (se borra con el siguiente éxito), y cada informe registra los valores aplicados.",
+    "fr": "Les appareils affichent désormais un avertissement lorsque leurs rapports d’énergie échouent à répétition (effacé au succès suivant), et chaque rapport journalise les valeurs appliquées.",
+    "it": "I dispositivi ora mostrano un avviso quando i loro report energetici continuano a fallire (rimosso al successo successivo), e ogni report registra i valori applicati.",
+    "ko": "에너지 보고서가 반복적으로 실패하면 기기에 경고가 표시되며(다음 성공 시 해제), 각 보고서는 적용된 값을 기록합니다.",
+    "nl": "Apparaten tonen nu een waarschuwing wanneer hun energierapporten blijven mislukken (gewist bij het volgende succes), en elk rapport logt de toegepaste waarden.",
+    "no": "Enheter viser nå en advarsel når energirapportene deres fortsetter å feile (fjernes ved neste vellykkede kjøring), og hver rapport logger verdiene som ble brukt.",
+    "pl": "Urządzenia pokazują teraz ostrzeżenie, gdy ich raporty energii wielokrotnie się nie powiodą (usuwane przy następnym sukcesie), a każdy raport zapisuje zastosowane wartości.",
+    "ru": "Устройства теперь показывают предупреждение, когда их отчёты об энергии повторно завершаются ошибкой (снимается при следующем успехе), а каждый отчёт записывает применённые значения.",
+    "sv": "Enheter visar nu en varning när deras energirapporter fortsätter att misslyckas (rensas vid nästa lyckade körning), och varje rapport loggar de tillämpade värdena."
   }
 }

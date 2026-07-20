@@ -2,7 +2,8 @@
   "errors": {
     "deviceNotFound": "Device not found.",
     "zoneNotFound": "Zone not found.",
-    "invalidDuration": "The duration must be a whole number of days between 0 and 365."
+    "invalidDuration": "The duration must be a whole number of days between 0 and 365.",
+    "energyReportsFailing": "Energy reports have failed several times in a row — the energy values may be stale."
   },
   "settings": {
     "authenticate": {

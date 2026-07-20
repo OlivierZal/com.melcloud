@@ -52,6 +52,8 @@ const setIntervalMock = vi
   .mockReturnValue(2)
 const logMock = vi.fn<(...args: unknown[]) => void>()
 const errorMock = vi.fn<(...args: unknown[]) => void>()
+const setWarningMock = vi.fn<(warning: string | null) => Promise<void>>()
+const translateMock = vi.fn<(key: string) => string>((key) => key)
 
 const regularConfig = {
   duration: { hours: 1 },
@@ -84,6 +86,7 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   ensureDevice: ensureDeviceMock,
   error: errorMock,
   homey: mock<Homey.Homey>({
+    __: translateMock,
     clearInterval: clearIntervalMock,
     clearTimeout: clearTimeoutMock,
     clock: mock<Homey.Homey['clock']>({
@@ -94,6 +97,7 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   setCapabilityValue: setCapabilityValueMock,
   setInterval: setIntervalMock,
   setTimeout: setTimeoutMock,
+  setWarning: setWarningMock,
 })
 
 const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
@@ -102,6 +106,15 @@ const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
     .mockResolvedValue(ok(energyData))
   ensureDeviceMock.mockResolvedValue({ data: {}, getEnergy: getEnergyMock })
   return getEnergyMock
+}
+
+const mockFailingFetch = (): void => {
+  ensureDeviceMock.mockResolvedValue({
+    data: {},
+    getEnergy: vi
+      .fn<(query?: unknown) => Promise<unknown>>()
+      .mockResolvedValue(err({ kind: 'network' as const })),
+  })
 }
 
 const createCopMocks = (
@@ -252,6 +265,81 @@ describe(EnergyReport, () => {
       await report.start()
 
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('failure warning and success logging', () => {
+    const validEnergyData = {
+      Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
+    }
+
+    it('should warn the device once after three consecutive failures', async () => {
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+      await report.start()
+
+      expect(setWarningMock).not.toHaveBeenCalled()
+
+      await report.start()
+      await report.start()
+
+      expect(setWarningMock).toHaveBeenCalledTimes(1)
+      expect(setWarningMock).toHaveBeenCalledWith('errors.energyReportsFailing')
+    })
+
+    it('should clear the warning and reset the streak on the next success', async () => {
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+      await report.start()
+      await report.start()
+      mockEnergyFetch(validEnergyData)
+      await report.start()
+
+      expect(setWarningMock).toHaveBeenCalledTimes(2)
+      expect(setWarningMock).toHaveBeenLastCalledWith(null)
+    })
+
+    it('should not warn when successes interleave the failures', async () => {
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+      await report.start()
+      mockEnergyFetch(validEnergyData)
+      await report.start()
+      mockFailingFetch()
+      await report.start()
+      await report.start()
+
+      expect(setWarningMock).not.toHaveBeenCalled()
+    })
+
+    it('should keep the chain alive when the warning update itself fails', async () => {
+      setWarningMock.mockRejectedValueOnce(new Error('ipc down'))
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+      await report.start()
+      await report.start()
+
+      expect(errorMock).toHaveBeenCalledWith(
+        'Failed to update the device warning:',
+        expect.any(Error),
+      )
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('should log a compact summary of the applied values', async () => {
+      mockEnergyFetch(validEnergyData)
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      expect(logMock).toHaveBeenCalledWith(
+        'regular energy report applied:',
+        expect.stringMatching(/^measure_power=\d+(?:\.\d+)?$/v),
+      )
     })
   })
 

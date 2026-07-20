@@ -1,6 +1,7 @@
 {
   "errors": {
     "deviceNotFound": "Enhed ikke fundet.",
+    "energyReportsFailing": "Energirapporterne er fejlet flere gange i træk — energiværdierne kan være forældede.",
     "invalidDuration": "Varigheden skal være et helt antal dage mellem 0 og 365.",
     "zoneNotFound": "Zone ikke fundet."
   },
