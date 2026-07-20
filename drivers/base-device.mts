@@ -446,9 +446,10 @@ export abstract class BaseMELCloudDevice<
       await this.#syncOptionalCapabilities(newSettings, changedCapabilities)
       await this.setWarning(this.homey.__('warnings.dashboard'))
     }
-    // A device without onoff (e.g. a guest Home ATW unit, measures only)
-    // cannot be switched from Homey at all: always_on is inert there, and
-    // triggering the listener would error on the missing capability.
+    // A device without onoff (a driver may compute its capabilities and
+    // omit it) cannot be switched from Homey at all: always_on is inert
+    // there, and triggering the listener would error on the missing
+    // capability.
     if (
       changedKeys.includes('always_on') &&
       newSettings.always_on === true &&

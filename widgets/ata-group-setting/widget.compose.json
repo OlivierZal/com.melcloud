@@ -54,24 +54,36 @@
     }
   },
   "name": {
+    "ar": "إعداد أجهزة الهواء-هواء",
     "da": "Luft-til-luft-enhedsindstilling",
+    "de": "Luft-Luft-Geräteeinstellung",
     "en": "Air-to-air device setting",
     "es": "Ajuste de dispositivos aire-aire",
     "fr": "Réglage des appareils air-air",
+    "it": "Impostazione dei dispositivi aria-aria",
+    "ko": "공기-공기 장치 설정",
     "nl": "Lucht-lucht apparaatinstelling",
     "no": "Luft-til-luft-enhetsinnstilling",
+    "pl": "Ustawienie urządzeń powietrze-powietrze",
+    "ru": "Настройка устройств воздух-воздух",
     "sv": "Luft-till-luft-enhetsinställning"
   },
   "settings": [
     {
       "id": "default_zone",
       "title": {
+        "ar": "المنطقة أو الجهاز الافتراضي",
         "da": "Standardzone eller -enhed",
+        "de": "Standardzone oder -gerät",
         "en": "Default zone or device",
         "es": "Zona o dispositivo predeterminado",
         "fr": "Zone ou appareil par défaut",
+        "it": "Zona o dispositivo predefinito",
+        "ko": "기본 구역 또는 장치",
         "nl": "Standaardzone of -apparaat",
         "no": "Standardsone eller -enhet",
+        "pl": "Domyślna strefa lub urządzenie",
+        "ru": "Зона или устройство по умолчанию",
         "sv": "Standardzon eller -enhet"
       },
       "type": "autocomplete"
@@ -79,12 +91,18 @@
     {
       "id": "animations",
       "title": {
+        "ar": "الرسوم المتحركة",
         "da": "Animationer",
+        "de": "Animationen",
         "en": "Animations",
         "es": "Animaciones",
         "fr": "Animations",
+        "it": "Animazioni",
+        "ko": "애니메이션",
         "nl": "Animaties",
         "no": "Animasjoner",
+        "pl": "Animacje",
+        "ru": "Анимации",
         "sv": "Animationer"
       },
       "type": "checkbox",

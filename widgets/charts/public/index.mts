@@ -195,10 +195,10 @@ const seriesColors: Record<string, string> = {
   RoomTemperature: '#D62728',
   RoomTemperatureZone1: '#D62728',
   RoomTemperatureZone2: '#9467BD',
-  SetRoomTemperatureZone1: '#FF9896',
-  SetRoomTemperatureZone2: '#C5B0D5',
   SetTankWaterTemperature: '#FFBB78',
   SetTemperature: '#FF9896',
+  SetTemperatureZone1: '#FF9896',
+  SetTemperatureZone2: '#C5B0D5',
   Stop: '#7F7F7F',
   TankWaterTemperature: '#FF7F0E',
   VentilationMode: '#17BECF',
@@ -771,13 +771,19 @@ const getTimeout = (chart: HomeySettings['chart']): number => {
     return HOURLY_CHART_REFRESH_MS
   }
   const now = Temporal.Now.zonedDateTimeISO()
-  const next = now.add({ hours: 1 }).with({
+  // The NEXT hh:05 — which is still this hour's when the draw happens
+  // between hh:00 and hh:05 (adding a flat hour there would delay the
+  // freshly aggregated hour by a full cycle).
+  let next = now.with({
     microsecond: 0,
     millisecond: 0,
     minute: 5,
     nanosecond: 0,
     second: 0,
   })
+  if (Temporal.ZonedDateTime.compare(next, now) <= 0) {
+    next = next.add({ hours: 1 })
+  }
   return now.until(next).total('milliseconds')
 }
 
@@ -980,17 +986,17 @@ class ChartWidget {
     }
   }
 
-  async #fetchDevices(
-    type?: Classic.DeviceType,
-  ): Promise<Classic.DeviceZone[]> {
+  // One fetcher for both vendors: `String(type)` is an identity on the
+  // Home string enum and stringifies the Classic numeric one.
+  async #fetchDeviceZones<T extends ChartDeviceZone>(
+    vendor: 'classic' | 'home',
+    type?: Classic.DeviceType | Home.DeviceType,
+  ): Promise<T[]> {
     const typeQuery =
       type === undefined ? '' : (
         `?${new URLSearchParams({ type: String(type) })}`
       )
-    return homeyApiGet<Classic.DeviceZone[]>(
-      this.#homey,
-      `/classic/devices${typeQuery}`,
-    )
+    return homeyApiGet<T[]>(this.#homey, `/${vendor}/devices${typeQuery}`)
   }
 
   // Resolves to null when a picker change landed while the fetch was in
@@ -1006,15 +1012,6 @@ class ChartWidget {
     return isSameSelection(selection, this.#readSelection()) ? config : null
   }
 
-  async #fetchHomeDevices(type?: Home.DeviceType): Promise<HomeDeviceZone[]> {
-    const typeQuery =
-      type === undefined ? '' : `?${new URLSearchParams({ type })}`
-    return homeyApiGet<HomeDeviceZone[]>(
-      this.#homey,
-      `/home/devices${typeQuery}`,
-    )
-  }
-
   // The picker only ever holds ids from `CHARTS`; the fallback is
   // type-level only.
   #getChart(): HomeySettings['chart'] {
@@ -1025,11 +1022,17 @@ class ChartWidget {
   async #initControls(): Promise<void> {
     const [classicAll, classicAta, classicAtw, homeAll, homeAtw] =
       await Promise.all([
-        this.#fetchDevices(),
-        this.#fetchDevices(ClassicDeviceType.Ata),
-        this.#fetchDevices(ClassicDeviceType.Atw),
-        this.#fetchHomeDevices(),
-        this.#fetchHomeDevices(HomeDeviceType.Atw),
+        this.#fetchDeviceZones<Classic.DeviceZone>('classic'),
+        this.#fetchDeviceZones<Classic.DeviceZone>(
+          'classic',
+          ClassicDeviceType.Ata,
+        ),
+        this.#fetchDeviceZones<Classic.DeviceZone>(
+          'classic',
+          ClassicDeviceType.Atw,
+        ),
+        this.#fetchDeviceZones<HomeDeviceZone>('home'),
+        this.#fetchDeviceZones<HomeDeviceZone>('home', HomeDeviceType.Atw),
       ])
     // Per-chart device line-up: temperature and signal history exist for
     // every device; the hourly temperatures and the operation modes are

@@ -24,12 +24,9 @@
       "true": "Sì"
     },
     "devices": {
-      "apply": {
-        "button": "Applica a tutti i dispositivi",
-        "nothing": "Nessuna modifica da applicare."
-      },
       "legend": "Impostazioni di tutti i dispositivi",
-      "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!"
+      "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!",
+      "nothing": "Nessuna modifica da applicare."
     },
     "devicesAta": {
       "autoAdjust": "Regolazione automatica della temperatura del condizionatore",
@@ -66,6 +63,7 @@
       "startDate": "Data di inizio"
     },
     "intError": "__name__: deve essere un numero intero compreso tra __min__ e __max__.",
+    "loadFailed": "Caricamento non riuscito",
     "refresh": "Ricarica",
     "success": "Aggiornamento riuscito.",
     "title": "Impostazioni MELCloud",
@@ -131,6 +129,7 @@
       "temperatures": "Temperature"
     },
     "days": "Numero di giorni",
+    "loadFailed": "Caricamento non riuscito",
     "zones": "Zone"
   }
 }

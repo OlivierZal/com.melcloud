@@ -57,6 +57,9 @@
         <details id="authentication" class="homey-form-fieldset">
             <summary class="homey-form-legend" data-i18n="settings.authenticate.legend">Credentials</summary>
             <div class="homey-form-group">
+                <!-- The accessible name "API" is language-neutral (reads
+                    identically in all 13 locales), so it deliberately
+                    carries no data-i18n-aria-label. -->
                 <select
                     id="api"
                     class="homey-form-select"
@@ -137,9 +140,10 @@
                     >Update</button>
                 </div>
             </fieldset>
-            <!-- Air-to-air temperature auto-adjust: a Classic-ATA-only link
-                to the companion extension app, shown when such devices
-                exist. Not part of the generated per-driver sections. -->
+            <!-- Air-to-air temperature auto-adjust: a link to the
+                companion extension app, shown when devices of either
+                air-to-air driver (Classic or Home) exist. Not part of
+                the generated per-driver sections. -->
             <div id="auto_adjust_section" hidden>
                 <fieldset class="homey-form-fieldset">
                     <legend class="homey-form-legend" data-i18n="settings.devicesAta.legend">All air-to-air device settings</legend>

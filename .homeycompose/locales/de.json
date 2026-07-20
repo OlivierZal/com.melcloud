@@ -24,12 +24,9 @@
       "true": "Ja"
     },
     "devices": {
-      "apply": {
-        "button": "Auf alle Geräte anwenden",
-        "nothing": "Keine Änderung zum Anwenden."
-      },
       "legend": "Einstellungen aller Geräte",
-      "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!"
+      "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!",
+      "nothing": "Keine Änderung zum Anwenden."
     },
     "devicesAta": {
       "autoAdjust": "Klimaanlagen-Temperatur automatisch anpassen",
@@ -66,6 +63,7 @@
       "startDate": "Startdatum"
     },
     "intError": "__name__: muss eine ganze Zahl zwischen __min__ und __max__ sein.",
+    "loadFailed": "Laden fehlgeschlagen",
     "refresh": "Neu laden",
     "success": "Aktualisierung erfolgreich.",
     "title": "MELCloud-Einstellungen",
@@ -131,6 +129,7 @@
       "temperatures": "Temperaturen"
     },
     "days": "Anzahl der Tage",
+    "loadFailed": "Laden fehlgeschlagen",
     "zones": "Zonen"
   }
 }

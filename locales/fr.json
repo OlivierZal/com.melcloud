@@ -2,8 +2,7 @@
   "errors": {
     "deviceNotFound": "Appareil introuvable.",
     "zoneNotFound": "Zone introuvable.",
-    "invalidDuration": "La durée doit être un nombre entier de jours entre 0 et 365.",
-    "updateFailed": "MELCloud a refusé la mise à jour."
+    "invalidDuration": "La durée doit être un nombre entier de jours entre 0 et 365."
   },
   "settings": {
     "authenticate": {
@@ -21,19 +20,12 @@
     "devices": {
       "legend": "Paramètres de tous les appareils",
       "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !",
-      "nothing": "Aucun changement à appliquer.",
-      "apply": {
-        "button": "Appliquer à tous les appareils",
-        "nothing": "Aucun changement à appliquer."
-      }
+      "nothing": "Aucun changement à appliquer."
     },
     "devicesAta": {
       "autoAdjust": "Auto-ajuster la température de la climatisation",
       "configure": "Configurer",
       "legend": "Paramètres de tous les appareils air-air"
-    },
-    "devicesAtw": {
-      "legend": "Paramètres des appareils air-eau (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -71,14 +63,7 @@
     "title": "Paramètres de MELCloud",
     "update": "Mettre à jour",
     "zones": {
-      "legend": "Paramètres des zones (Classic)",
-      "update": "Mettre à jour"
-    },
-    "devicesAtaHome": {
-      "legend": "Paramètres des appareils air-air (Home)"
-    },
-    "devicesAtwHome": {
-      "legend": "Paramètres des appareils air-eau (Home)"
+      "legend": "Paramètres des zones (Classic)"
     }
   },
   "warnings": {

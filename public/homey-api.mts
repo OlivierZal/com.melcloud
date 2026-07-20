@@ -54,7 +54,7 @@ export const runWebview = async (
  * @param work - The init chain to bound.
  * @returns The work's result, or a rejection once the deadline passes.
  */
-export const withInitTimeout = async <T,>(work: Promise<T>): Promise<T> => {
+const withInitTimeout = async <T,>(work: Promise<T>): Promise<T> => {
   let timer: ReturnType<typeof setTimeout> | undefined
   try {
     return await Promise.race([
@@ -115,9 +115,7 @@ export const homeyApiPut = async (
   await homey.api('PUT', path, body)
 }
 
-export const setDocumentLanguage = async (
-  homey: HomeyWidget,
-): Promise<void> => {
+const setDocumentLanguage = async (homey: HomeyWidget): Promise<void> => {
   document.documentElement.lang = await homeyApiGet<string>(homey, '/language')
 }
 

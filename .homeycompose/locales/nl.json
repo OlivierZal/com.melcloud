@@ -24,12 +24,9 @@
       "true": "Ja"
     },
     "devices": {
-      "apply": {
-        "button": "Toepassen op alle apparaten",
-        "nothing": "Geen wijziging om toe te passen."
-      },
       "legend": "Instellingen van alle apparaten",
-      "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!"
+      "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!",
+      "nothing": "Geen wijziging om toe te passen."
     },
     "devicesAta": {
       "autoAdjust": "Auto-afstellen airco-temperatuur",
@@ -66,6 +63,7 @@
       "startDate": "Begindatum"
     },
     "intError": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
+    "loadFailed": "Laden mislukt",
     "refresh": "Herladen",
     "success": "Update geslaagd.",
     "title": "MELCloud-instellingen",
@@ -131,6 +129,7 @@
       "temperatures": "Temperaturen"
     },
     "days": "Aantal dagen",
+    "loadFailed": "Laden mislukt",
     "zones": "Zones"
   }
 }

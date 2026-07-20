@@ -24,12 +24,9 @@
       "true": "Yes"
     },
     "devices": {
-      "apply": {
-        "button": "Apply to all devices",
-        "nothing": "No change to apply."
-      },
       "legend": "All device settings",
-      "none": "Add a device to unlock all the app's settings!"
+      "none": "Add a device to unlock all the app's settings!",
+      "nothing": "No change to apply."
     },
     "devicesAta": {
       "autoAdjust": "Auto-adjust air conditioning temperature",
@@ -66,6 +63,7 @@
       "startDate": "Start date"
     },
     "intError": "__name__: must be an integer between __min__ and __max__.",
+    "loadFailed": "Loading failed",
     "refresh": "Refresh",
     "success": "Update succeeded.",
     "title": "MELCloud settings",
@@ -131,6 +129,7 @@
       "temperatures": "Temperatures"
     },
     "days": "Number of days",
+    "loadFailed": "Loading failed",
     "zones": "Zones"
   }
 }

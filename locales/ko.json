@@ -2,8 +2,7 @@
   "errors": {
     "deviceNotFound": "기기를 찾을 수 없습니다.",
     "zoneNotFound": "구역을 찾을 수 없습니다.",
-    "invalidDuration": "기간은 0에서 365 사이의 정수(일)여야 합니다.",
-    "updateFailed": "MELCloud가 업데이트를 거부했습니다."
+    "invalidDuration": "기간은 0에서 365 사이의 정수(일)여야 합니다."
   },
   "settings": {
     "authenticate": {
@@ -21,19 +20,12 @@
     "devices": {
       "legend": "모든 기기 설정",
       "none": "기기를 추가하여 모든 앱 설정을 잠금 해제하세요!",
-      "nothing": "적용할 변경 사항이 없습니다.",
-      "apply": {
-        "button": "모든 기기에 적용",
-        "nothing": "적용할 변경 사항이 없습니다."
-      }
+      "nothing": "적용할 변경 사항이 없습니다."
     },
     "devicesAta": {
       "autoAdjust": "에어컨 온도 자동 조절",
       "configure": "구성",
       "legend": "모든 공기-공기 기기 설정"
-    },
-    "devicesAtw": {
-      "legend": "공기 대 물 기기 설정 (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -71,14 +63,7 @@
     "title": "MELCloud 설정",
     "update": "업데이트",
     "zones": {
-      "legend": "구역 설정 (Classic)",
-      "update": "업데이트"
-    },
-    "devicesAtaHome": {
-      "legend": "공기 대 공기 기기 설정 (Home)"
-    },
-    "devicesAtwHome": {
-      "legend": "공기 대 물 기기 설정 (Home)"
+      "legend": "구역 설정 (Classic)"
     }
   },
   "warnings": {

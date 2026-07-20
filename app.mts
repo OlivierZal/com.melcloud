@@ -63,6 +63,12 @@ import { typedFromEntries } from './lib/typed-object.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 
+// Locale-aware by-name comparator shared by every zone/building sort.
+const byName = (
+  first: { readonly name: string },
+  other: { readonly name: string },
+): number => first.name.localeCompare(other.name)
+
 const HOLIDAY_MODE_MAX_DURATION_DAYS = 365
 const HOLIDAY_MODE_OFF_DURATION = 0
 
@@ -271,7 +277,7 @@ interface RawErrorEntry {
 // next one ends the day before it starts) so a Home-only account still
 // browses windows when Classic is signed out.
 const syntheticErrorLogWindow = (
-  { period, to }: Classic.ErrorLogQuery,
+  { from, period, to }: Classic.ErrorLogQuery,
   timeZone: string,
 ): Omit<Classic.ErrorLog, 'errors'> => {
   const periodDays = period ?? DEFAULT_ERROR_LOG_PERIOD_DAYS
@@ -279,7 +285,12 @@ const syntheticErrorLogWindow = (
     to !== undefined && to !== '' ?
       Temporal.PlainDate.from(to)
     : Temporal.Now.plainDateISO(timeZone)
-  const fromDate = toDate.subtract({ days: periodDays })
+  // A user-picked "since" date pins the window start, like the
+  // library's own parseErrorLogQuery does on the Classic path.
+  const fromDate =
+    from !== undefined && from !== '' ?
+      Temporal.PlainDate.from(from)
+    : toDate.subtract({ days: periodDays })
   const nextToDate = fromDate.subtract({ days: 1 })
   return {
     fromDate: fromDate.toString(),
@@ -470,7 +481,7 @@ export default class MELCloudApp extends App {
           this.#classicRegistry.buildings.getById(device.buildingId)?.name,
         ),
       }))
-      .toSorted((zone, other) => zone.name.localeCompare(other.name))
+      .toSorted(byName)
   }
 
   public async getClassicEnergyReport({
@@ -675,7 +686,7 @@ export default class MELCloudApp extends App {
   public getHomeAtaTargets(): (HomeBuildingZone | HomeDeviceZone)[] {
     return this.#homeRegistry
       .getBuildingsByType(Home.DeviceType.Ata)
-      .toSorted((building, other) => building.name.localeCompare(other.name))
+      .toSorted(byName)
       .flatMap(({ devices, id, name }) => [
         {
           id,
@@ -690,7 +701,7 @@ export default class MELCloudApp extends App {
             model: 'homeDevices',
             name: device.name,
           }))
-          .toSorted((zone, other) => zone.name.localeCompare(other.name)),
+          .toSorted(byName),
       ])
   }
 
@@ -731,7 +742,7 @@ export default class MELCloudApp extends App {
         model: 'homeDevices',
         name: toFlatDeviceName(device.name, device.building.name),
       }))
-      .toSorted((zone, other) => zone.name.localeCompare(other.name))
+      .toSorted(byName)
   }
 
   public async getHomeEnergyReport({
@@ -1306,7 +1317,7 @@ export default class MELCloudApp extends App {
         [
           ...filterZonesByName(this.getClassicDeviceZones(), query),
           ...filterZonesByName(this.getHomeDeviceZones(), query),
-        ].toSorted((zone, other) => zone.name.localeCompare(other.name)),
+        ].toSorted(byName),
       )
   }
 

@@ -283,7 +283,7 @@
       "värmeåtervinning"
     ]
   },
-  "version": "45.7.3",
+  "version": "45.7.4",
   "flow": {
     "triggers": [
       {
@@ -13496,24 +13496,36 @@
         }
       },
       "name": {
+        "ar": "إعداد أجهزة الهواء-هواء",
         "da": "Luft-til-luft-enhedsindstilling",
+        "de": "Luft-Luft-Geräteeinstellung",
         "en": "Air-to-air device setting",
         "es": "Ajuste de dispositivos aire-aire",
         "fr": "Réglage des appareils air-air",
+        "it": "Impostazione dei dispositivi aria-aria",
+        "ko": "공기-공기 장치 설정",
         "nl": "Lucht-lucht apparaatinstelling",
         "no": "Luft-til-luft-enhetsinnstilling",
+        "pl": "Ustawienie urządzeń powietrze-powietrze",
+        "ru": "Настройка устройств воздух-воздух",
         "sv": "Luft-till-luft-enhetsinställning"
       },
       "settings": [
         {
           "id": "default_zone",
           "title": {
+            "ar": "المنطقة أو الجهاز الافتراضي",
             "da": "Standardzone eller -enhed",
+            "de": "Standardzone oder -gerät",
             "en": "Default zone or device",
             "es": "Zona o dispositivo predeterminado",
             "fr": "Zone ou appareil par défaut",
+            "it": "Zona o dispositivo predefinito",
+            "ko": "기본 구역 또는 장치",
             "nl": "Standaardzone of -apparaat",
             "no": "Standardsone eller -enhet",
+            "pl": "Domyślna strefa lub urządzenie",
+            "ru": "Зона или устройство по умолчанию",
             "sv": "Standardzon eller -enhet"
           },
           "type": "autocomplete"
@@ -13521,12 +13533,18 @@
         {
           "id": "animations",
           "title": {
+            "ar": "الرسوم المتحركة",
             "da": "Animationer",
+            "de": "Animationen",
             "en": "Animations",
             "es": "Animaciones",
             "fr": "Animations",
+            "it": "Animazioni",
+            "ko": "애니메이션",
             "nl": "Animaties",
             "no": "Animasjoner",
+            "pl": "Animacje",
+            "ru": "Анимации",
             "sv": "Animationer"
           },
           "type": "checkbox",
@@ -13596,24 +13614,36 @@
         }
       },
       "name": {
+        "ar": "سجل MELCloud",
         "da": "MELCloud-historik",
+        "de": "MELCloud-Verlauf",
         "en": "MELCloud History",
         "es": "Historial de MELCloud",
         "fr": "Historique de MELCloud",
+        "it": "Cronologia MELCloud",
+        "ko": "MELCloud 기록",
         "nl": "MELCloud-geschiedenis",
         "no": "MELCloud-historikk",
+        "pl": "Historia MELCloud",
+        "ru": "История MELCloud",
         "sv": "MELCloud-historik"
       },
       "settings": [
         {
           "id": "chart",
           "title": {
+            "ar": "الرسم البياني الافتراضي",
             "da": "Standarddiagram",
+            "de": "Standarddiagramm",
             "en": "Default chart",
             "es": "Gráfico predeterminado",
             "fr": "Graphique par défaut",
+            "it": "Grafico predefinito",
+            "ko": "기본 차트",
             "nl": "Standaardgrafiek",
             "no": "Standarddiagram",
+            "pl": "Domyślny wykres",
+            "ru": "График по умолчанию",
             "sv": "Standarddiagram"
           },
           "type": "dropdown",
@@ -13622,60 +13652,90 @@
             {
               "id": "operation_modes",
               "title": {
+                "ar": "حالات التشغيل",
                 "da": "Driftstilstande",
+                "de": "Betriebszustände",
                 "en": "Operational states",
                 "es": "Estados operativos",
                 "fr": "États opérationnels",
+                "it": "Stati operativi",
+                "ko": "작동 상태",
                 "nl": "Operationele staten",
                 "no": "Driftstilstander",
+                "pl": "Stany pracy",
+                "ru": "Рабочие состояния",
                 "sv": "Drifttillstånd"
               }
             },
             {
               "id": "temperatures",
               "title": {
+                "ar": "درجات الحرارة",
                 "da": "Temperaturer",
+                "de": "Temperaturen",
                 "en": "Temperatures",
                 "es": "Temperaturas",
                 "fr": "Températures",
+                "it": "Temperature",
+                "ko": "온도",
                 "nl": "Temperaturen",
                 "no": "Temperaturer",
+                "pl": "Temperatury",
+                "ru": "Температуры",
                 "sv": "Temperaturer"
               }
             },
             {
               "id": "hourly_temperatures",
               "title": {
+                "ar": "درجات الحرارة منذ الساعة الأخيرة",
                 "da": "Temperaturer siden sidste time",
+                "de": "Temperaturen seit der letzten Stunde",
                 "en": "Temperatures since the last hour",
                 "es": "Temperaturas desde la última hora",
                 "fr": "Températures depuis la dernière heure",
+                "it": "Temperature dall'ultima ora",
+                "ko": "지난 1시간 동안의 온도",
                 "nl": "Temperaturen sinds het afgelopen uur",
                 "no": "Temperaturer siden siste time",
+                "pl": "Temperatury od ostatniej godziny",
+                "ru": "Температуры за последний час",
                 "sv": "Temperaturer sedan den senaste timmen"
               }
             },
             {
               "id": "signal",
               "title": {
+                "ar": "قوة الإشارة منذ الساعة الأخيرة",
                 "da": "Signalstyrke siden sidste time",
+                "de": "Signalstärke seit der letzten Stunde",
                 "en": "Signal Strength since the last hour",
                 "es": "Intensidad de la señal desde la última hora",
                 "fr": "Intensité du signal depuis la dernière heure",
+                "it": "Intensità del segnale dall'ultima ora",
+                "ko": "지난 1시간 동안의 신호 강도",
                 "nl": "Signaalsterkte sinds het afgelopen uur",
                 "no": "Signalstyrke siden siste time",
+                "pl": "Siła sygnału od ostatniej godziny",
+                "ru": "Уровень сигнала за последний час",
                 "sv": "Signalstyrka sedan den senaste timmen"
               }
             },
             {
               "id": "report",
               "title": {
+                "ar": "تقرير الطاقة",
                 "da": "Energirapport",
+                "de": "Energiebericht",
                 "en": "Energy report",
                 "es": "Informe de energía",
                 "fr": "Rapport d'énergie",
+                "it": "Rapporto energetico",
+                "ko": "에너지 보고서",
                 "nl": "Energierapport",
                 "no": "Energirapport",
+                "pl": "Raport energii",
+                "ru": "Отчёт об энергии",
                 "sv": "Energirapport"
               }
             }
@@ -13683,24 +13743,36 @@
         },
         {
           "hint": {
+            "ar": "فقط للرسوم البيانية التي ينطبق عليها ذلك.",
             "da": "Kun for diagrammer hvor dette gælder.",
+            "de": "Nur für Diagramme, auf die dies zutrifft.",
             "en": "Only for charts where this applies.",
             "es": "Solo para gráficos donde esto aplica.",
             "fr": "Uniquement pour les graphiques où cela s'applique.",
+            "it": "Solo per i grafici a cui si applica.",
+            "ko": "해당되는 차트에만 적용됩니다.",
             "nl": "Alleen voor grafieken waar dit van toepassing is.",
             "no": "Kun for diagrammer der dette gjelder.",
+            "pl": "Tylko dla wykresów, których to dotyczy.",
+            "ru": "Только для графиков, к которым это применимо.",
             "sv": "Endast för diagram där detta gäller."
           },
           "id": "days",
           "max": 365,
           "min": 1,
           "title": {
+            "ar": "عدد الأيام الافتراضي",
             "da": "Standardantal dage",
+            "de": "Standardanzahl der Tage",
             "en": "Default number of days",
             "es": "Número de días predeterminado",
             "fr": "Nombre de jours par défaut",
+            "it": "Numero di giorni predefinito",
+            "ko": "기본 일수",
             "nl": "Standaardaantal dagen",
             "no": "Standardantall dager",
+            "pl": "Domyślna liczba dni",
+            "ru": "Число дней по умолчанию",
             "sv": "Standardantal dagar"
           },
           "type": "number",
@@ -13708,22 +13780,34 @@
         },
         {
           "hint": {
+            "ar": "بعض الأجهزة غير متاحة لجميع الرسوم البيانية.",
             "da": "Nogle enheder er ikke tilgængelige for alle diagrammer.",
+            "de": "Einige Geräte sind nicht für alle Diagramme verfügbar.",
             "en": "Some devices are not available for all charts.",
             "es": "Algunos dispositivos no están disponibles para todos los gráficos.",
             "fr": "Certains appareils ne sont pas disponibles pour tous les graphiques.",
+            "it": "Alcuni dispositivi non sono disponibili per tutti i grafici.",
+            "ko": "일부 장치는 모든 차트에서 사용할 수 없습니다.",
             "nl": "Sommige apparaten zijn niet beschikbaar voor alle grafieken.",
             "no": "Noen enheter er ikke tilgjengelige for alle diagrammer.",
+            "pl": "Niektóre urządzenia nie są dostępne dla wszystkich wykresów.",
+            "ru": "Некоторые устройства доступны не для всех графиков.",
             "sv": "Vissa enheter är inte tillgängliga för alla diagram."
           },
           "id": "default_zone",
           "title": {
+            "ar": "الجهاز الافتراضي",
             "da": "Standardenhed",
+            "de": "Standardgerät",
             "en": "Default device",
             "es": "Dispositivo predeterminado",
             "fr": "Appareil par défaut",
+            "it": "Dispositivo predefinito",
+            "ko": "기본 장치",
             "nl": "Standaardapparaat",
             "no": "Standardenhet",
+            "pl": "Domyślne urządzenie",
+            "ru": "Устройство по умолчанию",
             "sv": "Standardenhet"
           },
           "type": "autocomplete"
@@ -13731,12 +13815,18 @@
         {
           "id": "height",
           "title": {
+            "ar": "حجم الودجت",
             "da": "Widgetstørrelse",
+            "de": "Widget-Größe",
             "en": "Widget size",
             "es": "Tamaño del widget",
             "fr": "Taille du widget",
+            "it": "Dimensione del widget",
+            "ko": "위젯 크기",
             "nl": "Widgetgrootte",
             "no": "Widgetstørrelse",
+            "pl": "Rozmiar widżetu",
+            "ru": "Размер виджета",
             "sv": "Widgetstorlek"
           },
           "type": "dropdown",
@@ -13745,24 +13835,36 @@
             {
               "id": "400",
               "title": {
+                "ar": "متوسط",
                 "da": "Mellem",
+                "de": "Mittel",
                 "en": "Medium",
                 "es": "Mediano",
                 "fr": "Moyenne",
+                "it": "Media",
+                "ko": "중간",
                 "nl": "Middel",
                 "no": "Middels",
+                "pl": "Średni",
+                "ru": "Средний",
                 "sv": "Medel"
               }
             },
             {
               "id": "500",
               "title": {
+                "ar": "كبير",
                 "da": "Stor",
+                "de": "Groß",
                 "en": "Large",
                 "es": "Grande",
                 "fr": "Grande",
+                "it": "Grande",
+                "ko": "큼",
                 "nl": "Groot",
                 "no": "Stor",
+                "pl": "Duży",
+                "ru": "Большой",
                 "sv": "Stor"
               }
             }
