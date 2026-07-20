@@ -88,6 +88,7 @@
       ]
     }
   },
+  "class": "airtreatment",
   "name": {
     "ar": "[Classic] مبادل حراري مع استرداد الطاقة (ERV)",
     "da": "[Classic] Ventilator med varmegenvinding (ERV)",

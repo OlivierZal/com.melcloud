@@ -37,4 +37,13 @@ export default class ClassicMELCloudDeviceErv extends ClassicMELCloudDevice<
 
   protected override readonly thermostatMode: typeof ThermostatModeErv =
     ThermostatModeErv
+
+  // Devices paired before 45.8.3 carry the template's heatpump class:
+  // reclassify once — an ERV is an air-treatment appliance.
+  public override async onInit(): Promise<void> {
+    if (this.getClass() !== 'airtreatment') {
+      await this.setClass('airtreatment')
+    }
+    await super.onInit()
+  }
 }
