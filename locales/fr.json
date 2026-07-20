@@ -11,7 +11,9 @@
       "legend": "Identifiants",
       "unverified": "Connexion réussie, mais la session n'a pas pu être vérifiée — veuillez réessayer.",
       "reset": "Réinitialiser",
-      "resetConfirm": "Ceci déconnecte immédiatement le compte sélectionné et efface ses identifiants enregistrés."
+      "resetConfirm": "Ceci déconnecte immédiatement le compte sélectionné et efface ses identifiants enregistrés.",
+      "rejected": "__name__ a refusé ces identifiants — vérifiez l'adresse e-mail et le mot de passe.",
+      "throttled": "__name__ bloque temporairement les connexions après trop de tentatives — réessayez plus tard."
     },
     "boolean": {
       "false": "Non",

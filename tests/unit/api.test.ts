@@ -1,6 +1,10 @@
-import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
+import {
+  type LoginCredentials,
+  AuthenticationError,
+  AuthenticationThrottledError,
+} from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Home from '@olivierzal/melcloud-api/home'
 
@@ -63,7 +67,11 @@ const mockApp = {
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
 
-const homey = mock<Homey>({ app: mockApp, i18n: mockI18n })
+const mockTranslate = vi.fn<(key: string, tags?: object) => string>(
+  (key) => key,
+)
+
+const homey = mock<Homey>({ __: mockTranslate, app: mockApp, i18n: mockI18n })
 
 describe('api', () => {
   beforeEach(() => {
@@ -311,6 +319,36 @@ describe('api', () => {
       await expect(
         api.homeAuthenticate({ body: mock<LoginCredentials>(), homey }),
       ).rejects.toThrow(error)
+    })
+  })
+
+  describe('login failure classification', () => {
+    it('translates a credential rejection into its localized reason', async () => {
+      mockClassicAuthenticate.mockRejectedValueOnce(
+        new AuthenticationError('MELCloud Classic rejected the credentials'),
+      )
+
+      await expect(
+        api.classicAuthenticate({ body: mock<LoginCredentials>(), homey }),
+      ).rejects.toThrow('settings.authenticate.rejected')
+      expect(mockTranslate).toHaveBeenCalledWith(
+        'settings.authenticate.rejected',
+        { name: 'MELCloud Classic' },
+      )
+    })
+
+    it('translates the login throttle into its localized reason', async () => {
+      mockHomeAuthenticate.mockRejectedValueOnce(
+        new AuthenticationThrottledError('blocked'),
+      )
+
+      await expect(
+        api.homeAuthenticate({ body: mock<LoginCredentials>(), homey }),
+      ).rejects.toThrow('settings.authenticate.throttled')
+      expect(mockTranslate).toHaveBeenCalledWith(
+        'settings.authenticate.throttled',
+        { name: 'MELCloud Home' },
+      )
     })
   })
 

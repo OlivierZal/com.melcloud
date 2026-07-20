@@ -157,6 +157,7 @@ const mockSettingsUnset = vi.fn<(key: string) => void>()
 const mockSetTimeout =
   vi.fn<(callback: () => Promise<void> | void, ms: number) => void>()
 const mockCreateNotification = vi.fn<() => Promise<void>>()
+const mockHomeyReady = vi.fn<() => Promise<void>>().mockResolvedValue()
 const mockWidgetRegister =
   vi.fn<(id: string, listener: (query: string) => unknown) => void>()
 const mockGetWidget = vi
@@ -325,6 +326,7 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
       i18n: { getLanguage: mockGetLanguage },
       manifest: { drivers: mockManifestDrivers, version: '1.0.0' },
       notifications: { createNotification: mockCreateNotification },
+      ready: mockHomeyReady,
       setTimeout: mockSetTimeout,
       settings: {
         get: mockSettingsGet,
@@ -532,11 +534,12 @@ describe('melCloudApp', () => {
     })
 
     it.each([
-      ['classic', (): typeof mockCreate => mockCreate],
-      ['home', (): typeof mockHomeCreate => mockHomeCreate],
+      ['classic', (): typeof mockCreate => mockCreate, 'melcloud'],
+      ['home', (): typeof mockHomeCreate => mockHomeCreate, 'home-melcloud'],
     ])(
       'should turn a lost %s session into a Homey notification',
-      async (api, getCreateMock) => {
+      async (api, getCreateMock, driverId) => {
+        setupDriver([createClassicDevice()], driverId)
         await app.onInit()
         const { events } = getMockCallArg<{
           events: { onAuthenticationLost?: () => void }
@@ -556,6 +559,50 @@ describe('melCloudApp', () => {
         expect(mockCreateNotification).toHaveBeenCalledWith({
           excerpt: `notifications.sessionExpired.${api}`,
         })
+      },
+    )
+
+    it.each([
+      ['classic', (): typeof mockCreate => mockCreate, 'melcloud'],
+      ['home', (): typeof mockHomeCreate => mockHomeCreate, 'home-melcloud'],
+    ])(
+      'should only log a lost %s session when the API has no paired device',
+      async (api, getCreateMock, emptyDriverId) => {
+        const logMock = vi.fn<(...args: unknown[]) => void>()
+        Object.defineProperty(app, 'log', {
+          configurable: true,
+          value: logMock,
+        })
+        // A device paired on the OTHER API must not qualify, nor must a
+        // device-less driver of the lost API.
+        const otherDriverId =
+          api === 'classic' ? 'home-melcloud' : 'melcloud_atw'
+        mockGetDrivers.mockReturnValue({
+          [emptyDriverId]: createMockDriver([], emptyDriverId),
+          [otherDriverId]: createMockDriver(
+            [createClassicDevice()],
+            otherDriverId,
+          ),
+        })
+        await app.onInit()
+        const { events } = getMockCallArg<{
+          events: { onAuthenticationLost?: () => void }
+        }>(getCreateMock(), 0, 0)
+
+        events.onAuthenticationLost?.()
+        const scheduled = getMockCallArg<() => Promise<void>>(
+          mockSetTimeout,
+          mockSetTimeout.mock.calls.length - 1,
+          0,
+        )
+        await scheduled()
+
+        expect(mockCreateNotification).not.toHaveBeenCalled()
+        expect(logMock).toHaveBeenCalledWith(
+          'Session lost on',
+          api,
+          'ignored: no paired device',
+        )
       },
     )
 

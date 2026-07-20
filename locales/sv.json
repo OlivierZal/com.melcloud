@@ -11,7 +11,9 @@
       "legend": "Inloggningsuppgifter",
       "unverified": "Inloggad, men sessionen kunde inte verifieras — försök igen.",
       "reset": "Återställ",
-      "resetConfirm": "Detta loggar omedelbart ut det valda kontot och rensar dess sparade autentiseringsuppgifter."
+      "resetConfirm": "Detta loggar omedelbart ut det valda kontot och rensar dess sparade autentiseringsuppgifter.",
+      "rejected": "__name__ avvisade dessa autentiseringsuppgifter — kontrollera e-postadressen och lösenordet.",
+      "throttled": "__name__ blockerar tillfälligt inloggningar efter för många försök — försök igen senare."
     },
     "boolean": {
       "false": "Nej",

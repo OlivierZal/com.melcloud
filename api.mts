@@ -1,6 +1,10 @@
-import type { LoginCredentials } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
+import {
+  type LoginCredentials,
+  AuthenticationError,
+  AuthenticationThrottledError,
+} from '@olivierzal/melcloud-api'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
@@ -11,7 +15,34 @@ import type {
 } from './types/error-log.mts'
 import type { DeviceGroup, DeviceOrZoneData } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
+import { getErrorMessage } from './lib/get-error-message.mts'
 import { toDeviceOrZoneData } from './lib/validation.mts'
+
+// The user-facing service names, interpolated into the failure
+// messages so the alert says WHICH account failed.
+const API_DISPLAY_NAMES = {
+  classic: 'MELCloud Classic',
+  home: 'MELCloud Home',
+} as const
+
+// The webview only receives an error MESSAGE across the app bridge, so
+// login failures are classified here, where `instanceof` still works:
+// a rejection reads differently from MELCloud's login throttle (where
+// retrying keeps the lockout alive) and from a transport failure.
+const toLoginFailure = (
+  homey: Homey,
+  service: keyof typeof API_DISPLAY_NAMES,
+  error: unknown,
+): Error => {
+  if (!(error instanceof AuthenticationError)) {
+    return new Error(getErrorMessage(error))
+  }
+  const reason =
+    error instanceof AuthenticationThrottledError ?
+      'settings.authenticate.throttled'
+    : 'settings.authenticate.rejected'
+  return new Error(homey.__(reason, { name: API_DISPLAY_NAMES[service] }))
+}
 
 // The registry zone tree nests devices under the building itself, its
 // areas, and its floors (which nest areas of their own)
@@ -67,11 +98,17 @@ const toNumber = (value: string | undefined): number | undefined => {
 const api = {
   classicAuthenticate: async ({
     body,
-    homey: { app },
+    homey,
   }: {
     body: LoginCredentials
     homey: Homey
-  }): Promise<void> => app.classicApi.authenticate(body),
+  }): Promise<void> => {
+    try {
+      await homey.app.classicApi.authenticate(body)
+    } catch (error) {
+      throw toLoginFailure(homey, 'classic', error)
+    }
+  },
   classicLogOut: ({ homey: { app } }: { homey: Homey }): void => {
     logSettingsRoute(app, '/classic/sessions')
     app.classicApi.logOut()
@@ -144,11 +181,17 @@ const api = {
     i18n.getLanguage(),
   homeAuthenticate: async ({
     body,
-    homey: { app },
+    homey,
   }: {
     body: LoginCredentials
     homey: Homey
-  }): Promise<void> => app.homeApi.authenticate(body),
+  }): Promise<void> => {
+    try {
+      await homey.app.homeApi.authenticate(body)
+    } catch (error) {
+      throw toLoginFailure(homey, 'home', error)
+    }
+  },
   homeLogOut: ({ homey: { app } }: { homey: Homey }): void => {
     logSettingsRoute(app, '/home/sessions')
     app.homeApi.logOut()

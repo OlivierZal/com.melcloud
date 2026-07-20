@@ -706,5 +706,20 @@
     "pl": "Ulepszenia strony ustawień: poprawne sekcje dla każdej grupy i podpowiedzi menedżera haseł w polach logowania.",
     "ru": "Улучшения страницы настроек: корректные секции по группам и подсказки менеджера паролей в полях учётных данных.",
     "sv": "Förbättringar av inställningssidan: korrekta sektioner per grupp och lösenordshanterartips för inloggningsfälten."
+  },
+  "45.7.6": {
+    "ar": "رسائل فشل تسجيل الدخول أوضح: بيانات مرفوضة، أو حظر مؤقت من MELCloud، أو مشكلة شبكة — ويُشذَّب البريد الإلكتروني من المسافات الزائدة. كما لا يظهر تنبيه « انتهت الجلسة » إلا للحسابات التي لديها أجهزة مقترنة.",
+    "da": "Tydeligere loginfejl: afviste legitimationsoplysninger, midlertidig MELCloud-blokering eller netværksproblem — og e-mailadressen renses for utilsigtede mellemrum. Meddelelsen « session udløbet » vises kun for konti med parrede enheder.",
+    "de": "Klarere Anmeldefehler: abgelehnte Zugangsdaten, vorübergehende MELCloud-Sperre oder Netzwerkproblem — und die E-Mail-Adresse wird von versehentlichen Leerzeichen bereinigt. Die Meldung „Sitzung abgelaufen“ erscheint nur noch für Konten mit gekoppelten Geräten.",
+    "en": "Clearer sign-in failures: rejected credentials, a temporary MELCloud block, or a network problem — and the email address is trimmed of accidental spaces. The \"session expired\" notification is only raised for accounts with paired devices.",
+    "es": "Errores de inicio de sesión más claros: credenciales rechazadas, bloqueo temporal de MELCloud o problema de red — y la dirección de correo se limpia de espacios accidentales. La notificación « sesión caducada » solo se muestra para cuentas con dispositivos emparejados.",
+    "fr": "Échecs de connexion plus clairs : identifiants refusés, blocage temporaire MELCloud ou problème réseau — et l'adresse e-mail est nettoyée des espaces accidentelles. La notification « session expirée » ne concerne plus que les comptes ayant des appareils appariés.",
+    "it": "Errori di accesso più chiari: credenziali rifiutate, blocco temporaneo di MELCloud o problema di rete — e l'indirizzo e-mail viene ripulito dagli spazi accidentali. La notifica « sessione scaduta » riguarda solo gli account con dispositivi associati.",
+    "ko": "더 명확한 로그인 실패 안내: 거부된 자격 증명, MELCloud 일시 차단 또는 네트워크 문제 — 이메일 주소의 실수로 입력된 공백도 제거됩니다. « 세션 만료 » 알림은 페어링된 기기가 있는 계정에만 표시됩니다.",
+    "nl": "Duidelijkere aanmeldfouten: geweigerde inloggegevens, een tijdelijke MELCloud-blokkade of een netwerkprobleem — en het e-mailadres wordt ontdaan van onbedoelde spaties. De melding « sessie verlopen » verschijnt alleen nog voor accounts met gekoppelde apparaten.",
+    "no": "Tydeligere påloggingsfeil: avviste påloggingsopplysninger, midlertidig MELCloud-blokkering eller nettverksproblem — og e-postadressen renses for utilsiktede mellomrom. Varselet « økt utløpt » vises bare for kontoer med sammenkoblede enheter.",
+    "pl": "Czytelniejsze błędy logowania: odrzucone dane, tymczasowa blokada MELCloud lub problem z siecią — a adres e-mail jest oczyszczany z przypadkowych spacji. Powiadomienie « sesja wygasła » pojawia się tylko dla kont ze sparowanymi urządzeniami.",
+    "ru": "Понятнее ошибки входа: отклонённые данные, временная блокировка MELCloud или проблема с сетью — а адрес электронной почты очищается от случайных пробелов. Уведомление « сессия истекла » показывается только для учётных записей с сопряжёнными устройствами.",
+    "sv": "Tydligare inloggningsfel: avvisade uppgifter, tillfällig MELCloud-blockering eller nätverksproblem — och e-postadressen rensas från oavsiktliga mellanslag. Aviseringen « sessionen har löpt ut » visas bara för konton med parkopplade enheter."
   }
 }

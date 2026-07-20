@@ -553,11 +553,14 @@ class AuthManager {
   /** @alerts Displays authentication errors to the user. */
   public async login(): Promise<void> {
     const api = this.#currentApi
-    const username = this.#usernameInput?.value ?? ''
+    // Trimmed: mobile keyboards append a space after autocompleted
+    // email addresses, invisible in the field and rejected by MELCloud.
+    const username = (this.#usernameInput?.value ?? '').trim()
     const password = this.#passwordInput?.value ?? ''
-    const failureMessage = this.#homey.__('settings.authenticate.failure')
     if (username === '' || password === '') {
-      fireAndForget(this.#homey.alert(failureMessage))
+      fireAndForget(
+        this.#homey.alert(this.#homey.__('settings.authenticate.failure')),
+      )
       return
     }
     await withDisablingButton(this.#authenticateButton.id, async () => {
@@ -568,8 +571,10 @@ class AuthManager {
         } satisfies LoginCredentials)
         this.#credentialsByApi[api] = { password, username }
         await this.#loadPostLoginCallback(api)
-      } catch {
-        await this.#homey.alert(failureMessage)
+      } catch (error) {
+        // The app-side handler already classified the failure into a
+        // user-facing reason (rejected / throttled / transport).
+        await this.#homey.alert(getErrorMessage(error))
       }
     })
   }

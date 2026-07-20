@@ -15,8 +15,10 @@
       "button": "Log ind",
       "failure": "Godkendelse mislykkedes.",
       "legend": "Brugernavn og adgangskode",
+      "rejected": "__name__ afviste disse legitimationsoplysninger — kontrollér e-mailadressen og adgangskoden.",
       "reset": "Nulstil",
       "resetConfirm": "Dette logger straks den valgte konto ud og rydder dens gemte legitimationsoplysninger.",
+      "throttled": "__name__ blokerer midlertidigt for login efter for mange forsøg — prøv igen senere.",
       "unverified": "Logget ind, men sessionen kunne ikke bekræftes — prøv igen."
     },
     "boolean": {

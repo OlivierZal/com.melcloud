@@ -11,7 +11,9 @@
       "legend": "Brugernavn og adgangskode",
       "unverified": "Logget ind, men sessionen kunne ikke bekræftes — prøv igen.",
       "reset": "Nulstil",
-      "resetConfirm": "Dette logger straks den valgte konto ud og rydder dens gemte legitimationsoplysninger."
+      "resetConfirm": "Dette logger straks den valgte konto ud og rydder dens gemte legitimationsoplysninger.",
+      "rejected": "__name__ afviste disse legitimationsoplysninger — kontrollér e-mailadressen og adgangskoden.",
+      "throttled": "__name__ blokerer midlertidigt for login efter for mange forsøg — prøv igen senere."
     },
     "boolean": {
       "false": "Nej",

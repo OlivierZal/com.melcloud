@@ -15,8 +15,10 @@
       "button": "Log in",
       "failure": "Authentication failed.",
       "legend": "Credentials",
+      "rejected": "__name__ rejected these credentials — please check the email address and password.",
       "reset": "Reset",
       "resetConfirm": "This immediately signs out the selected account and clears its saved credentials.",
+      "throttled": "__name__ is temporarily blocking sign-ins after too many attempts — please try again later.",
       "unverified": "Signed in, but the session could not be verified — please try again."
     },
     "boolean": {

@@ -11,7 +11,9 @@
       "legend": "Dane logowania",
       "unverified": "Zalogowano, ale nie udało się zweryfikować sesji — spróbuj ponownie.",
       "reset": "Resetuj",
-      "resetConfirm": "Spowoduje to natychmiastowe wylogowanie wybranego konta i usunięcie jego zapisanych danych logowania."
+      "resetConfirm": "Spowoduje to natychmiastowe wylogowanie wybranego konta i usunięcie jego zapisanych danych logowania.",
+      "rejected": "__name__ odrzucił te dane logowania — sprawdź adres e-mail i hasło.",
+      "throttled": "__name__ tymczasowo blokuje logowanie po zbyt wielu próbach — spróbuj ponownie później."
     },
     "boolean": {
       "false": "Nie",

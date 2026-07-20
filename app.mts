@@ -1162,6 +1162,16 @@ export default class MELCloudApp extends App {
     return logs.flat()
   }
 
+  // Driver ids are a store compat contract: Home drivers are namespaced
+  // `home-*` (see DRIVER_IDS_BY_TYPE), Classic ids are bare.
+  #hasPairedDevices(api: Api): boolean {
+    return this.#getDrivers().some(
+      (driver) =>
+        (driver.id.startsWith('home-') ? 'home' : 'classic') === api &&
+        driver.getDevices().length > 0,
+    )
+  }
+
   async #initClassicApi(config: {
     language: string
     locale: string
@@ -1223,9 +1233,19 @@ export default class MELCloudApp extends App {
   // alert API and no webview is open when a sync loses the session).
   // The library fires once per loss episode, so no dedup is needed
   // here; the deferral mirrors #createNotification (off the event
-  // callstack, best-effort).
+  // callstack, best-effort). Residual credentials on an API without any
+  // paired device (say, a Classic-only user who once tried Home) only
+  // get a log line: the timeline nag is reserved for a loss that stops
+  // device updates. The readiness await orders the device check after
+  // driver init — a backed-off resume reports the loss during
+  // `App#onInit`, when `getDrivers()` is still empty.
   #notifySessionLost(api: Api): void {
     this.homey.setTimeout(async () => {
+      await this.homey.ready()
+      if (!this.#hasPairedDevices(api)) {
+        this.log('Session lost on', api, 'ignored: no paired device')
+        return
+      }
       try {
         await this.homey.notifications.createNotification({
           excerpt: this.homey.__(`notifications.sessionExpired.${api}`),
