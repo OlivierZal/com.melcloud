@@ -61,10 +61,13 @@ export class EnergyReport<
     this.driver = device.driver
   }
 
-  protected override async fetchAndApply(): Promise<void> {
+  protected override async fetchAndApply(): Promise<Record<
+    string,
+    number
+  > | null> {
     const device = await this.#device.ensureDevice()
     if (device === null) {
-      return
+      return null
     }
     // Fetch energy data from the previous period (offset by config.minus)
     const toDateTime = this.reportDateTime()
@@ -72,7 +75,7 @@ export class EnergyReport<
     // Total mode reports from the epoch: omitting `from` lets the API
     // default to its full-history lower bound.
     const query = this.mode === 'total' ? { to } : { from: to, to }
-    await this.#set(
+    return this.#set(
       unwrapResult(await device.getEnergy(query)),
       toDateTime.hour,
     )
@@ -142,28 +145,33 @@ export class EnergyReport<
     return this.#calculateEnergyValue(data, tags)
   }
 
-  async #set(data: Classic.EnergyData<T>, hour: number): Promise<void> {
+  async #set(
+    data: Classic.EnergyData<T>,
+    hour: number,
+  ): Promise<Record<string, number>> {
     if ('UsageDisclaimerPercentages' in data) {
       this.#linkedDeviceCount =
         data.UsageDisclaimerPercentages.split(',').length
     }
+    const applied = this.#energyCapabilityTagEntries.map(
+      ([capability, tags]: [
+        string & keyof EnergyCapabilities<T>,
+        readonly (keyof Classic.EnergyData<T>)[],
+      ]) =>
+        [
+          capability,
+          this.#calculateValue({ capability, data, hour, tags }),
+        ] as const,
+    )
     await Promise.all(
-      this.#energyCapabilityTagEntries.map(
-        async ([capability, tags]: [
-          string & keyof EnergyCapabilities<T>,
-          readonly (keyof Classic.EnergyData<T>)[],
-        ]) =>
-          this.#device.setCapabilityValue(
-            capability,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
-            this.#calculateValue({
-              capability,
-              data,
-              hour,
-              tags,
-            }) as Capabilities<T>[string & keyof EnergyCapabilities<T>],
-          ),
+      applied.map(async ([capability, value]) =>
+        this.#device.setCapabilityValue(
+          capability,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
+          value as Capabilities<T>[string & keyof EnergyCapabilities<T>],
+        ),
       ),
     )
+    return Object.fromEntries(applied)
   }
 }

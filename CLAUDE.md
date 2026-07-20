@@ -268,6 +268,12 @@ coverage.
   reasoned reply when it does not — verify claims against sources
   before acting either way (Copilot has been wrong about library
   semantics). Resolve the thread once settled; none left dangling.
+- SonarCloud must be spotless for a PR to merge: quality gate green,
+  zero open issues on its analysis, and 100 % coverage (within the
+  exclusions `sonar-project.properties` declares). A Sonar finding is
+  handled like a lint error — the code adapts, or the divergence is
+  settled as a documented verdict (e.g. the `Number.NaN` convention in
+  `eslint.config.ts`) — never merged over.
 - Verify claimed library behavior empirically (headless chromium against
   the real dist/bundle in the scratchpad) rather than from memory — this
   repo's PRs document several review claims refuted that way.
