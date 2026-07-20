@@ -11,7 +11,9 @@
       "legend": "Anmeldedaten",
       "unverified": "Angemeldet, aber die Sitzung konnte nicht überprüft werden – bitte erneut versuchen.",
       "reset": "Zurücksetzen",
-      "resetConfirm": "Dies meldet das ausgewählte Konto sofort ab und löscht seine gespeicherten Zugangsdaten."
+      "resetConfirm": "Dies meldet das ausgewählte Konto sofort ab und löscht seine gespeicherten Zugangsdaten.",
+      "rejected": "MELCloud hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen.",
+      "throttled": "MELCloud blockiert Anmeldungen nach zu vielen Versuchen vorübergehend — bitte später erneut versuchen."
     },
     "boolean": {
       "false": "Nein",

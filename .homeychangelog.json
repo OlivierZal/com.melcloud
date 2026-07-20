@@ -706,5 +706,20 @@
     "pl": "Ulepszenia strony ustawień: poprawne sekcje dla każdej grupy i podpowiedzi menedżera haseł w polach logowania.",
     "ru": "Улучшения страницы настроек: корректные секции по группам и подсказки менеджера паролей в полях учётных данных.",
     "sv": "Förbättringar av inställningssidan: korrekta sektioner per grupp och lösenordshanterartips för inloggningsfälten."
+  },
+  "45.7.6": {
+    "ar": "رسائل فشل تسجيل الدخول أوضح: بيانات مرفوضة، أو حظر مؤقت من MELCloud، أو مشكلة شبكة — ويُشذَّب البريد الإلكتروني من المسافات الزائدة.",
+    "da": "Tydeligere loginfejl: afviste legitimationsoplysninger, midlertidig MELCloud-blokering eller netværksproblem — og e-mailadressen renses for utilsigtede mellemrum.",
+    "de": "Klarere Anmeldefehler: abgelehnte Zugangsdaten, vorübergehende MELCloud-Sperre oder Netzwerkproblem — und die E-Mail-Adresse wird von versehentlichen Leerzeichen bereinigt.",
+    "en": "Clearer sign-in failures: rejected credentials, a temporary MELCloud block, or a network problem — and the email address is trimmed of accidental spaces.",
+    "es": "Errores de inicio de sesión más claros: credenciales rechazadas, bloqueo temporal de MELCloud o problema de red — y la dirección de correo se limpia de espacios accidentales.",
+    "fr": "Échecs de connexion plus clairs : identifiants refusés, blocage temporaire MELCloud ou problème réseau — et l'adresse e-mail est nettoyée des espaces accidentelles.",
+    "it": "Errori di accesso più chiari: credenziali rifiutate, blocco temporaneo di MELCloud o problema di rete — e l'indirizzo e-mail viene ripulito dagli spazi accidentali.",
+    "ko": "더 명확한 로그인 실패 안내: 거부된 자격 증명, MELCloud 일시 차단 또는 네트워크 문제 — 이메일 주소의 실수로 입력된 공백도 제거됩니다.",
+    "nl": "Duidelijkere aanmeldfouten: geweigerde inloggegevens, een tijdelijke MELCloud-blokkade of een netwerkprobleem — en het e-mailadres wordt ontdaan van onbedoelde spaties.",
+    "no": "Tydeligere påloggingsfeil: avviste påloggingsopplysninger, midlertidig MELCloud-blokkering eller nettverksproblem — og e-postadressen renses for utilsiktede mellomrom.",
+    "pl": "Czytelniejsze błędy logowania: odrzucone dane, tymczasowa blokada MELCloud lub problem z siecią — a adres e-mail jest oczyszczany z przypadkowych spacji.",
+    "ru": "Понятнее ошибки входа: отклонённые данные, временная блокировка MELCloud или проблема с сетью — а адрес электронной почты очищается от случайных пробелов.",
+    "sv": "Tydligare inloggningsfel: avvisade uppgifter, tillfällig MELCloud-blockering eller nätverksproblem — och e-postadressen rensas från oavsiktliga mellanslag."
   }
 }

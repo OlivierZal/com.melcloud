@@ -15,8 +15,10 @@
       "button": "Logga in",
       "failure": "Autentisering misslyckades.",
       "legend": "Inloggningsuppgifter",
+      "rejected": "MELCloud avvisade dessa autentiseringsuppgifter — kontrollera e-postadressen och lösenordet.",
       "reset": "Återställ",
       "resetConfirm": "Detta loggar omedelbart ut det valda kontot och rensar dess sparade autentiseringsuppgifter.",
+      "throttled": "MELCloud blockerar tillfälligt inloggningar efter för många försök — försök igen senare.",
       "unverified": "Inloggad, men sessionen kunde inte verifieras — försök igen."
     },
     "boolean": {

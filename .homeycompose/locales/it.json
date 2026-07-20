@@ -15,8 +15,10 @@
       "button": "Accedi",
       "failure": "Autenticazione fallita.",
       "legend": "Credenziali",
+      "rejected": "MELCloud ha rifiutato queste credenziali — controlla l'indirizzo e-mail e la password.",
       "reset": "Reimposta",
       "resetConfirm": "Questo disconnette immediatamente l'account selezionato e cancella le sue credenziali salvate.",
+      "throttled": "MELCloud sta bloccando temporaneamente gli accessi dopo troppi tentativi — riprova più tardi.",
       "unverified": "Accesso effettuato, ma non è stato possibile verificare la sessione: riprova."
     },
     "boolean": {

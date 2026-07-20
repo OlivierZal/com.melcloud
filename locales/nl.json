@@ -11,7 +11,9 @@
       "legend": "Referenties",
       "unverified": "Aangemeld, maar de sessie kon niet worden geverifieerd — probeer het opnieuw.",
       "reset": "Opnieuw instellen",
-      "resetConfirm": "Dit meldt het geselecteerde account onmiddellijk af en wist de opgeslagen inloggegevens."
+      "resetConfirm": "Dit meldt het geselecteerde account onmiddellijk af en wist de opgeslagen inloggegevens.",
+      "rejected": "MELCloud heeft deze inloggegevens geweigerd — controleer het e-mailadres en het wachtwoord.",
+      "throttled": "MELCloud blokkeert aanmeldingen tijdelijk na te veel pogingen — probeer het later opnieuw."
     },
     "boolean": {
       "false": "Nee",

@@ -11,7 +11,9 @@
       "legend": "Credenciales",
       "unverified": "Sesión iniciada, pero no se pudo verificar la sesión; inténtelo de nuevo.",
       "reset": "Restablecer",
-      "resetConfirm": "Esto cierra la sesión de la cuenta seleccionada de inmediato y borra sus credenciales guardadas."
+      "resetConfirm": "Esto cierra la sesión de la cuenta seleccionada de inmediato y borra sus credenciales guardadas.",
+      "rejected": "MELCloud rechazó estas credenciales — comprueba la dirección de correo y la contraseña.",
+      "throttled": "MELCloud está bloqueando temporalmente los inicios de sesión tras demasiados intentos — inténtalo de nuevo más tarde."
     },
     "boolean": {
       "false": "No",

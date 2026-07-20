@@ -15,8 +15,10 @@
       "button": "Logg inn",
       "failure": "Autentisering mislyktes.",
       "legend": "Innloggingsinformasjon",
+      "rejected": "MELCloud avviste disse påloggingsopplysningene — kontroller e-postadressen og passordet.",
       "reset": "Tilbakestill",
       "resetConfirm": "Dette logger den valgte kontoen ut umiddelbart og sletter de lagrede påloggingsopplysningene.",
+      "throttled": "MELCloud blokkerer pålogginger midlertidig etter for mange forsøk — prøv igjen senere.",
       "unverified": "Logget inn, men økten kunne ikke bekreftes — prøv igjen."
     },
     "boolean": {

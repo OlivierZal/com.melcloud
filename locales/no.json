@@ -11,7 +11,9 @@
       "legend": "Innloggingsinformasjon",
       "unverified": "Logget inn, men økten kunne ikke bekreftes — prøv igjen.",
       "reset": "Tilbakestill",
-      "resetConfirm": "Dette logger den valgte kontoen ut umiddelbart og sletter de lagrede påloggingsopplysningene."
+      "resetConfirm": "Dette logger den valgte kontoen ut umiddelbart og sletter de lagrede påloggingsopplysningene.",
+      "rejected": "MELCloud avviste disse påloggingsopplysningene — kontroller e-postadressen og passordet.",
+      "throttled": "MELCloud blokkerer pålogginger midlertidig etter for mange forsøk — prøv igjen senere."
     },
     "boolean": {
       "false": "Nei",
