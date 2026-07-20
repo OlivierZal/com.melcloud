@@ -590,10 +590,8 @@ describe('melCloudApp', () => {
       logger.log('test log')
       logger.error('test error')
 
-      // The API prefix says which account a diagnostics report is
-      // talking about (mockCreate is the Classic client).
-      expect(logMock).toHaveBeenCalledWith('[Classic]', 'test log')
-      expect(errorMock).toHaveBeenCalledWith('[Classic]', 'test error')
+      expect(logMock).toHaveBeenCalledWith('test log')
+      expect(errorMock).toHaveBeenCalledWith('test error')
     })
 
     it('should create notification when version differs', async () => {

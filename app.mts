@@ -954,17 +954,13 @@ export default class MELCloudApp extends App {
     }
   }
 
-  // The two API clients emit identically-worded lifecycle logs
-  // ("Session resume failed", "Automatic sign-ins paused"): the prefix
-  // says which account a diagnostics report is talking about.
-  #createLogger(api: Api): Logger {
-    const prefix = api === 'classic' ? '[Classic]' : '[Home]'
+  #createLogger(): Logger {
     return {
       error: (...args: unknown[]): void => {
-        this.error(prefix, ...args)
+        this.error(...args)
       },
       log: (...args: unknown[]): void => {
-        this.log(prefix, ...args)
+        this.log(...args)
       },
     }
   }
@@ -1180,7 +1176,7 @@ export default class MELCloudApp extends App {
           this.#notifySessionLost('classic')
         },
       },
-      logger: this.#createLogger('classic'),
+      logger: this.#createLogger(),
       settingManager: this.#createSettingManager(),
       shouldResumeSessionInBackground: true,
     })
@@ -1214,7 +1210,7 @@ export default class MELCloudApp extends App {
         },
       },
       locale: language,
-      logger: this.#createLogger('home'),
+      logger: this.#createLogger(),
       settingManager: this.#createSettingManager('home'),
       shouldResumeSessionInBackground: true,
       timezone: getTimeZone(this.homey),

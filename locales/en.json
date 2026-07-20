@@ -12,8 +12,8 @@
       "unverified": "Signed in, but the session could not be verified — please try again.",
       "reset": "Reset",
       "resetConfirm": "This immediately signs out the selected account and clears its saved credentials.",
-      "rejected": "MELCloud rejected these credentials — please check the email address and password.",
-      "throttled": "MELCloud is temporarily blocking sign-ins after too many attempts — please try again later."
+      "rejected": "__name__ rejected these credentials — please check the email address and password.",
+      "throttled": "__name__ is temporarily blocking sign-ins after too many attempts — please try again later."
     },
     "boolean": {
       "false": "No",

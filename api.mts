@@ -3,6 +3,7 @@ import type { Homey } from 'homey/lib/Homey'
 import {
   type LoginCredentials,
   AuthenticationError,
+  AuthenticationThrottledError,
 } from '@olivierzal/melcloud-api'
 import * as Home from '@olivierzal/melcloud-api/home'
 
@@ -17,19 +18,29 @@ import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 import { getErrorMessage } from './lib/get-error-message.mts'
 import { toDeviceOrZoneData } from './lib/validation.mts'
 
+// The user-facing service names, interpolated into the failure
+// messages so the alert says WHICH account failed.
+const API_DISPLAY_NAMES = {
+  classic: 'MELCloud',
+  home: 'MELCloud Home',
+} as const
+
 // The webview only receives an error MESSAGE across the app bridge, so
 // login failures are classified here, where `instanceof` still works:
 // a rejection reads differently from MELCloud's login throttle (where
-// retrying keeps the lockout alive) and from a transport failure. The
-// throttled subclass is not re-exported by the package root; its
-// stable `name` is the discriminant.
-const toLoginFailure = (homey: Homey, error: unknown): Error =>
+// retrying keeps the lockout alive) and from a transport failure.
+const toLoginFailure = (
+  homey: Homey,
+  service: keyof typeof API_DISPLAY_NAMES,
+  error: unknown,
+): Error =>
   new Error(
     error instanceof AuthenticationError ?
       homey.__(
-        error.name === 'AuthenticationThrottledError' ?
+        error instanceof AuthenticationThrottledError ?
           'settings.authenticate.throttled'
         : 'settings.authenticate.rejected',
+        { name: API_DISPLAY_NAMES[service] },
       )
     : getErrorMessage(error),
   )
@@ -96,7 +107,7 @@ const api = {
     try {
       await homey.app.classicApi.authenticate(body)
     } catch (error) {
-      throw toLoginFailure(homey, error)
+      throw toLoginFailure(homey, 'classic', error)
     }
   },
   classicLogOut: ({ homey: { app } }: { homey: Homey }): void => {
@@ -179,7 +190,7 @@ const api = {
     try {
       await homey.app.homeApi.authenticate(body)
     } catch (error) {
-      throw toLoginFailure(homey, error)
+      throw toLoginFailure(homey, 'home', error)
     }
   },
   homeLogOut: ({ homey: { app } }: { homey: Homey }): void => {

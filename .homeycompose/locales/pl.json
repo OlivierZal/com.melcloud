@@ -15,10 +15,10 @@
       "button": "Zaloguj się",
       "failure": "Uwierzytelnianie nie powiodło się.",
       "legend": "Dane logowania",
-      "rejected": "MELCloud odrzucił te dane logowania — sprawdź adres e-mail i hasło.",
+      "rejected": "__name__ odrzucił te dane logowania — sprawdź adres e-mail i hasło.",
       "reset": "Resetuj",
       "resetConfirm": "Spowoduje to natychmiastowe wylogowanie wybranego konta i usunięcie jego zapisanych danych logowania.",
-      "throttled": "MELCloud tymczasowo blokuje logowanie po zbyt wielu próbach — spróbuj ponownie później.",
+      "throttled": "__name__ tymczasowo blokuje logowanie po zbyt wielu próbach — spróbuj ponownie później.",
       "unverified": "Zalogowano, ale nie udało się zweryfikować sesji — spróbuj ponownie."
     },
     "boolean": {

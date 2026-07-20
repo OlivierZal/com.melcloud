@@ -15,10 +15,10 @@
       "button": "Se connecter",
       "failure": "L'authentification a échoué.",
       "legend": "Identifiants",
-      "rejected": "MELCloud a refusé ces identifiants — vérifiez l'adresse e-mail et le mot de passe.",
+      "rejected": "__name__ a refusé ces identifiants — vérifiez l'adresse e-mail et le mot de passe.",
       "reset": "Réinitialiser",
       "resetConfirm": "Ceci déconnecte immédiatement le compte sélectionné et efface ses identifiants enregistrés.",
-      "throttled": "MELCloud bloque temporairement les connexions après trop de tentatives — réessayez plus tard.",
+      "throttled": "__name__ bloque temporairement les connexions après trop de tentatives — réessayez plus tard.",
       "unverified": "Connexion réussie, mais la session n'a pas pu être vérifiée — veuillez réessayer."
     },
     "boolean": {

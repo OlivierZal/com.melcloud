@@ -15,10 +15,10 @@
       "button": "Anmelden",
       "failure": "Authentifizierung fehlgeschlagen.",
       "legend": "Anmeldedaten",
-      "rejected": "MELCloud hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen.",
+      "rejected": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen.",
       "reset": "Zurücksetzen",
       "resetConfirm": "Dies meldet das ausgewählte Konto sofort ab und löscht seine gespeicherten Zugangsdaten.",
-      "throttled": "MELCloud blockiert Anmeldungen nach zu vielen Versuchen vorübergehend — bitte später erneut versuchen.",
+      "throttled": "__name__ blockiert Anmeldungen nach zu vielen Versuchen vorübergehend — bitte später erneut versuchen.",
       "unverified": "Angemeldet, aber die Sitzung konnte nicht überprüft werden – bitte erneut versuchen."
     },
     "boolean": {

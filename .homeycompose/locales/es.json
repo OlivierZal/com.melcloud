@@ -15,10 +15,10 @@
       "button": "Iniciar sesión",
       "failure": "La autenticación falló.",
       "legend": "Credenciales",
-      "rejected": "MELCloud rechazó estas credenciales — comprueba la dirección de correo y la contraseña.",
+      "rejected": "__name__ rechazó estas credenciales — comprueba la dirección de correo y la contraseña.",
       "reset": "Restablecer",
       "resetConfirm": "Esto cierra la sesión de la cuenta seleccionada de inmediato y borra sus credenciales guardadas.",
-      "throttled": "MELCloud está bloqueando temporalmente los inicios de sesión tras demasiados intentos — inténtalo de nuevo más tarde.",
+      "throttled": "__name__ está bloqueando temporalmente los inicios de sesión tras demasiados intentos — inténtalo de nuevo más tarde.",
       "unverified": "Sesión iniciada, pero no se pudo verificar la sesión; inténtelo de nuevo."
     },
     "boolean": {

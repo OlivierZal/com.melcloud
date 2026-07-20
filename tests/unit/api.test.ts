@@ -3,6 +3,7 @@ import type { Homey } from 'homey/lib/Homey'
 import {
   type LoginCredentials,
   AuthenticationError,
+  AuthenticationThrottledError,
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Home from '@olivierzal/melcloud-api/home'
@@ -66,15 +67,11 @@ const mockApp = {
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
 
-const mockTranslate = vi.fn<(key: string) => string>((key) => key)
+const mockTranslate = vi.fn<(key: string, tags?: object) => string>(
+  (key) => key,
+)
 
 const homey = mock<Homey>({ __: mockTranslate, app: mockApp, i18n: mockI18n })
-
-// Mirrors the package-internal subclass (not re-exported by the
-// root): the handler discriminates on this stable name.
-class AuthenticationThrottledError extends AuthenticationError {
-  public override readonly name = 'AuthenticationThrottledError'
-}
 
 describe('api', () => {
   beforeEach(() => {
@@ -334,6 +331,10 @@ describe('api', () => {
       await expect(
         api.classicAuthenticate({ body: mock<LoginCredentials>(), homey }),
       ).rejects.toThrow('settings.authenticate.rejected')
+      expect(mockTranslate).toHaveBeenCalledWith(
+        'settings.authenticate.rejected',
+        { name: 'MELCloud' },
+      )
     })
 
     it('translates the login throttle into its localized reason', async () => {
@@ -344,6 +345,10 @@ describe('api', () => {
       await expect(
         api.homeAuthenticate({ body: mock<LoginCredentials>(), homey }),
       ).rejects.toThrow('settings.authenticate.throttled')
+      expect(mockTranslate).toHaveBeenCalledWith(
+        'settings.authenticate.throttled',
+        { name: 'MELCloud Home' },
+      )
     })
   })
 
