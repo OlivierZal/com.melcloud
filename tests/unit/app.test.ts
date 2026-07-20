@@ -606,6 +606,162 @@ describe('melCloudApp', () => {
       },
     )
 
+    it.each([
+      ['classic', (): typeof mockCreate => mockCreate, 'melcloud'],
+      ['home', (): typeof mockHomeCreate => mockHomeCreate, 'home-melcloud'],
+    ])(
+      'should mirror a notified lost %s session with a signed-in-again notification',
+      async (api, getCreateMock, driverId) => {
+        setupDriver([createClassicDevice()], driverId)
+        await app.onInit()
+        const { events } = getMockCallArg<{
+          events: {
+            onAuthenticationLost?: () => void
+            onAuthenticationRestored?: () => void
+          }
+        }>(getCreateMock(), 0, 0)
+
+        events.onAuthenticationLost?.()
+        await getMockCallArg<() => Promise<void>>(
+          mockSetTimeout,
+          mockSetTimeout.mock.calls.length - 1,
+          0,
+        )()
+        events.onAuthenticationRestored?.()
+        await getMockCallArg<() => Promise<void>>(
+          mockSetTimeout,
+          mockSetTimeout.mock.calls.length - 1,
+          0,
+        )()
+
+        expect(mockCreateNotification).toHaveBeenLastCalledWith({
+          excerpt: `notifications.sessionRestored.${api}`,
+        })
+      },
+    )
+
+    it('should not announce a recovery when the loss was never notified', async () => {
+      setupDriver([createClassicDevice()], 'melcloud')
+      await app.onInit()
+      const { events } = getMockCallArg<{
+        events: { onAuthenticationRestored?: () => void }
+      }>(mockCreate, 0, 0)
+      // onInit already schedules the changelog notification: only the
+      // count staying flat proves the recovery scheduled nothing.
+      const scheduledCalls = mockSetTimeout.mock.calls.length
+
+      events.onAuthenticationRestored?.()
+
+      expect(mockSetTimeout).toHaveBeenCalledTimes(scheduledCalls)
+      expect(mockCreateNotification).not.toHaveBeenCalled()
+    })
+
+    it('should keep the recovery silent when the loss notification was gated off', async () => {
+      Object.defineProperty(app, 'log', {
+        configurable: true,
+        value: vi.fn<(...args: unknown[]) => void>(),
+      })
+      // A device-less driver: the loss is logged, never notified.
+      setupDriver([], 'melcloud')
+      await app.onInit()
+      const { events } = getMockCallArg<{
+        events: {
+          onAuthenticationLost?: () => void
+          onAuthenticationRestored?: () => void
+        }
+      }>(mockCreate, 0, 0)
+
+      events.onAuthenticationLost?.()
+      await getMockCallArg<() => Promise<void>>(
+        mockSetTimeout,
+        mockSetTimeout.mock.calls.length - 1,
+        0,
+      )()
+      const scheduledCalls = mockSetTimeout.mock.calls.length
+      events.onAuthenticationRestored?.()
+
+      expect(mockSetTimeout).toHaveBeenCalledTimes(scheduledCalls)
+      expect(mockCreateNotification).not.toHaveBeenCalled()
+    })
+
+    it('should drop both notifications when the recovery outruns the deferred loss handler', async () => {
+      setupDriver([createClassicDevice()], 'melcloud')
+      await app.onInit()
+      const { events } = getMockCallArg<{
+        events: {
+          onAuthenticationLost?: () => void
+          onAuthenticationRestored?: () => void
+        }
+      }>(mockCreate, 0, 0)
+
+      events.onAuthenticationLost?.()
+      const parkedLoss = getMockCallArg<() => Promise<void>>(
+        mockSetTimeout,
+        mockSetTimeout.mock.calls.length - 1,
+        0,
+      )
+      // The session self-heals while the loss handler is still parked
+      // (in the field: on `homey.ready()` during boot).
+      events.onAuthenticationRestored?.()
+      const scheduledCalls = mockSetTimeout.mock.calls.length
+      await parkedLoss()
+
+      expect(mockSetTimeout).toHaveBeenCalledTimes(scheduledCalls)
+      expect(mockCreateNotification).not.toHaveBeenCalled()
+    })
+
+    it('should keep the recovery silent when the loss notification failed to display', async () => {
+      setupDriver([createClassicDevice()], 'melcloud')
+      await app.onInit()
+      const { events } = getMockCallArg<{
+        events: {
+          onAuthenticationLost?: () => void
+          onAuthenticationRestored?: () => void
+        }
+      }>(mockCreate, 0, 0)
+      mockCreateNotification.mockRejectedValueOnce(new Error('fail'))
+
+      events.onAuthenticationLost?.()
+      await getMockCallArg<() => Promise<void>>(
+        mockSetTimeout,
+        mockSetTimeout.mock.calls.length - 1,
+        0,
+      )()
+      const scheduledCalls = mockSetTimeout.mock.calls.length
+      events.onAuthenticationRestored?.()
+
+      expect(mockSetTimeout).toHaveBeenCalledTimes(scheduledCalls)
+      expect(mockCreateNotification).toHaveBeenCalledTimes(1)
+    })
+
+    it('should not resurrect an episode when the recovery lands during the loss notification', async () => {
+      setupDriver([createClassicDevice()], 'melcloud')
+      await app.onInit()
+      const { events } = getMockCallArg<{
+        events: {
+          onAuthenticationLost?: () => void
+          onAuthenticationRestored?: () => void
+        }
+      }>(mockCreate, 0, 0)
+      mockCreateNotification.mockImplementationOnce(async () => {
+        await Promise.resolve()
+        events.onAuthenticationRestored?.()
+      })
+
+      events.onAuthenticationLost?.()
+      await getMockCallArg<() => Promise<void>>(
+        mockSetTimeout,
+        mockSetTimeout.mock.calls.length - 1,
+        0,
+      )()
+      const scheduledCalls = mockSetTimeout.mock.calls.length
+      // A later recovery must find no episode to mirror either.
+      events.onAuthenticationRestored?.()
+
+      expect(mockSetTimeout).toHaveBeenCalledTimes(scheduledCalls)
+      expect(mockCreateNotification).toHaveBeenCalledTimes(1)
+    })
+
     it('should not fetch Home devices itself (the API create contract owns it)', async () => {
       await app.onInit()
 

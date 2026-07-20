@@ -8,6 +8,10 @@
     "sessionExpired": {
       "classic": "Din MELCloud Classic-konto er ikke længere logget ind. Åbn MELCloud-appens indstillinger for at logge ind igen.",
       "home": "Din MELCloud Home-konto er ikke længere logget ind. Åbn MELCloud-appens indstillinger for at logge ind igen."
+    },
+    "sessionRestored": {
+      "classic": "Din MELCloud Classic-konto er logget ind igen — enhederne opdateres igen.",
+      "home": "Din MELCloud Home-konto er logget ind igen — enhederne opdateres igen."
     }
   },
   "settings": {

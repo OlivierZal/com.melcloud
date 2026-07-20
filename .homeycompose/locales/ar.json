@@ -8,6 +8,10 @@
     "sessionExpired": {
       "classic": "لم يعد حساب MELCloud Classic الخاص بك مسجلاً للدخول. افتح إعدادات تطبيق MELCloud لتسجيل الدخول مجددًا.",
       "home": "لم يعد حساب MELCloud Home الخاص بك مسجلاً للدخول. افتح إعدادات تطبيق MELCloud لتسجيل الدخول مجددًا."
+    },
+    "sessionRestored": {
+      "classic": "تم تسجيل الدخول إلى حساب MELCloud Classic من جديد — يتم تحديث الأجهزة الآن.",
+      "home": "تم تسجيل الدخول إلى حساب MELCloud Home من جديد — يتم تحديث الأجهزة الآن."
     }
   },
   "settings": {
