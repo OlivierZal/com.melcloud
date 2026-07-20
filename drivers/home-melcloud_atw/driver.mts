@@ -8,27 +8,41 @@ import {
 } from '../../types/home-atw.mts'
 import { HomeMELCloudDriver } from '../home-driver.mts'
 
-// Power (like Classic ATW's always-present measure_power/produced) is not a
-// user toggle: it appears when the unit can report the direction. Consumed
-// power needs a consumption estimate or meter; produced power a production
-// one — the same flags that gate the energy meters.
-const powerCapabilities = (
+// Energy (like Classic ATW's always-present energy surface) is not a
+// user toggle: each capability appears when the unit can report its
+// direction. Consumed power/meters need a consumption estimate or
+// meter; produced ones a production one; COP needs both.
+const hasEnergyDirection = (
+  capabilities: HomeAtwDeviceProfile['capabilities'] | undefined,
+  flags: readonly (keyof NonNullable<HomeAtwDeviceProfile['capabilities']>)[],
+): boolean => flags.some((flag) => capabilities?.[flag] === true)
+
+const energyCapabilities = (
   capabilities: HomeAtwDeviceProfile['capabilities'] | undefined,
 ): string[] => {
-  const caps: string[] = []
-  if (
-    capabilities?.hasEstimatedEnergyConsumption === true ||
-    capabilities?.hasMeasuredEnergyConsumption === true
-  ) {
-    caps.push('measure_power')
-  }
-  if (
-    capabilities?.hasEstimatedEnergyProduction === true ||
-    capabilities?.hasMeasuredEnergyProduction === true
-  ) {
-    caps.push('measure_power.produced')
-  }
-  return caps
+  const hasConsumed = hasEnergyDirection(capabilities, [
+    'hasEstimatedEnergyConsumption',
+    'hasMeasuredEnergyConsumption',
+  ])
+  const hasProduced = hasEnergyDirection(capabilities, [
+    'hasEstimatedEnergyProduction',
+    'hasMeasuredEnergyProduction',
+  ])
+  return [
+    ...(hasConsumed ?
+      ['measure_power', 'meter_power', 'meter_power.daily']
+    : []),
+    ...(hasProduced ?
+      [
+        'measure_power.produced',
+        'meter_power.produced',
+        'meter_power.produced_daily',
+      ]
+    : []),
+    ...(hasConsumed && hasProduced ?
+      ['meter_power.cop', 'meter_power.cop_daily']
+    : []),
+  ]
 }
 
 export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
@@ -83,7 +97,7 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
     const { capabilities } = profile ?? {}
     return [
       ...this.#measureCapabilities,
-      ...powerCapabilities(capabilities),
+      ...energyCapabilities(capabilities),
       ...this.#zone1ControlCapabilities,
       ...(capabilities?.hasHotWater === true ?
         [

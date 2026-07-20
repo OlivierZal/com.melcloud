@@ -519,6 +519,250 @@
         "sv": "Måltemperatur för värmekurva - zon 2"
       }
     },
+    "meter_power.cop_cooling": {
+      "title": {
+        "ar": "CoP - تبريد",
+        "da": "CoP - køling",
+        "de": "CoP - Kühlung",
+        "en": "CoP - cooling",
+        "es": "CoP - enfriamiento",
+        "fr": "CoP - refroidissement",
+        "it": "CoP - raffreddamento",
+        "ko": "CoP - 냉방",
+        "nl": "CoP - koeling",
+        "no": "CoP - kjøling",
+        "pl": "CoP - chłodzenie",
+        "ru": "CoP - охлаждение",
+        "sv": "CoP - kylning"
+      },
+      "units": ""
+    },
+    "meter_power.cop_daily_cooling": {
+      "title": {
+        "ar": "CoP يومي - تبريد",
+        "da": "Daglig CoP - køling",
+        "de": "Täglicher CoP - Kühlung",
+        "en": "Daily CoP - cooling",
+        "es": "CoP diario - enfriamiento",
+        "fr": "CoP quotidien - refroidissement",
+        "it": "CoP giornaliero - raffreddamento",
+        "ko": "일일 CoP - 냉방",
+        "nl": "Dagelijkse CoP - koeling",
+        "no": "Daglig CoP - kjøling",
+        "pl": "Dzienny CoP - chłodzenie",
+        "ru": "CoP за день - охлаждение",
+        "sv": "Daglig CoP - kylning"
+      },
+      "units": ""
+    },
+    "meter_power.cop_daily_heating": {
+      "title": {
+        "ar": "CoP يومي - تدفئة",
+        "da": "Daglig CoP - opvarmning",
+        "de": "Täglicher CoP - Heizung",
+        "en": "Daily CoP - heating",
+        "es": "CoP diario - calefacción",
+        "fr": "CoP quotidien - chauffage",
+        "it": "CoP giornaliero - riscaldamento",
+        "ko": "일일 CoP - 난방",
+        "nl": "Dagelijkse CoP - verwarming",
+        "no": "Daglig CoP - oppvarming",
+        "pl": "Dzienny CoP - ogrzewanie",
+        "ru": "CoP за день - отопление",
+        "sv": "Daglig CoP - uppvärmning"
+      },
+      "units": ""
+    },
+    "meter_power.cop_daily_hotwater": {
+      "title": {
+        "ar": "CoP يومي - مياه ساخنة صحية",
+        "da": "Daglig CoP - varmtvandslastning",
+        "de": "Täglicher CoP - Brauchwarmwasser",
+        "en": "Daily CoP - domestic hot water",
+        "es": "CoP diario - agua caliente sanitaria",
+        "fr": "CoP quotidien - eau chaude sanitaire",
+        "it": "CoP giornaliero - acqua calda sanitaria",
+        "ko": "일일 CoP - 생활 온수",
+        "nl": "Dagelijkse CoP - sanitair warm water",
+        "no": "Daglig CoP - varmvannslastning",
+        "pl": "Dzienny CoP - ciepła woda użytkowa",
+        "ru": "CoP за день - ГВС",
+        "sv": "Daglig CoP - varmvattenladdning"
+      },
+      "units": ""
+    },
+    "meter_power.cop_heating": {
+      "title": {
+        "ar": "CoP - تدفئة",
+        "da": "CoP - opvarmning",
+        "de": "CoP - Heizung",
+        "en": "CoP - heating",
+        "es": "CoP - calefacción",
+        "fr": "CoP - chauffage",
+        "it": "CoP - riscaldamento",
+        "ko": "CoP - 난방",
+        "nl": "CoP - verwarming",
+        "no": "CoP - oppvarming",
+        "pl": "CoP - ogrzewanie",
+        "ru": "CoP - отопление",
+        "sv": "CoP - uppvärmning"
+      },
+      "units": ""
+    },
+    "meter_power.cop_hotwater": {
+      "title": {
+        "ar": "CoP - مياه ساخنة صحية",
+        "da": "CoP - varmtvandsindlæsning",
+        "de": "CoP - Brauchwarmwasser",
+        "en": "CoP - domestic hot water",
+        "es": "CoP - agua caliente sanitaria",
+        "fr": "CoP - eau chaude sanitaire",
+        "it": "CoP - acqua calda sanitaria",
+        "ko": "CoP - 생활 온수",
+        "nl": "CoP - sanitair warm water",
+        "no": "CoP - varmvannslastning",
+        "pl": "CoP - ciepła woda użytkowa",
+        "ru": "CoP - ГВС",
+        "sv": "CoP - varmvattenladdning"
+      },
+      "units": ""
+    },
+    "meter_power.daily_hotwater": {
+      "title": {
+        "ar": "الطاقة اليومية - مياه ساخنة صحية",
+        "da": "Daglig energi - varmtvandslastning",
+        "de": "Tägliche Energie - Brauchwarmwasser",
+        "en": "Daily energy - domestic hot water",
+        "es": "Energía diaria - agua caliente sanitaria",
+        "fr": "Énergie quotidienne - eau chaude sanitaire",
+        "it": "Energia giornaliera - acqua calda sanitaria",
+        "ko": "일일 에너지 - 생활 온수",
+        "nl": "Dagelijkse energie - sanitair warm water",
+        "no": "Daglig energi - varmvannslastning",
+        "pl": "Energia dzienna - ciepła woda użytkowa",
+        "ru": "Энергия за день - ГВС",
+        "sv": "Daglig energi - varmvattenladdning"
+      }
+    },
+    "meter_power.hotwater": {
+      "title": {
+        "ar": "الطاقة المستهلكة - مياه ساخنة صحية",
+        "da": "Energi - varmtvandsindlæsning",
+        "de": "Energie - Brauchwarmwasser",
+        "en": "Energy - domestic hot water",
+        "es": "Energía - agua caliente sanitaria",
+        "fr": "Énergie - eau chaude sanitaire",
+        "it": "Energia - acqua calda sanitaria",
+        "ko": "에너지 - 생활 온수",
+        "nl": "Energie - sanitair warm water",
+        "no": "Energi - varmvannslastning",
+        "pl": "Energia - ciepła woda użytkowa",
+        "ru": "Энергия - ГВС",
+        "sv": "Energi - varmvattenladdning"
+      }
+    },
+    "meter_power.produced_cooling": {
+      "title": {
+        "ar": "الطاقة المنتجة - تبريد",
+        "da": "Produceret energi - køling",
+        "de": "Erzeugte Energie - Kühlung",
+        "en": "Produced energy - cooling",
+        "es": "Energía producida - enfriamiento",
+        "fr": "Énergie produite - refroidissement",
+        "it": "Energia prodotta - raffreddamento",
+        "ko": "생산 에너지 - 냉방",
+        "nl": "Geproduceerde energie - koeling",
+        "no": "Produsert energi - kjøling",
+        "pl": "Energia wytworzona - chłodzenie",
+        "ru": "Произведённая энергия - охлаждение",
+        "sv": "Producerad energi - kylning"
+      }
+    },
+    "meter_power.produced_daily_cooling": {
+      "title": {
+        "ar": "الطاقة المنتجة اليومية - تبريد",
+        "da": "Daglig produceret energi - køling",
+        "de": "Tägliche erzeugte Energie - Kühlung",
+        "en": "Daily produced energy - cooling",
+        "es": "Energía producida diaria - enfriamiento",
+        "fr": "Énergie produite quotidienne - refroidissement",
+        "it": "Energia prodotta giornaliera - raffreddamento",
+        "ko": "일일 생산 에너지 - 냉방",
+        "nl": "Dagelijkse geproduceerde energie - koeling",
+        "no": "Daglig produsert energi - kjøling",
+        "pl": "Dzienna energia wytworzona - chłodzenie",
+        "ru": "Произведённая энергия за день - охлаждение",
+        "sv": "Daglig producerad energi - kylning"
+      }
+    },
+    "meter_power.produced_daily_heating": {
+      "title": {
+        "ar": "الطاقة المنتجة اليومية - تدفئة",
+        "da": "Daglig produceret energi - opvarmning",
+        "de": "Tägliche erzeugte Energie - Heizung",
+        "en": "Daily produced energy - heating",
+        "es": "Energía producida diaria - calefacción",
+        "fr": "Énergie produite quotidienne - chauffage",
+        "it": "Energia prodotta giornaliera - riscaldamento",
+        "ko": "일일 생산 에너지 - 난방",
+        "nl": "Dagelijkse geproduceerde energie - verwarming",
+        "no": "Daglig produsert energi - oppvarming",
+        "pl": "Dzienna energia wytworzona - ogrzewanie",
+        "ru": "Произведённая энергия за день - отопление",
+        "sv": "Daglig producerad energi - uppvärmning"
+      }
+    },
+    "meter_power.produced_daily_hotwater": {
+      "title": {
+        "ar": "الطاقة المنتجة اليومية - مياه ساخنة صحية",
+        "da": "Daglig produceret energi - varmtvandslastning",
+        "de": "Tägliche erzeugte Energie - Brauchwarmwasser",
+        "en": "Daily produced energy - domestic hot water",
+        "es": "Energía producida diaria - agua caliente sanitaria",
+        "fr": "Énergie produite quotidienne - eau chaude sanitaire",
+        "it": "Energia prodotta giornaliera - acqua calda sanitaria",
+        "ko": "일일 생산 에너지 - 생활 온수",
+        "nl": "Dagelijkse geproduceerde energie - sanitair warm water",
+        "no": "Daglig produsert energi - varmvannslastning",
+        "pl": "Dzienna energia wytworzona - ciepła woda użytkowa",
+        "ru": "Произведённая энергия за день - ГВС",
+        "sv": "Daglig producerad energi - varmvattenladdning"
+      }
+    },
+    "meter_power.produced_heating": {
+      "title": {
+        "ar": "الطاقة المنتجة - تدفئة",
+        "da": "Produceret energi - opvarmning",
+        "de": "Erzeugte Energie - Heizung",
+        "en": "Produced energy - heating",
+        "es": "Energía producida - calefacción",
+        "fr": "Énergie produite - chauffage",
+        "it": "Energia prodotta - riscaldamento",
+        "ko": "생산 에너지 - 난방",
+        "nl": "Geproduceerde energie - verwarming",
+        "no": "Produsert energi - oppvarming",
+        "pl": "Energia wytworzona - ogrzewanie",
+        "ru": "Произведённая энергия - отопление",
+        "sv": "Producerad energi - uppvärmning"
+      }
+    },
+    "meter_power.produced_hotwater": {
+      "title": {
+        "ar": "الطاقة المنتجة - مياه ساخنة صحية",
+        "da": "Produceret energi - varmtvandsindlæsning",
+        "de": "Erzeugte Energie - Brauchwarmwasser",
+        "en": "Produced energy - domestic hot water",
+        "es": "Energía producida - agua caliente sanitaria",
+        "fr": "Énergie produite - eau chaude sanitaire",
+        "it": "Energia prodotta - acqua calda sanitaria",
+        "ko": "생산 에너지 - 생활 온수",
+        "nl": "Geproduceerde energie - sanitair warm water",
+        "no": "Produsert energi - varmvannslastning",
+        "pl": "Energia wytworzona - ciepła woda użytkowa",
+        "ru": "Произведённая энергия - ГВС",
+        "sv": "Producerad energi - varmvattenladdning"
+      }
+    },
     "target_temperature": {
       "max": 30,
       "min": 10

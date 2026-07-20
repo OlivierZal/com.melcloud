@@ -751,5 +751,20 @@
     "pl": "Szybsze i bardziej niezawodne uruchamianie na starszych Homey: urządzenia nie czekają już na pierwszy raport energii, zanim będą gotowe.",
     "ru": "Более быстрый и надёжный запуск на старых Homey: устройства больше не ждут первого отчёта об энергии, прежде чем стать готовыми.",
     "sv": "Snabbare och mer pålitlig start på äldre Homeys: enheter väntar inte längre på sin första energirapport innan de blir klara."
+  },
+  "45.8.0": {
+    "ar": "قراءات الطاقة والاستهلاك متاحة الآن دائمًا على أجهزة MELCloud Home (عندما تُبلغ عنها الوحدة) — أُزيلت إعدادات عرضها.",
+    "da": "Effekt- og energiaflæsninger er nu altid tilgængelige på MELCloud Home-enheder (når enheden rapporterer dem) — deres visningsindstillinger er fjernet.",
+    "de": "Leistungs- und Energiewerte sind auf MELCloud-Home-Geräten jetzt immer verfügbar (wenn das Gerät sie meldet) — ihre Anzeigeeinstellungen entfallen.",
+    "en": "Power and energy readings are now always available on MELCloud Home devices (when the unit reports them) — their display settings are gone.",
+    "es": "Las lecturas de potencia y energía ahora están siempre disponibles en los dispositivos MELCloud Home (cuando la unidad las informa) — sus ajustes de visualización desaparecen.",
+    "fr": "Les mesures de puissance et d’énergie sont désormais toujours disponibles sur les appareils MELCloud Home (lorsque l’unité les remonte) — leurs réglages d’affichage disparaissent.",
+    "it": "Le letture di potenza ed energia sono ora sempre disponibili sui dispositivi MELCloud Home (quando l’unità le riporta) — le loro impostazioni di visualizzazione sono state rimosse.",
+    "ko": "이제 MELCloud Home 기기에서 전력 및 에너지 측정값이 항상 제공됩니다(기기가 보고하는 경우) — 해당 표시 설정은 제거되었습니다.",
+    "nl": "Vermogens- en energiewaarden zijn nu altijd beschikbaar op MELCloud Home-apparaten (wanneer het apparaat ze rapporteert) — hun weergave-instellingen zijn verdwenen.",
+    "no": "Effekt- og energiavlesninger er nå alltid tilgjengelige på MELCloud Home-enheter (når enheten rapporterer dem) — visningsinnstillingene deres er fjernet.",
+    "pl": "Odczyty mocy i energii są teraz zawsze dostępne na urządzeniach MELCloud Home (gdy urządzenie je raportuje) — ich ustawienia wyświetlania zostały usunięte.",
+    "ru": "Показания мощности и энергии теперь всегда доступны на устройствах MELCloud Home (когда устройство их передаёт) — их настройки отображения удалены.",
+    "sv": "Effekt- och energivärden är nu alltid tillgängliga på MELCloud Home-enheter (när enheten rapporterar dem) — deras visningsinställningar är borttagna."
   }
 }
