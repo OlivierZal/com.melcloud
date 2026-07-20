@@ -853,8 +853,13 @@ class DeviceSettingsManager {
     if (driverSetting === undefined || firstSetting === undefined) {
       return
     }
-    const { controls, section } = createSectionShell(firstSetting.driverLabel)
+    // No checkbox settings, no section: an empty shell would still
+    // render its legend and buttons.
     const checkboxSets = this.#createCheckboxSets(driverSetting)
+    if (checkboxSets.length === 0) {
+      return
+    }
+    const { controls, section } = createSectionShell(firstSetting.driverLabel)
     controls.append(...checkboxSets)
     section.append(createSettingsButtonRow(this.#homey, toSectionId(driverId)))
     getDiv('device_settings').append(section)
