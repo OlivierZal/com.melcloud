@@ -333,7 +333,7 @@ describe('api', () => {
       ).rejects.toThrow('settings.authenticate.rejected')
       expect(mockTranslate).toHaveBeenCalledWith(
         'settings.authenticate.rejected',
-        { name: 'MELCloud' },
+        { name: 'MELCloud Classic' },
       )
     })
 

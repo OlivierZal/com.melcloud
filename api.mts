@@ -21,7 +21,7 @@ import { toDeviceOrZoneData } from './lib/validation.mts'
 // The user-facing service names, interpolated into the failure
 // messages so the alert says WHICH account failed.
 const API_DISPLAY_NAMES = {
-  classic: 'MELCloud',
+  classic: 'MELCloud Classic',
   home: 'MELCloud Home',
 } as const
 
