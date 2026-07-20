@@ -33,17 +33,16 @@ const toLoginFailure = (
   homey: Homey,
   service: keyof typeof API_DISPLAY_NAMES,
   error: unknown,
-): Error =>
-  new Error(
-    error instanceof AuthenticationError ?
-      homey.__(
-        error instanceof AuthenticationThrottledError ?
-          'settings.authenticate.throttled'
-        : 'settings.authenticate.rejected',
-        { name: API_DISPLAY_NAMES[service] },
-      )
-    : getErrorMessage(error),
-  )
+): Error => {
+  if (!(error instanceof AuthenticationError)) {
+    return new Error(getErrorMessage(error))
+  }
+  const reason =
+    error instanceof AuthenticationThrottledError ?
+      'settings.authenticate.throttled'
+    : 'settings.authenticate.rejected'
+  return new Error(homey.__(reason, { name: API_DISPLAY_NAMES[service] }))
+}
 
 // The registry zone tree nests devices under the building itself, its
 // areas, and its floors (which nest areas of their own)
