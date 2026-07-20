@@ -16,10 +16,15 @@ describe('api contract', () => {
       '%s handler exists in api.mts',
       (name) => {
         expect(api).toHaveProperty(name)
-
-        expectTypeOf(api[name as keyof typeof api]).toBeFunction()
       },
     )
+
+    // The compile-time half of the contract, asserted on the whole
+    // union at once: no per-name method reference ever leaves its
+    // object (unbound-method).
+    it('should expose only function handlers', () => {
+      expectTypeOf<(typeof api)[keyof typeof api]>().toBeFunction()
+    })
 
     it('should not have handlers missing from app.json', () => {
       expect(sortedKeys(api)).toStrictEqual(sortedKeys(appConfig.api))
@@ -31,12 +36,14 @@ describe('api contract', () => {
       '%s handler exists in api.mts',
       (name) => {
         expect(ataGroupSettingApi).toHaveProperty(name)
-
-        expectTypeOf(
-          ataGroupSettingApi[name as keyof typeof ataGroupSettingApi],
-        ).toBeFunction()
       },
     )
+
+    it('should expose only function handlers', () => {
+      expectTypeOf<
+        (typeof ataGroupSettingApi)[keyof typeof ataGroupSettingApi]
+      >().toBeFunction()
+    })
 
     it('should not have handlers missing from widget.compose.json', () => {
       expect(sortedKeys(ataGroupSettingApi)).toStrictEqual(
@@ -50,10 +57,12 @@ describe('api contract', () => {
       '%s handler exists in api.mts',
       (name) => {
         expect(chartsApi).toHaveProperty(name)
-
-        expectTypeOf(chartsApi[name as keyof typeof chartsApi]).toBeFunction()
       },
     )
+
+    it('should expose only function handlers', () => {
+      expectTypeOf<(typeof chartsApi)[keyof typeof chartsApi]>().toBeFunction()
+    })
 
     it('should not have handlers missing from widget.compose.json', () => {
       expect(sortedKeys(chartsApi)).toStrictEqual(sortedKeys(chartsConfig.api))
