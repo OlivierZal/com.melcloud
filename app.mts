@@ -379,6 +379,14 @@ export default class MELCloudApp extends App {
 
   #homeFacadeManager!: Home.FacadeManager
 
+  // Loss-episode ledger, written SYNCHRONOUSLY by both lib event
+  // callbacks and read by the deferred halves: 'pending' = loss
+  // announced, deferred handler undecided; 'shown' = loss notification
+  // actually displayed. A recovery arriving while a loss is still
+  // 'pending' (a self-heal during boot, before `homey.ready()`
+  // resolves) erases the episode so neither stale notification fires.
+  readonly #sessionLossStates = new Map<Api, 'pending' | 'shown'>()
+
   get #classicRegistry(): Classic.Registry {
     return this.#classicApi.registry
   }
@@ -938,6 +946,32 @@ export default class MELCloudApp extends App {
 
   // Sync matching classic devices by pulling their latest state from MELCloud.
   // Per-device sync failures are logged without aborting the full sync run.
+  // Deferred half of the loss notification: the readiness await
+  // orders the device check after driver init — a backed-off resume
+  // reports the loss during `App#onInit`, when `getDrivers()` is
+  // still empty. The pending-state re-check after the notification
+  // IPC keeps a recovery that landed mid-flight from resurrecting
+  // the episode.
+  async #announceSessionLost(api: Api): Promise<void> {
+    await this.homey.ready()
+    if (!this.#shouldAnnounceSessionLost(api)) {
+      return
+    }
+    try {
+      await this.homey.notifications.createNotification({
+        excerpt: this.homey.__(`notifications.sessionExpired.${api}`),
+      })
+    } catch {
+      // Non-critical: notification display is best-effort — the
+      // episode stays 'pending', so no recovery follow-up will
+      // reference a notification the user never saw.
+      return
+    }
+    if (this.#sessionLossStates.get(api) === 'pending') {
+      this.#sessionLossStates.set(api, 'shown')
+    }
+  }
+
   async #classicSyncDevices(
     filter: {
       driverId?: string | undefined
@@ -1185,6 +1219,9 @@ export default class MELCloudApp extends App {
         onAuthenticationLost: () => {
           this.#notifySessionLost('classic')
         },
+        onAuthenticationRestored: () => {
+          this.#notifySessionRestored('classic')
+        },
       },
       logger: this.#createLogger(),
       settingManager: this.#createSettingManager(),
@@ -1218,6 +1255,9 @@ export default class MELCloudApp extends App {
         onAuthenticationLost: () => {
           this.#notifySessionLost('home')
         },
+        onAuthenticationRestored: () => {
+          this.#notifySessionRestored('home')
+        },
       },
       locale: language,
       logger: this.#createLogger(),
@@ -1236,19 +1276,29 @@ export default class MELCloudApp extends App {
   // callstack, best-effort). Residual credentials on an API without any
   // paired device (say, a Classic-only user who once tried Home) only
   // get a log line: the timeline nag is reserved for a loss that stops
-  // device updates. The readiness await orders the device check after
-  // driver init — a backed-off resume reports the loss during
-  // `App#onInit`, when `getDrivers()` is still empty.
+  // device updates. The episode is recorded synchronously so a
+  // recovery event can never outrun it.
   #notifySessionLost(api: Api): void {
+    this.#sessionLossStates.set(api, 'pending')
+    this.homey.setTimeout(async () => this.#announceSessionLost(api), 0)
+  }
+
+  // Recovery counterpart of #notifySessionLost, fed by melcloud-api's
+  // onAuthenticationRestored (once per loss episode). Consumes the
+  // episode synchronously: a loss still 'pending' means the user never
+  // saw it — erasing it silences BOTH the stale loss (its parked
+  // handler finds no pending episode) and this follow-up. Only a loss
+  // actually displayed earns the "signed in again" confirmation.
+  #notifySessionRestored(api: Api): void {
+    const state = this.#sessionLossStates.get(api)
+    this.#sessionLossStates.delete(api)
+    if (state !== 'shown') {
+      return
+    }
     this.homey.setTimeout(async () => {
-      await this.homey.ready()
-      if (!this.#hasPairedDevices(api)) {
-        this.log('Session lost on', api, 'ignored: no paired device')
-        return
-      }
       try {
         await this.homey.notifications.createNotification({
-          excerpt: this.homey.__(`notifications.sessionExpired.${api}`),
+          excerpt: this.homey.__(`notifications.sessionRestored.${api}`),
         })
       } catch {
         // Non-critical: notification display is best-effort
@@ -1363,5 +1413,21 @@ export default class MELCloudApp extends App {
       type === undefined ? {} : { type },
     )
     return filterZonesByName(zones, query)
+  }
+
+  // Residual credentials on an API without any paired device only get
+  // a log line: the timeline nag is reserved for a loss that stops
+  // device updates.
+  #shouldAnnounceSessionLost(api: Api): boolean {
+    if (this.#sessionLossStates.get(api) !== 'pending') {
+      // The session recovered while we waited: the loss is stale.
+      return false
+    }
+    if (this.#hasPairedDevices(api)) {
+      return true
+    }
+    this.#sessionLossStates.delete(api)
+    this.log('Session lost on', api, 'ignored: no paired device')
+    return false
   }
 }
