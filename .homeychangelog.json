@@ -676,5 +676,20 @@
     "pl": "Przycisk resetowania danych logowania natychmiast wylogowuje konto i całkowicie usuwa jego zapisane dane.",
     "ru": "Кнопка сброса учётных данных теперь немедленно выполняет выход из учётной записи и полностью удаляет её сохранённые данные.",
     "sv": "Knappen för att återställa autentiseringsuppgifter loggar nu ut kontot omedelbart och raderar dess sparade data helt."
+  },
+  "45.7.4": {
+    "ar": "إصلاحات: حساب Home يحتوي على أجهزة ATW فقط يظهر أجهزته في الإعدادات، وألوان سلاسل درجات الحرارة المستهدفة للمناطق، وتاريخ «منذ» في سجل الأخطاء، وترجمات الودجات في 13 لغة.",
+    "da": "Rettelser: en Home-konto med kun ATW-enheder viser sine enheder i indstillingerne, farver for zonemåltemperaturserier, «siden»-datoen i fejlloggen og widgetoversættelser på 13 sprog.",
+    "de": "Korrekturen: Ein Home-Konto mit nur ATW-Geräten zeigt seine Geräte in den Einstellungen, Farben der Zonen-Solltemperaturserien, das „Seit\"-Datum im Fehlerprotokoll und Widget-Übersetzungen in 13 Sprachen.",
+    "en": "Fixes: a Home account with only ATW devices shows its devices in the settings, zone set-temperature series colors, the error log \"since\" date, and widget translations in 13 languages.",
+    "es": "Correcciones: una cuenta Home con solo dispositivos ATW muestra sus dispositivos en los ajustes, colores de las series de temperatura de consigna por zona, la fecha «desde» del registro de errores y traducciones de widgets en 13 idiomas.",
+    "fr": "Corrections : un compte Home avec uniquement des appareils ATW affiche ses appareils dans les réglages, couleurs des courbes de température de consigne des zones, date « depuis » de l'historique d'erreurs, et traductions des widgets en 13 langues.",
+    "it": "Correzioni: un account Home con soli dispositivi ATW mostra i suoi dispositivi nelle impostazioni, colori delle serie di temperatura impostata per zona, la data «dal» del registro errori e traduzioni dei widget in 13 lingue.",
+    "ko": "수정: ATW 장치만 있는 Home 계정이 설정에 장치를 표시하고, 구역 설정 온도 시리즈 색상, 오류 로그의 \"이후\" 날짜, 13개 언어의 위젯 번역이 수정되었습니다.",
+    "nl": "Correcties: een Home-account met alleen ATW-apparaten toont zijn apparaten in de instellingen, kleuren van de zone-insteltemperatuurreeksen, de \"sinds\"-datum van het foutenlogboek en widgetvertalingen in 13 talen.",
+    "no": "Rettelser: en Home-konto med bare ATW-enheter viser enhetene sine i innstillingene, farger for soneinnstilt temperaturserier, «siden»-datoen i feilloggen og widgetoversettelser på 13 språk.",
+    "pl": "Poprawki: konto Home z samymi urządzeniami ATW pokazuje swoje urządzenia w ustawieniach, kolory serii temperatur zadanych stref, data „od\" w dzienniku błędów i tłumaczenia widżetów w 13 językach.",
+    "ru": "Исправления: учётная запись Home только с устройствами ATW показывает свои устройства в настройках, цвета серий заданной температуры зон, дата «с» в журнале ошибок и переводы виджетов на 13 языков.",
+    "sv": "Rättelser: ett Home-konto med enbart ATW-enheter visar sina enheter i inställningarna, färger för zonbörvärdesserier, \"sedan\"-datumet i felloggen och widgetöversättningar på 13 språk."
   }
 }
