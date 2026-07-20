@@ -2,8 +2,7 @@
   "errors": {
     "deviceNotFound": "Dispositivo non trovato.",
     "zoneNotFound": "Zona non trovata.",
-    "invalidDuration": "La durata deve essere un numero intero di giorni compreso tra 0 e 365.",
-    "updateFailed": "MELCloud ha rifiutato l’aggiornamento."
+    "invalidDuration": "La durata deve essere un numero intero di giorni compreso tra 0 e 365."
   },
   "settings": {
     "authenticate": {
@@ -21,19 +20,12 @@
     "devices": {
       "legend": "Impostazioni di tutti i dispositivi",
       "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!",
-      "nothing": "Nessuna modifica da applicare.",
-      "apply": {
-        "button": "Applica a tutti i dispositivi",
-        "nothing": "Nessuna modifica da applicare."
-      }
+      "nothing": "Nessuna modifica da applicare."
     },
     "devicesAta": {
       "autoAdjust": "Regolazione automatica della temperatura del condizionatore",
       "configure": "Configura",
       "legend": "Impostazioni di tutti i dispositivi aria-aria"
-    },
-    "devicesAtw": {
-      "legend": "Impostazioni dispositivo aria-acqua (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -71,14 +63,7 @@
     "title": "Impostazioni MELCloud",
     "update": "Aggiorna",
     "zones": {
-      "legend": "Impostazioni zona (Classic)",
-      "update": "Aggiorna"
-    },
-    "devicesAtaHome": {
-      "legend": "Impostazioni dispositivo aria-aria (Home)"
-    },
-    "devicesAtwHome": {
-      "legend": "Impostazioni dispositivo aria-acqua (Home)"
+      "legend": "Impostazioni zona (Classic)"
     }
   },
   "warnings": {

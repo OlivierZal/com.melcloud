@@ -24,12 +24,9 @@
       "true": "Sí"
     },
     "devices": {
-      "apply": {
-        "button": "Aplicar a todos los dispositivos",
-        "nothing": "No hay cambios que aplicar."
-      },
       "legend": "Ajustes de todos los dispositivos",
-      "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!"
+      "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!",
+      "nothing": "No hay cambios que aplicar."
     },
     "devicesAta": {
       "autoAdjust": "Autoajustar la temperatura del enfriamiento",
@@ -66,6 +63,7 @@
       "startDate": "Fecha de inicio"
     },
     "intError": "__name__: debe ser un número entero entre __min__ y __max__.",
+    "loadFailed": "Error al cargar",
     "refresh": "Recargar",
     "success": "La actualización fue exitosa.",
     "title": "Configuración de MELCloud",
@@ -131,6 +129,7 @@
       "temperatures": "Temperaturas"
     },
     "days": "Número de días",
+    "loadFailed": "Error al cargar",
     "zones": "Zonas"
   }
 }

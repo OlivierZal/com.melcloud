@@ -1101,6 +1101,34 @@ describe('melCloudApp', () => {
       expect(errorLog.nextToDate).toMatch(/^\d{4}-\d{2}-\d{2}$/v)
     })
 
+    it('should pin the synthetic window on a user-picked "since" date', async () => {
+      mockApiInstance.isAuthenticated.mockReturnValue(false)
+      stubHomeAtaDevice([
+        {
+          clearedTimestamp: null,
+          errorCode: 'E101',
+          errorReason: 'Sensor failure',
+          timestamp: '2026-01-05T10:00:00Z',
+        },
+      ])
+      await app.onInit()
+
+      const errorLog = await app.getErrorLog(
+        mock<Classic.ErrorLogQuery>({
+          from: '2026-01-01',
+          period: 29,
+          to: '2026-03-31',
+        }),
+      )
+
+      // The window starts at the picked date — mirroring the library's
+      // Classic path — so older-than-default Home errors still show.
+      expect(errorLog.errors.map(({ device }) => device)).toStrictEqual([
+        'Studeerkamer',
+      ])
+      expect(errorLog.nextToDate).toBe('2025-12-31')
+    })
+
     it('should format dates and resolve device names from api error log', async () => {
       const deviceName = 'Living Room'
       mockApiInstance.getErrorLog.mockResolvedValue(

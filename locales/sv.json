@@ -2,8 +2,7 @@
   "errors": {
     "deviceNotFound": "Enhet ej hittad.",
     "zoneNotFound": "Zon ej hittad.",
-    "invalidDuration": "Varaktigheten måste vara ett helt antal dagar mellan 0 och 365.",
-    "updateFailed": "MELCloud avvisade uppdateringen."
+    "invalidDuration": "Varaktigheten måste vara ett helt antal dagar mellan 0 och 365."
   },
   "settings": {
     "authenticate": {
@@ -21,19 +20,12 @@
     "devices": {
       "legend": "Inställningar för alla enheter",
       "none": "Lägg till en enhet för att låsa upp alla appens inställningar!",
-      "nothing": "Ingen ändring att tillämpa.",
-      "apply": {
-        "button": "Tillämpa på alla enheter",
-        "nothing": "Ingen ändring att tillämpa."
-      }
+      "nothing": "Ingen ändring att tillämpa."
     },
     "devicesAta": {
       "autoAdjust": "Autojustera luftkonditioneringstemperaturen",
       "configure": "Konfigurera",
       "legend": "Inställningar för alla luft-till-luft-enheter"
-    },
-    "devicesAtw": {
-      "legend": "Luft-til-vatten enhetsinställningar (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -71,14 +63,7 @@
     "title": "MELCloud-inställningar",
     "update": "Uppdatera",
     "zones": {
-      "legend": "Zonsinställningar (Classic)",
-      "update": "Uppdatera"
-    },
-    "devicesAtaHome": {
-      "legend": "Luft-til-luft enhetsinställningar (Home)"
-    },
-    "devicesAtwHome": {
-      "legend": "Luft-til-vatten enhetsinställningar (Home)"
+      "legend": "Zonsinställningar (Classic)"
     }
   },
   "warnings": {

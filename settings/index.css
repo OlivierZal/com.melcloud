@@ -126,8 +126,7 @@ input.homey-form-checkbox-input:indeterminate
    success or failure alert) as greyed and non-interactive. */
 .homey-button-danger-shadow:disabled,
 .homey-button-primary-full:disabled,
-.homey-button-secondary-shadow:disabled,
-.homey-button-secondary-shadow-full:disabled {
+.homey-button-secondary-shadow:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }

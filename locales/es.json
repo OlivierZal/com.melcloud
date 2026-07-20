@@ -2,8 +2,7 @@
   "errors": {
     "deviceNotFound": "Dispositivo no encontrado.",
     "zoneNotFound": "Zona no encontrada.",
-    "invalidDuration": "La duración debe ser un número entero de días entre 0 y 365.",
-    "updateFailed": "MELCloud rechazó la actualización."
+    "invalidDuration": "La duración debe ser un número entero de días entre 0 y 365."
   },
   "settings": {
     "authenticate": {
@@ -21,19 +20,12 @@
     "devices": {
       "legend": "Ajustes de todos los dispositivos",
       "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!",
-      "nothing": "No hay cambios que aplicar.",
-      "apply": {
-        "button": "Aplicar a todos los dispositivos",
-        "nothing": "No hay cambios que aplicar."
-      }
+      "nothing": "No hay cambios que aplicar."
     },
     "devicesAta": {
       "autoAdjust": "Autoajustar la temperatura del enfriamiento",
       "configure": "Configurar",
       "legend": "Ajustes de todos los dispositivos aire-aire"
-    },
-    "devicesAtw": {
-      "legend": "Configuración de los dispositivos aire-agua (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -71,14 +63,7 @@
     "title": "Configuración de MELCloud",
     "update": "Actualizar",
     "zones": {
-      "legend": "Configuración de las zonas (Classic)",
-      "update": "Actualizar"
-    },
-    "devicesAtaHome": {
-      "legend": "Configuración de los dispositivos aire-aire (Home)"
-    },
-    "devicesAtwHome": {
-      "legend": "Configuración de los dispositivos aire-agua (Home)"
+      "legend": "Configuración de las zonas (Classic)"
     }
   },
   "warnings": {

@@ -24,12 +24,9 @@
       "true": "Oui"
     },
     "devices": {
-      "apply": {
-        "button": "Appliquer à tous les appareils",
-        "nothing": "Aucun changement à appliquer."
-      },
       "legend": "Paramètres de tous les appareils",
-      "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !"
+      "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !",
+      "nothing": "Aucun changement à appliquer."
     },
     "devicesAta": {
       "autoAdjust": "Auto-ajuster la température de la climatisation",
@@ -66,6 +63,7 @@
       "startDate": "Date de début"
     },
     "intError": "__name__ : doit être un entier compris entre __min__ et __max__.",
+    "loadFailed": "Le chargement a échoué",
     "refresh": "Rafraîchir",
     "success": "La mise à jour a réussi.",
     "title": "Paramètres de MELCloud",
@@ -131,6 +129,7 @@
       "temperatures": "Températures"
     },
     "days": "Nombre de jours",
+    "loadFailed": "Le chargement a échoué",
     "zones": "Zones"
   }
 }

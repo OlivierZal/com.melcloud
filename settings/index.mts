@@ -34,7 +34,7 @@ import {
   translateAriaLabels,
 } from '../public/dom.mts'
 import { fireAndForget, runWebview } from '../public/homey-api.mts'
-import { getZoneId, getZoneName } from '../public/zones.mts'
+import { getZoneId, getZoneName, getZonePath } from '../public/zones.mts'
 
 // ── Helpers ──
 
@@ -102,8 +102,13 @@ const FROST_PROTECTION_TEMPERATURE_GAP = 2
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
-/** Currently the only Home driver; expand to a readonly array if more are added. */
-const HOME_DRIVER_ID = 'home-melcloud'
+// Every Home driver: a Home account counts as "has devices" when any of
+// them has paired devices (an ATW-only account is as real as an
+// ATA-only one).
+const HOME_DRIVER_IDS: readonly string[] = [
+  'home-melcloud',
+  'home-melcloud_atw',
+]
 
 // The two APIs, in the order the picker offers them; also the priority
 // order when auto-selecting an account whose credentials are missing.
@@ -400,6 +405,14 @@ const getSubzones = (zone: Classic.Zone): Classic.Zone[] => [
 ]
 
 // ── AuthManager ──
+
+// One frost-protection / holiday-mode panel: its button-pair id, its
+// endpoint suffix, and the display refresh bound to it.
+interface ZoneSettingDescriptor {
+  readonly id: 'frost_protection' | 'holiday_mode'
+  readonly path: 'frost-protection' | 'holiday-mode'
+  readonly display: () => void
+}
 
 class AuthManager {
   readonly #apiSelect: HTMLSelectElement
@@ -1028,10 +1041,6 @@ class ErrorLogManager {
     })
   }
 
-  public disable(): void {
-    disableButton(this.#seeButton.id)
-  }
-
   /** @alerts Displays fetch errors to the user. */
   public async fetchErrorLog(): Promise<void> {
     await withDisablingButton(this.#seeButton.id, async () => {
@@ -1184,32 +1193,23 @@ class ZoneSettingsManager {
 
   /** @silent Falls back to default values on error. */
   public async fetchFrostProtectionData(): Promise<void> {
-    await withDisablingButtonPair('frost_protection', async () => {
-      try {
-        const data = await homeyApiGet<Classic.FrostProtectionData>(
-          this.#homey,
-          `/classic/zones/${this.#getZonePath()}/settings/frost-protection`,
-        )
-        this.#updateZoneMapping(data)
+    await this.#fetchZoneSetting({
+      id: 'frost_protection',
+      path: 'frost-protection',
+      display: () => {
         this.displayFrostProtectionData()
-      } catch {
-        // Non-critical: UI falls back to default values
-      }
+      },
     })
   }
 
+  /** @silent Falls back to default values on error. */
   public async fetchHolidayModeData(): Promise<void> {
-    await withDisablingButtonPair('holiday_mode', async () => {
-      try {
-        const data = await homeyApiGet<Classic.HolidayModeData>(
-          this.#homey,
-          `/classic/zones/${this.#getZonePath()}/settings/holiday-mode`,
-        )
-        this.#updateZoneMapping(data)
+    await this.#fetchZoneSetting({
+      id: 'holiday_mode',
+      path: 'holiday-mode',
+      display: () => {
         this.displayHolidayModeData()
-      } catch {
-        // Non-critical: UI falls back to default values
-      }
+      },
     })
   }
 
@@ -1218,16 +1218,14 @@ class ZoneSettingsManager {
     await this.fetchHolidayModeData()
   }
 
-  public populateZoneOptions(zones: Classic.Zone[] = []): void {
-    if (zones.length > 0) {
-      for (const zone of zones) {
-        const { id, level, model, name } = zone
-        createOption(this.#zone, {
-          id: getZoneId(id, model),
-          label: getZoneName(name, level),
-        })
-        this.populateZoneOptions(getSubzones(zone))
-      }
+  public populateZoneOptions(zones: Classic.Zone[]): void {
+    for (const zone of zones) {
+      const { id, level, model, name } = zone
+      createOption(this.#zone, {
+        id: getZoneId(id, model),
+        label: getZoneName(name, level),
+      })
+      this.populateZoneOptions(getSubzones(zone))
     }
   }
 
@@ -1237,30 +1235,21 @@ class ZoneSettingsManager {
     max,
     min,
   }: Classic.FrostProtectionQuery): Promise<void> {
-    await withDisablingButtonPair('frost_protection', async () => {
-      const query = {
-        isEnabled,
-        max,
-        min,
-      } satisfies Classic.FrostProtectionQuery
-      const zoneSettings: Partial<Classic.ZoneSettings> = {
+    await this.#putZoneSetting(
+      {
+        id: 'frost_protection',
+        path: 'frost-protection',
+        display: () => {
+          this.displayFrostProtectionData()
+        },
+      },
+      { isEnabled, max, min } satisfies Classic.FrostProtectionQuery,
+      {
         FPMaxTemperature: max,
         FPMinTemperature: min,
         ...(isEnabled !== undefined && { FPEnabled: isEnabled }),
-      }
-      try {
-        await homeyApiPut<unknown>(
-          this.#homey,
-          `/classic/zones/${this.#getZonePath()}/settings/frost-protection`,
-          query,
-        )
-        this.#updateZoneMapping(zoneSettings)
-        this.displayFrostProtectionData()
-        await this.#homey.alert(this.#homey.__('settings.success'))
-      } catch (error) {
-        await this.#homey.alert(getErrorMessage(error))
-      }
-    })
+      },
+    )
   }
 
   /** @alerts Displays save errors to the user. */
@@ -1268,29 +1257,21 @@ class ZoneSettingsManager {
     from: startDate,
     to: endDate,
   }: Classic.HolidayModeQuery): Promise<void> {
-    await withDisablingButtonPair('holiday_mode', async () => {
-      const query = {
-        from: startDate,
-        to: endDate,
-      } satisfies Classic.HolidayModeQuery
-      const zoneSettings: Partial<Classic.ZoneSettings> = {
+    await this.#putZoneSetting(
+      {
+        id: 'holiday_mode',
+        path: 'holiday-mode',
+        display: () => {
+          this.displayHolidayModeData()
+        },
+      },
+      { from: startDate, to: endDate } satisfies Classic.HolidayModeQuery,
+      {
         HMEnabled: Boolean(endDate),
         HMEndDate: endDate ?? null,
         HMStartDate: startDate ?? null,
-      }
-      try {
-        await homeyApiPut<unknown>(
-          this.#homey,
-          `/classic/zones/${this.#getZonePath()}/settings/holiday-mode`,
-          query,
-        )
-        this.#updateZoneMapping(zoneSettings)
-        this.displayHolidayModeData()
-        await this.#homey.alert(this.#homey.__('settings.success'))
-      } catch (error) {
-        await this.#homey.alert(getErrorMessage(error))
-      }
-    })
+      },
+    )
   }
 
   #addDateChangeListener(
@@ -1387,6 +1368,27 @@ class ZoneSettingsManager {
     })
   }
 
+  // GET one zone-setting panel: refresh the cached zone mapping and
+  // the panel, silent on failure (the UI falls back to default values).
+  async #fetchZoneSetting({
+    display,
+    id,
+    path,
+  }: ZoneSettingDescriptor): Promise<void> {
+    await withDisablingButtonPair(id, async () => {
+      try {
+        const data = await homeyApiGet<Partial<Classic.ZoneSettings>>(
+          this.#homey,
+          `/classic/zones/${this.#getZonePath()}/settings/${path}`,
+        )
+        this.#updateZoneMapping(data)
+        display()
+      } catch {
+        // Non-critical: UI falls back to default values
+      }
+    })
+  }
+
   #getFPMinAndMax(): { max: number; min: number } {
     const errors: string[] = []
     let [min = null, max = null] = [
@@ -1411,7 +1413,30 @@ class ZoneSettingsManager {
   }
 
   #getZonePath(): string {
-    return this.#zone.value.replace('_', '/')
+    return getZonePath(this.#zone.value)
+  }
+
+  // PUT one zone-setting panel: refresh the cached zone mapping and
+  // the panel, alert success or failure.
+  async #putZoneSetting(
+    { display, id, path }: ZoneSettingDescriptor,
+    query: Classic.FrostProtectionQuery | Classic.HolidayModeQuery,
+    zoneSettings: Partial<Classic.ZoneSettings>,
+  ): Promise<void> {
+    await withDisablingButtonPair(id, async () => {
+      try {
+        await homeyApiPut<unknown>(
+          this.#homey,
+          `/classic/zones/${this.#getZonePath()}/settings/${path}`,
+          query,
+        )
+        this.#updateZoneMapping(zoneSettings)
+        display()
+        await this.#homey.alert(this.#homey.__('settings.success'))
+      } catch (error) {
+        await this.#homey.alert(getErrorMessage(error))
+      }
+    })
   }
 
   #updateZoneMapping(data: Partial<Classic.ZoneSettings>): void {
@@ -1553,9 +1578,8 @@ class SettingsApp {
   }
 
   #hasHomeDevices(): boolean {
-    return Object.hasOwn(
-      this.#deviceSettingsManager.deviceSettings,
-      HOME_DRIVER_ID,
+    return HOME_DRIVER_IDS.some((driverId) =>
+      Object.hasOwn(this.#deviceSettingsManager.deviceSettings, driverId),
     )
   }
 
@@ -1621,9 +1645,9 @@ class SettingsApp {
     const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
       this.#authState
     // Fold only when nothing needs attention: both accounts signed in
-    // AND both still hold complete credentials. A cleared account (its
-    // session outlives the reset until the next app restart) keeps the
-    // panel open on the empty fields.
+    // AND both still hold complete credentials. A reset account (signed
+    // out immediately, credentials deleted) keeps the panel open on the
+    // empty fields.
     this.#authManager.collapseAuthenticationSection(
       isClassicAuthenticated &&
         isHomeAuthenticated &&

@@ -120,6 +120,28 @@ export class EnergyReport<
     return total / this.#linkedDeviceCount
   }
 
+  // Per-capability number dispatch, so the capability-type cast in
+  // `#set` lives once instead of per branch.
+  #calculateValue({
+    capability,
+    data,
+    hour,
+    tags,
+  }: {
+    capability: string & keyof EnergyCapabilities<T>
+    data: Classic.EnergyData<T>
+    hour: number
+    tags: readonly (keyof Classic.EnergyData<T>)[]
+  }): number {
+    if (capability.includes('cop')) {
+      return this.#calculateCopValue(data, capability)
+    }
+    if (capability.startsWith('measure_power')) {
+      return this.#calculatePowerValue(data, tags, hour)
+    }
+    return this.#calculateEnergyValue(data, tags)
+  }
+
   async #set(data: Classic.EnergyData<T>, hour: number): Promise<void> {
     if ('UsageDisclaimerPercentages' in data) {
       this.#linkedDeviceCount =
@@ -130,37 +152,17 @@ export class EnergyReport<
         async ([capability, tags]: [
           string & keyof EnergyCapabilities<T>,
           readonly (keyof Classic.EnergyData<T>)[],
-        ]) => {
-          if (capability.includes('cop')) {
-            await this.#device.setCapabilityValue(
-              capability,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
-              this.#calculateCopValue(
-                data,
-                capability,
-              ) as Capabilities<T>[string & keyof EnergyCapabilities<T>],
-            )
-            return
-          }
-          if (capability.startsWith('measure_power')) {
-            await this.#device.setCapabilityValue(
-              capability,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
-              this.#calculatePowerValue(
-                data,
-                tags,
-                hour,
-              ) as Capabilities<T>[string & keyof EnergyCapabilities<T>],
-            )
-            return
-          }
-          await this.#device.setCapabilityValue(
+        ]) =>
+          this.#device.setCapabilityValue(
             capability,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
-            this.#calculateEnergyValue(data, tags) as Capabilities<T>[string &
-              keyof EnergyCapabilities<T>],
-          )
-        },
+            this.#calculateValue({
+              capability,
+              data,
+              hour,
+              tags,
+            }) as Capabilities<T>[string & keyof EnergyCapabilities<T>],
+          ),
       ),
     )
   }

@@ -2,8 +2,7 @@
   "errors": {
     "deviceNotFound": "Apparaat niet gevonden.",
     "zoneNotFound": "Zone niet gevonden.",
-    "invalidDuration": "De duur moet een geheel aantal dagen tussen 0 en 365 zijn.",
-    "updateFailed": "MELCloud heeft de update geweigerd."
+    "invalidDuration": "De duur moet een geheel aantal dagen tussen 0 en 365 zijn."
   },
   "settings": {
     "authenticate": {
@@ -21,19 +20,12 @@
     "devices": {
       "legend": "Instellingen van alle apparaten",
       "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!",
-      "nothing": "Geen wijziging om toe te passen.",
-      "apply": {
-        "button": "Toepassen op alle apparaten",
-        "nothing": "Geen wijziging om toe te passen."
-      }
+      "nothing": "Geen wijziging om toe te passen."
     },
     "devicesAta": {
       "autoAdjust": "Auto-afstellen airco-temperatuur",
       "configure": "Configureren",
       "legend": "Instellingen van alle lucht-lucht-apparaten"
-    },
-    "devicesAtw": {
-      "legend": "Lucht-water apparaatinstellingen (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -71,14 +63,7 @@
     "title": "MELCloud-instellingen",
     "update": "Updaten",
     "zones": {
-      "legend": "Zonesinstellingen (Classic)",
-      "update": "Updaten"
-    },
-    "devicesAtaHome": {
-      "legend": "Lucht-lucht apparaatinstellingen (Home)"
-    },
-    "devicesAtwHome": {
-      "legend": "Lucht-water apparaatinstellingen (Home)"
+      "legend": "Zonesinstellingen (Classic)"
     }
   },
   "warnings": {

@@ -8,7 +8,7 @@ export const localizeWithAffix = (
   ...typedFromEntries(
     Object.entries(affix).map(([language, localizedAffix]) => [
       language,
-      /* v8 ignore next -- ternary branch: both paths tested but v8 marks one arm as uncovered */
+      /* v8 ignore next 2 -- both arms run (atw suffix, ata-erv prefix callers) but v8 misattributes the `??` sub-branches inside this map-callback ternary; the identical bare ternary below records both arms covered */
       position === 'prefix' ?
         `${localizedAffix ?? affix.en} ${(base[language] ?? base.en).toLowerCase()}`
       : `${base[language] ?? base.en} ${localizedAffix ?? affix.en}`,

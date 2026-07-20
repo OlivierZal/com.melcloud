@@ -24,12 +24,9 @@
       "true": "Ja"
     },
     "devices": {
-      "apply": {
-        "button": "Tillämpa på alla enheter",
-        "nothing": "Ingen ändring att tillämpa."
-      },
       "legend": "Inställningar för alla enheter",
-      "none": "Lägg till en enhet för att låsa upp alla appens inställningar!"
+      "none": "Lägg till en enhet för att låsa upp alla appens inställningar!",
+      "nothing": "Ingen ändring att tillämpa."
     },
     "devicesAta": {
       "autoAdjust": "Autojustera luftkonditioneringstemperaturen",
@@ -66,6 +63,7 @@
       "startDate": "Startdatum"
     },
     "intError": "__name__: måste vara ett heltal mellan __min__ och __max__.",
+    "loadFailed": "Inläsningen misslyckades",
     "refresh": "Ladda om",
     "success": "Uppdatering lyckades.",
     "title": "MELCloud-inställningar",
@@ -131,6 +129,7 @@
       "temperatures": "Temperaturer"
     },
     "days": "Antal dagar",
+    "loadFailed": "Inläsningen misslyckades",
     "zones": "Zoner"
   }
 }

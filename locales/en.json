@@ -2,8 +2,7 @@
   "errors": {
     "deviceNotFound": "Device not found.",
     "zoneNotFound": "Zone not found.",
-    "invalidDuration": "The duration must be a whole number of days between 0 and 365.",
-    "updateFailed": "MELCloud rejected the update."
+    "invalidDuration": "The duration must be a whole number of days between 0 and 365."
   },
   "settings": {
     "authenticate": {
@@ -21,19 +20,12 @@
     "devices": {
       "legend": "All device settings",
       "none": "Add a device to unlock all the app's settings!",
-      "nothing": "No change to apply.",
-      "apply": {
-        "button": "Apply to all devices",
-        "nothing": "No change to apply."
-      }
+      "nothing": "No change to apply."
     },
     "devicesAta": {
       "autoAdjust": "Auto-adjust air conditioning temperature",
       "configure": "Configure",
       "legend": "All air-to-air device settings"
-    },
-    "devicesAtw": {
-      "legend": "Air-to-water device settings (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -71,14 +63,7 @@
     "title": "MELCloud settings",
     "update": "Update",
     "zones": {
-      "legend": "Zone settings (Classic)",
-      "update": "Update"
-    },
-    "devicesAtaHome": {
-      "legend": "Air-to-air device settings (Home)"
-    },
-    "devicesAtwHome": {
-      "legend": "Air-to-water device settings (Home)"
+      "legend": "Zone settings (Classic)"
     }
   },
   "warnings": {

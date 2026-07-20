@@ -2,8 +2,7 @@
   "errors": {
     "deviceNotFound": "Gerät nicht gefunden.",
     "zoneNotFound": "Zone nicht gefunden.",
-    "invalidDuration": "Die Dauer muss eine ganze Zahl von Tagen zwischen 0 und 365 sein.",
-    "updateFailed": "MELCloud hat die Aktualisierung abgelehnt."
+    "invalidDuration": "Die Dauer muss eine ganze Zahl von Tagen zwischen 0 und 365 sein."
   },
   "settings": {
     "authenticate": {
@@ -21,19 +20,12 @@
     "devices": {
       "legend": "Einstellungen aller Geräte",
       "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!",
-      "nothing": "Keine Änderung zum Anwenden.",
-      "apply": {
-        "button": "Auf alle Geräte anwenden",
-        "nothing": "Keine Änderung zum Anwenden."
-      }
+      "nothing": "Keine Änderung zum Anwenden."
     },
     "devicesAta": {
       "autoAdjust": "Klimaanlagen-Temperatur automatisch anpassen",
       "configure": "Konfigurieren",
       "legend": "Einstellungen aller Luft-Luft-Geräte"
-    },
-    "devicesAtw": {
-      "legend": "Luft-Wasser-Geräteeinstellungen (Classic)"
     },
     "errorLog": {
       "columns": {
@@ -71,14 +63,7 @@
     "title": "MELCloud-Einstellungen",
     "update": "Aktualisieren",
     "zones": {
-      "legend": "Zoneneinstellungen (Classic)",
-      "update": "Aktualisieren"
-    },
-    "devicesAtaHome": {
-      "legend": "Luft-Luft-Geräteeinstellungen (Home)"
-    },
-    "devicesAtwHome": {
-      "legend": "Luft-Wasser-Geräteeinstellungen (Home)"
+      "legend": "Zoneneinstellungen (Classic)"
     }
   },
   "warnings": {
