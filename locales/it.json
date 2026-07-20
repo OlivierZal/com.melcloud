@@ -130,7 +130,7 @@
   },
   "notifications": {
     "sessionExpired": {
-      "classic": "Il tuo account MELCloud non è più connesso. Apri le impostazioni dell'app MELCloud per accedere di nuovo.",
+      "classic": "Il tuo account MELCloud Classic non è più connesso. Apri le impostazioni dell'app MELCloud per accedere di nuovo.",
       "home": "Il tuo account MELCloud Home non è più connesso. Apri le impostazioni dell'app MELCloud per accedere di nuovo."
     }
   }

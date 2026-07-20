@@ -72,6 +72,21 @@ fieldset[hidden] {
   display: none;
 }
 
+/* Sibling per-group checkbox fieldsets must stack: the injected sheet
+   resets them with `all: unset`, leaving `display: inline`, and WebKit
+   renders inline fieldsets atomically — adjacent groups tile side by
+   side. The ancestor selector outweighs the injected (0,1,1) rule
+   whatever the stylesheet order. */
+.homey-form-group fieldset.homey-form-checkbox-set {
+  display: block;
+}
+
+.homey-form-group
+  fieldset.homey-form-checkbox-set
+  + fieldset.homey-form-checkbox-set {
+  margin-block-start: var(--homey-su-3);
+}
+
 /* Two-column grid for button pairs */
 .container {
   display: grid;

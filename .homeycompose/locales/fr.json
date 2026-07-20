@@ -6,7 +6,7 @@
   },
   "notifications": {
     "sessionExpired": {
-      "classic": "Votre compte MELCloud n'est plus connecté. Ouvrez les réglages de l'app MELCloud pour vous reconnecter.",
+      "classic": "Votre compte MELCloud Classic n'est plus connecté. Ouvrez les réglages de l'app MELCloud pour vous reconnecter.",
       "home": "Votre compte MELCloud Home n'est plus connecté. Ouvrez les réglages de l'app MELCloud pour vous reconnecter."
     }
   },
