@@ -687,6 +687,53 @@ describe(ClassicMELCloudDevice, () => {
         failure,
       )
     })
+
+    it('should become ready while the initial energy fetch is still pending', async () => {
+      const { promise, resolve }: PromiseWithResolvers<void> =
+        Promise.withResolvers()
+      energyReportStartMock.mockReturnValueOnce(promise)
+      const deviceWithRegular = new TestDevice()
+      Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
+        value: {
+          duration: { hours: 1 },
+          minus: { hours: 1 },
+          mode: 'regular' as const,
+          values: { millisecond: 0, minute: 5, second: 0 },
+        },
+      })
+      setDriver(deviceWithRegular)
+      // Resolves although the initial fetch hangs: device readiness
+      // must not depend on MELCloud latency (Early 2018 Homeys hit the
+      // SDK ready_timeout exactly there).
+      await deviceWithRegular.onInit()
+
+      expect(energyReportStartMock).toHaveBeenCalledTimes(1)
+
+      resolve()
+    })
+
+    it('should log a detached scheduling failure without breaking init', async () => {
+      energyReportStartMock.mockRejectedValueOnce(new Error('fetch down'))
+      const deviceWithRegular = new TestDevice()
+      Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
+        value: {
+          duration: { hours: 1 },
+          minus: { hours: 1 },
+          mode: 'regular' as const,
+          values: { millisecond: 0, minute: 5, second: 0 },
+        },
+      })
+      setDriver(deviceWithRegular)
+      await deviceWithRegular.onInit()
+      // The detached chain settles a couple of microtasks after init.
+      await Promise.resolve()
+      await Promise.resolve()
+
+      expect(deviceWithRegular.error).toHaveBeenCalledWith(
+        'Energy report scheduling failed:',
+        expect.any(Error),
+      )
+    })
   })
 
   describe('synchronization when device is unavailable', () => {

@@ -736,5 +736,20 @@
     "pl": "Urządzenia pokazują teraz ostrzeżenie, gdy ich raporty energii wielokrotnie się nie powiodą (usuwane przy następnym sukcesie), a każdy raport zapisuje zastosowane wartości.",
     "ru": "Устройства теперь показывают предупреждение, когда их отчёты об энергии повторно завершаются ошибкой (снимается при следующем успехе), а каждый отчёт записывает применённые значения.",
     "sv": "Enheter visar nu en varning när deras energirapporter fortsätter att misslyckas (rensas vid nästa lyckade körning), och varje rapport loggar de tillämpade värdena."
+  },
+  "45.7.8": {
+    "ar": "تشغيل أسرع وأكثر موثوقية على أجهزة Homey القديمة: لم تعد الأجهزة تنتظر أول تقرير طاقة قبل أن تصبح جاهزة.",
+    "da": "Hurtigere og mere pålidelig opstart på ældre Homeys: enheder venter ikke længere på deres første energirapport, før de bliver klar.",
+    "de": "Schnellerer, zuverlässigerer Start auf älteren Homeys: Geräte warten nicht mehr auf ihren ersten Energiebericht, bevor sie bereit sind.",
+    "en": "Faster, more reliable startup on older Homeys: devices no longer wait for their first energy report before becoming ready.",
+    "es": "Arranque más rápido y fiable en Homeys antiguos: los dispositivos ya no esperan su primer informe de energía antes de estar listos.",
+    "fr": "Démarrage plus rapide et plus fiable sur les anciens Homey : les appareils n’attendent plus leur premier rapport d’énergie avant d’être prêts.",
+    "it": "Avvio più rapido e affidabile sui Homey meno recenti: i dispositivi non attendono più il loro primo report energetico prima di essere pronti.",
+    "ko": "구형 Homey에서 더 빠르고 안정적인 시작: 기기가 준비되기 전에 첫 에너지 보고서를 더 이상 기다리지 않습니다.",
+    "nl": "Sneller en betrouwbaarder opstarten op oudere Homeys: apparaten wachten niet langer op hun eerste energierapport voordat ze gereed zijn.",
+    "no": "Raskere og mer pålitelig oppstart på eldre Homey-er: enheter venter ikke lenger på sin første energirapport før de blir klare.",
+    "pl": "Szybsze i bardziej niezawodne uruchamianie na starszych Homey: urządzenia nie czekają już na pierwszy raport energii, zanim będą gotowe.",
+    "ru": "Более быстрый и надёжный запуск на старых Homey: устройства больше не ждут первого отчёта об энергии, прежде чем стать готовыми.",
+    "sv": "Snabbare och mer pålitlig start på äldre Homeys: enheter väntar inte längre på sin första energirapport innan de blir klara."
   }
 }
