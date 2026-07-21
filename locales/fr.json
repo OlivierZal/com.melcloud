@@ -3,7 +3,8 @@
     "deviceNotFound": "Appareil introuvable.",
     "zoneNotFound": "Zone introuvable.",
     "invalidDuration": "La durée doit être un nombre entier de jours entre 0 et 365.",
-    "energyReportsFailing": "Les rapports d’énergie ont échoué plusieurs fois de suite — les valeurs d’énergie peuvent être obsolètes."
+    "energyReportsFailing": "Les rapports d’énergie ont échoué plusieurs fois de suite — les valeurs d’énergie peuvent être obsolètes.",
+    "invalidTime": "L'heure de début n'est pas valide."
   },
   "settings": {
     "authenticate": {

@@ -3,6 +3,7 @@
     "deviceNotFound": "Apparaat niet gevonden.",
     "energyReportsFailing": "De energierapporten zijn meerdere keren na elkaar mislukt — de energiewaarden kunnen verouderd zijn.",
     "invalidDuration": "De duur moet een geheel aantal dagen tussen 0 en 365 zijn.",
+    "invalidTime": "De starttijd is ongeldig.",
     "zoneNotFound": "Zone niet gevonden."
   },
   "notifications": {

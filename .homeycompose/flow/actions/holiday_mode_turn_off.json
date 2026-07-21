@@ -1,0 +1,68 @@
+{
+  "args": [
+    {
+      "name": "zone",
+      "placeholder": {
+        "ar": "اختر المنطقة",
+        "da": "Vælg zone",
+        "de": "Zone auswählen",
+        "en": "Select zone",
+        "es": "Seleccionar zona",
+        "fr": "Sélectionner la zone",
+        "it": "Seleziona zona",
+        "ko": "구역 선택",
+        "nl": "Selecteer zone",
+        "no": "Velg sone",
+        "pl": "Wybierz strefę",
+        "ru": "Выберите зону",
+        "sv": "Välj zon"
+      },
+      "title": {
+        "ar": "منطقة",
+        "da": "Zone",
+        "de": "Zone",
+        "en": "Zone",
+        "es": "Zona",
+        "fr": "Zone",
+        "it": "Zona",
+        "ko": "구역",
+        "nl": "Zone",
+        "no": "Sone",
+        "pl": "Strefa",
+        "ru": "Зона",
+        "sv": "Zon"
+      },
+      "type": "autocomplete"
+    }
+  ],
+  "title": {
+    "ar": "إيقاف وضع الإجازة",
+    "da": "Slå ferietilstand fra",
+    "de": "Urlaubsmodus ausschalten",
+    "en": "Turn off holiday mode",
+    "es": "Desactivar el modo vacaciones",
+    "fr": "Désactiver le mode vacances",
+    "it": "Disattiva la modalità vacanza",
+    "ko": "휴가 모드 끄기",
+    "nl": "Vakantiemodus uitschakelen",
+    "no": "Slå av feriemodus",
+    "pl": "Wyłącz tryb wakacyjny",
+    "ru": "Отключить режим отпуска",
+    "sv": "Stäng av semesterläget"
+  },
+  "titleFormatted": {
+    "ar": "إيقاف وضع الإجازة في [[zone]]",
+    "da": "Slå ferietilstand fra i [[zone]]",
+    "de": "Urlaubsmodus in [[zone]] ausschalten",
+    "en": "Turn off holiday mode in [[zone]]",
+    "es": "Desactivar el modo vacaciones en [[zone]]",
+    "fr": "Désactiver le mode vacances dans [[zone]]",
+    "it": "Disattiva la modalità vacanza in [[zone]]",
+    "ko": "[[zone]]의 휴가 모드 끄기",
+    "nl": "Vakantiemodus in [[zone]] uitschakelen",
+    "no": "Slå av feriemodus i [[zone]]",
+    "pl": "Wyłącz tryb wakacyjny w [[zone]]",
+    "ru": "Отключить режим отпуска в [[zone]]",
+    "sv": "Stäng av semesterläget i [[zone]]"
+  }
+}

@@ -3,6 +3,7 @@
     "deviceNotFound": "Dispositivo non trovato.",
     "energyReportsFailing": "I report energetici sono falliti più volte di seguito — i valori energetici potrebbero non essere aggiornati.",
     "invalidDuration": "La durata deve essere un numero intero di giorni compreso tra 0 e 365.",
+    "invalidTime": "L'ora di inizio non è valida.",
     "zoneNotFound": "Zona non trovata."
   },
   "notifications": {

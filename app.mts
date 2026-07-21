@@ -115,6 +115,20 @@ const toDurationDays = (duration: unknown): number => {
   return Number.NaN
 }
 
+// Next wall-clock occurrence of a time-of-day relative to `now`: today if
+// still ahead, otherwise tomorrow — so a scheduled holiday-mode start
+// always lands in the future (a start already in the past is never
+// crossed by the unit's clock).
+const nextTimeOccurrence = (
+  now: Temporal.PlainDateTime,
+  time: string,
+): Temporal.PlainDateTime => {
+  const start = now.toPlainDate().toPlainDateTime(Temporal.PlainTime.from(time))
+  return Temporal.PlainDateTime.compare(start, now) <= 0 ?
+      start.add({ days: 1 })
+    : start
+}
+
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
     .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
@@ -1340,6 +1354,8 @@ export default class MELCloudApp extends App {
 
   #registerFlowListeners(): void {
     this.#registerHolidayModeAction()
+    this.#registerHolidayModeScheduled()
+    this.#registerHolidayModeTurnOff()
     this.#registerHolidayModeCondition()
   }
 
@@ -1398,6 +1414,56 @@ export default class MELCloudApp extends App {
     )
   }
 
+  #registerHolidayModeScheduled(): void {
+    const card = this.homey.flow.getActionCard('holiday_mode_scheduled')
+    card.registerArgumentAutocompleteListener('zone', (query) =>
+      toZoneAutocompleteItems(this.#searchZones(query)),
+    )
+    card.registerRunListener(
+      async ({
+        duration,
+        time,
+        zone: { zoneId, zoneType },
+      }: {
+        duration: unknown
+        time: unknown
+        zone: DeviceOrZoneData
+      }) => {
+        const days = toDurationDays(duration)
+        if (
+          !Number.isSafeInteger(days) ||
+          days < HOLIDAY_MODE_OFF_DURATION ||
+          days > HOLIDAY_MODE_MAX_DURATION_DAYS
+        ) {
+          throw new RangeError(this.homey.__('errors.invalidDuration'))
+        }
+        const start = this.#resolveHolidayModeStart(time)
+        await this.updateClassicHolidayMode({
+          settings:
+            days > HOLIDAY_MODE_OFF_DURATION ?
+              { from: start.toString(), to: start.add({ days }).toString() }
+            : {},
+          zoneId,
+          zoneType,
+        })
+      },
+    )
+  }
+
+  #registerHolidayModeTurnOff(): void {
+    const card = this.homey.flow.getActionCard('holiday_mode_turn_off')
+    card.registerArgumentAutocompleteListener('zone', (query) =>
+      toZoneAutocompleteItems(this.#searchZones(query)),
+    )
+    card.registerRunListener(
+      async ({ zone: { zoneId, zoneType } }: { zone: DeviceOrZoneData }) => {
+        // Empty settings clear the window: the library reads a missing
+        // `to` as "holiday mode off".
+        await this.updateClassicHolidayMode({ settings: {}, zoneId, zoneType })
+      },
+    )
+  }
+
   #registerWidgetListeners(): void {
     this.homey.dashboards
       .getWidget('ata-group-setting')
@@ -1412,6 +1478,19 @@ export default class MELCloudApp extends App {
           ...filterZonesByName(this.getHomeDeviceZones(), query),
         ].toSorted(byName),
       )
+  }
+
+  #resolveHolidayModeStart(time: unknown): Temporal.PlainDateTime {
+    if (
+      typeof time !== 'string' ||
+      !/^(?:[01]\d|2[0-3]):[0-5]\d$/v.test(time)
+    ) {
+      throw new RangeError(this.homey.__('errors.invalidTime'))
+    }
+    return nextTimeOccurrence(
+      Temporal.Now.plainDateTimeISO(getTimeZone(this.homey)),
+      time,
+    )
   }
 
   // Everything the ATA group widget can target: the Classic zones and

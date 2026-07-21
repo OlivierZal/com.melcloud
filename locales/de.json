@@ -3,7 +3,8 @@
     "deviceNotFound": "Gerät nicht gefunden.",
     "zoneNotFound": "Zone nicht gefunden.",
     "invalidDuration": "Die Dauer muss eine ganze Zahl von Tagen zwischen 0 und 365 sein.",
-    "energyReportsFailing": "Die Energieberichte sind mehrmals in Folge fehlgeschlagen — die Energiewerte können veraltet sein."
+    "energyReportsFailing": "Die Energieberichte sind mehrmals in Folge fehlgeschlagen — die Energiewerte können veraltet sein.",
+    "invalidTime": "Die Startzeit ist ungültig."
   },
   "settings": {
     "authenticate": {
