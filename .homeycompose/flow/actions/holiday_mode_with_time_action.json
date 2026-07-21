@@ -1,0 +1,109 @@
+{
+  "args": [
+    {
+      "name": "zone",
+      "placeholder": {
+        "ar": "اختر المنطقة",
+        "da": "Vælg zone",
+        "de": "Zone auswählen",
+        "en": "Select zone",
+        "es": "Seleccionar zona",
+        "fr": "Sélectionner la zone",
+        "it": "Seleziona zona",
+        "ko": "구역 선택",
+        "nl": "Selecteer zone",
+        "no": "Velg sone",
+        "pl": "Wybierz strefę",
+        "ru": "Выберите зону",
+        "sv": "Välj zon"
+      },
+      "title": {
+        "ar": "منطقة",
+        "da": "Zone",
+        "de": "Zone",
+        "en": "Zone",
+        "es": "Zona",
+        "fr": "Zone",
+        "it": "Zona",
+        "ko": "구역",
+        "nl": "Zone",
+        "no": "Sone",
+        "pl": "Strefa",
+        "ru": "Зона",
+        "sv": "Zon"
+      },
+      "type": "autocomplete"
+    },
+    {
+      "max": 365,
+      "min": 0,
+      "name": "duration",
+      "step": 1,
+      "title": {
+        "ar": "المدة بالأيام",
+        "da": "Varighed i dage",
+        "de": "Dauer in Tagen",
+        "en": "Duration in days",
+        "es": "Duración en días",
+        "fr": "Durée en jours",
+        "it": "Durata in giorni",
+        "ko": "기간(일)",
+        "nl": "Duur in dagen",
+        "no": "Varighet i dager",
+        "pl": "Czas trwania w dniach",
+        "ru": "Продолжительность в днях",
+        "sv": "Varaktighet i dagar"
+      },
+      "type": "number"
+    },
+    {
+      "name": "time",
+      "title": {
+        "ar": "وقت الانتهاء",
+        "da": "Sluttidspunkt",
+        "de": "Endzeit",
+        "en": "End time",
+        "es": "Hora de fin",
+        "fr": "Heure de fin",
+        "it": "Ora di fine",
+        "ko": "종료 시간",
+        "nl": "Eindtijd",
+        "no": "Sluttidspunkt",
+        "pl": "Godzina zakończenia",
+        "ru": "Время окончания",
+        "sv": "Sluttid"
+      },
+      "type": "time"
+    }
+  ],
+  "title": {
+    "ar": "ضبط وضع الإجازة مع وقت انتهاء",
+    "da": "Indstil ferietilstand med et sluttidspunkt",
+    "de": "Urlaubsmodus mit einer Endzeit einstellen",
+    "en": "Set holiday mode with an end time",
+    "es": "Configurar modo vacaciones con una hora de fin",
+    "fr": "Définir le mode vacances avec une heure de fin",
+    "it": "Imposta la modalità vacanza con un'ora di fine",
+    "ko": "종료 시간과 함께 휴가 모드 설정",
+    "nl": "Vakantiemodus instellen met een eindtijd",
+    "no": "Innstill feriemodus med et sluttidspunkt",
+    "pl": "Ustaw tryb wakacyjny z godziną zakończenia",
+    "ru": "Установить режим отпуска с временем окончания",
+    "sv": "Ställ in semesterläge med en sluttid"
+  },
+  "titleFormatted": {
+    "ar": "ضبط وضع الإجازة في [[zone]] لمدة [[duration]] من الأيام ينتهي في [[time]]",
+    "da": "Indstil ferietilstand i [[zone]] i [[duration]] dag(e) der slutter [[time]]",
+    "de": "Urlaubsmodus in [[zone]] für [[duration]] Tag(e) mit Ende um [[time]] einstellen",
+    "en": "Set holiday mode in [[zone]] for [[duration]] day(s) ending at [[time]]",
+    "es": "Configurar modo vacaciones en [[zone]] durante [[duration]] día(s) que termina a las [[time]]",
+    "fr": "Définir le mode vacances dans [[zone]] pour [[duration]] jour(s) se terminant à [[time]]",
+    "it": "Imposta la modalità vacanza in [[zone]] per [[duration]] giorno/i con fine alle [[time]]",
+    "ko": "[[zone]]의 휴가 모드를 [[duration]]일 동안 [[time]]에 종료로 설정",
+    "nl": "Vakantiemodus instellen in [[zone]] voor [[duration]] dag(en) eindigend om [[time]]",
+    "no": "Innstill feriemodus i [[zone]] i [[duration]] dag(er) som slutter [[time]]",
+    "pl": "Ustaw tryb wakacyjny w [[zone]] na [[duration]] dzień/dni kończący się o [[time]]",
+    "ru": "Установить режим отпуска в [[zone]] на [[duration]] дн. с окончанием в [[time]]",
+    "sv": "Ställ in semesterläge i [[zone]] i [[duration]] dag(ar) som slutar [[time]]"
+  }
+}
