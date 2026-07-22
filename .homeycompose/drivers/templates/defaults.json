@@ -775,7 +775,6 @@
           "ru": "Пароль",
           "sv": "Lösenord"
         },
-        "passwordPlaceholder": "P4ssw0rd",
         "usernameLabel": {
           "ar": "اسم المستخدم",
           "da": "Brugernavn",
@@ -827,7 +826,6 @@
           "ru": "Пароль",
           "sv": "Lösenord"
         },
-        "passwordPlaceholder": "P4ssw0rd",
         "usernameLabel": {
           "ar": "اسم المستخدم",
           "da": "Brugernavn",
