@@ -4174,21 +4174,6 @@
               "ru": "Пароль",
               "sv": "Lösenord"
             },
-            "passwordPlaceholder": {
-              "ar": "P4ssw0rd",
-              "da": "P4ssw0rd",
-              "de": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "it": "P4ssw0rd",
-              "ko": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "pl": "P4ssw0rd",
-              "ru": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
             "usernameLabel": {
               "ar": "اسم المستخدم",
               "da": "Brugernavn",
@@ -4204,21 +4189,7 @@
               "ru": "Имя пользователя",
               "sv": "Användarnamn"
             },
-            "usernamePlaceholder": {
-              "ar": "user@domain.com",
-              "da": "bruger@domain.dk",
-              "de": "benutzer@domain.de",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "it": "utente@domain.it",
-              "ko": "user@domain.com",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "pl": "uzytkownik@domain.pl",
-              "ru": "user@domain.com",
-              "sv": "anvandare@domain.se"
-            }
+            "usernamePlaceholder": "name@example.com"
           },
           "template": "login_credentials"
         },
@@ -4254,21 +4225,6 @@
               "ru": "Пароль",
               "sv": "Lösenord"
             },
-            "passwordPlaceholder": {
-              "ar": "P4ssw0rd",
-              "da": "P4ssw0rd",
-              "de": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "it": "P4ssw0rd",
-              "ko": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "pl": "P4ssw0rd",
-              "ru": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
             "usernameLabel": {
               "ar": "اسم المستخدم",
               "da": "Brugernavn",
@@ -4284,21 +4240,7 @@
               "ru": "Имя пользователя",
               "sv": "Användarnamn"
             },
-            "usernamePlaceholder": {
-              "ar": "user@domain.com",
-              "da": "bruger@domain.dk",
-              "de": "benutzer@domain.de",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "it": "utente@domain.it",
-              "ko": "user@domain.com",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "pl": "uzytkownik@domain.pl",
-              "ru": "user@domain.com",
-              "sv": "anvandare@domain.se"
-            }
+            "usernamePlaceholder": "name@example.com"
           },
           "template": "login_credentials"
         }
@@ -5192,21 +5134,6 @@
               "ru": "Пароль",
               "sv": "Lösenord"
             },
-            "passwordPlaceholder": {
-              "ar": "P4ssw0rd",
-              "da": "P4ssw0rd",
-              "de": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "it": "P4ssw0rd",
-              "ko": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "pl": "P4ssw0rd",
-              "ru": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
             "usernameLabel": {
               "ar": "اسم المستخدم",
               "da": "Brugernavn",
@@ -5222,21 +5149,7 @@
               "ru": "Имя пользователя",
               "sv": "Användarnamn"
             },
-            "usernamePlaceholder": {
-              "ar": "user@domain.com",
-              "da": "bruger@domain.dk",
-              "de": "benutzer@domain.de",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "it": "utente@domain.it",
-              "ko": "user@domain.com",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "pl": "uzytkownik@domain.pl",
-              "ru": "user@domain.com",
-              "sv": "anvandare@domain.se"
-            }
+            "usernamePlaceholder": "name@example.com"
           },
           "template": "login_credentials"
         },
@@ -5272,21 +5185,6 @@
               "ru": "Пароль",
               "sv": "Lösenord"
             },
-            "passwordPlaceholder": {
-              "ar": "P4ssw0rd",
-              "da": "P4ssw0rd",
-              "de": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "it": "P4ssw0rd",
-              "ko": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "pl": "P4ssw0rd",
-              "ru": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
             "usernameLabel": {
               "ar": "اسم المستخدم",
               "da": "Brugernavn",
@@ -5302,21 +5200,7 @@
               "ru": "Имя пользователя",
               "sv": "Användarnamn"
             },
-            "usernamePlaceholder": {
-              "ar": "user@domain.com",
-              "da": "bruger@domain.dk",
-              "de": "benutzer@domain.de",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "it": "utente@domain.it",
-              "ko": "user@domain.com",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "pl": "uzytkownik@domain.pl",
-              "ru": "user@domain.com",
-              "sv": "anvandare@domain.se"
-            }
+            "usernamePlaceholder": "name@example.com"
           },
           "template": "login_credentials"
         }
@@ -6641,21 +6525,6 @@
               "ru": "Пароль",
               "sv": "Lösenord"
             },
-            "passwordPlaceholder": {
-              "ar": "P4ssw0rd",
-              "da": "P4ssw0rd",
-              "de": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "it": "P4ssw0rd",
-              "ko": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "pl": "P4ssw0rd",
-              "ru": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
             "usernameLabel": {
               "ar": "اسم المستخدم",
               "da": "Brugernavn",
@@ -6671,21 +6540,7 @@
               "ru": "Имя пользователя",
               "sv": "Användarnamn"
             },
-            "usernamePlaceholder": {
-              "ar": "user@domain.com",
-              "da": "bruger@domain.dk",
-              "de": "benutzer@domain.de",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "it": "utente@domain.it",
-              "ko": "user@domain.com",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "pl": "uzytkownik@domain.pl",
-              "ru": "user@domain.com",
-              "sv": "anvandare@domain.se"
-            }
+            "usernamePlaceholder": "name@example.com"
           },
           "template": "login_credentials"
         },
@@ -6721,21 +6576,6 @@
               "ru": "Пароль",
               "sv": "Lösenord"
             },
-            "passwordPlaceholder": {
-              "ar": "P4ssw0rd",
-              "da": "P4ssw0rd",
-              "de": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "it": "P4ssw0rd",
-              "ko": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "pl": "P4ssw0rd",
-              "ru": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
             "usernameLabel": {
               "ar": "اسم المستخدم",
               "da": "Brugernavn",
@@ -6751,21 +6591,7 @@
               "ru": "Имя пользователя",
               "sv": "Användarnamn"
             },
-            "usernamePlaceholder": {
-              "ar": "user@domain.com",
-              "da": "bruger@domain.dk",
-              "de": "benutzer@domain.de",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "it": "utente@domain.it",
-              "ko": "user@domain.com",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "pl": "uzytkownik@domain.pl",
-              "ru": "user@domain.com",
-              "sv": "anvandare@domain.se"
-            }
+            "usernamePlaceholder": "name@example.com"
           },
           "template": "login_credentials"
         }
@@ -8936,21 +8762,6 @@
               "ru": "Пароль",
               "sv": "Lösenord"
             },
-            "passwordPlaceholder": {
-              "ar": "P4ssw0rd",
-              "da": "P4ssw0rd",
-              "de": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "it": "P4ssw0rd",
-              "ko": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "pl": "P4ssw0rd",
-              "ru": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
             "usernameLabel": {
               "ar": "اسم المستخدم",
               "da": "Brugernavn",
@@ -8966,21 +8777,7 @@
               "ru": "Имя пользователя",
               "sv": "Användarnamn"
             },
-            "usernamePlaceholder": {
-              "ar": "user@domain.com",
-              "da": "bruger@domain.dk",
-              "de": "benutzer@domain.de",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "it": "utente@domain.it",
-              "ko": "user@domain.com",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "pl": "uzytkownik@domain.pl",
-              "ru": "user@domain.com",
-              "sv": "anvandare@domain.se"
-            }
+            "usernamePlaceholder": "name@example.com"
           },
           "template": "login_credentials"
         },
@@ -9016,21 +8813,6 @@
               "ru": "Пароль",
               "sv": "Lösenord"
             },
-            "passwordPlaceholder": {
-              "ar": "P4ssw0rd",
-              "da": "P4ssw0rd",
-              "de": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "it": "P4ssw0rd",
-              "ko": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "pl": "P4ssw0rd",
-              "ru": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
             "usernameLabel": {
               "ar": "اسم المستخدم",
               "da": "Brugernavn",
@@ -9046,21 +8828,7 @@
               "ru": "Имя пользователя",
               "sv": "Användarnamn"
             },
-            "usernamePlaceholder": {
-              "ar": "user@domain.com",
-              "da": "bruger@domain.dk",
-              "de": "benutzer@domain.de",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "it": "utente@domain.it",
-              "ko": "user@domain.com",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "pl": "uzytkownik@domain.pl",
-              "ru": "user@domain.com",
-              "sv": "anvandare@domain.se"
-            }
+            "usernamePlaceholder": "name@example.com"
           },
           "template": "login_credentials"
         }
@@ -11095,21 +10863,6 @@
               "ru": "Пароль",
               "sv": "Lösenord"
             },
-            "passwordPlaceholder": {
-              "ar": "P4ssw0rd",
-              "da": "P4ssw0rd",
-              "de": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "it": "P4ssw0rd",
-              "ko": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "pl": "P4ssw0rd",
-              "ru": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
             "usernameLabel": {
               "ar": "اسم المستخدم",
               "da": "Brugernavn",
@@ -11125,21 +10878,7 @@
               "ru": "Имя пользователя",
               "sv": "Användarnamn"
             },
-            "usernamePlaceholder": {
-              "ar": "user@domain.com",
-              "da": "bruger@domain.dk",
-              "de": "benutzer@domain.de",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "it": "utente@domain.it",
-              "ko": "user@domain.com",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "pl": "uzytkownik@domain.pl",
-              "ru": "user@domain.com",
-              "sv": "anvandare@domain.se"
-            }
+            "usernamePlaceholder": "name@example.com"
           },
           "template": "login_credentials"
         },
@@ -11175,21 +10914,6 @@
               "ru": "Пароль",
               "sv": "Lösenord"
             },
-            "passwordPlaceholder": {
-              "ar": "P4ssw0rd",
-              "da": "P4ssw0rd",
-              "de": "P4ssw0rd",
-              "en": "P4ssw0rd",
-              "es": "P4ssw0rd",
-              "fr": "P4ssw0rd",
-              "it": "P4ssw0rd",
-              "ko": "P4ssw0rd",
-              "nl": "P4ssw0rd",
-              "no": "P4ssw0rd",
-              "pl": "P4ssw0rd",
-              "ru": "P4ssw0rd",
-              "sv": "P4ssw0rd"
-            },
             "usernameLabel": {
               "ar": "اسم المستخدم",
               "da": "Brugernavn",
@@ -11205,21 +10929,7 @@
               "ru": "Имя пользователя",
               "sv": "Användarnamn"
             },
-            "usernamePlaceholder": {
-              "ar": "user@domain.com",
-              "da": "bruger@domain.dk",
-              "de": "benutzer@domain.de",
-              "en": "user@domain.com",
-              "es": "usuario@domain.es",
-              "fr": "utilisateur@domain.fr",
-              "it": "utente@domain.it",
-              "ko": "user@domain.com",
-              "nl": "gebruiker@domain.nl",
-              "no": "bruker@domain.no",
-              "pl": "uzytkownik@domain.pl",
-              "ru": "user@domain.com",
-              "sv": "anvandare@domain.se"
-            }
+            "usernamePlaceholder": "name@example.com"
           },
           "template": "login_credentials"
         }

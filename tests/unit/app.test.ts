@@ -236,9 +236,9 @@ const mockManifestDrivers: ManifestDriver[] = [
         id: 'login',
         options: {
           passwordLabel: { en: 'Password' },
-          passwordPlaceholder: { en: 'Your password' },
+          passwordPlaceholder: 'Your password',
           usernameLabel: { en: 'Email', nl: 'E-mail' },
-          usernamePlaceholder: { en: 'Your email' },
+          usernamePlaceholder: 'Your email',
         },
       },
     ],
@@ -1131,7 +1131,7 @@ describe('melCloudApp', () => {
       expect(setting?.title).toBe('Setting 1')
     })
 
-    it('should fall back to English login labels and placeholders', async () => {
+    it('should fall back to English login labels and keep plain placeholders', async () => {
       mockGetLanguage.mockReturnValue('fr')
       app = createApp()
       await app.onInit()
@@ -2732,9 +2732,9 @@ describe('melCloudApp', () => {
                 id: 'login' as const,
                 options: {
                   passwordLabel: { en: 'Password' },
-                  passwordPlaceholder: { en: 'Enter password' },
+                  passwordPlaceholder: 'Enter password',
                   usernameLabel: { en: 'Username' },
-                  usernamePlaceholder: { en: 'Enter username' },
+                  usernamePlaceholder: 'Enter username',
                 },
               },
             ],
@@ -2742,9 +2742,9 @@ describe('melCloudApp', () => {
               id: 'login' as const,
               options: {
                 passwordLabel: { en: 'Password' },
-                passwordPlaceholder: { en: 'Enter password' },
+                passwordPlaceholder: 'Enter password',
                 usernameLabel: { en: 'Username' },
-                usernamePlaceholder: { en: 'Enter username' },
+                usernamePlaceholder: 'Enter username',
               },
             },
           ),

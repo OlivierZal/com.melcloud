@@ -153,8 +153,11 @@ const mergeDeviceSettings = (
   }
 }
 
-const localize = (strings: LocalizedStrings, language: string): string =>
-  strings[language] ?? strings.en
+const localize = (
+  strings: string | LocalizedStrings,
+  language: string,
+): string =>
+  typeof strings === 'string' ? strings : (strings[language] ?? strings.en)
 
 const getDriverSettings = (
   { id: driverId, name, settings }: ManifestDriver,
