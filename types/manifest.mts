@@ -27,9 +27,12 @@ export interface LoginSetting extends PairSetting {
   readonly id: 'login'
   readonly options: {
     readonly passwordLabel: LocalizedStrings
-    readonly passwordPlaceholder: LocalizedStrings
+    // Placeholders are neutral ASCII (an email/password is ASCII), so they
+    // carry a single value rather than per-locale strings — the label holds
+    // the localization.
+    readonly passwordPlaceholder: string
     readonly usernameLabel: LocalizedStrings
-    readonly usernamePlaceholder: LocalizedStrings
+    readonly usernamePlaceholder: string
   }
 }
 
