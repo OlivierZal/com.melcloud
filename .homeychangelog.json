@@ -811,5 +811,20 @@
     "pl": "Jednostka wentylacyjna (ERV) jest teraz klasyfikowana jako oczyszczanie powietrza zamiast pompy ciepła.",
     "ru": "Вентиляционная установка (ERV) теперь классифицируется как обработка воздуха вместо теплового насоса.",
     "sv": "Ventilationsenheten (ERV) klassificeras nu som luftbehandling i stället för värmepump."
+  },
+  "45.9.0": {
+    "ar": "بطاقات Flow جديدة لوضع الإجازة: إنهاؤه في وقت محدد أو إيقافه. تنتهي بطاقة الأيام الآن عند منتصف الليل.",
+    "da": "Nye Flow-kort til ferietilstand: afslut den på et valgt tidspunkt, eller slå den fra. Dagskortet slutter nu ved midnat.",
+    "de": "Neue Flow-Karten für den Urlaubsmodus: ihn zu einer gewählten Uhrzeit beenden oder ausschalten. Die Tage-Karte endet jetzt um Mitternacht.",
+    "en": "New Flow cards for holiday mode: end it at a chosen time, or turn it off. The day-count card now ends at midnight.",
+    "es": "Nuevas tarjetas de Flow para el modo vacaciones: terminarlo a una hora elegida o desactivarlo. La tarjeta por días ahora termina a medianoche.",
+    "fr": "Nouvelles cartes Flow pour le mode vacances : le terminer à une heure choisie, ou le désactiver. La carte en jours se termine désormais à minuit.",
+    "it": "Nuove schede Flow per la modalità vacanza: terminarla a un'ora scelta o disattivarla. La scheda a giorni ora termina a mezzanotte.",
+    "ko": "휴가 모드를 위한 새로운 Flow 카드: 선택한 시간에 종료하거나 끕니다. 일수 카드는 이제 자정에 종료됩니다.",
+    "nl": "Nieuwe Flow-kaarten voor de vakantiemodus: hem op een gekozen tijd beëindigen of uitschakelen. De dagenkaart eindigt nu om middernacht.",
+    "no": "Nye Flow-kort for feriemodus: avslutt den på et valgt tidspunkt, eller slå den av. Dagkortet slutter nå ved midnatt.",
+    "pl": "Nowe karty Flow dla trybu wakacyjnego: zakończ go o wybranej godzinie lub go wyłącz. Karta dni kończy się teraz o północy.",
+    "ru": "Новые карточки Flow для режима отпуска: завершить его в выбранное время или выключить. Карта по дням теперь заканчивается в полночь.",
+    "sv": "Nya Flow-kort för semesterläge: avsluta det vid en vald tid eller stäng av det. Dagkortet slutar nu vid midnatt."
   }
 }

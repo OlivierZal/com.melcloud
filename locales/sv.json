@@ -3,7 +3,9 @@
     "deviceNotFound": "Enhet ej hittad.",
     "zoneNotFound": "Zon ej hittad.",
     "invalidDuration": "Varaktigheten måste vara ett helt antal dagar mellan 0 och 365.",
-    "energyReportsFailing": "Energirapporterna har misslyckats flera gånger i rad — energivärdena kan vara inaktuella."
+    "energyReportsFailing": "Energirapporterna har misslyckats flera gånger i rad — energivärdena kan vara inaktuella.",
+    "invalidTime": "Sluttiden är ogiltig.",
+    "invalidHolidayModeEnd": "Semesterlägets slut måste vara i framtiden."
   },
   "settings": {
     "authenticate": {

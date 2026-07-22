@@ -470,6 +470,16 @@ const getActionRunListener = (): ((args: {
   zone: { zoneId: string; zoneType: 'buildings' }
 }) => Promise<unknown>) => getMockCallArg(mockActionRegisterRun, 0, 0)
 
+const getWithTimeRunListener = (): ((args: {
+  duration: unknown
+  time: unknown
+  zone: { zoneId: string; zoneType: 'buildings' }
+}) => Promise<unknown>) => getMockCallArg(mockActionRegisterRun, 1, 0)
+
+const getFalseRunListener = (): ((args: {
+  zone: { zoneId: string; zoneType: 'buildings' }
+}) => Promise<unknown>) => getMockCallArg(mockActionRegisterRun, 2, 0)
+
 const getSyncCallbackFrom = (
   mockCreateFunction: ReturnType<typeof vi.fn>,
 ): SyncCallback =>
@@ -2474,24 +2484,30 @@ describe('melCloudApp', () => {
     })
 
     describe('action run listener', () => {
-      it('should enable holiday mode for a positive duration', async () => {
-        const mockUpdateHolidayMode = mockUpdateResult(null)
-        await initWithHolidayModeFacade(app, {
-          updateHolidayMode: mockUpdateHolidayMode,
-        })
-
-        await getActionRunListener()({ duration: 3, zone: zoneArg })
-
-        const settings = getMockCallArg<Classic.HolidayModeQuery>(
-          mockUpdateHolidayMode,
-          0,
-          0,
+      it('should end at midnight, N days out, starting now', async () => {
+        vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+          Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
         )
+        try {
+          const mockUpdateHolidayMode = mockUpdateResult(null)
+          await initWithHolidayModeFacade(app, {
+            updateHolidayMode: mockUpdateHolidayMode,
+          })
 
-        // `from` stays unset: the library defaults it to now in the API's
-        // timezone.
-        expect(settings.from).toBeUndefined()
-        expect(settings.to).toMatch(/^\d{4}-\d{2}-\d{2}T/v)
+          await getActionRunListener()({ duration: 3, zone: zoneArg })
+
+          // `from` omitted (library defaults it to now); the end is the
+          // start of the day 3 days out (00:00), not the trigger time.
+          expect(
+            getMockCallArg<Classic.HolidayModeQuery>(
+              mockUpdateHolidayMode,
+              0,
+              0,
+            ),
+          ).toStrictEqual({ to: '2026-07-22T00:00:00' })
+        } finally {
+          vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+        }
       })
 
       it('should disable holiday mode for a zero duration', async () => {
@@ -2508,17 +2524,27 @@ describe('melCloudApp', () => {
       // Tokens dropped into the duration field arrive as numbers or
       // numeric strings and bypass the manifest min/max/step.
       it('should accept a numeric string duration from a token', async () => {
-        const mockUpdateHolidayMode = mockUpdateResult(null)
-        await initWithHolidayModeFacade(app, {
-          updateHolidayMode: mockUpdateHolidayMode,
-        })
+        vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+          Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
+        )
+        try {
+          const mockUpdateHolidayMode = mockUpdateResult(null)
+          await initWithHolidayModeFacade(app, {
+            updateHolidayMode: mockUpdateHolidayMode,
+          })
 
-        await getActionRunListener()({ duration: '3', zone: zoneArg })
+          await getActionRunListener()({ duration: '3', zone: zoneArg })
 
-        expect(
-          getMockCallArg<Classic.HolidayModeQuery>(mockUpdateHolidayMode, 0, 0)
-            .to,
-        ).toMatch(/^\d{4}-\d{2}-\d{2}T/v)
+          expect(
+            getMockCallArg<Classic.HolidayModeQuery>(
+              mockUpdateHolidayMode,
+              0,
+              0,
+            ).to,
+          ).toBe('2026-07-22T00:00:00')
+        } finally {
+          vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+        }
       })
 
       it.each([1.5, -1, 366, 'holidays', '', false, true, null])(
@@ -2536,6 +2562,139 @@ describe('melCloudApp', () => {
           expect(mockUpdateHolidayMode).not.toHaveBeenCalled()
         },
       )
+    })
+
+    describe('with-time action run listener', () => {
+      it('should end at the chosen time, N days out, starting now', async () => {
+        vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+          Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
+        )
+        try {
+          const mockUpdateHolidayMode = mockUpdateResult(null)
+          await initWithHolidayModeFacade(app, {
+            updateHolidayMode: mockUpdateHolidayMode,
+          })
+
+          await getWithTimeRunListener()({
+            duration: 5,
+            time: '10:00',
+            zone: zoneArg,
+          })
+
+          // `from` omitted (start = now); end is that time 5 days out.
+          expect(
+            getMockCallArg<Classic.HolidayModeQuery>(
+              mockUpdateHolidayMode,
+              0,
+              0,
+            ),
+          ).toStrictEqual({ to: '2026-07-24T10:00:00' })
+        } finally {
+          vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+        }
+      })
+
+      // Zero days is not a disable here: it ends the same day at the time.
+      it('should end today for a zero duration', async () => {
+        vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+          Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
+        )
+        try {
+          const mockUpdateHolidayMode = mockUpdateResult(null)
+          await initWithHolidayModeFacade(app, {
+            updateHolidayMode: mockUpdateHolidayMode,
+          })
+
+          await getWithTimeRunListener()({
+            duration: 0,
+            time: '10:00',
+            zone: zoneArg,
+          })
+
+          expect(
+            getMockCallArg<Classic.HolidayModeQuery>(
+              mockUpdateHolidayMode,
+              0,
+              0,
+            ),
+          ).toStrictEqual({ to: '2026-07-19T10:00:00' })
+        } finally {
+          vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+        }
+      })
+
+      it('should reject an end that is not after now', async () => {
+        vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+          Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
+        )
+        try {
+          const mockUpdateHolidayMode = mockUpdateResult(null)
+          await initWithHolidayModeFacade(app, {
+            updateHolidayMode: mockUpdateHolidayMode,
+          })
+
+          await expect(
+            getWithTimeRunListener()({
+              duration: 0,
+              time: '06:00',
+              zone: zoneArg,
+            }),
+          ).rejects.toThrow('errors.invalidHolidayModeEnd')
+
+          expect(mockUpdateHolidayMode).not.toHaveBeenCalled()
+        } finally {
+          vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+        }
+      })
+
+      it.each([1.5, -1, 366, 'holidays', '', false, true, null])(
+        'should reject the out-of-contract duration %j',
+        async (duration) => {
+          const mockUpdateHolidayMode = mockUpdateResult(null)
+          await initWithHolidayModeFacade(app, {
+            updateHolidayMode: mockUpdateHolidayMode,
+          })
+
+          await expect(
+            getWithTimeRunListener()({
+              duration,
+              time: '10:00',
+              zone: zoneArg,
+            }),
+          ).rejects.toThrow('errors.invalidDuration')
+
+          expect(mockUpdateHolidayMode).not.toHaveBeenCalled()
+        },
+      )
+
+      it.each(['24:00', '10:60', '1000', 'noon', '', 15, null])(
+        'should reject the invalid end time %j',
+        async (time) => {
+          const mockUpdateHolidayMode = mockUpdateResult(null)
+          await initWithHolidayModeFacade(app, {
+            updateHolidayMode: mockUpdateHolidayMode,
+          })
+
+          await expect(
+            getWithTimeRunListener()({ duration: 5, time, zone: zoneArg }),
+          ).rejects.toThrow('errors.invalidTime')
+
+          expect(mockUpdateHolidayMode).not.toHaveBeenCalled()
+        },
+      )
+    })
+
+    describe('false action run listener', () => {
+      it('should clear the holiday mode window', async () => {
+        const mockUpdateHolidayMode = mockUpdateResult(null)
+        await initWithHolidayModeFacade(app, {
+          updateHolidayMode: mockUpdateHolidayMode,
+        })
+
+        await getFalseRunListener()({ zone: zoneArg })
+
+        expect(getMockCallArg(mockUpdateHolidayMode, 0, 0)).toStrictEqual({})
+      })
     })
 
     describe('condition run listener', () => {

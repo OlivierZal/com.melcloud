@@ -3,6 +3,8 @@
     "deviceNotFound": "Gerät nicht gefunden.",
     "energyReportsFailing": "Die Energieberichte sind mehrmals in Folge fehlgeschlagen — die Energiewerte können veraltet sein.",
     "invalidDuration": "Die Dauer muss eine ganze Zahl von Tagen zwischen 0 und 365 sein.",
+    "invalidHolidayModeEnd": "Das Ende des Urlaubsmodus muss in der Zukunft liegen.",
+    "invalidTime": "Die Endzeit ist ungültig.",
     "zoneNotFound": "Zone nicht gefunden."
   },
   "notifications": {

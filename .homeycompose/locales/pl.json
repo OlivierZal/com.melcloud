@@ -3,6 +3,8 @@
     "deviceNotFound": "Nie znaleziono urządzenia.",
     "energyReportsFailing": "Raporty energii nie powiodły się kilka razy z rzędu — wartości energii mogą być nieaktualne.",
     "invalidDuration": "Czas trwania musi być całkowitą liczbą dni od 0 do 365.",
+    "invalidHolidayModeEnd": "Koniec trybu wakacyjnego musi być w przyszłości.",
+    "invalidTime": "Godzina zakończenia jest nieprawidłowa.",
     "zoneNotFound": "Nie znaleziono strefy."
   },
   "notifications": {

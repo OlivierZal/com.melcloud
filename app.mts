@@ -115,6 +115,14 @@ const toDurationDays = (duration: unknown): number => {
   return Number.NaN
 }
 
+// Flow-action arguments shared by the holiday-mode cards: `zone` always,
+// `duration`/`time` only on the cards that declare them.
+interface HolidayModeActionArgs {
+  zone: DeviceOrZoneData
+  duration?: unknown
+  time?: unknown
+}
+
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
     .map(([error, messages]) => `${error}: ${messages.join(', ')}`)
@@ -1233,6 +1241,41 @@ export default class MELCloudApp extends App {
     )
   }
 
+  #holidayModeDays(duration: unknown): number {
+    const days = toDurationDays(duration)
+    if (
+      !Number.isSafeInteger(days) ||
+      days < HOLIDAY_MODE_OFF_DURATION ||
+      days > HOLIDAY_MODE_MAX_DURATION_DAYS
+    ) {
+      throw new RangeError(this.homey.__('errors.invalidDuration'))
+    }
+    return days
+  }
+
+  // Window end: `days` calendar days after today at `endTime` (default
+  // 00:00 — the start of that day, not 24:00). The start is always now,
+  // so `from` is omitted on the caller side; the end is rejected when it
+  // is not after now (e.g. 0 days at a time already past today).
+  #holidayModeEnd(days: number, endTime?: Temporal.PlainTime): string {
+    const now = Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
+    const end = now.toPlainDate().add({ days }).toPlainDateTime(endTime)
+    if (Temporal.PlainDateTime.compare(end, now) <= 0) {
+      throw new RangeError(this.homey.__('errors.invalidHolidayModeEnd'))
+    }
+    return end.toString()
+  }
+
+  #holidayModeEndTime(time: unknown): Temporal.PlainTime {
+    if (
+      typeof time !== 'string' ||
+      !/^(?:[01]\d|2[0-3]):[0-5]\d$/v.test(time)
+    ) {
+      throw new RangeError(this.homey.__('errors.invalidTime'))
+    }
+    return Temporal.PlainTime.from(time)
+  }
+
   async #initClassicApi(config: {
     language: string
     locale: string
@@ -1339,47 +1382,43 @@ export default class MELCloudApp extends App {
   }
 
   #registerFlowListeners(): void {
-    this.#registerHolidayModeAction()
+    // Both duration cards start now (`from` omitted) and only differ by the
+    // end-of-window time — midnight for the bare card, the chosen time for
+    // the with-time card; the false card just clears the window.
+    this.#registerHolidayModeCard('holiday_mode_action', ({ duration }) => {
+      const days = this.#holidayModeDays(duration)
+      return days > HOLIDAY_MODE_OFF_DURATION ?
+          { to: this.#holidayModeEnd(days) }
+        : {}
+    })
+    this.#registerHolidayModeCard(
+      'holiday_mode_with_time_action',
+      ({ duration, time }) => ({
+        to: this.#holidayModeEnd(
+          this.#holidayModeDays(duration),
+          this.#holidayModeEndTime(time),
+        ),
+      }),
+    )
+    this.#registerHolidayModeCard('holiday_mode_false_action', () => ({}))
     this.#registerHolidayModeCondition()
   }
 
-  #registerHolidayModeAction(): void {
-    const card = this.homey.flow.getActionCard('holiday_mode_action')
+  #registerHolidayModeCard(
+    id: string,
+    toSettings: (args: HolidayModeActionArgs) => Classic.HolidayModeQuery,
+  ): void {
+    const card = this.homey.flow.getActionCard(id)
     card.registerArgumentAutocompleteListener('zone', (query) =>
       toZoneAutocompleteItems(this.#searchZones(query)),
     )
-    card.registerRunListener(
-      async ({
-        duration,
-        zone: { zoneId, zoneType },
-      }: {
-        duration: unknown
-        zone: DeviceOrZoneData
-      }) => {
-        const days = toDurationDays(duration)
-        if (
-          !Number.isSafeInteger(days) ||
-          days < HOLIDAY_MODE_OFF_DURATION ||
-          days > HOLIDAY_MODE_MAX_DURATION_DAYS
-        ) {
-          throw new RangeError(this.homey.__('errors.invalidDuration'))
-        }
-        // `from` is omitted: the library defaults it to now in the API's
-        // timezone, which onInit seeds from Homey's clock.
-        await this.updateClassicHolidayMode({
-          settings:
-            days > HOLIDAY_MODE_OFF_DURATION ?
-              {
-                to: Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
-                  .add({ days })
-                  .toString(),
-              }
-            : {},
-          zoneId,
-          zoneType,
-        })
-      },
-    )
+    card.registerRunListener(async (args: HolidayModeActionArgs) => {
+      await this.updateClassicHolidayMode({
+        settings: toSettings(args),
+        zoneId: args.zone.zoneId,
+        zoneType: args.zone.zoneType,
+      })
+    })
   }
 
   #registerHolidayModeCondition(): void {
