@@ -807,18 +807,18 @@
         },
         "usernamePlaceholder": {
           "ar": "user@domain.com",
-          "da": "bruger@domain.dk",
-          "de": "benutzer@domain.de",
+          "da": "bruger@domæne.dk",
+          "de": "benutzer@domäne.de",
           "en": "user@domain.com",
-          "es": "usuario@domain.es",
-          "fr": "utilisateur@domain.fr",
-          "it": "utente@domain.it",
+          "es": "usuario@dominio.es",
+          "fr": "utilisateur@domaine.fr",
+          "it": "utente@dominio.it",
           "ko": "user@domain.com",
-          "nl": "gebruiker@domain.nl",
-          "no": "bruker@domain.no",
-          "pl": "uzytkownik@domain.pl",
+          "nl": "gebruiker@domein.nl",
+          "no": "bruker@domene.no",
+          "pl": "uzytkownik@domena.pl",
           "ru": "user@domain.com",
-          "sv": "anvandare@domain.se"
+          "sv": "anvandare@domän.se"
         }
       },
       "template": "login_credentials"
@@ -887,18 +887,18 @@
         },
         "usernamePlaceholder": {
           "ar": "user@domain.com",
-          "da": "bruger@domain.dk",
-          "de": "benutzer@domain.de",
+          "da": "bruger@domæne.dk",
+          "de": "benutzer@domäne.de",
           "en": "user@domain.com",
-          "es": "usuario@domain.es",
-          "fr": "utilisateur@domain.fr",
-          "it": "utente@domain.it",
+          "es": "usuario@dominio.es",
+          "fr": "utilisateur@domaine.fr",
+          "it": "utente@dominio.it",
           "ko": "user@domain.com",
-          "nl": "gebruiker@domain.nl",
-          "no": "bruker@domain.no",
-          "pl": "uzytkownik@domain.pl",
+          "nl": "gebruiker@domein.nl",
+          "no": "bruker@domene.no",
+          "pl": "uzytkownik@domena.pl",
           "ru": "user@domain.com",
-          "sv": "anvandare@domain.se"
+          "sv": "anvandare@domän.se"
         }
       },
       "template": "login_credentials"
