@@ -3,7 +3,8 @@
     "deviceNotFound": "Appareil introuvable.",
     "energyReportsFailing": "Les rapports d’énergie ont échoué plusieurs fois de suite — les valeurs d’énergie peuvent être obsolètes.",
     "invalidDuration": "La durée doit être un nombre entier de jours entre 0 et 365.",
-    "invalidTime": "L'heure de début n'est pas valide.",
+    "invalidHolidayModeEnd": "La fin du mode vacances doit être dans le futur.",
+    "invalidTime": "L'heure de fin n'est pas valide.",
     "zoneNotFound": "Zone introuvable."
   },
   "notifications": {

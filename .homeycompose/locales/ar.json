@@ -3,7 +3,8 @@
     "deviceNotFound": "لم يتم العثور على الجهاز.",
     "energyReportsFailing": "فشلت تقارير الطاقة عدة مرات متتالية — قد تكون قيم الطاقة قديمة.",
     "invalidDuration": "يجب أن تكون المدة عددًا صحيحًا من الأيام بين 0 و365.",
-    "invalidTime": "وقت البدء غير صالح.",
+    "invalidHolidayModeEnd": "يجب أن تكون نهاية وضع الإجازة في المستقبل.",
+    "invalidTime": "وقت الانتهاء غير صالح.",
     "zoneNotFound": "لم يتم العثور على المنطقة."
   },
   "notifications": {

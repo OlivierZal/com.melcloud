@@ -3,7 +3,8 @@
     "deviceNotFound": "Device not found.",
     "energyReportsFailing": "Energy reports have failed several times in a row — the energy values may be stale.",
     "invalidDuration": "The duration must be a whole number of days between 0 and 365.",
-    "invalidTime": "The start time is invalid.",
+    "invalidHolidayModeEnd": "The holiday-mode end must be in the future.",
+    "invalidTime": "The end time is invalid.",
     "zoneNotFound": "Zone not found."
   },
   "notifications": {

@@ -3,7 +3,8 @@
     "deviceNotFound": "Enhet ikke funnet.",
     "energyReportsFailing": "Energirapportene har feilet flere ganger på rad — energiverdiene kan være utdaterte.",
     "invalidDuration": "Varigheten må være et helt antall dager mellom 0 og 365.",
-    "invalidTime": "Starttidspunktet er ugyldig.",
+    "invalidHolidayModeEnd": "Slutten på feriemodus må være i fremtiden.",
+    "invalidTime": "Sluttidspunktet er ugyldig.",
     "zoneNotFound": "Sone ikke funnet."
   },
   "notifications": {

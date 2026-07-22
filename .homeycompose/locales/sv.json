@@ -3,7 +3,8 @@
     "deviceNotFound": "Enhet ej hittad.",
     "energyReportsFailing": "Energirapporterna har misslyckats flera gånger i rad — energivärdena kan vara inaktuella.",
     "invalidDuration": "Varaktigheten måste vara ett helt antal dagar mellan 0 och 365.",
-    "invalidTime": "Starttiden är ogiltig.",
+    "invalidHolidayModeEnd": "Semesterlägets slut måste vara i framtiden.",
+    "invalidTime": "Sluttiden är ogiltig.",
     "zoneNotFound": "Zon ej hittad."
   },
   "notifications": {

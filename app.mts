@@ -1255,13 +1255,15 @@ export default class MELCloudApp extends App {
 
   // Window end: `days` calendar days after today at `endTime` (default
   // 00:00 — the start of that day, not 24:00). The start is always now,
-  // so `from` is omitted on the caller side.
+  // so `from` is omitted on the caller side; the end is rejected when it
+  // is not after now (e.g. 0 days at a time already past today).
   #holidayModeEnd(days: number, endTime?: Temporal.PlainTime): string {
-    return Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
-      .toPlainDate()
-      .add({ days })
-      .toPlainDateTime(endTime)
-      .toString()
+    const now = Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
+    const end = now.toPlainDate().add({ days }).toPlainDateTime(endTime)
+    if (Temporal.PlainDateTime.compare(end, now) <= 0) {
+      throw new RangeError(this.homey.__('errors.invalidHolidayModeEnd'))
+    }
+    return end.toString()
   }
 
   #holidayModeEndTime(time: unknown): Temporal.PlainTime {

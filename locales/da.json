@@ -4,7 +4,8 @@
     "zoneNotFound": "Zone ikke fundet.",
     "invalidDuration": "Varigheden skal være et helt antal dage mellem 0 og 365.",
     "energyReportsFailing": "Energirapporterne er fejlet flere gange i træk — energiværdierne kan være forældede.",
-    "invalidTime": "Starttidspunktet er ugyldigt."
+    "invalidTime": "Sluttidspunktet er ugyldigt.",
+    "invalidHolidayModeEnd": "Afslutningen på ferietilstand skal være i fremtiden."
   },
   "settings": {
     "authenticate": {

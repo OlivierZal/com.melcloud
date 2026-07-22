@@ -4,7 +4,8 @@
     "zoneNotFound": "Zone niet gevonden.",
     "invalidDuration": "De duur moet een geheel aantal dagen tussen 0 en 365 zijn.",
     "energyReportsFailing": "De energierapporten zijn meerdere keren na elkaar mislukt — de energiewaarden kunnen verouderd zijn.",
-    "invalidTime": "De starttijd is ongeldig."
+    "invalidTime": "De eindtijd is ongeldig.",
+    "invalidHolidayModeEnd": "Het einde van de vakantiemodus moet in de toekomst liggen."
   },
   "settings": {
     "authenticate": {

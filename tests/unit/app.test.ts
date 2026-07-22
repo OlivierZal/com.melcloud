@@ -2623,6 +2623,30 @@ describe('melCloudApp', () => {
         }
       })
 
+      it('should reject an end that is not after now', async () => {
+        vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+          Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
+        )
+        try {
+          const mockUpdateHolidayMode = mockUpdateResult(null)
+          await initWithHolidayModeFacade(app, {
+            updateHolidayMode: mockUpdateHolidayMode,
+          })
+
+          await expect(
+            getWithTimeRunListener()({
+              duration: 0,
+              time: '06:00',
+              zone: zoneArg,
+            }),
+          ).rejects.toThrow('errors.invalidHolidayModeEnd')
+
+          expect(mockUpdateHolidayMode).not.toHaveBeenCalled()
+        } finally {
+          vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+        }
+      })
+
       it.each([1.5, -1, 366, 'holidays', '', false, true, null])(
         'should reject the out-of-contract duration %j',
         async (duration) => {

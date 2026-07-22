@@ -4,7 +4,8 @@
     "zoneNotFound": "Zone not found.",
     "invalidDuration": "The duration must be a whole number of days between 0 and 365.",
     "energyReportsFailing": "Energy reports have failed several times in a row — the energy values may be stale.",
-    "invalidTime": "The start time is invalid."
+    "invalidTime": "The end time is invalid.",
+    "invalidHolidayModeEnd": "The holiday-mode end must be in the future."
   },
   "settings": {
     "authenticate": {
