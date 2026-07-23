@@ -15,7 +15,7 @@ import type {
   ErrorLogQueryParams,
   FormattedErrorLog,
 } from '../../types/error-log.mts'
-import type { ZoneData } from '../../types/zone.mts'
+import type { HomeDeviceZone, ZoneData } from '../../types/zone.mts'
 import { mock } from '../helpers.js'
 
 const mockGetBuildings =
@@ -53,6 +53,9 @@ const mockApp = {
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
   getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
+  getHomeDeviceZones: vi.fn<() => HomeDeviceZone[]>(),
+  getHomeFrostProtection: vi.fn<() => Home.FrostProtection | null>(),
+  getHomeHolidayMode: vi.fn<() => Home.HolidayMode | null>(),
   homeApi: {
     authenticate: mockHomeAuthenticate,
     isAuthenticated: mockIsHomeAuthenticated,
@@ -64,6 +67,8 @@ const mockApp = {
   updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
   updateClassicHolidayMode: vi.fn<() => Promise<void>>(),
   updateDeviceSettings: vi.fn<() => Promise<void>>(),
+  updateHomeFrostProtection: vi.fn<() => Promise<void>>(),
+  updateHomeHolidayMode: vi.fn<() => Promise<void>>(),
 }
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
@@ -273,6 +278,45 @@ describe('api', () => {
 
       expect(result).toBe(holidayMode)
       expect(mockApp.getClassicHolidayMode).toHaveBeenCalledWith(params)
+    })
+  })
+
+  describe('home devices retrieval', () => {
+    it('should delegate to app.getHomeDeviceZones', () => {
+      const devices = [mock<HomeDeviceZone>({ id: 'guid-1' })]
+      mockApp.getHomeDeviceZones.mockReturnValue(devices)
+
+      expect(api.getHomeDevices({ homey })).toBe(devices)
+    })
+  })
+
+  describe('home frost protection settings retrieval', () => {
+    it('should delegate to app.getHomeFrostProtection with the device id', () => {
+      const frostProtection = mock<Home.FrostProtection>()
+      mockApp.getHomeFrostProtection.mockReturnValue(frostProtection)
+
+      const result = api.getHomeFrostProtection({
+        homey,
+        params: { deviceId: 'guid-1' },
+      })
+
+      expect(result).toBe(frostProtection)
+      expect(mockApp.getHomeFrostProtection).toHaveBeenCalledWith('guid-1')
+    })
+  })
+
+  describe('home holiday mode settings retrieval', () => {
+    it('should delegate to app.getHomeHolidayMode with the device id', () => {
+      const holidayMode = mock<Home.HolidayMode>()
+      mockApp.getHomeHolidayMode.mockReturnValue(holidayMode)
+
+      const result = api.getHomeHolidayMode({
+        homey,
+        params: { deviceId: 'guid-1' },
+      })
+
+      expect(result).toBe(holidayMode)
+      expect(mockApp.getHomeHolidayMode).toHaveBeenCalledWith('guid-1')
     })
   })
 
@@ -506,6 +550,42 @@ describe('api', () => {
         settings: body,
         ...params,
       })
+    })
+  })
+
+  describe('home frost protection settings update', () => {
+    it('should delegate to app.updateHomeFrostProtection for the device', async () => {
+      const body = { isEnabled: true, max: 16, min: 4 }
+      mockApp.updateHomeFrostProtection.mockResolvedValue()
+
+      await api.updateHomeFrostProtection({
+        body,
+        homey,
+        params: { deviceId: 'guid-1' },
+      })
+
+      expect(mockApp.updateHomeFrostProtection).toHaveBeenCalledWith(
+        ['guid-1'],
+        body,
+      )
+    })
+  })
+
+  describe('home holiday mode settings update', () => {
+    it('should delegate to app.updateHomeHolidayMode for the device', async () => {
+      const body = mock<HolidayModeUpdate>()
+      mockApp.updateHomeHolidayMode.mockResolvedValue()
+
+      await api.updateHomeHolidayMode({
+        body,
+        homey,
+        params: { deviceId: 'guid-1' },
+      })
+
+      expect(mockApp.updateHomeHolidayMode).toHaveBeenCalledWith(
+        ['guid-1'],
+        body,
+      )
     })
   })
 })

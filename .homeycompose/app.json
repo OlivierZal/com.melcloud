@@ -36,6 +36,18 @@
       "method": "GET",
       "path": "/logs/errors"
     },
+    "getHomeDevices": {
+      "method": "GET",
+      "path": "/home/devices"
+    },
+    "getHomeFrostProtection": {
+      "method": "GET",
+      "path": "/home/devices/:deviceId/settings/frost-protection"
+    },
+    "getHomeHolidayMode": {
+      "method": "GET",
+      "path": "/home/devices/:deviceId/settings/holiday-mode"
+    },
     "getLanguage": {
       "method": "GET",
       "path": "/language"
@@ -71,6 +83,14 @@
     "updateDeviceSettings": {
       "method": "PUT",
       "path": "/settings/devices"
+    },
+    "updateHomeFrostProtection": {
+      "method": "PUT",
+      "path": "/home/devices/:deviceId/settings/frost-protection"
+    },
+    "updateHomeHolidayMode": {
+      "method": "PUT",
+      "path": "/home/devices/:deviceId/settings/holiday-mode"
     }
   },
   "author": {

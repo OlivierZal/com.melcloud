@@ -14,7 +14,11 @@ import type {
   ErrorLogQueryParams,
   FormattedErrorLog,
 } from './types/error-log.mts'
-import type { DeviceGroup, DeviceOrZoneData } from './types/zone.mts'
+import type {
+  DeviceGroup,
+  DeviceOrZoneData,
+  HomeDeviceZone,
+} from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 import { getErrorMessage } from './lib/get-error-message.mts'
 import { toDeviceOrZoneData } from './lib/validation.mts'
@@ -178,6 +182,22 @@ const api = {
       to,
     })
   },
+  getHomeDevices: ({ homey: { app } }: { homey: Homey }): HomeDeviceZone[] =>
+    app.getHomeDeviceZones(),
+  getHomeFrostProtection: ({
+    homey: { app },
+    params: { deviceId },
+  }: {
+    homey: Homey
+    params: { deviceId: string }
+  }): Home.FrostProtection | null => app.getHomeFrostProtection(deviceId),
+  getHomeHolidayMode: ({
+    homey: { app },
+    params: { deviceId },
+  }: {
+    homey: Homey
+    params: { deviceId: string }
+  }): Home.HolidayMode | null => app.getHomeHolidayMode(deviceId),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
   homeAuthenticate: async ({
@@ -262,6 +282,24 @@ const api = {
     homey: Homey
     query: { driverId?: string }
   }): Promise<void> => app.updateDeviceSettings({ driverId, settings: body }),
+  updateHomeFrostProtection: async ({
+    body,
+    homey: { app },
+    params: { deviceId },
+  }: {
+    body: { isEnabled: boolean; max: number; min: number }
+    homey: Homey
+    params: { deviceId: string }
+  }): Promise<void> => app.updateHomeFrostProtection([deviceId], body),
+  updateHomeHolidayMode: async ({
+    body,
+    homey: { app },
+    params: { deviceId },
+  }: {
+    body: HolidayModeUpdate
+    homey: Homey
+    params: { deviceId: string }
+  }): Promise<void> => app.updateHomeHolidayMode([deviceId], body),
 }
 
 export default api

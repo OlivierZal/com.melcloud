@@ -3,6 +3,7 @@ import type {
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import type * as Home from '@olivierzal/melcloud-api/home'
 import type Homey from 'homey/lib/HomeySettings'
 import { Temporal } from 'temporal-polyfill'
 
@@ -22,6 +23,7 @@ import type {
   FormattedErrorDetails,
   FormattedErrorLog,
 } from '../types/error-log.mts'
+import type { HomeDeviceZone } from '../types/zone.mts'
 import { getErrorMessage } from '../lib/get-error-message.mts'
 import {
   type HTMLValueElement,
@@ -37,7 +39,13 @@ import {
   translateAriaLabels,
 } from '../public/dom.mts'
 import { fireAndForget, runWebview } from '../public/homey-api.mts'
-import { getZoneId, getZoneName, getZonePath } from '../public/zones.mts'
+import {
+  getHomeDeviceId,
+  getZoneId,
+  getZoneName,
+  getZonePath,
+  isHomeDeviceValue,
+} from '../public/zones.mts'
 
 // ── Helpers ──
 
@@ -449,7 +457,7 @@ const initFrostProtectionMax = (): HTMLInputElement => {
   return element
 }
 
-const getSubzones = (zone: Classic.Zone): Classic.Zone[] => [
+const getSubzones = (zone: Classic.Zone | HomeDeviceZone): Classic.Zone[] => [
   ...('devices' in zone ? zone.devices : []),
   ...('areas' in zone ? zone.areas : []),
   ...('floors' in zone ? zone.floors : []),
@@ -1286,7 +1294,7 @@ class ZoneSettingsManager {
     await this.fetchHolidayModeData()
   }
 
-  public populateZoneOptions(zones: Classic.Zone[]): void {
+  public populateZoneOptions(zones: (Classic.Zone | HomeDeviceZone)[]): void {
     for (const zone of zones) {
       const { id, level, model, name } = zone
       createOption(this.#zone, {
@@ -1447,11 +1455,7 @@ class ZoneSettingsManager {
   }: ZoneSettingDescriptor): Promise<void> {
     await withDisablingButtonPair(id, async () => {
       try {
-        const data = await homeyApiGet<Partial<Classic.ZoneSettings>>(
-          this.#homey,
-          `/classic/zones/${this.#getZonePath()}/settings/${path}`,
-        )
-        this.#updateZoneMapping(data)
+        this.#updateZoneMapping(await this.#getZoneSettingData(path))
         display()
       } catch {
         // Non-critical: UI falls back to default values
@@ -1482,8 +1486,51 @@ class ZoneSettingsManager {
     return { max: Math.max(max, min + FROST_PROTECTION_TEMPERATURE_GAP), min }
   }
 
-  #getZonePath(): string {
-    return getZonePath(this.#zone.value)
+  // Read one panel's settings for the selected target, normalized to the
+  // Classic zone-settings shape the panels render. Home devices answer the
+  // camelCase Home shape, mapped onto the FP*/HM* fields here; a `null`
+  // (no window defined) reads as empty, i.e. default values.
+  async #getZoneSettingData(
+    path: 'frost-protection' | 'holiday-mode',
+  ): Promise<Partial<Classic.ZoneSettings>> {
+    const url = `${this.#getZoneSettingsBase()}/settings/${path}`
+    if (!isHomeDeviceValue(this.#zone.value)) {
+      return homeyApiGet<Partial<Classic.ZoneSettings>>(this.#homey, url)
+    }
+    if (path === 'frost-protection') {
+      const frostProtection = await homeyApiGet<Home.FrostProtection | null>(
+        this.#homey,
+        url,
+      )
+      return frostProtection === null ?
+          {}
+        : {
+            FPEnabled: frostProtection.enabled,
+            FPMaxTemperature: frostProtection.max,
+            FPMinTemperature: frostProtection.min,
+          }
+    }
+    const holidayMode = await homeyApiGet<Home.HolidayMode | null>(
+      this.#homey,
+      url,
+    )
+    return holidayMode === null ?
+        {}
+      : {
+          HMEnabled: holidayMode.enabled,
+          HMEndDate: holidayMode.endDate,
+          HMStartDate: holidayMode.startDate,
+        }
+  }
+
+  // The selected target's settings base URL: a Home device routes to the
+  // Home device endpoints; every Classic zone/device keeps the classic zone
+  // path (`getZonePath` splits `${model}_${id}` at the first underscore).
+  #getZoneSettingsBase(): string {
+    const { value } = this.#zone
+    return isHomeDeviceValue(value) ?
+        `/home/devices/${getHomeDeviceId(value)}`
+      : `/classic/zones/${getZonePath(value)}`
   }
 
   // PUT one zone-setting panel: refresh the cached zone mapping and
@@ -1497,7 +1544,7 @@ class ZoneSettingsManager {
       try {
         await homeyApiPut<unknown>(
           this.#homey,
-          `/classic/zones/${this.#getZonePath()}/settings/${path}`,
+          `${this.#getZoneSettingsBase()}/settings/${path}`,
           query,
         )
         this.#updateZoneMapping(zoneSettings)
@@ -1613,7 +1660,9 @@ class SettingsApp {
   async #ensureDevicesForApi(api: Api): Promise<void> {
     if (api === 'classic') {
       await this.#fetchClassicBuildings()
-    } else if (!this.#hasHomeDevices()) {
+    } else if (this.#hasHomeDevices()) {
+      await this.#fetchHomeDevices()
+    } else {
       throw new NoDeviceError(this.#homey)
     }
   }
@@ -1633,6 +1682,19 @@ class SettingsApp {
     // on-demand "See" button — prefetching it blocked first paint on a
     // MELCloud cloud round-trip (~350 ms on a Homey Pro 2019) and its
     // alert-on-failure would surface unprompted.
+    fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
+  }
+
+  // The Home account has no zone tree: each device is a standalone
+  // selectable target, appended after any Classic zones.
+  async #fetchHomeDevices(): Promise<void> {
+    const devices = await homeyApiGet<HomeDeviceZone[]>(
+      this.#homey,
+      '/home/devices',
+    )
+    this.#zoneSettingsManager.populateZoneOptions(devices)
+    // See #fetchClassicBuildings: fills the initial panel values only (the
+    // first option, a Classic zone when both accounts are paired).
     fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
   }
 
@@ -1749,8 +1811,8 @@ class SettingsApp {
     if (this.#authState.classic) {
       await this.#validateInitialClassicAuth()
     }
-    if (this.#authState.home && !this.#hasHomeDevices()) {
-      this.#disableForError(new NoDeviceError(this.#homey))
+    if (this.#authState.home) {
+      await this.#validateInitialHomeAuth()
     }
   }
 
@@ -1763,6 +1825,14 @@ class SettingsApp {
       } else {
         this.#authState.classic = false
       }
+    }
+  }
+
+  async #validateInitialHomeAuth(): Promise<void> {
+    if (this.#hasHomeDevices()) {
+      await this.#fetchHomeDevices()
+    } else {
+      this.#disableForError(new NoDeviceError(this.#homey))
     }
   }
 }

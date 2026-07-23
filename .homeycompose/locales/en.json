@@ -78,7 +78,7 @@
     "title": "MELCloud settings",
     "update": "Update",
     "zones": {
-      "legend": "Zone settings (Classic)"
+      "legend": "Zone and device settings"
     }
   },
   "warnings": {
