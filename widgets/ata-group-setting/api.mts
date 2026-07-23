@@ -1,5 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
+import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { GroupAtaStates } from '../../types/classic-ata.mts'
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
@@ -58,7 +59,8 @@ const api = {
     homey: { app },
   }: {
     homey: Homey
-  }): (HomeBuildingZone | HomeDeviceZone)[] => app.getHomeAtaTargets(),
+  }): (HomeBuildingZone | HomeDeviceZone)[] =>
+    app.getHomeTargets(Home.DeviceType.Ata),
   getHomeBuildingAtaModes: ({
     homey: { app },
     params: { buildingId },

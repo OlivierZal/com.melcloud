@@ -751,31 +751,6 @@ export default class MELCloudApp extends App {
     )
   }
 
-  // Every ATA target the group widget can address on the Home side: one
-  // root entry per `/context` building (the account-level group), its
-  // devices one level below, both alphabetical.
-  public getHomeAtaTargets(): (HomeBuildingZone | HomeDeviceZone)[] {
-    return this.#homeRegistry
-      .getBuildingsByType(Home.DeviceType.Ata)
-      .toSorted(byName)
-      .flatMap(({ devices, id, name }) => [
-        {
-          id,
-          level: 0,
-          model: 'homeBuildings',
-          name,
-        } satisfies HomeBuildingZone,
-        ...devices
-          .map((device): HomeDeviceZone => ({
-            id: device.id,
-            level: 1,
-            model: 'homeDevices',
-            name: device.name,
-          }))
-          .toSorted(byName),
-      ])
-  }
-
   // Member operation modes in the Classic vocabulary — what the widget's
   // mixed-mode scene resolver consumes.
   public getHomeBuildingAtaModes(buildingId: string): number[] {
@@ -949,16 +924,24 @@ export default class MELCloudApp extends App {
     )
   }
 
-  // The Home target tree for the settings selector: each `/context`
-  // building (level 0) followed by its own devices (level 1), generalizing
-  // `getHomeAtaTargets` across both ATA and ATW so a whole building or a
-  // single device can be addressed, alpha-sorted at each level.
-  public getHomeTargets(): (HomeBuildingZone | HomeDeviceZone)[] {
+  // The Home target tree for a selector: each `/context` building (level 0)
+  // followed by its own devices (level 1), both alpha-sorted, so a whole
+  // building or a single device can be addressed. `type` narrows to one
+  // connection type (the ATA group widget); omitted spans both ATA and ATW
+  // (the settings selector) — the `getHomeDeviceZones` pattern applied to
+  // this tree-shaped surface.
+  public getHomeTargets(
+    type?: Home.DeviceType,
+  ): (HomeBuildingZone | HomeDeviceZone)[] {
+    const devices =
+      type === undefined ?
+        this.#homeRegistry.getAll()
+      : this.#homeRegistry.getByType(type)
     const buildings = new Map<
       string,
       { devices: HomeDeviceZone[]; name: string }
     >()
-    for (const device of this.#homeRegistry.getAll()) {
+    for (const device of devices) {
       const building = buildings.get(device.building.id) ?? {
         devices: [],
         name: device.building.name,
@@ -974,15 +957,21 @@ export default class MELCloudApp extends App {
     return buildings
       .entries()
       .map(
-        ([id, { devices, name }]): HomeBuildingZone & {
+        ([id, { devices: buildingDevices, name }]): HomeBuildingZone & {
           devices: HomeDeviceZone[]
-        } => ({ devices, id, level: 0, model: 'homeBuildings', name }),
+        } => ({
+          devices: buildingDevices,
+          id,
+          level: 0,
+          model: 'homeBuildings',
+          name,
+        }),
       )
       .toArray()
       .toSorted(byName)
-      .flatMap(({ devices, ...building }) => [
+      .flatMap(({ devices: buildingDevices, ...building }) => [
         building,
-        ...devices.toSorted(byName),
+        ...buildingDevices.toSorted(byName),
       ])
   }
 
@@ -1649,7 +1638,7 @@ export default class MELCloudApp extends App {
   ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[] {
     return [
       ...this.#searchZones(query, { type: Classic.DeviceType.Ata }),
-      ...filterZonesByName(this.getHomeAtaTargets(), query),
+      ...filterZonesByName(this.getHomeTargets(Home.DeviceType.Ata), query),
     ]
   }
 

@@ -1640,24 +1640,26 @@ describe('melCloudApp', () => {
 
   describe('home ata targets', () => {
     it('should nest alpha-sorted devices under their alpha-sorted building', async () => {
-      mockHomeRegistry.getBuildingsByType.mockReturnValue([
+      mockHomeRegistry.getByType.mockReturnValue([
         {
-          devices: [
-            { id: 'device-2', name: 'Salon' },
-            { id: 'device-1', name: 'Bureau' },
-          ],
-          id: 'building-2',
-          name: 'Verkstan',
+          building: { id: 'building-2', name: 'Verkstan' },
+          id: 'device-2',
+          name: 'Salon',
         },
         {
-          devices: [{ id: 'device-3', name: 'Woonkamer' }],
-          id: 'building-1',
-          name: 'Appartement',
+          building: { id: 'building-2', name: 'Verkstan' },
+          id: 'device-1',
+          name: 'Bureau',
+        },
+        {
+          building: { id: 'building-1', name: 'Appartement' },
+          id: 'device-3',
+          name: 'Woonkamer',
         },
       ])
       await app.onInit()
 
-      expect(app.getHomeAtaTargets()).toStrictEqual([
+      expect(app.getHomeTargets(Home.DeviceType.Ata)).toStrictEqual([
         {
           id: 'building-1',
           level: 0,
@@ -1674,7 +1676,7 @@ describe('melCloudApp', () => {
         { id: 'device-1', level: 1, model: 'homeDevices', name: 'Bureau' },
         { id: 'device-2', level: 1, model: 'homeDevices', name: 'Salon' },
       ])
-      expect(mockHomeRegistry.getBuildingsByType).toHaveBeenCalledWith(
+      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
         Home.DeviceType.Ata,
       )
     })
@@ -3159,15 +3161,21 @@ describe('melCloudApp', () => {
       ])
       // Unsorted on purpose: home targets must come back alpha-sorted
       // (buildings, then their devices), appended after the classic ones.
-      mockHomeRegistry.getBuildingsByType.mockReturnValue([
+      mockHomeRegistry.getByType.mockReturnValue([
         {
-          devices: [
-            { id: 'home-2', name: 'Building two' },
-            { id: 'home-1', name: 'Building one' },
-            { id: 'home-3', name: 'Bedroom' },
-          ],
-          id: 'account-1',
-          name: 'Buildings',
+          building: { id: 'account-1', name: 'Buildings' },
+          id: 'home-2',
+          name: 'Building two',
+        },
+        {
+          building: { id: 'account-1', name: 'Buildings' },
+          id: 'home-1',
+          name: 'Building one',
+        },
+        {
+          building: { id: 'account-1', name: 'Buildings' },
+          id: 'home-3',
+          name: 'Bedroom',
         },
       ])
       await app.onInit()

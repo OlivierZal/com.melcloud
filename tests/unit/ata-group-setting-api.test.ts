@@ -1,6 +1,7 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { GroupAtaStates } from '../../types/classic-ata.mts'
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
@@ -31,9 +32,9 @@ const mockApp = {
   getClassicAtaDetailedStates: vi.fn<() => GroupAtaStates>(),
   getClassicAtaState: vi.fn<() => Promise<Classic.GroupState>>(),
   getHomeAtaState: vi.fn<() => Promise<Classic.GroupState>>(),
-  getHomeAtaTargets: vi.fn<() => (HomeBuildingZone | HomeDeviceZone)[]>(),
   getHomeBuildingAtaModes: vi.fn<() => number[]>(),
   getHomeBuildingAtaState: vi.fn<() => Promise<Classic.GroupState>>(),
+  getHomeTargets: vi.fn<() => (HomeBuildingZone | HomeDeviceZone)[]>(),
   updateClassicAtaState: vi.fn<() => Promise<void>>(),
   updateHomeAtaState: vi.fn<() => Promise<void>>(),
   updateHomeBuildingAtaState: vi.fn<() => Promise<void>>(),
@@ -169,14 +170,14 @@ describe('ata-group-setting api', () => {
   })
 
   describe('home target retrieval', () => {
-    it('should delegate to app.getHomeAtaTargets', () => {
+    it('should delegate to app.getHomeTargets for the ATA type', () => {
       const targets = mock<(HomeBuildingZone | HomeDeviceZone)[]>()
-      mockApp.getHomeAtaTargets.mockReturnValue(targets)
+      mockApp.getHomeTargets.mockReturnValue(targets)
 
       const result = api.getHomeAtaTargets({ homey })
 
       expect(result).toBe(targets)
-      expect(mockApp.getHomeAtaTargets).toHaveBeenCalledTimes(1)
+      expect(mockApp.getHomeTargets).toHaveBeenCalledWith(Home.DeviceType.Ata)
     })
 
     it('should delegate home state to app.getHomeAtaState', async () => {
