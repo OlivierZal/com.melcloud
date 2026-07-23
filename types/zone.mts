@@ -20,7 +20,11 @@ export interface DeviceOrZoneData {
 // group) is a selectable root entry, its devices one level below. The
 // models are camelCase because option values split `${model}_${id}` at
 // the FIRST underscore — a Home id may itself contain underscores.
+// `buildingName` mirrors `Classic.FlatZone`: it names the owning building
+// (a building carries its own) so a flat picker can suffix leaves and keep
+// same-named devices on different buildings apart.
 export interface HomeBuildingZone {
+  readonly buildingName: string
   readonly id: string
   readonly level: 0
   readonly model: 'homeBuildings'
@@ -28,6 +32,7 @@ export interface HomeBuildingZone {
 }
 
 export interface HomeDeviceZone {
+  readonly buildingName: string
   readonly id: string
   readonly level: 1
   readonly model: 'homeDevices'

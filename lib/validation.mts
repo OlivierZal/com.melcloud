@@ -4,16 +4,16 @@ import type { DeviceOrZoneData, ZoneData } from '../types/zone.mts'
 
 const HOUR_MAX = 23
 
-const zoneTypes = new Set<ZoneData['zoneType']>([
-  'areas',
-  'buildings',
-  'floors',
-])
+const zoneTypes = new Set<string>(['areas', 'buildings', 'floors'])
 
-const deviceOrZoneTypes = new Set<DeviceOrZoneData['zoneType']>([
-  ...zoneTypes,
-  'devices',
-])
+const deviceOrZoneTypes = new Set<string>([...zoneTypes, 'devices'])
+
+const isZoneType = (zoneType: string): zoneType is ZoneData['zoneType'] =>
+  zoneTypes.has(zoneType)
+
+const isDeviceOrZoneType = (
+  zoneType: string,
+): zoneType is DeviceOrZoneData['zoneType'] => deviceOrZoneTypes.has(zoneType)
 
 interface NonNegativeIntOptions {
   readonly field?: string | undefined
@@ -62,12 +62,18 @@ export const toHour = (value: unknown, field?: string): Hour => {
 }
 
 /**
- * Validates URL path params as `ZoneData`. `zoneType` comes straight from the
- * request path and is later used to index the zone registry, so reject
- * anything outside the known zone collections.
+ * Validates a raw `zoneType`/`zoneId` pair (from a request path or a parsed
+ * option value) as `ZoneData`. `zoneType` is later used to index the zone
+ * registry, so reject anything outside the known zone collections.
  */
-export const toZoneData = ({ zoneId, zoneType }: ZoneData): ZoneData => {
-  if (!zoneTypes.has(zoneType)) {
+export const toZoneData = ({
+  zoneId,
+  zoneType,
+}: {
+  readonly zoneId: string
+  readonly zoneType: string
+}): ZoneData => {
+  if (!isZoneType(zoneType)) {
     throw new RangeError(`Invalid zone type: ${zoneType}`)
   }
   return { zoneId, zoneType }
@@ -81,9 +87,26 @@ export const toZoneData = ({ zoneId, zoneType }: ZoneData): ZoneData => {
 export const toDeviceOrZoneData = ({
   zoneId,
   zoneType,
-}: DeviceOrZoneData): DeviceOrZoneData => {
-  if (!deviceOrZoneTypes.has(zoneType)) {
+}: {
+  readonly zoneId: string
+  readonly zoneType: string
+}): DeviceOrZoneData => {
+  if (!isDeviceOrZoneType(zoneType)) {
     throw new RangeError(`Invalid zone type: ${zoneType}`)
   }
   return { zoneId, zoneType }
+}
+
+/**
+ * Splits a `${model}_${id}` zone option value — as carried by every flat
+ * picker item — into validated coordinates. The model is a single word and
+ * the id numeric, so the first underscore separates them; the type is then
+ * guarded exactly like a request path param.
+ */
+export const toZoneValueData = (value: string): DeviceOrZoneData => {
+  const separator = value.indexOf('_')
+  return toDeviceOrZoneData({
+    zoneId: value.slice(separator + 1),
+    zoneType: value.slice(0, separator),
+  })
 }
