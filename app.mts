@@ -118,10 +118,16 @@ const toDurationDays = (duration: unknown): number => {
 // Flow-action arguments shared by the holiday-mode cards: `zone` always,
 // `duration`/`time` only on the cards that declare them.
 interface HolidayModeActionArgs {
-  zone: DeviceOrZoneData
+  zone: HolidayModeTarget
   duration?: unknown
   time?: unknown
 }
+
+// A holiday-mode flow target: a Classic zone/device (zone coordinates) or a
+// single Home device (its id). Run listeners discriminate on `deviceId`.
+type HolidayModeTarget =
+  | { readonly deviceId: string; readonly id: string; readonly name: string }
+  | (DeviceOrZoneData & { readonly id: string; readonly name: string })
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
@@ -272,6 +278,28 @@ const toZoneAutocompleteItems = (
     zoneId: String(id),
     zoneType: model,
   }))
+
+// Flow autocomplete items over Home devices: each device is a standalone
+// holiday-mode target, carried by id so run listeners route to the Home
+// batch endpoints without id parsing.
+const toHomeDeviceAutocompleteItems = (
+  zones: readonly HomeDeviceZone[],
+): { deviceId: string; id: string; name: string }[] =>
+  zones.map(({ id, name }) => ({ deviceId: id, id: `homeDevices_${id}`, name }))
+
+// Translate a Classic holiday query into the Home window shape: a `to` bound
+// means "enabled until then", an empty query means "disabled". The holiday
+// cards always start now (they never set `from`), so start is always now —
+// the same instant the Classic path gets by omitting `from`.
+const toHomeHolidayIntent = (
+  query: Classic.HolidayModeQuery,
+  timezone: string,
+): { endDate: string; isEnabled: boolean; startDate: string } => {
+  const now = Temporal.Now.plainDateTimeISO(timezone).toString()
+  return query.to === undefined ?
+      { endDate: now, isEnabled: false, startDate: now }
+    : { endDate: query.to, isEnabled: true, startDate: now }
+}
 
 // MELCloud reports error timestamps either as UTC instants (Z or offset
 // suffix) or as wall-clock times in the building's timezone.
@@ -824,6 +852,14 @@ export default class MELCloudApp extends App {
     throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
   }
 
+  public getHomeFrostProtection(deviceId: string): Home.FrostProtection | null {
+    return this.#getHomeDeviceFacade(deviceId).frostProtection
+  }
+
+  public getHomeHolidayMode(deviceId: string): Home.HolidayMode | null {
+    return this.#getHomeDeviceFacade(deviceId).holidayMode
+  }
+
   public async getHomeHourlyTemperatures({
     deviceId,
     hour,
@@ -973,6 +1009,20 @@ export default class MELCloudApp extends App {
     state: Classic.GroupState
   }): Promise<void> {
     await this.#getHomeBuildingFacade(buildingId).updateGroupState(state)
+  }
+
+  public async updateHomeFrostProtection(
+    deviceIds: readonly string[],
+    settings: { isEnabled: boolean; max: number; min: number },
+  ): Promise<void> {
+    await this.#homeFacadeManager.updateFrostProtection(deviceIds, settings)
+  }
+
+  public async updateHomeHolidayMode(
+    deviceIds: readonly string[],
+    settings: { endDate: string; isEnabled: boolean; startDate: string },
+  ): Promise<void> {
+    await this.#homeFacadeManager.updateHolidayMode(deviceIds, settings)
   }
 
   readonly #onSync: SyncCallback = async ({ ids, type } = {}) => {
@@ -1413,13 +1463,22 @@ export default class MELCloudApp extends App {
   ): void {
     const card = this.homey.flow.getActionCard(id)
     card.registerArgumentAutocompleteListener('zone', (query) =>
-      toZoneAutocompleteItems(this.#searchZones(query)),
+      this.#searchHolidayModeTargets(query),
     )
     card.registerRunListener(async (args: HolidayModeActionArgs) => {
+      const settings = toSettings(args)
+      const { zone } = args
+      if ('deviceId' in zone) {
+        await this.updateHomeHolidayMode(
+          [zone.deviceId],
+          toHomeHolidayIntent(settings, getTimeZone(this.homey)),
+        )
+        return
+      }
       await this.updateClassicHolidayMode({
-        settings: toSettings(args),
-        zoneId: args.zone.zoneId,
-        zoneType: args.zone.zoneType,
+        settings,
+        zoneId: zone.zoneId,
+        zoneType: zone.zoneType,
       })
     })
   }
@@ -1427,17 +1486,18 @@ export default class MELCloudApp extends App {
   #registerHolidayModeCondition(): void {
     const card = this.homey.flow.getConditionCard('holiday_mode_condition')
     card.registerArgumentAutocompleteListener('zone', (query) =>
-      toZoneAutocompleteItems(this.#searchZones(query)),
+      this.#searchHolidayModeTargets(query),
     )
-    card.registerRunListener(
-      async ({ zone: { zoneId, zoneType } }: { zone: DeviceOrZoneData }) => {
-        const { HMEnabled: isEnabled } = await this.getClassicHolidayMode({
-          zoneId,
-          zoneType,
-        })
-        return isEnabled
-      },
-    )
+    card.registerRunListener(async ({ zone }: { zone: HolidayModeTarget }) => {
+      if ('deviceId' in zone) {
+        return this.getHomeHolidayMode(zone.deviceId)?.enabled === true
+      }
+      const { HMEnabled: isEnabled } = await this.getClassicHolidayMode({
+        zoneId: zone.zoneId,
+        zoneType: zone.zoneType,
+      })
+      return isEnabled
+    })
   }
 
   #registerWidgetListeners(): void {
@@ -1465,6 +1525,18 @@ export default class MELCloudApp extends App {
       ...this.#searchZones(query, { type: Classic.DeviceType.Ata }),
       ...filterZonesByName(this.getHomeAtaTargets(), query),
     ]
+  }
+
+  // Holiday-mode / condition targets: Classic zones and devices, then the
+  // individual Home devices (alpha-sorted). Each selected item carries its
+  // own routing — zone coordinates or a Home device id.
+  #searchHolidayModeTargets(query: string): HolidayModeTarget[] {
+    return [
+      ...toZoneAutocompleteItems(this.#searchZones(query)),
+      ...toHomeDeviceAutocompleteItems(
+        filterZonesByName(this.getHomeDeviceZones(), query),
+      ),
+    ].toSorted(byName)
   }
 
   // One zone-search pipeline for the tree-shaped autocomplete surfaces

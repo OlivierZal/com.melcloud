@@ -110,6 +110,10 @@ const mockFacadeManagerGetZones = vi
   .mockReturnValue([])
 const mockHomeFacadeManagerGet = vi.fn<(model: unknown) => unknown>()
 const mockHomeFacadeManagerGetBuilding = vi.fn<(id: string) => unknown>()
+const mockHomeFacadeManagerUpdateFrostProtection =
+  vi.fn<Home.FacadeManager['updateFrostProtection']>()
+const mockHomeFacadeManagerUpdateHolidayMode =
+  vi.fn<Home.FacadeManager['updateHolidayMode']>()
 
 const {
   mockCreate,
@@ -279,6 +283,8 @@ const newMockHomeFacadeManager =
     return mock<Home.FacadeManager>({
       get: mockHomeFacadeManagerGet,
       getBuilding: mockHomeFacadeManagerGetBuilding,
+      updateFrostProtection: mockHomeFacadeManagerUpdateFrostProtection,
+      updateHolidayMode: mockHomeFacadeManagerUpdateHolidayMode,
     })
   }
 
@@ -465,20 +471,45 @@ const initWithHolidayModeFacade = async (
   )
 }
 
+// A holiday flow target as the run listeners receive it: a Classic zone or a
+// single Home device (the item the Home autocomplete branch emits).
+type TestHolidayZone =
+  | { deviceId: string; id: string; name: string }
+  | { zoneId: string; zoneType: 'buildings' }
+
 const getActionRunListener = (): ((args: {
   duration: unknown
-  zone: { zoneId: string; zoneType: 'buildings' }
+  zone: TestHolidayZone
 }) => Promise<unknown>) => getMockCallArg(mockActionRegisterRun, 0, 0)
 
 const getWithTimeRunListener = (): ((args: {
   duration: unknown
   time: unknown
-  zone: { zoneId: string; zoneType: 'buildings' }
+  zone: TestHolidayZone
 }) => Promise<unknown>) => getMockCallArg(mockActionRegisterRun, 1, 0)
 
 const getFalseRunListener = (): ((args: {
-  zone: { zoneId: string; zoneType: 'buildings' }
+  zone: TestHolidayZone
 }) => Promise<unknown>) => getMockCallArg(mockActionRegisterRun, 2, 0)
+
+// The Home device the holiday autocomplete branch returns, as its run
+// listener receives it.
+const homeHolidayZone = {
+  deviceId: 'guid-1',
+  id: 'homeDevices_guid-1',
+  name: 'Salon',
+} as const
+
+// Point the Home registry/facade at one ATA device so the Home holiday and
+// frost paths resolve for `guid-1`.
+const stubHomeDevice = (facade: unknown): void => {
+  mockHomeRegistry.getById.mockReturnValue({
+    id: 'guid-1',
+    isAta: (): boolean => true,
+    isAtw: (): boolean => false,
+  })
+  mockHomeFacadeManagerGet.mockReturnValue(facade)
+}
 
 const getSyncCallbackFrom = (
   mockCreateFunction: ReturnType<typeof vi.fn>,
@@ -520,6 +551,7 @@ describe('melCloudApp', () => {
     mockGetDrivers.mockReturnValue({})
     mockFacadeManagerGetZones.mockReturnValue([])
     mockApiInstance.isAuthenticated.mockReturnValue(true)
+    mockHomeRegistry.getAll.mockReturnValue([])
     mockHomeRegistry.getByType.mockReturnValue([])
     app = createApp()
   })
@@ -2481,6 +2513,38 @@ describe('melCloudApp', () => {
           },
         ])
       })
+
+      it('should append Home devices, alpha-sorted with the zones', async () => {
+        mockFacadeManagerGetZones.mockReturnValue([
+          mock<Classic.Zone>({ id: 1, model: 'buildings', name: 'Maison' }),
+        ])
+        mockHomeRegistry.getAll.mockReturnValue([
+          { building: { name: 'Chalet' }, id: 'guid-9', name: 'Salon' },
+        ])
+        await app.onInit()
+
+        const autocomplete = getMockCallArg<(query: string) => unknown>(
+          mockActionRegisterAutocomplete,
+          0,
+          1,
+        )
+
+        // Classic zones and Home devices share one sorted list; the Home
+        // entry carries its device id for routing.
+        expect(autocomplete('')).toStrictEqual([
+          {
+            id: 'buildings_1',
+            name: 'Maison',
+            zoneId: '1',
+            zoneType: 'buildings',
+          },
+          {
+            deviceId: 'guid-9',
+            id: 'homeDevices_guid-9',
+            name: 'Salon (Chalet)',
+          },
+        ])
+      })
     })
 
     describe('action run listener', () => {
@@ -2519,6 +2583,31 @@ describe('melCloudApp', () => {
         await getActionRunListener()({ duration: 0, zone: zoneArg })
 
         expect(getMockCallArg(mockUpdateHolidayMode, 0, 0)).toStrictEqual({})
+      })
+
+      it('should batch a Home device window via the Home endpoint', async () => {
+        vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+          Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
+        )
+        try {
+          await app.onInit()
+          stubHomeDevice({})
+
+          await getActionRunListener()({ duration: 3, zone: homeHolidayZone })
+
+          // Start = now (matching the Classic path's omitted `from`), end =
+          // midnight 3 days out; the single device is sent as a one-item set.
+          expect(mockHomeFacadeManagerUpdateHolidayMode).toHaveBeenCalledWith(
+            ['guid-1'],
+            {
+              endDate: '2026-07-22T00:00:00',
+              isEnabled: true,
+              startDate: '2026-07-19T08:30:00',
+            },
+          )
+        } finally {
+          vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+        }
       })
 
       // Tokens dropped into the duration field arrive as numbers or
@@ -2695,6 +2784,29 @@ describe('melCloudApp', () => {
 
         expect(getMockCallArg(mockUpdateHolidayMode, 0, 0)).toStrictEqual({})
       })
+
+      it('should disable holiday mode on a Home device', async () => {
+        vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+          Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
+        )
+        try {
+          await app.onInit()
+          stubHomeDevice({})
+
+          await getFalseRunListener()({ zone: homeHolidayZone })
+
+          expect(mockHomeFacadeManagerUpdateHolidayMode).toHaveBeenCalledWith(
+            ['guid-1'],
+            {
+              endDate: '2026-07-19T08:30:00',
+              isEnabled: false,
+              startDate: '2026-07-19T08:30:00',
+            },
+          )
+        } finally {
+          vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+        }
+      })
     })
 
     describe('condition run listener', () => {
@@ -2714,6 +2826,54 @@ describe('melCloudApp', () => {
           >(mockConditionRegisterRun, 0, 0)
 
           await expect(run({ zone: zoneArg })).resolves.toBe(isEnabled)
+        },
+      )
+
+      it.each([
+        { holidayMode: { enabled: true }, shouldBeOn: true },
+        { holidayMode: { enabled: false }, shouldBeOn: false },
+        // No holiday data on the facade reads as "off".
+        { holidayMode: null, shouldBeOn: false },
+      ])(
+        'should mirror a Home device holiday state ($shouldBeOn)',
+        async ({ holidayMode, shouldBeOn }) => {
+          await app.onInit()
+          stubHomeDevice({ holidayMode })
+
+          const run = getMockCallArg<
+            (args: { zone: TestHolidayZone }) => Promise<boolean>
+          >(mockConditionRegisterRun, 0, 0)
+
+          await expect(run({ zone: homeHolidayZone })).resolves.toBe(shouldBeOn)
+        },
+      )
+    })
+  })
+
+  describe('home frost protection', () => {
+    it('should read a Home device frost protection off the facade', async () => {
+      await app.onInit()
+      const frostProtection = mock<Home.FrostProtection>({ active: true })
+      stubHomeDevice({ frostProtection })
+
+      expect(app.getHomeFrostProtection('guid-1')).toBe(frostProtection)
+    })
+
+    it('should batch a frost protection update across the given devices', async () => {
+      await app.onInit()
+
+      await app.updateHomeFrostProtection(['guid-1', 'guid-2'], {
+        isEnabled: true,
+        max: 16,
+        min: 4,
+      })
+
+      expect(mockHomeFacadeManagerUpdateFrostProtection).toHaveBeenCalledWith(
+        ['guid-1', 'guid-2'],
+        {
+          isEnabled: true,
+          max: 16,
+          min: 4,
         },
       )
     })
