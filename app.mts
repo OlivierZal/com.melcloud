@@ -63,6 +63,14 @@ import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { typedFromEntries } from './lib/typed-object.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
+import { toZoneValueData } from './lib/validation.mts'
+import {
+  getHomeBuildingId,
+  getHomeDeviceId,
+  getZoneId,
+  isHomeBuildingValue,
+  isHomeDeviceValue,
+} from './public/zones.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 
 // Locale-aware by-name comparator shared by every zone/building sort.
@@ -127,18 +135,15 @@ const toDurationDays = (duration: unknown): number => {
 }
 
 // Flow-action arguments shared by the holiday-mode cards: `zone` always,
-// `duration`/`time` only on the cards that declare them.
+// `duration`/`time` only on the cards that declare them. The zone carries
+// its `${model}_${id}` option value as `id` — the shape every stored card
+// arg has always had — so run listeners route by parsing it (legacy Flows
+// included) and never need the structured coordinates threaded back.
 interface HolidayModeActionArgs {
-  zone: HolidayModeTarget
+  zone: FlatZoneItem
   duration?: unknown
   time?: unknown
 }
-
-// A holiday-mode flow target: a Classic zone/device (zone coordinates) or a
-// single Home device (its id). Run listeners discriminate on `deviceId`.
-type HolidayModeTarget =
-  | { readonly deviceId: string; readonly id: string; readonly name: string }
-  | (DeviceOrZoneData & { readonly id: string; readonly name: string })
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
@@ -258,16 +263,42 @@ type ClassicAtaGroupFacade = Pick<
   'getGroup' | 'updateGroupState'
 >
 
-// Devices flat-listed outside their zone tree (chart pickers, device
-// autocompletes) carry their building name, so same-named devices on
-// different buildings stay tellable apart; tree-shaped lists keep the
-// bare name — the hierarchy already locates the device.
-const toFlatDeviceName = (name: string, buildingName?: string): string => {
-  const trimmed = name.trim()
-  return buildingName === undefined ? trimmed : (
-      `${trimmed} (${buildingName.trim()})`
-    )
+// A flat autocomplete/select item: the `${model}_${id}` option value as
+// `id` (unique, and the routing key run listeners parse) plus the display
+// name. Shared by the holiday flow cards and the settings zone selector.
+interface FlatZoneItem {
+  readonly id: string
+  readonly name: string
 }
+
+// A node from either zone source: a Classic zone (carrying its building
+// name since melcloud-api 43.1.0) or a Home building/device (same shape).
+// The single vocabulary every picker draws from.
+type PickerNode = Classic.FlatZone | HomeBuildingZone | HomeDeviceZone
+
+// A flat picker lists every node at one level, so a leaf's bare name can
+// collide with a same-named leaf on another building; suffixing it with its
+// owning building keeps them apart. Building nodes locate themselves and
+// keep the bare name — as do tree-shaped lists, where the hierarchy already
+// places each node. The one suffix rule for every flat surface (holiday
+// flow, chart and group widget pickers).
+const toFlatName = ({ buildingName, model, name }: PickerNode): string => {
+  const trimmed = name.trim()
+  return model === 'buildings' || model === 'homeBuildings' ?
+      trimmed
+    : `${trimmed} (${buildingName.trim()})`
+}
+
+// Flat autocomplete items over the given nodes, name-sorted. The selected
+// item's `id` carries the `${model}_${id}` routing — run listeners parse it,
+// needing no structured coordinates.
+const toFlatZoneItems = (nodes: readonly PickerNode[]): FlatZoneItem[] =>
+  nodes
+    .map((node) => ({
+      id: getZoneId(node.id, node.model),
+      name: toFlatName(node),
+    }))
+    .toSorted(byName)
 
 const filterZonesByName = <T extends { readonly name: string }>(
   zones: readonly T[],
@@ -276,27 +307,6 @@ const filterZonesByName = <T extends { readonly name: string }>(
   const lowerCaseQuery = query.toLowerCase()
   return zones.filter(({ name }) => name.toLowerCase().includes(lowerCaseQuery))
 }
-
-// Flow autocomplete items over the given zones (including single devices,
-// which the holiday mode endpoints also accept). The zone target is
-// carried on the selected item so run listeners need no id parsing.
-const toZoneAutocompleteItems = (
-  zones: readonly Classic.Zone[],
-): (DeviceOrZoneData & { id: string; name: string })[] =>
-  zones.map(({ id, model, name }) => ({
-    id: `${model}_${String(id)}`,
-    name,
-    zoneId: String(id),
-    zoneType: model,
-  }))
-
-// Flow autocomplete items over Home devices: each device is a standalone
-// holiday-mode target, carried by id so run listeners route to the Home
-// batch endpoints without id parsing.
-const toHomeDeviceAutocompleteItems = (
-  zones: readonly HomeDeviceZone[],
-): { deviceId: string; id: string; name: string }[] =>
-  zones.map(({ id, name }) => ({ deviceId: id, id: `homeDevices_${id}`, name }))
 
 // MELCloud reports error timestamps either as UTC instants (Z or offset
 // suffix) or as wall-clock times in the building's timezone.
@@ -537,20 +547,16 @@ export default class MELCloudApp extends App {
     )
   }
 
+  // The chart pickers' Classic vocabulary: the flat device leaves, each
+  // suffixed with its building, drawn from the shared zone source.
   public getClassicDeviceZones(type?: Classic.DeviceType): Classic.Zone[] {
-    const devices =
-      type === undefined ?
-        this.#classicRegistry.getDevices()
-      : this.#classicRegistry.getDevicesByType(type)
-    return devices
-      .map((device) => ({
-        id: device.id,
-        level: 1,
+    return this.getClassicTargets(type)
+      .filter(({ model }) => model === 'devices')
+      .map((node) => ({
+        id: node.id,
+        level: node.level,
         model: 'devices' as const,
-        name: toFlatDeviceName(
-          device.name,
-          this.#classicRegistry.buildings.getById(device.buildingId)?.name,
-        ),
+        name: toFlatName(node),
       }))
       .toSorted(byName)
   }
@@ -654,6 +660,14 @@ export default class MELCloudApp extends App {
     return unwrapResult(
       await this.getClassicFacade('devices', deviceId).getSignalStrength(hour),
     )
+  }
+
+  // The Classic zone source: every zone (buildings, floors, areas, devices)
+  // flattened, each stamped with its owning building name (melcloud-api
+  // 43.1.0), optionally narrowed to one device type. Every flat Classic
+  // picker draws from here with the filters it needs.
+  public getClassicTargets(type?: Classic.DeviceType): Classic.FlatZone[] {
+    return this.#facadeManager.getZones(type === undefined ? {} : { type })
   }
 
   public async getClassicTemperatures({
@@ -824,20 +838,13 @@ export default class MELCloudApp extends App {
     return this.#homeRegistry.getByType(type)
   }
 
-  // The charts widget vocabulary: Home devices as flat selectable
-  // entries (no building nodes), alpha-sorted, both types by default.
+  // The charts widget vocabulary: Home devices as flat selectable entries
+  // (no building nodes), each suffixed with its building, alpha-sorted, both
+  // types by default — the device leaves of the shared Home source.
   public getHomeDeviceZones(type?: Home.DeviceType): HomeDeviceZone[] {
-    const devices =
-      type === undefined ?
-        this.#homeRegistry.getAll()
-      : this.#homeRegistry.getByType(type)
-    return devices
-      .map((device): HomeDeviceZone => ({
-        id: device.id,
-        level: 1,
-        model: 'homeDevices',
-        name: toFlatDeviceName(device.name, device.building.name),
-      }))
+    return this.getHomeTargets(type)
+      .filter((node): node is HomeDeviceZone => node.model === 'homeDevices')
+      .map((node) => ({ ...node, name: toFlatName(node) }))
       .toSorted(byName)
   }
 
@@ -947,6 +954,7 @@ export default class MELCloudApp extends App {
         name: device.building.name,
       }
       building.devices.push({
+        buildingName: device.building.name,
         id: device.id,
         level: 1,
         model: 'homeDevices',
@@ -960,6 +968,7 @@ export default class MELCloudApp extends App {
         ([id, { devices: buildingDevices, name }]): HomeBuildingZone & {
           devices: HomeDeviceZone[]
         } => ({
+          buildingName: name,
           devices: buildingDevices,
           id,
           level: 0,
@@ -1508,6 +1517,25 @@ export default class MELCloudApp extends App {
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
   }
 
+  // Is holiday mode on for a flat target value? A single Home device, or a
+  // whole Home building (on only when every device agrees), or a Classic
+  // zone/device — routed by parsing the option value.
+  async #isHolidayModeEnabled(value: string): Promise<boolean> {
+    if (isHomeDeviceValue(value)) {
+      return this.getHomeHolidayMode(getHomeDeviceId(value))?.enabled === true
+    }
+    if (isHomeBuildingValue(value)) {
+      return (
+        this.getHomeBuildingHolidayMode(getHomeBuildingId(value)).HMEnabled ===
+        true
+      )
+    }
+    const { HMEnabled: isEnabled } = await this.getClassicHolidayMode(
+      toZoneValueData(value),
+    )
+    return isEnabled
+  }
+
   async #logBootReady(): Promise<void> {
     await this.homey.ready()
     this.log('Boot: ready after', process.uptime().toFixed(1), 's')
@@ -1584,17 +1612,7 @@ export default class MELCloudApp extends App {
       this.#searchHolidayModeTargets(query),
     )
     card.registerRunListener(async (args: HolidayModeActionArgs) => {
-      const settings = toSettings(args)
-      const { zone } = args
-      if ('deviceId' in zone) {
-        await this.updateHomeHolidayMode([zone.deviceId], settings)
-        return
-      }
-      await this.updateClassicHolidayMode({
-        settings,
-        zoneId: zone.zoneId,
-        zoneType: zone.zoneType,
-      })
+      await this.#updateHolidayModeTarget(args.zone.id, toSettings(args))
     })
   }
 
@@ -1603,16 +1621,9 @@ export default class MELCloudApp extends App {
     card.registerArgumentAutocompleteListener('zone', (query) =>
       this.#searchHolidayModeTargets(query),
     )
-    card.registerRunListener(async ({ zone }: { zone: HolidayModeTarget }) => {
-      if ('deviceId' in zone) {
-        return this.getHomeHolidayMode(zone.deviceId)?.enabled === true
-      }
-      const { HMEnabled: isEnabled } = await this.getClassicHolidayMode({
-        zoneId: zone.zoneId,
-        zoneType: zone.zoneType,
-      })
-      return isEnabled
-    })
+    card.registerRunListener(async ({ zone }: { zone: FlatZoneItem }) =>
+      this.#isHolidayModeEnabled(zone.id),
+    )
   }
 
   #registerWidgetListeners(): void {
@@ -1631,40 +1642,29 @@ export default class MELCloudApp extends App {
       )
   }
 
-  // Everything the ATA group widget can target: the Classic zones and
-  // devices, then the Home buildings with their devices (alpha-sorted).
+  // Everything the ATA group widget can target: every Classic zone/device
+  // and every Home building/device, each leaf suffixed with its building
+  // and the whole list drawn from the two shared sources.
   #searchAtaTargets(
     query: string,
   ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[] {
-    return [
-      ...this.#searchZones(query, { type: Classic.DeviceType.Ata }),
-      ...filterZonesByName(this.getHomeTargets(Home.DeviceType.Ata), query),
-    ]
-  }
-
-  // Holiday-mode / condition targets: Classic zones and devices, then the
-  // individual Home devices (alpha-sorted). Each selected item carries its
-  // own routing — zone coordinates or a Home device id.
-  #searchHolidayModeTargets(query: string): HolidayModeTarget[] {
-    return [
-      ...toZoneAutocompleteItems(this.#searchZones(query)),
-      ...toHomeDeviceAutocompleteItems(
-        filterZonesByName(this.getHomeDeviceZones(), query),
-      ),
-    ].toSorted(byName)
-  }
-
-  // One zone-search pipeline for the tree-shaped autocomplete surfaces
-  // (flow zones, ATA group targets): registry fetch (instance state),
-  // optional type narrowing, then query filtering.
-  #searchZones(
-    query: string,
-    { type }: { type?: Classic.DeviceType } = {},
-  ): Classic.Zone[] {
-    const zones = this.#facadeManager.getZones(
-      type === undefined ? {} : { type },
+    return filterZonesByName(
+      [
+        ...this.getClassicTargets(Classic.DeviceType.Ata),
+        ...this.getHomeTargets(Home.DeviceType.Ata),
+      ].map((node) => ({ ...node, name: toFlatName(node) })),
+      query,
     )
-    return filterZonesByName(zones, query)
+  }
+
+  // Holiday-mode / condition targets: every Classic zone/device and every
+  // Home building/device, each carrying its `${model}_${id}` routing value
+  // and a building-suffixed display name, name-sorted.
+  #searchHolidayModeTargets(query: string): FlatZoneItem[] {
+    return filterZonesByName(
+      toFlatZoneItems([...this.getClassicTargets(), ...this.getHomeTargets()]),
+      query,
+    )
   }
 
   // Residual credentials on an API without any paired device only get
@@ -1681,5 +1681,27 @@ export default class MELCloudApp extends App {
     this.#sessionLossStates.delete(api)
     this.log('Session lost on', api, 'ignored: no paired device')
     return false
+  }
+
+  // Route a holiday-mode write from a flat target value: a single Home
+  // device, a whole Home building (its devices batched), or a Classic
+  // zone/device — the same value parsing the settings page uses.
+  async #updateHolidayModeTarget(
+    value: string,
+    settings: HolidayModeUpdate,
+  ): Promise<void> {
+    if (isHomeDeviceValue(value)) {
+      await this.updateHomeHolidayMode([getHomeDeviceId(value)], settings)
+    } else if (isHomeBuildingValue(value)) {
+      await this.updateHomeBuildingHolidayMode(
+        getHomeBuildingId(value),
+        settings,
+      )
+    } else {
+      await this.updateClassicHolidayMode({
+        settings,
+        ...toZoneValueData(value),
+      })
+    }
   }
 }

@@ -472,11 +472,11 @@ const initWithHolidayModeFacade = async (
   )
 }
 
-// A holiday flow target as the run listeners receive it: a Classic zone or a
-// single Home device (the item the Home autocomplete branch emits).
-type TestHolidayZone =
-  | { deviceId: string; id: string; name: string }
-  | { zoneId: string; zoneType: 'buildings' }
+// A holiday flow target as the run listeners receive it: a flat item whose
+// `id` is the `${model}_${id}` option value the run listeners parse to route.
+interface TestHolidayZone {
+  id: string
+}
 
 const getActionRunListener = (): ((args: {
   duration: unknown
@@ -493,13 +493,9 @@ const getFalseRunListener = (): ((args: {
   zone: TestHolidayZone
 }) => Promise<unknown>) => getMockCallArg(mockActionRegisterRun, 2, 0)
 
-// The Home device the holiday autocomplete branch returns, as its run
-// listener receives it.
-const homeHolidayZone = {
-  deviceId: 'guid-1',
-  id: 'homeDevices_guid-1',
-  name: 'Salon',
-} as const
+// The single Home device the holiday autocomplete branch returns, as its run
+// listener receives it: only the option value survives.
+const homeHolidayZone = { id: 'homeDevices_guid-1' } as const
 
 // Point the Home registry/facade at one ATA device so the Home holiday and
 // frost paths resolve for `guid-1`.
@@ -1661,20 +1657,40 @@ describe('melCloudApp', () => {
 
       expect(app.getHomeTargets(Home.DeviceType.Ata)).toStrictEqual([
         {
+          buildingName: 'Appartement',
           id: 'building-1',
           level: 0,
           model: 'homeBuildings',
           name: 'Appartement',
         },
-        { id: 'device-3', level: 1, model: 'homeDevices', name: 'Woonkamer' },
         {
+          buildingName: 'Appartement',
+          id: 'device-3',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Woonkamer',
+        },
+        {
+          buildingName: 'Verkstan',
           id: 'building-2',
           level: 0,
           model: 'homeBuildings',
           name: 'Verkstan',
         },
-        { id: 'device-1', level: 1, model: 'homeDevices', name: 'Bureau' },
-        { id: 'device-2', level: 1, model: 'homeDevices', name: 'Salon' },
+        {
+          buildingName: 'Verkstan',
+          id: 'device-1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Bureau',
+        },
+        {
+          buildingName: 'Verkstan',
+          id: 'device-2',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Salon',
+        },
       ])
       expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
         Home.DeviceType.Ata,
@@ -2129,8 +2145,15 @@ describe('melCloudApp', () => {
       // Same-named devices on different buildings stay tellable apart;
       // wire names are trimmed before suffixing.
       expect(app.getHomeDeviceZones()).toStrictEqual([
-        { id: 'a', level: 1, model: 'homeDevices', name: 'Garage (Verkstan)' },
         {
+          buildingName: 'Verkstan',
+          id: 'a',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Garage (Verkstan)',
+        },
+        {
+          buildingName: 'Vinkenstraat 22',
           id: 'b',
           level: 1,
           model: 'homeDevices',
@@ -2147,6 +2170,7 @@ describe('melCloudApp', () => {
 
       expect(app.getHomeDeviceZones(Home.DeviceType.Atw)).toStrictEqual([
         {
+          buildingName: 'Huis',
           id: 'atw-1',
           level: 1,
           model: 'homeDevices',
@@ -2160,14 +2184,32 @@ describe('melCloudApp', () => {
   })
 
   describe('classic device zones', () => {
-    it('should suffix the building and sort for the flat pickers', async () => {
-      mockApiInstance.registry.getDevices.mockReturnValue([
-        { buildingId: 2, id: 20, name: 'Garage' },
-        { buildingId: 1, id: 10, name: 'Hydrobox' },
+    it('should keep only the device leaves, suffixed and sorted', async () => {
+      // The shared source flattens the whole tree, each zone stamped with its
+      // building; the chart pickers keep just the devices.
+      mockFacadeManagerGetZones.mockReturnValue([
+        {
+          buildingName: 'Casa',
+          id: 1,
+          level: 0,
+          model: 'buildings',
+          name: 'Casa',
+        },
+        {
+          buildingName: 'Verkstan',
+          id: 20,
+          level: 1,
+          model: 'devices',
+          name: 'Garage',
+        },
+        {
+          buildingName: 'Casa',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Hydrobox',
+        },
       ])
-      mockApiInstance.registry.buildings.getById.mockImplementation(
-        (id: number) => (id === 1 ? { name: 'Casa' } : { name: 'Verkstan' }),
-      )
       await app.onInit()
 
       expect(app.getClassicDeviceZones()).toStrictEqual([
@@ -2176,19 +2218,24 @@ describe('melCloudApp', () => {
       ])
     })
 
-    it('should keep the bare name when the building is unknown', async () => {
-      mockApiInstance.registry.getDevicesByType.mockReturnValue([
-        { buildingId: 9, id: 30, name: 'Orphan' },
+    it('should narrow the source to a device type when one is given', async () => {
+      mockFacadeManagerGetZones.mockReturnValue([
+        {
+          buildingName: 'Huis',
+          id: 30,
+          level: 1,
+          model: 'devices',
+          name: 'AC',
+        },
       ])
-      mockApiInstance.registry.buildings.getById.mockReturnValue(undefined)
       await app.onInit()
 
       expect(app.getClassicDeviceZones(Classic.DeviceType.Ata)).toStrictEqual([
-        { id: 30, level: 1, model: 'devices', name: 'Orphan' },
+        { id: 30, level: 1, model: 'devices', name: 'AC (Huis)' },
       ])
-      expect(mockApiInstance.registry.getDevicesByType).toHaveBeenCalledWith(
-        Classic.DeviceType.Ata,
-      )
+      expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
+        type: Classic.DeviceType.Ata,
+      })
     })
   })
 
@@ -2493,17 +2540,25 @@ describe('melCloudApp', () => {
   })
 
   describe('holiday mode flow cards', () => {
-    const zoneArg = { zoneId: '1', zoneType: 'buildings' as const }
+    const zoneArg = { id: 'buildings_1' } as const
 
     describe('zone autocomplete', () => {
-      it('should filter zones by query and carry the zone target', async () => {
+      it('should filter zones by query, suffixing leaves and carrying the value', async () => {
         mockFacadeManagerGetZones.mockReturnValue([
-          mock<Classic.Zone>({ id: 1, model: 'buildings', name: 'Home' }),
-          mock<Classic.Zone>({
+          {
+            buildingName: 'Home',
+            id: 1,
+            level: 0,
+            model: 'buildings',
+            name: 'Home',
+          },
+          {
+            buildingName: 'Home',
             id: 2,
+            level: 1,
             model: 'devices',
             name: 'Living room unit',
-          }),
+          },
         ])
         await app.onInit()
 
@@ -2513,13 +2568,10 @@ describe('melCloudApp', () => {
           1,
         )
 
+        // The item carries only its `${model}_${id}` value and a
+        // building-suffixed display name — the run listener parses the value.
         expect(autocomplete('liv')).toStrictEqual([
-          {
-            id: 'devices_2',
-            name: 'Living room unit',
-            zoneId: '2',
-            zoneType: 'devices',
-          },
+          { id: 'devices_2', name: 'Living room unit (Home)' },
         ])
 
         expect(autocomplete('')).toHaveLength(2)
@@ -2527,7 +2579,13 @@ describe('melCloudApp', () => {
 
       it('should serve the condition card with the same autocomplete', async () => {
         mockFacadeManagerGetZones.mockReturnValue([
-          mock<Classic.Zone>({ id: 1, model: 'buildings', name: 'Home' }),
+          {
+            buildingName: 'Home',
+            id: 1,
+            level: 0,
+            model: 'buildings',
+            name: 'Home',
+          },
         ])
         await app.onInit()
 
@@ -2538,21 +2596,26 @@ describe('melCloudApp', () => {
         )
 
         expect(autocomplete('home')).toStrictEqual([
-          {
-            id: 'buildings_1',
-            name: 'Home',
-            zoneId: '1',
-            zoneType: 'buildings',
-          },
+          { id: 'buildings_1', name: 'Home' },
         ])
       })
 
-      it('should append Home devices, alpha-sorted with the zones', async () => {
+      it('should mix Classic zones with Home buildings and devices, sorted', async () => {
         mockFacadeManagerGetZones.mockReturnValue([
-          mock<Classic.Zone>({ id: 1, model: 'buildings', name: 'Maison' }),
+          {
+            buildingName: 'Maison',
+            id: 1,
+            level: 0,
+            model: 'buildings',
+            name: 'Maison',
+          },
         ])
         mockHomeRegistry.getAll.mockReturnValue([
-          { building: { name: 'Chalet' }, id: 'guid-9', name: 'Salon' },
+          {
+            building: { id: 'chalet-1', name: 'Chalet' },
+            id: 'guid-9',
+            name: 'Salon',
+          },
         ])
         await app.onInit()
 
@@ -2562,20 +2625,12 @@ describe('melCloudApp', () => {
           1,
         )
 
-        // Classic zones and Home devices share one sorted list; the Home
-        // entry carries its device id for routing.
+        // One sorted list: the Classic building, the Home building (a batched
+        // group) and its suffixed device — each keyed by its routing value.
         expect(autocomplete('')).toStrictEqual([
-          {
-            id: 'buildings_1',
-            name: 'Maison',
-            zoneId: '1',
-            zoneType: 'buildings',
-          },
-          {
-            deviceId: 'guid-9',
-            id: 'homeDevices_guid-9',
-            name: 'Salon (Chalet)',
-          },
+          { id: 'homeBuildings_chalet-1', name: 'Chalet' },
+          { id: 'buildings_1', name: 'Maison' },
+          { id: 'homeDevices_guid-9', name: 'Salon (Chalet)' },
         ])
       })
     })
@@ -2646,6 +2701,33 @@ describe('melCloudApp', () => {
           // midnight 3 days out; the single device is sent as a one-item set.
           expect(mockHomeFacadeManagerUpdateHolidayMode).toHaveBeenCalledWith(
             ['guid-1'],
+            {
+              endDate: '2026-07-22T00:00:00',
+              isEnabled: true,
+              startDate: '2026-07-19T08:30:00',
+            },
+          )
+        } finally {
+          vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+        }
+      })
+
+      it('should batch a Home building window across its devices', async () => {
+        vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+          Temporal.PlainDateTime.from('2026-07-19T08:30:00'),
+        )
+        try {
+          await app.onInit()
+          stubBuilding({})
+
+          await getActionRunListener()({
+            duration: 3,
+            zone: { id: 'homeBuildings_b1' },
+          })
+
+          // A whole Home building fans the one window out over every device.
+          expect(mockHomeFacadeManagerUpdateHolidayMode).toHaveBeenCalledWith(
+            ['d1', 'd2'],
             {
               endDate: '2026-07-22T00:00:00',
               isEnabled: true,
@@ -2904,6 +2986,32 @@ describe('melCloudApp', () => {
           await expect(run({ zone: homeHolidayZone })).resolves.toBe(shouldBeOn)
         },
       )
+
+      it.each([
+        {
+          holidayById: { d1: { enabled: true }, d2: { enabled: true } },
+          shouldBeOn: true,
+        },
+        // Devices disagree: the building aggregate is "mixed", read as off.
+        {
+          holidayById: { d1: { enabled: true }, d2: { enabled: false } },
+          shouldBeOn: false,
+        },
+      ])(
+        'should mirror a Home building holiday state ($shouldBeOn)',
+        async ({ holidayById, shouldBeOn }) => {
+          await app.onInit()
+          stubBuilding({}, holidayById)
+
+          const run = getMockCallArg<
+            (args: { zone: TestHolidayZone }) => Promise<boolean>
+          >(mockConditionRegisterRun, 0, 0)
+
+          await expect(run({ zone: { id: 'homeBuildings_b1' } })).resolves.toBe(
+            shouldBeOn,
+          )
+        },
+      )
     })
   })
 
@@ -3031,13 +3139,43 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       // Buildings alpha-sorted; each building's devices nested (level 1) and
-      // sorted under it.
+      // sorted under it; every node stamped with its building name.
       expect(app.getHomeTargets()).toStrictEqual([
-        { id: 'b1', level: 0, model: 'homeBuildings', name: 'Alpha' },
-        { id: 'd1', level: 1, model: 'homeDevices', name: 'Xray' },
-        { id: 'd2', level: 1, model: 'homeDevices', name: 'Yankee' },
-        { id: 'b2', level: 0, model: 'homeBuildings', name: 'Bravo' },
-        { id: 'd3', level: 1, model: 'homeDevices', name: 'Zeta' },
+        {
+          buildingName: 'Alpha',
+          id: 'b1',
+          level: 0,
+          model: 'homeBuildings',
+          name: 'Alpha',
+        },
+        {
+          buildingName: 'Alpha',
+          id: 'd1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Xray',
+        },
+        {
+          buildingName: 'Alpha',
+          id: 'd2',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Yankee',
+        },
+        {
+          buildingName: 'Bravo',
+          id: 'b2',
+          level: 0,
+          model: 'homeBuildings',
+          name: 'Bravo',
+        },
+        {
+          buildingName: 'Bravo',
+          id: 'd3',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Zeta',
+        },
       ])
     })
   })
@@ -3155,25 +3293,43 @@ describe('melCloudApp', () => {
     it('should serve matching classic zones, classic devices and home devices to the ata-group-setting widget', async () => {
       const { mockRegisterAta } = setupWidgetListeners()
       mockFacadeManagerGetZones.mockReturnValue([
-        { model: 'buildings', name: 'Building 1' },
-        { model: 'buildings', name: 'Office' },
-        { model: 'devices', name: 'Building unit' },
+        {
+          buildingName: 'Building 1',
+          id: 1,
+          level: 0,
+          model: 'buildings',
+          name: 'Building 1',
+        },
+        {
+          buildingName: 'Office',
+          id: 2,
+          level: 0,
+          model: 'buildings',
+          name: 'Office',
+        },
+        {
+          buildingName: 'Building 1',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Building unit',
+        },
       ])
       // Unsorted on purpose: home targets must come back alpha-sorted
-      // (buildings, then their devices), appended after the classic ones.
+      // (building, then its devices), appended after the classic ones.
       mockHomeRegistry.getByType.mockReturnValue([
         {
-          building: { id: 'account-1', name: 'Buildings' },
+          building: { id: 'account-1', name: 'Maison' },
           id: 'home-2',
           name: 'Building two',
         },
         {
-          building: { id: 'account-1', name: 'Buildings' },
+          building: { id: 'account-1', name: 'Maison' },
           id: 'home-1',
           name: 'Building one',
         },
         {
-          building: { id: 'account-1', name: 'Buildings' },
+          building: { id: 'account-1', name: 'Maison' },
           id: 'home-3',
           name: 'Bedroom',
         },
@@ -3187,17 +3343,37 @@ describe('melCloudApp', () => {
       )
       const result = ataCallback('build')
 
+      // Classic zones then Home building/devices; leaves suffixed with their
+      // building, buildings kept bare; the query matches the suffixed names.
       expect(result).toStrictEqual([
-        { model: 'buildings', name: 'Building 1' },
-        { model: 'devices', name: 'Building unit' },
         {
-          id: 'account-1',
+          buildingName: 'Building 1',
+          id: 1,
           level: 0,
-          model: 'homeBuildings',
-          name: 'Buildings',
+          model: 'buildings',
+          name: 'Building 1',
         },
-        { id: 'home-1', level: 1, model: 'homeDevices', name: 'Building one' },
-        { id: 'home-2', level: 1, model: 'homeDevices', name: 'Building two' },
+        {
+          buildingName: 'Building 1',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Building unit (Building 1)',
+        },
+        {
+          buildingName: 'Maison',
+          id: 'home-1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Building one (Maison)',
+        },
+        {
+          buildingName: 'Maison',
+          id: 'home-2',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Building two (Maison)',
+        },
       ])
       expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
         type: Classic.DeviceType.Ata,
@@ -3206,15 +3382,28 @@ describe('melCloudApp', () => {
 
     it('should serve building-suffixed device zones to the charts widget', async () => {
       const { mockRegisterCharts } = setupWidgetListeners()
-      mockApiInstance.registry.getDevices.mockReturnValue([
-        { buildingId: 1, id: 10, name: 'Device 1' },
-        { buildingId: 1, id: 11, name: 'Device 2' },
+      mockFacadeManagerGetZones.mockReturnValue([
+        {
+          buildingName: 'Casa',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Device 1',
+        },
+        {
+          buildingName: 'Casa',
+          id: 11,
+          level: 1,
+          model: 'devices',
+          name: 'Device 2',
+        },
       ])
-      mockApiInstance.registry.buildings.getById.mockReturnValue({
-        name: 'Casa',
-      })
       mockHomeRegistry.getAll.mockReturnValue([
-        { building: { name: 'Antwerpen' }, id: 'guid-1', name: 'Device 1' },
+        {
+          building: { id: 'antwerp-1', name: 'Antwerpen' },
+          id: 'guid-1',
+          name: 'Device 1',
+        },
       ])
       await app.onInit()
 
@@ -3229,6 +3418,7 @@ describe('melCloudApp', () => {
       // before the Classic one); the query matches the suffixed names.
       expect(result).toStrictEqual([
         {
+          buildingName: 'Antwerpen',
           id: 'guid-1',
           level: 1,
           model: 'homeDevices',

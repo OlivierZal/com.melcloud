@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import type { DeviceOrZoneData, ZoneData } from '../../types/zone.mts'
 import {
   toDeviceOrZoneData,
   toHour,
   toNonNegativeInt,
   toZoneData,
+  toZoneValueData,
 } from '../../lib/validation.mts'
 
 describe(toNonNegativeInt, () => {
@@ -77,12 +77,9 @@ describe(toZoneData, () => {
   it.each(['devices', 'constructor', ''])(
     'rejects %p coming from the URL',
     (zoneType) => {
-      expect(() =>
-        toZoneData({
-          zoneId: '1',
-          zoneType: zoneType as ZoneData['zoneType'],
-        }),
-      ).toThrow(/Invalid zone type/v)
+      expect(() => toZoneData({ zoneId: '1', zoneType })).toThrow(
+        /Invalid zone type/v,
+      )
     },
   )
 })
@@ -99,11 +96,25 @@ describe(toDeviceOrZoneData, () => {
   )
 
   it.each(['constructor', ''])('rejects %p coming from the URL', (zoneType) => {
-    expect(() =>
-      toDeviceOrZoneData({
-        zoneId: '1',
-        zoneType: zoneType as DeviceOrZoneData['zoneType'],
-      }),
-    ).toThrow(/Invalid zone type/v)
+    expect(() => toDeviceOrZoneData({ zoneId: '1', zoneType })).toThrow(
+      /Invalid zone type/v,
+    )
+  })
+})
+
+describe(toZoneValueData, () => {
+  it.each([
+    ['areas_100', { zoneId: '100', zoneType: 'areas' }],
+    ['buildings_1', { zoneId: '1', zoneType: 'buildings' }],
+    ['devices_2001', { zoneId: '2001', zoneType: 'devices' }],
+    ['floors_10', { zoneId: '10', zoneType: 'floors' }],
+  ] as const)('splits %p into coordinates', (value, expected) => {
+    expect(toZoneValueData(value)).toStrictEqual(expected)
+  })
+
+  it('rejects a value whose model is not a zone collection', () => {
+    expect(() => toZoneValueData('homeDevices_abc')).toThrow(
+      /Invalid zone type/v,
+    )
   })
 })
