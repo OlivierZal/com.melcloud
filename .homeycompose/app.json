@@ -36,6 +36,30 @@
       "method": "GET",
       "path": "/logs/errors"
     },
+    "getHomeBuildingFrostProtection": {
+      "method": "GET",
+      "path": "/home/buildings/:buildingId/settings/frost-protection"
+    },
+    "getHomeBuildingHolidayMode": {
+      "method": "GET",
+      "path": "/home/buildings/:buildingId/settings/holiday-mode"
+    },
+    "getHomeDevices": {
+      "method": "GET",
+      "path": "/home/devices"
+    },
+    "getHomeFrostProtection": {
+      "method": "GET",
+      "path": "/home/devices/:deviceId/settings/frost-protection"
+    },
+    "getHomeHolidayMode": {
+      "method": "GET",
+      "path": "/home/devices/:deviceId/settings/holiday-mode"
+    },
+    "getHomeTargets": {
+      "method": "GET",
+      "path": "/home/targets"
+    },
     "getLanguage": {
       "method": "GET",
       "path": "/language"
@@ -71,6 +95,22 @@
     "updateDeviceSettings": {
       "method": "PUT",
       "path": "/settings/devices"
+    },
+    "updateHomeBuildingFrostProtection": {
+      "method": "PUT",
+      "path": "/home/buildings/:buildingId/settings/frost-protection"
+    },
+    "updateHomeBuildingHolidayMode": {
+      "method": "PUT",
+      "path": "/home/buildings/:buildingId/settings/holiday-mode"
+    },
+    "updateHomeFrostProtection": {
+      "method": "PUT",
+      "path": "/home/devices/:deviceId/settings/frost-protection"
+    },
+    "updateHomeHolidayMode": {
+      "method": "PUT",
+      "path": "/home/devices/:deviceId/settings/holiday-mode"
     }
   },
   "author": {

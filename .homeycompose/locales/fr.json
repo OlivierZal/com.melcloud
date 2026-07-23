@@ -78,7 +78,8 @@
     "title": "Paramètres de MELCloud",
     "update": "Mettre à jour",
     "zones": {
-      "legend": "Paramètres des zones (Classic)"
+      "enabledRequired": "Choisissez Oui ou Non avant d'appliquer.",
+      "legend": "Paramètres des zones et des appareils"
     }
   },
   "warnings": {

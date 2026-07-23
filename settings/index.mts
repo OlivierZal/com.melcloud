@@ -1,5 +1,9 @@
-import type { LoginCredentials } from '@olivierzal/melcloud-api'
+import type {
+  HolidayModeUpdate,
+  LoginCredentials,
+} from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import type * as Home from '@olivierzal/melcloud-api/home'
 import type Homey from 'homey/lib/HomeySettings'
 import { Temporal } from 'temporal-polyfill'
 
@@ -19,6 +23,7 @@ import type {
   FormattedErrorDetails,
   FormattedErrorLog,
 } from '../types/error-log.mts'
+import type { HomeBuildingZone, HomeDeviceZone } from '../types/zone.mts'
 import { getErrorMessage } from '../lib/get-error-message.mts'
 import {
   type HTMLValueElement,
@@ -34,7 +39,15 @@ import {
   translateAriaLabels,
 } from '../public/dom.mts'
 import { fireAndForget, runWebview } from '../public/homey-api.mts'
-import { getZoneId, getZoneName, getZonePath } from '../public/zones.mts'
+import {
+  getHomeBuildingId,
+  getHomeDeviceId,
+  getZoneId,
+  getZoneName,
+  getZonePath,
+  isHomeBuildingValue,
+  isHomeDeviceValue,
+} from '../public/zones.mts'
 
 // ── Helpers ──
 
@@ -220,9 +233,12 @@ const hide = (element: HTMLDivElement, isHidden = true): void => {
   element.hidden = isHidden
 }
 
-const toggleClassicOnlySections = (isVisible: boolean): void => {
+// The zone/device settings fieldset (frost protection + holiday mode) is
+// shown whenever either account is signed in: Classic contributes its zone
+// tree, Home its individual devices.
+const toggleZoneDeviceSettings = (isVisible: boolean): void => {
   for (const fieldset of document.querySelectorAll<HTMLFieldSetElement>(
-    '.classic-only',
+    '.zone-device-settings',
   )) {
     fieldset.hidden = !isVisible
   }
@@ -446,14 +462,21 @@ const initFrostProtectionMax = (): HTMLInputElement => {
   return element
 }
 
-const getSubzones = (zone: Classic.Zone): Classic.Zone[] => [
+const getSubzones = (
+  zone: Classic.Zone | HomeBuildingZone | HomeDeviceZone,
+): Classic.Zone[] => [
   ...('devices' in zone ? zone.devices : []),
   ...('areas' in zone ? zone.areas : []),
   ...('floors' in zone ? zone.floors : []),
 ]
 
-// ── AuthManager ──
+// Panel values, where a field may be `null` to mean "mixed" across a Home
+// building's devices — rendered indeterminate (blank).
+type MixableZoneSettings = {
+  readonly [K in keyof Classic.ZoneSettings]?: Classic.ZoneSettings[K] | null
+}
 
+// ── AuthManager ──
 // One frost-protection / holiday-mode panel: its button-pair id, its
 // endpoint suffix, and the display refresh bound to it.
 interface ZoneSettingDescriptor {
@@ -1206,7 +1229,7 @@ class ZoneSettingsManager {
 
   readonly #zone: HTMLSelectElement
 
-  #zoneMapping: Partial<Record<string, Partial<Classic.ZoneSettings>>> = {}
+  #zoneMapping: Partial<Record<string, MixableZoneSettings>> = {}
 
   public constructor(homey: Homey) {
     this.#homey = homey
@@ -1232,13 +1255,16 @@ class ZoneSettingsManager {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
       const {
-        FPEnabled: isEnabled,
+        FPEnabled: isEnabled = false,
         FPMaxTemperature: max,
         FPMinTemperature: min,
       } = data
-      this.#frostProtectionEnabled.value = String(isEnabled)
-      this.#frostProtectionMinTemperature.value = String(min)
-      this.#frostProtectionMaxTemperature.value = String(max)
+      // `null` (a Home building's devices disagree) reads as blank; a plain
+      // `undefined` (a device with no frost config) reads as "No".
+      this.#frostProtectionEnabled.value =
+        isEnabled === null ? '' : String(isEnabled)
+      this.#frostProtectionMinTemperature.value = String(min ?? '')
+      this.#frostProtectionMaxTemperature.value = String(max ?? '')
     }
   }
 
@@ -1250,9 +1276,13 @@ class ZoneSettingsManager {
         HMEndDate: endDate,
         HMStartDate: startDate,
       } = data
-      this.#holidayModeEnabled.value = String(isEnabled)
-      this.#holidayModeStartDate.value = isEnabled ? (startDate ?? '') : ''
-      this.#holidayModeEndDate.value = isEnabled ? (endDate ?? '') : ''
+      // `null` enabled (mixed across a building) reads as blank; dates show
+      // only when the window is definitely on and itself not mixed.
+      this.#holidayModeEnabled.value =
+        isEnabled === null ? '' : String(isEnabled)
+      this.#holidayModeStartDate.value =
+        isEnabled === true ? (startDate ?? '') : ''
+      this.#holidayModeEndDate.value = isEnabled === true ? (endDate ?? '') : ''
     }
   }
 
@@ -1283,7 +1313,9 @@ class ZoneSettingsManager {
     await this.fetchHolidayModeData()
   }
 
-  public populateZoneOptions(zones: Classic.Zone[]): void {
+  public populateZoneOptions(
+    zones: (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[],
+  ): void {
     for (const zone of zones) {
       const { id, level, model, name } = zone
       createOption(this.#zone, {
@@ -1318,10 +1350,8 @@ class ZoneSettingsManager {
   }
 
   /** @alerts Displays save errors to the user. */
-  public async setHolidayModeData({
-    from: startDate,
-    to: endDate,
-  }: Classic.HolidayModeQuery): Promise<void> {
+  public async setHolidayModeData(update: HolidayModeUpdate): Promise<void> {
+    const { endDate, isEnabled, startDate } = update
     await this.#putZoneSetting(
       {
         id: 'holiday_mode',
@@ -1330,11 +1360,11 @@ class ZoneSettingsManager {
           this.displayHolidayModeData()
         },
       },
-      { from: startDate, to: endDate } satisfies Classic.HolidayModeQuery,
+      update,
       {
-        HMEnabled: Boolean(endDate),
-        HMEndDate: endDate ?? null,
-        HMStartDate: startDate ?? null,
+        HMEnabled: isEnabled,
+        HMEndDate: isEnabled ? endDate : null,
+        HMStartDate: isEnabled ? startDate : null,
       },
     )
   }
@@ -1376,6 +1406,9 @@ class ZoneSettingsManager {
       this.displayFrostProtectionData()
     })
     getButton('apply_frost_protection').addEventListener('click', () => {
+      if (!this.#requireEnabledChosen(this.#frostProtectionEnabled)) {
+        return
+      }
       try {
         const { max, min } = this.#getFPMinAndMax()
         fireAndForget(
@@ -1412,24 +1445,10 @@ class ZoneSettingsManager {
       this.displayHolidayModeData()
     })
     getButton('apply_holiday_mode').addEventListener('click', () => {
-      const isEnabled = this.#holidayModeEnabled.value === 'true'
-      const { value: startDateValue } = this.#holidayModeStartDate
-      const { value: endDateValue } = this.#holidayModeEndDate
-      const endDate = endDateValue === '' ? undefined : endDateValue
-      if (isEnabled && endDate === undefined) {
-        fireAndForget(
-          this.#homey.alert(
-            this.#homey.__('settings.holidayMode.endDateMissing'),
-          ),
-        )
-        return
+      const update = this.#readHolidayModeForm()
+      if (update !== null) {
+        fireAndForget(this.setHolidayModeData(update))
       }
-      fireAndForget(
-        this.setHolidayModeData({
-          ...(startDateValue !== '' && { from: startDateValue }),
-          ...(endDate !== undefined && { to: endDate }),
-        }),
-      )
     })
   }
 
@@ -1442,11 +1461,7 @@ class ZoneSettingsManager {
   }: ZoneSettingDescriptor): Promise<void> {
     await withDisablingButtonPair(id, async () => {
       try {
-        const data = await homeyApiGet<Partial<Classic.ZoneSettings>>(
-          this.#homey,
-          `/classic/zones/${this.#getZonePath()}/settings/${path}`,
-        )
-        this.#updateZoneMapping(data)
+        this.#updateZoneMapping(await this.#getZoneSettingData(path))
         display()
       } catch {
         // Non-critical: UI falls back to default values
@@ -1477,22 +1492,69 @@ class ZoneSettingsManager {
     return { max: Math.max(max, min + FROST_PROTECTION_TEMPERATURE_GAP), min }
   }
 
-  #getZonePath(): string {
-    return getZonePath(this.#zone.value)
+  // Read one panel's settings for the selected target, normalized to the
+  // Classic zone-settings shape the panels render. Home devices answer the
+  // camelCase Home shape, mapped onto the FP*/HM* fields here; a `null`
+  // (no window defined) reads as empty, i.e. default values.
+  async #getZoneSettingData(
+    path: 'frost-protection' | 'holiday-mode',
+  ): Promise<MixableZoneSettings> {
+    const url = `${this.#getZoneSettingsBase()}/settings/${path}`
+    // Classic zones and Home buildings both answer the FP*/HM* shape — the
+    // building endpoint aggregates its devices, with `null` marking a field
+    // they disagree on ("mixed"). Only a single Home device needs the
+    // camelCase translation below.
+    if (!isHomeDeviceValue(this.#zone.value)) {
+      return homeyApiGet<MixableZoneSettings>(this.#homey, url)
+    }
+    if (path === 'frost-protection') {
+      const frostProtection = await homeyApiGet<Home.FrostProtection | null>(
+        this.#homey,
+        url,
+      )
+      return frostProtection === null ?
+          {}
+        : {
+            FPEnabled: frostProtection.enabled,
+            FPMaxTemperature: frostProtection.max,
+            FPMinTemperature: frostProtection.min,
+          }
+    }
+    const holidayMode = await homeyApiGet<Home.HolidayMode | null>(
+      this.#homey,
+      url,
+    )
+    return holidayMode === null ?
+        {}
+      : {
+          HMEnabled: holidayMode.enabled,
+          HMEndDate: holidayMode.endDate,
+          HMStartDate: holidayMode.startDate,
+        }
+  }
+
+  #getZoneSettingsBase(): string {
+    const { value } = this.#zone
+    if (isHomeBuildingValue(value)) {
+      return `/home/buildings/${getHomeBuildingId(value)}`
+    }
+    return isHomeDeviceValue(value) ?
+        `/home/devices/${getHomeDeviceId(value)}`
+      : `/classic/zones/${getZonePath(value)}`
   }
 
   // PUT one zone-setting panel: refresh the cached zone mapping and
   // the panel, alert success or failure.
   async #putZoneSetting(
     { display, id, path }: ZoneSettingDescriptor,
-    query: Classic.FrostProtectionQuery | Classic.HolidayModeQuery,
+    query: Classic.FrostProtectionQuery | HolidayModeUpdate,
     zoneSettings: Partial<Classic.ZoneSettings>,
   ): Promise<void> {
     await withDisablingButtonPair(id, async () => {
       try {
         await homeyApiPut<unknown>(
           this.#homey,
-          `/classic/zones/${this.#getZonePath()}/settings/${path}`,
+          `${this.#getZoneSettingsBase()}/settings/${path}`,
           query,
         )
         this.#updateZoneMapping(zoneSettings)
@@ -1504,7 +1566,54 @@ class ZoneSettingsManager {
     })
   }
 
-  #updateZoneMapping(data: Partial<Classic.ZoneSettings>): void {
+  // Build the holiday-mode update from the form, alerting and returning
+  // `null` on a validation failure (a mixed enabled not chosen, or an
+  // enabled window with no end date).
+  #readHolidayModeForm(): HolidayModeUpdate | null {
+    if (!this.#requireEnabledChosen(this.#holidayModeEnabled)) {
+      return null
+    }
+    const isEnabled = this.#holidayModeEnabled.value === 'true'
+    const { value: startDateValue } = this.#holidayModeStartDate
+    const endDate =
+      this.#holidayModeEndDate.value === '' ?
+        undefined
+      : this.#holidayModeEndDate.value
+    if (isEnabled && endDate === undefined) {
+      fireAndForget(
+        this.#homey.alert(
+          this.#homey.__('settings.holidayMode.endDateMissing'),
+        ),
+      )
+      return null
+    }
+    // The window defaults its start to now (an empty field); the dates are
+    // ignored when disabling.
+    const now = Temporal.Now.plainDateTimeISO().toString()
+    return {
+      endDate: endDate ?? now,
+      isEnabled,
+      startDate: startDateValue === '' ? now : startDateValue,
+    }
+  }
+
+  // The selected target's settings base URL: a Home device routes to the
+  // Home device endpoints; every Classic zone/device keeps the classic zone
+  // path (`getZonePath` splits `${model}_${id}` at the first underscore).
+  // A blank enabled select means a Home building's devices disagree
+  // ("mixed") and the user has not chosen: applying would silently write a
+  // single value (off) to them all, so require an explicit choice first.
+  #requireEnabledChosen(select: HTMLSelectElement): boolean {
+    if (select.value !== '') {
+      return true
+    }
+    fireAndForget(
+      this.#homey.alert(this.#homey.__('settings.zones.enabledRequired')),
+    )
+    return false
+  }
+
+  #updateZoneMapping(data: MixableZoneSettings): void {
     const { value } = this.#zone
     this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
   }
@@ -1608,7 +1717,9 @@ class SettingsApp {
   async #ensureDevicesForApi(api: Api): Promise<void> {
     if (api === 'classic') {
       await this.#fetchClassicBuildings()
-    } else if (!this.#hasHomeDevices()) {
+    } else if (this.#hasHomeDevices()) {
+      await this.#fetchHomeTargets()
+    } else {
       throw new NoDeviceError(this.#homey)
     }
   }
@@ -1628,6 +1739,21 @@ class SettingsApp {
     // on-demand "See" button — prefetching it blocked first paint on a
     // MELCloud cloud round-trip (~350 ms on a Homey Pro 2019) and its
     // alert-on-failure would surface unprompted.
+    fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
+  }
+
+  // The Home account has no zone tree: each device is a standalone
+  // selectable target, appended after any Classic zones.
+  async #fetchHomeTargets(): Promise<void> {
+    // A tree: each Home building followed by its own devices (indented),
+    // both frost/holiday targets.
+    const targets = await homeyApiGet<(HomeBuildingZone | HomeDeviceZone)[]>(
+      this.#homey,
+      '/home/targets',
+    )
+    this.#zoneSettingsManager.populateZoneOptions(targets)
+    // See #fetchClassicBuildings: fills the initial panel values only (the
+    // first option, a Classic zone when both accounts are paired).
     fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
   }
 
@@ -1718,7 +1844,7 @@ class SettingsApp {
         this.#authManager.getIncompleteApis().length === 0,
     )
     hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
-    toggleClassicOnlySections(isClassicAuthenticated)
+    toggleZoneDeviceSettings(isClassicAuthenticated || isHomeAuthenticated)
   }
 
   async #run(): Promise<void> {
@@ -1744,8 +1870,8 @@ class SettingsApp {
     if (this.#authState.classic) {
       await this.#validateInitialClassicAuth()
     }
-    if (this.#authState.home && !this.#hasHomeDevices()) {
-      this.#disableForError(new NoDeviceError(this.#homey))
+    if (this.#authState.home) {
+      await this.#validateInitialHomeAuth()
     }
   }
 
@@ -1758,6 +1884,14 @@ class SettingsApp {
       } else {
         this.#authState.classic = false
       }
+    }
+  }
+
+  async #validateInitialHomeAuth(): Promise<void> {
+    if (this.#hasHomeDevices()) {
+      await this.#fetchHomeTargets()
+    } else {
+      this.#disableForError(new NoDeviceError(this.#homey))
     }
   }
 }

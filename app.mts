@@ -2,6 +2,7 @@ import 'source-map-support/register.js'
 
 import {
   type DeviceType,
+  type HolidayModeUpdate,
   type Hour,
   type Logger,
   type ReportChartLineOptions,
@@ -70,6 +71,16 @@ const byName = (
   other: { readonly name: string },
 ): number => first.name.localeCompare(other.name)
 
+// The value shared by every entry, or `null` when they disagree — a Home
+// building aggregates per-device frost/holiday, and a field the devices do
+// not agree on reads as "mixed" (`null`).
+const commonValue = <T,>(values: readonly T[]): NonNullable<T> | null => {
+  const [first, ...rest] = values
+  return values.length > 0 && rest.every((value) => value === first) ?
+      (first ?? null)
+    : null
+}
+
 const HOLIDAY_MODE_MAX_DURATION_DAYS = 365
 const HOLIDAY_MODE_OFF_DURATION = 0
 
@@ -118,10 +129,16 @@ const toDurationDays = (duration: unknown): number => {
 // Flow-action arguments shared by the holiday-mode cards: `zone` always,
 // `duration`/`time` only on the cards that declare them.
 interface HolidayModeActionArgs {
-  zone: DeviceOrZoneData
+  zone: HolidayModeTarget
   duration?: unknown
   time?: unknown
 }
+
+// A holiday-mode flow target: a Classic zone/device (zone coordinates) or a
+// single Home device (its id). Run listeners discriminate on `deviceId`.
+type HolidayModeTarget =
+  | { readonly deviceId: string; readonly id: string; readonly name: string }
+  | (DeviceOrZoneData & { readonly id: string; readonly name: string })
 
 const formatErrors = (errors: Record<string, readonly string[]>): string =>
   Object.entries(errors)
@@ -272,6 +289,14 @@ const toZoneAutocompleteItems = (
     zoneId: String(id),
     zoneType: model,
   }))
+
+// Flow autocomplete items over Home devices: each device is a standalone
+// holiday-mode target, carried by id so run listeners route to the Home
+// batch endpoints without id parsing.
+const toHomeDeviceAutocompleteItems = (
+  zones: readonly HomeDeviceZone[],
+): { deviceId: string; id: string; name: string }[] =>
+  zones.map(({ id, name }) => ({ deviceId: id, id: `homeDevices_${id}`, name }))
 
 // MELCloud reports error timestamps either as UTC instants (Z or offset
 // suffix) or as wall-clock times in the building's timezone.
@@ -726,31 +751,6 @@ export default class MELCloudApp extends App {
     )
   }
 
-  // Every ATA target the group widget can address on the Home side: one
-  // root entry per `/context` building (the account-level group), its
-  // devices one level below, both alphabetical.
-  public getHomeAtaTargets(): (HomeBuildingZone | HomeDeviceZone)[] {
-    return this.#homeRegistry
-      .getBuildingsByType(Home.DeviceType.Ata)
-      .toSorted(byName)
-      .flatMap(({ devices, id, name }) => [
-        {
-          id,
-          level: 0,
-          model: 'homeBuildings',
-          name,
-        } satisfies HomeBuildingZone,
-        ...devices
-          .map((device): HomeDeviceZone => ({
-            id: device.id,
-            level: 1,
-            model: 'homeDevices',
-            name: device.name,
-          }))
-          .toSorted(byName),
-      ])
-  }
-
   // Member operation modes in the Classic vocabulary — what the widget's
   // mixed-mode scene resolver consumes.
   public getHomeBuildingAtaModes(buildingId: string): number[] {
@@ -768,6 +768,56 @@ export default class MELCloudApp extends App {
     return unwrapResult(
       await this.#getHomeBuildingFacade(buildingId).getGroup(),
     )
+  }
+
+  // Aggregate frost protection across a Home building's devices: each field
+  // is the shared value, or `null` when the devices disagree ("mixed").
+  public getHomeBuildingFrostProtection(buildingId: string): {
+    FPEnabled: boolean | null
+    FPMaxTemperature: number | null
+    FPMinTemperature: number | null
+  } {
+    const frostProtections = this.#getHomeBuildingDeviceIds(buildingId).map(
+      (deviceId) => this.getHomeFrostProtection(deviceId),
+    )
+    return {
+      // A device with no frost config counts as off, so an all-unconfigured
+      // building reads "No" rather than "mixed".
+      FPEnabled: commonValue(
+        frostProtections.map(
+          (frostProtection) => frostProtection?.enabled ?? false,
+        ),
+      ),
+      FPMaxTemperature: commonValue(
+        frostProtections.map((frostProtection) => frostProtection?.max),
+      ),
+      FPMinTemperature: commonValue(
+        frostProtections.map((frostProtection) => frostProtection?.min),
+      ),
+    }
+  }
+
+  // Aggregate holiday mode across a Home building's devices, `null` per
+  // field on disagreement ("mixed").
+  public getHomeBuildingHolidayMode(buildingId: string): {
+    HMEnabled: boolean | null
+    HMEndDate: string | null
+    HMStartDate: string | null
+  } {
+    const holidayModes = this.#getHomeBuildingDeviceIds(buildingId).map(
+      (deviceId) => this.getHomeHolidayMode(deviceId),
+    )
+    return {
+      HMEnabled: commonValue(
+        holidayModes.map((holidayMode) => holidayMode?.enabled ?? false),
+      ),
+      HMEndDate: commonValue(
+        holidayModes.map((holidayMode) => holidayMode?.endDate),
+      ),
+      HMStartDate: commonValue(
+        holidayModes.map((holidayMode) => holidayMode?.startDate),
+      ),
+    }
   }
 
   public getHomeDevicesByType(type: Home.DeviceType): Home.Device[] {
@@ -824,6 +874,14 @@ export default class MELCloudApp extends App {
     throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
   }
 
+  public getHomeFrostProtection(deviceId: string): Home.FrostProtection | null {
+    return this.#getHomeDeviceFacade(deviceId).frostProtection
+  }
+
+  public getHomeHolidayMode(deviceId: string): Home.HolidayMode | null {
+    return this.#getHomeDeviceFacade(deviceId).holidayMode
+  }
+
   public async getHomeHourlyTemperatures({
     deviceId,
     hour,
@@ -864,6 +922,57 @@ export default class MELCloudApp extends App {
     return unwrapResult(
       await this.#getHomeDeviceFacade(deviceId).getSignalStrength(hour),
     )
+  }
+
+  // The Home target tree for a selector: each `/context` building (level 0)
+  // followed by its own devices (level 1), both alpha-sorted, so a whole
+  // building or a single device can be addressed. `type` narrows to one
+  // connection type (the ATA group widget); omitted spans both ATA and ATW
+  // (the settings selector) — the `getHomeDeviceZones` pattern applied to
+  // this tree-shaped surface.
+  public getHomeTargets(
+    type?: Home.DeviceType,
+  ): (HomeBuildingZone | HomeDeviceZone)[] {
+    const devices =
+      type === undefined ?
+        this.#homeRegistry.getAll()
+      : this.#homeRegistry.getByType(type)
+    const buildings = new Map<
+      string,
+      { devices: HomeDeviceZone[]; name: string }
+    >()
+    for (const device of devices) {
+      const building = buildings.get(device.building.id) ?? {
+        devices: [],
+        name: device.building.name,
+      }
+      building.devices.push({
+        id: device.id,
+        level: 1,
+        model: 'homeDevices',
+        name: device.name,
+      })
+      buildings.set(device.building.id, building)
+    }
+    return buildings
+      .entries()
+      .map(
+        ([id, { devices: buildingDevices, name }]): HomeBuildingZone & {
+          devices: HomeDeviceZone[]
+        } => ({
+          devices: buildingDevices,
+          id,
+          level: 0,
+          model: 'homeBuildings',
+          name,
+        }),
+      )
+      .toArray()
+      .toSorted(byName)
+      .flatMap(({ devices: buildingDevices, ...building }) => [
+        building,
+        ...buildingDevices.toSorted(byName),
+      ])
   }
 
   public async getHomeTemperatures({
@@ -910,7 +1019,7 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: DeviceOrZoneData & {
-    settings: Classic.HolidayModeQuery
+    settings: HolidayModeUpdate
   }): Promise<void> {
     const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
@@ -973,6 +1082,40 @@ export default class MELCloudApp extends App {
     state: Classic.GroupState
   }): Promise<void> {
     await this.#getHomeBuildingFacade(buildingId).updateGroupState(state)
+  }
+
+  public async updateHomeBuildingFrostProtection(
+    buildingId: string,
+    settings: { isEnabled: boolean; max: number; min: number },
+  ): Promise<void> {
+    await this.updateHomeFrostProtection(
+      this.#getHomeBuildingDeviceIds(buildingId),
+      settings,
+    )
+  }
+
+  public async updateHomeBuildingHolidayMode(
+    buildingId: string,
+    settings: HolidayModeUpdate,
+  ): Promise<void> {
+    await this.updateHomeHolidayMode(
+      this.#getHomeBuildingDeviceIds(buildingId),
+      settings,
+    )
+  }
+
+  public async updateHomeFrostProtection(
+    deviceIds: readonly string[],
+    settings: { isEnabled: boolean; max: number; min: number },
+  ): Promise<void> {
+    await this.#homeFacadeManager.updateFrostProtection(deviceIds, settings)
+  }
+
+  public async updateHomeHolidayMode(
+    deviceIds: readonly string[],
+    settings: HolidayModeUpdate,
+  ): Promise<void> {
+    await this.#homeFacadeManager.updateHolidayMode(deviceIds, settings)
   }
 
   readonly #onSync: SyncCallback = async ({ ids, type } = {}) => {
@@ -1182,6 +1325,14 @@ export default class MELCloudApp extends App {
       )
   }
 
+  // The ids of every device (ATA and ATW) in a `/context` building.
+  #getHomeBuildingDeviceIds(buildingId: string): string[] {
+    return this.#homeRegistry
+      .getAll()
+      .filter((device) => device.building.id === buildingId)
+      .map((device) => device.id)
+  }
+
   #getHomeBuildingFacade(buildingId: string): Home.BuildingAtaFacade {
     const facade = this.#homeFacadeManager.getBuilding(buildingId)
     if (facade === null) {
@@ -1256,19 +1407,6 @@ export default class MELCloudApp extends App {
     return days
   }
 
-  // Window end: `days` calendar days after today at `endTime` (default
-  // 00:00 — the start of that day, not 24:00). The start is always now,
-  // so `from` is omitted on the caller side; the end is rejected when it
-  // is not after now (e.g. 0 days at a time already past today).
-  #holidayModeEnd(days: number, endTime?: Temporal.PlainTime): string {
-    const now = Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
-    const end = now.toPlainDate().add({ days }).toPlainDateTime(endTime)
-    if (Temporal.PlainDateTime.compare(end, now) <= 0) {
-      throw new RangeError(this.homey.__('errors.invalidHolidayModeEnd'))
-    }
-    return end.toString()
-  }
-
   #holidayModeEndTime(time: unknown): Temporal.PlainTime {
     if (
       typeof time !== 'string' ||
@@ -1277,6 +1415,35 @@ export default class MELCloudApp extends App {
       throw new RangeError(this.homey.__('errors.invalidTime'))
     }
     return Temporal.PlainTime.from(time)
+  }
+
+  // Disabling holiday mode: both APIs ignore the window when off, so the
+  // bounds are stamped at now for a valid, self-consistent payload.
+  #holidayModeOff(): HolidayModeUpdate {
+    const now = Temporal.Now.plainDateTimeISO(
+      getTimeZone(this.homey),
+    ).toString()
+    return { endDate: now, isEnabled: false, startDate: now }
+  }
+
+  // The window a holiday card applies: start = now, end = `days` calendar
+  // days after today at `endTime` (default 00:00 — the start of that day,
+  // not 24:00). The end is rejected when it is not after now (e.g. 0 days
+  // at a time already past today).
+  #holidayModeWindow(
+    days: number,
+    endTime?: Temporal.PlainTime,
+  ): HolidayModeUpdate {
+    const now = Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
+    const end = now.toPlainDate().add({ days }).toPlainDateTime(endTime)
+    if (Temporal.PlainDateTime.compare(end, now) <= 0) {
+      throw new RangeError(this.homey.__('errors.invalidHolidayModeEnd'))
+    }
+    return {
+      endDate: end.toString(),
+      isEnabled: true,
+      startDate: now.toString(),
+    }
   }
 
   async #initClassicApi(config: {
@@ -1385,41 +1552,48 @@ export default class MELCloudApp extends App {
   }
 
   #registerFlowListeners(): void {
-    // Both duration cards start now (`from` omitted) and only differ by the
-    // end-of-window time — midnight for the bare card, the chosen time for
-    // the with-time card; the false card just clears the window.
+    // Both duration cards start now and only differ by the end-of-window
+    // time — midnight for the bare card, the chosen time for the with-time
+    // card; the false card just clears the window.
     this.#registerHolidayModeCard('holiday_mode_action', ({ duration }) => {
       const days = this.#holidayModeDays(duration)
       return days > HOLIDAY_MODE_OFF_DURATION ?
-          { to: this.#holidayModeEnd(days) }
-        : {}
+          this.#holidayModeWindow(days)
+        : this.#holidayModeOff()
     })
     this.#registerHolidayModeCard(
       'holiday_mode_with_time_action',
-      ({ duration, time }) => ({
-        to: this.#holidayModeEnd(
+      ({ duration, time }) =>
+        this.#holidayModeWindow(
           this.#holidayModeDays(duration),
           this.#holidayModeEndTime(time),
         ),
-      }),
     )
-    this.#registerHolidayModeCard('holiday_mode_false_action', () => ({}))
+    this.#registerHolidayModeCard('holiday_mode_false_action', () =>
+      this.#holidayModeOff(),
+    )
     this.#registerHolidayModeCondition()
   }
 
   #registerHolidayModeCard(
     id: string,
-    toSettings: (args: HolidayModeActionArgs) => Classic.HolidayModeQuery,
+    toSettings: (args: HolidayModeActionArgs) => HolidayModeUpdate,
   ): void {
     const card = this.homey.flow.getActionCard(id)
     card.registerArgumentAutocompleteListener('zone', (query) =>
-      toZoneAutocompleteItems(this.#searchZones(query)),
+      this.#searchHolidayModeTargets(query),
     )
     card.registerRunListener(async (args: HolidayModeActionArgs) => {
+      const settings = toSettings(args)
+      const { zone } = args
+      if ('deviceId' in zone) {
+        await this.updateHomeHolidayMode([zone.deviceId], settings)
+        return
+      }
       await this.updateClassicHolidayMode({
-        settings: toSettings(args),
-        zoneId: args.zone.zoneId,
-        zoneType: args.zone.zoneType,
+        settings,
+        zoneId: zone.zoneId,
+        zoneType: zone.zoneType,
       })
     })
   }
@@ -1427,17 +1601,18 @@ export default class MELCloudApp extends App {
   #registerHolidayModeCondition(): void {
     const card = this.homey.flow.getConditionCard('holiday_mode_condition')
     card.registerArgumentAutocompleteListener('zone', (query) =>
-      toZoneAutocompleteItems(this.#searchZones(query)),
+      this.#searchHolidayModeTargets(query),
     )
-    card.registerRunListener(
-      async ({ zone: { zoneId, zoneType } }: { zone: DeviceOrZoneData }) => {
-        const { HMEnabled: isEnabled } = await this.getClassicHolidayMode({
-          zoneId,
-          zoneType,
-        })
-        return isEnabled
-      },
-    )
+    card.registerRunListener(async ({ zone }: { zone: HolidayModeTarget }) => {
+      if ('deviceId' in zone) {
+        return this.getHomeHolidayMode(zone.deviceId)?.enabled === true
+      }
+      const { HMEnabled: isEnabled } = await this.getClassicHolidayMode({
+        zoneId: zone.zoneId,
+        zoneType: zone.zoneType,
+      })
+      return isEnabled
+    })
   }
 
   #registerWidgetListeners(): void {
@@ -1463,8 +1638,20 @@ export default class MELCloudApp extends App {
   ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[] {
     return [
       ...this.#searchZones(query, { type: Classic.DeviceType.Ata }),
-      ...filterZonesByName(this.getHomeAtaTargets(), query),
+      ...filterZonesByName(this.getHomeTargets(Home.DeviceType.Ata), query),
     ]
+  }
+
+  // Holiday-mode / condition targets: Classic zones and devices, then the
+  // individual Home devices (alpha-sorted). Each selected item carries its
+  // own routing — zone coordinates or a Home device id.
+  #searchHolidayModeTargets(query: string): HolidayModeTarget[] {
+    return [
+      ...toZoneAutocompleteItems(this.#searchZones(query)),
+      ...toHomeDeviceAutocompleteItems(
+        filterZonesByName(this.getHomeDeviceZones(), query),
+      ),
+    ].toSorted(byName)
   }
 
   // One zone-search pipeline for the tree-shaped autocomplete surfaces

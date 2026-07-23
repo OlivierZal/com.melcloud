@@ -78,7 +78,8 @@
     "title": "MELCloud-innstillinger",
     "update": "Oppdater",
     "zones": {
-      "legend": "Sonesinnstillinger (Classic)"
+      "enabledRequired": "Velg Ja eller Nei før du bruker.",
+      "legend": "Sone- og enhetsinnstillinger"
     }
   },
   "warnings": {

@@ -78,7 +78,8 @@
     "title": "إعدادات MELCloud",
     "update": "تحديث",
     "zones": {
-      "legend": "إعدادات المنطقة (Classic)"
+      "enabledRequired": "اختر نعم أو لا قبل التطبيق.",
+      "legend": "إعدادات المناطق والأجهزة"
     }
   },
   "warnings": {

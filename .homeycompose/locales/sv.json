@@ -78,7 +78,8 @@
     "title": "MELCloud-inställningar",
     "update": "Uppdatera",
     "zones": {
-      "legend": "Zonsinställningar (Classic)"
+      "enabledRequired": "Välj Ja eller Nej innan du tillämpar.",
+      "legend": "Zon- och enhetsinställningar"
     }
   },
   "warnings": {

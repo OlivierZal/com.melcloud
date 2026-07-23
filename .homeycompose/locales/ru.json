@@ -78,7 +78,8 @@
     "title": "Настройки MELCloud",
     "update": "Обновить",
     "zones": {
-      "legend": "Настройки зоны (Classic)"
+      "enabledRequired": "Выберите «Да» или «Нет» перед применением.",
+      "legend": "Настройки зон и устройств"
     }
   },
   "warnings": {
