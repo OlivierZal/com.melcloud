@@ -68,7 +68,8 @@
     "title": "MELCloud-Einstellungen",
     "update": "Aktualisieren",
     "zones": {
-      "legend": "Zonen- und Geräteeinstellungen"
+      "legend": "Zonen- und Geräteeinstellungen",
+      "enabledRequired": "Wählen Sie Ja oder Nein, bevor Sie anwenden."
     }
   },
   "warnings": {

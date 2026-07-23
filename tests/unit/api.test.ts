@@ -15,7 +15,11 @@ import type {
   ErrorLogQueryParams,
   FormattedErrorLog,
 } from '../../types/error-log.mts'
-import type { HomeDeviceZone, ZoneData } from '../../types/zone.mts'
+import type {
+  HomeBuildingZone,
+  HomeDeviceZone,
+  ZoneData,
+} from '../../types/zone.mts'
 import { mock } from '../helpers.js'
 
 const mockGetBuildings =
@@ -53,6 +57,21 @@ const mockApp = {
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
   getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
+  getHomeBuildingFrostProtection: vi.fn<
+    () => {
+      FPEnabled: boolean | null
+      FPMaxTemperature: number | null
+      FPMinTemperature: number | null
+    }
+  >(),
+  getHomeBuildingHolidayMode: vi.fn<
+    () => {
+      HMEnabled: boolean | null
+      HMEndDate: string | null
+      HMStartDate: string | null
+    }
+  >(),
+  getHomeBuildingZones: vi.fn<() => HomeBuildingZone[]>(),
   getHomeDeviceZones: vi.fn<() => HomeDeviceZone[]>(),
   getHomeFrostProtection: vi.fn<() => Home.FrostProtection | null>(),
   getHomeHolidayMode: vi.fn<() => Home.HolidayMode | null>(),
@@ -67,6 +86,8 @@ const mockApp = {
   updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
   updateClassicHolidayMode: vi.fn<() => Promise<void>>(),
   updateDeviceSettings: vi.fn<() => Promise<void>>(),
+  updateHomeBuildingFrostProtection: vi.fn<() => Promise<void>>(),
+  updateHomeBuildingHolidayMode: vi.fn<() => Promise<void>>(),
   updateHomeFrostProtection: vi.fn<() => Promise<void>>(),
   updateHomeHolidayMode: vi.fn<() => Promise<void>>(),
 }
@@ -317,6 +338,89 @@ describe('api', () => {
 
       expect(result).toBe(holidayMode)
       expect(mockApp.getHomeHolidayMode).toHaveBeenCalledWith('guid-1')
+    })
+  })
+
+  describe('home buildings retrieval', () => {
+    it('should delegate to app.getHomeBuildingZones', () => {
+      const buildings = [mock<HomeBuildingZone>({ id: 'b1' })]
+      mockApp.getHomeBuildingZones.mockReturnValue(buildings)
+
+      expect(api.getHomeBuildings({ homey })).toBe(buildings)
+    })
+  })
+
+  describe('home building frost protection retrieval', () => {
+    it('should delegate to app.getHomeBuildingFrostProtection with the id', () => {
+      const aggregate = {
+        FPEnabled: true,
+        FPMaxTemperature: null,
+        FPMinTemperature: 6,
+      }
+      mockApp.getHomeBuildingFrostProtection.mockReturnValue(aggregate)
+
+      const result = api.getHomeBuildingFrostProtection({
+        homey,
+        params: { buildingId: 'b1' },
+      })
+
+      expect(result).toBe(aggregate)
+      expect(mockApp.getHomeBuildingFrostProtection).toHaveBeenCalledWith('b1')
+    })
+  })
+
+  describe('home building holiday mode retrieval', () => {
+    it('should delegate to app.getHomeBuildingHolidayMode with the id', () => {
+      const aggregate = {
+        HMEnabled: null,
+        HMEndDate: 'e',
+        HMStartDate: null,
+      }
+      mockApp.getHomeBuildingHolidayMode.mockReturnValue(aggregate)
+
+      const result = api.getHomeBuildingHolidayMode({
+        homey,
+        params: { buildingId: 'b1' },
+      })
+
+      expect(result).toBe(aggregate)
+      expect(mockApp.getHomeBuildingHolidayMode).toHaveBeenCalledWith('b1')
+    })
+  })
+
+  describe('home building frost protection update', () => {
+    it('should delegate to app.updateHomeBuildingFrostProtection', async () => {
+      const body = { isEnabled: true, max: 16, min: 4 }
+      mockApp.updateHomeBuildingFrostProtection.mockResolvedValue()
+
+      await api.updateHomeBuildingFrostProtection({
+        body,
+        homey,
+        params: { buildingId: 'b1' },
+      })
+
+      expect(mockApp.updateHomeBuildingFrostProtection).toHaveBeenCalledWith(
+        'b1',
+        body,
+      )
+    })
+  })
+
+  describe('home building holiday mode update', () => {
+    it('should delegate to app.updateHomeBuildingHolidayMode', async () => {
+      const body = mock<HolidayModeUpdate>()
+      mockApp.updateHomeBuildingHolidayMode.mockResolvedValue()
+
+      await api.updateHomeBuildingHolidayMode({
+        body,
+        homey,
+        params: { buildingId: 'b1' },
+      })
+
+      expect(mockApp.updateHomeBuildingHolidayMode).toHaveBeenCalledWith(
+        'b1',
+        body,
+      )
     })
   })
 

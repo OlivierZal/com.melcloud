@@ -78,6 +78,7 @@
     "title": "MELCloud 설정",
     "update": "업데이트",
     "zones": {
+      "enabledRequired": "적용하기 전에 예 또는 아니요를 선택하세요.",
       "legend": "구역 및 기기 설정"
     }
   },

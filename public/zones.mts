@@ -17,3 +17,13 @@ export const isHomeDeviceValue = (value: string): boolean =>
 
 export const getHomeDeviceId = (value: string): string =>
   value.slice(HOME_DEVICE_VALUE_PREFIX.length)
+
+// A Home building groups its devices for a single batched frost/holiday
+// write; same prefix-detection contract as the device values above.
+const HOME_BUILDING_VALUE_PREFIX = 'homeBuildings_'
+
+export const isHomeBuildingValue = (value: string): boolean =>
+  value.startsWith(HOME_BUILDING_VALUE_PREFIX)
+
+export const getHomeBuildingId = (value: string): string =>
+  value.slice(HOME_BUILDING_VALUE_PREFIX.length)

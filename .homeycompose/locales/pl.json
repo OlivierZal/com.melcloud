@@ -78,6 +78,7 @@
     "title": "Ustawienia MELCloud",
     "update": "Aktualizuj",
     "zones": {
+      "enabledRequired": "Wybierz Tak lub Nie przed zastosowaniem.",
       "legend": "Ustawienia stref i urządzeń"
     }
   },

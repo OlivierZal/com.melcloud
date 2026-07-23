@@ -17,6 +17,7 @@ import type {
 import type {
   DeviceGroup,
   DeviceOrZoneData,
+  HomeBuildingZone,
   HomeDeviceZone,
 } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
@@ -182,6 +183,33 @@ const api = {
       to,
     })
   },
+  getHomeBuildingFrostProtection: ({
+    homey: { app },
+    params: { buildingId },
+  }: {
+    homey: Homey
+    params: { buildingId: string }
+  }): {
+    FPEnabled: boolean | null
+    FPMaxTemperature: number | null
+    FPMinTemperature: number | null
+  } => app.getHomeBuildingFrostProtection(buildingId),
+  getHomeBuildingHolidayMode: ({
+    homey: { app },
+    params: { buildingId },
+  }: {
+    homey: Homey
+    params: { buildingId: string }
+  }): {
+    HMEnabled: boolean | null
+    HMEndDate: string | null
+    HMStartDate: string | null
+  } => app.getHomeBuildingHolidayMode(buildingId),
+  getHomeBuildings: ({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): HomeBuildingZone[] => app.getHomeBuildingZones(),
   getHomeDevices: ({ homey: { app } }: { homey: Homey }): HomeDeviceZone[] =>
     app.getHomeDeviceZones(),
   getHomeFrostProtection: ({
@@ -282,6 +310,24 @@ const api = {
     homey: Homey
     query: { driverId?: string }
   }): Promise<void> => app.updateDeviceSettings({ driverId, settings: body }),
+  updateHomeBuildingFrostProtection: async ({
+    body,
+    homey: { app },
+    params: { buildingId },
+  }: {
+    body: { isEnabled: boolean; max: number; min: number }
+    homey: Homey
+    params: { buildingId: string }
+  }): Promise<void> => app.updateHomeBuildingFrostProtection(buildingId, body),
+  updateHomeBuildingHolidayMode: async ({
+    body,
+    homey: { app },
+    params: { buildingId },
+  }: {
+    body: HolidayModeUpdate
+    homey: Homey
+    params: { buildingId: string }
+  }): Promise<void> => app.updateHomeBuildingHolidayMode(buildingId, body),
   updateHomeFrostProtection: async ({
     body,
     homey: { app },

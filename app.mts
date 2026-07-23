@@ -71,6 +71,16 @@ const byName = (
   other: { readonly name: string },
 ): number => first.name.localeCompare(other.name)
 
+// The value shared by every entry, or `null` when they disagree — a Home
+// building aggregates per-device frost/holiday, and a field the devices do
+// not agree on reads as "mixed" (`null`).
+const commonValue = <T,>(values: readonly T[]): NonNullable<T> | null => {
+  const [first, ...rest] = values
+  return values.length > 0 && rest.every((value) => value === first) ?
+      (first ?? null)
+    : null
+}
+
 const HOLIDAY_MODE_MAX_DURATION_DAYS = 365
 const HOLIDAY_MODE_OFF_DURATION = 0
 
@@ -785,6 +795,68 @@ export default class MELCloudApp extends App {
     )
   }
 
+  // Aggregate frost protection across a Home building's devices: each field
+  // is the shared value, or `null` when the devices disagree ("mixed").
+  public getHomeBuildingFrostProtection(buildingId: string): {
+    FPEnabled: boolean | null
+    FPMaxTemperature: number | null
+    FPMinTemperature: number | null
+  } {
+    const frostProtections = this.#getHomeBuildingDeviceIds(buildingId).map(
+      (deviceId) => this.getHomeFrostProtection(deviceId),
+    )
+    return {
+      // A device with no frost config counts as off, so an all-unconfigured
+      // building reads "No" rather than "mixed".
+      FPEnabled: commonValue(
+        frostProtections.map(
+          (frostProtection) => frostProtection?.enabled ?? false,
+        ),
+      ),
+      FPMaxTemperature: commonValue(
+        frostProtections.map((frostProtection) => frostProtection?.max),
+      ),
+      FPMinTemperature: commonValue(
+        frostProtections.map((frostProtection) => frostProtection?.min),
+      ),
+    }
+  }
+
+  // Aggregate holiday mode across a Home building's devices, `null` per
+  // field on disagreement ("mixed").
+  public getHomeBuildingHolidayMode(buildingId: string): {
+    HMEnabled: boolean | null
+    HMEndDate: string | null
+    HMStartDate: string | null
+  } {
+    const holidayModes = this.#getHomeBuildingDeviceIds(buildingId).map(
+      (deviceId) => this.getHomeHolidayMode(deviceId),
+    )
+    return {
+      HMEnabled: commonValue(
+        holidayModes.map((holidayMode) => holidayMode?.enabled ?? false),
+      ),
+      HMEndDate: commonValue(
+        holidayModes.map((holidayMode) => holidayMode?.endDate),
+      ),
+      HMStartDate: commonValue(
+        holidayModes.map((holidayMode) => holidayMode?.startDate),
+      ),
+    }
+  }
+
+  // Every Home building (ATA and ATW), one flat selectable target per
+  // `/context` building, alpha-sorted.
+  public getHomeBuildingZones(): HomeBuildingZone[] {
+    const buildingsById = new Map<string, HomeBuildingZone>()
+    for (const type of [Home.DeviceType.Ata, Home.DeviceType.Atw]) {
+      for (const { id, name } of this.#homeRegistry.getBuildingsByType(type)) {
+        buildingsById.set(id, { id, level: 0, model: 'homeBuildings', name })
+      }
+    }
+    return buildingsById.values().toArray().toSorted(byName)
+  }
+
   public getHomeDevicesByType(type: Home.DeviceType): Home.Device[] {
     return this.#homeRegistry.getByType(type)
   }
@@ -996,6 +1068,26 @@ export default class MELCloudApp extends App {
     state: Classic.GroupState
   }): Promise<void> {
     await this.#getHomeBuildingFacade(buildingId).updateGroupState(state)
+  }
+
+  public async updateHomeBuildingFrostProtection(
+    buildingId: string,
+    settings: { isEnabled: boolean; max: number; min: number },
+  ): Promise<void> {
+    await this.updateHomeFrostProtection(
+      this.#getHomeBuildingDeviceIds(buildingId),
+      settings,
+    )
+  }
+
+  public async updateHomeBuildingHolidayMode(
+    buildingId: string,
+    settings: HolidayModeUpdate,
+  ): Promise<void> {
+    await this.updateHomeHolidayMode(
+      this.#getHomeBuildingDeviceIds(buildingId),
+      settings,
+    )
   }
 
   public async updateHomeFrostProtection(
@@ -1217,6 +1309,14 @@ export default class MELCloudApp extends App {
     return driverId === undefined ? drivers : (
         drivers.filter((driver) => driver.id === driverId)
       )
+  }
+
+  // The ids of every device (ATA and ATW) in a `/context` building.
+  #getHomeBuildingDeviceIds(buildingId: string): string[] {
+    return this.#homeRegistry
+      .getAll()
+      .filter((device) => device.building.id === buildingId)
+      .map((device) => device.id)
   }
 
   #getHomeBuildingFacade(buildingId: string): Home.BuildingAtaFacade {

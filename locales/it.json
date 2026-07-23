@@ -68,7 +68,8 @@
     "title": "Impostazioni MELCloud",
     "update": "Aggiorna",
     "zones": {
-      "legend": "Impostazioni di zone e dispositivi"
+      "legend": "Impostazioni di zone e dispositivi",
+      "enabledRequired": "Scegli Sì o No prima di applicare."
     }
   },
   "warnings": {

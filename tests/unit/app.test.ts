@@ -512,6 +512,36 @@ const stubHomeDevice = (facade: unknown): void => {
   mockHomeFacadeManagerGet.mockReturnValue(facade)
 }
 
+// Two ATA devices in building 'b1', each with its own frost/holiday, so the
+// building aggregate can be exercised across agreement and disagreement.
+const stubBuilding = (
+  frostById: Record<string, unknown>,
+  holidayById: Record<string, unknown> = {},
+): void => {
+  const devices = [
+    {
+      building: { id: 'b1' },
+      id: 'd1',
+      isAta: (): boolean => true,
+      isAtw: (): boolean => false,
+    },
+    {
+      building: { id: 'b1' },
+      id: 'd2',
+      isAta: (): boolean => true,
+      isAtw: (): boolean => false,
+    },
+  ]
+  mockHomeRegistry.getAll.mockReturnValue(devices)
+  mockHomeRegistry.getById.mockImplementation((id) =>
+    devices.find((device) => device.id === id),
+  )
+  mockHomeFacadeManagerGet.mockImplementation((model) => ({
+    frostProtection: frostById[(model as { id: string }).id] ?? null,
+    holidayMode: holidayById[(model as { id: string }).id] ?? null,
+  }))
+}
+
 const getSyncCallbackFrom = (
   mockCreateFunction: ReturnType<typeof vi.fn>,
 ): SyncCallback =>
@@ -2901,6 +2931,114 @@ describe('melCloudApp', () => {
           min: 4,
         },
       )
+    })
+  })
+
+  describe('home building frost protection and holiday mode', () => {
+    it('keeps shared frost values and nulls the disagreements', async () => {
+      await app.onInit()
+      stubBuilding({
+        d1: { active: false, enabled: true, max: 12, min: 6 },
+        d2: { active: false, enabled: true, max: 14, min: 6 },
+      })
+
+      expect(app.getHomeBuildingFrostProtection('b1')).toStrictEqual({
+        FPEnabled: true,
+        FPMaxTemperature: null,
+        FPMinTemperature: 6,
+      })
+    })
+
+    it('reads an all-unconfigured building as off, not mixed', async () => {
+      await app.onInit()
+      stubBuilding({})
+
+      expect(app.getHomeBuildingFrostProtection('b1')).toStrictEqual({
+        FPEnabled: false,
+        FPMaxTemperature: null,
+        FPMinTemperature: null,
+      })
+    })
+
+    it('aggregates holiday mode across the building devices', async () => {
+      await app.onInit()
+      stubBuilding(
+        {},
+        {
+          d1: { active: false, enabled: true, endDate: 'e', startDate: 's' },
+          d2: { active: false, enabled: true, endDate: 'e', startDate: 'x' },
+        },
+      )
+
+      expect(app.getHomeBuildingHolidayMode('b1')).toStrictEqual({
+        HMEnabled: true,
+        HMEndDate: 'e',
+        HMStartDate: null,
+      })
+    })
+
+    it('reads an all-unconfigured holiday building as off', async () => {
+      await app.onInit()
+      stubBuilding({}, {})
+
+      expect(app.getHomeBuildingHolidayMode('b1')).toStrictEqual({
+        HMEnabled: false,
+        HMEndDate: null,
+        HMStartDate: null,
+      })
+    })
+
+    it('batches a building frost update across all its devices', async () => {
+      await app.onInit()
+      stubBuilding({})
+
+      await app.updateHomeBuildingFrostProtection('b1', {
+        isEnabled: true,
+        max: 16,
+        min: 4,
+      })
+
+      expect(mockHomeFacadeManagerUpdateFrostProtection).toHaveBeenCalledWith(
+        ['d1', 'd2'],
+        { isEnabled: true, max: 16, min: 4 },
+      )
+    })
+
+    it('batches a building holiday update across all its devices', async () => {
+      await app.onInit()
+      stubBuilding({})
+
+      await app.updateHomeBuildingHolidayMode('b1', {
+        endDate: 'e',
+        isEnabled: true,
+        startDate: 's',
+      })
+
+      expect(mockHomeFacadeManagerUpdateHolidayMode).toHaveBeenCalledWith(
+        ['d1', 'd2'],
+        { endDate: 'e', isEnabled: true, startDate: 's' },
+      )
+    })
+
+    it('lists ATA and ATW buildings, deduped and alpha-sorted', async () => {
+      mockHomeRegistry.getBuildingsByType.mockImplementation((type) =>
+        type === Home.DeviceType.Ata ?
+          [
+            { devices: [], id: 'b2', name: 'Bravo' },
+            { devices: [], id: 'b1', name: 'Alpha' },
+          ]
+        : [
+            { devices: [], id: 'b1', name: 'Alpha' },
+            { devices: [], id: 'b3', name: 'Charlie' },
+          ],
+      )
+      await app.onInit()
+
+      expect(app.getHomeBuildingZones()).toStrictEqual([
+        { id: 'b1', level: 0, model: 'homeBuildings', name: 'Alpha' },
+        { id: 'b2', level: 0, model: 'homeBuildings', name: 'Bravo' },
+        { id: 'b3', level: 0, model: 'homeBuildings', name: 'Charlie' },
+      ])
     })
   })
 

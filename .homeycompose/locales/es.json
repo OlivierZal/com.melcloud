@@ -78,6 +78,7 @@
     "title": "Configuración de MELCloud",
     "update": "Actualizar",
     "zones": {
+      "enabledRequired": "Elige Sí o No antes de aplicar.",
       "legend": "Configuración de zonas y dispositivos"
     }
   },

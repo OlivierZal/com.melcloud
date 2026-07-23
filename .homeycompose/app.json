@@ -36,6 +36,18 @@
       "method": "GET",
       "path": "/logs/errors"
     },
+    "getHomeBuildingFrostProtection": {
+      "method": "GET",
+      "path": "/home/buildings/:buildingId/settings/frost-protection"
+    },
+    "getHomeBuildingHolidayMode": {
+      "method": "GET",
+      "path": "/home/buildings/:buildingId/settings/holiday-mode"
+    },
+    "getHomeBuildings": {
+      "method": "GET",
+      "path": "/home/buildings"
+    },
     "getHomeDevices": {
       "method": "GET",
       "path": "/home/devices"
@@ -83,6 +95,14 @@
     "updateDeviceSettings": {
       "method": "PUT",
       "path": "/settings/devices"
+    },
+    "updateHomeBuildingFrostProtection": {
+      "method": "PUT",
+      "path": "/home/buildings/:buildingId/settings/frost-protection"
+    },
+    "updateHomeBuildingHolidayMode": {
+      "method": "PUT",
+      "path": "/home/buildings/:buildingId/settings/holiday-mode"
     },
     "updateHomeFrostProtection": {
       "method": "PUT",
