@@ -154,9 +154,34 @@ input.homey-form-checkbox-input:indeterminate
    over the real `--homey-font-size-medium` of 20px; it goes unnoticed
    there because its summary sits alone, not next to a legend). */
 summary.homey-form-legend {
+  align-items: center;
   cursor: pointer;
+  display: flex;
   font-size: var(--homey-font-size-medium);
   font-weight: var(--homey-font-weight-bold);
+  gap: 0.5rem;
+  list-style: none;
+}
+
+/* Match the selects' thin chevron instead of the native disclosure
+   triangle: hide the default marker and draw a leading chevron that points
+   right when collapsed and rotates down — as the selects do — when open. */
+summary.homey-form-legend::-webkit-details-marker {
+  display: none;
+}
+
+summary.homey-form-legend::before {
+  block-size: 0.45em;
+  border-block-start: 0.14em solid currentcolor;
+  border-inline-end: 0.14em solid currentcolor;
+  content: '';
+  inline-size: 0.45em;
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+
+details[open] > summary.homey-form-legend::before {
+  transform: rotate(135deg);
 }
 
 /* Destructive twin of the filled sign-in button: the injected sheet
