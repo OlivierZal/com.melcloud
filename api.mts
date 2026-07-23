@@ -1,6 +1,7 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import {
+  type HolidayModeUpdate,
   type LoginCredentials,
   AuthenticationError,
   AuthenticationThrottledError,
@@ -244,7 +245,7 @@ const api = {
     homey: { app },
     params,
   }: {
-    body: Classic.HolidayModeQuery
+    body: HolidayModeUpdate
     homey: Homey
     params: DeviceOrZoneData
   }): Promise<void> =>

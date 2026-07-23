@@ -1,4 +1,7 @@
-import type { LoginCredentials } from '@olivierzal/melcloud-api'
+import type {
+  HolidayModeUpdate,
+  LoginCredentials,
+} from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
 import { Temporal } from 'temporal-polyfill'
@@ -1318,10 +1321,8 @@ class ZoneSettingsManager {
   }
 
   /** @alerts Displays save errors to the user. */
-  public async setHolidayModeData({
-    from: startDate,
-    to: endDate,
-  }: Classic.HolidayModeQuery): Promise<void> {
+  public async setHolidayModeData(update: HolidayModeUpdate): Promise<void> {
+    const { endDate, isEnabled, startDate } = update
     await this.#putZoneSetting(
       {
         id: 'holiday_mode',
@@ -1330,11 +1331,11 @@ class ZoneSettingsManager {
           this.displayHolidayModeData()
         },
       },
-      { from: startDate, to: endDate } satisfies Classic.HolidayModeQuery,
+      update,
       {
-        HMEnabled: Boolean(endDate),
-        HMEndDate: endDate ?? null,
-        HMStartDate: startDate ?? null,
+        HMEnabled: isEnabled,
+        HMEndDate: isEnabled ? endDate : null,
+        HMStartDate: isEnabled ? startDate : null,
       },
     )
   }
@@ -1424,10 +1425,14 @@ class ZoneSettingsManager {
         )
         return
       }
+      // The window defaults its start to now (an empty field) and the
+      // dates are ignored when disabling.
+      const now = Temporal.Now.plainDateTimeISO().toString()
       fireAndForget(
         this.setHolidayModeData({
-          ...(startDateValue !== '' && { from: startDateValue }),
-          ...(endDate !== undefined && { to: endDate }),
+          endDate: endDate ?? now,
+          isEnabled,
+          startDate: startDateValue === '' ? now : startDateValue,
         }),
       )
     })
@@ -1485,7 +1490,7 @@ class ZoneSettingsManager {
   // the panel, alert success or failure.
   async #putZoneSetting(
     { display, id, path }: ZoneSettingDescriptor,
-    query: Classic.FrostProtectionQuery | Classic.HolidayModeQuery,
+    query: Classic.FrostProtectionQuery | HolidayModeUpdate,
     zoneSettings: Partial<Classic.ZoneSettings>,
   ): Promise<void> {
     await withDisablingButtonPair(id, async () => {

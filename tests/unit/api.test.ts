@@ -1,6 +1,7 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import {
+  type HolidayModeUpdate,
   type LoginCredentials,
   AuthenticationError,
   AuthenticationThrottledError,
@@ -495,7 +496,7 @@ describe('api', () => {
 
   describe('holiday mode settings update', () => {
     it('should delegate to app.updateClassicHolidayMode', async () => {
-      const body = mock<Classic.HolidayModeQuery>()
+      const body = mock<HolidayModeUpdate>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
       mockApp.updateClassicHolidayMode.mockResolvedValue()
 

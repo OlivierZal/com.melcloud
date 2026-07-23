@@ -2,6 +2,7 @@ import 'source-map-support/register.js'
 
 import {
   type DeviceType,
+  type HolidayModeUpdate,
   type Hour,
   type Logger,
   type ReportChartLineOptions,
@@ -286,20 +287,6 @@ const toHomeDeviceAutocompleteItems = (
   zones: readonly HomeDeviceZone[],
 ): { deviceId: string; id: string; name: string }[] =>
   zones.map(({ id, name }) => ({ deviceId: id, id: `homeDevices_${id}`, name }))
-
-// Translate a Classic holiday query into the Home window shape: a `to` bound
-// means "enabled until then", an empty query means "disabled". The holiday
-// cards always start now (they never set `from`), so start is always now —
-// the same instant the Classic path gets by omitting `from`.
-const toHomeHolidayIntent = (
-  query: Classic.HolidayModeQuery,
-  timezone: string,
-): { endDate: string; isEnabled: boolean; startDate: string } => {
-  const now = Temporal.Now.plainDateTimeISO(timezone).toString()
-  return query.to === undefined ?
-      { endDate: now, isEnabled: false, startDate: now }
-    : { endDate: query.to, isEnabled: true, startDate: now }
-}
 
 // MELCloud reports error timestamps either as UTC instants (Z or offset
 // suffix) or as wall-clock times in the building's timezone.
@@ -946,7 +933,7 @@ export default class MELCloudApp extends App {
     zoneId,
     zoneType,
   }: DeviceOrZoneData & {
-    settings: Classic.HolidayModeQuery
+    settings: HolidayModeUpdate
   }): Promise<void> {
     const { AttributeErrors } = await this.getClassicFacade(
       zoneType,
@@ -1020,7 +1007,7 @@ export default class MELCloudApp extends App {
 
   public async updateHomeHolidayMode(
     deviceIds: readonly string[],
-    settings: { endDate: string; isEnabled: boolean; startDate: string },
+    settings: HolidayModeUpdate,
   ): Promise<void> {
     await this.#homeFacadeManager.updateHolidayMode(deviceIds, settings)
   }
@@ -1306,19 +1293,6 @@ export default class MELCloudApp extends App {
     return days
   }
 
-  // Window end: `days` calendar days after today at `endTime` (default
-  // 00:00 — the start of that day, not 24:00). The start is always now,
-  // so `from` is omitted on the caller side; the end is rejected when it
-  // is not after now (e.g. 0 days at a time already past today).
-  #holidayModeEnd(days: number, endTime?: Temporal.PlainTime): string {
-    const now = Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
-    const end = now.toPlainDate().add({ days }).toPlainDateTime(endTime)
-    if (Temporal.PlainDateTime.compare(end, now) <= 0) {
-      throw new RangeError(this.homey.__('errors.invalidHolidayModeEnd'))
-    }
-    return end.toString()
-  }
-
   #holidayModeEndTime(time: unknown): Temporal.PlainTime {
     if (
       typeof time !== 'string' ||
@@ -1327,6 +1301,35 @@ export default class MELCloudApp extends App {
       throw new RangeError(this.homey.__('errors.invalidTime'))
     }
     return Temporal.PlainTime.from(time)
+  }
+
+  // Disabling holiday mode: both APIs ignore the window when off, so the
+  // bounds are stamped at now for a valid, self-consistent payload.
+  #holidayModeOff(): HolidayModeUpdate {
+    const now = Temporal.Now.plainDateTimeISO(
+      getTimeZone(this.homey),
+    ).toString()
+    return { endDate: now, isEnabled: false, startDate: now }
+  }
+
+  // The window a holiday card applies: start = now, end = `days` calendar
+  // days after today at `endTime` (default 00:00 — the start of that day,
+  // not 24:00). The end is rejected when it is not after now (e.g. 0 days
+  // at a time already past today).
+  #holidayModeWindow(
+    days: number,
+    endTime?: Temporal.PlainTime,
+  ): HolidayModeUpdate {
+    const now = Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
+    const end = now.toPlainDate().add({ days }).toPlainDateTime(endTime)
+    if (Temporal.PlainDateTime.compare(end, now) <= 0) {
+      throw new RangeError(this.homey.__('errors.invalidHolidayModeEnd'))
+    }
+    return {
+      endDate: end.toString(),
+      isEnabled: true,
+      startDate: now.toString(),
+    }
   }
 
   async #initClassicApi(config: {
@@ -1435,31 +1438,32 @@ export default class MELCloudApp extends App {
   }
 
   #registerFlowListeners(): void {
-    // Both duration cards start now (`from` omitted) and only differ by the
-    // end-of-window time — midnight for the bare card, the chosen time for
-    // the with-time card; the false card just clears the window.
+    // Both duration cards start now and only differ by the end-of-window
+    // time — midnight for the bare card, the chosen time for the with-time
+    // card; the false card just clears the window.
     this.#registerHolidayModeCard('holiday_mode_action', ({ duration }) => {
       const days = this.#holidayModeDays(duration)
       return days > HOLIDAY_MODE_OFF_DURATION ?
-          { to: this.#holidayModeEnd(days) }
-        : {}
+          this.#holidayModeWindow(days)
+        : this.#holidayModeOff()
     })
     this.#registerHolidayModeCard(
       'holiday_mode_with_time_action',
-      ({ duration, time }) => ({
-        to: this.#holidayModeEnd(
+      ({ duration, time }) =>
+        this.#holidayModeWindow(
           this.#holidayModeDays(duration),
           this.#holidayModeEndTime(time),
         ),
-      }),
     )
-    this.#registerHolidayModeCard('holiday_mode_false_action', () => ({}))
+    this.#registerHolidayModeCard('holiday_mode_false_action', () =>
+      this.#holidayModeOff(),
+    )
     this.#registerHolidayModeCondition()
   }
 
   #registerHolidayModeCard(
     id: string,
-    toSettings: (args: HolidayModeActionArgs) => Classic.HolidayModeQuery,
+    toSettings: (args: HolidayModeActionArgs) => HolidayModeUpdate,
   ): void {
     const card = this.homey.flow.getActionCard(id)
     card.registerArgumentAutocompleteListener('zone', (query) =>
@@ -1469,10 +1473,7 @@ export default class MELCloudApp extends App {
       const settings = toSettings(args)
       const { zone } = args
       if ('deviceId' in zone) {
-        await this.updateHomeHolidayMode(
-          [zone.deviceId],
-          toHomeHolidayIntent(settings, getTimeZone(this.homey)),
-        )
+        await this.updateHomeHolidayMode([zone.deviceId], settings)
         return
       }
       await this.updateClassicHolidayMode({
