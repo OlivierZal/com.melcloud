@@ -1320,9 +1320,7 @@ class ZoneSettingsManager {
       const { id, level, model, name } = zone
       createOption(this.#zone, {
         id: getZoneId(id, model),
-        // Home devices have no parent node in this selector, so render them
-        // flat (top level) rather than with the zone tree's child indent.
-        label: getZoneName(name, model === 'homeDevices' ? 0 : level),
+        label: getZoneName(name, level),
       })
       this.populateZoneOptions(getSubzones(zone))
     }
@@ -1583,7 +1581,9 @@ class ZoneSettingsManager {
       : this.#holidayModeEndDate.value
     if (isEnabled && endDate === undefined) {
       fireAndForget(
-        this.#homey.alert(this.#homey.__('settings.holidayMode.endDateMissing')),
+        this.#homey.alert(
+          this.#homey.__('settings.holidayMode.endDateMissing'),
+        ),
       )
       return null
     }
@@ -1745,13 +1745,13 @@ class SettingsApp {
   // The Home account has no zone tree: each device is a standalone
   // selectable target, appended after any Classic zones.
   async #fetchHomeTargets(): Promise<void> {
-    const [buildings, devices] = await Promise.all([
-      homeyApiGet<HomeBuildingZone[]>(this.#homey, '/home/buildings'),
-      homeyApiGet<HomeDeviceZone[]>(this.#homey, '/home/devices'),
-    ])
-    // Buildings (batch targets) first, then the individual devices.
-    this.#zoneSettingsManager.populateZoneOptions(buildings)
-    this.#zoneSettingsManager.populateZoneOptions(devices)
+    // A tree: each Home building followed by its own devices (indented),
+    // both frost/holiday targets.
+    const targets = await homeyApiGet<(HomeBuildingZone | HomeDeviceZone)[]>(
+      this.#homey,
+      '/home/targets',
+    )
+    this.#zoneSettingsManager.populateZoneOptions(targets)
     // See #fetchClassicBuildings: fills the initial panel values only (the
     // first option, a Classic zone when both accounts are paired).
     fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())

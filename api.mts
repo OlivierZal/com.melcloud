@@ -205,11 +205,6 @@ const api = {
     HMEndDate: string | null
     HMStartDate: string | null
   } => app.getHomeBuildingHolidayMode(buildingId),
-  getHomeBuildings: ({
-    homey: { app },
-  }: {
-    homey: Homey
-  }): HomeBuildingZone[] => app.getHomeBuildingZones(),
   getHomeDevices: ({ homey: { app } }: { homey: Homey }): HomeDeviceZone[] =>
     app.getHomeDeviceZones(),
   getHomeFrostProtection: ({
@@ -226,6 +221,11 @@ const api = {
     homey: Homey
     params: { deviceId: string }
   }): Home.HolidayMode | null => app.getHomeHolidayMode(deviceId),
+  getHomeTargets: ({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): (HomeBuildingZone | HomeDeviceZone)[] => app.getHomeTargets(),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
   homeAuthenticate: async ({

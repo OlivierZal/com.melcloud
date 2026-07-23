@@ -71,10 +71,10 @@ const mockApp = {
       HMStartDate: string | null
     }
   >(),
-  getHomeBuildingZones: vi.fn<() => HomeBuildingZone[]>(),
   getHomeDeviceZones: vi.fn<() => HomeDeviceZone[]>(),
   getHomeFrostProtection: vi.fn<() => Home.FrostProtection | null>(),
   getHomeHolidayMode: vi.fn<() => Home.HolidayMode | null>(),
+  getHomeTargets: vi.fn<() => (HomeBuildingZone | HomeDeviceZone)[]>(),
   homeApi: {
     authenticate: mockHomeAuthenticate,
     isAuthenticated: mockIsHomeAuthenticated,
@@ -341,12 +341,12 @@ describe('api', () => {
     })
   })
 
-  describe('home buildings retrieval', () => {
-    it('should delegate to app.getHomeBuildingZones', () => {
-      const buildings = [mock<HomeBuildingZone>({ id: 'b1' })]
-      mockApp.getHomeBuildingZones.mockReturnValue(buildings)
+  describe('home targets retrieval', () => {
+    it('should delegate to app.getHomeTargets', () => {
+      const targets = [mock<HomeBuildingZone>({ id: 'b1' })]
+      mockApp.getHomeTargets.mockReturnValue(targets)
 
-      expect(api.getHomeBuildings({ homey })).toBe(buildings)
+      expect(api.getHomeTargets({ homey })).toBe(targets)
     })
   })
 

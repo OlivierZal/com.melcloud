@@ -45,10 +45,6 @@
       "method": "GET",
       "path": "/home/buildings/:buildingId/settings/holiday-mode"
     },
-    "getHomeBuildings": {
-      "method": "GET",
-      "path": "/home/buildings"
-    },
     "getHomeDevices": {
       "method": "GET",
       "path": "/home/devices"
@@ -60,6 +56,10 @@
     "getHomeHolidayMode": {
       "method": "GET",
       "path": "/home/devices/:deviceId/settings/holiday-mode"
+    },
+    "getHomeTargets": {
+      "method": "GET",
+      "path": "/home/targets"
     },
     "getLanguage": {
       "method": "GET",

@@ -845,18 +845,6 @@ export default class MELCloudApp extends App {
     }
   }
 
-  // Every Home building (ATA and ATW), one flat selectable target per
-  // `/context` building, alpha-sorted.
-  public getHomeBuildingZones(): HomeBuildingZone[] {
-    const buildingsById = new Map<string, HomeBuildingZone>()
-    for (const type of [Home.DeviceType.Ata, Home.DeviceType.Atw]) {
-      for (const { id, name } of this.#homeRegistry.getBuildingsByType(type)) {
-        buildingsById.set(id, { id, level: 0, model: 'homeBuildings', name })
-      }
-    }
-    return buildingsById.values().toArray().toSorted(byName)
-  }
-
   public getHomeDevicesByType(type: Home.DeviceType): Home.Device[] {
     return this.#homeRegistry.getByType(type)
   }
@@ -959,6 +947,43 @@ export default class MELCloudApp extends App {
     return unwrapResult(
       await this.#getHomeDeviceFacade(deviceId).getSignalStrength(hour),
     )
+  }
+
+  // The Home target tree for the settings selector: each `/context`
+  // building (level 0) followed by its own devices (level 1), generalizing
+  // `getHomeAtaTargets` across both ATA and ATW so a whole building or a
+  // single device can be addressed, alpha-sorted at each level.
+  public getHomeTargets(): (HomeBuildingZone | HomeDeviceZone)[] {
+    const buildings = new Map<
+      string,
+      { devices: HomeDeviceZone[]; name: string }
+    >()
+    for (const device of this.#homeRegistry.getAll()) {
+      const building = buildings.get(device.building.id) ?? {
+        devices: [],
+        name: device.building.name,
+      }
+      building.devices.push({
+        id: device.id,
+        level: 1,
+        model: 'homeDevices',
+        name: device.name,
+      })
+      buildings.set(device.building.id, building)
+    }
+    return buildings
+      .entries()
+      .map(
+        ([id, { devices, name }]): HomeBuildingZone & {
+          devices: HomeDeviceZone[]
+        } => ({ devices, id, level: 0, model: 'homeBuildings', name }),
+      )
+      .toArray()
+      .toSorted(byName)
+      .flatMap(({ devices, ...building }) => [
+        building,
+        ...devices.toSorted(byName),
+      ])
   }
 
   public async getHomeTemperatures({

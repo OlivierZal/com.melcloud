@@ -3020,24 +3020,22 @@ describe('melCloudApp', () => {
       )
     })
 
-    it('lists ATA and ATW buildings, deduped and alpha-sorted', async () => {
-      mockHomeRegistry.getBuildingsByType.mockImplementation((type) =>
-        type === Home.DeviceType.Ata ?
-          [
-            { devices: [], id: 'b2', name: 'Bravo' },
-            { devices: [], id: 'b1', name: 'Alpha' },
-          ]
-        : [
-            { devices: [], id: 'b1', name: 'Alpha' },
-            { devices: [], id: 'b3', name: 'Charlie' },
-          ],
-      )
+    it('builds the target tree: buildings with their devices nested, sorted', async () => {
+      mockHomeRegistry.getAll.mockReturnValue([
+        { building: { id: 'b2', name: 'Bravo' }, id: 'd3', name: 'Zeta' },
+        { building: { id: 'b1', name: 'Alpha' }, id: 'd2', name: 'Yankee' },
+        { building: { id: 'b1', name: 'Alpha' }, id: 'd1', name: 'Xray' },
+      ])
       await app.onInit()
 
-      expect(app.getHomeBuildingZones()).toStrictEqual([
+      // Buildings alpha-sorted; each building's devices nested (level 1) and
+      // sorted under it.
+      expect(app.getHomeTargets()).toStrictEqual([
         { id: 'b1', level: 0, model: 'homeBuildings', name: 'Alpha' },
+        { id: 'd1', level: 1, model: 'homeDevices', name: 'Xray' },
+        { id: 'd2', level: 1, model: 'homeDevices', name: 'Yankee' },
         { id: 'b2', level: 0, model: 'homeBuildings', name: 'Bravo' },
-        { id: 'b3', level: 0, model: 'homeBuildings', name: 'Charlie' },
+        { id: 'd3', level: 1, model: 'homeDevices', name: 'Zeta' },
       ])
     })
   })
