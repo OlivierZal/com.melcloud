@@ -231,9 +231,12 @@ const hide = (element: HTMLDivElement, isHidden = true): void => {
   element.hidden = isHidden
 }
 
-const toggleClassicOnlySections = (isVisible: boolean): void => {
+// The zone/device settings fieldset (frost protection + holiday mode) is
+// shown whenever either account is signed in: Classic contributes its zone
+// tree, Home its individual devices.
+const toggleZoneDeviceSettings = (isVisible: boolean): void => {
   for (const fieldset of document.querySelectorAll<HTMLFieldSetElement>(
-    '.classic-only',
+    '.zone-device-settings',
   )) {
     fieldset.hidden = !isVisible
   }
@@ -1243,7 +1246,7 @@ class ZoneSettingsManager {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
       const {
-        FPEnabled: isEnabled,
+        FPEnabled: isEnabled = false,
         FPMaxTemperature: max,
         FPMinTemperature: min,
       } = data
@@ -1299,7 +1302,9 @@ class ZoneSettingsManager {
       const { id, level, model, name } = zone
       createOption(this.#zone, {
         id: getZoneId(id, model),
-        label: getZoneName(name, level),
+        // Home devices have no parent node in this selector, so render them
+        // flat (top level) rather than with the zone tree's child indent.
+        label: getZoneName(name, model === 'homeDevices' ? 0 : level),
       })
       this.populateZoneOptions(getSubzones(zone))
     }
@@ -1785,7 +1790,7 @@ class SettingsApp {
         this.#authManager.getIncompleteApis().length === 0,
     )
     hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
-    toggleClassicOnlySections(isClassicAuthenticated)
+    toggleZoneDeviceSettings(isClassicAuthenticated || isHomeAuthenticated)
   }
 
   async #run(): Promise<void> {
