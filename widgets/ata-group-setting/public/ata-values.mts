@@ -13,6 +13,7 @@ import {
   booleanStrings,
   configureNumericInput,
   createOption,
+  getButton,
   getSelect,
 } from '../../../public/dom.mts'
 import {
@@ -172,13 +173,28 @@ const getAtaStatePath = (value: string): string => {
 // ── AtaValueManager class ──
 
 export class AtaValueManager {
+  readonly #applyButton: HTMLButtonElement
+
   #ataCapabilities: [keyof Classic.GroupState, DriverCapabilitiesOptions][] = []
 
   readonly #ataValues: HTMLDivElement
 
+  // Bumped whenever a save claims the busy state; only the claim holding
+  // the current value may release it (see `#withBusy`).
+  #busyGeneration = 0
+
   #defaultAtaValues: Partial<Record<keyof Classic.GroupState, null>> = {}
 
   readonly #homey: Homey
+
+  // A save (PUT) is in flight: greys Update and Refresh until it settles.
+  #isBusy = false
+
+  readonly #refreshButton: HTMLButtonElement
+
+  // Serialized snapshot of the form as of the last save/(re)load: Update
+  // is dirty-gated against it, so it greys out until an edit diverges.
+  #savedState = ''
 
   readonly #zone: HTMLSelectElement
 
@@ -193,6 +209,11 @@ export class AtaValueManager {
     this.#homey = homey
     this.#ataValues = ataValuesElement
     this.#zone = zoneElement
+    this.#applyButton = getButton('apply_values_melcloud')
+    this.#refreshButton = getButton('refresh_values_melcloud')
+    // Establish the pristine baseline up front: Update starts greyed even
+    // when no zone resolves and the first fetch never runs.
+    this.#resetSavedState()
   }
 
   public applyDefaultZone(
@@ -214,15 +235,22 @@ export class AtaValueManager {
 
   public createAtaFormControls(): void {
     for (const [id, { title, type, values }] of this.#ataCapabilities) {
-      appendFormControl(this.#ataValues, {
-        formControl: this.#createAtaControl({ id, type, values }),
-        title,
+      const formControl = this.#createAtaControl({ id, type, values })
+      // Every control feeds the dirty check so Update tracks edits live:
+      // `input` catches typing in the numeric field, `change` the selects.
+      formControl?.addEventListener('change', () => {
+        this.#updateDirty()
       })
+      formControl?.addEventListener('input', () => {
+        this.#updateDirty()
+      })
+      appendFormControl(this.#ataValues, { formControl, title })
     }
   }
 
   public displayValues(): void {
     this.#syncAtaValues()
+    this.#resetSavedState()
   }
 
   public async fetchCapabilities(): Promise<void> {
@@ -241,6 +269,10 @@ export class AtaValueManager {
     )
     this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
     this.#syncAtaValues()
+    // The incoming server state becomes the new baseline (a background
+    // re-fetch mid-edit re-snapshots here); `#withBusy`'s generation guard
+    // keeps this from releasing a save that a live PUT still owns.
+    this.#resetSavedState()
     return values
   }
 
@@ -258,14 +290,19 @@ export class AtaValueManager {
   }
 
   public async setValues(): Promise<void> {
-    const body = this.#buildAtaValuesBody()
-    if (Object.keys(body).length > 0) {
-      await homeyApiPut(
-        this.#homey,
-        getAtaStatePath(this.#zone.value),
-        body satisfies Classic.GroupState,
-      )
-    }
+    await this.#withBusy(async () => {
+      const body = this.#buildAtaValuesBody()
+      if (Object.keys(body).length > 0) {
+        await homeyApiPut(
+          this.#homey,
+          getAtaStatePath(this.#zone.value),
+          body satisfies Classic.GroupState,
+        )
+      }
+      // New pristine baseline is the just-applied form. A rejected PUT
+      // throws before this, so the edit stays dirty for a retry.
+      this.#resetSavedState()
+    })
   }
 
   #buildAtaValuesBody(): Classic.GroupState {
@@ -310,6 +347,33 @@ export class AtaValueManager {
     return Object.hasOwn(this.#defaultAtaValues, value)
   }
 
+  // Snapshots the current form as the new pristine baseline and refreshes
+  // the dirty gate: called on (re)load, after each fetch/display, and
+  // after a successful save.
+  #resetSavedState(): void {
+    this.#savedState = this.#serializeState()
+    this.#updateDirty()
+  }
+
+  // Serializes every control's id and value, in DOM order, into the string
+  // the dirty check diffs against. A control still on its mixed/empty state
+  // serializes as '', so picking a concrete value registers as a change.
+  #serializeState(): string {
+    return JSON.stringify(
+      [
+        ...this.#ataValues.querySelectorAll<HTMLValueElement>('input, select'),
+      ].map(({ id, value }) => [id, value]),
+    )
+  }
+
+  // Refresh is gated by busy ALONE (never dirty), so it stays the escape
+  // hatch on a pristine form; Update folds busy into its dirty gate too.
+  #setBusy(isBusy: boolean): void {
+    this.#isBusy = isBusy
+    this.#refreshButton.disabled = isBusy
+    this.#updateDirty()
+  }
+
   #syncAtaValues(): void {
     for (const [ataKey] of this.#ataCapabilities) {
       this.#updateAtaValue(ataKey)
@@ -328,8 +392,34 @@ export class AtaValueManager {
     }
   }
 
+  // Native `disabled` (not a CSS class): it also blocks keyboard
+  // activation mid-request and is announced by screen readers. Update is
+  // live only when the form diverges from the snapshot AND nothing is in
+  // flight — the busy flag folds in so a control change mid-PUT cannot
+  // re-enable it.
+  #updateDirty(): void {
+    this.#applyButton.disabled =
+      this.#isBusy || this.#serializeState() === this.#savedState
+  }
+
   #updateZoneMapping(data: Partial<Classic.GroupState>): void {
     const { value } = this.#zone
     this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
+  }
+
+  // Generation-tokened: a background re-fetch (deviceupdate/zone change)
+  // re-snapshots the baseline mid-save, but only the save that owns the
+  // current generation may clear the busy state — so a debounced refresh
+  // can never release the controls a live PUT still holds.
+  async #withBusy(action: () => Promise<void>): Promise<void> {
+    const generation = ++this.#busyGeneration
+    this.#setBusy(true)
+    try {
+      await action()
+    } finally {
+      if (generation === this.#busyGeneration) {
+        this.#setBusy(false)
+      }
+    }
   }
 }
