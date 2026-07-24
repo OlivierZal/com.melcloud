@@ -136,12 +136,11 @@ input.homey-form-checkbox-input:indeterminate
   transform: translate(-50%, -50%);
 }
 
-/* The SDK's shadow/full button classes carry no disabled state of their
-   own — surface an in-flight action (a settings update running until its
-   success or failure alert) as greyed and non-interactive. */
-.homey-button-danger-shadow:disabled,
-.homey-button-primary-full:disabled,
-.homey-button-secondary-shadow:disabled {
+/* The SDK's button classes carry no disabled state of their own — surface
+   a greyed, non-interactive state on EVERY homey-button variant (dirty-
+   gated Apply, in-flight actions). The attribute selector keeps the rule
+   variant-proof: a per-class list silently missed renamed buttons. */
+[class*='homey-button']:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
