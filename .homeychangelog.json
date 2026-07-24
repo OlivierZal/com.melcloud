@@ -841,5 +841,20 @@
     "pl": "Urządzenia MELCloud Home: ochrona przed zamarzaniem i tryb wakacyjny, z kart Flow i ustawień. Czytelniejsze, spójne selektory stref. Dopracowane ustawienia.",
     "ru": "Устройства MELCloud Home: защита от замерзания и режим отпуска — через карточки Flow и настройки. Более понятный и единообразный выбор зон везде. Улучшенный вид настроек.",
     "sv": "MELCloud Home-enheter: frostskydd och semesterläge, från Flow-kort och inställningar. Tydligare, enhetliga zonväljare överallt. Förfinade inställningar."
+  },
+  "45.10.1": {
+    "ar": "الإعدادات وأداة مجموعة المكيّفات: يبقى زر التحديث باهتًا حتى تُغيّر شيئًا، ويعود باهتًا بعد الحفظ.",
+    "da": "Indstillinger og AC-gruppewidgetten: knappen Opdater forbliver nedtonet, indtil du ændrer noget, og nedtones igen, når der er gemt.",
+    "de": "Einstellungen und das AC-Gruppen-Widget: Die Schaltfläche Aktualisieren bleibt ausgegraut, bis Sie etwas ändern, und wird nach dem Speichern wieder ausgegraut.",
+    "en": "Settings and the AC group widget: the Update button now stays greyed out until you change something, and greys out again once saved.",
+    "es": "Ajustes y el widget de grupo de aire acondicionado: el botón Actualizar permanece atenuado hasta que cambias algo y vuelve a atenuarse al guardar.",
+    "fr": "Réglages et widget de groupe de climatiseurs : le bouton Mettre à jour reste grisé tant que vous ne changez rien, et se grise à nouveau une fois enregistré.",
+    "it": "Impostazioni e widget del gruppo di climatizzatori: il pulsante Aggiorna resta disattivato finché non modifichi qualcosa e si disattiva di nuovo dopo il salvataggio.",
+    "ko": "설정과 에어컨 그룹 위젯: 업데이트 버튼이 무언가를 변경하기 전까지 회색으로 유지되고, 저장하면 다시 회색이 됩니다.",
+    "nl": "Instellingen en de airco-groepwidget: de knop Bijwerken blijft grijs tot je iets wijzigt en wordt na het opslaan weer grijs.",
+    "no": "Innstillinger og AC-gruppewidgeten: Oppdater-knappen forblir nedtonet til du endrer noe, og nedtones igjen når det er lagret.",
+    "pl": "Ustawienia i widżet grupy klimatyzatorów: przycisk Aktualizuj pozostaje wyszarzony, dopóki czegoś nie zmienisz, i ponownie szarzeje po zapisaniu.",
+    "ru": "Настройки и виджет группы кондиционеров: кнопка «Обновить» остаётся неактивной, пока вы что-нибудь не измените, и снова становится неактивной после сохранения.",
+    "sv": "Inställningar och AC-gruppwidgeten: knappen Uppdatera förblir nedtonad tills du ändrar något och tonas ned igen när det har sparats."
   }
 }
