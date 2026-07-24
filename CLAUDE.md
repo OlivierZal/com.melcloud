@@ -78,8 +78,9 @@ coverage.
   historical heatzy bug), and disabled greying styles
   `[class*='homey-button']:disabled` generically, never a per-class list
   (a class list silently missed renamed buttons).
-  `tests/unit/dirty-gate.test.ts` locks the behavior; com.heatzy carries a
-  byte-identical copy (`settings/dirty-gate.mts`) — edit both together.
+  `tests/unit/dirty-gate.test.ts` locks the behavior; com.heatzy and
+  com.melcloud.extension carry byte-identical copies
+  (`settings/dirty-gate.mts` in each) — edit all three together.
 - The injected sheet resets `fieldset.homey-form-checkbox-set` /
   `-radio-set` with `all: unset`, which leaves `display: inline` — and
   WebKit renders inline fieldsets atomically, so SIBLING sets tile side
