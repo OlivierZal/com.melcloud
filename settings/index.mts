@@ -523,6 +523,19 @@ const withBusyButtons = async (
   }
 }
 
+// Serialize a device-settings section's controls as a pure form snapshot for
+// its DirtyGate — the same value-only shape the frost/holiday gates use. A
+// checkbox contributes its checked state plus its indeterminate ("mixed
+// across devices") flag; every other control contributes its value.
+const serializeSettingElements = (elements: HTMLValueElement[]): string =>
+  JSON.stringify(
+    elements.map((element) =>
+      element instanceof HTMLInputElement && element.type === 'checkbox' ?
+        [element.checked, element.indeterminate]
+      : element.value,
+    ),
+  )
+
 // Panel values, where a field may be `null` to mean "mixed" across a Home
 // building's devices — rendered indeterminate (blank).
 type MixableZoneSettings = {
@@ -751,6 +764,12 @@ class DeviceSettingsManager {
 
   #deviceSettings: Partial<DeviceSettings> = {}
 
+  // One DirtyGate per device-settings section, keyed by section id
+  // (`common` or a driver's `toSectionId`). The per-driver gates are added
+  // as their sections are appended, so a common apply — which writes every
+  // driver — can reach and lock them all for the round-trip.
+  readonly #dirtyGates = new Map<string, DirtyGate>()
+
   readonly #homey: Homey
 
   readonly #settingsCommon: HTMLDivElement
@@ -788,44 +807,6 @@ class DeviceSettingsManager {
     }
   }
 
-  #addApplySettingsEventListener(
-    elements: HTMLValueElement[],
-    driverId?: string,
-  ): void {
-    const settings = `settings_${toSectionId(driverId ?? 'common')}`
-    const button = getButton(`apply_${settings}`)
-    button.addEventListener('click', () => {
-      fireAndForget(this.#submitDeviceSettings(elements, driverId))
-    })
-  }
-
-  #addRefreshSettingsEventListener(
-    elements: HTMLValueElement[],
-    driverId?: string,
-  ): void {
-    const settings = `settings_${toSectionId(driverId ?? 'common')}`
-    const button = getButton(`refresh_${settings}`)
-    button.addEventListener('click', () => {
-      if (driverId !== undefined) {
-        this.#syncDriverSettings(
-          elements.filter((element) => element instanceof HTMLInputElement),
-        )
-        return
-      }
-      this.#syncCommonSettings(
-        elements.filter((element) => element instanceof HTMLSelectElement),
-      )
-    })
-  }
-
-  #addSettingsEventListeners(
-    elements: HTMLValueElement[],
-    driverId?: string,
-  ): void {
-    this.#addApplySettingsEventListener(elements, driverId)
-    this.#addRefreshSettingsEventListener(elements, driverId)
-  }
-
   #alertNoChanges(elements: HTMLValueElement[], driverId?: string): void {
     if (driverId === undefined) {
       this.#syncCommonSettings(
@@ -844,7 +825,7 @@ class DeviceSettingsManager {
     controls.append(...checkboxSets)
     section.append(createSettingsButtonRow(this.#homey, toSectionId(driverId)))
     getDiv('device_settings').append(section)
-    this.#addSettingsEventListeners(
+    this.#registerSettingsSection(
       checkboxSets.flatMap((checkboxSet) => [
         ...checkboxSet.querySelectorAll('input'),
       ]),
@@ -928,7 +909,7 @@ class DeviceSettingsManager {
       appendFormControl(this.#settingsCommon, { formControl, title })
       this.#updateCommonSetting(formControl)
     }
-    this.#addSettingsEventListeners([
+    this.#registerSettingsSection([
       ...this.#settingsCommon.querySelectorAll('select'),
     ])
   }
@@ -974,24 +955,6 @@ class DeviceSettingsManager {
     }
   }
 
-  #disableButtons(id: string, isDisabled = true): void {
-    const isCommon = id.endsWith('common')
-    // Plain suffix swap — a regex would be lowered by the es2020 esbuild
-    // target to a runtime RegExp construction on every call.
-    const driverIdPrefix = id.slice(0, -'common'.length)
-    for (const action of ['apply', 'refresh']) {
-      disableButton(`${action}_${id}`, isDisabled)
-      if (isCommon) {
-        for (const driverId of Object.keys(this.#deviceSettings)) {
-          disableButton(
-            `${action}_${driverIdPrefix}${toSectionId(driverId)}`,
-            isDisabled,
-          )
-        }
-      }
-    }
-  }
-
   #parseFormValue(element: HTMLValueElement): Settings[keyof Settings] {
     if (element.value !== '') {
       if (element.type === 'checkbox') {
@@ -1011,6 +974,62 @@ class DeviceSettingsManager {
       return Number.isFinite(numberValue) ? numberValue : element.value
     }
     return null
+  }
+
+  // Re-sync a section's controls from the cached device settings (client-side,
+  // no round-trip), then re-baseline its gate so Apply drops back to disabled.
+  #refreshSettings(
+    gate: DirtyGate,
+    elements: HTMLValueElement[],
+    driverId?: string,
+  ): void {
+    this.#syncSettings(elements, driverId)
+    snapshotSavedState(gate)
+  }
+
+  // Build and wire one device-settings section's DirtyGate (the common one
+  // when `driverId` is omitted, else a driver's), keyed by section id in
+  // `#dirtyGates`. Snapshots the freshly populated controls as the pristine
+  // baseline, so Apply starts disabled until an edit diverges from it.
+  #registerSettingsSection(
+    elements: HTMLValueElement[],
+    driverId?: string,
+  ): void {
+    const sectionId = toSectionId(driverId ?? 'common')
+    const gate: DirtyGate = {
+      applyId: `apply_settings_${sectionId}`,
+      busy: { value: false },
+      refreshId: `refresh_settings_${sectionId}`,
+      saved: { value: '' },
+      serialize: () => serializeSettingElements(elements),
+    }
+    this.#dirtyGates.set(sectionId, gate)
+    wireDirtyRecompute(elements, gate)
+    snapshotSavedState(gate)
+    getButton(gate.applyId).addEventListener('click', () => {
+      fireAndForget(this.#submitDeviceSettings(gate, elements, driverId))
+    })
+    getButton(gate.refreshId).addEventListener('click', () => {
+      this.#refreshSettings(gate, elements, driverId)
+    })
+  }
+
+  // Toggle a section's busy state on its gate(s): the common section fans
+  // out to every registered gate (its apply writes all drivers), a driver
+  // section touches only its own. Iterates the map directly — an old-engine
+  // webview has no `Iterator#toArray`.
+  #setSectionBusy(
+    gate: DirtyGate,
+    driverId: string | undefined,
+    areBusy: boolean,
+  ): void {
+    if (driverId === undefined) {
+      for (const sectionGate of this.#dirtyGates.values()) {
+        setButtonsBusy(sectionGate, areBusy)
+      }
+      return
+    }
+    setButtonsBusy(gate, areBusy)
   }
 
   #setSetting(settings: Settings, element: HTMLValueElement): void {
@@ -1048,23 +1067,28 @@ class DeviceSettingsManager {
   }
 
   async #submitDeviceSettings(
+    gate: DirtyGate,
     elements: HTMLValueElement[],
     driverId?: string,
   ): Promise<void> {
     const body = this.#buildSettingsBody(elements)
     if (Object.keys(body).length === 0) {
+      // Safety net: the Apply button is disabled while the section is
+      // pristine, so this is reached only when a dirty edit nets no
+      // update (a blank select, a re-toggled checkbox). Re-baseline so
+      // Apply drops back to disabled.
       this.#alertNoChanges(elements, driverId)
+      snapshotSavedState(gate)
       return
     }
-    const settingsId = `settings_${toSectionId(driverId ?? 'common')}`
-    this.#disableButtons(settingsId)
-    try {
-      await this.#applyDeviceSettings(body, driverId)
-    } catch (error) {
-      await this.#homey.alert(getErrorMessage(error))
-    } finally {
-      this.#disableButtons(settingsId, false)
-    }
+    await this.#withSectionBusy(gate, driverId, async () => {
+      try {
+        await this.#applyDeviceSettings(body, driverId)
+        snapshotSavedState(gate)
+      } catch (error) {
+        await this.#homey.alert(getErrorMessage(error))
+      }
+    })
   }
 
   #syncCommonSettings(elements: HTMLSelectElement[]): void {
@@ -1077,6 +1101,20 @@ class DeviceSettingsManager {
     for (const element of elements) {
       this.#updateDriverSetting(element)
     }
+  }
+
+  // Dispatch a refresh to the right per-type sync: the common section holds
+  // selects, a driver section holds checkbox inputs.
+  #syncSettings(elements: HTMLValueElement[], driverId?: string): void {
+    if (driverId === undefined) {
+      this.#syncCommonSettings(
+        elements.filter((element) => element instanceof HTMLSelectElement),
+      )
+      return
+    }
+    this.#syncDriverSettings(
+      elements.filter((element) => element instanceof HTMLInputElement),
+    )
   }
 
   #updateCommonSetting(element: HTMLSelectElement): void {
@@ -1125,6 +1163,23 @@ class DeviceSettingsManager {
         },
         { once: true },
       )
+    }
+  }
+
+  // Run a section's apply with its buttons busy-locked, unlocking in a
+  // `finally`. A per-driver apply locks only its own gate; a common apply
+  // writes every driver, so it locks every section's gate for the round-trip
+  // (preventing a concurrent submit against the settings it will overwrite).
+  async #withSectionBusy(
+    gate: DirtyGate,
+    driverId: string | undefined,
+    action: () => Promise<void>,
+  ): Promise<void> {
+    this.#setSectionBusy(gate, driverId, true)
+    try {
+      await action()
+    } finally {
+      this.#setSectionBusy(gate, driverId, false)
     }
   }
 }
