@@ -826,5 +826,20 @@
     "pl": "Nowe karty Flow dla trybu wakacyjnego: zakończ go o wybranej godzinie lub go wyłącz. Karta dni kończy się teraz o północy.",
     "ru": "Новые карточки Flow для режима отпуска: завершить его в выбранное время или выключить. Карта по дням теперь заканчивается в полночь.",
     "sv": "Nya Flow-kort för semesterläge: avsluta det vid en vald tid eller stäng av det. Dagkortet slutar nu vid midnatt."
+  },
+  "45.10.0": {
+    "ar": "أجهزة MELCloud Home: الحماية من التجمد ووضع العطلة، من بطاقات Flow والإعدادات. محددات مناطق أوضح وأكثر اتساقًا في كل مكان. تحسين مظهر الإعدادات.",
+    "da": "MELCloud Home-enheder: frostsikring og feriemodus, fra Flow-kort og indstillinger. Klarere, ensartede zonevælgere overalt. Forfinede indstillinger.",
+    "de": "MELCloud Home-Geräte: Frostschutz und Urlaubsmodus über Flow-Karten und Einstellungen. Klarere, einheitliche Zonenauswahl überall. Verfeinerte Einstellungen.",
+    "en": "MELCloud Home devices: frost protection and holiday mode, from Flow cards and settings. Clearer, consistent zone pickers everywhere. Refined settings look.",
+    "es": "Dispositivos MELCloud Home: protección antiheladas y modo vacaciones, desde tarjetas de Flow y ajustes. Selectores de zona más claros y coherentes. Ajustes pulidos.",
+    "fr": "Appareils MELCloud Home : protection hors gel et mode vacances, via des cartes Flow et les réglages. Sélecteurs de zones plus clairs et cohérents partout. Réglages peaufinés.",
+    "it": "Dispositivi MELCloud Home: protezione antigelo e modalità vacanza, da carte Flow e impostazioni. Selettori di zona più chiari e coerenti ovunque. Impostazioni rifinite.",
+    "ko": "MELCloud Home 기기: 플로우 카드와 설정에서 동결 방지 및 휴가 모드를 설정하세요. 어디서나 더 명확하고 일관된 구역 선택기. 설정 화면 개선.",
+    "nl": "MELCloud Home-apparaten: vorstbeveiliging en vakantiemodus, via Flow-kaarten en instellingen. Duidelijkere, consistente zonekiezers overal. Verfijnde instellingen.",
+    "no": "MELCloud Home-enheter: frostbeskyttelse og feriemodus, fra Flow-kort og innstillinger. Klarere, konsistente sonevelgere overalt. Forfinede innstillinger.",
+    "pl": "Urządzenia MELCloud Home: ochrona przed zamarzaniem i tryb wakacyjny, z kart Flow i ustawień. Czytelniejsze, spójne selektory stref. Dopracowane ustawienia.",
+    "ru": "Устройства MELCloud Home: защита от замерзания и режим отпуска — через карточки Flow и настройки. Более понятный и единообразный выбор зон везде. Улучшенный вид настроек.",
+    "sv": "MELCloud Home-enheter: frostskydd och semesterläge, från Flow-kort och inställningar. Tydligare, enhetliga zonväljare överallt. Förfinade inställningar."
   }
 }
