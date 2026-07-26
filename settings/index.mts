@@ -25,6 +25,7 @@ import type {
 } from '../types/error-log.mts'
 import type { HomeBuildingZone, HomeDeviceZone } from '../types/zone.mts'
 import { getErrorMessage } from '../lib/get-error-message.mts'
+import { type DirtyGate, createDirtyGate } from '../public/dirty-gate.mts'
 import {
   type HTMLValueElement,
   booleanStrings,
@@ -455,73 +456,6 @@ const getSubzones = (
   ...('areas' in zone ? zone.areas : []),
   ...('floors' in zone ? zone.floors : []),
 ]
-
-// Per-section dirty-gating state: `saved` holds the serialization of the
-// zone values last loaded into the panel, `busy` marks a request in
-// flight. Apply is enabled only when the current form diverges from
-// `saved` AND nothing is busy; Refresh is gated by `busy` alone.
-interface DirtyGate {
-  readonly applyId: string
-  readonly busy: { value: boolean }
-  readonly refreshId: string
-  readonly saved: { value: string }
-  readonly serialize: () => string
-}
-
-// Apply is enabled only when the form diverges from the last-loaded values
-// AND no request is in flight — the native `disabled` also blocks keyboard
-// activation mid-request and is announced by screen readers.
-const updateDirty = (gate: DirtyGate): void => {
-  disableButton(
-    gate.applyId,
-    gate.busy.value || gate.serialize() === gate.saved.value,
-  )
-}
-
-// Recompute a section's dirty state on every input it exposes, so Apply
-// reflects unsaved edits. `input` covers live typing in the number/date
-// fields; `change` covers the selects and the final commit (and, since
-// `serialize` reads the whole section, any field a cascade handler mutated).
-const wireDirtyRecompute = (
-  elements: HTMLValueElement[],
-  gate: DirtyGate,
-): void => {
-  for (const element of elements) {
-    for (const eventName of ['change', 'input']) {
-      element.addEventListener(eventName, () => {
-        updateDirty(gate)
-      })
-    }
-  }
-}
-
-// Take the current form as the pristine baseline — called on load, on every
-// repopulate, and after a successful apply — then re-evaluate Apply.
-const snapshotSavedState = (gate: DirtyGate): void => {
-  gate.saved.value = gate.serialize()
-  updateDirty(gate)
-}
-
-// Refresh is gated by `busy` alone (never dirty), matching the section's
-// disable-during-request behavior; Apply folds the busy flag into its dirty
-// check so a mid-request edit cannot re-enable it.
-const setButtonsBusy = (gate: DirtyGate, areBusy: boolean): void => {
-  gate.busy.value = areBusy
-  disableButton(gate.refreshId, areBusy)
-  updateDirty(gate)
-}
-
-const withBusyButtons = async (
-  gate: DirtyGate,
-  action: () => Promise<void>,
-): Promise<void> => {
-  setButtonsBusy(gate, true)
-  try {
-    await action()
-  } finally {
-    setButtonsBusy(gate, false)
-  }
-}
 
 // Serialize a device-settings section's controls as a pure form snapshot for
 // its DirtyGate — the same value-only shape the frost/holiday gates use. A
@@ -984,32 +918,31 @@ class DeviceSettingsManager {
     driverId?: string,
   ): void {
     this.#syncSettings(elements, driverId)
-    snapshotSavedState(gate)
+    gate.markSaved()
   }
 
   // Build and wire one device-settings section's DirtyGate (the common one
   // when `driverId` is omitted, else a driver's), keyed by section id in
-  // `#dirtyGates`. Snapshots the freshly populated controls as the pristine
-  // baseline, so Apply starts disabled until an edit diverges from it.
+  // `#dirtyGates`. The gate snapshots the freshly populated controls at
+  // creation, so Apply starts disabled until an edit diverges from them.
   #registerSettingsSection(
     elements: HTMLValueElement[],
     driverId?: string,
   ): void {
     const sectionId = toSectionId(driverId ?? 'common')
-    const gate: DirtyGate = {
-      applyId: `apply_settings_${sectionId}`,
-      busy: { value: false },
-      refreshId: `refresh_settings_${sectionId}`,
-      saved: { value: '' },
+    const applyElement = getButton(`apply_settings_${sectionId}`)
+    const refreshElement = getButton(`refresh_settings_${sectionId}`)
+    const gate = createDirtyGate({
+      applyElement,
+      refreshElements: [refreshElement],
       serialize: () => serializeSettingElements(elements),
-    }
+    })
     this.#dirtyGates.set(sectionId, gate)
-    wireDirtyRecompute(elements, gate)
-    snapshotSavedState(gate)
-    getButton(gate.applyId).addEventListener('click', () => {
+    gate.wire(elements)
+    applyElement.addEventListener('click', () => {
       fireAndForget(this.#submitDeviceSettings(gate, elements, driverId))
     })
-    getButton(gate.refreshId).addEventListener('click', () => {
+    refreshElement.addEventListener('click', () => {
       this.#refreshSettings(gate, elements, driverId)
     })
   }
@@ -1025,11 +958,11 @@ class DeviceSettingsManager {
   ): void {
     if (driverId === undefined) {
       for (const sectionGate of this.#dirtyGates.values()) {
-        setButtonsBusy(sectionGate, areBusy)
+        sectionGate.setBusy(areBusy)
       }
       return
     }
-    setButtonsBusy(gate, areBusy)
+    gate.setBusy(areBusy)
   }
 
   #setSetting(settings: Settings, element: HTMLValueElement): void {
@@ -1078,13 +1011,13 @@ class DeviceSettingsManager {
       // update (a blank select, a re-toggled checkbox). Re-baseline so
       // Apply drops back to disabled.
       this.#alertNoChanges(elements, driverId)
-      snapshotSavedState(gate)
+      gate.markSaved()
       return
     }
     await this.#withSectionBusy(gate, driverId, async () => {
       try {
         await this.#applyDeviceSettings(body, driverId)
-        snapshotSavedState(gate)
+        gate.markSaved()
       } catch (error) {
         await this.#homey.alert(getErrorMessage(error))
       }
@@ -1352,30 +1285,26 @@ class ZoneSettingsManager {
     this.#frostProtectionMaxTemperature = initFrostProtectionMax()
     this.#holidayModeStartDate = getInput('start_date')
     this.#holidayModeEndDate = getInput('end_date')
-    this.#frostProtectionDirtyGate = {
-      applyId: 'apply_frost_protection',
-      busy: { value: false },
-      refreshId: 'refresh_frost_protection',
-      saved: { value: '' },
+    this.#frostProtectionDirtyGate = createDirtyGate({
+      applyElement: getButton('apply_frost_protection'),
+      refreshElements: [getButton('refresh_frost_protection')],
       serialize: (): string =>
         JSON.stringify([
           this.#frostProtectionEnabled.value,
           this.#frostProtectionMinTemperature.value,
           this.#frostProtectionMaxTemperature.value,
         ]),
-    }
-    this.#holidayModeDirtyGate = {
-      applyId: 'apply_holiday_mode',
-      busy: { value: false },
-      refreshId: 'refresh_holiday_mode',
-      saved: { value: '' },
+    })
+    this.#holidayModeDirtyGate = createDirtyGate({
+      applyElement: getButton('apply_holiday_mode'),
+      refreshElements: [getButton('refresh_holiday_mode')],
       serialize: (): string =>
         JSON.stringify([
           this.#holidayModeEnabled.value,
           this.#holidayModeStartDate.value,
           this.#holidayModeEndDate.value,
         ]),
-    }
+    })
   }
 
   public addEventListeners(): void {
@@ -1390,8 +1319,8 @@ class ZoneSettingsManager {
     this.#addDirtyRecomputeListeners()
     // Baseline before the first (fire-and-forget) load lands, so Apply
     // starts pristine (disabled) instead of spuriously enabled.
-    snapshotSavedState(this.#frostProtectionDirtyGate)
-    snapshotSavedState(this.#holidayModeDirtyGate)
+    this.#frostProtectionDirtyGate.markSaved()
+    this.#holidayModeDirtyGate.markSaved()
   }
 
   /** @silent Falls back to default values on error. */
@@ -1412,7 +1341,7 @@ class ZoneSettingsManager {
     }
     // Populating the panel re-baselines it: the freshly loaded (or saved)
     // values become the pristine state, so Apply drops back to disabled.
-    snapshotSavedState(this.#frostProtectionDirtyGate)
+    this.#frostProtectionDirtyGate.markSaved()
   }
 
   public displayHolidayModeData(): void {
@@ -1433,7 +1362,7 @@ class ZoneSettingsManager {
     }
     // Populating the panel re-baselines it: the freshly loaded (or saved)
     // values become the pristine state, so Apply drops back to disabled.
-    snapshotSavedState(this.#holidayModeDirtyGate)
+    this.#holidayModeDirtyGate.markSaved()
   }
 
   /** @silent Falls back to default values on error. */
@@ -1542,22 +1471,16 @@ class ZoneSettingsManager {
   }
 
   #addDirtyRecomputeListeners(): void {
-    wireDirtyRecompute(
-      [
-        this.#frostProtectionEnabled,
-        this.#frostProtectionMinTemperature,
-        this.#frostProtectionMaxTemperature,
-      ],
-      this.#frostProtectionDirtyGate,
-    )
-    wireDirtyRecompute(
-      [
-        this.#holidayModeEnabled,
-        this.#holidayModeStartDate,
-        this.#holidayModeEndDate,
-      ],
-      this.#holidayModeDirtyGate,
-    )
+    this.#frostProtectionDirtyGate.wire([
+      this.#frostProtectionEnabled,
+      this.#frostProtectionMinTemperature,
+      this.#frostProtectionMaxTemperature,
+    ])
+    this.#holidayModeDirtyGate.wire([
+      this.#holidayModeEnabled,
+      this.#holidayModeStartDate,
+      this.#holidayModeEndDate,
+    ])
   }
 
   #addFrostProtectionEventListeners(): void {
@@ -1628,7 +1551,7 @@ class ZoneSettingsManager {
     id,
     path,
   }: ZoneSettingDescriptor): Promise<void> {
-    await withBusyButtons(this.#gateFor(id), async () => {
+    await this.#gateFor(id).runBusy(async () => {
       try {
         this.#updateZoneMapping(await this.#getZoneSettingData(path))
         display()
@@ -1725,7 +1648,7 @@ class ZoneSettingsManager {
     query: Classic.FrostProtectionQuery | HolidayModeUpdate,
     zoneSettings: Partial<Classic.ZoneSettings>,
   ): Promise<void> {
-    await withBusyButtons(this.#gateFor(id), async () => {
+    await this.#gateFor(id).runBusy(async () => {
       try {
         await homeyApiPut<unknown>(
           this.#homey,

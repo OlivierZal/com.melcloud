@@ -70,6 +70,17 @@ coverage.
   `homey-button-*` classes; `settings/index.css` only fills documented SDK
   gaps (date inputs, checkbox `:indeterminate`, `fieldset[hidden]`
   specificity) and app-specific design.
+- Dirty-gating: `public/dirty-gate.mts` is the ONE primitive behind every
+  webview Apply/Refresh pair (settings sections, frost/holiday panels, the
+  ATA group widget) — never re-derive its invariant at a call site. Its
+  `serialize` must stay a PURE form snapshot, never a request-body builder
+  (those filter null deltas out and desync the pristine check — the
+  historical heatzy bug), and disabled greying styles
+  `[class*='homey-button']:disabled` generically, never a per-class list
+  (a class list silently missed renamed buttons).
+  `tests/unit/dirty-gate.test.ts` locks the behavior; com.heatzy and
+  com.melcloud.extension carry byte-identical copies
+  (`settings/dirty-gate.mts` in each) — edit all three together.
 - The injected sheet resets `fieldset.homey-form-checkbox-set` /
   `-radio-set` with `all: unset`, which leaves `display: inline` — and
   WebKit renders inline fieldsets atomically, so SIBLING sets tile side
