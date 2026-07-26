@@ -56,9 +56,9 @@ export default class HomeMELCloudDeviceAta extends HomeMELCloudDevice<AtaType> {
     onoff: ({ power: isOn }) => isOn,
     target_temperature: ({ setTemperature: temperature }) => temperature,
     thermostat_mode: ({ operationMode, power: isOn }) =>
-      isOn ?
-        operationModeFromDevice[operationModeToClassic[operationMode]]
-      : ThermostatModeAta.off,
+      isOn
+        ? operationModeFromDevice[operationModeToClassic[operationMode]]
+        : ThermostatModeAta.off,
     vertical: ({ vaneVerticalDirection }) =>
       verticalFromDevice[verticalToClassic[vaneVerticalDirection]],
   }

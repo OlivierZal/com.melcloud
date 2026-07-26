@@ -96,8 +96,8 @@ export abstract class BaseMELCloudDriver extends Driver {
               },
             ) => {
               const value = args.device.getCapabilityValue(capability)
-              return typeof value === 'string' || typeof value === 'number' ?
-                  value === args[getArg(capability)]
+              return typeof value === 'string' || typeof value === 'number'
+                ? value === args[getArg(capability)]
                 : value
             },
           )

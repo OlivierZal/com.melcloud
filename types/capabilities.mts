@@ -6,26 +6,36 @@ import type * as classicAtw from './classic-atw.mts'
 import type * as classicErv from './classic-erv.mts'
 
 type GetCapabilities<T extends Classic.DeviceType> =
-  T extends typeof Classic.DeviceType.Ata ? classicAta.GetCapabilities
-  : T extends typeof Classic.DeviceType.Atw ? classicAtw.GetCapabilities
-  : T extends typeof Classic.DeviceType.Erv ? classicErv.GetCapabilities
-  : never
+  T extends typeof Classic.DeviceType.Ata
+    ? classicAta.GetCapabilities
+    : T extends typeof Classic.DeviceType.Atw
+      ? classicAtw.GetCapabilities
+      : T extends typeof Classic.DeviceType.Erv
+        ? classicErv.GetCapabilities
+        : never
 
 type ListCapabilities<T extends Classic.DeviceType> =
-  T extends typeof Classic.DeviceType.Ata ? classicAta.ListCapabilities
-  : T extends typeof Classic.DeviceType.Atw ? classicAtw.ListCapabilities
-  : T extends typeof Classic.DeviceType.Erv ? classicErv.ListCapabilities
-  : never
+  T extends typeof Classic.DeviceType.Ata
+    ? classicAta.ListCapabilities
+    : T extends typeof Classic.DeviceType.Atw
+      ? classicAtw.ListCapabilities
+      : T extends typeof Classic.DeviceType.Erv
+        ? classicErv.ListCapabilities
+        : never
 
 export type Capabilities<T extends Classic.DeviceType> =
-  T extends typeof Classic.DeviceType.Ata ? classicAta.Capabilities
-  : T extends typeof Classic.DeviceType.Atw ? classicAtw.Capabilities
-  : T extends typeof Classic.DeviceType.Erv ? classicErv.Capabilities
-  : never
+  T extends typeof Classic.DeviceType.Ata
+    ? classicAta.Capabilities
+    : T extends typeof Classic.DeviceType.Atw
+      ? classicAtw.Capabilities
+      : T extends typeof Classic.DeviceType.Erv
+        ? classicErv.Capabilities
+        : never
 
 export type CapabilitiesOptions<T extends Classic.DeviceType> =
-  T extends typeof Classic.DeviceType.Atw ? classicAtw.CapabilitiesOptions
-  : CapabilitiesOptionsAtaErv
+  T extends typeof Classic.DeviceType.Atw
+    ? classicAtw.CapabilitiesOptions
+    : CapabilitiesOptionsAtaErv
 
 export interface CapabilitiesOptionsAtaErv {
   readonly fan_speed: RangeOptions
@@ -61,10 +71,13 @@ export type ConvertToDevice<T extends Classic.DeviceType> = {
 }['bivariant']
 
 export type EnergyCapabilities<T extends Classic.DeviceType> =
-  T extends typeof Classic.DeviceType.Ata ? classicAta.EnergyCapabilities
-  : T extends typeof Classic.DeviceType.Atw ? classicAtw.EnergyCapabilities
-  : T extends typeof Classic.DeviceType.Erv ? classicErv.EnergyCapabilities
-  : Record<string, never>
+  T extends typeof Classic.DeviceType.Ata
+    ? classicAta.EnergyCapabilities
+    : T extends typeof Classic.DeviceType.Atw
+      ? classicAtw.EnergyCapabilities
+      : T extends typeof Classic.DeviceType.Erv
+        ? classicErv.EnergyCapabilities
+        : Record<string, never>
 
 export type EnergyCapabilityTagEntry<T extends Classic.DeviceType> = [
   capability: string & keyof EnergyCapabilities<T>,
@@ -95,10 +108,13 @@ export type OperationalCapabilityTagEntry<T extends Classic.DeviceType> = [
 ]
 
 export type SetCapabilities<T extends Classic.DeviceType> =
-  T extends typeof Classic.DeviceType.Ata ? classicAta.SetCapabilities
-  : T extends typeof Classic.DeviceType.Atw ? classicAtw.SetCapabilities
-  : T extends typeof Classic.DeviceType.Erv ? classicErv.SetCapabilities
-  : never
+  T extends typeof Classic.DeviceType.Ata
+    ? classicAta.SetCapabilities
+    : T extends typeof Classic.DeviceType.Atw
+      ? classicAtw.SetCapabilities
+      : T extends typeof Classic.DeviceType.Erv
+        ? classicErv.SetCapabilities
+        : never
 
 export type SetCapabilityTagMapping<T extends Classic.DeviceType> = Record<
   keyof SetCapabilities<T>,

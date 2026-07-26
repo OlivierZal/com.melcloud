@@ -143,9 +143,9 @@ describe('api', () => {
       mockGetBuildingsByType.mockImplementation((type) => [
         {
           devices:
-            type === Home.DeviceType.Ata ?
-              [mock<Home.Device>({ id: 'uuid-1' })]
-            : [mock<Home.Device>({ id: 'uuid-2' })],
+            type === Home.DeviceType.Ata
+              ? [mock<Home.Device>({ id: 'uuid-1' })]
+              : [mock<Home.Device>({ id: 'uuid-2' })],
           id: 'home-building-1',
           name: 'Appartement',
         },
@@ -160,15 +160,15 @@ describe('api', () => {
     it('should serve Home groups from the registry without a wire call', () => {
       mockGetBuildings.mockReturnValue([])
       mockGetBuildingsByType.mockImplementation((type) =>
-        type === Home.DeviceType.Ata ?
-          [
-            {
-              devices: [mock<Home.Device>({ id: 'uuid-1' })],
-              id: 'home-building-1',
-              name: 'Appartement',
-            },
-          ]
-        : [],
+        type === Home.DeviceType.Ata
+          ? [
+              {
+                devices: [mock<Home.Device>({ id: 'uuid-1' })],
+                id: 'home-building-1',
+                name: 'Appartement',
+              },
+            ]
+          : [],
       )
 
       expect(api.getDeviceGroups({ homey })).toStrictEqual([

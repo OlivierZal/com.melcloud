@@ -46,9 +46,9 @@ const defineEnergyContext = (
     cachedFacade: {
       configurable: true,
       get: () =>
-        hasEnergyConsumedMeter === undefined ? undefined : (
-          { capabilities: { hasEnergyConsumedMeter } }
-        ),
+        hasEnergyConsumedMeter === undefined
+          ? undefined
+          : { capabilities: { hasEnergyConsumedMeter } },
     },
     driver: {
       configurable: true,

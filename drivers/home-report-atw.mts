@@ -31,9 +31,9 @@ const latestBucketWatts = (
       latest = point
     }
   }
-  return latest === null ? 0 : (
-      latest.value * MINUTES_PER_HOUR * WATTS_PER_KILOWATT
-    )
+  return latest === null
+    ? 0
+    : latest.value * MINUTES_PER_HOUR * WATTS_PER_KILOWATT
 }
 
 export class HomeEnergyReportAtw extends HomeEnergyReport<

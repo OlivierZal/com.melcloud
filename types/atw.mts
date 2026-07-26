@@ -114,9 +114,9 @@ const thermostatModeValuesAtw = [
 export const getThermostatModeValuesAtw = (
   canCool: boolean,
 ): CapabilitiesOptionsValues<keyof typeof Classic.OperationModeZone>[] =>
-  canCool ?
-    thermostatModeValuesAtw
-  : thermostatModeValuesAtw.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
+  canCool
+    ? thermostatModeValuesAtw
+    : thermostatModeValuesAtw.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
 
 export const thermostatModeZone2TitleAtw: LocalizedStrings = addSuffixToTitle(
   thermostatMode.title,

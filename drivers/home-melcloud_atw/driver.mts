@@ -29,19 +29,19 @@ const energyCapabilities = (
     'hasMeasuredEnergyProduction',
   ])
   return [
-    ...(hasConsumed ?
-      ['measure_power', 'meter_power', 'meter_power.daily']
-    : []),
-    ...(hasProduced ?
-      [
-        'measure_power.produced',
-        'meter_power.produced',
-        'meter_power.produced_daily',
-      ]
-    : []),
-    ...(hasConsumed && hasProduced ?
-      ['meter_power.cop', 'meter_power.cop_daily']
-    : []),
+    ...(hasConsumed
+      ? ['measure_power', 'meter_power', 'meter_power.daily']
+      : []),
+    ...(hasProduced
+      ? [
+          'measure_power.produced',
+          'meter_power.produced',
+          'meter_power.produced_daily',
+        ]
+      : []),
+    ...(hasConsumed && hasProduced
+      ? ['meter_power.cop', 'meter_power.cop_daily']
+      : []),
   ]
 }
 
@@ -99,15 +99,15 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
       ...this.#measureCapabilities,
       ...energyCapabilities(capabilities),
       ...this.#zone1ControlCapabilities,
-      ...(capabilities?.hasHotWater === true ?
-        [
-          ...this.#hotWaterMeasureCapabilities,
-          ...this.#hotWaterControlCapabilities,
-        ]
-      : []),
-      ...(capabilities?.hasZone2 === true ?
-        [...this.#zone2MeasureCapabilities, ...this.#zone2ControlCapabilities]
-      : []),
+      ...(capabilities?.hasHotWater === true
+        ? [
+            ...this.#hotWaterMeasureCapabilities,
+            ...this.#hotWaterControlCapabilities,
+          ]
+        : []),
+      ...(capabilities?.hasZone2 === true
+        ? [...this.#zone2MeasureCapabilities, ...this.#zone2ControlCapabilities]
+        : []),
     ]
   }
 }

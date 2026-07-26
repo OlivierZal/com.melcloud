@@ -158,8 +158,8 @@ export abstract class HomeEnergyReport<
     if (facade === null) {
       return null
     }
-    return this.mode === 'total' ?
-        this.#applyTotals(facade)
+    return this.mode === 'total'
+      ? this.#applyTotals(facade)
       : this.#applyRegular(facade)
   }
 
@@ -178,9 +178,9 @@ export abstract class HomeEnergyReport<
     const storedTotal = this.#storedNumber(totalKey(measure))
     const cursor = this.#storedCursor(cursorKey(measure))
     const accrued =
-      cursor !== null && Temporal.Instant.compare(cursor, upTo) < 0 ?
-        await this.#fetchAccrual(facade, { cursor, measure, upTo })
-      : 0
+      cursor !== null && Temporal.Instant.compare(cursor, upTo) < 0
+        ? await this.#fetchAccrual(facade, { cursor, measure, upTo })
+        : 0
     const total = storedTotal + accrued
     await this.#device.setStoreValue(totalKey(measure), total)
     await this.#device.setStoreValue(cursorKey(measure), upTo.toString())
@@ -196,9 +196,9 @@ export abstract class HomeEnergyReport<
     const dayStart = now.startOfDay().toInstant()
     const powerStart = nowInstant.subtract(POWER_WINDOW)
     const from =
-      Temporal.Instant.compare(dayStart, powerStart) <= 0 ?
-        dayStart
-      : powerStart
+      Temporal.Instant.compare(dayStart, powerStart) <= 0
+        ? dayStart
+        : powerStart
     const points = await this.#fetchMeasurePoints(facade, entries, {
       from,
       to: nowInstant,

@@ -448,9 +448,9 @@ const setupWidgetListeners = (): {
   const mockRegisterCharts =
     vi.fn<(id: string, listener: (query: string) => unknown) => void>()
   mockGetWidget.mockImplementation((widgetId: string) =>
-    widgetId === 'ata-group-setting' ?
-      { registerSettingAutocompleteListener: mockRegisterAta }
-    : { registerSettingAutocompleteListener: mockRegisterCharts },
+    widgetId === 'ata-group-setting'
+      ? { registerSettingAutocompleteListener: mockRegisterAta }
+      : { registerSettingAutocompleteListener: mockRegisterCharts },
   )
   return { mockRegisterAta, mockRegisterCharts }
 }

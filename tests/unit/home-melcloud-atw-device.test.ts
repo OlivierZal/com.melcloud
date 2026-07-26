@@ -121,17 +121,17 @@ const defineEnergyContext = (
     cachedFacade: {
       configurable: true,
       get: () =>
-        flags === undefined ? undefined : (
-          {
-            capabilities: {
-              hasEstimatedEnergyConsumption: false,
-              hasEstimatedEnergyProduction: false,
-              hasMeasuredEnergyConsumption: false,
-              hasMeasuredEnergyProduction: false,
-              ...flags,
+        flags === undefined
+          ? undefined
+          : {
+              capabilities: {
+                hasEstimatedEnergyConsumption: false,
+                hasEstimatedEnergyProduction: false,
+                hasMeasuredEnergyConsumption: false,
+                hasMeasuredEnergyProduction: false,
+                ...flags,
+              },
             },
-          }
-        ),
     },
     driver: {
       configurable: true,
