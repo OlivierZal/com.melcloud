@@ -95,8 +95,8 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     if (capabilities === undefined) {
       return true
     }
-    return measure === 'consumed' ?
-        capabilities.hasEstimatedEnergyConsumption ||
+    return measure === 'consumed'
+      ? capabilities.hasEstimatedEnergyConsumption ||
           capabilities.hasMeasuredEnergyConsumption
       : capabilities.hasEstimatedEnergyProduction ||
           capabilities.hasMeasuredEnergyProduction

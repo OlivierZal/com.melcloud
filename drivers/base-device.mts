@@ -407,9 +407,9 @@ export abstract class BaseMELCloudDevice<
     await sequential(
       [...currentCapabilities.symmetricDifference(requiredCapabilities)],
       async (capability) => {
-        await (requiredCapabilities.has(capability) ?
-          this.addCapability(capability)
-        : this.removeCapability(capability))
+        await (requiredCapabilities.has(capability)
+          ? this.addCapability(capability)
+          : this.removeCapability(capability))
       },
     )
 
@@ -448,9 +448,9 @@ export abstract class BaseMELCloudDevice<
     changedCapabilities: string[],
   ): Promise<void> {
     await sequential(changedCapabilities, async (capability) => {
-      await (newSettings[capability] === true ?
-        this.addCapability(capability)
-      : this.removeCapability(capability))
+      await (newSettings[capability] === true
+        ? this.addCapability(capability)
+        : this.removeCapability(capability))
     })
     this.#tagMappings.list = this.cleanMapping(this.driver.tagMappings.list)
   }

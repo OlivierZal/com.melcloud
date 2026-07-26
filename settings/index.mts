@@ -339,9 +339,9 @@ const createSettingsButton = (
   button.type = 'button'
   button.id = `${action}_settings_${sectionId}`
   button.classList.add(
-    action === 'apply' ?
-      'homey-button-danger-shadow'
-    : 'homey-button-secondary-shadow',
+    action === 'apply'
+      ? 'homey-button-danger-shadow'
+      : 'homey-button-secondary-shadow',
   )
   button.textContent = homey.__(
     action === 'apply' ? 'settings.update' : 'settings.refresh',
@@ -464,9 +464,9 @@ const getSubzones = (
 const serializeSettingElements = (elements: HTMLValueElement[]): string =>
   JSON.stringify(
     elements.map((element) =>
-      element instanceof HTMLInputElement && element.type === 'checkbox' ?
-        [element.checked, element.indeterminate]
-      : element.value,
+      element instanceof HTMLInputElement && element.type === 'checkbox'
+        ? [element.checked, element.indeterminate]
+        : element.value,
     ),
   )
 
@@ -769,9 +769,9 @@ class DeviceSettingsManager {
 
   async #applyDeviceSettings(body: Settings, driverId?: string): Promise<void> {
     const driverQuery =
-      driverId === undefined ? '' : (
-        `?${new URLSearchParams({ driverId } satisfies { driverId: string })}`
-      )
+      driverId === undefined
+        ? ''
+        : `?${new URLSearchParams({ driverId } satisfies { driverId: string })}`
     await homeyApiPut<unknown>(
       this.#homey,
       `/settings/devices${driverQuery}`,
@@ -992,9 +992,9 @@ class DeviceSettingsManager {
       return false
     }
     const settings =
-      driverId === undefined ?
-        this.flatDeviceSettings
-      : (this.#deviceSettings[driverId] ?? {})
+      driverId === undefined
+        ? this.flatDeviceSettings
+        : (this.#deviceSettings[driverId] ?? {})
     const setting = settings[id]
     return setting === null || value !== setting
   }
@@ -1057,13 +1057,11 @@ class DeviceSettingsManager {
     if (settingId !== undefined) {
       const value = this.flatDeviceSettings[settingId]
       element.value =
-        (
-          typeof value === 'boolean' ||
-          typeof value === 'number' ||
-          typeof value === 'string'
-        ) ?
-          String(value)
-        : ''
+        typeof value === 'boolean' ||
+        typeof value === 'number' ||
+        typeof value === 'string'
+          ? String(value)
+          : ''
     }
   }
 
@@ -1562,8 +1560,8 @@ class ZoneSettingsManager {
   }
 
   #gateFor(id: 'frost_protection' | 'holiday_mode'): DirtyGate {
-    return id === 'frost_protection' ?
-        this.#frostProtectionDirtyGate
+    return id === 'frost_protection'
+      ? this.#frostProtectionDirtyGate
       : this.#holidayModeDirtyGate
   }
 
@@ -1610,8 +1608,8 @@ class ZoneSettingsManager {
         this.#homey,
         url,
       )
-      return frostProtection === null ?
-          {}
+      return frostProtection === null
+        ? {}
         : {
             FPEnabled: frostProtection.enabled,
             FPMaxTemperature: frostProtection.max,
@@ -1622,8 +1620,8 @@ class ZoneSettingsManager {
       this.#homey,
       url,
     )
-    return holidayMode === null ?
-        {}
+    return holidayMode === null
+      ? {}
       : {
           HMEnabled: holidayMode.enabled,
           HMEndDate: holidayMode.endDate,
@@ -1636,8 +1634,8 @@ class ZoneSettingsManager {
     if (isHomeBuildingValue(value)) {
       return `/home/buildings/${getHomeBuildingId(value)}`
     }
-    return isHomeDeviceValue(value) ?
-        `/home/devices/${getHomeDeviceId(value)}`
+    return isHomeDeviceValue(value)
+      ? `/home/devices/${getHomeDeviceId(value)}`
       : `/classic/zones/${getZonePath(value)}`
   }
 
@@ -1674,9 +1672,9 @@ class ZoneSettingsManager {
     const isEnabled = this.#holidayModeEnabled.value === 'true'
     const { value: startDateValue } = this.#holidayModeStartDate
     const endDate =
-      this.#holidayModeEndDate.value === '' ?
-        undefined
-      : this.#holidayModeEndDate.value
+      this.#holidayModeEndDate.value === ''
+        ? undefined
+        : this.#holidayModeEndDate.value
     if (isEnabled && endDate === undefined) {
       fireAndForget(
         this.#homey.alert(
@@ -1908,9 +1906,9 @@ class SettingsApp {
           this.#disableForError(error)
         }
         await this.#homey.alert(
-          error instanceof NoDeviceError ?
-            error.message
-          : getErrorMessage(error),
+          error instanceof NoDeviceError
+            ? error.message
+            : getErrorMessage(error),
         )
       }
     } else {

@@ -110,12 +110,10 @@ const createSelect = (
 const coolModeNumbers: ReadonlySet<number> = classicCoolModes
 
 const getCoolingAdjustedMin = (id: string, min: string): string =>
-  (
-    id === 'SetTemperature' &&
-    coolModeNumbers.has(Number(getSelect('OperationMode').value))
-  ) ?
-    String(ClassicTemperature.cooling_min)
-  : min
+  id === 'SetTemperature' &&
+  coolModeNumbers.has(Number(getSelect('OperationMode').value))
+    ? String(ClassicTemperature.cooling_min)
+    : min
 
 const clampNumericInput = ({
   id,
@@ -166,8 +164,8 @@ const getAtaStatePath = (value: string): string => {
   if (model === 'homeBuildings') {
     return `/home/buildings/${encodeURIComponent(id)}/ata`
   }
-  return model === 'homeDevices' ?
-      `/home/devices/${encodeURIComponent(id)}/ata`
+  return model === 'homeDevices'
+    ? `/home/devices/${encodeURIComponent(id)}/ata`
     : `/classic/zones/${model}/${id}/ata`
 }
 

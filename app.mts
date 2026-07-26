@@ -84,8 +84,8 @@ const byName = (
 // not agree on reads as "mixed" (`null`).
 const commonValue = <T,>(values: readonly T[]): NonNullable<T> | null => {
   const [first, ...rest] = values
-  return values.length > 0 && rest.every((value) => value === first) ?
-      (first ?? null)
+  return values.length > 0 && rest.every((value) => value === first)
+    ? (first ?? null)
     : null
 }
 
@@ -112,13 +112,13 @@ const daysAgo = (days: number, timezone: string): string =>
 // last-24-hours choice the report picker offers when hourly buckets
 // exist.
 const chartDaysStart = (days: number, timezone: string): string =>
-  days === 0 ?
-    daysAgo(1, timezone)
-  : Temporal.Now.zonedDateTimeISO(timezone)
-      .startOfDay()
-      .subtract({ days: days - 1 })
-      .toPlainDateTime()
-      .toString()
+  days === 0
+    ? daysAgo(1, timezone)
+    : Temporal.Now.zonedDateTimeISO(timezone)
+        .startOfDay()
+        .subtract({ days: days - 1 })
+        .toPlainDateTime()
+        .toString()
 
 // The manifest min/max/step only constrain manual input: a flow token
 // dropped into the field can carry anything at runtime. Only numbers
@@ -248,9 +248,9 @@ const getLocalizedCapabilitiesOptions = (
   type: options.type,
   values: options.values?.map(({ id, title }) => ({
     id:
-      enumType !== undefined && Object.hasOwn(enumType, id) ?
-        String(enumType[id])
-      : id,
+      enumType !== undefined && Object.hasOwn(enumType, id)
+        ? String(enumType[id])
+        : id,
     label: title[language] ?? title.en,
   })),
 })
@@ -284,8 +284,8 @@ type PickerNode = Classic.FlatZone | HomeBuildingZone | HomeDeviceZone
 // flow, chart and group widget pickers).
 const toFlatName = ({ buildingName, model, name }: PickerNode): string => {
   const trimmed = name.trim()
-  return model === 'buildings' || model === 'homeBuildings' ?
-      trimmed
+  return model === 'buildings' || model === 'homeBuildings'
+    ? trimmed
     : `${trimmed} (${buildingName.trim()})`
 }
 
@@ -343,15 +343,15 @@ const syntheticErrorLogWindow = (
 ): Omit<Classic.ErrorLog, 'errors'> => {
   const periodDays = period ?? DEFAULT_ERROR_LOG_PERIOD_DAYS
   const toDate =
-    to !== undefined && to !== '' ?
-      Temporal.PlainDate.from(to)
-    : Temporal.Now.plainDateISO(timeZone)
+    to !== undefined && to !== ''
+      ? Temporal.PlainDate.from(to)
+      : Temporal.Now.plainDateISO(timeZone)
   // A user-picked "since" date pins the window start, like the
   // library's own parseErrorLogQuery does on the Classic path.
   const fromDate =
-    from !== undefined && from !== '' ?
-      Temporal.PlainDate.from(from)
-    : toDate.subtract({ days: periodDays })
+    from !== undefined && from !== ''
+      ? Temporal.PlainDate.from(from)
+      : toDate.subtract({ days: periodDays })
   const nextToDate = fromDate.subtract({ days: 1 })
   return {
     fromDate: fromDate.toString(),
@@ -408,9 +408,9 @@ const formatErrorEntries = (
     )
     .map(({ device, error, instant }) => ({
       date:
-        Temporal.Instant.compare(instant, MIN_PLAUSIBLE_ERROR_INSTANT) < 0 ?
-          UNKNOWN_DATE_PLACEHOLDER
-        : dateTimeMedFormat.format(instant),
+        Temporal.Instant.compare(instant, MIN_PLAUSIBLE_ERROR_INSTANT) < 0
+          ? UNKNOWN_DATE_PLACEHOLDER
+          : dateTimeMedFormat.format(instant),
       device,
       error,
     }))
@@ -730,9 +730,9 @@ export default class MELCloudApp extends App {
       from: Temporal.PlainDate.from(fromDate),
       timeZone,
       to:
-        query.to !== undefined && query.to !== '' ?
-          Temporal.PlainDate.from(query.to)
-        : null,
+        query.to !== undefined && query.to !== ''
+          ? Temporal.PlainDate.from(query.to)
+          : null,
     }
     const allHomeEntries = await this.#getHomeErrorEntries(timeZone)
     const homeEntries = allHomeEntries.filter((entry) =>
@@ -941,9 +941,9 @@ export default class MELCloudApp extends App {
     type?: Home.DeviceType,
   ): (HomeBuildingZone | HomeDeviceZone)[] {
     const devices =
-      type === undefined ?
-        this.#homeRegistry.getAll()
-      : this.#homeRegistry.getByType(type)
+      type === undefined
+        ? this.#homeRegistry.getAll()
+        : this.#homeRegistry.getByType(type)
     const buildings = new Map<
       string,
       { devices: HomeDeviceZone[]; name: string }
@@ -1222,9 +1222,9 @@ export default class MELCloudApp extends App {
     // Classic owns the unprefixed keys (legacy); Home is namespaced to
     // avoid collisions (e.g. `username` → `homeUsername`).
     const prefixKey = (key: string): string =>
-      api === 'classic' ? key : (
-        `${api}${key.charAt(0).toUpperCase()}${key.slice(1)}`
-      )
+      api === 'classic'
+        ? key
+        : `${api}${key.charAt(0).toUpperCase()}${key.slice(1)}`
     return {
       get: (key: string): string | null | undefined => {
         const value: unknown = this.homey.settings.get(prefixKey(key))
@@ -1312,9 +1312,9 @@ export default class MELCloudApp extends App {
     const stringIds = ids?.map(String)
     return drivers.flatMap((driver) => {
       const devices = driver.getDevices()
-      return stringIds === undefined ? devices : (
-          devices.filter(({ id }) => stringIds.includes(String(id)))
-        )
+      return stringIds === undefined
+        ? devices
+        : devices.filter(({ id }) => stringIds.includes(String(id)))
     })
   }
 
@@ -1329,9 +1329,9 @@ export default class MELCloudApp extends App {
   // and post-init `onSync` calls find every driver ready.
   #getDrivers(driverId?: string): MELCloudDriver[] {
     const drivers = Object.values(this.homey.drivers.getDrivers())
-    return driverId === undefined ? drivers : (
-        drivers.filter((driver) => driver.id === driverId)
-      )
+    return driverId === undefined
+      ? drivers
+      : drivers.filter((driver) => driver.id === driverId)
   }
 
   // The ids of every device (ATA and ATW) in a `/context` building.
@@ -1585,8 +1585,8 @@ export default class MELCloudApp extends App {
     // card; the false card just clears the window.
     this.#registerHolidayModeCard('holiday_mode_action', ({ duration }) => {
       const days = this.#holidayModeDays(duration)
-      return days > HOLIDAY_MODE_OFF_DURATION ?
-          this.#holidayModeWindow(days)
+      return days > HOLIDAY_MODE_OFF_DURATION
+        ? this.#holidayModeWindow(days)
         : this.#holidayModeOff()
     })
     this.#registerHolidayModeCard(

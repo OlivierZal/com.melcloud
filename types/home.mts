@@ -16,19 +16,25 @@ import type {
 } from './home-atw.mts'
 
 type HomeCapabilities<T extends Home.DeviceType> =
-  T extends typeof Home.DeviceType.Ata ? HomeCapabilitiesAta
-  : T extends typeof Home.DeviceType.Atw ? HomeCapabilitiesAtw
-  : never
+  T extends typeof Home.DeviceType.Ata
+    ? HomeCapabilitiesAta
+    : T extends typeof Home.DeviceType.Atw
+      ? HomeCapabilitiesAtw
+      : never
 
 type HomeSetCapabilities<T extends Home.DeviceType> =
-  T extends typeof Home.DeviceType.Ata ? HomeSetCapabilitiesAta
-  : T extends typeof Home.DeviceType.Atw ? HomeSetCapabilitiesAtw
-  : never
+  T extends typeof Home.DeviceType.Ata
+    ? HomeSetCapabilitiesAta
+    : T extends typeof Home.DeviceType.Atw
+      ? HomeSetCapabilitiesAtw
+      : never
 
 type HomeValues<T extends Home.DeviceType> =
-  T extends typeof Home.DeviceType.Ata ? Home.AtaValues
-  : T extends typeof Home.DeviceType.Atw ? Home.AtwValues
-  : never
+  T extends typeof Home.DeviceType.Ata
+    ? Home.AtaValues
+    : T extends typeof Home.DeviceType.Atw
+      ? Home.AtwValues
+      : never
 
 /**
  * Converter from a Home device facade to the corresponding Homey capability
@@ -61,9 +67,11 @@ export interface HomeDeviceDetails {
 }
 
 export type HomeDeviceFacade<T extends Home.DeviceType> =
-  T extends typeof Home.DeviceType.Ata ? Home.DeviceAtaFacade
-  : T extends typeof Home.DeviceType.Atw ? Home.DeviceAtwFacade
-  : never
+  T extends typeof Home.DeviceType.Ata
+    ? Home.DeviceAtaFacade
+    : T extends typeof Home.DeviceType.Atw
+      ? Home.DeviceAtwFacade
+      : never
 
 export type HomeMELCloudDevice = HomeMELCloudDeviceAta | HomeMELCloudDeviceAtw
 

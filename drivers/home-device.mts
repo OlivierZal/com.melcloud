@@ -41,8 +41,8 @@ export abstract class HomeMELCloudDevice<
     Record<string, unknown>
   > {
     const facade = this.cachedFacade
-    return facade === undefined ?
-        {}
+    return facade === undefined
+      ? {}
       : this.driver.getCapabilitiesOptions(facade)
   }
 
@@ -52,8 +52,8 @@ export abstract class HomeMELCloudDevice<
 
   protected override getRequiredCapabilities(): string[] {
     const facade = this.cachedFacade
-    return facade === undefined ?
-        []
+    return facade === undefined
+      ? []
       : this.driver.getRequiredCapabilities(facade)
   }
 

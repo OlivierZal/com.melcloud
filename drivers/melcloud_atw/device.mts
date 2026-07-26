@@ -134,8 +134,8 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
     // number type).
     return (data) => {
       const value = data[tag]
-      return value !== 0 && Number.isFinite(value) ?
-          value
+      return value !== 0 && Number.isFinite(value)
+        ? value
         : this.getCapabilityOptions(capability).min
     }
   }

@@ -44,9 +44,9 @@ const toLoginFailure = (
     return new Error(getErrorMessage(error))
   }
   const reason =
-    error instanceof AuthenticationThrottledError ?
-      'settings.authenticate.throttled'
-    : 'settings.authenticate.rejected'
+    error instanceof AuthenticationThrottledError
+      ? 'settings.authenticate.throttled'
+      : 'settings.authenticate.rejected'
   return new Error(homey.__(reason, { name: API_DISPLAY_NAMES[service] }))
 }
 

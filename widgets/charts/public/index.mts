@@ -748,14 +748,12 @@ const fetchChartData = async (
   homey: Homey,
   { chart, days, zoneValue }: ChartSelection,
 ): Promise<ReportChartLineOptions | ReportChartPieOptions> => {
-  const daysQuery =
-    chartsWithDays.has(chart) ?
-      `?${new URLSearchParams({ days: String(days) } satisfies DaysQuery)}`
+  const daysQuery = chartsWithDays.has(chart)
+    ? `?${new URLSearchParams({ days: String(days) } satisfies DaysQuery)}`
     : ''
   const isHome = zoneValue.startsWith(HOME_DEVICES_PATH_PREFIX)
-  const path =
-    isHome ?
-      `home/devices/${zoneValue.slice(HOME_DEVICES_PATH_PREFIX.length)}`
+  const path = isHome
+    ? `home/devices/${zoneValue.slice(HOME_DEVICES_PATH_PREFIX.length)}`
     : `classic/${zoneValue}`
   return homeyApiGet<ReportChartLineOptions | ReportChartPieOptions>(
     homey,
@@ -993,9 +991,9 @@ class ChartWidget {
     type?: Classic.DeviceType | Home.DeviceType,
   ): Promise<T[]> {
     const typeQuery =
-      type === undefined ? '' : (
-        `?${new URLSearchParams({ type: String(type) })}`
-      )
+      type === undefined
+        ? ''
+        : `?${new URLSearchParams({ type: String(type) })}`
     return homeyApiGet<T[]>(this.#homey, `/${vendor}/devices${typeQuery}`)
   }
 

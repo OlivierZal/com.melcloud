@@ -64,12 +64,12 @@ export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<AtwT
     return [
       ...this.#zone1Capabilities,
       ...(canCool === true ? this.#zone1CoolCapabilities : []),
-      ...(hasClassicZone2 === true ?
-        [
-          ...this.#zone2Capabilities,
-          ...(canCool === true ? this.#zone2CoolCapabilities : []),
-        ]
-      : []),
+      ...(hasClassicZone2 === true
+        ? [
+            ...this.#zone2Capabilities,
+            ...(canCool === true ? this.#zone2CoolCapabilities : []),
+          ]
+        : []),
     ]
   }
 }

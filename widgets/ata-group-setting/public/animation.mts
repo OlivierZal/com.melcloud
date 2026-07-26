@@ -151,9 +151,9 @@ const parseStateParams = (
     isSomethingOn: isOn !== false,
     newMode: Number(mode ?? null),
     newSpeed:
-      numberSpeed === 0 || Number.isNaN(numberSpeed) ?
-        ClassicFanSpeed.moderate
-      : numberSpeed,
+      numberSpeed === 0 || Number.isNaN(numberSpeed)
+        ? ClassicFanSpeed.moderate
+        : numberSpeed,
   }
 }
 
@@ -560,9 +560,9 @@ export class AnimationController {
     if (elementName !== undefined) {
       const previousElement = getPreviousElement(elementName, index)
       const previousPosition =
-        previousElement === null ?
-          -gap * 2
-        : parsePixelValue(previousElement.style[positionProperty])
+        previousElement === null
+          ? -gap * 2
+          : parsePixelValue(previousElement.style[positionProperty])
       element.style[positionProperty] = generateStyleString(
         {
           gap,
