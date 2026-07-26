@@ -130,7 +130,6 @@ const hourlyCharts = new Set<HomeySettings['chart']>([
   'signal',
 ])
 
-// D3/Tableau-inspired color palette for chart series
 const colors = [
   '#1F77B4',
   '#D62728',

@@ -69,7 +69,6 @@ export class EnergyReport<
     if (device === null) {
       return null
     }
-    // Fetch energy data from the previous period (offset by config.minus)
     const toDateTime = this.reportDateTime()
     const to = toDateTime.toPlainDate().toString()
     // Total mode reports from the epoch: omitting `from` lets the API
@@ -86,7 +85,6 @@ export class EnergyReport<
   }
 
   // COP (Coefficient of Performance) = produced energy / consumed energy.
-  // Falls back to divisor of 1 to avoid division by zero when no energy consumed
   #calculateCopValue(
     data: Classic.EnergyData<T>,
     capability: string & keyof EnergyCapabilities<T>,
@@ -105,8 +103,7 @@ export class EnergyReport<
     return sumTags(data, tags) / this.#linkedDeviceCount
   }
 
-  // Power values are stored as 24-element arrays (one per hour).
-  // Multiply by KILOWATT_TO_WATT to convert from kW to W
+  // Power values are stored as 24-element kW arrays (one per hour).
   #calculatePowerValue(
     data: Classic.EnergyData<T>,
     tags: readonly (keyof Classic.EnergyData<T>)[],
