@@ -543,7 +543,7 @@ class AuthManager {
   }
 
   // Folded when the credentials are settled, expanded while attention
-  // is needed — same rule the section's visibility used to follow.
+  // is needed.
   public collapseAuthenticationSection(isCollapsed: boolean): void {
     this.#authenticationSection.open = !isCollapsed
   }
@@ -1693,9 +1693,6 @@ class ZoneSettingsManager {
     }
   }
 
-  // The selected target's settings base URL: a Home device routes to the
-  // Home device endpoints; every Classic zone/device keeps the classic zone
-  // path (`getZonePath` splits `${model}_${id}` at the first underscore).
   // A blank enabled select means a Home building's devices disagree
   // ("mixed") and the user has not chosen: applying would silently write a
   // single value (off) to them all, so require an explicit choice first.
@@ -1770,15 +1767,13 @@ class SettingsApp {
   }
 
   // `ready()` always fires — an unbounded await here would hold Homey's
-  // loading overlay open forever on a single hung or failed call. The
-  // failure alert waits until after `ready()`: an alert raised while the
-  // overlay is still up never gets seen.
+  // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
     const { error, hasFailed } = await runWebview(this.#homey, this.#run())
     if (hasFailed) {
       // After `ready` (runWebview's finally): an alert raised under the
-      // overlay is never seen, and fire-and-forget keeps this non-throwing
-      // so a rejected alert cannot trip the HTML loader's catch.
+      // overlay is never seen, and fire-and-forget keeps a rejected alert
+      // from bubbling out of `start()` as an unhandled rejection.
       fireAndForget(this.#homey.alert(getErrorMessage(error)))
     }
   }
@@ -1838,8 +1833,7 @@ class SettingsApp {
     fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
   }
 
-  // The Home account has no zone tree: each device is a standalone
-  // selectable target, appended after any Classic zones.
+  // Home targets are appended after any Classic zones.
   async #fetchHomeTargets(): Promise<void> {
     // A tree: each Home building followed by its own devices (indented),
     // both frost/holiday targets.
@@ -1894,9 +1888,7 @@ class SettingsApp {
   /** @alerts Displays post-login errors to the user. */
   async #onLogin(api: Api): Promise<void> {
     // Reflect the server truth instead of assuming success: the login
-    // POST resolves even when the post-login device sync fails, and a
-    // hardcoded `true` here hid the credentials frame for the session
-    // only to bring it back on the next page open.
+    // POST resolves even when the post-login device sync fails.
     this.#authState[api] = await this.#fetchSessionState(api)
     if (this.#authState[api]) {
       try {

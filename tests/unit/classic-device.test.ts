@@ -729,7 +729,6 @@ describe(ClassicMELCloudDevice, () => {
       })
       setDriver(deviceWithRegular)
       await deviceWithRegular.onInit()
-      // The detached chain settles within one macrotask turn.
       await settleDetached()
 
       expect(deviceWithRegular.error).toHaveBeenCalledWith(

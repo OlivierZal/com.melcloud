@@ -1,6 +1,5 @@
 import { vi } from 'vitest'
 
-// Options for createMockDeviceClass.
 // - `overrides`: instance-level props assigned in the constructor (shallow merge).
 // - `superMocks`: prototype-level async methods that delegate to the provided vi.fn.
 //   Required when BaseMELCloudDevice calls super.X() (e.g. addCapability,

@@ -54,7 +54,7 @@ const config = defineConfig([
     ignores: [
       '.homeybuild/',
       'coverage/',
-      // esbuild outputs (see scripts/bundle.mjs), also gitignored
+      // Stale pre-`.homeybuild` esbuild outputs, also gitignored
       'settings/index.mjs',
       'widgets/*/public/index.mjs',
     ],
@@ -185,7 +185,6 @@ const config = defineConfig([
           types: ['boolean'],
         },
         // ── Parameters ───────────────────────────────────────
-        // Unused parameters must wear the underscore.
         {
           format: ['camelCase'],
           leadingUnderscore: 'require',
@@ -430,8 +429,8 @@ const config = defineConfig([
         'error',
         {
           bundledDependencies: false,
-          // Widget and settings sources are bundled by esbuild, so their
-          // imports may live in devDependencies.
+          // Widget sources are bundled by esbuild, so their imports may
+          // live in devDependencies.
           devDependencies: ['*.config.ts', 'tests/**', 'widgets/**'],
           optionalDependencies: false,
           peerDependencies: false,

@@ -125,9 +125,9 @@ const areAnimationsEnabled = (homey: Homey<HomeySettings>): boolean =>
 const prefersReducedMotion = (): boolean =>
   matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// Calculates a randomized delay with exponential speed scaling. Higher speed
-// values produce shorter delays via exponential interpolation between
-// factorMin and factorMax
+// Randomized delay with exponential speed scaling: higher speeds yield
+// shorter delays via exponential interpolation between SPEED_FACTOR_MIN
+// and SPEED_FACTOR_MAX.
 const generateDelay = (delay: number, speed: number): number => {
   const speedFactor =
     SPEED_FACTOR_MIN *
@@ -157,11 +157,9 @@ const parseStateParams = (
   }
 }
 
-// Converts a CSS pixel length (e.g. `12.5px`) into its numeric value.
-// Non-numeric values such as `auto` yield NaN. Unlike Number.parseFloat,
-// an empty string coerces to 0 — no call site can produce one, since the
-// inline positions are written before being read and getComputedStyle
-// returns resolved values
+// Non-numeric values such as `auto` yield NaN; an empty string would
+// coerce to 0, but no call site can produce one (inline positions are
+// written before being read; getComputedStyle returns resolved values).
 const parsePixelValue = (value: string): number =>
   Number(value.replace('px', ''))
 

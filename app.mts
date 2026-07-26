@@ -136,9 +136,8 @@ const toDurationDays = (duration: unknown): number => {
 
 // Flow-action arguments shared by the holiday-mode cards: `zone` always,
 // `duration`/`time` only on the cards that declare them. The zone carries
-// its `${model}_${id}` option value as `id` — the shape every stored card
-// arg has always had — so run listeners route by parsing it (legacy Flows
-// included) and never need the structured coordinates threaded back.
+// its `${model}_${id}` option value as `id` — the shape stored card args
+// in existing Flows carry — so run listeners route by parsing it.
 interface HolidayModeActionArgs {
   zone: FlatZoneItem
   duration?: unknown
@@ -272,8 +271,8 @@ interface FlatZoneItem {
 }
 
 // A node from either zone source: a Classic zone (carrying its building
-// name since melcloud-api 43.1.0) or a Home building/device (same shape).
-// The single vocabulary every picker draws from.
+// name) or a Home building/device (same shape). The single vocabulary
+// every picker draws from.
 type PickerNode = Classic.FlatZone | HomeBuildingZone | HomeDeviceZone
 
 // A flat picker lists every node at one level, so a leaf's bare name can
@@ -290,8 +289,7 @@ const toFlatName = ({ buildingName, model, name }: PickerNode): string => {
 }
 
 // Flat autocomplete items over the given nodes, name-sorted. The selected
-// item's `id` carries the `${model}_${id}` routing — run listeners parse it,
-// needing no structured coordinates.
+// item's `id` carries the `${model}_${id}` routing value run listeners parse.
 const toFlatZoneItems = (nodes: readonly PickerNode[]): FlatZoneItem[] =>
   nodes
     .map((node) => ({
@@ -393,7 +391,6 @@ const formatErrorEntries = (
   entries: readonly RawErrorEntry[],
   { locale, timeZone }: { locale: string; timeZone: string },
 ): FormattedErrorDetails[] => {
-  // Reused across all entries instead of rebuilding a formatter per call.
   const dateTimeMedFormat = new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     hour: 'numeric',
@@ -663,9 +660,9 @@ export default class MELCloudApp extends App {
   }
 
   // The Classic zone source: every zone (buildings, floors, areas, devices)
-  // flattened, each stamped with its owning building name (melcloud-api
-  // 43.1.0), optionally narrowed to one device type. Every flat Classic
-  // picker draws from here with the filters it needs.
+  // flattened, each stamped with its owning building name, optionally
+  // narrowed to one device type. Every flat Classic picker draws from
+  // here with the filters it needs.
   public getClassicTargets(type?: Classic.DeviceType): Classic.FlatZone[] {
     return this.#facadeManager.getZones(type === undefined ? {} : { type })
   }
@@ -1134,8 +1131,6 @@ export default class MELCloudApp extends App {
     })
   }
 
-  // Sync matching classic devices by pulling their latest state from MELCloud.
-  // Per-device sync failures are logged without aborting the full sync run.
   // Deferred half of the loss notification: the readiness await
   // orders the device check after driver init — a backed-off resume
   // reports the loss during `App#onInit`, when `getDrivers()` is
@@ -1546,10 +1541,7 @@ export default class MELCloudApp extends App {
   // alert API and no webview is open when a sync loses the session).
   // The library fires once per loss episode, so no dedup is needed
   // here; the deferral mirrors #createNotification (off the event
-  // callstack, best-effort). Residual credentials on an API without any
-  // paired device (say, a Classic-only user who once tried Home) only
-  // get a log line: the timeline nag is reserved for a loss that stops
-  // device updates. The episode is recorded synchronously so a
+  // callstack, best-effort). The episode is recorded synchronously so a
   // recovery event can never outrun it.
   #notifySessionLost(api: Api): void {
     this.#sessionLossStates.set(api, 'pending')
