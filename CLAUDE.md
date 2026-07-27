@@ -70,6 +70,18 @@ coverage.
   `homey-button-*` classes; `settings/index.css` only fills documented SDK
   gaps (date inputs, checkbox `:indeterminate`, `fieldset[hidden]`
   specificity) and app-specific design.
+- App-API surface conventions: paths are kebab-case REST (`get*` for
+  GET, `update*` for PUT — never `set*`); handler renames are
+  wire-invisible (routing is method+path), path renames are NOT (phone
+  webviews cache bundles across versions — keep the old path as an
+  alias). `GET /device_groups` (`getDeviceGroupsLegacy`) is the FROZEN
+  inter-app contract the extension's older releases call during version
+  skew — never remove or rename it; `/devices/groups` is the current
+  form. `settings/callback-api.mts` is the settings pages' transport
+  (the settings SDK is error-first-callback, unlike the widget SDK —
+  which is why `public/homey-api.mts` stays a separate, promise-native
+  widget layer); byte-identical copies live in com.heatzy and
+  com.melcloud.extension — edit all three together.
 - Dirty-gating: `public/dirty-gate.mts` is the ONE primitive behind every
   webview Apply/Refresh pair (settings sections, frost/holiday panels, the
   ATA group widget) — never re-derive its invariant at a call site. Its

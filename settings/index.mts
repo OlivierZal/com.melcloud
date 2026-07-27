@@ -49,56 +49,16 @@ import {
   isHomeBuildingValue,
   isHomeDeviceValue,
 } from '../public/zones.mts'
+import {
+  homeyApiDelete,
+  homeyApiGet,
+  homeyApiPost,
+  homeyApiPut,
+  homeyCallback,
+  homeyConfirm,
+} from './callback-api.mts'
 
 // ── Helpers ──
-
-// Promisifies any error-first Homey settings callback (the extension's
-// idiom, aligned here so the two apps share one promisification form).
-const homeyCallback = async <T,>(
-  call: (callback: (error: Error | null, result: T) => void) => void,
-): Promise<T> =>
-  new Promise((resolve, reject) => {
-    call((error, result) => {
-      if (error !== null) {
-        reject(error)
-        return
-      }
-      resolve(result)
-    })
-  })
-
-const homeyApiGet = async <T,>(homey: Homey, path: string): Promise<T> =>
-  homeyCallback((callback) => {
-    homey.api('GET', path, callback)
-  })
-
-const homeyApiPost = async <T,>(
-  homey: Homey,
-  path: string,
-  body: unknown,
-): Promise<T> =>
-  homeyCallback((callback) => {
-    homey.api('POST', path, body, callback)
-  })
-
-const homeyApiPut = async <T,>(
-  homey: Homey,
-  path: string,
-  body: unknown,
-): Promise<T> =>
-  homeyCallback((callback) => {
-    homey.api('PUT', path, body, callback)
-  })
-
-const homeyApiDelete = async (homey: Homey, path: string): Promise<void> =>
-  homeyCallback((callback) => {
-    homey.api('DELETE', path, callback)
-  })
-
-const homeyConfirm = async (homey: Homey, message: string): Promise<boolean> =>
-  homeyCallback((callback) => {
-    homey.confirm(message, null, callback)
-  })
 
 interface CheckboxGroup {
   readonly label: string

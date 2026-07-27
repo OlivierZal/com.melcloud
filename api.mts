@@ -155,6 +155,17 @@ const api = {
       .filter(({ deviceIds }) => deviceIds.length > 0)
       .toSorted((group1, group2) => group1.name.localeCompare(group2.name))
   },
+  /**
+   * Serves `/device_groups`, the FROZEN inter-app path: extension
+   * installs in the wild call it during version skew (its current
+   * releases probe `/devices/groups` first, older ones only know this
+   * one) — never remove or rename it.
+   * @param context - Homey API context.
+   * @param context.homey - Homey instance carrying the app.
+   * @returns One entry per non-empty building, sorted by name.
+   */
+  getDeviceGroupsLegacy: (context: { homey: Homey }): DeviceGroup[] =>
+    api.getDeviceGroups(context),
   getDeviceSettings: ({ homey: { app } }: { homey: Homey }): DeviceSettings => {
     logSettingsRoute(app, '/settings/devices')
     return app.getDeviceSettings()
