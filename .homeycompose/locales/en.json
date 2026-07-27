@@ -74,7 +74,8 @@
     "intError": "__name__: must be an integer between __min__ and __max__.",
     "loadFailed": "Loading failed",
     "overheatProtection": {
-      "enabled": "Enable <strong>overheat protection</strong> (Home)",
+      "airToAir": "(air-to-air)",
+      "enabled": "Enable <strong>overheat protection</strong>",
       "max": "Maximum temperature",
       "min": "Minimum temperature"
     },

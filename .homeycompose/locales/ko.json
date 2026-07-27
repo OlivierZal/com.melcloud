@@ -74,7 +74,8 @@
     "intError": "__name__: __min__에서 __max__ 사이의 정수여야 합니다.",
     "loadFailed": "로드에 실패했습니다",
     "overheatProtection": {
-      "enabled": "<strong>과열 방지</strong> 사용 (Home)",
+      "airToAir": "(공기 대 공기)",
+      "enabled": "<strong>과열 방지</strong> 사용",
       "max": "최고 온도",
       "min": "최저 온도"
     },

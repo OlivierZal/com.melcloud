@@ -72,9 +72,10 @@
       "enabledRequired": "Wählen Sie Ja oder Nein, bevor Sie anwenden."
     },
     "overheatProtection": {
-      "enabled": "<strong>Überhitzungsschutz</strong> aktivieren (Home)",
+      "enabled": "<strong>Überhitzungsschutz</strong> aktivieren",
       "max": "Maximaltemperatur",
-      "min": "Minimaltemperatur"
+      "min": "Minimaltemperatur",
+      "airToAir": "(Luft-Luft)"
     }
   },
   "warnings": {

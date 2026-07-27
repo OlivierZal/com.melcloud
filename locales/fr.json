@@ -72,9 +72,10 @@
       "enabledRequired": "Choisissez Oui ou Non avant d'appliquer."
     },
     "overheatProtection": {
-      "enabled": "Activer la <strong>protection contre la surchauffe</strong> (Home)",
+      "enabled": "Activer la <strong>protection contre la surchauffe</strong>",
       "max": "Température maximale",
-      "min": "Température minimale"
+      "min": "Température minimale",
+      "airToAir": "(air-air)"
     }
   },
   "warnings": {

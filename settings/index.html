@@ -292,9 +292,17 @@
                     <div class="homey-form-group">
                         <label
                             class="homey-form-label"
-                            data-i18n="settings.overheatProtection.enabled"
                             for="enabled_overheat_protection"
-                        >Enable overheat protection (Home)</label>
+                        >
+                            <span
+                                data-i18n="settings.overheatProtection.enabled"
+                            >Enable overheat protection</span>
+                            <span
+                                id="overheat_protection_scope"
+                                data-i18n="settings.overheatProtection.airToAir"
+                                hidden
+                            >(air-to-air)</span>
+                        </label>
                         <select id="enabled_overheat_protection" class="homey-form-select">
                             <option
                                 data-i18n="settings.boolean.false"

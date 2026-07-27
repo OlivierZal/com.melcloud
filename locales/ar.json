@@ -72,9 +72,10 @@
       "enabledRequired": "اختر نعم أو لا قبل التطبيق."
     },
     "overheatProtection": {
-      "enabled": "تفعيل <strong>الحماية من فرط التسخين</strong> (Home)",
+      "enabled": "تفعيل <strong>الحماية من فرط التسخين</strong>",
       "max": "درجة الحرارة القصوى",
-      "min": "درجة الحرارة الدنيا"
+      "min": "درجة الحرارة الدنيا",
+      "airToAir": "(هواء-هواء)"
     }
   },
   "warnings": {

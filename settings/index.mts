@@ -425,26 +425,30 @@ const createValuesGate = (
       JSON.stringify(elements.map((element) => element.value)),
   })
 
-// Option values eligible for the Home-only overheat panel: every Home ATA
-// device, plus each Home building once one of its (immediately following)
-// devices is one.
-const collectOverheatCapableValues = (
+// Option values driving the Home-only overheat panel: `capable` lists
+// every Home ATA device plus each building owning one (the flat target
+// list puts a building right before its devices); `atwBuildings` lists
+// the buildings owning at least one ATW, so a capable building can show
+// the "(air-to-air)" scope qualifier when its bulk write skips ATW.
+const collectOverheatZoneValues = (
   zones: readonly (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[],
-): string[] => {
-  const values: string[] = []
+): { atwBuildings: string[]; capable: string[] } => {
+  const atwBuildings: string[] = []
+  const capable: string[] = []
   let buildingValue: string | null = null
   for (const zone of zones) {
     if (zone.model === 'homeBuildings') {
       buildingValue = getZoneId(zone.id, zone.model)
     } else if (zone.model === 'homeDevices' && zone.deviceType === 'ata') {
-      values.push(
+      capable.push(
         getZoneId(zone.id, zone.model),
         ...(buildingValue === null ? [] : [buildingValue]),
       )
-      buildingValue = null
+    } else if (buildingValue !== null && zone.model === 'homeDevices') {
+      atwBuildings.push(buildingValue)
     }
   }
-  return values
+  return { atwBuildings, capable }
 }
 
 const getSubzones = (
@@ -1254,6 +1258,10 @@ class ErrorLogManager {
 
 // ── ZoneSettingsManager ──
 class ZoneSettingsManager {
+  // Home buildings owning at least one ATW device: a capable building in
+  // this set shows the "(air-to-air)" scope qualifier.
+  readonly #atwBuildingValues = new Set<string>()
+
   readonly #frostProtectionDirtyGate: DirtyGate
 
   readonly #frostProtectionEnabled = getSelect('enabled_frost_protection')
@@ -1297,6 +1305,8 @@ class ZoneSettingsManager {
     'overheat_min',
     overheatProtectionTemperatureRange,
   )
+
+  readonly #overheatScope = getSpan('overheat_protection_scope')
 
   readonly #zone = getSelect('zones')
 
@@ -1451,10 +1461,7 @@ class ZoneSettingsManager {
   public populateZoneOptions(
     zones: (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[],
   ): void {
-    for (const value of collectOverheatCapableValues(zones)) {
-      this.#overheatCapableValues.add(value)
-    }
-    this.#refreshOverheatVisibility()
+    this.#registerOverheatZones(zones)
     for (const zone of zones) {
       const { id, level, model, name } = zone
       createOption(this.#zone, {
@@ -1841,10 +1848,26 @@ class ZoneSettingsManager {
   // ("mixed") and the user has not chosen: applying would silently write a
   // single value (off) to them all, so require an explicit choice first.
   #refreshOverheatVisibility(): void {
-    hide(
-      this.#overheatPanel,
-      !this.#overheatCapableValues.has(this.#zone.value),
-    )
+    const { value } = this.#zone
+    const isCapable = this.#overheatCapableValues.has(value)
+    hide(this.#overheatPanel, !isCapable)
+    // The bulk write of a mixed building silently skips its ATW devices —
+    // the qualifier says so; a pure-ATA building (or a device) needs none.
+    this.#overheatScope.hidden =
+      !isCapable || !this.#atwBuildingValues.has(value)
+  }
+
+  #registerOverheatZones(
+    zones: readonly (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[],
+  ): void {
+    const { atwBuildings, capable } = collectOverheatZoneValues(zones)
+    for (const value of capable) {
+      this.#overheatCapableValues.add(value)
+    }
+    for (const value of atwBuildings) {
+      this.#atwBuildingValues.add(value)
+    }
+    this.#refreshOverheatVisibility()
   }
 
   #requireEnabledChosen(select: HTMLSelectElement): boolean {

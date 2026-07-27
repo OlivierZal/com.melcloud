@@ -72,9 +72,10 @@
       "enabledRequired": "Kies Ja of Nee voordat je toepast."
     },
     "overheatProtection": {
-      "enabled": "<strong>Oververhittingsbeveiliging</strong> inschakelen (Home)",
+      "enabled": "<strong>Oververhittingsbeveiliging</strong> inschakelen",
       "max": "Maximumtemperatuur",
-      "min": "Minimumtemperatuur"
+      "min": "Minimumtemperatuur",
+      "airToAir": "(lucht-lucht)"
     }
   },
   "warnings": {
