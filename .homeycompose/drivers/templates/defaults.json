@@ -745,7 +745,7 @@
       }
     }
   },
-  "class": "heatpump",
+  "class": "thermostat",
   "icon": "{{driverAssetsPath}}/icon.svg",
   "images": {
     "large": "{{driverAssetsPath}}/images/large.png",

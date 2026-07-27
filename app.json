@@ -4188,7 +4188,7 @@
           ]
         }
       },
-      "class": "heatpump",
+      "class": "thermostat",
       "icon": "/drivers/home-melcloud/assets/icon.svg",
       "images": {
         "large": "/drivers/home-melcloud/assets/images/large.png",
@@ -5148,7 +5148,7 @@
           "min": 10
         }
       },
-      "class": "heatpump",
+      "class": "thermostat",
       "icon": "/drivers/home-melcloud_atw/assets/icon.svg",
       "images": {
         "large": "/drivers/home-melcloud_atw/assets/images/large.png",
@@ -6539,7 +6539,7 @@
           ]
         }
       },
-      "class": "heatpump",
+      "class": "thermostat",
       "icon": "/drivers/melcloud/assets/icon.svg",
       "images": {
         "large": "/drivers/melcloud/assets/images/large.png",
@@ -8776,7 +8776,7 @@
           }
         }
       },
-      "class": "heatpump",
+      "class": "thermostat",
       "icon": "/drivers/melcloud_atw/assets/icon.svg",
       "images": {
         "large": "/drivers/melcloud_atw/assets/images/large.png",

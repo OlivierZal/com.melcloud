@@ -216,6 +216,7 @@ const mockManifestDrivers: ManifestDriver[] = [
         ],
       },
     },
+    class: 'thermostat',
     id: 'melcloud',
     name: { en: 'melcloud' },
     settings: [
@@ -234,6 +235,7 @@ const mockManifestDrivers: ManifestDriver[] = [
   },
   {
     capabilities: [],
+    class: 'thermostat',
     id: 'melcloud-login',
     name: { en: 'melcloud-login' },
     pair: [
@@ -250,6 +252,7 @@ const mockManifestDrivers: ManifestDriver[] = [
   },
   {
     capabilities: [],
+    class: 'thermostat',
     id: 'melcloud-odd',
     name: { en: 'melcloud-odd' },
     settings: [
@@ -3185,6 +3188,7 @@ describe('melCloudApp', () => {
       const driversWithLogin: ManifestDriver[] = [
         {
           capabilities: [],
+          class: 'thermostat',
           id: 'melcloud',
           name: { en: 'melcloud' },
           pair: Object.assign(
@@ -3569,6 +3573,7 @@ describe('melCloudApp', () => {
       const driversWithValues: ManifestDriver[] = [
         {
           capabilities: [],
+          class: 'thermostat',
           id: 'melcloud',
           name: { en: 'melcloud' },
           settings: [

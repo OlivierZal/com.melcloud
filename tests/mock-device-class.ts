@@ -33,6 +33,8 @@ export const createMockDeviceClass = (
 
     public getCapabilityValue = vi.fn<(capability: string) => unknown>()
 
+    public getClass = vi.fn<() => string>().mockReturnValue('thermostat')
+
     public getData = vi
       .fn<() => { id: number | string }>()
       .mockReturnValue({ id: 1 })
@@ -82,6 +84,8 @@ export const createMockDeviceClass = (
 
     public setCapabilityValue =
       vi.fn<(capability: string, value: unknown) => Promise<void>>()
+
+    public setClass = vi.fn<(deviceClass: string) => Promise<void>>()
 
     public setSettings =
       vi.fn<(settings: Record<string, unknown>) => Promise<void>>()
