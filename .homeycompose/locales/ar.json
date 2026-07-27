@@ -73,6 +73,11 @@
     },
     "intError": "__name__: يجب أن يكون عددًا صحيحًا بين __min__ و __max__.",
     "loadFailed": "فشل التحميل",
+    "overheatProtection": {
+      "enabled": "تفعيل <strong>الحماية من فرط التسخين</strong> (Home)",
+      "max": "درجة الحرارة القصوى",
+      "min": "درجة الحرارة الدنيا"
+    },
     "refresh": "إعادة تحميل",
     "success": "تم التحديث بنجاح.",
     "title": "إعدادات MELCloud",

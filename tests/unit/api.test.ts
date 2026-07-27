@@ -71,9 +71,17 @@ const mockApp = {
       HMStartDate: string | null
     }
   >(),
+  getHomeBuildingOverheatProtection: vi.fn<
+    () => {
+      OHEnabled: boolean | null
+      OHMaxTemperature: number | null
+      OHMinTemperature: number | null
+    }
+  >(),
   getHomeDeviceZones: vi.fn<() => HomeDeviceZone[]>(),
   getHomeFrostProtection: vi.fn<() => Home.FrostProtection | null>(),
   getHomeHolidayMode: vi.fn<() => Home.HolidayMode | null>(),
+  getHomeOverheatProtection: vi.fn<() => Home.OverheatProtection | null>(),
   getHomeTargets: vi.fn<() => (HomeBuildingZone | HomeDeviceZone)[]>(),
   homeApi: {
     authenticate: mockHomeAuthenticate,
@@ -88,8 +96,10 @@ const mockApp = {
   updateDeviceSettings: vi.fn<() => Promise<void>>(),
   updateHomeBuildingFrostProtection: vi.fn<() => Promise<void>>(),
   updateHomeBuildingHolidayMode: vi.fn<() => Promise<void>>(),
+  updateHomeBuildingOverheatProtection: vi.fn<() => Promise<void>>(),
   updateHomeFrostProtection: vi.fn<() => Promise<void>>(),
   updateHomeHolidayMode: vi.fn<() => Promise<void>>(),
+  updateHomeOverheatProtection: vi.fn<() => Promise<void>>(),
 }
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
@@ -345,6 +355,21 @@ describe('api', () => {
     })
   })
 
+  describe('home overheat protection settings retrieval', () => {
+    it('should delegate to app.getHomeOverheatProtection with the device id', () => {
+      const overheatProtection = mock<Home.OverheatProtection>()
+      mockApp.getHomeOverheatProtection.mockReturnValue(overheatProtection)
+
+      const result = api.getHomeOverheatProtection({
+        homey,
+        params: { deviceId: 'guid-1' },
+      })
+
+      expect(result).toBe(overheatProtection)
+      expect(mockApp.getHomeOverheatProtection).toHaveBeenCalledWith('guid-1')
+    })
+  })
+
   describe('home holiday mode settings retrieval', () => {
     it('should delegate to app.getHomeHolidayMode with the device id', () => {
       const holidayMode = mock<Home.HolidayMode>()
@@ -385,6 +410,27 @@ describe('api', () => {
 
       expect(result).toBe(aggregate)
       expect(mockApp.getHomeBuildingFrostProtection).toHaveBeenCalledWith('b1')
+    })
+  })
+
+  describe('home building overheat protection retrieval', () => {
+    it('should delegate to app.getHomeBuildingOverheatProtection with the id', () => {
+      const aggregate = {
+        OHEnabled: true,
+        OHMaxTemperature: null,
+        OHMinTemperature: 35,
+      }
+      mockApp.getHomeBuildingOverheatProtection.mockReturnValue(aggregate)
+
+      const result = api.getHomeBuildingOverheatProtection({
+        homey,
+        params: { buildingId: 'b1' },
+      })
+
+      expect(result).toBe(aggregate)
+      expect(mockApp.getHomeBuildingOverheatProtection).toHaveBeenCalledWith(
+        'b1',
+      )
     })
   })
 
@@ -689,6 +735,40 @@ describe('api', () => {
 
       expect(mockApp.updateHomeFrostProtection).toHaveBeenCalledWith(
         ['guid-1'],
+        body,
+      )
+    })
+  })
+
+  describe('home overheat protection settings update', () => {
+    it('should delegate to app.updateHomeOverheatProtection for the device', async () => {
+      const body = { isEnabled: true, max: 37, min: 35 }
+      mockApp.updateHomeOverheatProtection.mockResolvedValue()
+
+      await api.updateHomeOverheatProtection({
+        body,
+        homey,
+        params: { deviceId: 'guid-1' },
+      })
+
+      expect(mockApp.updateHomeOverheatProtection).toHaveBeenCalledWith(
+        ['guid-1'],
+        body,
+      )
+    })
+
+    it('should delegate to app.updateHomeBuildingOverheatProtection for the building', async () => {
+      const body = { isEnabled: false, max: 37, min: 35 }
+      mockApp.updateHomeBuildingOverheatProtection.mockResolvedValue()
+
+      await api.updateHomeBuildingOverheatProtection({
+        body,
+        homey,
+        params: { buildingId: 'b1' },
+      })
+
+      expect(mockApp.updateHomeBuildingOverheatProtection).toHaveBeenCalledWith(
+        'b1',
         body,
       )
     })

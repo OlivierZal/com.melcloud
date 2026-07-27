@@ -73,6 +73,11 @@
     },
     "intError": "__name__: skal være et heltal mellem __min__ og __max__.",
     "loadFailed": "Indlæsning mislykkedes",
+    "overheatProtection": {
+      "enabled": "Aktivér <strong>overophedningsbeskyttelse</strong> (Home)",
+      "max": "Maksimumtemperatur",
+      "min": "Minimumtemperatur"
+    },
     "refresh": "Genindlæs",
     "success": "Opdatering lykkedes.",
     "title": "MELCloud-indstillinger",

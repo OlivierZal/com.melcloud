@@ -70,6 +70,11 @@
     "zones": {
       "legend": "Zonen- und Geräteeinstellungen",
       "enabledRequired": "Wählen Sie Ja oder Nein, bevor Sie anwenden."
+    },
+    "overheatProtection": {
+      "enabled": "<strong>Überhitzungsschutz</strong> aktivieren (Home)",
+      "max": "Maximaltemperatur",
+      "min": "Minimaltemperatur"
     }
   },
   "warnings": {

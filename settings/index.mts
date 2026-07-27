@@ -120,7 +120,8 @@ const PLURAL_THRESHOLD = 2
 const slavicPaucal = { maxEnding: 4, minEnding: 2, teenMax: 14, teenMin: 12 }
 
 const frostProtectionTemperatureRange = { max: 16, min: 4 }
-const FROST_PROTECTION_TEMPERATURE_GAP = 2
+const overheatProtectionTemperatureRange = { max: 40, min: 31 }
+const PROTECTION_TEMPERATURE_GAP = 2
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
@@ -391,22 +392,59 @@ const parseNumericInput = (
   return numberValue
 }
 
-const initFrostProtectionMin = (): HTMLInputElement => {
-  const element = getInput('min')
-  element.min = String(frostProtectionTemperatureRange.min)
-  element.max = String(
-    frostProtectionTemperatureRange.max - FROST_PROTECTION_TEMPERATURE_GAP,
-  )
+const initProtectionMin = (
+  id: string,
+  range: { max: number; min: number },
+): HTMLInputElement => {
+  const element = getInput(id)
+  element.min = String(range.min)
+  element.max = String(range.max - PROTECTION_TEMPERATURE_GAP)
   return element
 }
 
-const initFrostProtectionMax = (): HTMLInputElement => {
-  const element = getInput('max')
-  element.min = String(
-    frostProtectionTemperatureRange.min + FROST_PROTECTION_TEMPERATURE_GAP,
-  )
-  element.max = String(frostProtectionTemperatureRange.max)
+const initProtectionMax = (
+  id: string,
+  range: { max: number; min: number },
+): HTMLInputElement => {
+  const element = getInput(id)
+  element.min = String(range.min + PROTECTION_TEMPERATURE_GAP)
+  element.max = String(range.max)
   return element
+}
+
+// One zone-panel DirtyGate: Apply/Refresh looked up from the panel's
+// button-id prefix, pristine = the serialized values of its controls.
+const createValuesGate = (
+  prefix: string,
+  elements: readonly HTMLValueElement[],
+): DirtyGate =>
+  createDirtyGate({
+    applyElement: getButton(`apply_${prefix}`),
+    refreshElements: [getButton(`refresh_${prefix}`)],
+    serialize: (): string =>
+      JSON.stringify(elements.map((element) => element.value)),
+  })
+
+// Option values eligible for the Home-only overheat panel: every Home ATA
+// device, plus each Home building once one of its (immediately following)
+// devices is one.
+const collectOverheatCapableValues = (
+  zones: readonly (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[],
+): string[] => {
+  const values: string[] = []
+  let buildingValue: string | null = null
+  for (const zone of zones) {
+    if (zone.model === 'homeBuildings') {
+      buildingValue = getZoneId(zone.id, zone.model)
+    } else if (zone.model === 'homeDevices' && zone.deviceType === 'ata') {
+      values.push(
+        getZoneId(zone.id, zone.model),
+        ...(buildingValue === null ? [] : [buildingValue]),
+      )
+      buildingValue = null
+    }
+  }
+  return values
 }
 
 const getSubzones = (
@@ -434,14 +472,18 @@ const serializeSettingElements = (elements: HTMLValueElement[]): string =>
 // building's devices — rendered indeterminate (blank).
 type MixableZoneSettings = {
   readonly [K in keyof Classic.ZoneSettings]?: Classic.ZoneSettings[K] | null
+} & {
+  readonly OHEnabled?: boolean | null
+  readonly OHMaxTemperature?: number | null
+  readonly OHMinTemperature?: number | null
 }
 
 // ── AuthManager ──
 // One frost-protection / holiday-mode panel: its button-pair id, its
 // endpoint suffix, and the display refresh bound to it.
 interface ZoneSettingDescriptor {
-  readonly id: 'frost_protection' | 'holiday_mode'
-  readonly path: 'frost-protection' | 'holiday-mode'
+  readonly id: 'frost_protection' | 'holiday_mode' | 'overheat_protection'
+  readonly path: 'frost-protection' | 'holiday-mode' | 'overheat-protection'
   readonly display: () => void
 }
 
@@ -1214,63 +1256,82 @@ class ErrorLogManager {
 class ZoneSettingsManager {
   readonly #frostProtectionDirtyGate: DirtyGate
 
-  readonly #frostProtectionEnabled: HTMLSelectElement
+  readonly #frostProtectionEnabled = getSelect('enabled_frost_protection')
 
-  readonly #frostProtectionMaxTemperature: HTMLInputElement
+  readonly #frostProtectionMaxTemperature = initProtectionMax(
+    'max',
+    frostProtectionTemperatureRange,
+  )
 
-  readonly #frostProtectionMinTemperature: HTMLInputElement
+  readonly #frostProtectionMinTemperature = initProtectionMin(
+    'min',
+    frostProtectionTemperatureRange,
+  )
 
   readonly #holidayModeDirtyGate: DirtyGate
 
-  readonly #holidayModeEnabled: HTMLSelectElement
+  readonly #holidayModeEnabled = getSelect('enabled_holiday_mode')
 
-  readonly #holidayModeEndDate: HTMLInputElement
+  readonly #holidayModeEndDate = getInput('end_date')
 
-  readonly #holidayModeStartDate: HTMLInputElement
+  readonly #holidayModeStartDate = getInput('start_date')
 
   readonly #homey: Homey
 
-  readonly #zone: HTMLSelectElement
+  // Option values (devices and buildings) eligible for the Home-only
+  // overheat panel: Home ATA devices and buildings owning at least one.
+  readonly #overheatCapableValues = new Set<string>()
+
+  readonly #overheatPanel = getDiv('overheat_protection_panel')
+
+  readonly #overheatProtectionDirtyGate: DirtyGate
+
+  readonly #overheatProtectionEnabled = getSelect('enabled_overheat_protection')
+
+  readonly #overheatProtectionMaxTemperature = initProtectionMax(
+    'overheat_max',
+    overheatProtectionTemperatureRange,
+  )
+
+  readonly #overheatProtectionMinTemperature = initProtectionMin(
+    'overheat_min',
+    overheatProtectionTemperatureRange,
+  )
+
+  readonly #zone = getSelect('zones')
 
   #zoneMapping: Partial<Record<string, MixableZoneSettings>> = {}
 
   public constructor(homey: Homey) {
     this.#homey = homey
-    this.#zone = getSelect('zones')
-    this.#frostProtectionEnabled = getSelect('enabled_frost_protection')
-    this.#holidayModeEnabled = getSelect('enabled_holiday_mode')
-    this.#frostProtectionMinTemperature = initFrostProtectionMin()
-    this.#frostProtectionMaxTemperature = initFrostProtectionMax()
-    this.#holidayModeStartDate = getInput('start_date')
-    this.#holidayModeEndDate = getInput('end_date')
-    this.#frostProtectionDirtyGate = createDirtyGate({
-      applyElement: getButton('apply_frost_protection'),
-      refreshElements: [getButton('refresh_frost_protection')],
-      serialize: (): string =>
-        JSON.stringify([
-          this.#frostProtectionEnabled.value,
-          this.#frostProtectionMinTemperature.value,
-          this.#frostProtectionMaxTemperature.value,
-        ]),
-    })
-    this.#holidayModeDirtyGate = createDirtyGate({
-      applyElement: getButton('apply_holiday_mode'),
-      refreshElements: [getButton('refresh_holiday_mode')],
-      serialize: (): string =>
-        JSON.stringify([
-          this.#holidayModeEnabled.value,
-          this.#holidayModeStartDate.value,
-          this.#holidayModeEndDate.value,
-        ]),
-    })
+    this.#frostProtectionDirtyGate = createValuesGate('frost_protection', [
+      this.#frostProtectionEnabled,
+      this.#frostProtectionMinTemperature,
+      this.#frostProtectionMaxTemperature,
+    ])
+    this.#holidayModeDirtyGate = createValuesGate('holiday_mode', [
+      this.#holidayModeEnabled,
+      this.#holidayModeStartDate,
+      this.#holidayModeEndDate,
+    ])
+    this.#overheatProtectionDirtyGate = createValuesGate(
+      'overheat_protection',
+      [
+        this.#overheatProtectionEnabled,
+        this.#overheatProtectionMinTemperature,
+        this.#overheatProtectionMaxTemperature,
+      ],
+    )
   }
 
   public addEventListeners(): void {
     this.#zone.addEventListener('change', () => {
+      this.#refreshOverheatVisibility()
       fireAndForget(this.fetchZoneSettings())
     })
     this.#addHolidayModeEventListeners()
     this.#addFrostProtectionEventListeners()
+    this.#addOverheatProtectionEventListeners()
     // Registered last so a section's dirty recompute runs after any
     // cascade handler (a date edit toggling enabled, enabled clearing the
     // dates): the recompute serializes the whole section, capturing those.
@@ -1279,6 +1340,7 @@ class ZoneSettingsManager {
     // starts pristine (disabled) instead of spuriously enabled.
     this.#frostProtectionDirtyGate.markSaved()
     this.#holidayModeDirtyGate.markSaved()
+    this.#overheatProtectionDirtyGate.markSaved()
   }
 
   /** @silent Falls back to default values on error. */
@@ -1323,6 +1385,26 @@ class ZoneSettingsManager {
     this.#holidayModeDirtyGate.markSaved()
   }
 
+  public displayOverheatProtectionData(): void {
+    const data = this.#zoneMapping[this.#zone.value]
+    if (data !== undefined) {
+      const {
+        OHEnabled: isEnabled = false,
+        OHMaxTemperature: max,
+        OHMinTemperature: min,
+      } = data
+      // `null` (a Home building's ATA devices disagree) reads as blank; a
+      // plain `undefined` (no overheat config) reads as "No".
+      this.#overheatProtectionEnabled.value =
+        isEnabled === null ? '' : String(isEnabled)
+      this.#overheatProtectionMinTemperature.value = String(min ?? '')
+      this.#overheatProtectionMaxTemperature.value = String(max ?? '')
+    }
+    // Populating the panel re-baselines it: the freshly loaded (or saved)
+    // values become the pristine state, so Apply drops back to disabled.
+    this.#overheatProtectionDirtyGate.markSaved()
+  }
+
   /** @silent Falls back to default values on error. */
   public async fetchFrostProtectionData(): Promise<void> {
     await this.#fetchZoneSetting({
@@ -1345,14 +1427,34 @@ class ZoneSettingsManager {
     })
   }
 
+  /** @silent Falls back to default values on error. */
+  public async fetchOverheatProtectionData(): Promise<void> {
+    await this.#fetchZoneSetting({
+      id: 'overheat_protection',
+      path: 'overheat-protection',
+      display: () => {
+        this.displayOverheatProtectionData()
+      },
+    })
+  }
+
   public async fetchZoneSettings(): Promise<void> {
     await this.fetchFrostProtectionData()
     await this.fetchHolidayModeData()
+    // Home-only panel: skip the fetch entirely for targets that cannot
+    // carry the feature (Classic zones, ATW devices).
+    if (this.#overheatCapableValues.has(this.#zone.value)) {
+      await this.fetchOverheatProtectionData()
+    }
   }
 
   public populateZoneOptions(
     zones: (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[],
   ): void {
+    for (const value of collectOverheatCapableValues(zones)) {
+      this.#overheatCapableValues.add(value)
+    }
+    this.#refreshOverheatVisibility()
     for (const zone of zones) {
       const { id, level, model, name } = zone
       createOption(this.#zone, {
@@ -1406,6 +1508,33 @@ class ZoneSettingsManager {
     )
   }
 
+  /** @alerts Displays save errors to the user. */
+  public async setOverheatProtectionData({
+    isEnabled,
+    max,
+    min,
+  }: {
+    isEnabled: boolean
+    max: number
+    min: number
+  }): Promise<void> {
+    await this.#putZoneSetting(
+      {
+        id: 'overheat_protection',
+        path: 'overheat-protection',
+        display: () => {
+          this.displayOverheatProtectionData()
+        },
+      },
+      { isEnabled, max, min },
+      {
+        OHEnabled: isEnabled,
+        OHMaxTemperature: max,
+        OHMinTemperature: min,
+      },
+    )
+  }
+
   #addDateChangeListener(
     primaryElement: HTMLInputElement,
     otherElement: HTMLInputElement,
@@ -1439,6 +1568,11 @@ class ZoneSettingsManager {
       this.#holidayModeStartDate,
       this.#holidayModeEndDate,
     ])
+    this.#overheatProtectionDirtyGate.wire([
+      this.#overheatProtectionEnabled,
+      this.#overheatProtectionMinTemperature,
+      this.#overheatProtectionMaxTemperature,
+    ])
   }
 
   #addFrostProtectionEventListeners(): void {
@@ -1460,7 +1594,10 @@ class ZoneSettingsManager {
         return
       }
       try {
-        const { max, min } = this.#getFPMinAndMax()
+        const { max, min } = this.#getMinAndMax(
+          this.#frostProtectionMinTemperature,
+          this.#frostProtectionMaxTemperature,
+        )
         fireAndForget(
           this.setFrostProtectionData({
             isEnabled: this.#frostProtectionEnabled.value === 'true',
@@ -1502,6 +1639,32 @@ class ZoneSettingsManager {
     })
   }
 
+  #addOverheatProtectionEventListeners(): void {
+    getButton('refresh_overheat_protection').addEventListener('click', () => {
+      this.displayOverheatProtectionData()
+    })
+    getButton('apply_overheat_protection').addEventListener('click', () => {
+      if (!this.#requireEnabledChosen(this.#overheatProtectionEnabled)) {
+        return
+      }
+      try {
+        const { max, min } = this.#getMinAndMax(
+          this.#overheatProtectionMinTemperature,
+          this.#overheatProtectionMaxTemperature,
+        )
+        fireAndForget(
+          this.setOverheatProtectionData({
+            isEnabled: this.#overheatProtectionEnabled.value === 'true',
+            max,
+            min,
+          }),
+        )
+      } catch (error) {
+        fireAndForget(this.#homey.alert(getErrorMessage(error)))
+      }
+    })
+  }
+
   // GET one zone-setting panel: refresh the cached zone mapping and
   // the panel, silent on failure (the UI falls back to default values).
   async #fetchZoneSetting({
@@ -1519,18 +1682,62 @@ class ZoneSettingsManager {
     })
   }
 
-  #gateFor(id: 'frost_protection' | 'holiday_mode'): DirtyGate {
-    return id === 'frost_protection'
-      ? this.#frostProtectionDirtyGate
-      : this.#holidayModeDirtyGate
+  #gateFor(id: ZoneSettingDescriptor['id']): DirtyGate {
+    if (id === 'frost_protection') {
+      return this.#frostProtectionDirtyGate
+    }
+    return id === 'holiday_mode'
+      ? this.#holidayModeDirtyGate
+      : this.#overheatProtectionDirtyGate
   }
 
-  #getFPMinAndMax(): { max: number; min: number } {
+  async #getHomeDeviceZoneSettingData(
+    path: ZoneSettingDescriptor['path'],
+    url: string,
+  ): Promise<MixableZoneSettings> {
+    if (path === 'frost-protection') {
+      const frostProtection = await homeyApiGet<Home.FrostProtection | null>(
+        this.#homey,
+        url,
+      )
+      return frostProtection === null
+        ? {}
+        : {
+            FPEnabled: frostProtection.enabled,
+            FPMaxTemperature: frostProtection.max,
+            FPMinTemperature: frostProtection.min,
+          }
+    }
+    if (path === 'overheat-protection') {
+      const overheatProtection =
+        await homeyApiGet<Home.OverheatProtection | null>(this.#homey, url)
+      return overheatProtection === null
+        ? {}
+        : {
+            OHEnabled: overheatProtection.enabled,
+            OHMaxTemperature: overheatProtection.max,
+            OHMinTemperature: overheatProtection.min,
+          }
+    }
+    const holidayMode = await homeyApiGet<Home.HolidayMode | null>(
+      this.#homey,
+      url,
+    )
+    return holidayMode === null
+      ? {}
+      : {
+          HMEnabled: holidayMode.enabled,
+          HMEndDate: holidayMode.endDate,
+          HMStartDate: holidayMode.startDate,
+        }
+  }
+
+  #getMinAndMax(
+    minElement: HTMLInputElement,
+    maxElement: HTMLInputElement,
+  ): { max: number; min: number } {
     const errors: string[] = []
-    let [min = null, max = null] = [
-      this.#frostProtectionMinTemperature,
-      this.#frostProtectionMaxTemperature,
-    ].map((element) => {
+    let [min = null, max = null] = [minElement, maxElement].map((element) => {
       try {
         return parseNumericInput(this.#homey, element)
       } catch (error) {
@@ -1545,7 +1752,7 @@ class ZoneSettingsManager {
     if (max < min) {
       ;[min, max] = [max, min]
     }
-    return { max: Math.max(max, min + FROST_PROTECTION_TEMPERATURE_GAP), min }
+    return { max: Math.max(max, min + PROTECTION_TEMPERATURE_GAP), min }
   }
 
   // Read one panel's settings for the selected target, normalized to the
@@ -1553,40 +1760,17 @@ class ZoneSettingsManager {
   // camelCase Home shape, mapped onto the FP*/HM* fields here; a `null`
   // (no window defined) reads as empty, i.e. default values.
   async #getZoneSettingData(
-    path: 'frost-protection' | 'holiday-mode',
+    path: ZoneSettingDescriptor['path'],
   ): Promise<MixableZoneSettings> {
     const url = `${this.#getZoneSettingsBase()}/settings/${path}`
-    // Classic zones and Home buildings both answer the FP*/HM* shape — the
-    // building endpoint aggregates its devices, with `null` marking a field
-    // they disagree on ("mixed"). Only a single Home device needs the
-    // camelCase translation below.
+    // Classic zones and Home buildings both answer the FP*/HM*/OH* shape —
+    // the building endpoint aggregates its devices, with `null` marking a
+    // field they disagree on ("mixed"). Only a single Home device needs
+    // the camelCase translation.
     if (!isHomeDeviceValue(this.#zone.value)) {
       return homeyApiGet<MixableZoneSettings>(this.#homey, url)
     }
-    if (path === 'frost-protection') {
-      const frostProtection = await homeyApiGet<Home.FrostProtection | null>(
-        this.#homey,
-        url,
-      )
-      return frostProtection === null
-        ? {}
-        : {
-            FPEnabled: frostProtection.enabled,
-            FPMaxTemperature: frostProtection.max,
-            FPMinTemperature: frostProtection.min,
-          }
-    }
-    const holidayMode = await homeyApiGet<Home.HolidayMode | null>(
-      this.#homey,
-      url,
-    )
-    return holidayMode === null
-      ? {}
-      : {
-          HMEnabled: holidayMode.enabled,
-          HMEndDate: holidayMode.endDate,
-          HMStartDate: holidayMode.startDate,
-        }
+    return this.#getHomeDeviceZoneSettingData(path, url)
   }
 
   #getZoneSettingsBase(): string {
@@ -1604,7 +1788,7 @@ class ZoneSettingsManager {
   async #putZoneSetting(
     { display, id, path }: ZoneSettingDescriptor,
     query: Classic.FrostProtectionQuery | HolidayModeUpdate,
-    zoneSettings: Partial<Classic.ZoneSettings>,
+    zoneSettings: MixableZoneSettings,
   ): Promise<void> {
     await this.#gateFor(id).runBusy(async () => {
       try {
@@ -1656,6 +1840,13 @@ class ZoneSettingsManager {
   // A blank enabled select means a Home building's devices disagree
   // ("mixed") and the user has not chosen: applying would silently write a
   // single value (off) to them all, so require an explicit choice first.
+  #refreshOverheatVisibility(): void {
+    hide(
+      this.#overheatPanel,
+      !this.#overheatCapableValues.has(this.#zone.value),
+    )
+  }
+
   #requireEnabledChosen(select: HTMLSelectElement): boolean {
     if (select.value !== '') {
       return true

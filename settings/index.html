@@ -288,6 +288,65 @@
                         data-i18n="settings.update"
                     >Update</button>
                 </div>
+                <div id="overheat_protection_panel" hidden>
+                    <div class="homey-form-group">
+                        <label
+                            class="homey-form-label"
+                            data-i18n="settings.overheatProtection.enabled"
+                            for="enabled_overheat_protection"
+                        >Enable overheat protection (Home)</label>
+                        <select id="enabled_overheat_protection" class="homey-form-select">
+                            <option
+                                data-i18n="settings.boolean.false"
+                                value="false"
+                            >No</option>
+                            <option
+                                data-i18n="settings.boolean.true"
+                                value="true"
+                            >Yes</option>
+                        </select>
+                    </div>
+                    <div class="homey-form-group">
+                        <label
+                            class="homey-form-label"
+                            data-i18n="settings.overheatProtection.min"
+                            for="overheat_min"
+                        >Minimum temperature</label>
+                        <input
+                            id="overheat_min"
+                            type="number"
+                            class="homey-form-input"
+                            inputmode="numeric"
+                        >
+                    </div>
+                    <div class="homey-form-group">
+                        <label
+                            class="homey-form-label"
+                            data-i18n="settings.overheatProtection.max"
+                            for="overheat_max"
+                        >Maximum temperature</label>
+                        <input
+                            id="overheat_max"
+                            type="number"
+                            class="homey-form-input"
+                            inputmode="numeric"
+                        >
+                    </div>
+                    <div class="homey-form-group container">
+                        <button
+                            id="refresh_overheat_protection"
+                            type="button"
+                            class="homey-button-secondary-shadow"
+                            data-i18n="settings.refresh"
+                        >Refresh</button>
+                        <button
+                            id="apply_overheat_protection"
+                            type="button"
+                            class="homey-button-danger-shadow"
+                            data-i18n="settings.update"
+                        >Update</button>
+                    </div>
+                </div>
             </fieldset>
         </div>
     </body>

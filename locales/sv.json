@@ -70,6 +70,11 @@
     "zones": {
       "legend": "Zon- och enhetsinställningar",
       "enabledRequired": "Välj Ja eller Nej innan du tillämpar."
+    },
+    "overheatProtection": {
+      "enabled": "Aktivera <strong>överhettningsskydd</strong> (Home)",
+      "max": "Maximitemperatur",
+      "min": "Minimitemperatur"
     }
   },
   "warnings": {

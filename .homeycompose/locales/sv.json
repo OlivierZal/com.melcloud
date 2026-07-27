@@ -73,6 +73,11 @@
     },
     "intError": "__name__: måste vara ett heltal mellan __min__ och __max__.",
     "loadFailed": "Inläsningen misslyckades",
+    "overheatProtection": {
+      "enabled": "Aktivera <strong>överhettningsskydd</strong> (Home)",
+      "max": "Maximitemperatur",
+      "min": "Minimitemperatur"
+    },
     "refresh": "Ladda om",
     "success": "Uppdatering lyckades.",
     "title": "MELCloud-inställningar",

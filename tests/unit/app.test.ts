@@ -115,6 +115,8 @@ const mockHomeFacadeManagerUpdateFrostProtection =
   vi.fn<Home.FacadeManager['updateFrostProtection']>()
 const mockHomeFacadeManagerUpdateHolidayMode =
   vi.fn<Home.FacadeManager['updateHolidayMode']>()
+const mockHomeFacadeManagerUpdateOverheatProtection =
+  vi.fn<Home.FacadeManager['updateOverheatProtection']>()
 
 const {
   mockCreate,
@@ -289,6 +291,7 @@ const newMockHomeFacadeManager =
       getBuilding: mockHomeFacadeManagerGetBuilding,
       updateFrostProtection: mockHomeFacadeManagerUpdateFrostProtection,
       updateHolidayMode: mockHomeFacadeManagerUpdateHolidayMode,
+      updateOverheatProtection: mockHomeFacadeManagerUpdateOverheatProtection,
     })
   }
 
@@ -516,6 +519,7 @@ const stubHomeDevice = (facade: unknown): void => {
 const stubBuilding = (
   frostById: Record<string, unknown>,
   holidayById: Record<string, unknown> = {},
+  overheatById: Record<string, unknown> = {},
 ): void => {
   const devices = [
     {
@@ -538,6 +542,7 @@ const stubBuilding = (
   mockHomeFacadeManagerGet.mockImplementation((model) => ({
     frostProtection: frostById[(model as { id: string }).id] ?? null,
     holidayMode: holidayById[(model as { id: string }).id] ?? null,
+    overheatProtection: overheatById[(model as { id: string }).id] ?? null,
   }))
 }
 
@@ -1644,16 +1649,22 @@ describe('melCloudApp', () => {
           building: { id: 'building-2', name: 'Verkstan' },
           id: 'device-2',
           name: 'Salon',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
         },
         {
           building: { id: 'building-2', name: 'Verkstan' },
           id: 'device-1',
           name: 'Bureau',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
         },
         {
           building: { id: 'building-1', name: 'Appartement' },
           id: 'device-3',
           name: 'Woonkamer',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
         },
       ])
       await app.onInit()
@@ -1668,6 +1679,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Appartement',
+          deviceType: 'ata',
           id: 'device-3',
           level: 1,
           model: 'homeDevices',
@@ -1682,6 +1694,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Verkstan',
+          deviceType: 'ata',
           id: 'device-1',
           level: 1,
           model: 'homeDevices',
@@ -1689,6 +1702,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Verkstan',
+          deviceType: 'ata',
           id: 'device-2',
           level: 1,
           model: 'homeDevices',
@@ -2140,8 +2154,20 @@ describe('melCloudApp', () => {
   describe('home device zones', () => {
     it('should suffix the building and sort for the flat pickers', async () => {
       mockHomeRegistry.getAll.mockReturnValue([
-        { building: { name: 'Vinkenstraat 22' }, id: 'b', name: 'Garage' },
-        { building: { name: 'Verkstan' }, id: 'a', name: 'Garage ' },
+        {
+          building: { name: 'Vinkenstraat 22' },
+          id: 'b',
+          name: 'Garage',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
+        },
+        {
+          building: { name: 'Verkstan' },
+          id: 'a',
+          name: 'Garage ',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
+        },
       ])
       await app.onInit()
 
@@ -2150,6 +2176,7 @@ describe('melCloudApp', () => {
       expect(app.getHomeDeviceZones()).toStrictEqual([
         {
           buildingName: 'Verkstan',
+          deviceType: 'ata',
           id: 'a',
           level: 1,
           model: 'homeDevices',
@@ -2157,6 +2184,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Vinkenstraat 22',
+          deviceType: 'ata',
           id: 'b',
           level: 1,
           model: 'homeDevices',
@@ -2167,13 +2195,20 @@ describe('melCloudApp', () => {
 
     it('should filter by device type when one is given', async () => {
       mockHomeRegistry.getByType.mockReturnValue([
-        { building: { name: 'Huis' }, id: 'atw-1', name: 'Warmtepomp' },
+        {
+          building: { name: 'Huis' },
+          id: 'atw-1',
+          name: 'Warmtepomp',
+          isAta: (): boolean => false,
+          isAtw: (): boolean => true,
+        },
       ])
       await app.onInit()
 
       expect(app.getHomeDeviceZones(Home.DeviceType.Atw)).toStrictEqual([
         {
           buildingName: 'Huis',
+          deviceType: 'atw',
           id: 'atw-1',
           level: 1,
           model: 'homeDevices',
@@ -2618,6 +2653,8 @@ describe('melCloudApp', () => {
             building: { id: 'chalet-1', name: 'Chalet' },
             id: 'guid-9',
             name: 'Salon',
+            isAta: (): boolean => true,
+            isAtw: (): boolean => false,
           },
         ])
         await app.onInit()
@@ -3047,6 +3084,43 @@ describe('melCloudApp', () => {
     })
   })
 
+  describe('home overheat protection', () => {
+    it('should read a Home ATA device overheat protection off the facade', async () => {
+      await app.onInit()
+      const overheatProtection = mock<Home.OverheatProtection>({
+        active: false,
+      })
+      stubHomeDevice({ overheatProtection })
+
+      expect(app.getHomeOverheatProtection('guid-1')).toBe(overheatProtection)
+    })
+
+    it('should read null for a facade without the ATA-only getter', async () => {
+      await app.onInit()
+      stubHomeDevice({ frostProtection: null })
+
+      expect(app.getHomeOverheatProtection('guid-1')).toBeNull()
+    })
+
+    it('should batch an overheat protection update across the given devices', async () => {
+      await app.onInit()
+
+      await app.updateHomeOverheatProtection(['guid-1', 'guid-2'], {
+        isEnabled: true,
+        max: 37,
+        min: 35,
+      })
+
+      expect(
+        mockHomeFacadeManagerUpdateOverheatProtection,
+      ).toHaveBeenCalledWith(['guid-1', 'guid-2'], {
+        isEnabled: true,
+        max: 37,
+        min: 35,
+      })
+    })
+  })
+
   describe('home building frost protection and holiday mode', () => {
     it('keeps shared frost values and nulls the disagreements', async () => {
       await app.onInit()
@@ -3101,6 +3175,91 @@ describe('melCloudApp', () => {
       })
     })
 
+    it('keeps shared overheat values and nulls the disagreements', async () => {
+      await app.onInit()
+      stubBuilding(
+        {},
+        {},
+        {
+          d1: { active: false, enabled: true, max: 37, min: 35 },
+          d2: { active: false, enabled: true, max: 38, min: 35 },
+        },
+      )
+
+      expect(app.getHomeBuildingOverheatProtection('b1')).toStrictEqual({
+        OHEnabled: true,
+        OHMaxTemperature: null,
+        OHMinTemperature: 35,
+      })
+    })
+
+    it('reads an all-unconfigured overheat building as off, not mixed', async () => {
+      await app.onInit()
+      stubBuilding({}, {}, {})
+
+      expect(app.getHomeBuildingOverheatProtection('b1')).toStrictEqual({
+        OHEnabled: false,
+        OHMaxTemperature: null,
+        OHMinTemperature: null,
+      })
+    })
+
+    it('aggregates overheat over the ATA devices only', async () => {
+      await app.onInit()
+      stubBuilding(
+        {},
+        {},
+        {
+          d1: { active: false, enabled: true, max: 37, min: 35 },
+        },
+      )
+      // Turn d2 into an ATW device: it must not drag the aggregate to
+      // "mixed" — the feature is ATA-only.
+      const devices = [
+        {
+          building: { id: 'b1' },
+          id: 'd1',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
+        },
+        {
+          building: { id: 'b1' },
+          id: 'd2',
+          isAta: (): boolean => false,
+          isAtw: (): boolean => true,
+        },
+      ]
+      mockHomeRegistry.getAll.mockReturnValue(devices)
+      mockHomeRegistry.getById.mockImplementation((id) =>
+        devices.find((device) => device.id === id),
+      )
+
+      expect(app.getHomeBuildingOverheatProtection('b1')).toStrictEqual({
+        OHEnabled: true,
+        OHMaxTemperature: 37,
+        OHMinTemperature: 35,
+      })
+    })
+
+    it('batches a building overheat update across all its devices', async () => {
+      await app.onInit()
+      stubBuilding({})
+
+      await app.updateHomeBuildingOverheatProtection('b1', {
+        isEnabled: false,
+        max: 37,
+        min: 35,
+      })
+
+      expect(
+        mockHomeFacadeManagerUpdateOverheatProtection,
+      ).toHaveBeenCalledWith(['d1', 'd2'], {
+        isEnabled: false,
+        max: 37,
+        min: 35,
+      })
+    })
+
     it('batches a building frost update across all its devices', async () => {
       await app.onInit()
       stubBuilding({})
@@ -3135,9 +3294,27 @@ describe('melCloudApp', () => {
 
     it('builds the target tree: buildings with their devices nested, sorted', async () => {
       mockHomeRegistry.getAll.mockReturnValue([
-        { building: { id: 'b2', name: 'Bravo' }, id: 'd3', name: 'Zeta' },
-        { building: { id: 'b1', name: 'Alpha' }, id: 'd2', name: 'Yankee' },
-        { building: { id: 'b1', name: 'Alpha' }, id: 'd1', name: 'Xray' },
+        {
+          building: { id: 'b2', name: 'Bravo' },
+          id: 'd3',
+          name: 'Zeta',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
+        },
+        {
+          building: { id: 'b1', name: 'Alpha' },
+          id: 'd2',
+          name: 'Yankee',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
+        },
+        {
+          building: { id: 'b1', name: 'Alpha' },
+          id: 'd1',
+          name: 'Xray',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
+        },
       ])
       await app.onInit()
 
@@ -3153,6 +3330,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Alpha',
+          deviceType: 'ata',
           id: 'd1',
           level: 1,
           model: 'homeDevices',
@@ -3160,6 +3338,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Alpha',
+          deviceType: 'ata',
           id: 'd2',
           level: 1,
           model: 'homeDevices',
@@ -3174,6 +3353,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Bravo',
+          deviceType: 'ata',
           id: 'd3',
           level: 1,
           model: 'homeDevices',
@@ -3326,16 +3506,22 @@ describe('melCloudApp', () => {
           building: { id: 'account-1', name: 'Maison' },
           id: 'home-2',
           name: 'Building two',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
         },
         {
           building: { id: 'account-1', name: 'Maison' },
           id: 'home-1',
           name: 'Building one',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
         },
         {
           building: { id: 'account-1', name: 'Maison' },
           id: 'home-3',
           name: 'Bedroom',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
         },
       ])
       await app.onInit()
@@ -3366,6 +3552,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Maison',
+          deviceType: 'ata',
           id: 'home-1',
           level: 1,
           model: 'homeDevices',
@@ -3373,6 +3560,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Maison',
+          deviceType: 'ata',
           id: 'home-2',
           level: 1,
           model: 'homeDevices',
@@ -3407,6 +3595,8 @@ describe('melCloudApp', () => {
           building: { id: 'antwerp-1', name: 'Antwerpen' },
           id: 'guid-1',
           name: 'Device 1',
+          isAta: (): boolean => true,
+          isAtw: (): boolean => false,
         },
       ])
       await app.onInit()
@@ -3423,6 +3613,7 @@ describe('melCloudApp', () => {
       expect(result).toStrictEqual([
         {
           buildingName: 'Antwerpen',
+          deviceType: 'ata',
           id: 'guid-1',
           level: 1,
           model: 'homeDevices',

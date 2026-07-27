@@ -216,6 +216,17 @@ const api = {
     HMEndDate: string | null
     HMStartDate: string | null
   } => app.getHomeBuildingHolidayMode(buildingId),
+  getHomeBuildingOverheatProtection: ({
+    homey: { app },
+    params: { buildingId },
+  }: {
+    homey: Homey
+    params: { buildingId: string }
+  }): {
+    OHEnabled: boolean | null
+    OHMaxTemperature: number | null
+    OHMinTemperature: number | null
+  } => app.getHomeBuildingOverheatProtection(buildingId),
   getHomeDevices: ({ homey: { app } }: { homey: Homey }): HomeDeviceZone[] =>
     app.getHomeDeviceZones(),
   getHomeFrostProtection: ({
@@ -232,6 +243,13 @@ const api = {
     homey: Homey
     params: { deviceId: string }
   }): Home.HolidayMode | null => app.getHomeHolidayMode(deviceId),
+  getHomeOverheatProtection: ({
+    homey: { app },
+    params: { deviceId },
+  }: {
+    homey: Homey
+    params: { deviceId: string }
+  }): Home.OverheatProtection | null => app.getHomeOverheatProtection(deviceId),
   getHomeTargets: ({
     homey: { app },
   }: {
@@ -339,6 +357,16 @@ const api = {
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> => app.updateHomeBuildingHolidayMode(buildingId, body),
+  updateHomeBuildingOverheatProtection: async ({
+    body,
+    homey: { app },
+    params: { buildingId },
+  }: {
+    body: { isEnabled: boolean; max: number; min: number }
+    homey: Homey
+    params: { buildingId: string }
+  }): Promise<void> =>
+    app.updateHomeBuildingOverheatProtection(buildingId, body),
   updateHomeFrostProtection: async ({
     body,
     homey: { app },
@@ -357,6 +385,15 @@ const api = {
     homey: Homey
     params: { deviceId: string }
   }): Promise<void> => app.updateHomeHolidayMode([deviceId], body),
+  updateHomeOverheatProtection: async ({
+    body,
+    homey: { app },
+    params: { deviceId },
+  }: {
+    body: { isEnabled: boolean; max: number; min: number }
+    homey: Homey
+    params: { deviceId: string }
+  }): Promise<void> => app.updateHomeOverheatProtection([deviceId], body),
 }
 
 export default api
