@@ -49,6 +49,10 @@
       "method": "GET",
       "path": "/home/buildings/:buildingId/settings/holiday-mode"
     },
+    "getHomeBuildingOverheatProtection": {
+      "method": "GET",
+      "path": "/home/buildings/:buildingId/settings/overheat-protection"
+    },
     "getHomeDevices": {
       "method": "GET",
       "path": "/home/devices"
@@ -60,6 +64,10 @@
     "getHomeHolidayMode": {
       "method": "GET",
       "path": "/home/devices/:deviceId/settings/holiday-mode"
+    },
+    "getHomeOverheatProtection": {
+      "method": "GET",
+      "path": "/home/devices/:deviceId/settings/overheat-protection"
     },
     "getHomeTargets": {
       "method": "GET",
@@ -109,6 +117,10 @@
       "method": "PUT",
       "path": "/home/buildings/:buildingId/settings/holiday-mode"
     },
+    "updateHomeBuildingOverheatProtection": {
+      "method": "PUT",
+      "path": "/home/buildings/:buildingId/settings/overheat-protection"
+    },
     "updateHomeFrostProtection": {
       "method": "PUT",
       "path": "/home/devices/:deviceId/settings/frost-protection"
@@ -116,6 +128,10 @@
     "updateHomeHolidayMode": {
       "method": "PUT",
       "path": "/home/devices/:deviceId/settings/holiday-mode"
+    },
+    "updateHomeOverheatProtection": {
+      "method": "PUT",
+      "path": "/home/devices/:deviceId/settings/overheat-protection"
     }
   },
   "author": {

@@ -33,6 +33,7 @@ export interface HomeBuildingZone {
 
 export interface HomeDeviceZone {
   readonly buildingName: string
+  readonly deviceType: 'ata' | 'atw'
   readonly id: string
   readonly level: 1
   readonly model: 'homeDevices'

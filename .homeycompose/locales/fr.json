@@ -73,6 +73,11 @@
     },
     "intError": "__name__ : doit être un entier compris entre __min__ et __max__.",
     "loadFailed": "Le chargement a échoué",
+    "overheatProtection": {
+      "enabled": "Activer la <strong>protection contre la surchauffe</strong> (Home)",
+      "max": "Température maximale",
+      "min": "Température minimale"
+    },
     "refresh": "Rafraîchir",
     "success": "La mise à jour a réussi.",
     "title": "Paramètres de MELCloud",

@@ -70,6 +70,11 @@
     "zones": {
       "legend": "Zone and device settings",
       "enabledRequired": "Choose Yes or No before applying."
+    },
+    "overheatProtection": {
+      "enabled": "Enable <strong>overheat protection</strong> (Home)",
+      "max": "Maximum temperature",
+      "min": "Minimum temperature"
     }
   },
   "warnings": {

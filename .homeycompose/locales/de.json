@@ -73,6 +73,11 @@
     },
     "intError": "__name__: muss eine ganze Zahl zwischen __min__ und __max__ sein.",
     "loadFailed": "Laden fehlgeschlagen",
+    "overheatProtection": {
+      "enabled": "<strong>Überhitzungsschutz</strong> aktivieren (Home)",
+      "max": "Maximaltemperatur",
+      "min": "Minimaltemperatur"
+    },
     "refresh": "Neu laden",
     "success": "Aktualisierung erfolgreich.",
     "title": "MELCloud-Einstellungen",

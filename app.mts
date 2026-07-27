@@ -831,6 +831,37 @@ export default class MELCloudApp extends App {
     }
   }
 
+  // Aggregate overheat protection across a Home building's ATA devices
+  // (the feature is ATA-only), `null` per field on disagreement ("mixed").
+  public getHomeBuildingOverheatProtection(buildingId: string): {
+    OHEnabled: boolean | null
+    OHMaxTemperature: number | null
+    OHMinTemperature: number | null
+  } {
+    const overheatProtections = this.#getHomeBuildingAtaDeviceIds(
+      buildingId,
+    ).map((deviceId) => this.getHomeOverheatProtection(deviceId))
+    return {
+      // A device with no overheat config counts as off, so an
+      // all-unconfigured building reads "No" rather than "mixed".
+      OHEnabled: commonValue(
+        overheatProtections.map(
+          (overheatProtection) => overheatProtection?.enabled ?? false,
+        ),
+      ),
+      OHMaxTemperature: commonValue(
+        overheatProtections.map(
+          (overheatProtection) => overheatProtection?.max,
+        ),
+      ),
+      OHMinTemperature: commonValue(
+        overheatProtections.map(
+          (overheatProtection) => overheatProtection?.min,
+        ),
+      ),
+    }
+  }
+
   public getHomeDevicesByType(type: Home.DeviceType): Home.Device[] {
     return this.#homeRegistry.getByType(type)
   }
@@ -916,6 +947,15 @@ export default class MELCloudApp extends App {
     )
   }
 
+  public getHomeOverheatProtection(
+    deviceId: string,
+  ): Home.OverheatProtection | null {
+    const facade = this.#getHomeDeviceFacade(deviceId)
+    // ATA-only: the wire carries the field on ATW too, but the official
+    // app never offers the feature there — only the ATA facade exposes it.
+    return 'overheatProtection' in facade ? facade.overheatProtection : null
+  }
+
   public async getHomeSignal({
     deviceId,
     hour,
@@ -952,6 +992,7 @@ export default class MELCloudApp extends App {
       }
       building.devices.push({
         buildingName: device.building.name,
+        deviceType: device.isAta() ? 'ata' : 'atw',
         id: device.id,
         level: 1,
         model: 'homeDevices',
@@ -1110,6 +1151,16 @@ export default class MELCloudApp extends App {
     )
   }
 
+  public async updateHomeBuildingOverheatProtection(
+    buildingId: string,
+    settings: { isEnabled: boolean; max: number; min: number },
+  ): Promise<void> {
+    await this.updateHomeOverheatProtection(
+      this.#getHomeBuildingDeviceIds(buildingId),
+      settings,
+    )
+  }
+
   public async updateHomeFrostProtection(
     deviceIds: readonly string[],
     settings: { isEnabled: boolean; max: number; min: number },
@@ -1122,6 +1173,13 @@ export default class MELCloudApp extends App {
     settings: HolidayModeUpdate,
   ): Promise<void> {
     await this.#homeFacadeManager.updateHolidayMode(deviceIds, settings)
+  }
+
+  public async updateHomeOverheatProtection(
+    deviceIds: readonly string[],
+    settings: { isEnabled: boolean; max: number; min: number },
+  ): Promise<void> {
+    await this.#homeFacadeManager.updateOverheatProtection(deviceIds, settings)
   }
 
   readonly #onSync: SyncCallback = async ({ ids, type } = {}) => {
@@ -1330,6 +1388,13 @@ export default class MELCloudApp extends App {
   }
 
   // The ids of every device (ATA and ATW) in a `/context` building.
+  #getHomeBuildingAtaDeviceIds(buildingId: string): string[] {
+    return this.#homeRegistry
+      .getAll()
+      .filter((device) => device.building.id === buildingId && device.isAta())
+      .map((device) => device.id)
+  }
+
   #getHomeBuildingDeviceIds(buildingId: string): string[] {
     return this.#homeRegistry
       .getAll()

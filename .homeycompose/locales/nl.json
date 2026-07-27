@@ -73,6 +73,11 @@
     },
     "intError": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
     "loadFailed": "Laden mislukt",
+    "overheatProtection": {
+      "enabled": "<strong>Oververhittingsbeveiliging</strong> inschakelen (Home)",
+      "max": "Maximumtemperatuur",
+      "min": "Minimumtemperatuur"
+    },
     "refresh": "Herladen",
     "success": "Update geslaagd.",
     "title": "MELCloud-instellingen",

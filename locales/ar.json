@@ -70,6 +70,11 @@
     "zones": {
       "legend": "إعدادات المناطق والأجهزة",
       "enabledRequired": "اختر نعم أو لا قبل التطبيق."
+    },
+    "overheatProtection": {
+      "enabled": "تفعيل <strong>الحماية من فرط التسخين</strong> (Home)",
+      "max": "درجة الحرارة القصوى",
+      "min": "درجة الحرارة الدنيا"
     }
   },
   "warnings": {
