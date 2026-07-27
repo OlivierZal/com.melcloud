@@ -81,7 +81,13 @@ coverage.
   (the settings SDK is error-first-callback, unlike the widget SDK —
   which is why `public/homey-api.mts` stays a separate, promise-native
   widget layer); byte-identical copies live in com.heatzy and
-  com.melcloud.extension — edit all three together.
+  com.melcloud.extension — edit all three together. The surface is
+  test-pinned in two halves, one file each — extend BOTH when touching
+  a route: `tests/integration/api-contract.test.ts` (since #1261) pins
+  manifest ids ↔ handlers both ways plus the handlers' function type,
+  on all three surfaces; `tests/unit/api-route-guards.test.ts` pins the
+  call sites (every webview path literal must match a declared route of
+  its own surface) and the frozen legacy routes.
 - Dirty-gating: `public/dirty-gate.mts` is the ONE primitive behind every
   webview Apply/Refresh pair (settings sections, frost/holiday panels, the
   ATA group widget) — never re-derive its invariant at a call site. Its
