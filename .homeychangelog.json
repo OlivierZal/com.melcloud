@@ -856,5 +856,20 @@
     "pl": "Ustawienia i widżet grupy klimatyzatorów: przycisk Aktualizuj pozostaje wyszarzony, dopóki czegoś nie zmienisz, i ponownie szarzeje po zapisaniu.",
     "ru": "Настройки и виджет группы кондиционеров: кнопка «Обновить» остаётся неактивной, пока вы что-нибудь не измените, и снова становится неактивной после сохранения.",
     "sv": "Inställningar och AC-gruppwidgeten: knappen Uppdatera förblir nedtonad tills du ändrar något och tonas ned igen när det har sparats."
+  },
+  "45.11.0": {
+    "ar": "حماية من فرط التسخين لوحدات MELCloud Home هواء-هواء: تُضبط من إعدادات المناطق، لكل جهاز أو لكل مبنى. تظهر الأجهزة الآن كمنظمات حرارة.",
+    "da": "Overophedningsbeskyttelse til MELCloud Home luft-til-luft-enheder: indstilles fra zoneindstillingerne, pr. enhed eller pr. bygning. Enheder vises nu som termostater.",
+    "de": "Überhitzungsschutz für MELCloud-Home-Luft-Luft-Geräte: einstellbar in den Zoneneinstellungen, pro Gerät oder pro Gebäude. Geräte erscheinen jetzt als Thermostate.",
+    "en": "Overheat protection for MELCloud Home air-to-air units: set it from the zone settings, per device or per building. Devices now appear as thermostats.",
+    "es": "Protección contra sobrecalentamiento para unidades aire-aire de MELCloud Home: ajustable desde los ajustes de zona, por dispositivo o por edificio. Los dispositivos ahora aparecen como termostatos.",
+    "fr": "Protection contre la surchauffe pour les unités air-air MELCloud Home : réglable depuis les réglages de zone, par appareil ou par bâtiment. Les appareils apparaissent désormais comme des thermostats.",
+    "it": "Protezione dal surriscaldamento per le unità aria-aria MELCloud Home: regolabile dalle impostazioni di zona, per dispositivo o per edificio. I dispositivi ora appaiono come termostati.",
+    "ko": "MELCloud Home 공기 대 공기 유닛의 과열 방지: 구역 설정에서 기기별 또는 건물별로 설정하세요. 이제 기기가 온도 조절기로 표시됩니다.",
+    "nl": "Oververhittingsbeveiliging voor MELCloud Home lucht-lucht-units: instelbaar via de zone-instellingen, per apparaat of per gebouw. Apparaten verschijnen nu als thermostaten.",
+    "no": "Overopphetingsbeskyttelse for MELCloud Home luft-til-luft-enheter: stilles inn fra soneinnstillingene, per enhet eller per bygning. Enheter vises nå som termostater.",
+    "pl": "Ochrona przed przegrzaniem dla jednostek powietrze-powietrze MELCloud Home: ustawiana w ustawieniach stref, na urządzenie lub na budynek. Urządzenia są teraz widoczne jako termostaty.",
+    "ru": "Защита от перегрева для блоков воздух-воздух MELCloud Home: настраивается в настройках зон, для устройства или для здания. Устройства теперь отображаются как термостаты.",
+    "sv": "Överhettningsskydd för MELCloud Home luft-luft-enheter: ställs in i zoninställningarna, per enhet eller per byggnad. Enheter visas nu som termostater."
   }
 }
