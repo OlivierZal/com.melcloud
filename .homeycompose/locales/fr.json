@@ -74,7 +74,8 @@
     "intError": "__name__ : doit être un entier compris entre __min__ et __max__.",
     "loadFailed": "Le chargement a échoué",
     "overheatProtection": {
-      "enabled": "Activer la <strong>protection contre la surchauffe</strong> (Home)",
+      "airToAir": "(air-air)",
+      "enabled": "Activer la <strong>protection contre la surchauffe</strong>",
       "max": "Température maximale",
       "min": "Température minimale"
     },

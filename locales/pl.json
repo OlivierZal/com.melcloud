@@ -72,9 +72,10 @@
       "enabledRequired": "Wybierz Tak lub Nie przed zastosowaniem."
     },
     "overheatProtection": {
-      "enabled": "Włącz <strong>ochronę przed przegrzaniem</strong> (Home)",
+      "enabled": "Włącz <strong>ochronę przed przegrzaniem</strong>",
       "max": "Temperatura maksymalna",
-      "min": "Temperatura minimalna"
+      "min": "Temperatura minimalna",
+      "airToAir": "(powietrze-powietrze)"
     }
   },
   "warnings": {

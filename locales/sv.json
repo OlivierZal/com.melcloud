@@ -72,9 +72,10 @@
       "enabledRequired": "Välj Ja eller Nej innan du tillämpar."
     },
     "overheatProtection": {
-      "enabled": "Aktivera <strong>överhettningsskydd</strong> (Home)",
+      "enabled": "Aktivera <strong>överhettningsskydd</strong>",
       "max": "Maximitemperatur",
-      "min": "Minimitemperatur"
+      "min": "Minimitemperatur",
+      "airToAir": "(luft-luft)"
     }
   },
   "warnings": {

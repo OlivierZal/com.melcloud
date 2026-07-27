@@ -74,7 +74,8 @@
     "intError": "__name__: musi być liczbą całkowitą od __min__ do __max__.",
     "loadFailed": "Ładowanie nie powiodło się",
     "overheatProtection": {
-      "enabled": "Włącz <strong>ochronę przed przegrzaniem</strong> (Home)",
+      "airToAir": "(powietrze-powietrze)",
+      "enabled": "Włącz <strong>ochronę przed przegrzaniem</strong>",
       "max": "Temperatura maksymalna",
       "min": "Temperatura minimalna"
     },

@@ -72,9 +72,10 @@
       "enabledRequired": "Choose Yes or No before applying."
     },
     "overheatProtection": {
-      "enabled": "Enable <strong>overheat protection</strong> (Home)",
+      "enabled": "Enable <strong>overheat protection</strong>",
       "max": "Maximum temperature",
-      "min": "Minimum temperature"
+      "min": "Minimum temperature",
+      "airToAir": "(air-to-air)"
     }
   },
   "warnings": {

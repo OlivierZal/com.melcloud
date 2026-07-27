@@ -74,7 +74,8 @@
     "intError": "__name__: måste vara ett heltal mellan __min__ och __max__.",
     "loadFailed": "Inläsningen misslyckades",
     "overheatProtection": {
-      "enabled": "Aktivera <strong>överhettningsskydd</strong> (Home)",
+      "airToAir": "(luft-luft)",
+      "enabled": "Aktivera <strong>överhettningsskydd</strong>",
       "max": "Maximitemperatur",
       "min": "Minimitemperatur"
     },

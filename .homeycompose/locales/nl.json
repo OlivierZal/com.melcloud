@@ -74,7 +74,8 @@
     "intError": "__name__: moet een heel getal zijn tussen __min__ en __max__.",
     "loadFailed": "Laden mislukt",
     "overheatProtection": {
-      "enabled": "<strong>Oververhittingsbeveiliging</strong> inschakelen (Home)",
+      "airToAir": "(lucht-lucht)",
+      "enabled": "<strong>Oververhittingsbeveiliging</strong> inschakelen",
       "max": "Maximumtemperatuur",
       "min": "Minimumtemperatuur"
     },
