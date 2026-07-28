@@ -44,7 +44,10 @@ const {
   superSetWarningMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
 }))
 
-const facadeState = { isPoweredOn: true }
+const facadeState = {
+  isConnected: true,
+  isPoweredOn: true,
+}
 
 const requiredCapabilities = vi.hoisted(() => [
   'measure_temperature',
@@ -59,6 +62,7 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
       hasAutomaticFanSpeed: true,
       numberOfFanSpeeds: 5,
     },
+    isConnected: facadeState.isConnected,
     updateValues: setValuesMock,
     get operationMode(): string {
       return 'Heat'
@@ -140,6 +144,7 @@ describe(BaseMELCloudDevice, () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+    facadeState.isConnected = true
     facadeState.isPoweredOn = true
     getHomeFacadeMock.mockReturnValue(createMockFacade())
     setValuesMock.mockResolvedValue(true)
@@ -178,6 +183,20 @@ describe(BaseMELCloudDevice, () => {
   })
 
   describe('device synchronization', () => {
+    it('should mark the device unavailable when MELCloud reports it disconnected', async () => {
+      facadeState.isConnected = false
+      getHomeFacadeMock.mockReturnValue(createMockFacade())
+      await device.syncFromDevice()
+
+      expect(device.setUnavailable).toHaveBeenCalledWith('errors.unitOffline')
+    })
+
+    it('should mark the device available when MELCloud reports it connected', async () => {
+      await device.syncFromDevice()
+
+      expect(device.setAvailable).toHaveBeenCalledWith()
+    })
+
     it('should set capability values from facade', async () => {
       await device.syncFromDevice()
 

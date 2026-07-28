@@ -34,6 +34,7 @@ export abstract class HomeMELCloudDevice<
     if (device === null) {
       return
     }
+    await this.syncAvailability(device.isConnected)
     await this.#setCapabilityValues(device)
   }
 
