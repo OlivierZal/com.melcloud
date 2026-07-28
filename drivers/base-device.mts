@@ -100,7 +100,6 @@ export abstract class BaseMELCloudDevice<
     // `isAvailable` contract; this also heals the stuck unavailable state
     // builds up to #1481 may have left.
     await this.setAvailable()
-    await this.#migrateDeviceClass()
     await this.setWarning(null)
     this.#registerCapabilityListeners()
     await this.ensureDevice()
@@ -357,19 +356,6 @@ export abstract class BaseMELCloudDevice<
 
   #isThermostatModeSupportingOff(): boolean {
     return this.thermostatMode !== null && 'off' in this.thermostatMode
-  }
-
-  // Devices paired before the class change keep their stored class
-  // forever, so migrate them once. Guarded by the manifest class: an
-  // airtreatment driver (ERV) must never be flipped, whatever its
-  // stored class says.
-  async #migrateDeviceClass(): Promise<void> {
-    if (
-      this.getClass() === 'heatpump' &&
-      this.driver.manifest.class === 'thermostat'
-    ) {
-      await this.setClass('thermostat')
-    }
   }
 
   async #pushUpdate(
