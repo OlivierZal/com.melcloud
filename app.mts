@@ -957,7 +957,6 @@ export default class MELCloudApp extends App {
     )
   }
 
-  // The Home target tree for a selector: each `/context` building (level 0)
   // The flattened Home picker list — name-sorted buildings (level 0) each
   // followed by its own devices (level 1); `type` narrows to one
   // connection type (the ATA group widget), omitted spans both (the
