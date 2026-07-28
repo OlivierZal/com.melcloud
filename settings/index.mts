@@ -1,10 +1,11 @@
 import type {
+  HolidayModeState,
   HolidayModeUpdate,
   LoginCredentials,
+  ProtectionState,
   ProtectionUpdate,
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-import type * as Home from '@olivierzal/melcloud-api/home'
 import type Homey from 'homey/lib/HomeySettings'
 import { Temporal } from 'temporal-polyfill'
 
@@ -475,12 +476,17 @@ const serializeSettingElements = (elements: HTMLValueElement[]): string =>
 
 // Panel values, where a field may be `null` to mean "mixed" across a Home
 // building's devices — rendered indeterminate (blank).
-type MixableZoneSettings = {
-  readonly [K in keyof Classic.ZoneSettings]?: Classic.ZoneSettings[K] | null
-} & {
-  readonly OHEnabled?: boolean | null
-  readonly OHMaxTemperature?: number | null
-  readonly OHMinTemperature?: number | null
+// A field reads `null` when a Home building's devices disagree on it
+// ("mixed"), which the panels render as blank.
+type Mixable<T> = { readonly [K in keyof T]: T[K] | null }
+
+// The three panels share one cache entry per target, so each keeps its own
+// slot: frost and overheat carry the same neutral protection shape and
+// would otherwise overwrite each other.
+interface MixableZoneSettings {
+  readonly frost_protection?: Mixable<ProtectionState> | null
+  readonly holiday_mode?: Mixable<HolidayModeState> | null
+  readonly overheat_protection?: Mixable<ProtectionState> | null
 }
 
 // ── AuthManager ──
@@ -1358,11 +1364,7 @@ class ZoneSettingsManager {
   public displayFrostProtectionData(): void {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
-      const {
-        FPEnabled: isEnabled = false,
-        FPMaxTemperature: max,
-        FPMinTemperature: min,
-      } = data
+      const { isEnabled = false, max, min } = data.frost_protection ?? {}
       // `null` (a Home building's devices disagree) reads as blank; a plain
       // `undefined` (a device with no frost config) reads as "No".
       this.#frostProtectionEnabled.value =
@@ -1378,11 +1380,7 @@ class ZoneSettingsManager {
   public displayHolidayModeData(): void {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
-      const {
-        HMEnabled: isEnabled = false,
-        HMEndDate: endDate,
-        HMStartDate: startDate,
-      } = data
+      const { endDate, isEnabled = false, startDate } = data.holiday_mode ?? {}
       // `null` enabled (mixed across a building) reads as blank; dates show
       // only when the window is definitely on and itself not mixed.
       this.#holidayModeEnabled.value =
@@ -1399,11 +1397,7 @@ class ZoneSettingsManager {
   public displayOverheatProtectionData(): void {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
-      const {
-        OHEnabled: isEnabled = false,
-        OHMaxTemperature: max,
-        OHMinTemperature: min,
-      } = data
+      const { isEnabled = false, max, min } = data.overheat_protection ?? {}
       // `null` (a Home building's ATA devices disagree) reads as blank; a
       // plain `undefined` (no overheat config) reads as "No".
       this.#overheatProtectionEnabled.value =
@@ -1488,7 +1482,7 @@ class ZoneSettingsManager {
         },
       },
       { isEnabled, max, min } satisfies ProtectionUpdate,
-      { FPEnabled: isEnabled, FPMaxTemperature: max, FPMinTemperature: min },
+      { frost_protection: { isEnabled, max, min } },
     )
   }
 
@@ -1505,9 +1499,11 @@ class ZoneSettingsManager {
       },
       update,
       {
-        HMEnabled: isEnabled,
-        HMEndDate: isEnabled ? endDate : null,
-        HMStartDate: isEnabled ? startDate : null,
+        holiday_mode: {
+          endDate: isEnabled ? endDate : null,
+          isEnabled,
+          startDate: isEnabled ? startDate : null,
+        },
       },
     )
   }
@@ -1531,11 +1527,7 @@ class ZoneSettingsManager {
         },
       },
       { isEnabled, max, min },
-      {
-        OHEnabled: isEnabled,
-        OHMaxTemperature: max,
-        OHMinTemperature: min,
-      },
+      { overheat_protection: { isEnabled, max, min } },
     )
   }
 
@@ -1678,7 +1670,7 @@ class ZoneSettingsManager {
   }: ZoneSettingDescriptor): Promise<void> {
     await this.#gateFor(id).runBusy(async () => {
       try {
-        this.#updateZoneMapping(await this.#getZoneSettingData(path))
+        this.#updateZoneMapping(await this.#getZoneSettingData(id, path))
         display()
       } catch {
         // Non-critical: UI falls back to default values
@@ -1693,47 +1685,6 @@ class ZoneSettingsManager {
     return id === 'holiday_mode'
       ? this.#holidayModeDirtyGate
       : this.#overheatProtectionDirtyGate
-  }
-
-  async #getHomeDeviceZoneSettingData(
-    path: ZoneSettingDescriptor['path'],
-    url: string,
-  ): Promise<MixableZoneSettings> {
-    if (path === 'frost-protection') {
-      const frostProtection = await homeyApiGet<Home.FrostProtection | null>(
-        this.#homey,
-        url,
-      )
-      return frostProtection === null
-        ? {}
-        : {
-            FPEnabled: frostProtection.enabled,
-            FPMaxTemperature: frostProtection.max,
-            FPMinTemperature: frostProtection.min,
-          }
-    }
-    if (path === 'overheat-protection') {
-      const overheatProtection =
-        await homeyApiGet<Home.OverheatProtection | null>(this.#homey, url)
-      return overheatProtection === null
-        ? {}
-        : {
-            OHEnabled: overheatProtection.enabled,
-            OHMaxTemperature: overheatProtection.max,
-            OHMinTemperature: overheatProtection.min,
-          }
-    }
-    const holidayMode = await homeyApiGet<Home.HolidayMode | null>(
-      this.#homey,
-      url,
-    )
-    return holidayMode === null
-      ? {}
-      : {
-          HMEnabled: holidayMode.enabled,
-          HMEndDate: holidayMode.endDate,
-          HMStartDate: holidayMode.startDate,
-        }
   }
 
   #getMinAndMax(
@@ -1759,22 +1710,22 @@ class ZoneSettingsManager {
     return { max: Math.max(max, min + PROTECTION_TEMPERATURE_GAP), min }
   }
 
-  // Read one panel's settings for the selected target, normalized to the
-  // Classic zone-settings shape the panels render. Home devices answer the
-  // camelCase Home shape, mapped onto the FP*/HM* fields here; a `null`
-  // (no window defined) reads as empty, i.e. default values.
+  // Read one panel's settings for the selected target. Every target kind
+  // answers the same neutral shape since the cross-dialect contracts, so
+  // there is nothing left to translate: a Classic zone, a Home building
+  // (aggregated, `null` per field its devices disagree on) and a single
+  // Home device all land in the panel's own cache slot. A `null` payload
+  // (nothing configured) reads as empty, i.e. default values.
   async #getZoneSettingData(
+    id: ZoneSettingDescriptor['id'],
     path: ZoneSettingDescriptor['path'],
   ): Promise<MixableZoneSettings> {
-    const url = `${this.#getZoneSettingsBase()}/settings/${path}`
-    // Classic zones and Home buildings both answer the FP*/HM*/OH* shape —
-    // the building endpoint aggregates its devices, with `null` marking a
-    // field they disagree on ("mixed"). Only a single Home device needs
-    // the camelCase translation.
-    if (!isHomeDeviceValue(this.#zone.value)) {
-      return homeyApiGet<MixableZoneSettings>(this.#homey, url)
+    return {
+      [id]: await homeyApiGet<Mixable<ProtectionState> | null>(
+        this.#homey,
+        `${this.#getZoneSettingsBase()}/settings/${path}`,
+      ),
     }
-    return this.#getHomeDeviceZoneSettingData(path, url)
   }
 
   #getZoneSettingsBase(): string {
