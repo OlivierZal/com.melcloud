@@ -227,12 +227,11 @@ describe(BaseMELCloudDevice, () => {
     })
 
     it('should warn instead of crashing when the registry drops the device', async () => {
-      getHomeFacadeMock.mockReturnValue({
-        ...createMockFacade(),
-        get isAvailable(): boolean {
-          throw new EntityNotFoundError('DeviceLocation', { entityId: 1 })
-        },
-      } as unknown as Home.DeviceAtaFacade)
+      const facade = createMockFacade()
+      vi.spyOn(facade, 'isAvailable', 'get').mockImplementation(() => {
+        throw new EntityNotFoundError('Device', { entityId: 'device-1' })
+      })
+      getHomeFacadeMock.mockReturnValue(facade)
       await device.syncFromDevice()
 
       expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
