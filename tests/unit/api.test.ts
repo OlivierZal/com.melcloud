@@ -193,25 +193,6 @@ describe('api', () => {
 
       expect(api.getDeviceGroups({ homey })).toStrictEqual([])
     })
-
-    it('should serve the frozen legacy path with the same payload', () => {
-      mockGetBuildings.mockReturnValue([])
-      mockGetBuildingsByType.mockImplementation((type) =>
-        type === Home.DeviceType.Ata
-          ? [
-              {
-                devices: [mock<Home.Device>({ id: 'uuid-1' })],
-                id: 'home-building-1',
-                name: 'Appartement',
-              },
-            ]
-          : [],
-      )
-
-      expect(api.getDeviceGroupsLegacy({ homey })).toStrictEqual(
-        api.getDeviceGroups({ homey }),
-      )
-    })
   })
 
   describe('device settings retrieval', () => {

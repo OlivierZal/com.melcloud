@@ -24,10 +24,6 @@
       "method": "GET",
       "path": "/devices/groups"
     },
-    "getDeviceGroupsLegacy": {
-      "method": "GET",
-      "path": "/device_groups"
-    },
     "getDeviceSettings": {
       "method": "GET",
       "path": "/settings/devices"

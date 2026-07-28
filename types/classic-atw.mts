@@ -113,12 +113,12 @@ export interface ListCapabilities extends BaseListCapabilities {
   readonly 'measure_temperature.flow': number
   readonly 'measure_temperature.flow_zone1': number
   readonly 'measure_temperature.flow_zone2': number
+  readonly 'measure_temperature.heating_circuit': number
+  readonly 'measure_temperature.heating_circuit_zone2': number
   readonly 'measure_temperature.return': number
   readonly 'measure_temperature.return_zone1': number
   readonly 'measure_temperature.return_zone2': number
   readonly 'measure_temperature.tank_water_mixing': number
-  readonly 'measure_temperature.target_curve': number
-  readonly 'measure_temperature.target_curve_zone2': number
 }
 
 export interface SetCapabilities
@@ -234,12 +234,12 @@ export const tagMappings: {
     'measure_temperature.flow': 'FlowTemperature',
     'measure_temperature.flow_zone1': 'FlowTemperatureZone1',
     'measure_temperature.flow_zone2': 'FlowTemperatureZone2',
+    'measure_temperature.heating_circuit': 'TargetHCTemperatureZone1',
+    'measure_temperature.heating_circuit_zone2': 'TargetHCTemperatureZone2',
     'measure_temperature.return': 'ReturnTemperature',
     'measure_temperature.return_zone1': 'ReturnTemperatureZone1',
     'measure_temperature.return_zone2': 'ReturnTemperatureZone2',
     'measure_temperature.tank_water_mixing': 'MixingTankWaterTemperature',
-    'measure_temperature.target_curve': 'TargetHCTemperatureZone1',
-    'measure_temperature.target_curve_zone2': 'TargetHCTemperatureZone2',
   },
   set: {
     hot_water_mode: 'ForcedHotWaterMode',
