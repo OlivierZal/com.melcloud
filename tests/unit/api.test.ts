@@ -1,13 +1,14 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
 import {
   type HolidayModeUpdate,
   type LoginCredentials,
+  type ProtectionUpdate,
   AuthenticationError,
   AuthenticationThrottledError,
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DeviceSettings, Settings } from '../../types/device-settings.mts'
 import type { DriverSetting } from '../../types/driver-settings.mts'
@@ -37,8 +38,8 @@ const { default: api } = await import('../../api.mts')
 
 const mockIsAuthenticated = vi.fn<() => boolean>()
 const mockIsHomeAuthenticated = vi.fn<() => boolean>()
-const mockHomeList = vi.fn<() => Promise<unknown[]>>()
-const mockGetBuildingsByType = vi.fn<Home.Registry['getBuildingsByType']>()
+const mockEnsureHomeAuthenticated = vi.fn<() => Promise<boolean>>()
+const mockGetHomeBuildings = vi.fn<Home.Registry['getBuildings']>()
 const mockClassicAuthenticate = vi.fn<() => Promise<void>>()
 const mockHomeAuthenticate = vi.fn<() => Promise<void>>()
 const mockClassicLogOut = vi.fn<() => void>()
@@ -85,10 +86,10 @@ const mockApp = {
   getHomeTargets: vi.fn<() => (HomeBuildingZone | HomeDeviceZone)[]>(),
   homeApi: {
     authenticate: mockHomeAuthenticate,
+    ensureAuthenticated: mockEnsureHomeAuthenticated,
     isAuthenticated: mockIsHomeAuthenticated,
-    list: mockHomeList,
     logOut: mockHomeLogOut,
-    registry: { getBuildingsByType: mockGetBuildingsByType },
+    registry: { getBuildings: mockGetHomeBuildings },
   },
   log: vi.fn<(...args: readonly unknown[]) => void>(),
   updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
@@ -150,12 +151,13 @@ describe('api', () => {
           name: 'Bâtiment vide',
         }),
       ])
-      mockGetBuildingsByType.mockImplementation((type) => [
+      // The registry merges a mixed building's connection types itself.
+      mockGetHomeBuildings.mockReturnValue([
         {
-          devices:
-            type === Home.DeviceType.Ata
-              ? [mock<Home.Device>({ id: 'uuid-1' })]
-              : [mock<Home.Device>({ id: 'uuid-2' })],
+          devices: [
+            mock<Home.Device>({ id: 'uuid-1' }),
+            mock<Home.Device>({ id: 'uuid-2' }),
+          ],
           id: 'home-building-1',
           name: 'Appartement',
         },
@@ -169,27 +171,23 @@ describe('api', () => {
 
     it('should serve Home groups from the registry without a wire call', () => {
       mockGetBuildings.mockReturnValue([])
-      mockGetBuildingsByType.mockImplementation((type) =>
-        type === Home.DeviceType.Ata
-          ? [
-              {
-                devices: [mock<Home.Device>({ id: 'uuid-1' })],
-                id: 'home-building-1',
-                name: 'Appartement',
-              },
-            ]
-          : [],
-      )
+      mockGetHomeBuildings.mockReturnValue([
+        {
+          devices: [mock<Home.Device>({ id: 'uuid-1' })],
+          id: 'home-building-1',
+          name: 'Appartement',
+        },
+      ])
 
       expect(api.getDeviceGroups({ homey })).toStrictEqual([
         { deviceIds: ['uuid-1'], name: 'Appartement' },
       ])
-      expect(mockHomeList).not.toHaveBeenCalled()
+      expect(mockEnsureHomeAuthenticated).not.toHaveBeenCalled()
     })
 
     it('should return no groups when both dialects are empty', () => {
       mockGetBuildings.mockReturnValue([])
-      mockGetBuildingsByType.mockReturnValue([])
+      mockGetHomeBuildings.mockReturnValue([])
 
       expect(api.getDeviceGroups({ homey })).toStrictEqual([])
     })
@@ -581,35 +579,21 @@ describe('api', () => {
   })
 
   describe('home session retrieval', () => {
-    it('should not retry the context fetch when already authenticated', async () => {
-      mockIsHomeAuthenticated.mockReturnValue(true)
+    it('should delegate the lazy self-heal to the SDK contract', async () => {
+      mockEnsureHomeAuthenticated.mockResolvedValue(true)
 
       const isAuthenticated = await api.isHomeAuthenticated({ homey })
 
       expect(isAuthenticated).toBe(true)
-      expect(mockHomeList).not.toHaveBeenCalled()
+      expect(mockEnsureHomeAuthenticated).toHaveBeenCalledTimes(1)
     })
 
-    it('should retry the context fetch once when the boot restore failed', async () => {
-      mockIsHomeAuthenticated
-        .mockReturnValueOnce(false)
-        .mockReturnValueOnce(true)
-      mockHomeList.mockResolvedValue([])
-
-      const isAuthenticated = await api.isHomeAuthenticated({ homey })
-
-      expect(isAuthenticated).toBe(true)
-      expect(mockHomeList).toHaveBeenCalledTimes(1)
-    })
-
-    it('should return false when the retried context fetch does not restore the session', async () => {
-      mockIsHomeAuthenticated.mockReturnValue(false)
-      mockHomeList.mockResolvedValue([])
+    it('should return false when the SDK cannot restore the session', async () => {
+      mockEnsureHomeAuthenticated.mockResolvedValue(false)
 
       const isAuthenticated = await api.isHomeAuthenticated({ homey })
 
       expect(isAuthenticated).toBe(false)
-      expect(mockHomeList).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -675,7 +659,7 @@ describe('api', () => {
 
   describe('frost protection settings update', () => {
     it('should delegate to app.updateClassicFrostProtection', async () => {
-      const body = mock<Classic.FrostProtectionQuery>()
+      const body = mock<ProtectionUpdate>()
       const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
       mockApp.updateClassicFrostProtection.mockResolvedValue()
 
