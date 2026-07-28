@@ -835,23 +835,35 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('init error handling', () => {
-    it('should set warning when ensureDevice throws EntityNotFoundError', async () => {
+    it('should warn instead of crashing when the registry drops the device', async () => {
       const errorDevice = new TestDevice()
       setDriver(errorDevice)
-      vi.spyOn(errorDevice, 'ensureDevice').mockRejectedValue(
-        new EntityNotFoundError('DeviceLocation', { entityId: 1 }),
-      )
+      getFacadeMock.mockReturnValue({
+        data: mockDeviceData,
+        getEnergy: vi.fn<(query?: unknown) => Promise<unknown>>(),
+        updateValues: setValuesMock,
+        get isAvailable(): boolean {
+          throw new EntityNotFoundError('DeviceLocation', { entityId: 1 })
+        },
+      })
       await errorDevice.syncFromDevice()
 
       expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
       expect(superSetWarningMock).toHaveBeenCalledWith(null)
     })
 
-    it('should rethrow unexpected errors from ensureDevice', async () => {
+    it('should propagate unexpected sync errors untouched', async () => {
       const errorDevice = new TestDevice()
       setDriver(errorDevice)
       const unexpected = new Error('unexpected failure')
-      vi.spyOn(errorDevice, 'ensureDevice').mockRejectedValue(unexpected)
+      getFacadeMock.mockReturnValue({
+        data: mockDeviceData,
+        getEnergy: vi.fn<(query?: unknown) => Promise<unknown>>(),
+        updateValues: setValuesMock,
+        get isAvailable(): boolean {
+          throw unexpected
+        },
+      })
 
       await expect(errorDevice.syncFromDevice()).rejects.toThrow(unexpected)
     })

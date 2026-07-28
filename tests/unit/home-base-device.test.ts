@@ -226,6 +226,16 @@ describe(BaseMELCloudDevice, () => {
       expect(device.setAvailable).toHaveBeenCalledWith()
     })
 
+    it('should propagate unexpected sync errors untouched', async () => {
+      const facade = createMockFacade()
+      vi.spyOn(facade, 'isAvailable', 'get').mockImplementation(() => {
+        throw new Error('boom')
+      })
+      getHomeFacadeMock.mockReturnValue(facade)
+
+      await expect(device.syncFromDevice()).rejects.toThrow('boom')
+    })
+
     it('should warn instead of crashing when the registry drops the device', async () => {
       const facade = createMockFacade()
       vi.spyOn(facade, 'isAvailable', 'get').mockImplementation(() => {
