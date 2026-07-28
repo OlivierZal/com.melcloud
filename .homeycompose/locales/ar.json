@@ -5,7 +5,6 @@
     "invalidDuration": "يجب أن تكون المدة عددًا صحيحًا من الأيام بين 0 و365.",
     "invalidHolidayModeEnd": "يجب أن تكون نهاية وضع الإجازة في المستقبل.",
     "invalidTime": "وقت الانتهاء غير صالح.",
-    "unitOffline": "يشير MELCloud إلى أن هذه الوحدة غير متصلة — تحقق من اتصال Wi-Fi الخاص بها.",
     "zoneNotFound": "لم يتم العثور على المنطقة."
   },
   "notifications": {
