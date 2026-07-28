@@ -183,20 +183,6 @@ describe(BaseMELCloudDevice, () => {
   })
 
   describe('device synchronization', () => {
-    it('should mark the device unavailable when MELCloud reports it disconnected', async () => {
-      facadeState.isConnected = false
-      getHomeFacadeMock.mockReturnValue(createMockFacade())
-      await device.syncFromDevice()
-
-      expect(device.setUnavailable).toHaveBeenCalledWith('errors.unitOffline')
-    })
-
-    it('should mark the device available when MELCloud reports it connected', async () => {
-      await device.syncFromDevice()
-
-      expect(device.setAvailable).toHaveBeenCalledWith()
-    })
-
     it('should set capability values from facade', async () => {
       await device.syncFromDevice()
 

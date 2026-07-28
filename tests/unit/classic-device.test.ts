@@ -798,20 +798,6 @@ describe(ClassicMELCloudDevice, () => {
 
       expect(realtimeMock).not.toHaveBeenCalled()
     })
-
-    it('should mark the device unavailable when MELCloud reports it offline', async () => {
-      mockFacade({ ...mockDeviceData, Offline: true })
-      await device.syncFromDevice()
-
-      expect(device.setUnavailable).toHaveBeenCalledWith('errors.unitOffline')
-    })
-
-    it('should mark the device available again when it comes back online', async () => {
-      await device.syncFromDevice()
-
-      expect(device.setAvailable).toHaveBeenCalledWith()
-      expect(device.setUnavailable).not.toHaveBeenCalled()
-    })
   })
 
   describe('timer methods', () => {

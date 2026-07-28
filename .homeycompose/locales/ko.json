@@ -5,7 +5,6 @@
     "invalidDuration": "기간은 0에서 365 사이의 정수(일)여야 합니다.",
     "invalidHolidayModeEnd": "휴가 모드 종료는 미래여야 합니다.",
     "invalidTime": "종료 시간이 잘못되었습니다.",
-    "unitOffline": "MELCloud에서 이 기기가 오프라인이라고 보고합니다. Wi-Fi 연결을 확인하세요.",
     "zoneNotFound": "구역을 찾을 수 없습니다."
   },
   "notifications": {
