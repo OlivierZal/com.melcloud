@@ -6,7 +6,8 @@
     "energyReportsFailing": "Energy reports have failed several times in a row — the energy values may be stale.",
     "invalidTime": "The end time is invalid.",
     "invalidHolidayModeEnd": "The holiday-mode end must be in the future.",
-    "unitOffline": "MELCloud reports this unit as offline — check its Wi-Fi connection."
+    "unitOffline": "MELCloud reports this unit as offline — check its Wi-Fi connection.",
+    "unitStale": "This unit has not communicated with MELCloud for over 24 hours — check its Wi-Fi connection."
   },
   "settings": {
     "authenticate": {

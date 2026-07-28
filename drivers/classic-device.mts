@@ -72,11 +72,26 @@ export abstract class ClassicMELCloudDevice<
   }
 
   public override async syncFromDevice(): Promise<void> {
-    const data = await this.#getDeviceData()
-    if (data === null) {
+    const device = await this.ensureDevice()
+    if (device === null) {
       return
     }
-    await this.setCapabilityValues(data)
+    try {
+      await this.syncAvailability(
+        device.isAvailable,
+        this.homey.__('errors.unitStale'),
+      )
+      await this.setCapabilityValues(device.data)
+    } catch (error) {
+      if (!(error instanceof EntityNotFoundError)) {
+        throw error
+      }
+      // Mirrors the Home contract: a cached facade over a pruned id (the
+      // registry rebuilds on logout) warns and keeps the last known
+      // availability; the next sync after re-login resolves the fresh
+      // model transparently.
+      await this.setWarning(this.homey.__('errors.deviceNotFound'))
+    }
   }
 
   protected override readonly createEnergyReport = (
@@ -126,27 +141,5 @@ export abstract class ClassicMELCloudDevice<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- raw tag values and union-returning converters narrow to the capability's type
     return (this.deviceToCapability[capability]?.(data) ??
       data[tag]) as Capabilities<T>[TKey]
-  }
-
-  async #getDeviceData(): Promise<Readonly<Classic.ListDeviceData<T>> | null> {
-    try {
-      return await this.#resolveDeviceData()
-    } catch (error) {
-      if (!(error instanceof EntityNotFoundError)) {
-        throw error
-      }
-      await this.setWarning(this.homey.__('errors.deviceNotFound'))
-      return null
-    }
-  }
-
-  async #resolveDeviceData(): Promise<Readonly<
-    Classic.ListDeviceData<T>
-  > | null> {
-    if (this.#data !== undefined) {
-      return this.#data
-    }
-    const device = await this.ensureDevice()
-    return device?.data ?? null
   }
 }

@@ -5,6 +5,8 @@
     "invalidDuration": "Czas trwania musi być całkowitą liczbą dni od 0 do 365.",
     "invalidHolidayModeEnd": "Koniec trybu wakacyjnego musi być w przyszłości.",
     "invalidTime": "Godzina zakończenia jest nieprawidłowa.",
+    "unitOffline": "MELCloud zgłasza, że to urządzenie jest offline — sprawdź jego połączenie Wi-Fi.",
+    "unitStale": "To urządzenie nie komunikowało się z MELCloud od ponad 24 godzin — sprawdź jego połączenie Wi-Fi.",
     "zoneNotFound": "Nie znaleziono strefy."
   },
   "notifications": {

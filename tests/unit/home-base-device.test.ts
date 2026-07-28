@@ -1,5 +1,6 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type HomeyModule from 'homey'
+import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { InteropModule } from '../helpers.ts'
@@ -45,7 +46,7 @@ const {
 }))
 
 const facadeState = {
-  isConnected: true,
+  isAvailable: true,
   isPoweredOn: true,
 }
 
@@ -62,8 +63,10 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
       hasAutomaticFanSpeed: true,
       numberOfFanSpeeds: 5,
     },
-    isConnected: facadeState.isConnected,
     updateValues: setValuesMock,
+    get isAvailable(): boolean {
+      return facadeState.isAvailable
+    },
     get operationMode(): string {
       return 'Heat'
     },
@@ -144,7 +147,7 @@ describe(BaseMELCloudDevice, () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    facadeState.isConnected = true
+    facadeState.isAvailable = true
     facadeState.isPoweredOn = true
     getHomeFacadeMock.mockReturnValue(createMockFacade())
     setValuesMock.mockResolvedValue(true)
@@ -204,6 +207,45 @@ describe(BaseMELCloudDevice, () => {
         'thermostat_mode',
         'Heat',
       )
+    })
+
+    it('should mark the device unavailable when MELCloud reports it disconnected', async () => {
+      facadeState.isAvailable = false
+      await device.syncFromDevice()
+
+      expect(device.setUnavailable).toHaveBeenCalledWith('errors.unitOffline')
+      expect(device.setAvailable).not.toHaveBeenCalled()
+    })
+
+    it('should mark the device available again when the unit reconnects', async () => {
+      facadeState.isAvailable = false
+      await device.syncFromDevice()
+      facadeState.isAvailable = true
+      await device.syncFromDevice()
+
+      expect(device.setAvailable).toHaveBeenCalledWith()
+    })
+
+    it('should propagate unexpected sync errors untouched', async () => {
+      const facade = createMockFacade()
+      vi.spyOn(facade, 'isAvailable', 'get').mockImplementation(() => {
+        throw new Error('boom')
+      })
+      getHomeFacadeMock.mockReturnValue(facade)
+
+      await expect(device.syncFromDevice()).rejects.toThrow('boom')
+    })
+
+    it('should warn instead of crashing when the registry drops the device', async () => {
+      const facade = createMockFacade()
+      vi.spyOn(facade, 'isAvailable', 'get').mockImplementation(() => {
+        throw new EntityNotFoundError('Device', { entityId: 'device-1' })
+      })
+      getHomeFacadeMock.mockReturnValue(facade)
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
+      expect(device.setUnavailable).not.toHaveBeenCalled()
     })
 
     it('should set thermostat_mode to off when power is off', async () => {

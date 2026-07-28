@@ -6,7 +6,8 @@
     "energyReportsFailing": "Die Energieberichte sind mehrmals in Folge fehlgeschlagen — die Energiewerte können veraltet sein.",
     "invalidTime": "Die Endzeit ist ungültig.",
     "invalidHolidayModeEnd": "Das Ende des Urlaubsmodus muss in der Zukunft liegen.",
-    "unitOffline": "MELCloud meldet dieses Gerät als offline — prüfen Sie seine WLAN-Verbindung."
+    "unitOffline": "MELCloud meldet dieses Gerät als offline — prüfen Sie seine WLAN-Verbindung.",
+    "unitStale": "Dieses Gerät hat seit über 24 Stunden nicht mit MELCloud kommuniziert — prüfen Sie seine WLAN-Verbindung."
   },
   "settings": {
     "authenticate": {

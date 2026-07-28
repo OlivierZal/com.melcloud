@@ -66,6 +66,9 @@ vi.mock(import('homey'), async () => {
             .mockReturnValue({ id: 'atw-1' }),
           hasCapability: hasCapabilityMock,
           homey: {
+            __: vi
+              .fn<(key: string) => string>()
+              .mockImplementation((key: string) => key),
             api: { realtime: vi.fn<(event: string, data: unknown) => void>() },
             app: { getHomeFacade: getHomeFacadeMock },
             clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
@@ -95,7 +98,7 @@ const mockFacade = (
     forcedHotWaterMode: false,
     hasCoolingMode: true,
     hotWaterOperationalState: 'dhw',
-    isConnected: true,
+    isAvailable: true,
     isOwner: true,
     operationalState: 'dhw',
     operationalStateZone1: 'idle',

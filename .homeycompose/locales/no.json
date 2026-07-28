@@ -5,6 +5,8 @@
     "invalidDuration": "Varigheten må være et helt antall dager mellom 0 og 365.",
     "invalidHolidayModeEnd": "Slutten på feriemodus må være i fremtiden.",
     "invalidTime": "Sluttidspunktet er ugyldig.",
+    "unitOffline": "MELCloud melder at denne enheten er frakoblet — sjekk wi-fi-tilkoblingen.",
+    "unitStale": "Denne enheten har ikke kommunisert med MELCloud på over 24 timer — sjekk wi-fi-tilkoblingen.",
     "zoneNotFound": "Sone ikke funnet."
   },
   "notifications": {

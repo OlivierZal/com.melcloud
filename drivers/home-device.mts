@@ -1,4 +1,5 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
+import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 
 import type {
   HomeConvertFromDevice,
@@ -34,7 +35,22 @@ export abstract class HomeMELCloudDevice<
     if (device === null) {
       return
     }
-    await this.#setCapabilityValues(device)
+    try {
+      await this.syncAvailability(
+        device.isAvailable,
+        this.homey.__('errors.unitOffline'),
+      )
+      await this.#setCapabilityValues(device)
+    } catch (error) {
+      if (!(error instanceof EntityNotFoundError)) {
+        throw error
+      }
+      // Mirrors the Classic contract: a cached facade over a pruned id
+      // (the registry rebuilds on logout) warns and keeps the last known
+      // availability; the next sync after re-login resolves the fresh
+      // model transparently.
+      await this.setWarning(this.homey.__('errors.deviceNotFound'))
+    }
   }
 
   protected override getCapabilitiesOptions(): Partial<

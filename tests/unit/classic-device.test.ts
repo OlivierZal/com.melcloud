@@ -66,7 +66,6 @@ const {
 
 const mockDeviceData = {
   FanSpeed: 3,
-  Offline: false,
   Power: true,
   SetTemperature: 22,
 }
@@ -160,10 +159,14 @@ const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
   },
 })
 
-const mockFacade = (data: Record<string, unknown> = mockDeviceData): void => {
+const mockFacade = (
+  data: Record<string, unknown> = mockDeviceData,
+  isAvailable = true,
+): void => {
   getFacadeMock.mockReturnValue({
     data,
     getEnergy: vi.fn<(query?: unknown) => Promise<unknown>>(),
+    isAvailable,
     updateValues: setValuesMock,
   })
 }
@@ -343,6 +346,21 @@ describe(ClassicMELCloudDevice, () => {
       await device.syncFromDevice()
 
       expect(realtimeMock).toHaveBeenCalledWith('deviceupdate', null)
+    })
+
+    it('should mark the device unavailable when the unit is unreachable', async () => {
+      mockFacade(mockDeviceData, false)
+      await device.syncFromDevice()
+
+      expect(device.setUnavailable).toHaveBeenCalledWith('errors.unitStale')
+      expect(device.setAvailable).not.toHaveBeenCalled()
+    })
+
+    it('should mark the device available while the unit is reachable', async () => {
+      await device.syncFromDevice()
+
+      expect(device.setAvailable).toHaveBeenCalledWith()
+      expect(device.setUnavailable).not.toHaveBeenCalled()
     })
   })
 
@@ -817,23 +835,35 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('init error handling', () => {
-    it('should set warning when ensureDevice throws EntityNotFoundError', async () => {
+    it('should warn instead of crashing when the registry drops the device', async () => {
       const errorDevice = new TestDevice()
       setDriver(errorDevice)
-      vi.spyOn(errorDevice, 'ensureDevice').mockRejectedValue(
-        new EntityNotFoundError('DeviceLocation', { entityId: 1 }),
-      )
+      getFacadeMock.mockReturnValue({
+        data: mockDeviceData,
+        getEnergy: vi.fn<(query?: unknown) => Promise<unknown>>(),
+        updateValues: setValuesMock,
+        get isAvailable(): boolean {
+          throw new EntityNotFoundError('DeviceLocation', { entityId: 1 })
+        },
+      })
       await errorDevice.syncFromDevice()
 
       expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
       expect(superSetWarningMock).toHaveBeenCalledWith(null)
     })
 
-    it('should rethrow unexpected errors from ensureDevice', async () => {
+    it('should propagate unexpected sync errors untouched', async () => {
       const errorDevice = new TestDevice()
       setDriver(errorDevice)
       const unexpected = new Error('unexpected failure')
-      vi.spyOn(errorDevice, 'ensureDevice').mockRejectedValue(unexpected)
+      getFacadeMock.mockReturnValue({
+        data: mockDeviceData,
+        getEnergy: vi.fn<(query?: unknown) => Promise<unknown>>(),
+        updateValues: setValuesMock,
+        get isAvailable(): boolean {
+          throw unexpected
+        },
+      })
 
       await expect(errorDevice.syncFromDevice()).rejects.toThrow(unexpected)
     })
