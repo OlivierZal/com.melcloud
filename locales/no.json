@@ -6,7 +6,8 @@
     "energyReportsFailing": "Energirapportene har feilet flere ganger på rad — energiverdiene kan være utdaterte.",
     "invalidTime": "Sluttidspunktet er ugyldig.",
     "invalidHolidayModeEnd": "Slutten på feriemodus må være i fremtiden.",
-    "unitOffline": "MELCloud melder at denne enheten er frakoblet — sjekk wi-fi-tilkoblingen."
+    "unitOffline": "MELCloud melder at denne enheten er frakoblet — sjekk wi-fi-tilkoblingen.",
+    "unitStale": "Denne enheten har ikke kommunisert med MELCloud på over 24 timer — sjekk wi-fi-tilkoblingen."
   },
   "settings": {
     "authenticate": {

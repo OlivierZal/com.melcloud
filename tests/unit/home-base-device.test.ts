@@ -1,5 +1,6 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type HomeyModule from 'homey'
+import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { InteropModule } from '../helpers.ts'
@@ -223,6 +224,19 @@ describe(BaseMELCloudDevice, () => {
       await device.syncFromDevice()
 
       expect(device.setAvailable).toHaveBeenCalledWith()
+    })
+
+    it('should warn instead of crashing when the registry drops the device', async () => {
+      getHomeFacadeMock.mockReturnValue({
+        ...createMockFacade(),
+        get isAvailable(): boolean {
+          throw new EntityNotFoundError('DeviceLocation', { entityId: 1 })
+        },
+      } as unknown as Home.DeviceAtaFacade)
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
+      expect(device.setUnavailable).not.toHaveBeenCalled()
     })
 
     it('should set thermostat_mode to off when power is off', async () => {

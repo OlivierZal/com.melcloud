@@ -6,7 +6,8 @@
     "energyReportsFailing": "에너지 보고서가 연속으로 여러 번 실패했습니다 — 에너지 값이 최신이 아닐 수 있습니다.",
     "invalidTime": "종료 시간이 잘못되었습니다.",
     "invalidHolidayModeEnd": "휴가 모드 종료는 미래여야 합니다.",
-    "unitOffline": "MELCloud에서 이 기기가 오프라인이라고 보고합니다. Wi-Fi 연결을 확인하세요."
+    "unitOffline": "MELCloud에서 이 기기가 오프라인이라고 보고합니다. Wi-Fi 연결을 확인하세요.",
+    "unitStale": "이 기기가 24시간 넘게 MELCloud와 통신하지 않았습니다. Wi-Fi 연결을 확인하세요."
   },
   "settings": {
     "authenticate": {
