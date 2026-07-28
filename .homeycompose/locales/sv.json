@@ -5,6 +5,8 @@
     "invalidDuration": "Varaktigheten måste vara ett helt antal dagar mellan 0 och 365.",
     "invalidHolidayModeEnd": "Semesterlägets slut måste vara i framtiden.",
     "invalidTime": "Sluttiden är ogiltig.",
+    "unitOffline": "MELCloud rapporterar att enheten är offline — kontrollera dess wifi-anslutning.",
+    "unitStale": "Enheten har inte kommunicerat med MELCloud på över 24 timmar — kontrollera dess wifi-anslutning.",
     "zoneNotFound": "Zon ej hittad."
   },
   "notifications": {

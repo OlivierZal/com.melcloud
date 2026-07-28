@@ -45,7 +45,7 @@ const {
 }))
 
 const facadeState = {
-  isConnected: true,
+  isAvailable: true,
   isPoweredOn: true,
 }
 
@@ -62,8 +62,10 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
       hasAutomaticFanSpeed: true,
       numberOfFanSpeeds: 5,
     },
-    isConnected: facadeState.isConnected,
     updateValues: setValuesMock,
+    get isAvailable(): boolean {
+      return facadeState.isAvailable
+    },
     get operationMode(): string {
       return 'Heat'
     },
@@ -144,7 +146,7 @@ describe(BaseMELCloudDevice, () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    facadeState.isConnected = true
+    facadeState.isAvailable = true
     facadeState.isPoweredOn = true
     getHomeFacadeMock.mockReturnValue(createMockFacade())
     setValuesMock.mockResolvedValue(true)
@@ -204,6 +206,23 @@ describe(BaseMELCloudDevice, () => {
         'thermostat_mode',
         'Heat',
       )
+    })
+
+    it('should mark the device unavailable when MELCloud reports it disconnected', async () => {
+      facadeState.isAvailable = false
+      await device.syncFromDevice()
+
+      expect(device.setUnavailable).toHaveBeenCalledWith('errors.unitOffline')
+      expect(device.setAvailable).not.toHaveBeenCalled()
+    })
+
+    it('should mark the device available again when the unit reconnects', async () => {
+      facadeState.isAvailable = false
+      await device.syncFromDevice()
+      facadeState.isAvailable = true
+      await device.syncFromDevice()
+
+      expect(device.setAvailable).toHaveBeenCalledWith()
     })
 
     it('should set thermostat_mode to off when power is off', async () => {

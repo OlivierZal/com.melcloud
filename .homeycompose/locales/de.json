@@ -5,6 +5,8 @@
     "invalidDuration": "Die Dauer muss eine ganze Zahl von Tagen zwischen 0 und 365 sein.",
     "invalidHolidayModeEnd": "Das Ende des Urlaubsmodus muss in der Zukunft liegen.",
     "invalidTime": "Die Endzeit ist ungültig.",
+    "unitOffline": "MELCloud meldet dieses Gerät als offline — prüfen Sie seine WLAN-Verbindung.",
+    "unitStale": "Dieses Gerät hat seit über 24 Stunden nicht mit MELCloud kommuniziert — prüfen Sie seine WLAN-Verbindung.",
     "zoneNotFound": "Zone nicht gefunden."
   },
   "notifications": {

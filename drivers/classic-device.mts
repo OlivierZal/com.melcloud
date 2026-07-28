@@ -76,6 +76,10 @@ export abstract class ClassicMELCloudDevice<
     if (data === null) {
       return
     }
+    await this.syncAvailability(
+      this.facade?.isAvailable ?? true,
+      this.homey.__('errors.unitStale'),
+    )
     await this.setCapabilityValues(data)
   }
 

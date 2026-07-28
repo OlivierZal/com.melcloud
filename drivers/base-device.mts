@@ -96,9 +96,9 @@ export abstract class BaseMELCloudDevice<
   } = { get: {}, list: {}, set: {} }
 
   public override async onInit(): Promise<void> {
-    // Availability is not app-managed (MELCloud's Offline flag proved
-    // unreliable): clear any stale unavailable state a previous build
-    // may have left, or the device stays uncontrollable.
+    // Start available and let the first sync re-assert from the facades'
+    // `isAvailable` contract; this also heals the stuck unavailable state
+    // builds up to #1481 may have left.
     await this.setAvailable()
     await this.#migrateDeviceClass()
     await this.setWarning(null)
@@ -308,6 +308,19 @@ export abstract class BaseMELCloudDevice<
       await this.#pushUpdate(device, updateData)
     }
     this.#scheduleSyncFromDevice()
+  }
+
+  // MELCloud accepting a write is not delivery: when the unit's cloud
+  // link is down, writes are silently dropped and readings go stale —
+  // an unreachable unit truly cannot be controlled, so surface it as
+  // device availability. Only the facades' `isAvailable` contract may
+  // feed this: the raw Classic `Offline` flag flaps on healthy units
+  // (#1479/#1481).
+  protected async syncAvailability(
+    isAvailable: boolean,
+    message: string,
+  ): Promise<void> {
+    await (isAvailable ? this.setAvailable() : this.setUnavailable(message))
   }
 
   async #ensureDeviceFacade(): Promise<TFacade> {

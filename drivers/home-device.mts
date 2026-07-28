@@ -34,6 +34,10 @@ export abstract class HomeMELCloudDevice<
     if (device === null) {
       return
     }
+    await this.syncAvailability(
+      device.isAvailable,
+      this.homey.__('errors.unitOffline'),
+    )
     await this.#setCapabilityValues(device)
   }
 
