@@ -514,6 +514,18 @@ const config = defineConfig([
       'no-object-constructor': 'error',
       'no-param-reassign': 'error',
       'no-promise-executor-return': 'error',
+      // `consistent-type-exports` tolerates inline specifiers on all-type
+      // exports; no shipped rule hoists them, so the constraint is spelled
+      // out here (imports get the same via `consistent-type-imports`).
+      'no-restricted-syntax': [
+        'error',
+        {
+          message:
+            'An all-type export hoists the keyword: `export type { … }`.',
+          selector:
+            "ExportNamedDeclaration[exportKind='value']:has(ExportSpecifier[exportKind='type']):not(:has(ExportSpecifier[exportKind='value']))",
+        },
+      ],
       'no-return-assign': ['error', 'always'],
       'no-self-compare': 'error',
       'no-sequences': [
