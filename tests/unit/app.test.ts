@@ -1,6 +1,9 @@
 import {
+  type HolidayModeState,
   type HolidayModeUpdate,
   type LoginCredentials,
+  type ProtectionState,
+  type ProtectionUpdate,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
   type Result,
@@ -8,6 +11,7 @@ import {
   err,
   NoChangesError,
   ok,
+  UpdateRejectedError,
 } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -92,10 +96,17 @@ const mockApiInstance = {
 }
 
 const mockHomeRegistry = {
-  getAll: vi.fn<() => unknown[]>().mockReturnValue([]),
-  getBuildingsByType: vi.fn<(type: Home.DeviceType) => unknown[]>(),
+  getBuildings: vi
+    .fn<(params?: { type?: Home.DeviceType }) => unknown[]>()
+    .mockReturnValue([]),
   getById: vi.fn<(id: string) => unknown>(),
-  getByType: vi.fn<(type: Home.DeviceType) => unknown[]>().mockReturnValue([]),
+  getDevices: vi.fn<() => unknown[]>().mockReturnValue([]),
+  getDevicesByType: vi
+    .fn<(type: Home.DeviceType) => unknown[]>()
+    .mockReturnValue([]),
+  getZones: vi
+    .fn<(params?: { type?: Home.DeviceType }) => unknown[]>()
+    .mockReturnValue([]),
 }
 
 const mockHomeApiInstance = {
@@ -110,6 +121,8 @@ const mockFacadeManagerGetZones = vi
   .fn<(options?: { type?: Classic.DeviceType }) => unknown[]>()
   .mockReturnValue([])
 const mockHomeFacadeManagerGet = vi.fn<(model: unknown) => unknown>()
+const mockHomeFacadeManagerGetZones =
+  vi.fn<(params?: { type?: Home.DeviceType }) => unknown[]>()
 const mockHomeFacadeManagerGetBuilding = vi.fn<(id: string) => unknown>()
 const mockHomeFacadeManagerUpdateFrostProtection =
   vi.fn<Home.FacadeManager['updateFrostProtection']>()
@@ -289,6 +302,7 @@ const newMockHomeFacadeManager =
     return mock<Home.FacadeManager>({
       get: mockHomeFacadeManagerGet,
       getBuilding: mockHomeFacadeManagerGetBuilding,
+      getZones: mockHomeFacadeManagerGetZones,
       updateFrostProtection: mockHomeFacadeManagerUpdateFrostProtection,
       updateHolidayMode: mockHomeFacadeManagerUpdateHolidayMode,
       updateOverheatProtection: mockHomeFacadeManagerUpdateOverheatProtection,
@@ -307,6 +321,7 @@ const setupMocks = (): void => {
   mockHomeCreate.mockResolvedValue(mockHomeApiInstance)
   mockFacadeManagerConstructor.mockImplementation(newMockFacadeManager)
   mockHomeFacadeManagerConstructor.mockImplementation(newMockHomeFacadeManager)
+  mockHomeFacadeManagerGetZones.mockReturnValue([])
   mockGetLanguage.mockReturnValue('en')
   mockGetTimezone.mockReturnValue('Europe/Paris')
   mockTranslate.mockImplementation((key: string) => key)
@@ -461,12 +476,16 @@ const setupWidgetListeners = (): {
   return { mockRegisterAta, mockRegisterCharts }
 }
 
+// Mutations resolve void and throw UpdateRejectedError on a wire
+// rejection (melcloud-api 45.0.0): `null` models the accepted write.
 const mockUpdateResult = (
   attributeErrors: Record<string, string[]> | null,
 ): ReturnType<typeof vi.fn> =>
-  vi
-    .fn<() => Promise<{ AttributeErrors: Record<string, string[]> | null }>>()
-    .mockResolvedValue({ AttributeErrors: attributeErrors })
+  attributeErrors === null
+    ? vi.fn<() => Promise<void>>().mockResolvedValue()
+    : vi
+        .fn<() => Promise<void>>()
+        .mockRejectedValue(new UpdateRejectedError(attributeErrors))
 
 const initWithHolidayModeFacade = async (
   app: InstanceType<typeof MelCloudApp>,
@@ -505,6 +524,28 @@ const homeHolidayZone = { id: 'homeDevices_guid-1' } as const
 
 // Point the Home registry/facade at one ATA device so the Home holiday and
 // frost paths resolve for `guid-1`.
+// The picker tree now comes from the library; the app filters its leaves
+// and suffixes them, so tests drive the manager's flat list directly.
+const stubHomeZones = (
+  devices: {
+    buildingName: string
+    id: string
+    name: string
+    deviceType?: 'ata' | 'atw'
+  }[],
+): void => {
+  mockHomeFacadeManagerGetZones.mockReturnValue(
+    devices.map(({ buildingName, deviceType = 'ata', id, name }) => ({
+      buildingName,
+      deviceType,
+      id,
+      level: 1,
+      model: 'homeDevices',
+      name,
+    })),
+  )
+}
+
 const stubHomeDevice = (facade: unknown): void => {
   mockHomeRegistry.getById.mockReturnValue({
     id: 'guid-1',
@@ -535,7 +576,7 @@ const stubBuilding = (
       isAtw: (): boolean => false,
     },
   ]
-  mockHomeRegistry.getAll.mockReturnValue(devices)
+  mockHomeRegistry.getDevices.mockReturnValue(devices)
   mockHomeRegistry.getById.mockImplementation((id) =>
     devices.find((device) => device.id === id),
   )
@@ -543,6 +584,9 @@ const stubBuilding = (
     frostProtection: frostById[(model as { id: string }).id] ?? null,
     holidayMode: holidayById[(model as { id: string }).id] ?? null,
     overheatProtection: overheatById[(model as { id: string }).id] ?? null,
+    // The facade guards read the discriminator the wave added, so the
+    // stub carries it instead of relying on structural sniffing.
+    type: Home.DeviceType.Ata,
   }))
 }
 
@@ -586,8 +630,8 @@ describe('melCloudApp', () => {
     mockGetDrivers.mockReturnValue({})
     mockFacadeManagerGetZones.mockReturnValue([])
     mockApiInstance.isAuthenticated.mockReturnValue(true)
-    mockHomeRegistry.getAll.mockReturnValue([])
-    mockHomeRegistry.getByType.mockReturnValue([])
+    mockHomeRegistry.getDevices.mockReturnValue([])
+    mockHomeRegistry.getDevicesByType.mockReturnValue([])
     app = createApp()
   })
 
@@ -1250,7 +1294,7 @@ describe('melCloudApp', () => {
         timestamp: string
       }[],
     ): void => {
-      mockHomeRegistry.getByType.mockImplementation((type) =>
+      mockHomeRegistry.getDevicesByType.mockImplementation((type) =>
         type === Home.DeviceType.Ata ? [homeAtaDevice] : [],
       )
       mockHomeRegistry.getById.mockReturnValue({
@@ -1353,7 +1397,7 @@ describe('melCloudApp', () => {
       mockApiInstance.registry.devices.getById.mockReturnValue({
         name: 'Living Room',
       })
-      mockHomeRegistry.getByType.mockImplementation((type) =>
+      mockHomeRegistry.getDevicesByType.mockImplementation((type) =>
         type === Home.DeviceType.Ata ? [homeAtaDevice] : [],
       )
       mockHomeRegistry.getById.mockReturnValue({
@@ -1556,13 +1600,13 @@ describe('melCloudApp', () => {
   describe('home device listing by type', () => {
     it('should delegate to registry getByType', async () => {
       const mockModels = [{ id: 'device-1', name: 'Living Room' }]
-      mockHomeRegistry.getByType.mockReturnValue(mockModels)
+      mockHomeRegistry.getDevicesByType.mockReturnValue(mockModels)
       await app.onInit()
 
       const result = app.getHomeDevicesByType(Home.DeviceType.Ata)
 
       expect(result).toBe(mockModels)
-      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
+      expect(mockHomeRegistry.getDevicesByType).toHaveBeenCalledWith(
         Home.DeviceType.Ata,
       )
     })
@@ -1643,33 +1687,8 @@ describe('melCloudApp', () => {
   })
 
   describe('home ata targets', () => {
-    it('should nest alpha-sorted devices under their alpha-sorted building', async () => {
-      mockHomeRegistry.getByType.mockReturnValue([
-        {
-          building: { id: 'building-2', name: 'Verkstan' },
-          id: 'device-2',
-          name: 'Salon',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
-        {
-          building: { id: 'building-2', name: 'Verkstan' },
-          id: 'device-1',
-          name: 'Bureau',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
-        {
-          building: { id: 'building-1', name: 'Appartement' },
-          id: 'device-3',
-          name: 'Woonkamer',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
-      ])
-      await app.onInit()
-
-      expect(app.getHomeTargets(Home.DeviceType.Ata)).toStrictEqual([
+    it('should serve the library picker list, narrowed to the asked type', async () => {
+      const zones = [
         {
           buildingName: 'Appartement',
           id: 'building-1',
@@ -1685,33 +1704,14 @@ describe('melCloudApp', () => {
           model: 'homeDevices',
           name: 'Woonkamer',
         },
-        {
-          buildingName: 'Verkstan',
-          id: 'building-2',
-          level: 0,
-          model: 'homeBuildings',
-          name: 'Verkstan',
-        },
-        {
-          buildingName: 'Verkstan',
-          deviceType: 'ata',
-          id: 'device-1',
-          level: 1,
-          model: 'homeDevices',
-          name: 'Bureau',
-        },
-        {
-          buildingName: 'Verkstan',
-          deviceType: 'ata',
-          id: 'device-2',
-          level: 1,
-          model: 'homeDevices',
-          name: 'Salon',
-        },
-      ])
-      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
-        Home.DeviceType.Ata,
-      )
+      ]
+      mockHomeFacadeManagerGetZones.mockReturnValue(zones)
+      await app.onInit()
+
+      expect(app.getHomeTargets(Home.DeviceType.Ata)).toStrictEqual(zones)
+      expect(mockHomeFacadeManagerGetZones).toHaveBeenCalledWith({
+        type: Home.DeviceType.Ata,
+      })
     })
   })
 
@@ -2153,21 +2153,9 @@ describe('melCloudApp', () => {
 
   describe('home device zones', () => {
     it('should suffix the building and sort for the flat pickers', async () => {
-      mockHomeRegistry.getAll.mockReturnValue([
-        {
-          building: { name: 'Vinkenstraat 22' },
-          id: 'b',
-          name: 'Garage',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
-        {
-          building: { name: 'Verkstan' },
-          id: 'a',
-          name: 'Garage ',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
+      stubHomeZones([
+        { buildingName: 'Vinkenstraat 22', id: 'b', name: 'Garage' },
+        { buildingName: 'Verkstan', id: 'a', name: 'Garage ' },
       ])
       await app.onInit()
 
@@ -2194,13 +2182,12 @@ describe('melCloudApp', () => {
     })
 
     it('should filter by device type when one is given', async () => {
-      mockHomeRegistry.getByType.mockReturnValue([
+      stubHomeZones([
         {
-          building: { name: 'Huis' },
+          buildingName: 'Huis',
+          deviceType: 'atw',
           id: 'atw-1',
           name: 'Warmtepomp',
-          isAta: (): boolean => false,
-          isAtw: (): boolean => true,
         },
       ])
       await app.onInit()
@@ -2215,9 +2202,9 @@ describe('melCloudApp', () => {
           name: 'Warmtepomp (Huis)',
         },
       ])
-      expect(mockHomeRegistry.getByType).toHaveBeenCalledWith(
-        Home.DeviceType.Atw,
-      )
+      expect(mockHomeFacadeManagerGetZones).toHaveBeenCalledWith({
+        type: Home.DeviceType.Atw,
+      })
     })
   })
 
@@ -2520,7 +2507,7 @@ describe('melCloudApp', () => {
 
       await expect(
         app.updateClassicFrostProtection({
-          settings: mock<Classic.FrostProtectionQuery>(),
+          settings: mock<ProtectionUpdate>(),
           zoneId: '1',
           zoneType: 'buildings',
         }),
@@ -2537,7 +2524,7 @@ describe('melCloudApp', () => {
 
       await expect(
         app.updateClassicFrostProtection({
-          settings: mock<Classic.FrostProtectionQuery>(),
+          settings: mock<ProtectionUpdate>(),
           zoneId: '1',
           zoneType: 'buildings',
         }),
@@ -2648,13 +2635,21 @@ describe('melCloudApp', () => {
             name: 'Maison',
           },
         ])
-        mockHomeRegistry.getAll.mockReturnValue([
+        mockHomeFacadeManagerGetZones.mockReturnValue([
           {
-            building: { id: 'chalet-1', name: 'Chalet' },
+            buildingName: 'Chalet',
+            id: 'chalet-1',
+            level: 0,
+            model: 'homeBuildings',
+            name: 'Chalet',
+          },
+          {
+            buildingName: 'Chalet',
+            deviceType: 'ata',
             id: 'guid-9',
+            level: 1,
+            model: 'homeDevices',
             name: 'Salon',
-            isAta: (): boolean => true,
-            isAtw: (): boolean => false,
           },
         ])
         await app.onInit()
@@ -2994,10 +2989,8 @@ describe('melCloudApp', () => {
         async (isEnabled) => {
           await initWithHolidayModeFacade(app, {
             getHolidayMode: vi
-              .fn<() => Promise<Result<Classic.HolidayModeData>>>()
-              .mockResolvedValue(
-                ok(mock<Classic.HolidayModeData>({ HMEnabled: isEnabled })),
-              ),
+              .fn<() => Promise<Result<HolidayModeState | null>>>()
+              .mockResolvedValue(ok(mock<HolidayModeState>({ isEnabled }))),
           })
 
           const run = getMockCallArg<
@@ -3009,8 +3002,8 @@ describe('melCloudApp', () => {
       )
 
       it.each([
-        { holidayMode: { enabled: true }, shouldBeOn: true },
-        { holidayMode: { enabled: false }, shouldBeOn: false },
+        { holidayMode: { isEnabled: true }, shouldBeOn: true },
+        { holidayMode: { isEnabled: false }, shouldBeOn: false },
         // No holiday data on the facade reads as "off".
         { holidayMode: null, shouldBeOn: false },
       ])(
@@ -3029,12 +3022,12 @@ describe('melCloudApp', () => {
 
       it.each([
         {
-          holidayById: { d1: { enabled: true }, d2: { enabled: true } },
+          holidayById: { d1: { isEnabled: true }, d2: { isEnabled: true } },
           shouldBeOn: true,
         },
         // Devices disagree: the building aggregate is "mixed", read as off.
         {
-          holidayById: { d1: { enabled: true }, d2: { enabled: false } },
+          holidayById: { d1: { isEnabled: true }, d2: { isEnabled: false } },
           shouldBeOn: false,
         },
       ])(
@@ -3087,17 +3080,15 @@ describe('melCloudApp', () => {
   describe('home overheat protection', () => {
     it('should read a Home ATA device overheat protection off the facade', async () => {
       await app.onInit()
-      const overheatProtection = mock<Home.OverheatProtection>({
-        active: false,
-      })
-      stubHomeDevice({ overheatProtection })
+      const overheatProtection = mock<ProtectionState>({ isEnabled: true })
+      stubHomeDevice({ overheatProtection, type: Home.DeviceType.Ata })
 
       expect(app.getHomeOverheatProtection('guid-1')).toBe(overheatProtection)
     })
 
-    it('should read null for a facade without the ATA-only getter', async () => {
+    it('should read null for an ATW facade, which never carries it', async () => {
       await app.onInit()
-      stubHomeDevice({ frostProtection: null })
+      stubHomeDevice({ frostProtection: null, type: Home.DeviceType.Atw })
 
       expect(app.getHomeOverheatProtection('guid-1')).toBeNull()
     })
@@ -3125,14 +3116,14 @@ describe('melCloudApp', () => {
     it('keeps shared frost values and nulls the disagreements', async () => {
       await app.onInit()
       stubBuilding({
-        d1: { active: false, enabled: true, max: 12, min: 6 },
-        d2: { active: false, enabled: true, max: 14, min: 6 },
+        d1: { isEnabled: true, max: 12, min: 6 },
+        d2: { isEnabled: true, max: 14, min: 6 },
       })
 
       expect(app.getHomeBuildingFrostProtection('b1')).toStrictEqual({
-        FPEnabled: true,
-        FPMaxTemperature: null,
-        FPMinTemperature: 6,
+        isEnabled: true,
+        max: null,
+        min: 6,
       })
     })
 
@@ -3141,9 +3132,9 @@ describe('melCloudApp', () => {
       stubBuilding({})
 
       expect(app.getHomeBuildingFrostProtection('b1')).toStrictEqual({
-        FPEnabled: false,
-        FPMaxTemperature: null,
-        FPMinTemperature: null,
+        isEnabled: false,
+        max: null,
+        min: null,
       })
     })
 
@@ -3152,15 +3143,15 @@ describe('melCloudApp', () => {
       stubBuilding(
         {},
         {
-          d1: { active: false, enabled: true, endDate: 'e', startDate: 's' },
-          d2: { active: false, enabled: true, endDate: 'e', startDate: 'x' },
+          d1: { endDate: 'e', isEnabled: true, startDate: 's' },
+          d2: { endDate: 'e', isEnabled: true, startDate: 'x' },
         },
       )
 
       expect(app.getHomeBuildingHolidayMode('b1')).toStrictEqual({
-        HMEnabled: true,
-        HMEndDate: 'e',
-        HMStartDate: null,
+        endDate: 'e',
+        isEnabled: true,
+        startDate: null,
       })
     })
 
@@ -3169,9 +3160,9 @@ describe('melCloudApp', () => {
       stubBuilding({}, {})
 
       expect(app.getHomeBuildingHolidayMode('b1')).toStrictEqual({
-        HMEnabled: false,
-        HMEndDate: null,
-        HMStartDate: null,
+        endDate: null,
+        isEnabled: false,
+        startDate: null,
       })
     })
 
@@ -3181,15 +3172,15 @@ describe('melCloudApp', () => {
         {},
         {},
         {
-          d1: { active: false, enabled: true, max: 37, min: 35 },
-          d2: { active: false, enabled: true, max: 38, min: 35 },
+          d1: { isEnabled: true, max: 37, min: 35 },
+          d2: { isEnabled: true, max: 38, min: 35 },
         },
       )
 
       expect(app.getHomeBuildingOverheatProtection('b1')).toStrictEqual({
-        OHEnabled: true,
-        OHMaxTemperature: null,
-        OHMinTemperature: 35,
+        isEnabled: true,
+        max: null,
+        min: 35,
       })
     })
 
@@ -3198,9 +3189,9 @@ describe('melCloudApp', () => {
       stubBuilding({}, {}, {})
 
       expect(app.getHomeBuildingOverheatProtection('b1')).toStrictEqual({
-        OHEnabled: false,
-        OHMaxTemperature: null,
-        OHMinTemperature: null,
+        isEnabled: false,
+        max: null,
+        min: null,
       })
     })
 
@@ -3210,7 +3201,7 @@ describe('melCloudApp', () => {
         {},
         {},
         {
-          d1: { active: false, enabled: true, max: 37, min: 35 },
+          d1: { isEnabled: true, max: 37, min: 35 },
         },
       )
       // Turn d2 into an ATW device: it must not drag the aggregate to
@@ -3229,15 +3220,15 @@ describe('melCloudApp', () => {
           isAtw: (): boolean => true,
         },
       ]
-      mockHomeRegistry.getAll.mockReturnValue(devices)
+      mockHomeRegistry.getDevices.mockReturnValue(devices)
       mockHomeRegistry.getById.mockImplementation((id) =>
         devices.find((device) => device.id === id),
       )
 
       expect(app.getHomeBuildingOverheatProtection('b1')).toStrictEqual({
-        OHEnabled: true,
-        OHMaxTemperature: 37,
-        OHMinTemperature: 35,
+        isEnabled: true,
+        max: 37,
+        min: 35,
       })
     })
 
@@ -3292,35 +3283,8 @@ describe('melCloudApp', () => {
       )
     })
 
-    it('builds the target tree: buildings with their devices nested, sorted', async () => {
-      mockHomeRegistry.getAll.mockReturnValue([
-        {
-          building: { id: 'b2', name: 'Bravo' },
-          id: 'd3',
-          name: 'Zeta',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
-        {
-          building: { id: 'b1', name: 'Alpha' },
-          id: 'd2',
-          name: 'Yankee',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
-        {
-          building: { id: 'b1', name: 'Alpha' },
-          id: 'd1',
-          name: 'Xray',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
-      ])
-      await app.onInit()
-
-      // Buildings alpha-sorted; each building's devices nested (level 1) and
-      // sorted under it; every node stamped with its building name.
-      expect(app.getHomeTargets()).toStrictEqual([
+    it('serves the library picker list unfiltered when no type is given', async () => {
+      const zones = [
         {
           buildingName: 'Alpha',
           id: 'b1',
@@ -3336,30 +3300,14 @@ describe('melCloudApp', () => {
           model: 'homeDevices',
           name: 'Xray',
         },
-        {
-          buildingName: 'Alpha',
-          deviceType: 'ata',
-          id: 'd2',
-          level: 1,
-          model: 'homeDevices',
-          name: 'Yankee',
-        },
-        {
-          buildingName: 'Bravo',
-          id: 'b2',
-          level: 0,
-          model: 'homeBuildings',
-          name: 'Bravo',
-        },
-        {
-          buildingName: 'Bravo',
-          deviceType: 'ata',
-          id: 'd3',
-          level: 1,
-          model: 'homeDevices',
-          name: 'Zeta',
-        },
-      ])
+      ]
+      mockHomeFacadeManagerGetZones.mockReturnValue(zones)
+      await app.onInit()
+
+      expect(app.getHomeTargets()).toStrictEqual(zones)
+      expect(mockHomeFacadeManagerGetZones).toHaveBeenCalledWith({
+        type: undefined,
+      })
     })
   })
 
@@ -3501,28 +3449,11 @@ describe('melCloudApp', () => {
       ])
       // Unsorted on purpose: home targets must come back alpha-sorted
       // (building, then its devices), appended after the classic ones.
-      mockHomeRegistry.getByType.mockReturnValue([
-        {
-          building: { id: 'account-1', name: 'Maison' },
-          id: 'home-2',
-          name: 'Building two',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
-        {
-          building: { id: 'account-1', name: 'Maison' },
-          id: 'home-1',
-          name: 'Building one',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
-        {
-          building: { id: 'account-1', name: 'Maison' },
-          id: 'home-3',
-          name: 'Bedroom',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
+      // The library sorts its picker list, so the stub is already ordered.
+      stubHomeZones([
+        { buildingName: 'Maison', id: 'home-3', name: 'Bedroom' },
+        { buildingName: 'Maison', id: 'home-1', name: 'Building one' },
+        { buildingName: 'Maison', id: 'home-2', name: 'Building two' },
       ])
       await app.onInit()
 
@@ -3590,14 +3521,8 @@ describe('melCloudApp', () => {
           name: 'Device 2',
         },
       ])
-      mockHomeRegistry.getAll.mockReturnValue([
-        {
-          building: { id: 'antwerp-1', name: 'Antwerpen' },
-          id: 'guid-1',
-          name: 'Device 1',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
+      stubHomeZones([
+        { buildingName: 'Antwerpen', id: 'guid-1', name: 'Device 1' },
       ])
       await app.onInit()
 

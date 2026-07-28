@@ -1,6 +1,7 @@
 import type {
   HolidayModeUpdate,
   LoginCredentials,
+  ProtectionUpdate,
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
@@ -1477,7 +1478,7 @@ class ZoneSettingsManager {
     isEnabled,
     max,
     min,
-  }: Classic.FrostProtectionQuery): Promise<void> {
+  }: ProtectionUpdate): Promise<void> {
     await this.#putZoneSetting(
       {
         id: 'frost_protection',
@@ -1486,12 +1487,8 @@ class ZoneSettingsManager {
           this.displayFrostProtectionData()
         },
       },
-      { isEnabled, max, min } satisfies Classic.FrostProtectionQuery,
-      {
-        FPMaxTemperature: max,
-        FPMinTemperature: min,
-        ...(isEnabled !== undefined && { FPEnabled: isEnabled }),
-      },
+      { isEnabled, max, min } satisfies ProtectionUpdate,
+      { FPEnabled: isEnabled, FPMaxTemperature: max, FPMinTemperature: min },
     )
   }
 
@@ -1794,7 +1791,7 @@ class ZoneSettingsManager {
   // the panel, alert success or failure.
   async #putZoneSetting(
     { display, id, path }: ZoneSettingDescriptor,
-    query: Classic.FrostProtectionQuery | HolidayModeUpdate,
+    query: HolidayModeUpdate | ProtectionUpdate,
     zoneSettings: MixableZoneSettings,
   ): Promise<void> {
     await this.#gateFor(id).runBusy(async () => {

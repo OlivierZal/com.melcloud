@@ -1,12 +1,15 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
 import {
+  type HolidayModeState,
   type HolidayModeUpdate,
   type LoginCredentials,
+  type ProtectionState,
+  type ProtectionUpdate,
   AuthenticationError,
   AuthenticationThrottledError,
 } from '@olivierzal/melcloud-api'
-import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
 import type { DriverSetting } from './types/driver-settings.mts'
@@ -64,23 +67,13 @@ const collectClassicDeviceIds = (
     ]),
   ].map(({ id }) => String(id))
 
-// Home buildings can own units of both types; the per-type registry views
-// are merged by building id so a mixed building yields a single group.
-const collectHomeGroups = (registry: Home.Registry): DeviceGroup[] => {
-  const groups = new Map<string, DeviceGroup>()
-  for (const type of Object.values(Home.DeviceType)) {
-    for (const { devices, id, name } of registry.getBuildingsByType(type)) {
-      groups.set(id, {
-        deviceIds: [
-          ...(groups.get(id)?.deviceIds ?? []),
-          ...devices.map((device) => device.id),
-        ],
-        name,
-      })
-    }
-  }
-  return groups.values().toArray()
-}
+// A Home building can own units of both connection types; the registry
+// merges them per building, so one pass covers a mixed building.
+const collectHomeGroups = (registry: Home.Registry): DeviceGroup[] =>
+  registry.getBuildings().map(({ devices, name }) => ({
+    deviceIds: devices.map((device) => device.id),
+    name,
+  }))
 
 // Diagnostics breadcrumb: the settings webview is otherwise invisible in
 // diagnostic reports (its routes never touch MELCloud), which made
@@ -126,7 +119,7 @@ const api = {
   }: {
     homey: Homey
     params: DeviceOrZoneData
-  }): Promise<Classic.FrostProtectionData> =>
+  }): Promise<ProtectionState | null> =>
     app.getClassicFrostProtection(toDeviceOrZoneData(params)),
   getClassicHolidayMode: async ({
     homey: { app },
@@ -134,7 +127,7 @@ const api = {
   }: {
     homey: Homey
     params: DeviceOrZoneData
-  }): Promise<Classic.HolidayModeData> =>
+  }): Promise<HolidayModeState | null> =>
     app.getClassicHolidayMode(toDeviceOrZoneData(params)),
   /**
    * Lists the MELCloud buildings of both dialects with the device ids
@@ -190,9 +183,9 @@ const api = {
     homey: Homey
     params: { buildingId: string }
   }): {
-    FPEnabled: boolean | null
-    FPMaxTemperature: number | null
-    FPMinTemperature: number | null
+    isEnabled: boolean | null
+    max: number | null
+    min: number | null
   } => app.getHomeBuildingFrostProtection(buildingId),
   getHomeBuildingHolidayMode: ({
     homey: { app },
@@ -201,9 +194,9 @@ const api = {
     homey: Homey
     params: { buildingId: string }
   }): {
-    HMEnabled: boolean | null
-    HMEndDate: string | null
-    HMStartDate: string | null
+    endDate: string | null
+    isEnabled: boolean | null
+    startDate: string | null
   } => app.getHomeBuildingHolidayMode(buildingId),
   getHomeBuildingOverheatProtection: ({
     homey: { app },
@@ -212,9 +205,9 @@ const api = {
     homey: Homey
     params: { buildingId: string }
   }): {
-    OHEnabled: boolean | null
-    OHMaxTemperature: number | null
-    OHMinTemperature: number | null
+    isEnabled: boolean | null
+    max: number | null
+    min: number | null
   } => app.getHomeBuildingOverheatProtection(buildingId),
   getHomeDevices: ({ homey: { app } }: { homey: Homey }): HomeDeviceZone[] =>
     app.getHomeDeviceZones(),
@@ -224,21 +217,21 @@ const api = {
   }: {
     homey: Homey
     params: { deviceId: string }
-  }): Home.FrostProtection | null => app.getHomeFrostProtection(deviceId),
+  }): ProtectionState | null => app.getHomeFrostProtection(deviceId),
   getHomeHolidayMode: ({
     homey: { app },
     params: { deviceId },
   }: {
     homey: Homey
     params: { deviceId: string }
-  }): Home.HolidayMode | null => app.getHomeHolidayMode(deviceId),
+  }): HolidayModeState | null => app.getHomeHolidayMode(deviceId),
   getHomeOverheatProtection: ({
     homey: { app },
     params: { deviceId },
   }: {
     homey: Homey
     params: { deviceId: string }
-  }): Home.OverheatProtection | null => app.getHomeOverheatProtection(deviceId),
+  }): ProtectionState | null => app.getHomeOverheatProtection(deviceId),
   getHomeTargets: ({
     homey: { app },
   }: {
@@ -267,22 +260,13 @@ const api = {
     logSettingsRoute(app, '/classic/sessions')
     return app.classicApi.isAuthenticated()
   },
-  // Home authentication is only "restored" once a /context fetch has
-  // succeeded. That boot-time fetch can fail transiently (e.g. the box
-  // network is not ready right after an app restart) even though the
-  // stored tokens are valid, which made the settings page show the Home
-  // login form at open. Retry the context fetch lazily here so the check
-  // self-heals; `list()` swallows its own failures.
-  async isHomeAuthenticated({
+  isHomeAuthenticated: async ({
     homey: { app },
   }: {
     homey: Homey
-  }): Promise<boolean> {
+  }): Promise<boolean> => {
     logSettingsRoute(app, '/home/sessions')
-    if (!app.homeApi.isAuthenticated()) {
-      await app.homeApi.list()
-    }
-    return app.homeApi.isAuthenticated()
+    return app.homeApi.ensureAuthenticated()
   },
   logWebviewBoot: ({
     body,
@@ -298,7 +282,7 @@ const api = {
     homey: { app },
     params,
   }: {
-    body: Classic.FrostProtectionQuery
+    body: ProtectionUpdate
     homey: Homey
     params: DeviceOrZoneData
   }): Promise<void> =>
