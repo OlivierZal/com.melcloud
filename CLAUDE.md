@@ -281,6 +281,14 @@ coverage.
   narrowing across `await`: a re-check of externally-mutated state (e.g.
   `signal.aborted`) reads as "always false" — route through an API that
   reads the live value instead (`signal.throwIfAborted()`).
+- All-type exports hoist the keyword (`export type { A, B }`); mixed
+  exports keep inline `type` specifiers, mirroring the inline-type-imports
+  style. No shipped rule enforces the export side
+  (`consistent-type-exports` tolerates inline specifiers once present;
+  `import-x/consistent-type-specifier-style` covers imports only): the
+  convention is maintained by hand, in review — a bespoke
+  `no-restricted-syntax` selector for it was removed by decision
+  (2026-07-28).
 
 ## Repo process
 
