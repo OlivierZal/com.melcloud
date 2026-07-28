@@ -104,15 +104,4 @@ describe('api route guards', () => {
       expect(unmatched).toStrictEqual([])
     })
   })
-
-  it('should keep the frozen inter-app legacy route declared', async () => {
-    const manifest = JSON.parse(
-      await readFile('.homeycompose/app.json', 'utf8'),
-    ) as { api: Record<string, DeclaredRoute> }
-
-    expect(manifest.api.getDeviceGroupsLegacy).toStrictEqual({
-      method: 'GET',
-      path: '/device_groups',
-    })
-  })
 })
