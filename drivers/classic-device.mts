@@ -76,6 +76,7 @@ export abstract class ClassicMELCloudDevice<
     if (data === null) {
       return
     }
+    await this.syncAvailability(!data.Offline)
     await this.setCapabilityValues(data)
   }
 

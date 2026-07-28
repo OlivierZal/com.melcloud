@@ -95,6 +95,7 @@ const mockFacade = (
     forcedHotWaterMode: false,
     hasCoolingMode: true,
     hotWaterOperationalState: 'dhw',
+    isConnected: true,
     isOwner: true,
     operationalState: 'dhw',
     operationalStateZone1: 'idle',

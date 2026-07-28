@@ -5,7 +5,8 @@
     "invalidDuration": "La durata deve essere un numero intero di giorni compreso tra 0 e 365.",
     "energyReportsFailing": "I report energetici sono falliti più volte di seguito — i valori energetici potrebbero non essere aggiornati.",
     "invalidTime": "L'ora di fine non è valida.",
-    "invalidHolidayModeEnd": "La fine della modalità vacanza deve essere nel futuro."
+    "invalidHolidayModeEnd": "La fine della modalità vacanza deve essere nel futuro.",
+    "unitOffline": "MELCloud segnala questa unità come offline: controlla la sua connessione Wi-Fi."
   },
   "settings": {
     "authenticate": {

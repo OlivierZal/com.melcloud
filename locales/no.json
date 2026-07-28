@@ -5,7 +5,8 @@
     "invalidDuration": "Varigheten må være et helt antall dager mellom 0 og 365.",
     "energyReportsFailing": "Energirapportene har feilet flere ganger på rad — energiverdiene kan være utdaterte.",
     "invalidTime": "Sluttidspunktet er ugyldig.",
-    "invalidHolidayModeEnd": "Slutten på feriemodus må være i fremtiden."
+    "invalidHolidayModeEnd": "Slutten på feriemodus må være i fremtiden.",
+    "unitOffline": "MELCloud melder at denne enheten er frakoblet — sjekk wi-fi-tilkoblingen."
   },
   "settings": {
     "authenticate": {

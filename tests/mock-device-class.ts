@@ -77,6 +77,8 @@ export const createMockDeviceClass = (
 
     public removeCapability = vi.fn<(capability: string) => Promise<void>>()
 
+    public setAvailable = vi.fn<() => Promise<void>>()
+
     public setCapabilityOptions =
       vi.fn<
         (capability: string, options: Record<string, unknown>) => Promise<void>
@@ -89,6 +91,8 @@ export const createMockDeviceClass = (
 
     public setSettings =
       vi.fn<(settings: Record<string, unknown>) => Promise<void>>()
+
+    public setUnavailable = vi.fn<(message: string) => Promise<void>>()
 
     public setWarning = vi.fn<(message: unknown) => Promise<void>>()
 

@@ -306,6 +306,16 @@ export abstract class BaseMELCloudDevice<
     this.#scheduleSyncFromDevice()
   }
 
+  // MELCloud accepting a write is not delivery: when the cloud reports
+  // the unit unreachable (wifi adapter down), writes are silently
+  // dropped and readings go stale — surface it as device availability
+  // instead of letting the device lie.
+  protected async syncAvailability(isReachable: boolean): Promise<void> {
+    await (isReachable
+      ? this.setAvailable()
+      : this.setUnavailable(this.homey.__('errors.unitOffline')))
+  }
+
   async #ensureDeviceFacade(): Promise<TFacade> {
     if (this.#deviceFacade === undefined) {
       this.#deviceFacade = this.getFacade()
