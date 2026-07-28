@@ -31,19 +31,16 @@ import {
 } from './classic-device-test-device.ts'
 
 const {
-  getClassMock,
   getFacadeMock,
   getSettingMock,
   realtimeMock,
   registerMultipleCapabilityListenerMock,
-  setClassMock,
   setValuesMock,
   superAddCapabilityMock,
   superRemoveCapabilityMock,
   superSetWarningMock,
   triggerCapabilityListenerMock,
 } = vi.hoisted(() => ({
-  getClassMock: vi.fn<() => string>(),
   getFacadeMock: vi.fn<(kind: string, id: number) => unknown>(),
   getSettingMock: vi.fn<(key: string) => unknown>(),
   realtimeMock: vi.fn<(event: string, data: unknown) => void>(),
@@ -55,7 +52,6 @@ const {
         delay?: number,
       ) => void
     >(),
-  setClassMock: vi.fn<(deviceClass: string) => Promise<void>>(),
   setValuesMock: vi.fn<(data: Record<string, unknown>) => Promise<unknown>>(),
   superAddCapabilityMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
   superRemoveCapabilityMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
@@ -100,7 +96,6 @@ vi.mock(import('homey'), async () => {
     default: {
       Device: createMockDeviceClass({
         overrides: {
-          getClass: getClassMock,
           getSetting: getSettingMock,
           homey: {
             __: vi
@@ -119,7 +114,6 @@ vi.mock(import('homey'), async () => {
           },
           registerMultipleCapabilityListener:
             registerMultipleCapabilityListenerMock,
-          setClass: setClassMock,
           triggerCapabilityListener: triggerCapabilityListenerMock,
         },
         superMocks: {
@@ -186,7 +180,6 @@ describe(ClassicMELCloudDevice, () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    getClassMock.mockReturnValue('thermostat')
     mockFacade()
     device = new TestDevice()
     setDriver(device)
@@ -209,25 +202,6 @@ describe(ClassicMELCloudDevice, () => {
         expect.any(Number),
       )
       expect(getFacadeMock).toHaveBeenCalledWith('devices', 1)
-    })
-
-    it('should migrate a stored heatpump class to the thermostat manifest class', async () => {
-      const driverWithClass = Object.create(mockDriver) as typeof mockDriver
-      Object.assign(driverWithClass, {
-        manifest: mock({ class: 'thermostat' }),
-      })
-      setDriver(device, driverWithClass)
-      getClassMock.mockReturnValue('heatpump')
-
-      await device.onInit()
-
-      expect(setClassMock).toHaveBeenCalledWith('thermostat')
-    })
-
-    it('should leave a non-heatpump stored class untouched', async () => {
-      await device.onInit()
-
-      expect(setClassMock).not.toHaveBeenCalled()
     })
   })
 
