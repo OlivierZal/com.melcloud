@@ -74,6 +74,16 @@ const extractPathLiterals = (source: string): string[] =>
     .map((match) => match.groups?.path ?? '')
     .toArray()
 
+// Path-shaped template literals are swept wherever they are written,
+// not just inside a call: a builder returning one of several templates
+// puts them a function away from any verb, and they would otherwise be
+// the only paths nothing checks.
+const extractPathTemplates = (source: string): string[] =>
+  stripComments(source)
+    .matchAll(/`(?<template>\/[a-z][^`]*)`/gv)
+    .map((match) => match.groups?.template ?? '')
+    .toArray()
+
 // The typed helpers carry the verb in their name; the boot beacon calls
 // the raw SDK with the verb as its first argument. Reading the pair
 // matters because eleven declared paths differ only by method —
@@ -179,6 +189,25 @@ const extractTemplateCalls = (source: string): TemplateCall[] =>
     }))
     .toArray()
 
+// Counting every helper call site, whatever shape its path takes, turns
+// the sweeps above from "found something" into "found everything": a
+// call the extractors cannot read shows up as a shortfall instead of
+// passing unseen. A generic may wrap across lines, so newlines are
+// allowed inside it.
+const HELPER_CALL_SITE = /homeyApi(?:Get|Put|Post|Delete)(?:<[^\(\)]*>)?\s*\(/gv
+
+// Some call sites hand over a path the site itself does not spell: a
+// parameter on a list helper, or a builder returning one of several
+// templates. Their verb is unreadable there, but every path they can
+// produce is written somewhere in the same sources, which the sweep
+// below reads. Counting them keeps the accounting complete instead of
+// letting them vanish.
+const HELPER_INDIRECT_CALL =
+  /homeyApi(?:Get|Put|Post|Delete)(?:<[^\(\)]*>)?\(\s*[\w.#]+\s*,\s*[a-z]\w*/gv
+
+const countMatches = (source: string, pattern: RegExp): number =>
+  stripComments(source).matchAll(pattern).toArray().length
+
 const dedupeCalls = (calls: DeclaredRoute[]): DeclaredRoute[] => {
   const byPair = new Map<string, DeclaredRoute>()
   for (const call of calls) {
@@ -216,9 +245,18 @@ describe('api route guards', () => {
       const routes = await readRoutes(manifest)
       const sources = await readSurfaceSources(sourceDirs)
       const literals = sources.flatMap((source) => extractPathLiterals(source))
-      const unmatched = [...new Set(literals)].filter((literal) =>
-        routes.every((route) => !routeMatches(route.path, literal)),
+      const templates = sources.flatMap((source) =>
+        extractPathTemplates(source),
       )
+      const unmatched = [
+        ...[...new Set(literals)].filter((literal) =>
+          routes.every((route) => !routeMatches(route.path, literal)),
+        ),
+        ...[...new Set(templates)].filter((template) => {
+          const pattern = toTemplatePattern(template)
+          return routes.every((route) => !pattern.test(route.path))
+        }),
+      ]
 
       expect(unmatched).toStrictEqual([])
     })
@@ -254,18 +292,26 @@ describe('api route guards', () => {
       expect(unmatched).toStrictEqual([])
     })
 
-    // Both checks above pass vacuously on an empty call list, which is
-    // how the verb went unchecked in the first place. Every surface
-    // calls its own API, so recovering nothing means the extractors
-    // stopped matching rather than the sources stopping calling.
-    it('should recover at least one call from its own sources', async () => {
+    // Both checks above pass vacuously on a call the extractors cannot
+    // read, which is how the verb went unchecked in the first place.
+    // Accounting for every call site — parsed, or one of the two
+    // parameterised list helpers — turns that silence into a failure.
+    it('should account for every helper call site in its own sources', async () => {
       const sources = await readSurfaceSources(sourceDirs)
-      const calls = [
-        ...sources.flatMap((source) => extractRouteCalls(source)),
-        ...sources.flatMap((source) => extractTemplateCalls(source)),
-      ]
+      const callSites = sources.reduce(
+        (total, source) => total + countMatches(source, HELPER_CALL_SITE),
+        0,
+      )
+      const indirectCalls = sources.reduce(
+        (total, source) => total + countMatches(source, HELPER_INDIRECT_CALL),
+        0,
+      )
+      const parsed =
+        sources.flatMap((source) => extractRouteCalls(source)).length +
+        sources.flatMap((source) => extractTemplateCalls(source)).length
 
-      expect(calls.length).toBeGreaterThan(0)
+      expect(callSites).toBeGreaterThan(0)
+      expect(parsed + indirectCalls).toBeGreaterThanOrEqual(callSites)
     })
   })
 
