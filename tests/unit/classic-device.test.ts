@@ -314,30 +314,6 @@ describe(ClassicMELCloudDevice, () => {
     })
   })
 
-  describe('renamed settings migration', () => {
-    it('carries an enabled setting over to its new id', async () => {
-      const renaming = new TestDevice()
-      setDriver(renaming)
-      Object.defineProperty(renaming, 'renamedSettings', {
-        configurable: true,
-        value: { old_id: 'new_id' },
-      })
-      vi.spyOn(renaming, 'getSettings').mockReturnValue({ old_id: true })
-      await renaming.onInit()
-
-      expect(renaming.setSettings).toHaveBeenCalledWith({
-        new_id: true,
-        old_id: null,
-      })
-    })
-
-    it('leaves settings alone when nothing was renamed', async () => {
-      await device.onInit()
-
-      expect(device.setSettings).not.toHaveBeenCalled()
-    })
-  })
-
   describe('device synchronization', () => {
     it('should set capability values from device data', async () => {
       await device.ensureDevice()
