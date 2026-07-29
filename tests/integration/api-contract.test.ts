@@ -10,15 +10,13 @@ import chartsConfig from '../../widgets/charts/widget.compose.json' with { type:
 const sortedKeys = (object: object): string[] =>
   Object.keys(object).toSorted((left, right) => left.localeCompare(right))
 
+// One equality per surface pins the ids ↔ handlers mapping in both
+// directions at once: a handler with no declaration and a declaration
+// with no handler both break it, and the diff names the offender. A
+// per-id existence sweep alongside it could only ever fail together
+// with the equality, so it is not kept.
 describe('api contract', () => {
   describe('app API', () => {
-    it.each(Object.keys(appConfig.api))(
-      '%s handler exists in api.mts',
-      (name) => {
-        expect(api).toHaveProperty(name)
-      },
-    )
-
     // The compile-time half of the contract, asserted on the whole
     // union at once: no per-name method reference ever leaves its
     // object (unbound-method).
@@ -26,26 +24,19 @@ describe('api contract', () => {
       expectTypeOf<(typeof api)[keyof typeof api]>().toBeFunction()
     })
 
-    it('should not have handlers missing from app.json', () => {
+    it('should declare exactly the handlers app.json names', () => {
       expect(sortedKeys(api)).toStrictEqual(sortedKeys(appConfig.api))
     })
   })
 
   describe('ata-group-setting widget API', () => {
-    it.each(Object.keys(ataGroupSettingConfig.api))(
-      '%s handler exists in api.mts',
-      (name) => {
-        expect(ataGroupSettingApi).toHaveProperty(name)
-      },
-    )
-
     it('should expose only function handlers', () => {
       expectTypeOf<
         (typeof ataGroupSettingApi)[keyof typeof ataGroupSettingApi]
       >().toBeFunction()
     })
 
-    it('should not have handlers missing from widget.compose.json', () => {
+    it('should declare exactly the handlers widget.compose.json names', () => {
       expect(sortedKeys(ataGroupSettingApi)).toStrictEqual(
         sortedKeys(ataGroupSettingConfig.api),
       )
@@ -53,18 +44,11 @@ describe('api contract', () => {
   })
 
   describe('charts widget API', () => {
-    it.each(Object.keys(chartsConfig.api))(
-      '%s handler exists in api.mts',
-      (name) => {
-        expect(chartsApi).toHaveProperty(name)
-      },
-    )
-
     it('should expose only function handlers', () => {
       expectTypeOf<(typeof chartsApi)[keyof typeof chartsApi]>().toBeFunction()
     })
 
-    it('should not have handlers missing from widget.compose.json', () => {
+    it('should declare exactly the handlers widget.compose.json names', () => {
       expect(sortedKeys(chartsApi)).toStrictEqual(sortedKeys(chartsConfig.api))
     })
   })
