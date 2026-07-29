@@ -4406,6 +4406,47 @@
             "sv": "Alternativ"
           },
           "type": "group"
+        },
+        {
+          "id": "status-indicator",
+          "children": [
+            {
+              "id": "custom_status_indicator",
+              "label": {
+                "ar": "السماح بمؤشر حالة مخصص",
+                "da": "Tillad en tilpasset statusindikator",
+                "de": "Eigenen Statusindikator zulassen",
+                "en": "Allow a custom status indicator",
+                "es": "Permitir un indicador de estado personalizado",
+                "fr": "Autoriser un indicateur d'état personnalisé",
+                "it": "Consenti un indicatore di stato personalizzato",
+                "ko": "사용자 지정 상태 표시기 허용",
+                "nl": "Een aangepaste statusindicator toestaan",
+                "no": "Tillat en egendefinert statusindikator",
+                "pl": "Zezwól na własny wskaźnik stanu",
+                "ru": "Разрешить свой индикатор состояния",
+                "sv": "Tillåt en anpassad statusindikator"
+              },
+              "type": "checkbox",
+              "value": false
+            }
+          ],
+          "label": {
+            "ar": "مؤشر الحالة",
+            "da": "Statusindikator",
+            "de": "Statusindikator",
+            "en": "Status indicator",
+            "es": "Indicador de estado",
+            "fr": "Indicateur d'état",
+            "it": "Indicatore di stato",
+            "ko": "상태 표시기",
+            "nl": "Statusindicator",
+            "no": "Statusindikator",
+            "pl": "Wskaźnik stanu",
+            "ru": "Индикатор состояния",
+            "sv": "Statusindikator"
+          },
+          "type": "group"
         }
       ]
     },
@@ -5376,6 +5417,47 @@
             "pl": "Opcje",
             "ru": "Параметры",
             "sv": "Alternativ"
+          },
+          "type": "group"
+        },
+        {
+          "id": "status-indicator",
+          "children": [
+            {
+              "id": "custom_status_indicator",
+              "label": {
+                "ar": "السماح بمؤشر حالة مخصص",
+                "da": "Tillad en tilpasset statusindikator",
+                "de": "Eigenen Statusindikator zulassen",
+                "en": "Allow a custom status indicator",
+                "es": "Permitir un indicador de estado personalizado",
+                "fr": "Autoriser un indicateur d'état personnalisé",
+                "it": "Consenti un indicatore di stato personalizzato",
+                "ko": "사용자 지정 상태 표시기 허용",
+                "nl": "Een aangepaste statusindicator toestaan",
+                "no": "Tillat en egendefinert statusindikator",
+                "pl": "Zezwól na własny wskaźnik stanu",
+                "ru": "Разрешить свой индикатор состояния",
+                "sv": "Tillåt en anpassad statusindikator"
+              },
+              "type": "checkbox",
+              "value": false
+            }
+          ],
+          "label": {
+            "ar": "مؤشر الحالة",
+            "da": "Statusindikator",
+            "de": "Statusindikator",
+            "en": "Status indicator",
+            "es": "Indicador de estado",
+            "fr": "Indicateur d'état",
+            "it": "Indicatore di stato",
+            "ko": "상태 표시기",
+            "nl": "Statusindicator",
+            "no": "Statusindikator",
+            "pl": "Wskaźnik stanu",
+            "ru": "Индикатор состояния",
+            "sv": "Statusindikator"
           },
           "type": "group"
         }
@@ -6776,6 +6858,47 @@
             "pl": "Opcje",
             "ru": "Параметры",
             "sv": "Alternativ"
+          },
+          "type": "group"
+        },
+        {
+          "id": "status-indicator",
+          "children": [
+            {
+              "id": "custom_status_indicator",
+              "label": {
+                "ar": "السماح بمؤشر حالة مخصص",
+                "da": "Tillad en tilpasset statusindikator",
+                "de": "Eigenen Statusindikator zulassen",
+                "en": "Allow a custom status indicator",
+                "es": "Permitir un indicador de estado personalizado",
+                "fr": "Autoriser un indicateur d'état personnalisé",
+                "it": "Consenti un indicatore di stato personalizzato",
+                "ko": "사용자 지정 상태 표시기 허용",
+                "nl": "Een aangepaste statusindicator toestaan",
+                "no": "Tillat en egendefinert statusindikator",
+                "pl": "Zezwól na własny wskaźnik stanu",
+                "ru": "Разрешить свой индикатор состояния",
+                "sv": "Tillåt en anpassad statusindikator"
+              },
+              "type": "checkbox",
+              "value": false
+            }
+          ],
+          "label": {
+            "ar": "مؤشر الحالة",
+            "da": "Statusindikator",
+            "de": "Statusindikator",
+            "en": "Status indicator",
+            "es": "Indicador de estado",
+            "fr": "Indicateur d'état",
+            "it": "Indicatore di stato",
+            "ko": "상태 표시기",
+            "nl": "Statusindicator",
+            "no": "Statusindikator",
+            "pl": "Wskaźnik stanu",
+            "ru": "Индикатор состояния",
+            "sv": "Statusindikator"
           },
           "type": "group"
         },
@@ -9045,6 +9168,47 @@
             "pl": "Opcje",
             "ru": "Параметры",
             "sv": "Alternativ"
+          },
+          "type": "group"
+        },
+        {
+          "id": "status-indicator",
+          "children": [
+            {
+              "id": "custom_status_indicator",
+              "label": {
+                "ar": "السماح بمؤشر حالة مخصص",
+                "da": "Tillad en tilpasset statusindikator",
+                "de": "Eigenen Statusindikator zulassen",
+                "en": "Allow a custom status indicator",
+                "es": "Permitir un indicador de estado personalizado",
+                "fr": "Autoriser un indicateur d'état personnalisé",
+                "it": "Consenti un indicatore di stato personalizzato",
+                "ko": "사용자 지정 상태 표시기 허용",
+                "nl": "Een aangepaste statusindicator toestaan",
+                "no": "Tillat en egendefinert statusindikator",
+                "pl": "Zezwól na własny wskaźnik stanu",
+                "ru": "Разрешить свой индикатор состояния",
+                "sv": "Tillåt en anpassad statusindikator"
+              },
+              "type": "checkbox",
+              "value": false
+            }
+          ],
+          "label": {
+            "ar": "مؤشر الحالة",
+            "da": "Statusindikator",
+            "de": "Statusindikator",
+            "en": "Status indicator",
+            "es": "Indicador de estado",
+            "fr": "Indicateur d'état",
+            "it": "Indicatore di stato",
+            "ko": "상태 표시기",
+            "nl": "Statusindicator",
+            "no": "Statusindikator",
+            "pl": "Wskaźnik stanu",
+            "ru": "Индикатор состояния",
+            "sv": "Statusindikator"
           },
           "type": "group"
         },
