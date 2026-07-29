@@ -2335,6 +2335,20 @@ describe('melCloudApp', () => {
       expect(mockSettingsUnset).toHaveBeenCalledWith('homeAccessToken')
     })
 
+    // The runtime half of the contract app-settings-contract.test.ts
+    // pins statically: loginBackoffUntil went undeclared for releases
+    // while the library wrote it under both namespaces.
+    it('should prefix the login backoff key like any other', async () => {
+      await app.onInit()
+
+      const { settingManager } = getMockCallArg<{
+        settingManager: { get: (key: string) => unknown }
+      }>(mockHomeCreate, 0, 0)
+      settingManager.get('loginBackoffUntil')
+
+      expect(mockSettingsGet).toHaveBeenCalledWith('homeLoginBackoffUntil')
+    })
+
     it('should create classic setting manager without key prefixing', async () => {
       await app.onInit()
 
@@ -2356,6 +2370,17 @@ describe('melCloudApp', () => {
       settingManager.unset('contextKey')
 
       expect(mockSettingsUnset).toHaveBeenCalledWith('contextKey')
+    })
+
+    it('should leave the login backoff key unprefixed', async () => {
+      await app.onInit()
+
+      const { settingManager } = getMockCallArg<{
+        settingManager: { get: (key: string) => unknown }
+      }>(mockCreate, 0, 0)
+      settingManager.get('loginBackoffUntil')
+
+      expect(mockSettingsGet).toHaveBeenCalledWith('loginBackoffUntil')
     })
 
     it('should pass through string and null settings and coerce the rest to undefined', async () => {
