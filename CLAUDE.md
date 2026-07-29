@@ -305,6 +305,21 @@ coverage.
 - `main` is protected (PRs only, squash merges, 6 required contexts,
   `strict=false`); merge queue is impossible (user-owned repo, org-only
   feature).
+- The PR title IS the commit that lands: `squash_merge_commit_title` is
+  `PR_TITLE` on all five repos, so the title is the single source (under
+  the former `COMMIT_OR_PR_TITLE`, a one-commit PR silently took its
+  commit subject instead). It must follow Conventional Commits, which
+  the required `PR title` check enforces
+  (`.github/workflows/pr-title.yml`, byte-identical in the five). The
+  default type set is the convention's own — no custom list, no scope
+  allowlist (house scopes are free-form), and deliberately no
+  `subjectPattern`: subjects legitimately open on a proper noun
+  (`feat: MELCloud Home frost protection`). Dependabot's prefixes are
+  pinned to `build(deps)` / `build(deps-dev)` in `dependabot.yml`
+  rather than inferred — left to infer, it read each repo's history and
+  landed a different style per repo (`Build(deps): Bump …` here,
+  bare `Bump …` there). No commitlint: in squash-only repos the title
+  check already covers everything that reaches `main`.
 - After every push, monitor the triggered pipelines to completion — the
   PR checks after a push, the publish run after a release tag — and act
   on the outcome: rerun transient infra failures (a SonarCloud 504 is
