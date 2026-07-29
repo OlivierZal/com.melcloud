@@ -86,8 +86,15 @@ coverage.
   a route: `tests/integration/api-contract.test.ts` (since #1261) pins
   manifest ids ↔ handlers both ways plus the handlers' function type,
   on all three surfaces; `tests/unit/api-route-guards.test.ts` pins the
-  call sites (every webview path literal must match a declared route of
-  its own surface).
+  call sites — every path a webview writes, literal or template-built,
+  must match a declared route of its own surface, under a declared
+  method. Everything below its `SURFACES` table is byte-identical in
+  com.heatzy and com.melcloud.extension (only that table differs) —
+  edit all three together. Its load-bearing clause is the call-site
+  accounting: every `homeyApi*` site must be parsed or hand over a path
+  it does not spell, which is what makes a broken extractor a failure
+  instead of a silent pass, and what makes separate "the regex still
+  matches" clauses redundant.
 - Dirty-gating: `public/dirty-gate.mts` is the ONE primitive behind every
   webview Apply/Refresh pair (settings sections, frost/holiday panels, the
   ATA group widget) — never re-derive its invariant at a call site. Its

@@ -39,6 +39,10 @@ const SURFACES: readonly Surface[] = [
   },
 ]
 
+// Everything below the SURFACES table is the shared guard, byte-identical
+// in com.melcloud, com.heatzy and com.melcloud.extension — edit all three
+// together. Only the table above differs: it names what each app exposes.
+
 const readRoutes = async (manifestPath: string): Promise<DeclaredRoute[]> => {
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as {
     api?: Record<string, DeclaredRoute>
@@ -294,8 +298,10 @@ describe('api route guards', () => {
 
     // Both checks above pass vacuously on a call the extractors cannot
     // read, which is how the verb went unchecked in the first place.
-    // Accounting for every call site — parsed, or one of the two
-    // parameterised list helpers — turns that silence into a failure.
+    // Accounting for every call site — parsed, or handing over a path it
+    // does not spell — turns that silence into a failure, and subsumes
+    // any "the extractor still matches something" clause: a regex that
+    // stopped matching leaves its calls counted here and nowhere else.
     it('should account for every helper call site in its own sources', async () => {
       const sources = await readSurfaceSources(sourceDirs)
       const callSites = sources.reduce(
@@ -313,35 +319,5 @@ describe('api route guards', () => {
       expect(callSites).toBeGreaterThan(0)
       expect(parsed + indirectCalls).toBeGreaterThanOrEqual(callSites)
     })
-  })
-
-  // Pinning that several distinct methods are recovered proves the
-  // extractors still read the verb, not just the path.
-  it('should recover several distinct methods from the call sites', async () => {
-    const sources = await Promise.all(
-      SURFACES.map(async ({ sourceDirs }) => readSurfaceSources(sourceDirs)),
-    )
-    const calls = sources.flat().flatMap((source) => extractRouteCalls(source))
-    const methods = new Set(calls.map(({ method }) => method))
-
-    expect(methods.size).toBeGreaterThan(1)
-  })
-
-  // The template sweep is the only cover the PUT and DELETE call sites
-  // have: every one of them builds its path. Were its regex to stop
-  // matching, the per-surface clause above would still be satisfied by
-  // the literal GET calls, so the loss is pinned on its own.
-  it('should recover the template-built calls, PUT and DELETE among them', async () => {
-    const sources = await Promise.all(
-      SURFACES.map(async ({ sourceDirs }) => readSurfaceSources(sourceDirs)),
-    )
-    const calls = sources
-      .flat()
-      .flatMap((source) => extractTemplateCalls(source))
-    const methods = new Set(calls.map(({ method }) => method))
-
-    expect(
-      [...methods].toSorted((left, right) => left.localeCompare(right)),
-    ).toStrictEqual(['DELETE', 'GET', 'POST', 'PUT'])
   })
 })
