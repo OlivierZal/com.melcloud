@@ -62,13 +62,6 @@ export abstract class BaseMELCloudDevice<
 
   protected readonly energyReportTotal: EnergyReportConfig | null = null
 
-  // Optional-capability settings whose id changed: old id → new id. A
-  // rename would otherwise drop the user's choice silently, since the
-  // stored old key no longer matches a supported capability and the new
-  // one starts at its `false` default. Drop an entry once the release
-  // that introduced it is behind every install.
-  protected readonly renamedSettings: Readonly<Record<string, string>> = {}
-
   protected readonly thermostatMode: Record<string, string> | null = null
 
   protected get cachedFacade(): TFacade | undefined {
@@ -107,7 +100,6 @@ export abstract class BaseMELCloudDevice<
     // `isAvailable` contract; this also heals the stuck unavailable state
     // builds up to #1481 may have left.
     await this.setAvailable()
-    await this.#migrateRenamedSettings()
     await this.setWarning(null)
     this.#registerCapabilityListeners()
     await this.ensureDevice()
@@ -364,21 +356,6 @@ export abstract class BaseMELCloudDevice<
 
   #isThermostatModeSupportingOff(): boolean {
     return this.thermostatMode !== null && 'off' in this.thermostatMode
-  }
-
-  async #migrateRenamedSettings(): Promise<void> {
-    const settings = this.getSettings()
-    const carried = Object.entries(this.renamedSettings).filter(
-      ([from]) => settings[from] === true,
-    )
-    if (carried.length > 0) {
-      await this.setSettings(
-        Object.fromEntries([
-          ...carried.map(([, to]) => [to, true]),
-          ...carried.map(([from]) => [from, null]),
-        ]),
-      )
-    }
   }
 
   async #pushUpdate(

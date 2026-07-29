@@ -114,17 +114,6 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
     values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
   }
 
-  // 46.0.0 renamed the curve readings to heating circuit, settings
-  // included: carry the user's choice over instead of silently
-  // resetting it to off.
-  protected override readonly renamedSettings: Readonly<
-    Record<string, string>
-  > = {
-    'measure_temperature.target_curve': 'measure_temperature.heating_circuit',
-    'measure_temperature.target_curve_zone2':
-      'measure_temperature.heating_circuit_zone2',
-  }
-
   protected override async setCapabilityValues(
     data: Readonly<Classic.ListDeviceData<typeof Classic.DeviceType.Atw>>,
   ): Promise<void> {
