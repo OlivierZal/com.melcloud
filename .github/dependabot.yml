@@ -4,7 +4,16 @@ registries:
     type: npm-registry
     url: https://npm.pkg.github.com
 updates:
-  - directory: /
+  # Both ecosystems share the `build(deps)` type: it keeps every bump under
+  # one `git log --grep` and leaves `ci` to mean hand-written CI changes.
+  # Pinned rather than left to Dependabot, which otherwise infers prefix and
+  # capitalization from each repo's history and lands a different style per
+  # repo.
+  - commit-message:
+      prefix: build(deps)
+    cooldown:
+      default-days: 7
+    directory: /
     groups:
       actions:
         patterns:
@@ -12,7 +21,10 @@ updates:
     package-ecosystem: github-actions
     schedule:
       interval: weekly
-  - cooldown:
+  - commit-message:
+      prefix: build(deps)
+      prefix-development: build(deps-dev)
+    cooldown:
       default-days: 7
     directory: /
     groups:
