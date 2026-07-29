@@ -317,7 +317,7 @@ const api = {
     homey: { app },
     params: { buildingId },
   }: {
-    body: { isEnabled: boolean; max: number; min: number }
+    body: ProtectionUpdate
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> => app.updateHomeBuildingFrostProtection(buildingId, body),
@@ -335,7 +335,7 @@ const api = {
     homey: { app },
     params: { buildingId },
   }: {
-    body: { isEnabled: boolean; max: number; min: number }
+    body: ProtectionUpdate
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> =>
@@ -345,7 +345,7 @@ const api = {
     homey: { app },
     params: { deviceId },
   }: {
-    body: { isEnabled: boolean; max: number; min: number }
+    body: ProtectionUpdate
     homey: Homey
     params: { deviceId: string }
   }): Promise<void> => app.updateHomeFrostProtection([deviceId], body),
@@ -363,7 +363,7 @@ const api = {
     homey: { app },
     params: { deviceId },
   }: {
-    body: { isEnabled: boolean; max: number; min: number }
+    body: ProtectionUpdate
     homey: Homey
     params: { deviceId: string }
   }): Promise<void> => app.updateHomeOverheatProtection([deviceId], body),

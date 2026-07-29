@@ -1068,7 +1068,7 @@ export default class MELCloudApp extends App {
 
   public async updateHomeBuildingFrostProtection(
     buildingId: string,
-    settings: { isEnabled: boolean; max: number; min: number },
+    settings: ProtectionUpdate,
   ): Promise<void> {
     await this.updateHomeFrostProtection(
       this.#getHomeBuildingDeviceIds(buildingId),
@@ -1088,7 +1088,7 @@ export default class MELCloudApp extends App {
 
   public async updateHomeBuildingOverheatProtection(
     buildingId: string,
-    settings: { isEnabled: boolean; max: number; min: number },
+    settings: ProtectionUpdate,
   ): Promise<void> {
     await this.updateHomeOverheatProtection(
       this.#getHomeBuildingDeviceIds(buildingId),
@@ -1098,7 +1098,7 @@ export default class MELCloudApp extends App {
 
   public async updateHomeFrostProtection(
     deviceIds: readonly string[],
-    settings: { isEnabled: boolean; max: number; min: number },
+    settings: ProtectionUpdate,
   ): Promise<void> {
     await this.#homeFacadeManager.updateFrostProtection(deviceIds, settings)
   }
@@ -1112,7 +1112,7 @@ export default class MELCloudApp extends App {
 
   public async updateHomeOverheatProtection(
     deviceIds: readonly string[],
-    settings: { isEnabled: boolean; max: number; min: number },
+    settings: ProtectionUpdate,
   ): Promise<void> {
     await this.#homeFacadeManager.updateOverheatProtection(deviceIds, settings)
   }
