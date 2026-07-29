@@ -7,49 +7,51 @@ import ataGroupSettingConfig from '../../widgets/ata-group-setting/widget.compos
 import chartsApi from '../../widgets/charts/api.mts'
 import chartsConfig from '../../widgets/charts/widget.compose.json' with { type: 'json' }
 
+// The declaration half of the API contract: what each surface exposes
+// against what its manifest declares. The call-site half (every path a
+// webview writes, under a declared method) lives in
+// tests/unit/api-route-guards.test.ts.
+const SURFACES = [
+  { api, config: appConfig, name: 'app API' },
+  {
+    api: ataGroupSettingApi,
+    config: ataGroupSettingConfig,
+    name: 'ata-group-setting widget API',
+  },
+  { api: chartsApi, config: chartsConfig, name: 'charts widget API' },
+]
+
+// Every surface's handler union, so the compile-time half is asserted
+// once rather than per surface.
+type Handler =
+  | (typeof api)[keyof typeof api]
+  | (typeof ataGroupSettingApi)[keyof typeof ataGroupSettingApi]
+  | (typeof chartsApi)[keyof typeof chartsApi]
+
+// Everything below the SURFACES table is the shared contract test,
+// byte-identical in com.melcloud, com.heatzy and com.melcloud.extension
+// — edit all three together. Only the table and the Handler union above
+// differ: they name what each app exposes.
+
 const sortedKeys = (object: object): string[] =>
   Object.keys(object).toSorted((left, right) => left.localeCompare(right))
 
-// One equality per surface pins the ids ↔ handlers mapping in both
-// directions at once: a handler with no declaration and a declaration
-// with no handler both break it, and the diff names the offender. A
-// per-id existence sweep alongside it could only ever fail together
-// with the equality, so it is not kept.
 describe('api contract', () => {
-  describe('app API', () => {
-    // The compile-time half of the contract, asserted on the whole
-    // union at once: no per-name method reference ever leaves its
-    // object (unbound-method).
-    it('should expose only function handlers', () => {
-      expectTypeOf<(typeof api)[keyof typeof api]>().toBeFunction()
-    })
-
-    it('should declare exactly the handlers app.json names', () => {
-      expect(sortedKeys(api)).toStrictEqual(sortedKeys(appConfig.api))
-    })
+  // Asserted on the whole union at once: no per-name method reference
+  // ever leaves its object (unbound-method).
+  it('should expose only function handlers', () => {
+    expectTypeOf<Handler>().toBeFunction()
   })
 
-  describe('ata-group-setting widget API', () => {
-    it('should expose only function handlers', () => {
-      expectTypeOf<
-        (typeof ataGroupSettingApi)[keyof typeof ataGroupSettingApi]
-      >().toBeFunction()
-    })
-
-    it('should declare exactly the handlers widget.compose.json names', () => {
-      expect(sortedKeys(ataGroupSettingApi)).toStrictEqual(
-        sortedKeys(ataGroupSettingConfig.api),
-      )
-    })
-  })
-
-  describe('charts widget API', () => {
-    it('should expose only function handlers', () => {
-      expectTypeOf<(typeof chartsApi)[keyof typeof chartsApi]>().toBeFunction()
-    })
-
-    it('should declare exactly the handlers widget.compose.json names', () => {
-      expect(sortedKeys(chartsApi)).toStrictEqual(sortedKeys(chartsConfig.api))
-    })
-  })
+  // One equality per surface pins the ids ↔ handlers mapping in both
+  // directions at once: a handler with no declaration and a declaration
+  // with no handler both break it, and the diff names the offender. A
+  // per-id existence sweep alongside it could only ever fail together
+  // with the equality, so it is not kept.
+  it.each(SURFACES)(
+    '$name should declare exactly the handlers its manifest names',
+    ({ api: surfaceApi, config }) => {
+      expect(sortedKeys(surfaceApi)).toStrictEqual(sortedKeys(config.api))
+    },
+  )
 })

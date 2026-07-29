@@ -85,7 +85,10 @@ coverage.
   test-pinned in two halves, one file each — extend BOTH when touching
   a route: `tests/integration/api-contract.test.ts` (since #1261) pins
   manifest ids ↔ handlers both ways plus the handlers' function type,
-  on all three surfaces; `tests/unit/api-route-guards.test.ts` pins the
+  on all three surfaces — and like the route guard, everything below its
+  own `SURFACES` table is byte-identical in the two sibling apps, only
+  the table and the `Handler` union naming what each app exposes differ;
+  `tests/unit/api-route-guards.test.ts` pins the
   call sites — every path a webview writes, literal or template-built,
   must match a declared route of its own surface, under a declared
   method. Everything below its `SURFACES` table is byte-identical in
