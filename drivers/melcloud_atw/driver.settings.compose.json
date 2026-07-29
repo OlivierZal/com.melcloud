@@ -3,6 +3,9 @@
     "$extends": ["options"]
   },
   {
+    "$extends": ["status-indicator"]
+  },
+  {
     "children": [
       {
         "id": "legionella",

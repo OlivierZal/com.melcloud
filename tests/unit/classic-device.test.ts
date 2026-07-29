@@ -392,6 +392,43 @@ describe(ClassicMELCloudDevice, () => {
       expect(superRemoveCapabilityMock).toHaveBeenCalledWith('fan_speed')
     })
 
+    it('should class the device as a heat pump when the indicator is allowed', async () => {
+      await device.onSettings({
+        changedKeys: ['custom_status_indicator'],
+        newSettings: { custom_status_indicator: true },
+      })
+
+      expect(device.setClass).toHaveBeenCalledWith('heatpump')
+    })
+
+    it('should class the device back as a thermostat when disallowed', async () => {
+      await device.onSettings({
+        changedKeys: ['custom_status_indicator'],
+        newSettings: { custom_status_indicator: false },
+      })
+
+      expect(device.setClass).toHaveBeenCalledWith('thermostat')
+    })
+
+    it('should not sync when only the status indicator changes', async () => {
+      realtimeMock.mockClear()
+      await device.onSettings({
+        changedKeys: ['custom_status_indicator'],
+        newSettings: { custom_status_indicator: true },
+      })
+
+      expect(realtimeMock).not.toHaveBeenCalledWith('deviceupdate', null)
+    })
+
+    it('should leave the class alone when other settings change', async () => {
+      await device.onSettings({
+        changedKeys: ['always_on'],
+        newSettings: { always_on: true },
+      })
+
+      expect(device.setClass).not.toHaveBeenCalled()
+    })
+
     it('should sync from device when non-always_on non-energy setting changes', async () => {
       await device.ensureDevice()
       await device.onSettings({

@@ -32,6 +32,13 @@ const capitalize = ([first = '', ...rest] = ''): string =>
 const DEBOUNCE_DELAY = 1000
 const modes: EnergyReportMode[] = ['regular', 'total']
 
+// Homey exposes its status-indicator picker on some device classes only:
+// a thermostat gets none, a heat pump does. The setting therefore drives
+// the class, `heatpump` being the closest Homey class to these units. It
+// is declared on the four thermostat drivers alone — the ERV is an
+// airtreatment device, which already gets the picker.
+const STATUS_INDICATOR_SETTING = 'custom_status_indicator'
+
 export abstract class BaseMELCloudDevice<
   TFacade extends ClassicDeviceFacade = ClassicDeviceFacade,
   TId extends number | string = number | string,
@@ -117,6 +124,13 @@ export abstract class BaseMELCloudDevice<
         this.isCapabilitySupported(setting) &&
         typeof newSettings[setting] === 'boolean',
     )
+    if (changedKeys.includes(STATUS_INDICATOR_SETTING)) {
+      await this.setClass(
+        newSettings[STATUS_INDICATOR_SETTING] === true
+          ? 'heatpump'
+          : 'thermostat',
+      )
+    }
     await this.#updateDeviceOnSettings(
       changedKeys,
       changedCapabilities,
@@ -493,10 +507,14 @@ export abstract class BaseMELCloudDevice<
       await this.triggerCapabilityListener('onoff', true)
       return
     }
+    // The status-indicator setting is purely Homey-side, like always_on:
+    // neither carries a value the unit could report back.
     if (
       changedKeys.some(
         (setting) =>
-          setting !== 'always_on' && !this.isEnergyCapability(setting),
+          setting !== 'always_on' &&
+          setting !== STATUS_INDICATOR_SETTING &&
+          !this.isEnergyCapability(setting),
       )
     ) {
       await this.syncFromDevice()
