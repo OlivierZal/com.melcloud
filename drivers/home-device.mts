@@ -1,5 +1,4 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
-import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 
 import type {
   HomeConvertFromDevice,
@@ -30,28 +29,9 @@ export abstract class HomeMELCloudDevice<
     Record<string, HomeConvertFromDevice<T>>
   >
 
-  public override async syncFromDevice(): Promise<void> {
-    const device = await this.ensureDevice()
-    if (device === null) {
-      return
-    }
-    try {
-      await this.syncAvailability(
-        device.isAvailable,
-        this.homey.__('errors.unitOffline'),
-      )
-      await this.#setCapabilityValues(device)
-    } catch (error) {
-      if (!(error instanceof EntityNotFoundError)) {
-        throw error
-      }
-      // Mirrors the Classic contract: a cached facade over a pruned id
-      // (the registry rebuilds on logout) warns and keeps the last known
-      // availability; the next sync after re-login resolves the fresh
-      // model transparently.
-      await this.setWarning(this.homey.__('errors.deviceNotFound'))
-    }
-  }
+  // An offline unit is one whose disconnection streak has passed the
+  // stale window.
+  protected override readonly unreachableWarning = 'errors.unitOffline'
 
   protected override getCapabilitiesOptions(): Partial<
     Record<string, unknown>
@@ -73,7 +53,9 @@ export abstract class HomeMELCloudDevice<
       : this.driver.getRequiredCapabilities(facade)
   }
 
-  async #setCapabilityValues(device: HomeDeviceFacade<T>): Promise<void> {
+  protected override async syncCapabilityValues(
+    device: HomeDeviceFacade<T>,
+  ): Promise<void> {
     await Promise.all(
       typedEntries(this.deviceToCapability).map(
         async ([capability, convert]) => {

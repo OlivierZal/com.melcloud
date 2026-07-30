@@ -1,5 +1,4 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 
 import type {
   Capabilities,
@@ -63,35 +62,15 @@ export abstract class ClassicMELCloudDevice<
     Record<keyof OperationalCapabilities<T>, ConvertFromDevice<T>>
   >
 
+  // A stale unit is one whose last-communication timestamp has aged out.
+  protected override readonly unreachableWarning = 'errors.unitStale'
+
   protected get facade(): Classic.DeviceFacade<T> | undefined {
     return this.cachedFacade
   }
 
   get #data(): Readonly<Classic.ListDeviceData<T>> | undefined {
     return this.facade?.data
-  }
-
-  public override async syncFromDevice(): Promise<void> {
-    const device = await this.ensureDevice()
-    if (device === null) {
-      return
-    }
-    try {
-      await this.syncAvailability(
-        device.isAvailable,
-        this.homey.__('errors.unitStale'),
-      )
-      await this.setCapabilityValues(device.data)
-    } catch (error) {
-      if (!(error instanceof EntityNotFoundError)) {
-        throw error
-      }
-      // Mirrors the Home contract: a cached facade over a pruned id (the
-      // registry rebuilds on logout) warns and keeps the last known
-      // availability; the next sync after re-login resolves the fresh
-      // model transparently.
-      await this.setWarning(this.homey.__('errors.deviceNotFound'))
-    }
   }
 
   protected override readonly createEnergyReport = (
@@ -131,6 +110,12 @@ export abstract class ClassicMELCloudDevice<
         }
       }),
     )
+  }
+
+  protected override async syncCapabilityValues(
+    facade: Classic.DeviceFacade<T>,
+  ): Promise<void> {
+    await this.setCapabilityValues(facade.data)
   }
 
   #convertFromDevice<TKey extends keyof Capabilities<T>>(

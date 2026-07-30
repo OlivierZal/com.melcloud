@@ -1,4 +1,9 @@
-import { isAPIError, NoChangesError } from '@olivierzal/melcloud-api'
+import {
+  type AvailabilityAware,
+  EntityNotFoundError,
+  isAPIError,
+  NoChangesError,
+} from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 
 import type { CapabilityConverter } from '../types/capabilities.mts'
@@ -40,7 +45,8 @@ const modes: EnergyReportMode[] = ['regular', 'total']
 const STATUS_INDICATOR_SETTING = 'custom_status_indicator'
 
 export abstract class BaseMELCloudDevice<
-  TFacade extends ClassicDeviceFacade = ClassicDeviceFacade,
+  TFacade extends AvailabilityAware & ClassicDeviceFacade = AvailabilityAware &
+    ClassicDeviceFacade,
   TId extends number | string = number | string,
 > extends Device {
   declare public readonly driver: BaseMELCloudDriver
@@ -54,6 +60,11 @@ export abstract class BaseMELCloudDevice<
   protected abstract readonly capabilityToDevice: Partial<
     Record<string, CapabilityConverter>
   >
+
+  // The message a stale unit shows: the two dialects word it differently
+  // ('unitStale' reads a last-communication timestamp, 'unitOffline' a
+  // disconnection streak) even though they answer the same contract.
+  protected abstract readonly unreachableWarning: string
 
   public get id(): TId {
     return this.getData().id
@@ -161,7 +172,8 @@ export abstract class BaseMELCloudDevice<
 
   protected abstract getRequiredCapabilities(): string[]
 
-  public abstract syncFromDevice(): Promise<void>
+  // Where the dialects genuinely differ: each reads its own payload shape.
+  protected abstract syncCapabilityValues(facade: TFacade): Promise<void>
 
   public override async addCapability(capability: string): Promise<void> {
     if (!this.hasCapability(capability)) {
@@ -243,6 +255,35 @@ export abstract class BaseMELCloudDevice<
       await super.setWarning(getErrorMessage(error))
     }
     await super.setWarning(null)
+  }
+
+  // One skeleton for both dialects, which the facades' neutral
+  // `isAvailable` contract makes possible: before it, Classic read a raw
+  // `Offline` flag and Home a disconnection streak, so each intermediate
+  // class carried its own copy of this method — identical but for the
+  // warning key and the payload read, and each commented "mirrors the
+  // other contract". The contract is pinned in melcloud-api's
+  // tests/contracts/is-available.test.ts.
+  public async syncFromDevice(): Promise<void> {
+    const device = await this.ensureDevice()
+    if (device === null) {
+      return
+    }
+    try {
+      await this.syncAvailability(
+        device.isAvailable,
+        this.homey.__(this.unreachableWarning),
+      )
+      await this.syncCapabilityValues(device)
+    } catch (error) {
+      if (!(error instanceof EntityNotFoundError)) {
+        throw error
+      }
+      // A cached facade over a pruned id (the registry rebuilds on logout)
+      // warns and keeps the last known availability; the next sync after
+      // re-login resolves the fresh model transparently.
+      await this.setWarning(this.homey.__('errors.deviceNotFound'))
+    }
   }
 
   protected async applyCapabilitiesOptions(): Promise<void> {
