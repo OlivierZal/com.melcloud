@@ -459,7 +459,7 @@ describe(EnergyReport, () => {
       mockEnergyFetch(
         mock<Classic.EnergyDataAta>({
           TotalAutoConsumed: 100,
-          TotalCoolingConsumed: undefined as unknown as number,
+          TotalCoolingConsumed: undefined,
         }),
       )
       const report = new EnergyReport(mockDevice, {
