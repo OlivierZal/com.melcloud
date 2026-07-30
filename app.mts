@@ -556,11 +556,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
-      await this.getClassicFacade('devices', deviceId).getEnergyReport({
-        from,
-      }),
+      await this.getClassicFacade('devices', deviceId).getEnergyReport(
+        this.#chartDaysQuery(days),
+      ),
     )
   }
 
@@ -630,11 +629,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
-    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
-      await this.getClassicFacade('devices', deviceId).getOperationModes({
-        from,
-      }),
+      await this.getClassicFacade('devices', deviceId).getOperationModes(
+        this.#chartDaysQuery(days),
+      ),
     )
   }
 
@@ -665,11 +663,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
-      await this.getClassicFacade('devices', deviceId).getTemperatures({
-        from,
-      }),
+      await this.getClassicFacade('devices', deviceId).getTemperatures(
+        this.#chartDaysQuery(days),
+      ),
     )
   }
 
@@ -874,9 +871,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
-      await this.#getHomeDeviceFacade(deviceId).getEnergyReport({ from }),
+      await this.#getHomeDeviceFacade(deviceId).getEnergyReport(
+        this.#chartDaysQuery(days),
+      ),
     )
   }
 
@@ -930,10 +928,9 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartPieOptions> {
-    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
       await this.getHomeFacade(deviceId, Home.DeviceType.Atw).getOperationModes(
-        { from },
+        this.#chartDaysQuery(days),
       ),
     )
   }
@@ -974,9 +971,10 @@ export default class MELCloudApp extends App {
     days: number
     deviceId: string
   }): Promise<ReportChartLineOptions> {
-    const from = chartDaysStart(days, getTimeZone(this.homey))
     return unwrapResult(
-      await this.#getHomeDeviceFacade(deviceId).getTemperatures({ from }),
+      await this.#getHomeDeviceFacade(deviceId).getTemperatures(
+        this.#chartDaysQuery(days),
+      ),
     )
   }
 
@@ -1148,6 +1146,16 @@ export default class MELCloudApp extends App {
     if (this.#sessionLossStates.get(api) === 'pending') {
       this.#sessionLossStates.set(api, 'shown')
     }
+  }
+
+  // Type-agnostic device facade lookup for the chart surfaces shared by
+  // both Home device types (temperatures, signal, energy report).
+  // The day-chart query every dialect's report reads. Derived once: the
+  // window anchor and the timezone source must not drift between the six
+  // call sites, which the facades' shared `(query?: ReportQuery)` contract
+  // lets us state in a single place.
+  #chartDaysQuery(days: number): { from: string } {
+    return { from: chartDaysStart(days, getTimeZone(this.homey)) }
   }
 
   async #classicSyncDevices(
@@ -1363,8 +1371,6 @@ export default class MELCloudApp extends App {
     }))
   }
 
-  // Type-agnostic device facade lookup for the chart surfaces shared by
-  // both Home device types (temperatures, signal, energy report).
   #getHomeDeviceFacade(
     deviceId: string,
   ): Home.DeviceAtaFacade | Home.DeviceAtwFacade {
