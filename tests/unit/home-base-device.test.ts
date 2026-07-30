@@ -3,7 +3,6 @@ import type HomeyModule from 'homey'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { InteropModule } from '../helpers.ts'
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import { NotFoundError } from '../../lib/errors.mts'
 import {
@@ -13,6 +12,7 @@ import {
   testSetValuesErrorHandling,
   testThermostatModeOff,
 } from '../device-descriptors.ts'
+import { type InteropModule, mock } from '../helpers.ts'
 import {
   type TestHomeDevice,
   createTestHomeDevice,
@@ -58,7 +58,7 @@ const requiredCapabilities = vi.hoisted(() => [
 ])
 
 const createMockFacade = (): Home.DeviceAtaFacade =>
-  ({
+  mock<Home.DeviceAtaFacade>({
     capabilities: {
       hasAutomaticFanSpeed: true,
       numberOfFanSpeeds: 5,
@@ -79,7 +79,7 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
     get setTemperature(): number {
       return 22
     },
-  }) as unknown as Home.DeviceAtaFacade
+  })
 
 vi.mock(import('homey'), async () => {
   const { createMockDeviceClass, mock: mockModule } =
