@@ -117,18 +117,25 @@ const mockFailingFetch = (): void => {
   })
 }
 
+type SyntheticTagMapping = Readonly<Record<string, readonly string[]>>
+
 const createCopMocks = (
   hasTagMappings = true,
 ): ClassicMELCloudDevice<TestDeviceType> => {
-  const copConsumed = {
+  // The COP arithmetic is capability-name agnostic — `cleanMapping` is
+  // mocked to hand it this key — so these mappings are synthetic on
+  // purpose and typed as such. Claiming they are
+  // `EnergyCapabilityTagMapping` would need an assertion to hide a key
+  // no device declares.
+  const copConsumed: SyntheticTagMapping = {
     'measure_power.cop': ['ConsumedTag'],
-  } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
-  const copProduced = {
+  }
+  const copProduced: SyntheticTagMapping = {
     'measure_power.cop': ['ProducedTag'],
-  } as unknown as Partial<EnergyCapabilityTagMapping<TestDeviceType>>
-  const copEnergyMapping = {
+  }
+  const copEnergyMapping: SyntheticTagMapping = {
     'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
-  } as unknown as EnergyCapabilityTagMapping<TestDeviceType>
+  }
   const copDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
     consumedTagMapping: hasTagMappings ? copConsumed : {},
     producedTagMapping: hasTagMappings ? copProduced : {},

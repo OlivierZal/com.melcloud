@@ -119,8 +119,8 @@ describe('api', () => {
   describe('building retrieval', () => {
     it('should delegate to getClassicBuildings', () => {
       const buildings = [
-        { id: 1, name: 'ClassicBuilding 1' },
-      ] as unknown as Classic.BuildingZone[]
+        mock<Classic.BuildingZone>({ id: 1, name: 'ClassicBuilding 1' }),
+      ]
       mockGetBuildings.mockReturnValue(buildings)
 
       const result = api.getClassicBuildings()

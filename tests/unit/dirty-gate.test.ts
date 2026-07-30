@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { createDirtyGate } from '../../public/dirty-gate.mts'
+import { mock } from '../helpers.ts'
 
 // The gate is headless: buttons only need a `disabled` slot, and wired
 // targets only need to dispatch events, so plain doubles are enough.
@@ -10,8 +11,8 @@ const setup = (): {
   gate: ReturnType<typeof createDirtyGate>
   refreshElement: HTMLButtonElement
 } => {
-  const applyElement = { disabled: false } as unknown as HTMLButtonElement
-  const refreshElement = { disabled: false } as unknown as HTMLButtonElement
+  const applyElement = mock<HTMLButtonElement>({ disabled: false })
+  const refreshElement = mock<HTMLButtonElement>({ disabled: false })
   const form = { value: 'pristine' }
   const gate = createDirtyGate({
     applyElement,

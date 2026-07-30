@@ -2,7 +2,6 @@ import type * as Home from '@olivierzal/melcloud-api/home'
 import type HomeyModule from 'homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { InteropModule } from '../helpers.ts'
 import { HomeEnergyReportAtw } from '../../drivers/home-report-atw.mts'
 import { NotFoundError } from '../../lib/errors.mts'
 import { homeTagMappingsAtw } from '../../types/home-atw.mts'
@@ -10,6 +9,7 @@ import {
   testEnergyReportConfig,
   testThermostatMode,
 } from '../device-descriptors.ts'
+import { type InteropModule, mock } from '../helpers.ts'
 import HomeMELCloudDeviceAtw from '../../drivers/home-melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -86,7 +86,7 @@ vi.mock(import('homey'), async () => {
 const mockFacade = (
   overrides: Partial<Record<keyof Home.DeviceAtwFacade, unknown>> = {},
 ): Home.DeviceAtwFacade =>
-  ({
+  mock<Home.DeviceAtwFacade>({
     capabilities: {
       hasHotWater: true,
       hasZone2: true,
@@ -115,7 +115,7 @@ const mockFacade = (
     tankWaterTemperature: 48,
     updateValues: vi.fn<() => Promise<void>>().mockResolvedValue(),
     ...overrides,
-  }) as unknown as Home.DeviceAtwFacade
+  })
 
 const defineEnergyContext = (
   device: object,
