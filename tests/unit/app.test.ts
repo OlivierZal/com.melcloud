@@ -23,7 +23,7 @@ import type * as HomeyLib from '../../lib/homey.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
 import type { Settings } from '../../types/device-settings.mts'
 import type { ManifestDriver } from '../../types/manifest.mts'
-import { getMockCallArg, mock, settleDetached } from '../helpers.js'
+import { getMockCallArg, mock, settleDetached } from '../helpers.ts'
 
 const mockSetFacadeManager = vi.fn<() => void>()
 

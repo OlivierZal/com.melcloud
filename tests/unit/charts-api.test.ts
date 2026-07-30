@@ -5,7 +5,7 @@ import type {
 import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { mock } from '../helpers.js'
+import { mock } from '../helpers.ts'
 
 const { default: api } = await import('../../widgets/charts/api.mts')
 

@@ -11,7 +11,7 @@ import type {
   HomeDeviceZone,
   ZoneData,
 } from '../../types/zone.mts'
-import { mock } from '../helpers.js'
+import { mock } from '../helpers.ts'
 
 const mockGetBuildings = vi.fn<() => Classic.BuildingZone[]>()
 
