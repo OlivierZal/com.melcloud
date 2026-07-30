@@ -2014,6 +2014,12 @@ describe('melCloudApp', () => {
         expect(getEnergyReport).toHaveBeenCalledWith({
           from: '2026-07-18T00:00:00',
         })
+        // The anchor must come from Homey's clock, not a hardcoded zone:
+        // the mocked `Temporal.Now` ignores its argument, so without this
+        // the timezone source is unpinned.
+        expect(Temporal.Now.zonedDateTimeISO).toHaveBeenCalledWith(
+          'Europe/Paris',
+        )
       } finally {
         vi.mocked(Temporal.Now.zonedDateTimeISO).mockRestore()
       }
