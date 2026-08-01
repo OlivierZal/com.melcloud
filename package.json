@@ -48,7 +48,7 @@
     "@types/node": "^26.1.1",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^4.1.10",
-    "@vitest/eslint-plugin": "^1.6.23",
+    "@vitest/eslint-plugin": "^1.6.24",
     "chart.js": "^4.5.1",
     "esbuild": "^0.28.1",
     "eslint": "^10.8.0",
