@@ -21,6 +21,5 @@
     "target": "es2025",
     "types": ["node"],
     "verbatimModuleSyntax": true
-  },
-  "exclude": ["*.config.ts"]
+  }
 }

@@ -1,4 +1,4 @@
-import { defineConfig } from 'eslint/config'
+import { type Config, defineConfig } from 'eslint/config'
 import { flatConfigs as importXConfigs } from 'eslint-plugin-import-x'
 import { jsdoc } from 'eslint-plugin-jsdoc'
 import { configs as packageJsonConfigs } from 'eslint-plugin-package-json'
@@ -49,7 +49,7 @@ const typeLikeSortOptions = {
   ],
 }
 
-const config = defineConfig([
+const config: Config[] = defineConfig([
   {
     ignores: [
       '.homeybuild/',
@@ -79,9 +79,7 @@ const config = defineConfig([
     files: ['**/*.{ts,mts}'],
     languageOptions: {
       parserOptions: {
-        projectService: {
-          allowDefaultProject: ['*.config.ts'],
-        },
+        projectService: true,
         warnOnUnsupportedTypeScriptVersion: false,
       },
     },
