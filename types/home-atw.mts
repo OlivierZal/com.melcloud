@@ -77,6 +77,16 @@ export const homeTagMappingsAtw: {
   set: homeSetCapabilityTagMappingAtw,
 }
 
+interface HomeCapabilitiesOptionsAtw {
+  readonly thermostat_mode: {
+    readonly values: readonly CapabilitiesOptionsValues<Home.AtwZoneMode>[]
+  }
+  readonly 'thermostat_mode.zone2': {
+    readonly title: LocalizedStrings
+    readonly values: readonly CapabilitiesOptionsValues<Home.AtwZoneMode>[]
+  }
+}
+
 /**
  * Structural slice of {@link Home.DeviceAtwFacade} driving which capabilities
  * a Home ATW device gets and their options. Satisfied by the facade itself;
@@ -89,16 +99,6 @@ export type HomeAtwDeviceProfile = Pick<
   Home.DeviceAtwFacade,
   'capabilities' | 'hasCoolingMode'
 >
-
-export interface HomeCapabilitiesOptionsAtw {
-  readonly thermostat_mode: {
-    readonly values: readonly CapabilitiesOptionsValues<Home.AtwZoneMode>[]
-  }
-  readonly 'thermostat_mode.zone2': {
-    readonly title: LocalizedStrings
-    readonly values: readonly CapabilitiesOptionsValues<Home.AtwZoneMode>[]
-  }
-}
 
 // Only complete option objects, and only for capabilities the device will
 // actually have: device-level options shadow the manifest's per capability
