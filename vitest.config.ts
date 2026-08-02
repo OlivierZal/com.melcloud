@@ -17,7 +17,7 @@ const swcPlugin = swc.vite({
 const config: ViteUserConfig = defineConfig({
   test: {
     coverage: {
-      exclude: ['**/public/**/*.mts', 'settings/**/*.mts'],
+      exclude: ['**/public/**/*.mts', 'scripts/**/*.mts', 'settings/**/*.mts'],
       include: ['**/*.mts'],
       reporter: ['text', 'lcov'],
       thresholds: {

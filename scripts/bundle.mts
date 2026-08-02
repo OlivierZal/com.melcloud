@@ -10,7 +10,7 @@ import { createHash } from 'node:crypto'
 import { readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-import { build } from 'esbuild'
+import { type BuildOptions, build } from 'esbuild'
 
 // The IIFE global each page's inline `onHomeyReady` reads `start` from.
 const GLOBAL_NAME = 'MELCloudWebview'
@@ -18,6 +18,8 @@ const GLOBAL_NAME = 'MELCloudWebview'
 // The Homey CLI's packaging target: `tsc` already emits here (its
 // validated `outDir`), and the CLI packs exactly this directory.
 const OUT_ROOT = '.homeybuild'
+
+const HASH_LENGTH = 8
 
 const entryPoints = [
   'widgets/ata-group-setting/public/index.mts',
@@ -31,7 +33,12 @@ const pages = [
   'widgets/charts/public/index.html',
 ]
 
-const sharedOptions = {
+// A local asset reference: an attribute value (href/src) or a dynamic
+// import specifier, with an optional existing stamp.
+const REFERENCE =
+  /(?<prefix>href="|src="|import\('\.\/)(?<file>[^"':?\/][^"':?]*)(?:\?v=[0-9a-f]+)?(?<suffix>["'\)])/gv
+
+const sharedOptions: BuildOptions = {
   bundle: true,
   legalComments: 'none',
   logLevel: 'info',
@@ -41,7 +48,7 @@ const sharedOptions = {
 
 await Promise.all(
   entryPoints.flatMap((entryPoint) => {
-    const outBase = path.join(OUT_ROOT, entryPoint.replace(/\.mts$/u, ''))
+    const outBase = path.join(OUT_ROOT, entryPoint.replace(/\.mts$/v, ''))
     return [
       build({
         ...sharedOptions,
@@ -64,7 +71,10 @@ await Promise.all(
 await Promise.all(
   entryPoints.flatMap((entryPoint) =>
     ['.js', '.mjs'].map(async (extension) =>
-      rm(entryPoint.replace(/\.mts$/u, extension), { force: true }),
+      rm(
+        entryPoint.replace(/\.mts$/v, () => extension),
+        { force: true },
+      ),
     ),
   ),
 )
@@ -76,36 +86,66 @@ await Promise.all(
 // CLI flow (its pre-process copy runs before `npm run build`) and is
 // absent in a standalone suite run, which only proves the bundles
 // compile.
-const hashOf = async (filePath) => {
+const hashOf = async (filePath: string): Promise<string> => {
   const content = await readFile(filePath)
-  return createHash('sha256').update(content).digest('hex').slice(0, 8)
+  return createHash('sha256')
+    .update(content)
+    .digest('hex')
+    .slice(0, HASH_LENGTH)
 }
 
-const stampHtml = async (htmlPath) => {
-  let html = ''
+const collectHashes = async (
+  html: string,
+  directory: string,
+): Promise<ReadonlyMap<string, string>> => {
+  const files = new Set<string>()
+  for (const match of html.matchAll(REFERENCE)) {
+    const { file = '' } = match.groups ?? {}
+    if (file !== '') {
+      files.add(file)
+    }
+  }
+  return new Map(
+    await Promise.all(
+      [...files].map(async (file): Promise<[string, string]> => [
+        file,
+        await hashOf(path.join(directory, file)),
+      ]),
+    ),
+  )
+}
+
+// Stamp only within a reference context, so the same filename written
+// elsewhere (e.g. a comment) is never rewritten. Rebuilt cursor-wise
+// rather than through a `replaceAll` callback, whose loosely typed rest
+// arguments cannot carry the named groups safely.
+const stampReferences = (
+  html: string,
+  hashes: ReadonlyMap<string, string>,
+): string => {
+  let stamped = ''
+  let cursor = 0
+  for (const match of html.matchAll(REFERENCE)) {
+    const { file = '', prefix = '', suffix = '' } = match.groups ?? {}
+    const hash = hashes.get(file) ?? ''
+    stamped += `${html.slice(cursor, match.index)}${prefix}${file}?v=${hash}${suffix}`
+    cursor = match.index + match[0].length
+  }
+  return stamped + html.slice(cursor)
+}
+
+const stampHtml = async (htmlPath: string): Promise<void> => {
+  let html: string
   try {
     html = await readFile(htmlPath, 'utf8')
   } catch {
+    // The page copy only exists in the CLI flow; a standalone suite run
+    // has nothing to stamp.
     return
   }
-  const directory = path.dirname(htmlPath)
-  // A local asset reference: an attribute value (href/src) or a dynamic
-  // import specifier, with an optional existing stamp.
-  const reference =
-    /(href="|src="|import\('\.\/)([^"':?/][^"':?]*)(?:\?v=[0-9a-f]+)?(["')])/gu
-  // Hash each referenced asset up front — the replace below is sync.
-  const hashes = new Map()
-  for (const [, , file] of html.matchAll(reference)) {
-    if (!hashes.has(file)) {
-      hashes.set(file, await hashOf(path.join(directory, file)))
-    }
-  }
-  // Stamp only within a reference context, so the same filename written
-  // elsewhere (e.g. a comment) is never rewritten.
-  const stamped = html.replaceAll(
-    reference,
-    (_match, prefix, file, suffix) =>
-      `${prefix}${file}?v=${hashes.get(file)}${suffix}`,
+  const stamped = stampReferences(
+    html,
+    await collectHashes(html, path.dirname(htmlPath)),
   )
   if (stamped !== html) {
     await writeFile(htmlPath, stamped)
