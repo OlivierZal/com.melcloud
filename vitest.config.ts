@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config'
+import { type ViteUserConfig, defineConfig } from 'vitest/config'
 import swc from 'unplugin-swc'
 
 const swcPlugin = swc.vite({
@@ -14,7 +14,7 @@ const swcPlugin = swc.vite({
   },
 })
 
-const config = defineConfig({
+const config: ViteUserConfig = defineConfig({
   test: {
     coverage: {
       exclude: ['**/public/**/*.mts', 'settings/**/*.mts'],
