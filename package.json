@@ -16,7 +16,7 @@
   "type": "module",
   "scripts": {
     "build": "npm run build:assets && node ./node_modules/@typescript/native/bin/tsc --project tsconfig.build.json",
-    "build:assets": "node scripts/bundle.mjs",
+    "build:assets": "node scripts/bundle.mts",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
     "github:push": "npm run homey:validate && npm run lint:fix && npm run format:fix && git push",

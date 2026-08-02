@@ -17,19 +17,19 @@ caught real failures that the others miss:
 - `npm run typecheck` — `tsc` from `@typescript/native` (TypeScript 7).
 - `npm test` / `npm run test:coverage` — vitest; branches are at 100%,
   keep them there.
-- `npm run build` — esbuild bundles (`scripts/bundle.mjs`) + `tsc`
+- `npm run build` — esbuild bundles (`scripts/bundle.mts`) + `tsc`
   emit, BOTH into `.homeybuild`. The Homey CLI runs `npm run build`
   when it detects TypeScript (`devDependencies.typescript`; it
   validates `outDir: .homeybuild`) — but only AFTER its pre-process
   copy into `.homeybuild`, so the source tree stays sources-only and
   everything the package needs must be emitted there: tsc does it via
-  `outDir`, and `bundle.mjs` emits the webview bundles there too (its
+  `outDir`, and `bundle.mts` emits the webview bundles there too (its
   former source-tree outfiles landed too late to be copied — the #1404
   root cause: every store install 404'd the bundles). The CLI's own
   build invocation is therefore sufficient for install, run, validate
   and publish alike; a standalone suite run (no `.homeybuild` page
   copies) still proves the bundles compile.
-- Cache-busting `?v=` — a PACKAGE-TIME transform: `bundle.mjs` stamps
+- Cache-busting `?v=` — a PACKAGE-TIME transform: `bundle.mts` stamps
   every local asset reference of the `.homeybuild` page copies with a
   content hash (`?v=<hash>`), so phone webviews (which cache assets
   across app versions) refetch an asset exactly when its bytes change.
@@ -40,7 +40,7 @@ caught real failures that the others miss:
   never comments.
 - `npm run homey:validate` — Homey validation at publish level; may
   rewrite files (see locales below), re-stage if it does.
-- `node scripts/sync-capability-definitions.mjs` — refreshes the
+- `node scripts/sync-capability-definitions.mts` — refreshes the
   vendored node-homey-lib capability JSONs under `vendor/capabilities/`
   (homey-lib is a devDependency and must not ship to the device); the
   drift test in `tests/unit/capability-definitions.test.ts` fails when
@@ -206,7 +206,7 @@ coverage.
   for two distinct phases (no overlap): the `onHomeyReady` poll's 10 s
   timeout ends it if the bundle never loads (`#init_error` / post-ready
   alert), and `runWebview`/`withInitTimeout` end it if a DATA fetch hangs
-  during init (`Homey.ready()` in a `finally`). `scripts/bundle.mjs`
+  during init (`Homey.ready()` in a `finally`). `scripts/bundle.mts`
   stamps the PACKAGED `.homeybuild` page copies — only inside an
   attribute/import context, never a comment — with a content hash
   (`?v=`): phone webviews cache assets across app versions; the source
@@ -227,7 +227,7 @@ coverage.
   (proven in the wild: a cached dynamic-import-era HTML requested
   `index.mjs?v=…` against a 45.2.6 app shipping only `index.js` → 404 →
   "Loading failed"), so shipped bundle filenames are a COMPAT CONTRACT:
-  `scripts/bundle.mjs` builds every entry twice — `index.js` (IIFE) for
+  `scripts/bundle.mts` builds every entry twice — `index.js` (IIFE) for
   the current HTML, `index.mjs` (ESM) for every cached ESM-era HTML,
   which is why the entries keep `export const start`. Never rename or
   drop a shipped bundle filename; add alongside. When a bundle still

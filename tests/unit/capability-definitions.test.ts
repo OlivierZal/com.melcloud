@@ -13,7 +13,7 @@ import {
 
 // homey-lib is a devDependency: the runtime consumes the vendored copies
 // under vendor/capabilities. Refresh them with
-// `node scripts/sync-capability-definitions.mjs` when this fails.
+// `node scripts/sync-capability-definitions.mts` when this fails.
 describe('vendored capability definitions', () => {
   it.each([
     ['fan_speed', fanSpeed, libFanSpeed],

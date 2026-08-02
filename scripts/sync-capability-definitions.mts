@@ -11,9 +11,11 @@ const CAPABILITIES = [
   'thermostat_mode',
 ]
 
-const sortKeysDeep = (value) => {
+const JSON_INDENT = 2
+
+const sortKeysDeep = (value: unknown): unknown => {
   if (Array.isArray(value)) {
-    return value.map(sortKeysDeep)
+    return value.map((entry: unknown) => sortKeysDeep(entry))
   }
   if (value !== null && typeof value === 'object') {
     return Object.fromEntries(
@@ -27,7 +29,7 @@ const sortKeysDeep = (value) => {
 
 await Promise.all(
   CAPABILITIES.map(async (capability) => {
-    const definition = JSON.parse(
+    const definition: unknown = JSON.parse(
       await readFile(
         `node_modules/homey-lib/assets/capability/capabilities/${capability}.json`,
         'utf8',
@@ -35,7 +37,7 @@ await Promise.all(
     )
     await writeFile(
       `vendor/capabilities/${capability}.json`,
-      `${JSON.stringify(sortKeysDeep(definition), null, 2)}\n`,
+      `${JSON.stringify(sortKeysDeep(definition), undefined, JSON_INDENT)}\n`,
     )
   }),
 )
