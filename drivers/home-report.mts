@@ -36,6 +36,27 @@ const WIRE_TIME_SECONDS_LENGTH = 19
 
 type EnergyEntry = readonly [string, readonly HomeEnergyMeasureName[]]
 
+interface HomeEnergyQuery {
+  readonly from: string
+  readonly measure: HomeEnergyMeasureName
+  readonly to: string
+}
+
+// Per-type telemetry dialect: how to fetch a measure's points, convert wire
+// sums to kWh, and derive an instantaneous power reading. Injected by the
+// concrete reports so the engine stays type-agnostic.
+interface HomeEnergyStrategy<T extends Home.DeviceType> {
+  readonly fetchPoints: (
+    facade: HomeDeviceFacade<T>,
+    query: HomeEnergyQuery,
+  ) => Promise<EnergyPoint[]>
+  readonly kilowattHours: (wireSum: number) => number
+  readonly watts: (
+    points: readonly EnergyPoint[],
+    now: Temporal.Instant,
+  ) => number
+}
+
 type MeasurePoints = Partial<
   Record<HomeEnergyMeasureName, readonly EnergyPoint[]>
 >
@@ -48,27 +69,6 @@ interface RegularBoundaries {
 export interface EnergyPoint {
   readonly instant: Temporal.Instant
   readonly value: number
-}
-
-export interface HomeEnergyQuery {
-  readonly from: string
-  readonly measure: HomeEnergyMeasureName
-  readonly to: string
-}
-
-// Per-type telemetry dialect: how to fetch a measure's points, convert wire
-// sums to kWh, and derive an instantaneous power reading. Injected by the
-// concrete reports so the engine stays type-agnostic.
-export interface HomeEnergyStrategy<T extends Home.DeviceType> {
-  readonly fetchPoints: (
-    facade: HomeDeviceFacade<T>,
-    query: HomeEnergyQuery,
-  ) => Promise<EnergyPoint[]>
-  readonly kilowattHours: (wireSum: number) => number
-  readonly watts: (
-    points: readonly EnergyPoint[],
-    now: Temporal.Instant,
-  ) => number
 }
 
 const cursorKey = (measure: HomeEnergyMeasureName): string =>
