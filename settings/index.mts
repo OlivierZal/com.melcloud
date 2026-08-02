@@ -427,13 +427,18 @@ const createValuesGate = (
       JSON.stringify(elements.map((element) => element.value)),
   })
 
+// Everything the zone picker can list: a Classic zone at any level, or a
+// Home building and its devices. Named once because the three overheat
+// helpers and `populateZoneOptions` all speak it.
+type PickerZone = Classic.Zone | HomeBuildingZone | HomeDeviceZone
+
 // Option values driving the Home-only overheat panel: `capable` lists
 // every Home ATA device plus each building owning one (the flat target
 // list puts a building right before its devices); `atwBuildings` lists
 // the buildings owning at least one ATW, so a capable building can show
 // the "(air-to-air)" scope qualifier when its bulk write skips ATW.
 const collectOverheatZoneValues = (
-  zones: readonly (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[],
+  zones: readonly PickerZone[],
 ): { atwBuildings: string[]; capable: string[] } => {
   const atwBuildings: string[] = []
   const capable: string[] = []
@@ -453,9 +458,7 @@ const collectOverheatZoneValues = (
   return { atwBuildings, capable }
 }
 
-const getSubzones = (
-  zone: Classic.Zone | HomeBuildingZone | HomeDeviceZone,
-): Classic.Zone[] => [
+const getSubzones = (zone: PickerZone): Classic.Zone[] => [
   ...('devices' in zone ? zone.devices : []),
   ...('areas' in zone ? zone.areas : []),
   ...('floors' in zone ? zone.floors : []),
@@ -1453,9 +1456,7 @@ class ZoneSettingsManager {
     }
   }
 
-  public populateZoneOptions(
-    zones: (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[],
-  ): void {
+  public populateZoneOptions(zones: PickerZone[]): void {
     this.#registerOverheatZones(zones)
     for (const zone of zones) {
       const { id, level, model, name } = zone
@@ -1805,9 +1806,7 @@ class ZoneSettingsManager {
       !isCapable || !this.#atwBuildingValues.has(value)
   }
 
-  #registerOverheatZones(
-    zones: readonly (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[],
-  ): void {
+  #registerOverheatZones(zones: readonly PickerZone[]): void {
     const { atwBuildings, capable } = collectOverheatZoneValues(zones)
     for (const value of capable) {
       this.#overheatCapableValues.add(value)
