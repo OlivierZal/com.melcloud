@@ -62,7 +62,7 @@ jobs:
                cause and the needed fix.
     timeout-minutes: 30
 name: Claude Dependabot Fix
-on: # zizmor: ignore[dangerous-triggers]
+on:
   workflow_run:
     types: [completed]
     workflows: [CI, Validate]
