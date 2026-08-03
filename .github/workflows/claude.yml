@@ -31,6 +31,8 @@ jobs:
     timeout-minutes: 15
 name: Claude
 on:
+  # No pull_request_review(_comment): Copilot auto-review fires them as a
+  # write-less bot, piling up held runs the if-guard would skip anyway.
   issue_comment:
     types: [created]
   issues:

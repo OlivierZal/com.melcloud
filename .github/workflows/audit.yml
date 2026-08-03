@@ -1,3 +1,6 @@
+# Serialize runs per ref (a manual dispatch racing the weekly schedule)
+# without cancelling in-progress audits — an interrupted audit reports
+# nothing, so letting each run finish is strictly more informative.
 concurrency:
   cancel-in-progress: false
   group: audit-${{ github.ref }}
