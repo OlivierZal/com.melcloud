@@ -65,5 +65,6 @@ name: Claude Dependabot Fix
 on:
   workflow_run:
     types: [completed]
+    # The repo's two always-running required build gates (see ruleset).
     workflows: [CI, Validate]
 permissions: {}
