@@ -1,0 +1,7 @@
+rules:
+  # workflow_run is deliberate there: it is the only trigger that keeps
+  # CLAUDE_CODE_OAUTH_TOKEN out of dependabot's reach (see the header
+  # comment in the workflow), and the job gates on the dependabot actor.
+  dangerous-triggers:
+    ignore:
+      - claude-dependabot-fix.yml

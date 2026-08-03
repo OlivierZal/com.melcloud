@@ -914,6 +914,44 @@ const config: Config[] = defineConfig([
     ],
   },
   {
+    // The webview runtime floor (see CLAUDE.md): es2023 array methods are
+    // the ceiling — no `Object.groupBy`/`Map.groupBy`, no iterator
+    // helpers (`.entries().map()` and friends). The tsconfig `lib`
+    // cannot express this (one project, two runtimes), so the constraint
+    // lives here — it has already caused a production incident once.
+    files: [
+      'public/**/*.mts',
+      'settings/**/*.mts',
+      'widgets/*/public/**/*.mts',
+    ],
+    rules: {
+      'no-restricted-properties': [
+        'error',
+        {
+          message:
+            'es2024+: old iOS webview engines lack it (CLAUDE.md webview floor).',
+          object: 'Object',
+          property: 'groupBy',
+        },
+        {
+          message:
+            'es2024+: old iOS webview engines lack it (CLAUDE.md webview floor).',
+          object: 'Map',
+          property: 'groupBy',
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          message:
+            'Iterator helpers are 2025-era: old iOS webview engines lack them (CLAUDE.md webview floor). Spread into an array first.',
+          selector:
+            "CallExpression[callee.type='MemberExpression'][callee.property.name=/^(drop|every|filter|find|flatMap|forEach|map|reduce|some|take|toArray)$/][callee.object.type='CallExpression'][callee.object.callee.type='MemberExpression'][callee.object.callee.property.name=/^(entries|keys|values)$/][callee.object.callee.object.name!='Object']",
+        },
+      ],
+    },
+  },
+  {
     files: ['lib/homey.mts'],
     rules: {
       'import-x/no-extraneous-dependencies': 'off',
@@ -1033,6 +1071,7 @@ const config: Config[] = defineConfig([
           natural: true,
         },
       ],
+      'json/top-level-interop': 'error',
     },
   },
   {
@@ -1240,6 +1279,15 @@ const config: Config[] = defineConfig([
         'error',
         {
           extension: 'yml',
+        },
+      ],
+      'yml/key-name-casing': [
+        'error',
+        {
+          camelCase: true,
+          'kebab-case': true,
+          SCREAMING_SNAKE_CASE: true,
+          snake_case: true,
         },
       ],
       'yml/require-string-key': 'error',

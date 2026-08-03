@@ -71,7 +71,9 @@ coverage.
   gaps (date inputs, checkbox `:indeterminate`, `fieldset[hidden]`
   specificity) and app-specific design.
 - App-API surface conventions: paths are kebab-case REST (`get*` for
-  GET, `update*` for PUT — never `set*`); handler renames are
+  GET — except `is*` for a boolean GET —, `update*` for PUT — never
+  `set*` —, and a business verb for POST: `*Authenticate` on
+  `/sessions`, `logWebviewBoot` on `/boot-error`); handler renames are
   wire-invisible (routing is method+path), path renames are NOT (phone
   webviews cache bundles across versions; stale callers now surface an
   error — legacy aliases were dropped by decision, 2026-07). The
@@ -83,7 +85,7 @@ coverage.
   widget layer); byte-identical copies live in com.heatzy and
   com.melcloud.extension — edit all three together. The surface is
   test-pinned in two halves, one file each — extend BOTH when touching
-  a route: `tests/integration/api-contract.test.ts` (since #1261) pins
+  a route: `tests/unit/api-contract.test.ts` (since #1261) pins
   manifest ids ↔ handlers both ways plus the handlers' function type,
   on all three surfaces — and like the route guard, everything below its
   own `SURFACES` table is byte-identical in the two sibling apps, only
@@ -150,8 +152,9 @@ coverage.
   the MELCloud Home app hides the ATW power toggle and precise zone
   modes from guests, but the BFF enforces no owner/guest distinction —
   guest `curve` write and a full guest power round-trip were both
-  `/context`-readback-verified (2026-07-14, melcloud-api
-  `scripts/probe-guest-precise-modes.ts` / `probe-guest-power.ts`),
+  `/context`-readback-verified (2026-07-14, via local
+  probe scripts under melcloud-api's gitignored `scripts/` — research
+  artifacts, not in any clone),
   as were the guest ATA writes earlier. App-UI narrowing is NOT a
   permission: only server-verified behavior gates capabilities.
 - New FTC vocabulary must never crash a sync — and that tolerance lives
@@ -261,6 +264,29 @@ coverage.
 - Scale ids are `xAxis`/`yAxis` because the id-length lint bans `x`/`y`
   keys.
 
+## Naming & authored-content conventions
+
+- What `@typescript-eslint/naming-convention` cannot see is convention
+  too: booleans read as questions even untyped (`isX`/`hasX`), handlers
+  as verbs; a name states what the thing IS, never its history. Test
+  files are named after the unit under test (`<module>.test.ts`); shared
+  test helpers keep their family's names — apps say `assertDefined` and
+  `mock(overrides)` where the libraries say `defined` and
+  `mock(value?)`: two test families, deliberately not unified.
+- Static markup and styles live in `.html`/`.css` files. TS builds DOM
+  only when the content is programmatic (computed values, per-item
+  nodes), via `createElement` — never `innerHTML` (`no-unsafe-dom-html`
+  enforces it). Inline style writes are reserved for values CSS cannot
+  express (a computed height, a generated path); anything static
+  belongs in the stylesheet, following the CSS/HTML lint rules' spirit
+  even where no rule captures it.
+- The webview runtime floor (es2023, no `Object.groupBy`, no iterator
+  helpers) is enforced by a scoped lint block over `public/`,
+  `settings/` and `widgets/*/public/` — the tsconfig cannot express two
+  runtimes in one project, and the floor has already caused a
+  production incident once. Node-side code may use the newer APIs
+  freely.
+
 ## Lint doctrine
 
 - Code adapts to the rules, never the reverse. Never add a disable — not
@@ -302,6 +328,11 @@ coverage.
 
 ## Repo process
 
+- `@olivierzal/melcloud-api` is pinned EXACTLY, never with a caret: the
+  library's breaking changes are self-published, adoption is an explicit
+  reviewed PR per release, and a caret is what silently held heatzy-api's
+  published auth fix away from its app for six days (2026-08). The
+  library's own Releasing doctrine mirrors this from the publisher side.
 - `main` is protected (PRs only, squash merges, 6 required contexts,
   `strict=false`); merge queue is impossible (user-owned repo, org-only
   feature).
@@ -347,8 +378,8 @@ coverage.
   regenerate `app.json`, and land it all through a PR. Then tag
   `vX.Y.Z` and publish a GitHub release: `publish.yml` fires on
   release-published (environment `homey`) and pushes to the App Store
-  via athombv's action. Do NOT dispatch `update-version.yml` — it
-  commits directly to `main` and fails against the ruleset (known
-  debt); the PR + release flow above replaces it.
+  via athombv's action. `update-version.yml` is deleted
+  debt (it committed directly to `main`, which the ruleset forbids) —
+  never restore it; the PR + release flow above replaces it.
 - Store submissions: a rejected version number cannot be resubmitted —
   bump the patch version.
