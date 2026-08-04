@@ -51,6 +51,7 @@ npm run homey:start  # run the app on your Homey (remote)
 
 Architecture notes:
 
+- The API layer lives in [@olivierzal/melcloud-api](https://github.com/OlivierZal/melcloud-api), a sibling repository with its own tooling; API bugs are fixed there, not worked around here.
 - Browser code (both widgets' `public/` and the `settings/` page) is bundled by `scripts/bundle.mts` into a compat pair per entry — `index.js` (IIFE, what the shipped HTML loads) and `index.mjs` (for HTMLs cached by phones from earlier app versions) — emitted into `.homeybuild`, the packaged app, never into the source tree. `npm run build` produces them, and the Homey CLI runs it automatically on validate/publish. Shared helpers live in `public/` and are imported directly by widgets and settings.
 - Both the build and `npm run typecheck` use the native TypeScript 7 compiler (`typescript@7` aliased as `@typescript/native`) for speed; `typescript@6` remains alongside it for tools that need the JS API (typescript-eslint) until TypeScript 7.1 ships its stable programmatic API.
 - Test coverage is enforced at 100% for backend code; browser glue (`public/`, `settings/`, widget `public/`) is excluded from coverage, so the badge covers drivers, app and API layers only.
