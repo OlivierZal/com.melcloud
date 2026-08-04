@@ -337,12 +337,12 @@ coverage.
 
 ## Repo process
 
-- Companion docs are part of a change's definition of done: a PR that
-  changes behavior, API surface, requirements or process must update
-  the affected companion files (README.md, CONTRIBUTING.md,
-  SECURITY.md, CLAUDE.md) in the same PR, never in a later sweep — the 2026-08
-  README audit caught exactly the drift this prevents (a shipped Home
-  ATW driver absent from its README, a stale `Result` kind list).
+- Companion docs are part of a change's definition of done: whenever a
+  PR changes behavior, API surface, requirements or process, the same
+  PR updates the affected companion files (README.md, CONTRIBUTING.md,
+  SECURITY.md, CLAUDE.md) — never a later sweep; the 2026-08 README
+  audit caught exactly the drift this prevents (a shipped Home ATW
+  driver absent from its README, a stale `Result` kind list).
 
 - `@olivierzal/melcloud-api` is pinned EXACTLY, never with a caret: the
   library's breaking changes are self-published, adoption is an explicit
