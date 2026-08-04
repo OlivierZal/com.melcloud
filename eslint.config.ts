@@ -781,9 +781,9 @@ const config: Config[] = defineConfig([
       'unicorn/filename-case': 'off',
       // Owned by `@typescript-eslint/naming-convention`.
       'unicorn/id-match': 'off',
+      'unicorn/iteration-fallback-style': 'error',
       // Vocabulary opt-out: the abbreviation renames it forces
       // (`args` -> `arguments_`, ...) fight the domain naming.
-      'unicorn/iteration-fallback-style': 'error',
       'unicorn/name-replacements': 'off',
       // Owned by `import-x/no-anonymous-default-export`.
       'unicorn/no-anonymous-default-export': 'off',
