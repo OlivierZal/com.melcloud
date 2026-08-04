@@ -41,7 +41,9 @@ export interface CapabilitiesOptionsAtaErv {
   readonly fan_speed: RangeOptions
 }
 
-/** Base write-converter type for capability-to-device transforms. */
+/**
+ * Base write-converter type for capability-to-device transforms.
+ */
 export type CapabilityConverter = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to their capability's type
   bivariant(value: unknown): unknown

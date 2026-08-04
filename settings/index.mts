@@ -589,7 +589,9 @@ class AuthManager {
     return API_VALUES.filter((api) => !this.#hasCompleteCredentials(api))
   }
 
-  /** @alerts Displays authentication errors to the user. */
+  /**
+   * @alerts Displays authentication errors to the user.
+   */
   public async login(): Promise<void> {
     const api = this.#currentApi
     // Trimmed: mobile keyboards append a space after autocompleted
@@ -618,7 +620,9 @@ class AuthManager {
     })
   }
 
-  /** @alerts Displays reset failures to the user. */
+  /**
+   * @alerts Displays reset failures to the user.
+   */
   public async resetCredentials(): Promise<void> {
     if (
       !(await homeyConfirm(
@@ -729,7 +733,9 @@ class DeviceSettingsManager {
     this.#settingsCommon = getDiv('settings_common')
   }
 
-  /** @alerts Displays fetch errors to the user. */
+  /**
+   * @alerts Displays fetch errors to the user.
+   */
   public async fetchDeviceSettings(): Promise<void> {
     try {
       this.#deviceSettings = await homeyApiGet<DeviceSettings>(
@@ -741,7 +747,9 @@ class DeviceSettingsManager {
     }
   }
 
-  /** @alerts Displays fetch errors to the user. Returns empty fallback on error. */
+  /**
+   * @alerts Displays fetch errors to the user. Returns empty fallback on error.
+   */
   public async fetchDriverSettings(): Promise<
     Partial<Record<string, DriverSetting[]>>
   > {
@@ -1184,7 +1192,9 @@ class ErrorLogManager {
     })
   }
 
-  /** @alerts Displays fetch errors to the user. */
+  /**
+   * @alerts Displays fetch errors to the user.
+   */
   public async fetchErrorLog(): Promise<void> {
     await withDisablingButton(this.#seeButton.id, async () => {
       try {
@@ -1363,7 +1373,9 @@ class ZoneSettingsManager {
     this.#overheatProtectionDirtyGate.markSaved()
   }
 
-  /** @silent Falls back to default values on error. */
+  /**
+   * @silent Falls back to default values on error.
+   */
   public displayFrostProtectionData(): void {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
@@ -1413,7 +1425,9 @@ class ZoneSettingsManager {
     this.#overheatProtectionDirtyGate.markSaved()
   }
 
-  /** @silent Falls back to default values on error. */
+  /**
+   * @silent Falls back to default values on error.
+   */
   public async fetchFrostProtectionData(): Promise<void> {
     await this.#fetchZoneSetting({
       id: 'frost_protection',
@@ -1424,7 +1438,9 @@ class ZoneSettingsManager {
     })
   }
 
-  /** @silent Falls back to default values on error. */
+  /**
+   * @silent Falls back to default values on error.
+   */
   public async fetchHolidayModeData(): Promise<void> {
     await this.#fetchZoneSetting({
       id: 'holiday_mode',
@@ -1435,7 +1451,9 @@ class ZoneSettingsManager {
     })
   }
 
-  /** @silent Falls back to default values on error. */
+  /**
+   * @silent Falls back to default values on error.
+   */
   public async fetchOverheatProtectionData(): Promise<void> {
     await this.#fetchZoneSetting({
       id: 'overheat_protection',
@@ -1468,7 +1486,9 @@ class ZoneSettingsManager {
     }
   }
 
-  /** @alerts Displays save errors to the user. */
+  /**
+   * @alerts Displays save errors to the user.
+   */
   public async setFrostProtectionData({
     isEnabled,
     max,
@@ -1487,7 +1507,9 @@ class ZoneSettingsManager {
     )
   }
 
-  /** @alerts Displays save errors to the user. */
+  /**
+   * @alerts Displays save errors to the user.
+   */
   public async setHolidayModeData(update: HolidayModeUpdate): Promise<void> {
     const { endDate, isEnabled, startDate } = update
     await this.#putZoneSetting(
@@ -1509,7 +1531,9 @@ class ZoneSettingsManager {
     )
   }
 
-  /** @alerts Displays save errors to the user. */
+  /**
+   * @alerts Displays save errors to the user.
+   */
   public async setOverheatProtectionData({
     isEnabled,
     max,
@@ -1864,7 +1888,9 @@ class SettingsApp {
     )
   }
 
-  /** @alerts Falls back to an empty settings object on error. */
+  /**
+   * @alerts Falls back to an empty settings object on error.
+   */
   static async #fetchHomeySettings(homey: Homey): Promise<HomeySettings> {
     try {
       return await homeyCallback((callback) => {
@@ -2006,7 +2032,9 @@ class SettingsApp {
     })
   }
 
-  /** @alerts Displays post-login errors to the user. */
+  /**
+   * @alerts Displays post-login errors to the user.
+   */
   async #onLogin(api: Api): Promise<void> {
     // Reflect the server truth instead of assuming success: the login
     // POST resolves even when the post-login device sync fails.
