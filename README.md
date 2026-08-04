@@ -28,7 +28,7 @@ This app integrates [MELCloud](https://app.melcloud.com/) and [MELCloud Home](ht
 
 ## Installation
 
-1. Install the [MELCloud app](https://homey.app/a/com.melcloud) from the Homey App Store.
+1. Install the [MELCloud app](https://homey.app/a/com.mecloud) from the Homey App Store.
 2. Open the app settings and log in with your MELCloud credentials.
 3. Add your devices via the pairing wizard.
 
