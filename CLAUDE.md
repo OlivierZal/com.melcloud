@@ -57,6 +57,15 @@ coverage.
 
 ## Homey platform gotchas
 
+- The published app id is `com.mecloud` — the original submission's
+  typo, now LOAD-BEARING: the id is the app's platform identity
+  (pairing, install base, inter-app API), so publishing under the
+  corrected spelling would be a new app and would orphan every paired
+  device. Everything derived keeps the typo: the store URL
+  (`https://homey.app/a/com.mecloud`) and the id the extension uses to
+  address this app. Never "fix" the missing `l` anywhere — manifest,
+  code or docs links (a README "fix" once turned the working store
+  link into a 404; reverted, 2026-08).
 - `.homeycompose/` is the SOURCE for `app.json` and `locales/*.json`; the
   Homey CLI regenerates those outputs on every preprocess and writes them
   WITHOUT a trailing newline. Commit the CLI-generated form verbatim — do
