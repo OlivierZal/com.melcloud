@@ -338,9 +338,9 @@ coverage.
 ## Repo process
 
 - Companion docs are part of a change's definition of done: a PR that
-  changes behavior, surface, requirements or process updates the
-  affected companion files (README.md, CONTRIBUTING.md, SECURITY.md,
-  CLAUDE.md) in the same PR, never in a later sweep — the 2026-08
+  changes behavior, API surface, requirements or process must update
+  the affected companion files (README.md, CONTRIBUTING.md,
+  SECURITY.md, CLAUDE.md) in the same PR, never in a later sweep — the 2026-08
   README audit caught exactly the drift this prevents (a shipped Home
   ATW driver absent from its README, a stale `Result` kind list).
 
