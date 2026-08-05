@@ -160,10 +160,19 @@ fieldset.busy-scope {
 /* A dirty-gate freeze sets `disabled` on the gated fieldset while its
    request is in flight — grey it like the buttons. Attribute (not
    `:disabled`) so nested fieldsets inside a frozen section do not
-   compound the opacity. */
+   compound the opacity; `pointer-events` because `disabled` only
+   reaches form controls, not arbitrary interactive descendants. */
 fieldset[disabled] {
   cursor: not-allowed;
   opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Buttons inside a frozen fieldset would stack their own disabled
+   opacity on the container's (0.25 effective) — let them inherit the
+   section's dimming instead. */
+fieldset[disabled] [class*='homey-button']:disabled {
+  opacity: 1;
 }
 
 /* The collapsible credentials panel: the summary doubles as the
