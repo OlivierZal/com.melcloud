@@ -144,9 +144,7 @@ const createCopMocks = (
   return mock<ClassicMELCloudDevice<TestDeviceType>>({
     cleanMapping: vi
       .fn<(mapping: unknown) => Record<string, unknown>>()
-      .mockReturnValue({
-        'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
-      }),
+      .mockReturnValue({ 'measure_power.cop': ['ProducedTag', 'ConsumedTag'] }),
     driver: copDriver,
     ensureDevice: ensureDeviceMock,
     homey: mock<Homey.Homey>({
@@ -183,9 +181,7 @@ describe(EnergyReport, () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    cleanMappingMock.mockReturnValue({
-      measure_power: ['Auto', 'Cooling'],
-    })
+    cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
   })
 
   afterAll(() => {
@@ -410,12 +406,7 @@ describe(EnergyReport, () => {
     })
 
     it('should handle non-array tag data by skipping power calculation', async () => {
-      mockEnergyFetch(
-        mock<Classic.EnergyDataAta>({
-          Auto: 100,
-          Cooling: 50,
-        }),
-      )
+      mockEnergyFetch(mock<Classic.EnergyDataAta>({ Auto: 100, Cooling: 50 }))
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
@@ -502,13 +493,9 @@ describe(EnergyReport, () => {
 
   describe('total mode', () => {
     it('should omit from for total mode energy requests', async () => {
-      cleanMappingMock.mockReturnValue({
-        meter_power: ['TotalAutoConsumed'],
-      })
+      cleanMappingMock.mockReturnValue({ meter_power: ['TotalAutoConsumed'] })
       const getEnergyMockLocal = mockEnergyFetch(
-        mock<Classic.EnergyDataAta>({
-          TotalAutoConsumed: 100,
-        }),
+        mock<Classic.EnergyDataAta>({ TotalAutoConsumed: 100 }),
       )
       const report = new EnergyReport(mockDevice, totalConfig)
       await report.start()

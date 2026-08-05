@@ -30,10 +30,7 @@
       "throttled": "__name__ is temporarily blocking sign-ins after too many attempts — please try again later.",
       "unverified": "Signed in, but the session could not be verified — please try again."
     },
-    "boolean": {
-      "false": "No",
-      "true": "Yes"
-    },
+    "boolean": { "false": "No", "true": "Yes" },
     "devices": {
       "legend": "All device settings",
       "none": "Add a device to unlock all the app's settings!",
@@ -45,11 +42,7 @@
       "legend": "All air-to-air device settings"
     },
     "errorLog": {
-      "columns": {
-        "date": "Date",
-        "device": "Device",
-        "error": "Error"
-      },
+      "columns": { "date": "Date", "device": "Device", "error": "Error" },
       "error": "Choose a date before\n__from__.",
       "errorCount": {
         "0": "error",

@@ -30,10 +30,7 @@
       "throttled": "__name__ bloque temporairement les connexions après trop de tentatives — réessayez plus tard.",
       "unverified": "Connexion réussie, mais la session n'a pas pu être vérifiée — veuillez réessayer."
     },
-    "boolean": {
-      "false": "Non",
-      "true": "Oui"
-    },
+    "boolean": { "false": "Non", "true": "Oui" },
     "devices": {
       "legend": "Paramètres de tous les appareils",
       "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !",
@@ -45,11 +42,7 @@
       "legend": "Paramètres de tous les appareils air-air"
     },
     "errorLog": {
-      "columns": {
-        "date": "Date",
-        "device": "Appareil",
-        "error": "Erreur"
-      },
+      "columns": { "date": "Date", "device": "Appareil", "error": "Erreur" },
       "error": "Choisissez une date antérieure au\n__from__.",
       "errorCount": {
         "0": "erreur",

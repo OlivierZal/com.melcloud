@@ -1,9 +1,6 @@
 {
   "api": {
-    "getClassicDevices": {
-      "method": "GET",
-      "path": "/classic/devices"
-    },
+    "getClassicDevices": { "method": "GET", "path": "/classic/devices" },
     "getClassicEnergyReport": {
       "method": "GET",
       "path": "/classic/devices/:deviceId/logs/report"
@@ -24,10 +21,7 @@
       "method": "GET",
       "path": "/classic/devices/:deviceId/logs/temperatures"
     },
-    "getHomeDevices": {
-      "method": "GET",
-      "path": "/home/devices"
-    },
+    "getHomeDevices": { "method": "GET", "path": "/home/devices" },
     "getHomeEnergyReport": {
       "method": "GET",
       "path": "/home/devices/:deviceId/logs/report"
@@ -48,18 +42,9 @@
       "method": "GET",
       "path": "/home/devices/:deviceId/logs/temperatures"
     },
-    "getLanguage": {
-      "method": "GET",
-      "path": "/language"
-    },
-    "getWebviewHashes": {
-      "method": "GET",
-      "path": "/webview-hashes"
-    },
-    "logWebviewBoot": {
-      "method": "POST",
-      "path": "/boot-error"
-    }
+    "getLanguage": { "method": "GET", "path": "/language" },
+    "getWebviewHashes": { "method": "GET", "path": "/webview-hashes" },
+    "logWebviewBoot": { "method": "POST", "path": "/boot-error" }
   },
   "name": {
     "ar": "سجل MELCloud",

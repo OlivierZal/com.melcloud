@@ -53,9 +53,7 @@ const defineEnergyContext = (
     driver: {
       configurable: true,
       value: {
-        manifest: {
-          capabilities: ['meter_power', 'measure_temperature'],
-        },
+        manifest: { capabilities: ['meter_power', 'measure_temperature'] },
         tagMappings: { energy: { meter_power: ['consumed'] } },
       },
     },

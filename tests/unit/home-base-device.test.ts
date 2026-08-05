@@ -45,10 +45,7 @@ const {
   superSetWarningMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
 }))
 
-const facadeState = {
-  isAvailable: true,
-  isPoweredOn: true,
-}
+const facadeState = { isAvailable: true, isPoweredOn: true }
 
 const requiredCapabilities = vi.hoisted(() => [
   'measure_temperature',
@@ -59,10 +56,7 @@ const requiredCapabilities = vi.hoisted(() => [
 
 const createMockFacade = (): Home.DeviceAtaFacade =>
   mock<Home.DeviceAtaFacade>({
-    capabilities: {
-      hasAutomaticFanSpeed: true,
-      numberOfFanSpeeds: 5,
-    },
+    capabilities: { hasAutomaticFanSpeed: true, numberOfFanSpeeds: 5 },
     updateValues: setValuesMock,
     get isAvailable(): boolean {
       return facadeState.isAvailable
@@ -89,9 +83,7 @@ vi.mock(import('homey'), async () => {
       Device: createMockDeviceClass({
         overrides: {
           driver: {
-            manifest: {
-              capabilities: requiredCapabilities,
-            },
+            manifest: { capabilities: requiredCapabilities },
             tagMappings: {
               energy: {},
               get: {},

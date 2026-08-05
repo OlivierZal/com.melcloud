@@ -52,12 +52,7 @@
           "sv": "Fläkthastigheten ändrades"
         },
         "tokens": [
-          {
-            "example": 0.5,
-            "name": "$id",
-            "title": "$title",
-            "type": "$type"
-          }
+          { "example": 0.5, "name": "$id", "title": "$title", "type": "$type" }
         ]
       }
     ]

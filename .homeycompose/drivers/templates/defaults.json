@@ -40,9 +40,7 @@
         }
       ]
     },
-    "measure_power": {
-      "approximated": true
-    },
+    "measure_power": { "approximated": true },
     "measure_power.produced": {
       "title": {
         "ar": "الطاقة المنتجة",
@@ -752,10 +750,7 @@
     "small": "{{driverAssetsPath}}/images/small.png"
   },
   "pair": [
-    {
-      "id": "loading",
-      "template": "loading"
-    },
+    { "id": "loading", "template": "loading" },
     {
       "id": "login",
       "options": {
@@ -796,15 +791,10 @@
     },
     {
       "id": "list_devices",
-      "navigation": {
-        "next": "add_devices"
-      },
+      "navigation": { "next": "add_devices" },
       "template": "list_devices"
     },
-    {
-      "id": "add_devices",
-      "template": "add_devices"
-    }
+    { "id": "add_devices", "template": "add_devices" }
   ],
   "repair": [
     {

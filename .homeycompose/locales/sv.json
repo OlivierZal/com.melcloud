@@ -30,10 +30,7 @@
       "throttled": "__name__ blockerar tillfälligt inloggningar efter för många försök — försök igen senare.",
       "unverified": "Inloggad, men sessionen kunde inte verifieras — försök igen."
     },
-    "boolean": {
-      "false": "Nej",
-      "true": "Ja"
-    },
+    "boolean": { "false": "Nej", "true": "Ja" },
     "devices": {
       "legend": "Inställningar för alla enheter",
       "none": "Lägg till en enhet för att låsa upp alla appens inställningar!",
@@ -45,18 +42,9 @@
       "legend": "Inställningar för alla luft-till-luft-enheter"
     },
     "errorLog": {
-      "columns": {
-        "date": "Datum",
-        "device": "Enhet",
-        "error": "Fel"
-      },
+      "columns": { "date": "Datum", "device": "Enhet", "error": "Fel" },
       "error": "Välj ett datum före\n__from__.",
-      "errorCount": {
-        "0": "fel",
-        "1": "fel",
-        "234": "fel",
-        "plural": "fel"
-      },
+      "errorCount": { "0": "fel", "1": "fel", "234": "fel", "plural": "fel" },
       "legend": "Felhistorik",
       "period": "Sedan __from__:",
       "see": "Se alla fel",

@@ -1,7 +1,5 @@
 {
-  "2.0.0": {
-    "en": "Added air-to-water heat pump support."
-  },
+  "2.0.0": { "en": "Added air-to-water heat pump support." },
   "3.0.0": {
     "en": "Migrated to Homey SDK 3. Fixed multi-floor device search. Fixed air-to-air fan & dry modes, horizontal vane control and various bugs."
   },
@@ -14,174 +12,98 @@
   "4.0.0": {
     "en": "Added power consumption reporting and reshaped air-to-water device display: 2-zone device are now handled with the same device, and measured temperature are shown with target temperature when possible."
   },
-  "5.0.0": {
-    "en": "Redesigned app core and improved device sync."
-  },
+  "5.0.0": { "en": "Redesigned app core and improved device sync." },
   "5.1.0": {
     "en": "Energy measurement display can be customized from settings."
   },
   "5.1.1": {
     "en": "Made other capabilities available for display or not from settings."
   },
-  "5.1.2": {
-    "en": "Added missing triggers."
-  },
-  "5.2.0": {
-    "en": "Improved sync to avoid overlaps with other sources."
-  },
+  "5.1.2": { "en": "Added missing triggers." },
+  "5.2.0": { "en": "Improved sync to avoid overlaps with other sources." },
   "5.2.1": {
     "en": "Fixed bugs, including horizontal vane control and reports not processed daily."
   },
-  "5.2.3": {
-    "en": "Added notifications about new features."
-  },
+  "5.2.3": { "en": "Added notifications about new features." },
   "5.3.0": {
     "en": "Improved sync by agglomerating requests to MELCloud, reports will be processed every day at 0:00 AM UTC, updated some settings."
   },
-  "5.4.0": {
-    "en": "Added back an `Always On` option in settings."
-  },
+  "5.4.0": { "en": "Added back an `Always On` option in settings." },
   "5.6.0": {
     "en": "Added Wi-Fi signal strength (can be enable from settings)."
   },
   "6.0.0": {
     "en": "Changed request library (axios). Added an always on setting also for air-to-air heat pumps. Added repairing support and daily authentication refresh (some users may need to authenticate again to make it work)."
   },
-  "7.0.0": {
-    "en": "Converted to TypeScript."
-  },
+  "7.0.0": { "en": "Converted to TypeScript." },
   "7.2.0": {
     "en": "Energy reporting is now handled according to user timezone (and no more according UTC forced by Homey). Made available hourly consumption for air-to-air heat pumps (cannot be retrieved from MELCloud API for air-to-water heat pumps) and last daily consumption becomes the (cumulated) daily consumption and is updated every hour. Capabalities displayed in the dashboard can be customized from device settings."
   },
-  "7.2.1": {
-    "en": "Added community topic."
-  },
+  "7.2.1": { "en": "Added community topic." },
   "8.0.0": {
     "en": "Redesigned capability and flow handling for performance improvement and code readability. Typed more and better. Added logs."
   },
-  "8.0.1": {
-    "en": "Fixed possible energy reporting issues."
-  },
+  "8.0.1": { "en": "Fixed possible energy reporting issues." },
   "8.0.3": {
     "en": "Run backend tasks (login refresh, reporting) only when needed."
   },
   "8.0.7": {
     "en": "Taken into consideration that MELCloud time is at least 5 minutes late to run energy reports."
   },
-  "9.0.0": {
-    "en": "Added app settings."
-  },
-  "9.1.0": {
-    "en": "Added device and building settings under app settings."
-  },
-  "11.0.0": {
-    "en": "Translated into French."
-  },
-  "11.1.0": {
-    "en": "Translated into Dutch, Swedish and Spanish."
-  },
-  "11.2.0": {
-    "en": "Added Norwegian and improved other languages."
-  },
-  "12.0.0": {
-    "en": "Improved 2-zone and/or cooling devices."
-  },
-  "12.1.0": {
-    "en": "Translated into Danish."
-  },
+  "9.0.0": { "en": "Added app settings." },
+  "9.1.0": { "en": "Added device and building settings under app settings." },
+  "11.0.0": { "en": "Translated into French." },
+  "11.1.0": { "en": "Translated into Dutch, Swedish and Spanish." },
+  "11.2.0": { "en": "Added Norwegian and improved other languages." },
+  "12.0.0": { "en": "Improved 2-zone and/or cooling devices." },
+  "12.1.0": { "en": "Translated into Danish." },
   "13.0.0": {
     "en": "Added a section dedicated to air-to-air heat pump customers in the application settings."
   },
   "14.0.0": {
     "en": "Improved app memory consumption, devices are now updated every minute."
   },
-  "15.0.0": {
-    "en": "Enhanced app settings and added new capabilities."
-  },
+  "15.0.0": { "en": "Enhanced app settings and added new capabilities." },
   "15.0.1": {
     "en": "Added live consumption! (refreshed every 3 minutes for air-to-water devices, and on a hourly basis for air-to-air devices)."
   },
-  "15.1.0": {
-    "en": "Optimized loops (task parallelization)."
-  },
-  "16.0.0": {
-    "en": "Reshaped error management."
-  },
-  "17.0.0": {
-    "en": "Improved memory usage and enhanced app settings."
-  },
-  "17.1.0": {
-    "en": "Use Map()"
-  },
+  "15.1.0": { "en": "Optimized loops (task parallelization)." },
+  "16.0.0": { "en": "Reshaped error management." },
+  "17.0.0": { "en": "Improved memory usage and enhanced app settings." },
+  "17.1.0": { "en": "Use Map()" },
   "18.0.0": {
     "en": "If you haven't already done so following the notification posted several months ago, it is now necessary to delete your air-to-water devices and recreate them: this will enable you to benefit from all the app's new features (new settings, new capabilities, etc.). Your flows will also have to be recreated (once and for all, don't worry!)."
   },
-  "19.0.0": {
-    "en": "Updated modules."
-  },
-  "20.0.0": {
-    "en": "Use eslint flat config."
-  },
-  "20.1.0": {
-    "en": "Use mixins."
-  },
-  "21.0.0": {
-    "en": "Reshaped code."
-  },
-  "22.0.0": {
-    "en": "Use decorator."
-  },
-  "23.0.0": {
-    "en": "Introduce ERV devices in Homey."
-  },
-  "24.0.0": {
-    "en": "Implemented session refresh in case of failure."
-  },
+  "19.0.0": { "en": "Updated modules." },
+  "20.0.0": { "en": "Use eslint flat config." },
+  "20.1.0": { "en": "Use mixins." },
+  "21.0.0": { "en": "Reshaped code." },
+  "22.0.0": { "en": "Use decorator." },
+  "23.0.0": { "en": "Introduce ERV devices in Homey." },
+  "24.0.0": { "en": "Implemented session refresh in case of failure." },
   "25.0.0": {
     "en": "Reshaped power/energy capabilities and added new air-to-water device capabilities."
   },
-  "26.0.0": {
-    "en": "Use array functions."
-  },
+  "26.0.0": { "en": "Use array functions." },
   "27.1.0": {
     "en": "Air-to-water devices: improved `forced hot water` action flow with new checkbox type: existing cards does not need to be recreated but may need to be updated."
   },
-  "28.0.0": {
-    "en": "Improved types."
-  },
-  "29.0.0": {
-    "en": "Improved performances."
-  },
-  "30.0.0": {
-    "en": "Enhanced performances."
-  },
-  "31.0.0": {
-    "en": "Improved error handling."
-  },
-  "32.0.0": {
-    "en": "Improved API management."
-  },
-  "32.1.0": {
-    "en": "Added wide horizontal mode (for air-to-air devices)."
-  },
+  "28.0.0": { "en": "Improved types." },
+  "29.0.0": { "en": "Improved performances." },
+  "30.0.0": { "en": "Enhanced performances." },
+  "31.0.0": { "en": "Improved error handling." },
+  "32.0.0": { "en": "Improved API management." },
+  "32.1.0": { "en": "Added wide horizontal mode (for air-to-air devices)." },
   "32.3.0": {
     "en": "Improved fan_power handling (air-to-air and erv devices)."
   },
   "33.0.0": {
     "en": "Added new capabilities: readonly silent mode and outdoor temperature (air-to-air devices), prohibit (air-to-water devices)."
   },
-  "34.0.0": {
-    "en": "Improved device pairing."
-  },
-  "35.0.0": {
-    "en": "Modularized API management."
-  },
-  "36.0.0": {
-    "en": "Improved API architecture design."
-  },
-  "37.0.0": {
-    "en": "Moved drivers to heatpump class"
-  },
+  "34.0.0": { "en": "Improved device pairing." },
+  "35.0.0": { "en": "Modularized API management." },
+  "36.0.0": { "en": "Improved API architecture design." },
+  "37.0.0": { "en": "Moved drivers to heatpump class" },
   "37.0.1": {
     "en": "It is now possible to change the main capability displayed on your device! To take advantage of this feature, you need to recreate your device and the associated flows."
   },
@@ -194,9 +116,7 @@
     "no": "⚠️ **Betydelig endring** ⚠️\nDenne utgivelsen introduserer betydelige endringer som kan kreve at du oppdaterer eller gjenskaper noen flyter.\nHomey 12.0.1 fastvareoppdateringen tillater nå tilpasning av verdiene for termostatmodus.\nFor luft-til-luft-enheter kan driftsmodus slås sammen med termostatmodus.\nFor luft-til-vann-enheter er det gjort forbedringer for å forenkle administrasjon og vedlikehold.\nI tillegg er et designproblem løst, noe som også kan løse noen synkroniseringsproblemer.",
     "sv": "⚠️ **Större förändring** ⚠️\nDenna version inför betydande förändringar som kan kräva att du uppdaterar eller återskapar vissa flöden.\nHomey 12.0.1 firmwareuppdateringen tillåter nu anpassning av termostatlägevärden.\nFör luft-till-luft-enheter kan driftläget slås samman med termostatläget.\nFör luft-till-vatten-enheter har förbättringar gjorts för att förenkla hantering och underhåll.\nDessutom har ett designproblem åtgärdats, vilket även kan lösa vissa synkroniseringsproblem."
   },
-  "38.0.1": {
-    "en": "Fix a sync issue in some cases of failure."
-  },
+  "38.0.1": { "en": "Fix a sync issue in some cases of failure." },
   "39.1.0": {
     "da": "I appindstillingerne: du kan nu se detaljerede indstillinger for hver zone (bygning, område og etage) og anvende masseændringer til dine luft-til-luft-enheders indstillinger for hver zone.",
     "en": "In the app settings: you can now view detailed settings for each zone (building, area and floor) and apply bulk changes to air-to-air device settings across zones.",
@@ -242,12 +162,8 @@
     "no": "✨ **Nye funksjoner** ✨\n• MELCloud-dashbords er nå tilgjengelige som widgets!\n• Du kan nå konfigurere en standard sone for hver widget.",
     "sv": "✨ **Nya funktioner** ✨\n• MELCloud-instrumentpaneler är nu tillgängliga som widgets!\n• Du kan nu konfigurera en standardzon för varje widget."
   },
-  "42.0.0": {
-    "en": "Major upgrade of Tailwind CSS & daisy UI."
-  },
-  "42.1.0": {
-    "en": "Widget animations are no longer enabled by default."
-  },
+  "42.0.0": { "en": "Major upgrade of Tailwind CSS & daisy UI." },
+  "42.1.0": { "en": "Widget animations are no longer enabled by default." },
   "43.0.0": {
     "da": "Opdateret for kompatibilitet med Node.js 22 og senere, inklusive flere rettelser (bl.a. visning af forbudt tilstand).",
     "en": "Updated for compatibility with Node.js 22 and later, including several fixes (notably prohibited mode display).",

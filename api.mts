@@ -71,10 +71,12 @@ const collectClassicDeviceIds = (
 // A Home building can own units of both connection types; the registry
 // merges them per building, so one pass covers a mixed building.
 const collectHomeGroups = (registry: Home.Registry): DeviceGroup[] =>
-  registry.getBuildings().map(({ devices, name }) => ({
-    deviceIds: devices.map((device) => device.id),
-    name,
-  }))
+  registry
+    .getBuildings()
+    .map(({ devices, name }) => ({
+      deviceIds: devices.map((device) => device.id),
+      name,
+    }))
 
 // Diagnostics breadcrumb: the settings webview is otherwise invisible in
 // diagnostic reports (its routes never touch MELCloud), which made
@@ -183,11 +185,8 @@ const api = {
   }: {
     homey: Homey
     params: { buildingId: string }
-  }): {
-    isEnabled: boolean | null
-    max: number | null
-    min: number | null
-  } => app.getHomeBuildingFrostProtection(buildingId),
+  }): { isEnabled: boolean | null; max: number | null; min: number | null } =>
+    app.getHomeBuildingFrostProtection(buildingId),
   getHomeBuildingHolidayMode: ({
     homey: { app },
     params: { buildingId },
@@ -205,11 +204,8 @@ const api = {
   }: {
     homey: Homey
     params: { buildingId: string }
-  }): {
-    isEnabled: boolean | null
-    max: number | null
-    min: number | null
-  } => app.getHomeBuildingOverheatProtection(buildingId),
+  }): { isEnabled: boolean | null; max: number | null; min: number | null } =>
+    app.getHomeBuildingOverheatProtection(buildingId),
   getHomeDevices: ({ homey: { app } }: { homey: Homey }): HomeDeviceZone[] =>
     app.getHomeDeviceZones(),
   getHomeFrostProtection: ({

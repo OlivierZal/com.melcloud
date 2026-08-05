@@ -113,10 +113,7 @@ const applyCredentialHints = (
 
 // ── DOM helpers ──
 
-const Modulo = {
-  base10: 10,
-  base100: 100,
-} as const
+const Modulo = { base10: 10, base100: 100 } as const
 
 // Slavic plural rules: numbers ending in 2/3/4 use a special plural
 // form, except 12-14 which use the regular plural

@@ -5,12 +5,7 @@
       "name": "device",
       "type": "device"
     },
-    {
-      "max": 30,
-      "min": 10,
-      "name": "target_temperature",
-      "type": "range"
-    }
+    { "max": 30, "min": 10, "name": "target_temperature", "type": "range" }
   ],
   "title": {
     "ar": "ضبط درجة الحرارة في المنطقة 2",

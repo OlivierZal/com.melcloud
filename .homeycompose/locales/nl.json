@@ -30,10 +30,7 @@
       "throttled": "__name__ blokkeert aanmeldingen tijdelijk na te veel pogingen — probeer het later opnieuw.",
       "unverified": "Aangemeld, maar de sessie kon niet worden geverifieerd — probeer het opnieuw."
     },
-    "boolean": {
-      "false": "Nee",
-      "true": "Ja"
-    },
+    "boolean": { "false": "Nee", "true": "Ja" },
     "devices": {
       "legend": "Instellingen van alle apparaten",
       "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!",
@@ -45,11 +42,7 @@
       "legend": "Instellingen van alle lucht-lucht-apparaten"
     },
     "errorLog": {
-      "columns": {
-        "date": "Datum",
-        "device": "Apparaat",
-        "error": "Fout"
-      },
+      "columns": { "date": "Datum", "device": "Apparaat", "error": "Fout" },
       "error": "Kies een datum voor\n__from__.",
       "errorCount": {
         "0": "fout",

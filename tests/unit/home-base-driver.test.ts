@@ -129,14 +129,8 @@ describe(BaseMELCloudDriver, () => {
   describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
       const devices = [
-        mock<Home.Device>({
-          id: 'device-1',
-          name: 'Living Room',
-        }),
-        mock<Home.Device>({
-          id: 'device-2',
-          name: 'Guest Room',
-        }),
+        mock<Home.Device>({ id: 'device-1', name: 'Living Room' }),
+        mock<Home.Device>({ id: 'device-2', name: 'Guest Room' }),
       ]
       getHomeDevicesByTypeMock.mockReturnValue(devices)
       getHomeFacadeMock.mockReturnValue({

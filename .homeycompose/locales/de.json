@@ -30,10 +30,7 @@
       "throttled": "__name__ blockiert Anmeldungen nach zu vielen Versuchen vorübergehend — bitte später erneut versuchen.",
       "unverified": "Angemeldet, aber die Sitzung konnte nicht überprüft werden – bitte erneut versuchen."
     },
-    "boolean": {
-      "false": "Nein",
-      "true": "Ja"
-    },
+    "boolean": { "false": "Nein", "true": "Ja" },
     "devices": {
       "legend": "Einstellungen aller Geräte",
       "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!",
@@ -45,11 +42,7 @@
       "legend": "Einstellungen aller Luft-Luft-Geräte"
     },
     "errorLog": {
-      "columns": {
-        "date": "Datum",
-        "device": "Gerät",
-        "error": "Fehler"
-      },
+      "columns": { "date": "Datum", "device": "Gerät", "error": "Fehler" },
       "error": "Wählen Sie ein Datum vor\n__from__.",
       "errorCount": {
         "0": "Fehler",

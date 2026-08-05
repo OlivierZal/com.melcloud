@@ -81,9 +81,7 @@ const point = (
 
 const telemetry = (
   values: { time: string; value: string }[],
-): Home.EnergyData => ({
-  measureData: [{ type: 'test', values }],
-})
+): Home.EnergyData => ({ measureData: [{ type: 'test', values }] })
 
 const mockAtaFetch = (
   values: { time: string; value: string }[],

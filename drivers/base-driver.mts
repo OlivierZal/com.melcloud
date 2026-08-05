@@ -67,10 +67,7 @@ export abstract class BaseMELCloudDriver extends Driver {
     await Promise.resolve()
   }
 
-  protected abstract getDeviceModels(): {
-    id: number | string
-    name: string
-  }[]
+  protected abstract getDeviceModels(): { id: number | string; name: string }[]
 
   protected abstract toDeviceDetails(model: {
     id: number | string

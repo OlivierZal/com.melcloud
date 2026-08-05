@@ -25,12 +25,7 @@
     "meter_power.cop_daily",
     "measure_signal_strength"
   ],
-  "capabilitiesOptions": {
-    "target_temperature": {
-      "max": 30,
-      "min": 10
-    }
-  },
+  "capabilitiesOptions": { "target_temperature": { "max": 30, "min": 10 } },
   "name": {
     "ar": "[Home] مضخة حرارية هواء-ماء",
     "da": "[Home] Luft-til-vand varmepumpe",

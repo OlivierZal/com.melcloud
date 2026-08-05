@@ -90,11 +90,7 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
     legionella: ({ LastLegionellaActivationTime: time }) =>
       toPlainDate(time, getTimeZone(this.homey)).toLocaleString(
         getLocale(this.homey),
-        {
-          day: 'numeric',
-          month: 'short',
-          weekday: 'short',
-        },
+        { day: 'numeric', month: 'short', weekday: 'short' },
       ),
     operational_state: ({ OperationMode: state }) =>
       operationModeStateFromDevice[state],

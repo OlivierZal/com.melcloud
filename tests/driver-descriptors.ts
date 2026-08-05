@@ -119,9 +119,7 @@ const createLoginSession = (
 }
 
 export const testPairing = (
-  getDriver: () => {
-    onPair: (session: PairSession) => Promise<void>
-  },
+  getDriver: () => { onPair: (session: PairSession) => Promise<void> },
   mocks: {
     authenticateMock: ReturnType<typeof vi.fn>
     isAuthenticatedMock: ReturnType<typeof vi.fn>
@@ -222,9 +220,7 @@ export const testPairing = (
 }
 
 export const testRepairing = (
-  getDriver: () => {
-    onRepair: (session: PairSession) => Promise<void>
-  },
+  getDriver: () => { onRepair: (session: PairSession) => Promise<void> },
   mocks: {
     authenticateMock: ReturnType<typeof vi.fn>
     setHandlerMock: ReturnType<typeof vi.fn>
@@ -234,9 +230,7 @@ export const testRepairing = (
 
   describe('repairing', () => {
     it('should set login handler on the session', async () => {
-      const session = mock<PairSession>({
-        setHandler: setHandlerMock,
-      })
+      const session = mock<PairSession>({ setHandler: setHandlerMock })
       await getDriver().onRepair(session)
 
       expect(setHandlerMock).toHaveBeenCalledWith('login', expect.any(Function))

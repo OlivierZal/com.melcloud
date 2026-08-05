@@ -1,5 +1,1 @@
-[
-  {
-    "$extends": ["options"]
-  }
-]
+[{ "$extends": ["options"] }]

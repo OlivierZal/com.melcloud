@@ -30,10 +30,7 @@
       "throttled": "__name__ está bloqueando temporalmente los inicios de sesión tras demasiados intentos — inténtalo de nuevo más tarde.",
       "unverified": "Sesión iniciada, pero no se pudo verificar la sesión; inténtelo de nuevo."
     },
-    "boolean": {
-      "false": "No",
-      "true": "Sí"
-    },
+    "boolean": { "false": "No", "true": "Sí" },
     "devices": {
       "legend": "Ajustes de todos los dispositivos",
       "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!",
@@ -45,11 +42,7 @@
       "legend": "Ajustes de todos los dispositivos aire-aire"
     },
     "errorLog": {
-      "columns": {
-        "date": "Fecha",
-        "device": "Dispositivo",
-        "error": "Error"
-      },
+      "columns": { "date": "Fecha", "device": "Dispositivo", "error": "Error" },
       "error": "Elija una fecha anterior a\n__from__.",
       "errorCount": {
         "0": "error",

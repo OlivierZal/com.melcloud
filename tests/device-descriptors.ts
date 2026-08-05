@@ -184,9 +184,7 @@ export const testWarningManagement = (
 }
 
 export const testThermostatModeOff = (
-  createDevice: () => {
-    onInit: () => Promise<void>
-  },
+  createDevice: () => { onInit: () => Promise<void> },
   getCapabilityListenerCallback: () => (
     values: Record<string, unknown>,
   ) => Promise<void>,
@@ -203,9 +201,7 @@ export const testThermostatModeOff = (
   describe('thermostat mode off handling', () => {
     it('should handle thermostat_mode off when thermostat supports off', async () => {
       const device = createDevice()
-      Object.defineProperty(device, 'thermostatMode', {
-        value: { off: 'off' },
-      })
+      Object.defineProperty(device, 'thermostatMode', { value: { off: 'off' } })
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'off' })
@@ -217,9 +213,7 @@ export const testThermostatModeOff = (
 
     it('should set onoff to true when thermostat_mode is not off', async () => {
       const device = createDevice()
-      Object.defineProperty(device, 'thermostatMode', {
-        value: { off: 'off' },
-      })
+      Object.defineProperty(device, 'thermostatMode', { value: { off: 'off' } })
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ thermostat_mode: 'heat' })
@@ -232,9 +226,7 @@ export const testThermostatModeOff = (
 }
 
 export const testEnsureDeviceNull = (
-  createDevice: () => {
-    onInit: () => Promise<void>
-  },
+  createDevice: () => { onInit: () => Promise<void> },
   getCapabilityListenerCallback: () => (
     values: Record<string, unknown>,
   ) => Promise<void>,

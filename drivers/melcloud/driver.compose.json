@@ -342,10 +342,7 @@
         "sv": "Energi - övrigt"
       }
     },
-    "target_temperature": {
-      "max": 31,
-      "min": 10
-    },
+    "target_temperature": { "max": 31, "min": 10 },
     "thermostat_mode": {
       "values": [
         {
