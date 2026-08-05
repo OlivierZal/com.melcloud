@@ -5,6 +5,7 @@ import type { HomeBuildingZone, HomeDeviceZone } from '../../../types/zone.mts'
 import {
   getButton,
   getDiv,
+  getFieldset,
   getSelect,
   hideInitError,
   showInitError,
@@ -48,7 +49,7 @@ class WidgetApp {
   public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
     const animation = getDiv('animation')
-    const ataValues = getDiv('values_melcloud')
+    const ataValues = getFieldset('values_melcloud')
     const zone = getSelect('zones')
     this.#animationController = new AnimationController(homey, animation)
     this.#ataValueManager = new AtaValueManager(homey, ataValues, zone)

@@ -174,7 +174,7 @@ const getAtaStatePath = (value: string): string => {
 export class AtaValueManager {
   #ataCapabilities: [keyof Classic.GroupState, DriverCapabilitiesOptions][] = []
 
-  readonly #ataValues: HTMLDivElement
+  readonly #ataValues: HTMLFieldSetElement
 
   #defaultAtaValues: Partial<Record<keyof Classic.GroupState, null>> = {}
 
@@ -191,7 +191,7 @@ export class AtaValueManager {
 
   public constructor(
     homey: Homey,
-    ataValuesElement: HTMLDivElement,
+    ataValuesElement: HTMLFieldSetElement,
     zoneElement: HTMLSelectElement,
   ) {
     this.#homey = homey
@@ -201,6 +201,7 @@ export class AtaValueManager {
     // greyed even when no zone resolves and the first fetch never runs.
     this.#dirtyGate = createDirtyGate({
       applyElement: getButton('apply_values_melcloud'),
+      fieldsetElements: [ataValuesElement],
       refreshElements: [getButton('refresh_values_melcloud')],
       serialize: (): string => this.#serializeState(),
     })

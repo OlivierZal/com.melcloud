@@ -122,7 +122,7 @@
                     </div>
                 </div>
             </fieldset>
-            <fieldset class="homey-form-fieldset">
+            <fieldset id="settings_common_section" class="homey-form-fieldset">
                 <legend class="homey-form-legend" data-i18n="settings.devices.legend">All device settings</legend>
                 <div id="settings_common"></div>
                 <div class="homey-form-group container">
@@ -178,117 +178,125 @@
                         data-i18n-aria-label="widgets.zones"
                     ></select>
                 </div>
-                <div class="homey-form-group">
-                    <label
-                        class="homey-form-label"
-                        data-i18n="settings.holidayMode.enabled"
-                        for="enabled_holiday_mode"
-                    >Enable holiday mode</label>
-                    <select id="enabled_holiday_mode" class="homey-form-select">
-                        <option
-                            data-i18n="settings.boolean.false"
-                            value="false"
-                        >No</option>
-                        <option
-                            data-i18n="settings.boolean.true"
-                            value="true"
-                        >Yes</option>
-                    </select>
-                </div>
-                <div class="homey-form-group">
-                    <label
-                        class="homey-form-label"
-                        data-i18n="settings.holidayMode.startDate"
-                        for="start_date"
-                    >Start date</label>
-                    <input
-                        id="start_date"
-                        type="datetime-local"
-                    >
-                </div>
-                <div class="homey-form-group">
-                    <label
-                        class="homey-form-label"
-                        data-i18n="settings.holidayMode.endDate"
-                        for="end_date"
-                    >End date</label>
-                    <input
-                        id="end_date"
-                        type="datetime-local"
-                    >
-                </div>
-                <div class="homey-form-group container">
-                    <button
-                        id="refresh_holiday_mode"
-                        type="button"
-                        class="homey-button-secondary-shadow"
-                        data-i18n="settings.refresh"
-                    >Refresh</button>
-                    <button
-                        id="apply_holiday_mode"
-                        type="button"
-                        class="homey-button-danger-shadow"
-                        data-i18n="settings.update"
-                    >Update</button>
-                </div>
-                <div class="homey-form-group">
-                    <label
-                        class="homey-form-label"
-                        data-i18n="settings.frostProtection.enabled"
-                        for="enabled_frost_protection"
-                    >Enable frost protection</label>
-                    <select id="enabled_frost_protection" class="homey-form-select">
-                        <option
-                            data-i18n="settings.boolean.false"
-                            value="false"
-                        >No</option>
-                        <option
-                            data-i18n="settings.boolean.true"
-                            value="true"
-                        >Yes</option>
-                    </select>
-                </div>
-                <div class="homey-form-group">
-                    <label
-                        class="homey-form-label"
-                        data-i18n="settings.frostProtection.min"
-                        for="min"
-                    >Minimum temperature</label>
-                    <input
-                        id="min"
-                        type="number"
-                        class="homey-form-input"
-                        inputmode="numeric"
-                    >
-                </div>
-                <div class="homey-form-group">
-                    <label
-                        class="homey-form-label"
-                        data-i18n="settings.frostProtection.max"
-                        for="max"
-                    >Maximum temperature</label>
-                    <input
-                        id="max"
-                        type="number"
-                        class="homey-form-input"
-                        inputmode="numeric"
-                    >
-                </div>
-                <div class="homey-form-group container">
-                    <button
-                        id="refresh_frost_protection"
-                        type="button"
-                        class="homey-button-secondary-shadow"
-                        data-i18n="settings.refresh"
-                    >Refresh</button>
-                    <button
-                        id="apply_frost_protection"
-                        type="button"
-                        class="homey-button-danger-shadow"
-                        data-i18n="settings.update"
-                    >Update</button>
-                </div>
-                <div id="overheat_protection_panel" hidden>
+                <fieldset id="holiday_mode_panel" class="busy-scope">
+                    <div class="homey-form-group">
+                        <label
+                            class="homey-form-label"
+                            data-i18n="settings.holidayMode.enabled"
+                            for="enabled_holiday_mode"
+                        >Enable holiday mode</label>
+                        <select id="enabled_holiday_mode" class="homey-form-select">
+                            <option
+                                data-i18n="settings.boolean.false"
+                                value="false"
+                            >No</option>
+                            <option
+                                data-i18n="settings.boolean.true"
+                                value="true"
+                            >Yes</option>
+                        </select>
+                    </div>
+                    <div class="homey-form-group">
+                        <label
+                            class="homey-form-label"
+                            data-i18n="settings.holidayMode.startDate"
+                            for="start_date"
+                        >Start date</label>
+                        <input
+                            id="start_date"
+                            type="datetime-local"
+                        >
+                    </div>
+                    <div class="homey-form-group">
+                        <label
+                            class="homey-form-label"
+                            data-i18n="settings.holidayMode.endDate"
+                            for="end_date"
+                        >End date</label>
+                        <input
+                            id="end_date"
+                            type="datetime-local"
+                        >
+                    </div>
+                    <div class="homey-form-group container">
+                        <button
+                            id="refresh_holiday_mode"
+                            type="button"
+                            class="homey-button-secondary-shadow"
+                            data-i18n="settings.refresh"
+                        >Refresh</button>
+                        <button
+                            id="apply_holiday_mode"
+                            type="button"
+                            class="homey-button-danger-shadow"
+                            data-i18n="settings.update"
+                        >Update</button>
+                    </div>
+                </fieldset>
+                <fieldset id="frost_protection_panel" class="busy-scope">
+                    <div class="homey-form-group">
+                        <label
+                            class="homey-form-label"
+                            data-i18n="settings.frostProtection.enabled"
+                            for="enabled_frost_protection"
+                        >Enable frost protection</label>
+                        <select id="enabled_frost_protection" class="homey-form-select">
+                            <option
+                                data-i18n="settings.boolean.false"
+                                value="false"
+                            >No</option>
+                            <option
+                                data-i18n="settings.boolean.true"
+                                value="true"
+                            >Yes</option>
+                        </select>
+                    </div>
+                    <div class="homey-form-group">
+                        <label
+                            class="homey-form-label"
+                            data-i18n="settings.frostProtection.min"
+                            for="min"
+                        >Minimum temperature</label>
+                        <input
+                            id="min"
+                            type="number"
+                            class="homey-form-input"
+                            inputmode="numeric"
+                        >
+                    </div>
+                    <div class="homey-form-group">
+                        <label
+                            class="homey-form-label"
+                            data-i18n="settings.frostProtection.max"
+                            for="max"
+                        >Maximum temperature</label>
+                        <input
+                            id="max"
+                            type="number"
+                            class="homey-form-input"
+                            inputmode="numeric"
+                        >
+                    </div>
+                    <div class="homey-form-group container">
+                        <button
+                            id="refresh_frost_protection"
+                            type="button"
+                            class="homey-button-secondary-shadow"
+                            data-i18n="settings.refresh"
+                        >Refresh</button>
+                        <button
+                            id="apply_frost_protection"
+                            type="button"
+                            class="homey-button-danger-shadow"
+                            data-i18n="settings.update"
+                        >Update</button>
+                    </div>
+                </fieldset>
+                <fieldset
+                    id="overheat_protection_panel"
+                    class="busy-scope"
+                    hidden
+                >
                     <div class="homey-form-group">
                         <label
                             class="homey-form-label"
@@ -354,7 +362,7 @@
                             data-i18n="settings.update"
                         >Update</button>
                     </div>
-                </div>
+                </fieldset>
             </fieldset>
         </div>
     </body>

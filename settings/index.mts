@@ -36,6 +36,7 @@ import {
   getButton,
   getDetails,
   getDiv,
+  getFieldset,
   getInput,
   getSelect,
   getSpan,
@@ -179,7 +180,7 @@ const withDisablingButton = async (
   }
 }
 
-const hide = (element: HTMLDivElement, isHidden = true): void => {
+const hide = (element: HTMLElement, isHidden = true): void => {
   element.hidden = isHidden
 }
 
@@ -414,14 +415,16 @@ const initProtectionMax = (
   return element
 }
 
-// One zone-panel DirtyGate: Apply/Refresh looked up from the panel's
-// button-id prefix, pristine = the serialized values of its controls.
+// One zone-panel DirtyGate: Apply/Refresh and the panel's fieldset are
+// looked up from the panel's id prefix, pristine = the serialized values
+// of its controls.
 const createValuesGate = (
   prefix: string,
   elements: readonly HTMLValueElement[],
 ): DirtyGate =>
   createDirtyGate({
     applyElement: getButton(`apply_${prefix}`),
+    fieldsetElements: [getFieldset(`${prefix}_panel`)],
     refreshElements: [getButton(`refresh_${prefix}`)],
     serialize: (): string =>
       JSON.stringify(elements.map((element) => element.value)),
@@ -787,6 +790,7 @@ class DeviceSettingsManager {
       checkboxSets.flatMap((checkboxSet) => [
         ...checkboxSet.querySelectorAll('input'),
       ]),
+      section,
       driverId,
     )
   }
@@ -867,9 +871,10 @@ class DeviceSettingsManager {
       appendFormControl(this.#settingsCommon, { formControl, title })
       this.#updateCommonSetting(formControl)
     }
-    this.#registerSettingsSection([
-      ...this.#settingsCommon.querySelectorAll('select'),
-    ])
+    this.#registerSettingsSection(
+      [...this.#settingsCommon.querySelectorAll('select')],
+      getFieldset('settings_common_section'),
+    )
   }
 
   // One section per driver that has devices, built from the driver's own
@@ -951,6 +956,7 @@ class DeviceSettingsManager {
   // creation, so Apply starts disabled until an edit diverges from them.
   #registerSettingsSection(
     elements: HTMLValueElement[],
+    sectionElement: HTMLFieldSetElement,
     driverId?: string,
   ): void {
     const sectionId = toSectionId(driverId ?? 'common')
@@ -958,6 +964,7 @@ class DeviceSettingsManager {
     const refreshElement = getButton(`refresh_settings_${sectionId}`)
     const gate = createDirtyGate({
       applyElement,
+      fieldsetElements: [sectionElement],
       refreshElements: [refreshElement],
       serialize: () => serializeSettingElements(elements),
     })
@@ -1310,7 +1317,7 @@ class ZoneSettingsManager {
   // overheat panel: Home ATA devices and buildings owning at least one.
   readonly #overheatCapableValues = new Set<string>()
 
-  readonly #overheatPanel = getDiv('overheat_protection_panel')
+  readonly #overheatPanel = getFieldset('overheat_protection_panel')
 
   readonly #overheatProtectionDirtyGate: DirtyGate
 

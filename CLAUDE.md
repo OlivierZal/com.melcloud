@@ -111,7 +111,12 @@ coverage.
   matches" clauses redundant.
 - Dirty-gating: `public/dirty-gate.mts` is the ONE primitive behind every
   webview Apply/Refresh pair (settings sections, frost/holiday panels, the
-  ATA group widget) — never re-derive its invariant at a call site. Its
+  ATA group widget) — never re-derive its invariant at a call site. The gate also freezes the gated
+  fieldsets while a request is in flight (container `disabled` +
+  `aria-busy`, so a control's own domain `disabled` survives the thaw):
+  every success path rewrites the fields, so a mid-flight edit would be
+  silently clobbered — pass every region `serialize` reads through
+  `fieldsetElements`. Its
   `serialize` must stay a PURE form snapshot, never a request-body builder
   (those filter null deltas out and desync the pristine check — the
   historical heatzy bug), and disabled greying styles

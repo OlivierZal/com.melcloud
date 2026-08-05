@@ -145,6 +145,27 @@ input.homey-form-checkbox-input:indeterminate
   opacity: 0.5;
 }
 
+/* Plain containers promoted to fieldsets so one `disabled` flip freezes a
+   whole dirty-gated form region: none of the UA fieldset chrome (border,
+   padding, min-inline-size) may surface. Explicit `display: block`
+   because WebKit renders inline fieldsets atomically. */
+fieldset.busy-scope {
+  border: 0;
+  display: block;
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
+}
+
+/* A dirty-gate freeze sets `disabled` on the gated fieldset while its
+   request is in flight — grey it like the buttons. Attribute (not
+   `:disabled`) so nested fieldsets inside a frozen section do not
+   compound the opacity. */
+fieldset[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 /* The collapsible credentials panel: the summary doubles as the
    fieldset legend, but Homey's `legend.homey-form-legend` rule is
    tag-qualified and misses a `summary` — restate the legend's own
