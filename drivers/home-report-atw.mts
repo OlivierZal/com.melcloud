@@ -1,7 +1,7 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import { Temporal } from 'temporal-polyfill'
 
-import { WATTS_PER_KILOWATT } from '../lib/constants.mts'
+import { KILO } from '../lib/constants.mts'
 import { unwrapResult } from '../lib/unwrap-result.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 import type { HomeMELCloudDevice } from './home-device.mts'
@@ -31,9 +31,7 @@ const latestBucketWatts = (
       latest = point
     }
   }
-  return latest === null
-    ? 0
-    : latest.value * MINUTES_PER_HOUR * WATTS_PER_KILOWATT
+  return latest === null ? 0 : latest.value * MINUTES_PER_HOUR * KILO
 }
 
 export class HomeEnergyReportAtw extends HomeEnergyReport<

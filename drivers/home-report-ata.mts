@@ -1,6 +1,6 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 
-import { WATTS_PER_KILOWATT } from '../lib/constants.mts'
+import { KILO } from '../lib/constants.mts'
 import { unwrapResult } from '../lib/unwrap-result.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 import type { HomeMELCloudDevice } from './home-device.mts'
@@ -28,7 +28,7 @@ export class HomeEnergyReportAta extends HomeEnergyReport<
           ),
         ),
       // ATA telemetry is Wh pulses: scale sums down to kWh.
-      kilowattHours: (wireSum) => wireSum / WATTS_PER_KILOWATT,
+      kilowattHours: (wireSum) => wireSum / KILO,
       // Coarse average: Wh pulses over the trailing window divided by its
       // span — the 100 Wh quantum makes anything finer noise.
       watts: (points, now) =>

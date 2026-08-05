@@ -5,7 +5,7 @@ import type {
   EnergyCapabilities,
   EnergyCapabilityTagEntry,
 } from '../types/capabilities.mts'
-import { WATTS_PER_KILOWATT } from '../lib/constants.mts'
+import { KILO } from '../lib/constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { typedEntries } from '../lib/typed-object.mts'
 import { unwrapResult } from '../lib/unwrap-result.mts'
@@ -113,7 +113,7 @@ export class EnergyReport<
     for (const tag of tags) {
       const tagData = data[tag]
       if (Array.isArray(tagData)) {
-        total += (tagData[hour] ?? 0) * WATTS_PER_KILOWATT
+        total += (tagData[hour] ?? 0) * KILO
       }
     }
 
