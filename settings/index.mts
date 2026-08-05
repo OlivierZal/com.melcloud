@@ -1917,26 +1917,16 @@ class SettingsApp {
   // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
     // A stale cached page refetches itself once (never-cached address)
-    // instead of booting: skip
-    // the init — the document is about to be replaced.
-    if (
-      await ensureFreshWebview(
-        'settings',
-        async () => homeyApiGet(this.#homey, '/webview-hashes'),
-        (message) => {
-          this.#homey.api(
-            'POST',
-            '/boot-error',
-            { message, name: 'WebviewFreshness' },
-            () => {
-              // A missed freshness breadcrumb is acceptable.
-            },
-          )
-        },
-      )
-    ) {
+    // instead of booting: skip the init — the document is about to be
+    // replaced.
+    if (await this.#checkFreshness()) {
       return
     }
+    // Second trigger of the same handshake: the app pokes open pages at
+    // its own (re)boot, when the served hashes may have moved.
+    this.#homey.on('webview_hashes_changed', () => {
+      fireAndForget(this.#checkFreshness())
+    })
     const { error, hasFailed } = await runWebview(this.#homey, this.#run())
     if (hasFailed) {
       // After `ready` (runWebview's finally): an alert raised under the
@@ -1955,6 +1945,25 @@ class SettingsApp {
         this.#homey.openURL('https://homey.app/a/com.mecloud.extension'),
       )
     })
+  }
+
+  // One freshness pass, shared by the boot pull and the app's realtime
+  // poke; its breadcrumbs ride the declared boot-error route.
+  async #checkFreshness(): Promise<boolean> {
+    return ensureFreshWebview(
+      'settings',
+      async () => homeyApiGet(this.#homey, '/webview-hashes'),
+      (message) => {
+        this.#homey.api(
+          'POST',
+          '/boot-error',
+          { message, name: 'WebviewFreshness' },
+          () => {
+            // A missed freshness breadcrumb is acceptable.
+          },
+        )
+      },
+    )
   }
 
   async #ensureDevicesForApi(api: Api): Promise<void> {

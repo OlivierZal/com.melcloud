@@ -51,7 +51,10 @@ caught real failures that the others miss:
   document from the HTTP cache; sessionStorage guard,
   `webview-freshness.mts`), whose fresh stamps pull the fresh assets;
   a mismatch that survives its refetch is reported to
-  `POST /boot-error`. Every failure
+  `POST /boot-error`. The app also emits a `webview_hashes_changed`
+  realtime event at its own boot; an open page re-runs the same
+  handshake on it — a second trigger of the one primitive, covering a
+  page left open across an app restart or update. Every failure
   path stays open: an unstamped page, an absent route or denied
   storage must never take a working webview down.
 - `npm run homey:validate` — Homey validation at publish level; may
@@ -410,8 +413,10 @@ coverage.
   before acting either way (Copilot has been wrong about library
   semantics). Resolve the thread once settled; none left dangling.
 - SonarCloud must be spotless for a PR to merge: quality gate green,
-  zero open issues on its analysis, and 100 % coverage (within the
-  exclusions `sonar-project.properties` declares). A Sonar finding is
+  zero open issues on its analysis, 100 % coverage (within the
+  exclusions `sonar-project.properties` declares), and 0 % duplicated
+  lines across the WHOLE codebase — new and old alike, not just the
+  gate's new-code window. A Sonar finding is
   handled like a lint error — the code adapts, or the divergence is
   settled as a documented verdict (e.g. the `Number.NaN` convention in
   `eslint.config.ts`) — never merged over.

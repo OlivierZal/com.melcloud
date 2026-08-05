@@ -459,6 +459,9 @@ export default class MELCloudApp extends App {
     this.#createNotification(language)
     this.#registerWidgetListeners()
     this.#registerFlowListeners()
+    // Poke any open webview to re-run its freshness handshake: an app
+    // (re)boot is exactly when the served hashes may have moved.
+    this.homey.api.realtime('webview_hashes_changed', null)
     fireAndForget(
       this.#logBootReady(),
       (...args: unknown[]) => {

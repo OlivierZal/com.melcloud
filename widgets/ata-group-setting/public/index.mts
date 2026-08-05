@@ -19,7 +19,10 @@ import {
   surfaceError,
   trySetDocumentLanguage,
 } from '../../../public/homey-api.mts'
-import { ensureFreshWidget } from '../../../public/webview-freshness-boot.mts'
+import {
+  ensureFreshWidget,
+  watchWebviewFreshness,
+} from '../../../public/webview-freshness-boot.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 
@@ -65,6 +68,7 @@ class WidgetApp {
     if (await ensureFreshWidget(this.#homey, 'ata-group-setting')) {
       return
     }
+    watchWebviewFreshness(this.#homey, 'ata-group-setting')
     await runWebview(this.#homey, this.#run(), {
       onError: showInitError,
       height: () => document.body.scrollHeight,
