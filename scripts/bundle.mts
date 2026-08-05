@@ -7,7 +7,7 @@
 // HTMLs — and npm dependencies (Chart.js) are inlined so widgets work
 // offline with versions pinned by the lockfile.
 import { createHash } from 'node:crypto'
-import { readFile, rm, writeFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { type BuildOptions, build } from 'esbuild'
@@ -41,9 +41,7 @@ const pages = [
 ]
 
 // A local asset reference — an href/src attribute value, with an
-// optional existing stamp. (A dynamic-import alternative once lived
-// here: dead since the classic-defer fix, no shipped HTML uses
-// `import()` any more.)
+// optional existing stamp.
 const REFERENCE =
   /(?<prefix>href="|src=")(?<file>[^"':?\/][^"':?]*)(?:\?v=[0-9a-f]+)?(?<suffix>")/gv
 
@@ -74,18 +72,6 @@ await Promise.all(
       }),
     ]
   }),
-)
-
-// Remove stale source-tree bundles left by pre-`.homeybuild` builds.
-await Promise.all(
-  entryPoints.flatMap((entryPoint) =>
-    ['.js', '.mjs'].map(async (extension) =>
-      rm(
-        entryPoint.replace(/\.mts$/v, () => extension),
-        { force: true },
-      ),
-    ),
-  ),
 )
 
 // Cache-bust the PACKAGED pages: phone webviews cache assets across app

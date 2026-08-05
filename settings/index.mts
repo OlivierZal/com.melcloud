@@ -158,14 +158,6 @@ const disableButton = (id: string, isDisabled = true): void => {
   getButton(id).disabled = isDisabled
 }
 
-// The error log aggregates both accounts, so it is not disabled here.
-const disableClassicZoneButtons = (): void => {
-  for (const id of ['frost_protection', 'holiday_mode']) {
-    disableButton(`apply_${id}`)
-    disableButton(`refresh_${id}`)
-  }
-}
-
 const withDisablingButton = async (
   id: string,
   action: () => Promise<void>,
@@ -1607,8 +1599,11 @@ class ZoneSettingsManager {
       this.#frostProtectionMaxTemperature,
     ]) {
       element.addEventListener('change', () => {
-        if (element.value === 'false') {
-          element.value = 'true'
+        if (
+          element.value !== '' &&
+          this.#frostProtectionEnabled.value === 'false'
+        ) {
+          this.#frostProtectionEnabled.value = 'true'
         }
       })
     }
@@ -1822,9 +1817,6 @@ class ZoneSettingsManager {
     }
   }
 
-  // A blank enabled select means a Home building's devices disagree
-  // ("mixed") and the user has not chosen: applying would silently write a
-  // single value (off) to them all, so require an explicit choice first.
   #refreshOverheatVisibility(): void {
     const { value } = this.#zone
     const isCapable = this.#overheatCapableValues.has(value)
@@ -1846,6 +1838,9 @@ class ZoneSettingsManager {
     this.#refreshOverheatVisibility()
   }
 
+  // A blank enabled select means a Home building's devices disagree
+  // ("mixed") and the user has not chosen: applying would silently write a
+  // single value (off) to them all, so require an explicit choice first.
   #requireEnabledChosen(select: HTMLSelectElement): boolean {
     if (select.value !== '') {
       return true
@@ -1950,22 +1945,6 @@ class SettingsApp {
     })
   }
 
-  #disableCommonButtonsIfNoDevices(): void {
-    if (Object.keys(this.#deviceSettingsManager.deviceSettings).length > 0) {
-      return
-    }
-
-    disableButton('apply_settings_common')
-    disableButton('refresh_settings_common')
-  }
-
-  #disableForError(error: NoDeviceError): void {
-    if (error instanceof NoClassicDeviceError) {
-      disableClassicZoneButtons()
-    }
-    this.#disableCommonButtonsIfNoDevices()
-  }
-
   async #ensureDevicesForApi(api: Api): Promise<void> {
     if (api === 'classic') {
       await this.#fetchClassicBuildings()
@@ -2057,9 +2036,6 @@ class SettingsApp {
       try {
         await this.#ensureDevicesForApi(api)
       } catch (error) {
-        if (error instanceof NoDeviceError) {
-          this.#disableForError(error)
-        }
         await this.#homey.alert(
           error instanceof NoDeviceError
             ? error.message
@@ -2130,9 +2106,10 @@ class SettingsApp {
     try {
       await this.#fetchClassicBuildings()
     } catch (error) {
-      if (error instanceof NoClassicDeviceError) {
-        this.#disableForError(error)
-      } else {
+      // No paired Classic device is not an auth failure: the session
+      // stays valid, only the device-scoped surfaces have nothing to
+      // show (their gates stay pristine on empty data).
+      if (!(error instanceof NoClassicDeviceError)) {
         this.#authState.classic = false
       }
     }
@@ -2141,8 +2118,6 @@ class SettingsApp {
   async #validateInitialHomeAuth(): Promise<void> {
     if (this.#hasHomeDevices()) {
       await this.#fetchHomeTargets()
-    } else {
-      this.#disableForError(new NoDeviceError(this.#homey))
     }
   }
 }

@@ -114,10 +114,6 @@ export abstract class BaseMELCloudDevice<
   } = { get: {}, list: {}, set: {} }
 
   public override async onInit(): Promise<void> {
-    // Start available and let the first sync re-assert from the facades'
-    // `isAvailable` contract; this also heals the stuck unavailable state
-    // builds up to #1481 may have left.
-    await this.setAvailable()
     await this.setWarning(null)
     this.#registerCapabilityListeners()
     await this.ensureDevice()
@@ -258,12 +254,8 @@ export abstract class BaseMELCloudDevice<
   }
 
   // One skeleton for both dialects, which the facades' neutral
-  // `isAvailable` contract makes possible: before it, Classic read a raw
-  // `Offline` flag and Home a disconnection streak, so each intermediate
-  // class carried its own copy of this method — identical but for the
-  // warning key and the payload read, and each commented "mirrors the
-  // other contract". The contract is pinned in melcloud-api's
-  // tests/contracts/is-available.test.ts.
+  // `isAvailable` contract makes possible — the contract is pinned in
+  // melcloud-api's tests/contracts/is-available.test.ts.
   public async syncFromDevice(): Promise<void> {
     const device = await this.ensureDevice()
     if (device === null) {

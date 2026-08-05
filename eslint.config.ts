@@ -54,8 +54,11 @@ const config: Config[] = defineConfig([
     ignores: [
       '.homeybuild/',
       'coverage/',
-      // Stale pre-`.homeybuild` esbuild outputs, also gitignored
+      // Pre-`.homeybuild` leftovers in never-rebuilt trees: gitignored,
+      // and ignored here so a stale tree cannot break the lint run.
+      'settings/index.js',
       'settings/index.mjs',
+      'widgets/*/public/index.js',
       'widgets/*/public/index.mjs',
     ],
   },
