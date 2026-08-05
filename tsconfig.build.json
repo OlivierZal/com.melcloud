@@ -1,7 +1,5 @@
 {
-  "compilerOptions": {
-    "rootDir": "."
-  },
+  "compilerOptions": { "rootDir": "." },
   "exclude": [
     "*.config.ts",
     "scripts",

@@ -1002,9 +1002,7 @@ export default class MELCloudApp extends App {
     settings,
     zoneId,
     zoneType,
-  }: DeviceOrZoneData & {
-    settings: HolidayModeUpdate
-  }): Promise<void> {
+  }: DeviceOrZoneData & { settings: HolidayModeUpdate }): Promise<void> {
     await this.getClassicFacade(zoneType, zoneId).updateHolidayMode(settings)
   }
 

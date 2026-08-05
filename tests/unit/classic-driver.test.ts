@@ -57,18 +57,14 @@ vi.mock(import('homey'), async () => {
               registerRunListener: typeof registerRunListenerMock
             }
           >()
-          .mockReturnValue({
-            registerRunListener: registerRunListenerMock,
-          }),
+          .mockReturnValue({ registerRunListener: registerRunListenerMock }),
         getConditionCard: vi
           .fn<
             (id: string) => {
               registerRunListener: typeof registerRunListenerMock
             }
           >()
-          .mockReturnValue({
-            registerRunListener: registerRunListenerMock,
-          }),
+          .mockReturnValue({ registerRunListener: registerRunListenerMock }),
       },
     }
 

@@ -174,7 +174,7 @@ const getAtaStatePath = (value: string): string => {
 export class AtaValueManager {
   #ataCapabilities: [keyof Classic.GroupState, DriverCapabilitiesOptions][] = []
 
-  readonly #ataValues: HTMLDivElement
+  readonly #ataValues: HTMLFieldSetElement
 
   #defaultAtaValues: Partial<Record<keyof Classic.GroupState, null>> = {}
 
@@ -191,7 +191,7 @@ export class AtaValueManager {
 
   public constructor(
     homey: Homey,
-    ataValuesElement: HTMLDivElement,
+    ataValuesElement: HTMLFieldSetElement,
     zoneElement: HTMLSelectElement,
   ) {
     this.#homey = homey
@@ -199,9 +199,16 @@ export class AtaValueManager {
     this.#zone = zoneElement
     // The gate snapshots its pristine baseline at creation: Update starts
     // greyed even when no zone resolves and the first fetch never runs.
+    // Arming goes through `isActionable`, not the snapshot diff: an
+    // emptied field means "no instruction" and a value equal to the
+    // zone's known state is filtered out, so Update arms only when the
+    // request would actually carry something.
     this.#dirtyGate = createDirtyGate({
       applyElement: getButton('apply_values_melcloud'),
+      fieldsetElements: [ataValuesElement],
       refreshElements: [getButton('refresh_values_melcloud')],
+      isActionable: (): boolean =>
+        Object.keys(this.#buildAtaValuesBody()).length > 0,
       serialize: (): string => this.#serializeState(),
     })
   }
@@ -288,6 +295,11 @@ export class AtaValueManager {
           getAtaStatePath(this.#zone.value),
           body satisfies Classic.GroupState,
         )
+        // The zone's known state absorbs the accepted write immediately:
+        // the debounced `deviceupdate` refetch confirms it later, but
+        // until then the body filter (and so `isActionable`) must judge
+        // against what the server now holds, not the pre-write state.
+        this.#updateZoneMapping(body)
       }
       // New pristine baseline is the just-applied form. A rejected PUT
       // throws before this, so the edit stays dirty for a retry.

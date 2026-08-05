@@ -30,10 +30,7 @@
       "throttled": "__name__ tymczasowo blokuje logowanie po zbyt wielu próbach — spróbuj ponownie później.",
       "unverified": "Zalogowano, ale nie udało się zweryfikować sesji — spróbuj ponownie."
     },
-    "boolean": {
-      "false": "Nie",
-      "true": "Tak"
-    },
+    "boolean": { "false": "Nie", "true": "Tak" },
     "devices": {
       "legend": "Ustawienia wszystkich urządzeń",
       "none": "Dodaj urządzenie, aby odblokować wszystkie ustawienia aplikacji!",
@@ -45,11 +42,7 @@
       "legend": "Ustawienia wszystkich urządzeń powietrze-powietrze"
     },
     "errorLog": {
-      "columns": {
-        "date": "Data",
-        "device": "Urządzenie",
-        "error": "Błąd"
-      },
+      "columns": { "date": "Data", "device": "Urządzenie", "error": "Błąd" },
       "error": "Wybierz datę przed\n__from__.",
       "errorCount": {
         "0": "błędów",

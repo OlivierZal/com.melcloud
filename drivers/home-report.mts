@@ -23,9 +23,7 @@ export const WATT_HOURS_PER_KILOWATT_HOUR = 1000
 // The single ATA counter has no per-mode split and no live power: the
 // approximated reading is a coarse average over this trailing window.
 export const POWER_WINDOW_HOURS = 2
-export const POWER_WINDOW: Temporal.DurationLike = {
-  hours: POWER_WINDOW_HOURS,
-}
+export const POWER_WINDOW: Temporal.DurationLike = { hours: POWER_WINDOW_HOURS }
 // A bucket older than this horizon means the unit stopped: report 0 W.
 export const POWER_FRESHNESS: Temporal.DurationLike = { minutes: 3 }
 // Buckets land up to ~2 min late: totals only accrue up to this safety
@@ -207,10 +205,7 @@ export abstract class HomeEnergyReport<
       (entry) =>
         [
           entry[0],
-          this.#regularValue(entry, points, {
-            dayStart,
-            now: nowInstant,
-          }),
+          this.#regularValue(entry, points, { dayStart, now: nowInstant }),
         ] as const,
     )
     await Promise.all(

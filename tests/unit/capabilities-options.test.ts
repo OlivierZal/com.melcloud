@@ -228,10 +228,7 @@ describe(homeGetCapabilitiesOptionsAtw, () => {
 
 describe('hot water mode options', () => {
   it('should have the correct values', () => {
-    expect(HotWaterMode).toStrictEqual({
-      auto: 'auto',
-      forced: 'forced',
-    })
+    expect(HotWaterMode).toStrictEqual({ auto: 'auto', forced: 'forced' })
   })
 })
 

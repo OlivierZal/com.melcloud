@@ -36,12 +36,14 @@ import {
   getButton,
   getDetails,
   getDiv,
+  getFieldset,
   getInput,
   getSelect,
   getSpan,
   translateAriaLabels,
 } from '../public/dom.mts'
 import { fireAndForget, runWebview } from '../public/homey-api.mts'
+import { ensureFreshWebview } from '../public/webview-freshness.mts'
 import {
   getHomeBuildingId,
   getHomeDeviceId,
@@ -111,10 +113,7 @@ const applyCredentialHints = (
 
 // ── DOM helpers ──
 
-const Modulo = {
-  base10: 10,
-  base100: 100,
-} as const
+const Modulo = { base10: 10, base100: 100 } as const
 
 // Slavic plural rules: numbers ending in 2/3/4 use a special plural
 // form, except 12-14 which use the regular plural
@@ -179,7 +178,7 @@ const withDisablingButton = async (
   }
 }
 
-const hide = (element: HTMLDivElement, isHidden = true): void => {
+const hide = (element: HTMLElement, isHidden = true): void => {
   element.hidden = isHidden
 }
 
@@ -414,14 +413,16 @@ const initProtectionMax = (
   return element
 }
 
-// One zone-panel DirtyGate: Apply/Refresh looked up from the panel's
-// button-id prefix, pristine = the serialized values of its controls.
+// One zone-panel DirtyGate: Apply/Refresh and the panel's fieldset are
+// looked up from the panel's id prefix, pristine = the serialized values
+// of its controls.
 const createValuesGate = (
   prefix: string,
   elements: readonly HTMLValueElement[],
 ): DirtyGate =>
   createDirtyGate({
     applyElement: getButton(`apply_${prefix}`),
+    fieldsetElements: [getFieldset(`${prefix}_panel`)],
     refreshElements: [getButton(`refresh_${prefix}`)],
     serialize: (): string =>
       JSON.stringify(elements.map((element) => element.value)),
@@ -787,6 +788,7 @@ class DeviceSettingsManager {
       checkboxSets.flatMap((checkboxSet) => [
         ...checkboxSet.querySelectorAll('input'),
       ]),
+      section,
       driverId,
     )
   }
@@ -867,9 +869,10 @@ class DeviceSettingsManager {
       appendFormControl(this.#settingsCommon, { formControl, title })
       this.#updateCommonSetting(formControl)
     }
-    this.#registerSettingsSection([
-      ...this.#settingsCommon.querySelectorAll('select'),
-    ])
+    this.#registerSettingsSection(
+      [...this.#settingsCommon.querySelectorAll('select')],
+      getFieldset('settings_common_section'),
+    )
   }
 
   // One section per driver that has devices, built from the driver's own
@@ -951,6 +954,7 @@ class DeviceSettingsManager {
   // creation, so Apply starts disabled until an edit diverges from them.
   #registerSettingsSection(
     elements: HTMLValueElement[],
+    sectionElement: HTMLFieldSetElement,
     driverId?: string,
   ): void {
     const sectionId = toSectionId(driverId ?? 'common')
@@ -958,6 +962,7 @@ class DeviceSettingsManager {
     const refreshElement = getButton(`refresh_settings_${sectionId}`)
     const gate = createDirtyGate({
       applyElement,
+      fieldsetElements: [sectionElement],
       refreshElements: [refreshElement],
       serialize: () => serializeSettingElements(elements),
     })
@@ -1310,7 +1315,7 @@ class ZoneSettingsManager {
   // overheat panel: Home ATA devices and buildings owning at least one.
   readonly #overheatCapableValues = new Set<string>()
 
-  readonly #overheatPanel = getDiv('overheat_protection_panel')
+  readonly #overheatPanel = getFieldset('overheat_protection_panel')
 
   readonly #overheatProtectionDirtyGate: DirtyGate
 
@@ -1916,6 +1921,15 @@ class SettingsApp {
   // `ready()` always fires — an unbounded await here would hold Homey's
   // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
+    // A stale cached page reloads itself once instead of booting: skip
+    // the init — the document is about to be replaced.
+    if (
+      await ensureFreshWebview('settings', async () =>
+        homeyApiGet(this.#homey, '/webview-hashes'),
+      )
+    ) {
+      return
+    }
     const { error, hasFailed } = await runWebview(this.#homey, this.#run())
     if (hasFailed) {
       // After `ready` (runWebview's finally): an alert raised under the

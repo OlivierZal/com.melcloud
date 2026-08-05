@@ -14,6 +14,7 @@ import type {
 import { getClassicBuildings } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
 import { toDeviceOrZoneData, toZoneData } from '../../lib/validation.mts'
+import { getWebviewHashes } from '../../lib/webview-hashes.mts'
 
 const api = {
   getClassicAtaCapabilities: ({
@@ -77,6 +78,8 @@ const api = {
   }): Promise<Classic.GroupState> => app.getHomeBuildingAtaState(buildingId),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
+  getWebviewHashes: async (): Promise<Partial<Record<string, string>>> =>
+    getWebviewHashes(),
   logWebviewBoot: ({
     body,
     homey: { app },

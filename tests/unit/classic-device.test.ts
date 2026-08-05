@@ -60,11 +60,7 @@ const {
     vi.fn<(capability: string, value: unknown) => Promise<void>>(),
 }))
 
-const mockDeviceData = {
-  FanSpeed: 3,
-  Power: true,
-  SetTemperature: 22,
-}
+const mockDeviceData = { FanSpeed: 3, Power: true, SetTemperature: 22 }
 
 const { energyReportStartMock } = vi.hoisted(() => ({
   energyReportStartMock: vi
@@ -147,9 +143,7 @@ const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
       measure_temperature: 'RoomTemperature',
     }),
     list: mock<ListCapabilityTagMapping<TestDeviceType>>({}),
-    set: mock<SetCapabilityTagMapping<TestDeviceType>>({
-      onoff: 'Power',
-    }),
+    set: mock<SetCapabilityTagMapping<TestDeviceType>>({ onoff: 'Power' }),
   },
 })
 
@@ -169,10 +163,7 @@ const setDriver = (
   target: TestDevice,
   driver: ClassicMELCloudDriver<TestDeviceType> = mockDriver,
 ): void => {
-  Object.defineProperty(target, 'driver', {
-    configurable: true,
-    value: driver,
-  })
+  Object.defineProperty(target, 'driver', { configurable: true, value: driver })
 }
 
 describe(ClassicMELCloudDevice, () => {
@@ -566,9 +557,7 @@ describe(ClassicMELCloudDevice, () => {
 
   describe('capability setup', () => {
     it('should add capabilities from required and enabled settings', async () => {
-      vi.spyOn(device, 'getSettings').mockReturnValue({
-        fan_speed: true,
-      })
+      vi.spyOn(device, 'getSettings').mockReturnValue({ fan_speed: true })
       vi.spyOn(device, 'getCapabilities').mockReturnValue([])
       vi.spyOn(device, 'hasCapability').mockReturnValue(false)
       await device.onInit()
@@ -613,9 +602,7 @@ describe(ClassicMELCloudDevice, () => {
     it('should set capability options from driver', async () => {
       const getCapabilitiesOptionsMock = vi
         .fn<() => Record<string, unknown>>()
-        .mockReturnValue({
-          measure_temperature: { units: '°C' },
-        })
+        .mockReturnValue({ measure_temperature: { units: '°C' } })
       const driverWithOptions = Object.create(mockDriver) as typeof mockDriver
       Object.assign(driverWithOptions, {
         getCapabilitiesOptions: getCapabilitiesOptionsMock,

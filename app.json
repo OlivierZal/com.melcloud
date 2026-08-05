@@ -73,6 +73,10 @@
       "method": "GET",
       "path": "/language"
     },
+    "getWebviewHashes": {
+      "method": "GET",
+      "path": "/webview-hashes"
+    },
     "homeAuthenticate": {
       "method": "POST",
       "path": "/home/sessions"
@@ -11299,6 +11303,10 @@
           "method": "GET",
           "path": "/language"
         },
+        "getWebviewHashes": {
+          "method": "GET",
+          "path": "/webview-hashes"
+        },
         "logWebviewBoot": {
           "method": "POST",
           "path": "/boot-error"
@@ -11428,6 +11436,10 @@
         "getLanguage": {
           "method": "GET",
           "path": "/language"
+        },
+        "getWebviewHashes": {
+          "method": "GET",
+          "path": "/webview-hashes"
         },
         "logWebviewBoot": {
           "method": "POST",

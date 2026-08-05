@@ -31,6 +31,9 @@ export const getDetails = (id: string): HTMLDetailsElement =>
 export const getDiv = (id: string): HTMLDivElement =>
   getElement(id, HTMLDivElement, 'div')
 
+export const getFieldset = (id: string): HTMLFieldSetElement =>
+  getElement(id, HTMLFieldSetElement, 'fieldset')
+
 export const getInput = (id: string): HTMLInputElement =>
   getElement(id, HTMLInputElement, 'input')
 

@@ -104,14 +104,18 @@ const SDK_CALL =
 const extractRouteCalls = (source: string): DeclaredRoute[] => {
   const stripped = stripComments(source)
   return [
-    ...stripped.matchAll(HELPER_CALL).map((match) => ({
-      method: (match.groups?.verb ?? '').toUpperCase(),
-      path: match.groups?.path ?? '',
-    })),
-    ...stripped.matchAll(SDK_CALL).map((match) => ({
-      method: match.groups?.verb ?? '',
-      path: match.groups?.path ?? '',
-    })),
+    ...stripped
+      .matchAll(HELPER_CALL)
+      .map((match) => ({
+        method: (match.groups?.verb ?? '').toUpperCase(),
+        path: match.groups?.path ?? '',
+      })),
+    ...stripped
+      .matchAll(SDK_CALL)
+      .map((match) => ({
+        method: match.groups?.verb ?? '',
+        path: match.groups?.path ?? '',
+      })),
   ]
 }
 

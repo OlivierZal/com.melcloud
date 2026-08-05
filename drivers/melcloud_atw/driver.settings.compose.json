@@ -1,10 +1,6 @@
 [
-  {
-    "$extends": ["options"]
-  },
-  {
-    "$extends": ["status-indicator"]
-  },
+  { "$extends": ["options"] },
+  { "$extends": ["status-indicator"] },
   {
     "children": [
       {

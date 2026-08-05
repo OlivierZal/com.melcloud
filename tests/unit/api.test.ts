@@ -58,27 +58,30 @@ const mockApp = {
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
   getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
-  getHomeBuildingFrostProtection: vi.fn<
-    () => {
-      FPEnabled: boolean | null
-      FPMaxTemperature: number | null
-      FPMinTemperature: number | null
-    }
-  >(),
-  getHomeBuildingHolidayMode: vi.fn<
-    () => {
-      HMEnabled: boolean | null
-      HMEndDate: string | null
-      HMStartDate: string | null
-    }
-  >(),
-  getHomeBuildingOverheatProtection: vi.fn<
-    () => {
-      OHEnabled: boolean | null
-      OHMaxTemperature: number | null
-      OHMinTemperature: number | null
-    }
-  >(),
+  getHomeBuildingFrostProtection:
+    vi.fn<
+      () => {
+        FPEnabled: boolean | null
+        FPMaxTemperature: number | null
+        FPMinTemperature: number | null
+      }
+    >(),
+  getHomeBuildingHolidayMode:
+    vi.fn<
+      () => {
+        HMEnabled: boolean | null
+        HMEndDate: string | null
+        HMStartDate: string | null
+      }
+    >(),
+  getHomeBuildingOverheatProtection:
+    vi.fn<
+      () => {
+        OHEnabled: boolean | null
+        OHMaxTemperature: number | null
+        OHMinTemperature: number | null
+      }
+    >(),
   getHomeDeviceZones: vi.fn<() => HomeDeviceZone[]>(),
   getHomeFrostProtection: vi.fn<() => Home.FrostProtection | null>(),
   getHomeHolidayMode: vi.fn<() => Home.HolidayMode | null>(),
@@ -275,9 +278,7 @@ describe('api', () => {
       await expect(
         api.getErrorLog({
           homey,
-          query: mock<Partial<ErrorLogQueryParams>>({
-            period: 'Infinity',
-          }),
+          query: mock<Partial<ErrorLogQueryParams>>({ period: 'Infinity' }),
         }),
       ).rejects.toThrow('Invalid numeric query param: "Infinity"')
       expect(mockApp.getErrorLog).not.toHaveBeenCalled()
@@ -415,11 +416,7 @@ describe('api', () => {
 
   describe('home building holiday mode retrieval', () => {
     it('should delegate to app.getHomeBuildingHolidayMode with the id', () => {
-      const aggregate = {
-        HMEnabled: null,
-        HMEndDate: 'e',
-        HMStartDate: null,
-      }
+      const aggregate = { HMEnabled: null, HMEndDate: 'e', HMStartDate: null }
       mockApp.getHomeBuildingHolidayMode.mockReturnValue(aggregate)
 
       const result = api.getHomeBuildingHolidayMode({
@@ -615,10 +612,7 @@ describe('api', () => {
       mockClassicAuthenticate.mockRejectedValue(error)
 
       await expect(
-        api.classicAuthenticate({
-          body: mock<LoginCredentials>(),
-          homey,
-        }),
+        api.classicAuthenticate({ body: mock<LoginCredentials>(), homey }),
       ).rejects.toThrow(error)
     })
   })
@@ -644,11 +638,7 @@ describe('api', () => {
       const body = mock<Settings>()
       mockApp.updateDeviceSettings.mockResolvedValue()
 
-      await api.updateDeviceSettings({
-        body,
-        homey,
-        query: {},
-      })
+      await api.updateDeviceSettings({ body, homey, query: {} })
 
       expect(mockApp.updateDeviceSettings).toHaveBeenCalledWith({
         driverId: undefined,
@@ -754,6 +744,14 @@ describe('api', () => {
         ['guid-1'],
         body,
       )
+    })
+  })
+
+  describe('webview hashes', () => {
+    it('should serve the packaged manifest map', async () => {
+      // A dev suite run packages no manifest: the empty map is the
+      // documented fresh-by-default answer.
+      await expect(api.getWebviewHashes()).resolves.toStrictEqual({})
     })
   })
 })

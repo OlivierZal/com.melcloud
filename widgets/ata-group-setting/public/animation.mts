@@ -47,26 +47,14 @@ export const AnimationDelay = {
 } as const
 
 // Minimum spacing between animated elements (px)
-const AnimationGap = {
-  flame: 20,
-  leaf: 50,
-  snowflake: 50,
-} as const
+const AnimationGap = { flame: 20, leaf: 50, snowflake: 50 } as const
 
 // Distinct duration ranges keep the flicker periods non-commensurate,
 // so the combined motion never visibly repeats (ms).
-const FlickerDurationMin = {
-  brightness: 500,
-  rotate: 400,
-  scale: 300,
-} as const
+const FlickerDurationMin = { brightness: 500, rotate: 400, scale: 300 } as const
 
 // Baseline drift of a leaf per path unit, over `units` path units.
-const LeafPath = {
-  driftX: 5,
-  driftY: -2,
-  units: 100,
-} as const
+const LeafPath = { driftX: 5, driftY: -2, units: 100 } as const
 
 // Smoke particle behaviour, expressed per nominal 60 fps frame: each
 // keyframe pair integrates the linear per-frame motion over the
@@ -241,15 +229,9 @@ const createAnimationMapping = (): Record<
   let leafIndex = 0
   let snowflakeIndex = 0
   return {
-    flame: {
-      textContent: '🔥',
-      getIndex: () => ++flameIndex,
-    },
+    flame: { textContent: '🔥', getIndex: () => ++flameIndex },
     leaf: { textContent: '🍁', getIndex: () => ++leafIndex },
-    snowflake: {
-      textContent: '❄',
-      getIndex: () => ++snowflakeIndex,
-    },
+    snowflake: { textContent: '❄', getIndex: () => ++snowflakeIndex },
     sun: { textContent: '☀', getIndex: () => 1 },
   }
 }

@@ -113,6 +113,24 @@ select:not(.zone-select) {
   opacity: 50%;
 }
 
+/* The values container is a fieldset so the dirty gate can freeze every
+   control with one `disabled` flip while a request is in flight: no UA
+   fieldset chrome, and the frozen state greys like the buttons. Explicit
+   `display: block` because WebKit renders inline fieldsets atomically. */
+fieldset.busy-scope {
+  border: 0;
+  display: block;
+  margin: 0;
+  min-inline-size: 0;
+  padding: 0;
+}
+
+fieldset[disabled] {
+  cursor: default;
+  opacity: 50%;
+  pointer-events: none;
+}
+
 .ghost-button.accent {
   color: var(--homey-text-color-blue);
 }

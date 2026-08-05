@@ -49,27 +49,15 @@ vi.mock(import('../../files.mts'), async (importOriginal) => {
       ...original.changelog,
       '1.0.0': { en: 'English changelog', nl: 'Dutch changelog' },
     },
-    fanSpeed: {
-      title: { en: 'Fan speed' },
-      type: 'enum',
-    },
+    fanSpeed: { title: { en: 'Fan speed' }, type: 'enum' },
     horizontal: {
       title: { en: 'Horizontal' },
       type: 'enum',
       values: [{ id: 'auto', title: { en: 'Auto' } }],
     },
-    power: {
-      title: { en: 'Power' },
-      type: 'boolean',
-    },
-    targetTemperature: {
-      title: { en: 'Set temperature' },
-      type: 'number',
-    },
-    thermostatMode: {
-      title: { en: 'Thermostat mode' },
-      type: 'enum',
-    },
+    power: { title: { en: 'Power' }, type: 'boolean' },
+    targetTemperature: { title: { en: 'Set temperature' }, type: 'number' },
+    thermostatMode: { title: { en: 'Thermostat mode' }, type: 'enum' },
     vertical: {
       title: { en: 'Vertical' },
       type: 'enum',
@@ -147,9 +135,7 @@ vi.mock(import('@olivierzal/melcloud-api/classic'), async (importOriginal) => {
   const { mock: mockModule } = await import('../helpers.ts')
   return mockModule<typeof Classic>({
     ...(await importOriginal()),
-    API: {
-      create: mockCreate,
-    },
+    API: { create: mockCreate },
     FacadeManager: mockFacadeManagerConstructor,
   })
 })
@@ -158,9 +144,7 @@ vi.mock(import('@olivierzal/melcloud-api/home'), async (importOriginal) => {
   const { mock: mockModule } = await import('../helpers.ts')
   return mockModule<typeof Home>({
     ...(await importOriginal()),
-    API: {
-      create: mockHomeCreate,
-    },
+    API: { create: mockHomeCreate },
     FacadeManager: mockHomeFacadeManagerConstructor,
   })
 })
@@ -186,9 +170,7 @@ const mockGetWidget = vi
       registerSettingAutocompleteListener: typeof mockWidgetRegister
     }
   >()
-  .mockReturnValue({
-    registerSettingAutocompleteListener: mockWidgetRegister,
-  })
+  .mockReturnValue({ registerSettingAutocompleteListener: mockWidgetRegister })
 const mockGetDrivers = vi
   .fn<() => Record<string, unknown>>()
   .mockReturnValue({})
@@ -196,22 +178,24 @@ const mockActionRegisterAutocomplete =
   vi.fn<(name: string, listener: (query: string) => unknown) => void>()
 const mockActionRegisterRun =
   vi.fn<(listener: (args: never) => Promise<unknown>) => void>()
-const mockGetActionCard = vi.fn<
-  (id: string) => {
-    registerArgumentAutocompleteListener: typeof mockActionRegisterAutocomplete
-    registerRunListener: typeof mockActionRegisterRun
-  }
->()
+const mockGetActionCard =
+  vi.fn<
+    (id: string) => {
+      registerArgumentAutocompleteListener: typeof mockActionRegisterAutocomplete
+      registerRunListener: typeof mockActionRegisterRun
+    }
+  >()
 const mockConditionRegisterAutocomplete =
   vi.fn<(name: string, listener: (query: string) => unknown) => void>()
 const mockConditionRegisterRun =
   vi.fn<(listener: (args: never) => Promise<unknown>) => void>()
-const mockGetConditionCard = vi.fn<
-  (id: string) => {
-    registerArgumentAutocompleteListener: typeof mockConditionRegisterAutocomplete
-    registerRunListener: typeof mockConditionRegisterRun
-  }
->()
+const mockGetConditionCard =
+  vi.fn<
+    (id: string) => {
+      registerArgumentAutocompleteListener: typeof mockConditionRegisterAutocomplete
+      registerRunListener: typeof mockConditionRegisterRun
+    }
+  >()
 const mockTranslate = vi
   .fn<(key: string) => string>()
   .mockImplementation((key: string) => key)
@@ -343,10 +327,7 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
   // The mocked App base is a bare Function: give every instance the
   // log/error methods the boot marks rely on (tests override at will).
   Object.defineProperties(app, {
-    error: {
-      configurable: true,
-      value: vi.fn<(...args: unknown[]) => void>(),
-    },
+    error: { configurable: true, value: vi.fn<(...args: unknown[]) => void>() },
     homey: {
       configurable: true,
       value: {
@@ -371,10 +352,7 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
       },
       writable: false,
     },
-    log: {
-      configurable: true,
-      value: vi.fn<(...args: unknown[]) => void>(),
-    },
+    log: { configurable: true, value: vi.fn<(...args: unknown[]) => void>() },
   })
   return app
 }
@@ -936,10 +914,7 @@ describe('melCloudApp', () => {
       const logMock = vi.fn<(...args: unknown[]) => void>()
       const errorMock = vi.fn<(...args: unknown[]) => void>()
       Object.defineProperties(app, {
-        error: {
-          configurable: true,
-          value: errorMock,
-        },
+        error: { configurable: true, value: errorMock },
         log: { configurable: true, value: logMock },
       })
       await app.onInit()
@@ -3099,11 +3074,7 @@ describe('melCloudApp', () => {
 
       expect(mockHomeFacadeManagerUpdateFrostProtection).toHaveBeenCalledWith(
         ['guid-1', 'guid-2'],
-        {
-          isEnabled: true,
-          max: 16,
-          min: 4,
-        },
+        { isEnabled: true, max: 16, min: 4 },
       )
     })
   })
@@ -3228,13 +3199,7 @@ describe('melCloudApp', () => {
 
     it('aggregates overheat over the ATA devices only', async () => {
       await app.onInit()
-      stubBuilding(
-        {},
-        {},
-        {
-          d1: { isEnabled: true, max: 37, min: 35 },
-        },
-      )
+      stubBuilding({}, {}, { d1: { isEnabled: true, max: 37, min: 35 } })
       // Turn d2 into an ATW device: it must not drag the aggregate to
       // "mixed" — the feature is ATA-only.
       const devices = [

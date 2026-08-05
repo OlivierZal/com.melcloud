@@ -3,11 +3,7 @@
     "actions": [
       {
         "args": [
-          {
-            "name": "thermostat_mode",
-            "type": "dropdown",
-            "values": "$values"
-          }
+          { "name": "thermostat_mode", "type": "dropdown", "values": "$values" }
         ],
         "id": "thermostat_mode_set",
         "title": {
@@ -30,11 +26,7 @@
     "conditions": [
       {
         "args": [
-          {
-            "name": "thermostat_mode",
-            "type": "dropdown",
-            "values": "$values"
-          }
+          { "name": "thermostat_mode", "type": "dropdown", "values": "$values" }
         ],
         "id": "thermostat_mode_is",
         "title": {
@@ -57,11 +49,7 @@
     "triggers": [
       {
         "args": [
-          {
-            "name": "thermostat_mode",
-            "type": "dropdown",
-            "values": "$values"
-          }
+          { "name": "thermostat_mode", "type": "dropdown", "values": "$values" }
         ],
         "id": "thermostat_mode_changed",
         "title": {

@@ -30,10 +30,7 @@
       "throttled": "__name__ blokkerer pålogginger midlertidig etter for mange forsøk — prøv igjen senere.",
       "unverified": "Logget inn, men økten kunne ikke bekreftes — prøv igjen."
     },
-    "boolean": {
-      "false": "Nei",
-      "true": "Ja"
-    },
+    "boolean": { "false": "Nei", "true": "Ja" },
     "devices": {
       "legend": "Innstillinger for alle enheter",
       "none": "Legg til en enhet for å låse opp alle appinnstillingene!",
@@ -45,11 +42,7 @@
       "legend": "Innstillinger for alle luft-til-luft-enheter"
     },
     "errorLog": {
-      "columns": {
-        "date": "Dato",
-        "device": "Enhet",
-        "error": "Feil"
-      },
+      "columns": { "date": "Dato", "device": "Enhet", "error": "Feil" },
       "error": "Velg en dato før\n__from__.",
       "errorCount": {
         "0": "feil",

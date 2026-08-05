@@ -51,12 +51,7 @@
           "sv": "Måltemperaturen ändrades"
         },
         "tokens": [
-          {
-            "example": 23.5,
-            "name": "$id",
-            "title": "$title",
-            "type": "$type"
-          }
+          { "example": 23.5, "name": "$id", "title": "$title", "type": "$type" }
         ]
       }
     ]

@@ -72,6 +72,10 @@
       "method": "GET",
       "path": "/language"
     },
+    "getWebviewHashes": {
+      "method": "GET",
+      "path": "/webview-hashes"
+    },
     "homeAuthenticate": {
       "method": "POST",
       "path": "/home/sessions"

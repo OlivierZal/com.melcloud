@@ -3,14 +3,9 @@ import swc from 'unplugin-swc'
 
 const swcPlugin = swc.vite({
   jsc: {
-    parser: {
-      decorators: true,
-      syntax: 'typescript',
-    },
+    parser: { decorators: true, syntax: 'typescript' },
     target: 'es2024',
-    transform: {
-      decoratorVersion: '2022-03',
-    },
+    transform: { decoratorVersion: '2022-03' },
   },
 })
 

@@ -503,10 +503,9 @@ export abstract class BaseMELCloudDevice<
       timerWords.timeSpecifier,
       duration.round({ largestUnit: 'days' }).toLocaleString(locale),
       timerWords.dateSpecifier,
-      getNow(this.homey).add(duration).toLocaleString(locale, {
-        dateStyle: 'full',
-        timeStyle: 'full',
-      }),
+      getNow(this.homey)
+        .add(duration)
+        .toLocaleString(locale, { dateStyle: 'full', timeStyle: 'full' }),
     )
 
     return this.homey[timerType](

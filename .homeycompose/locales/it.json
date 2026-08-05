@@ -30,10 +30,7 @@
       "throttled": "__name__ sta bloccando temporaneamente gli accessi dopo troppi tentativi — riprova più tardi.",
       "unverified": "Accesso effettuato, ma non è stato possibile verificare la sessione: riprova."
     },
-    "boolean": {
-      "false": "No",
-      "true": "Sì"
-    },
+    "boolean": { "false": "No", "true": "Sì" },
     "devices": {
       "legend": "Impostazioni di tutti i dispositivi",
       "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!",
@@ -45,11 +42,7 @@
       "legend": "Impostazioni di tutti i dispositivi aria-aria"
     },
     "errorLog": {
-      "columns": {
-        "date": "Data",
-        "device": "Dispositivo",
-        "error": "Errore"
-      },
+      "columns": { "date": "Data", "device": "Dispositivo", "error": "Errore" },
       "error": "Scegli una data prima di\n__from__.",
       "errorCount": {
         "0": "errori",

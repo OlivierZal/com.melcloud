@@ -12,18 +12,12 @@
       "method": "GET",
       "path": "/classic/zones/:zoneType/:zoneId/ata"
     },
-    "getClassicBuildings": {
-      "method": "GET",
-      "path": "/classic/buildings"
-    },
+    "getClassicBuildings": { "method": "GET", "path": "/classic/buildings" },
     "getHomeAtaState": {
       "method": "GET",
       "path": "/home/devices/:deviceId/ata"
     },
-    "getHomeAtaTargets": {
-      "method": "GET",
-      "path": "/home/targets/ata"
-    },
+    "getHomeAtaTargets": { "method": "GET", "path": "/home/targets/ata" },
     "getHomeBuildingAtaModes": {
       "method": "GET",
       "path": "/home/buildings/:buildingId/ata/modes"
@@ -32,14 +26,9 @@
       "method": "GET",
       "path": "/home/buildings/:buildingId/ata"
     },
-    "getLanguage": {
-      "method": "GET",
-      "path": "/language"
-    },
-    "logWebviewBoot": {
-      "method": "POST",
-      "path": "/boot-error"
-    },
+    "getLanguage": { "method": "GET", "path": "/language" },
+    "getWebviewHashes": { "method": "GET", "path": "/webview-hashes" },
+    "logWebviewBoot": { "method": "POST", "path": "/boot-error" },
     "updateClassicAtaState": {
       "method": "PUT",
       "path": "/classic/zones/:zoneType/:zoneId/ata"

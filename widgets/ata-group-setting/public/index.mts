@@ -5,6 +5,7 @@ import type { HomeBuildingZone, HomeDeviceZone } from '../../../types/zone.mts'
 import {
   getButton,
   getDiv,
+  getFieldset,
   getSelect,
   hideInitError,
   showInitError,
@@ -18,6 +19,7 @@ import {
   surfaceError,
   trySetDocumentLanguage,
 } from '../../../public/homey-api.mts'
+import { ensureFreshWebview } from '../../../public/webview-freshness.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 
@@ -48,7 +50,7 @@ class WidgetApp {
   public constructor(homey: Homey<HomeySettings>) {
     this.#homey = homey
     const animation = getDiv('animation')
-    const ataValues = getDiv('values_melcloud')
+    const ataValues = getFieldset('values_melcloud')
     const zone = getSelect('zones')
     this.#animationController = new AnimationController(homey, animation)
     this.#ataValueManager = new AtaValueManager(homey, ataValues, zone)
@@ -57,6 +59,15 @@ class WidgetApp {
   // `ready()` always fires — an unbounded await here would hold Homey's
   // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
+    // A stale cached page reloads itself once instead of booting: skip
+    // the init — the document is about to be replaced.
+    if (
+      await ensureFreshWebview('ata-group-setting', async () =>
+        homeyApiGet(this.#homey, '/webview-hashes'),
+      )
+    ) {
+      return
+    }
     await runWebview(this.#homey, this.#run(), {
       onError: showInitError,
       height: () => document.body.scrollHeight,
@@ -98,9 +109,9 @@ class WidgetApp {
     const [buildings, homeTargets] = await Promise.all([
       fetchList<Classic.BuildingZone>(
         this.#homey,
-        `/classic/buildings?${new URLSearchParams({
-          type: '0',
-        } satisfies { type: `${Classic.DeviceType}` })}`,
+        `/classic/buildings?${new URLSearchParams({ type: '0' } satisfies {
+          type: `${Classic.DeviceType}`
+        })}`,
       ),
       fetchList<HomeBuildingZone | HomeDeviceZone>(
         this.#homey,

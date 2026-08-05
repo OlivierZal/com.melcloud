@@ -37,7 +37,16 @@ caught real failures that the others miss:
   there, and nothing needs re-committing when a webview source changes
   (the old re-stamp-and-commit dance is gone). Stamps exist only in the
   packaged app, and only within attribute/import reference contexts,
-  never comments.
+  never comments. A second cache layer covers the HTML
+  itself (phone webviews cache the page across app versions,
+  force-close included): each bundle carries a freshness handshake —
+  the page's identity is the document-order join of its `?v=` stamps (a CSS-only ship moves it too), `GET /webview-hashes` serves the
+  live hashes (a manifest `bundle.mts` emits into the packaged app,
+  read by `lib/webview-hashes.mts`), and a mismatch triggers ONE
+  `location.reload()` (sessionStorage guard, `webview-freshness.mts`),
+  which revalidates the HTML and pulls the fresh bundle. Every failure
+  path stays open: an unstamped page, an absent route or denied
+  storage must never take a working webview down.
 - `npm run homey:validate` — Homey validation at publish level; may
   rewrite files (see locales below), re-stage if it does.
 - `node scripts/sync-capability-definitions.mts` — refreshes the
@@ -111,7 +120,17 @@ coverage.
   matches" clauses redundant.
 - Dirty-gating: `public/dirty-gate.mts` is the ONE primitive behind every
   webview Apply/Refresh pair (settings sections, frost/holiday panels, the
-  ATA group widget) — never re-derive its invariant at a call site. Its
+  ATA group widget) — never re-derive its invariant at a call site. The gate also freezes the gated
+  fieldsets while a request is in flight (container `disabled` +
+  `aria-busy`, so a control's own domain `disabled` survives the thaw):
+  every success path rewrites the fields, so a mid-flight edit would be
+  silently clobbered — pass every region `serialize` reads through
+  `fieldsetElements`. When a wire protocol cannot express every form
+  divergence (an emptied field means "no instruction" and is omitted
+  from the request), the call site supplies `isActionable` — Apply arms
+  only when the request would carry something — while `serialize` stays
+  the pure snapshot; the ATA group widget arms through its body builder
+  this way. Its
   `serialize` must stay a PURE form snapshot, never a request-body builder
   (those filter null deltas out and desync the pristine check — the
   historical heatzy bug), and disabled greying styles

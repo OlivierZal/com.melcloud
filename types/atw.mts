@@ -7,10 +7,7 @@ import {
   localizeWithAffix,
 } from './bases.mts'
 
-export const HotWaterMode = {
-  auto: 'auto',
-  forced: 'forced',
-} as const
+export const HotWaterMode = { auto: 'auto', forced: 'forced' } as const
 
 export type HotWaterMode = (typeof HotWaterMode)[keyof typeof HotWaterMode]
 
