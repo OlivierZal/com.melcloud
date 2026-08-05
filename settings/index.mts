@@ -485,15 +485,15 @@ interface MixableZoneSettings {
   readonly overheat_protection?: Mixable<ProtectionState> | null
 }
 
-// ── AuthManager ──
-// One frost-protection / holiday-mode panel: its button-pair id, its
-// endpoint suffix, and the display refresh bound to it.
+// One protection panel — frost, holiday or overheat: its button-pair
+// id, its endpoint suffix, and the display refresh bound to it.
 interface ZoneSettingDescriptor {
   readonly id: 'frost_protection' | 'holiday_mode' | 'overheat_protection'
   readonly path: 'frost-protection' | 'holiday-mode' | 'overheat-protection'
   readonly display: () => void
 }
 
+// ── AuthManager ──
 class AuthManager {
   readonly #apiSelect: HTMLSelectElement
 

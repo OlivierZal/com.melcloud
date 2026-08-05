@@ -5,7 +5,7 @@ import type {
   EnergyCapabilities,
   EnergyCapabilityTagEntry,
 } from '../types/capabilities.mts'
-import { KILOWATT_TO_WATT } from '../lib/constants.mts'
+import { WATTS_PER_KILOWATT } from '../lib/constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { typedEntries } from '../lib/typed-object.mts'
 import { unwrapResult } from '../lib/unwrap-result.mts'
@@ -37,12 +37,12 @@ export class EnergyReport<
 > extends ScheduledEnergyReport {
   readonly #device: ClassicMELCloudDevice<T>
 
+  readonly #driver: ClassicMELCloudDriver<T>
+
   #linkedDeviceCount = 1
 
-  private readonly driver: ClassicMELCloudDriver<T>
-
   get #energyCapabilityTagEntries(): EnergyCapabilityTagEntry<T>[] {
-    const cleaned = this.#device.cleanMapping(this.driver.tagMappings.energy)
+    const cleaned = this.#device.cleanMapping(this.#driver.tagMappings.energy)
     return typedEntries<
       string & keyof EnergyCapabilities<T>,
       readonly (keyof Classic.EnergyData<T>)[]
@@ -58,7 +58,7 @@ export class EnergyReport<
   ) {
     super(device, config)
     this.#device = device
-    this.driver = device.driver
+    this.#driver = device.driver
   }
 
   protected override async fetchAndApply(): Promise<Record<
@@ -89,7 +89,7 @@ export class EnergyReport<
     data: Classic.EnergyData<T>,
     capability: string & keyof EnergyCapabilities<T>,
   ): number {
-    const { consumedTagMapping, producedTagMapping } = this.driver
+    const { consumedTagMapping, producedTagMapping } = this.#driver
     const consumedTags = consumedTagMapping[capability] ?? []
     const producedTags = producedTagMapping[capability] ?? []
     const consumed = sumTags(data, consumedTags)
@@ -113,7 +113,7 @@ export class EnergyReport<
     for (const tag of tags) {
       const tagData = data[tag]
       if (Array.isArray(tagData)) {
-        total += (tagData[hour] ?? 0) * KILOWATT_TO_WATT
+        total += (tagData[hour] ?? 0) * WATTS_PER_KILOWATT
       }
     }
 

@@ -112,7 +112,7 @@ const api = {
     }
   },
   classicLogOut: ({ homey: { app } }: { homey: Homey }): void => {
-    logSettingsRoute(app, '/classic/sessions')
+    logSettingsRoute(app, 'DELETE /classic/sessions')
     app.classicApi.logOut()
   },
   getClassicBuildings: (): Classic.BuildingZone[] => getClassicBuildings(),
@@ -152,7 +152,7 @@ const api = {
       .toSorted((group1, group2) => group1.name.localeCompare(group2.name))
   },
   getDeviceSettings: ({ homey: { app } }: { homey: Homey }): DeviceSettings => {
-    logSettingsRoute(app, '/settings/devices')
+    logSettingsRoute(app, 'GET /settings/devices')
     return app.getDeviceSettings()
   },
   getDriverSettings: ({
@@ -160,7 +160,7 @@ const api = {
   }: {
     homey: Homey
   }): Partial<Record<string, DriverSetting[]>> => {
-    logSettingsRoute(app, '/settings/drivers')
+    logSettingsRoute(app, 'GET /settings/drivers')
     return app.getDriverSettings()
   },
   getErrorLog: async ({
@@ -236,8 +236,14 @@ const api = {
   }): (HomeBuildingZone | HomeDeviceZone)[] => app.getHomeTargets(),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
-  getWebviewHashes: async (): Promise<Partial<Record<string, string>>> =>
-    getWebviewHashes(),
+  getWebviewHashes: async ({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): Promise<Partial<Record<string, string>>> => {
+    logSettingsRoute(app, 'GET /webview-hashes')
+    return getWebviewHashes()
+  },
   homeAuthenticate: async ({
     body,
     homey,
@@ -252,11 +258,11 @@ const api = {
     }
   },
   homeLogOut: ({ homey: { app } }: { homey: Homey }): void => {
-    logSettingsRoute(app, '/home/sessions')
+    logSettingsRoute(app, 'DELETE /home/sessions')
     app.homeApi.logOut()
   },
   isClassicAuthenticated: ({ homey: { app } }: { homey: Homey }): boolean => {
-    logSettingsRoute(app, '/classic/sessions')
+    logSettingsRoute(app, 'GET /classic/sessions')
     return app.classicApi.isAuthenticated()
   },
   isHomeAuthenticated: async ({
@@ -264,7 +270,7 @@ const api = {
   }: {
     homey: Homey
   }): Promise<boolean> => {
-    logSettingsRoute(app, '/home/sessions')
+    logSettingsRoute(app, 'GET /home/sessions')
     return app.homeApi.ensureAuthenticated()
   },
   logWebviewBoot: ({

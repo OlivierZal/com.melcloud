@@ -17,9 +17,6 @@ import {
 // active periods return points, so an empty window means an idle unit.
 export const TELEMETRY_INTERVAL = 'Minute'
 export const MINUTES_PER_HOUR = 60
-export const WATTS_PER_KILOWATT = 1000
-// ATA telemetry is Wh pulses (100 Wh quantum); ATW buckets are kWh.
-export const WATT_HOURS_PER_KILOWATT_HOUR = 1000
 // The single ATA counter has no per-mode split and no live power: the
 // approximated reading is a coarse average over this trailing window.
 export const POWER_WINDOW_HOURS = 2
@@ -185,6 +182,19 @@ export abstract class HomeEnergyReport<
     return total
   }
 
+  // Writes the computed pairs to the device and returns them as the
+  // applied `capability → value` map the base contract expects.
+  async #applyPairs(
+    applied: readonly (readonly [string, number])[],
+  ): Promise<Record<string, number>> {
+    await Promise.all(
+      applied.map(async ([capability, value]) =>
+        this.#device.setCapabilityValue(capability, value),
+      ),
+    )
+    return Object.fromEntries(applied)
+  }
+
   async #applyRegular(
     facade: HomeDeviceFacade<T>,
   ): Promise<Record<string, number>> {
@@ -201,19 +211,15 @@ export abstract class HomeEnergyReport<
       from,
       to: nowInstant,
     })
-    const applied = entries.map(
-      (entry) =>
-        [
-          entry[0],
-          this.#regularValue(entry, points, { dayStart, now: nowInstant }),
-        ] as const,
-    )
-    await Promise.all(
-      applied.map(async ([capability, value]) =>
-        this.#device.setCapabilityValue(capability, value),
+    return this.#applyPairs(
+      entries.map(
+        (entry) =>
+          [
+            entry[0],
+            this.#regularValue(entry, points, { dayStart, now: nowInstant }),
+          ] as const,
       ),
     )
-    return Object.fromEntries(applied)
   }
 
   async #applyTotals(
@@ -229,15 +235,9 @@ export abstract class HomeEnergyReport<
         ),
       ),
     )
-    const applied = entries.map(
-      (entry) => [entry[0], totalValue(entry, totals)] as const,
+    return this.#applyPairs(
+      entries.map((entry) => [entry[0], totalValue(entry, totals)] as const),
     )
-    await Promise.all(
-      applied.map(async ([capability, value]) =>
-        this.#device.setCapabilityValue(capability, value),
-      ),
-    )
-    return Object.fromEntries(applied)
   }
 
   async #fetchAccrual(

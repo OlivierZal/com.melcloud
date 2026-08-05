@@ -42,7 +42,10 @@ caught real failures that the others miss:
   force-close included): each bundle carries a freshness handshake —
   the page's identity is the document-order join of its `?v=` stamps (a CSS-only ship moves it too), `GET /webview-hashes` serves the
   live hashes (a manifest `bundle.mts` emits into the packaged app,
-  read by `lib/webview-hashes.mts`), and a mismatch triggers ONE
+  read by `lib/webview-hashes.mts`; module, test
+  `tests/unit/webview-hashes.test.ts` and the
+  `tests/fixtures/webview-hashes/` fixtures are byte-identical in the
+  three apps — edit all three together), and a mismatch triggers ONE
   `location.reload()` (sessionStorage guard, `webview-freshness.mts`),
   which revalidates the HTML and pulls the fresh bundle. Every failure
   path stays open: an unstamped page, an absent route or denied

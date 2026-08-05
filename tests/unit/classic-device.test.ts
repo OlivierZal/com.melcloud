@@ -99,12 +99,9 @@ vi.mock(import('homey'), async () => {
               .mockImplementation((key: string) => key),
             api: { realtime: realtimeMock },
             app: { getClassicFacade: getFacadeMock },
-            clearInterval: vi.fn<(timer: NodeJS.Timeout | undefined) => void>(),
             clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
             clock: { getTimezone: vi.fn<() => string>(() => 'Europe/Paris') },
             i18n: { getLanguage: vi.fn<() => string>(() => 'en') },
-            setInterval:
-              vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
             setTimeout:
               vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
           },
@@ -817,13 +814,6 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('timer methods', () => {
-    it('should delegate setInterval to homey.setInterval with duration in ms', () => {
-      const callback = vi.fn<() => Promise<void>>()
-      device.setInterval(callback, { hours: 1 }, 'energy report')
-
-      expect(device.homey.setInterval).toHaveBeenCalledWith(callback, 3_600_000)
-    })
-
     it('should delegate setTimeout to homey.setTimeout with duration in ms', () => {
       const callback = vi.fn<() => Promise<void>>()
       device.setTimeout(callback, { minutes: 5 }, 'sync')

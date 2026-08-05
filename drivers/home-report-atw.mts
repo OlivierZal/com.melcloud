@@ -1,6 +1,7 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import { Temporal } from 'temporal-polyfill'
 
+import { WATTS_PER_KILOWATT } from '../lib/constants.mts'
 import { unwrapResult } from '../lib/unwrap-result.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 import type { HomeMELCloudDevice } from './home-device.mts'
@@ -11,7 +12,6 @@ import {
   POWER_FRESHNESS,
   parsePoints,
   TELEMETRY_INTERVAL,
-  WATTS_PER_KILOWATT,
 } from './home-report.mts'
 
 // Near-live reading: the latest minute bucket within the freshness horizon

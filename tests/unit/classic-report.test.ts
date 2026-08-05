@@ -30,8 +30,6 @@ const setCapabilityValueMock =
 const ensureDeviceMock = vi.fn<() => Promise<unknown>>()
 const cleanMappingMock = vi.fn<(mapping: unknown) => Record<string, unknown>>()
 const clearTimeoutMock = vi.fn<(timeout: NodeJS.Timeout | null) => void>()
-const clearIntervalMock =
-  vi.fn<(interval: NodeJS.Timeout | undefined) => void>()
 const setTimeoutMock = vi
   .fn<
     (
@@ -41,15 +39,6 @@ const setTimeoutMock = vi
     ) => number
   >()
   .mockReturnValue(1)
-const setIntervalMock = vi
-  .fn<
-    (
-      callback: () => Promise<void>,
-      interval: unknown,
-      actionType: string,
-    ) => number
-  >()
-  .mockReturnValue(2)
 const logMock = vi.fn<(...args: unknown[]) => void>()
 const errorMock = vi.fn<(...args: unknown[]) => void>()
 const setWarningMock = vi.fn<(warning: string | null) => Promise<void>>()
@@ -87,7 +76,6 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   error: errorMock,
   homey: mock<Homey.Homey>({
     __: translateMock,
-    clearInterval: clearIntervalMock,
     clearTimeout: clearTimeoutMock,
     clock: mock<Homey.Homey['clock']>({
       getTimezone: vi.fn<() => string>(() => 'Europe/Paris'),
@@ -95,7 +83,6 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   }),
   log: logMock,
   setCapabilityValue: setCapabilityValueMock,
-  setInterval: setIntervalMock,
   setTimeout: setTimeoutMock,
   setWarning: setWarningMock,
 })
@@ -148,7 +135,6 @@ const createCopMocks = (
     driver: copDriver,
     ensureDevice: ensureDeviceMock,
     homey: mock<Homey.Homey>({
-      clearInterval: clearIntervalMock,
       clearTimeout: clearTimeoutMock,
       clock: mock<Homey.Homey['clock']>({
         getTimezone: vi.fn<() => string>(() => 'Europe/Paris'),
@@ -156,7 +142,6 @@ const createCopMocks = (
     }),
     log: logMock,
     setCapabilityValue: setCapabilityValueMock,
-    setInterval: setIntervalMock,
     setTimeout: setTimeoutMock,
   })
 }
@@ -520,7 +505,6 @@ describe(EnergyReport, () => {
       )
       await timeoutCallback()
 
-      expect(setIntervalMock).not.toHaveBeenCalled()
       expect(setTimeoutMock).toHaveBeenCalledTimes(2)
       expect(setTimeoutMock).toHaveBeenLastCalledWith(
         expect.any(Function),

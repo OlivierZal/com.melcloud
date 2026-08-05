@@ -1,1 +1,1 @@
-export const KILOWATT_TO_WATT = 1000
+export const WATTS_PER_KILOWATT = 1000
