@@ -157,7 +157,12 @@ const stampHtml = async (htmlPath: string): Promise<string | null> => {
   if (stamped !== html) {
     await writeFile(htmlPath, stamped)
   }
-  return hashes.get('index.js') ?? null
+  // The page's identity is the join of every stamp it carries, in
+  // DOCUMENT order (the match order of `REFERENCE`, which the page's
+  // own collection mirrors): a change to any packaged asset (bundle,
+  // stylesheet) moves the identity, so CSS-only or markup-only ships
+  // self-heal too.
+  return hashes.size > 0 ? hashes.values().toArray().join('.') : null
 }
 
 // Emit the live-hash manifest the app serves (`GET /webview-hashes`) —
