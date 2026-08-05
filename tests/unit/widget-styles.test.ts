@@ -14,9 +14,14 @@ const readWidgetPair = async (
     ),
   )
 
-const getBootScript = (page: string | undefined): string =>
-  /<script>(?<script>[\s\S]*?)<\/script>/v.exec(page ?? '')?.groups?.script ??
-  ''
+const getBootScript = (page = ''): string => {
+  const opener = '<script>'
+  const start = page.indexOf(opener)
+  const end = page.indexOf('</script>')
+  return start === -1 || end <= start
+    ? ''
+    : page.slice(start + opener.length, end)
+}
 
 const getInitErrorRules = (sheet: string | undefined): string[] =>
   (sheet ?? '').match(/#init_error[^\{]*\{[^\}]*\}/gv) ?? []
