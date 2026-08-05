@@ -20,9 +20,9 @@ export interface DirtyGate {
 export interface DirtyGateOptions {
   readonly applyElement: HTMLButtonElement
   readonly fieldsetElements?: readonly HTMLFieldSetElement[]
-  readonly isActionable?: () => boolean
   readonly refreshElements?: readonly HTMLButtonElement[]
   readonly serialize: () => string
+  readonly isActionable?: () => boolean
 }
 
 // `input` covers live typing in number/date fields; `change` covers the
@@ -63,7 +63,9 @@ const setFrozen = (
 // "no instruction" and is omitted from the request), supply
 // `isActionable`: Apply then arms only when pressing it would send
 // something — the arming predicate gains domain judgment while the
-// baseline bookkeeping stays the pure snapshot.
+// baseline bookkeeping stays the pure snapshot. Buttons grey through
+// native `disabled` (not a CSS class): it blocks keyboard activation
+// during in-flight actions and is announced by screen readers.
 export const createDirtyGate = ({
   applyElement,
   fieldsetElements = [],
@@ -74,8 +76,6 @@ export const createDirtyGate = ({
   let busyGeneration = 0
   let isBusy = false
   let saved = serialize()
-  // Native `disabled` (not a CSS class): it blocks keyboard activation
-  // during in-flight actions and is announced by screen readers.
   const recompute = (): void => {
     applyElement.disabled =
       isBusy || !(isActionable?.() ?? serialize() !== saved)

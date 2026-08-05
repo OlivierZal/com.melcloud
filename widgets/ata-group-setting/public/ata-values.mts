@@ -206,9 +206,9 @@ export class AtaValueManager {
     this.#dirtyGate = createDirtyGate({
       applyElement: getButton('apply_values_melcloud'),
       fieldsetElements: [ataValuesElement],
+      refreshElements: [getButton('refresh_values_melcloud')],
       isActionable: (): boolean =>
         Object.keys(this.#buildAtaValuesBody()).length > 0,
-      refreshElements: [getButton('refresh_values_melcloud')],
       serialize: (): string => this.#serializeState(),
     })
   }
