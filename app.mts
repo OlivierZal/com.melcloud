@@ -149,8 +149,8 @@ interface HolidayModeActionArgs {
 }
 
 // Aggregates one device's settings into the per-driver map; a conflicting
-// value across devices marks the setting as indeterminate (`null`) and stops
-// processing the remaining settings of that device.
+// value across devices marks that setting as indeterminate (`null`) while
+// the remaining settings keep folding independently.
 const mergeDeviceSettings = (
   driverSettings: DeviceSetting,
   settings: Record<string, unknown>,
@@ -160,7 +160,6 @@ const mergeDeviceSettings = (
       driverSettings[settingId] = value
     } else if (driverSettings[settingId] !== value) {
       driverSettings[settingId] = null
-      return
     }
   }
 }

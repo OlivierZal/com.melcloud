@@ -1182,6 +1182,27 @@ describe('melCloudApp', () => {
 
       expect(deviceSettings.melcloud?.always_on).toBeNull()
     })
+
+    it('should keep folding the settings after an earlier conflict', async () => {
+      setupDriver([
+        createClassicDevice({
+          getSettings: vi
+            .fn<() => Record<string, unknown>>()
+            .mockReturnValue({ always_on: true, max_power: 30 }),
+        }),
+        createClassicDevice({
+          getSettings: vi
+            .fn<() => Record<string, unknown>>()
+            .mockReturnValue({ always_on: false, max_power: 50 }),
+        }),
+      ])
+      await app.onInit()
+
+      const deviceSettings = app.getDeviceSettings()
+
+      expect(deviceSettings.melcloud?.always_on).toBeNull()
+      expect(deviceSettings.melcloud?.max_power).toBeNull()
+    })
   })
 
   describe('driver settings retrieval', () => {
