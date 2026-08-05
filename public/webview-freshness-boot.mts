@@ -29,3 +29,17 @@ export const ensureFreshWidget = async (
       )
     },
   )
+
+// Second trigger of the same handshake: the app pokes open pages at its
+// own (re)boot, when the served hashes may have moved; a failed recheck
+// must never break a live page (every path inside is already fail-open).
+export const watchWebviewFreshness = (
+  homey: HomeyWidget,
+  entry: string,
+): void => {
+  homey.on('webview_hashes_changed', () => {
+    fireAndForget(ensureFreshWidget(homey, entry), () => {
+      // The next boot pull re-checks anyway.
+    })
+  })
+}

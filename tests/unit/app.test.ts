@@ -161,6 +161,8 @@ const mockSettingsUnset = vi.fn<(key: string) => void>()
 const mockSetTimeout =
   vi.fn<(callback: () => Promise<void> | void, ms: number) => void>()
 const mockCreateNotification = vi.fn<() => Promise<void>>()
+
+const mockRealtime = vi.fn<(event: string, data: unknown) => void>()
 const mockHomeyReady = vi.fn<() => Promise<void>>().mockResolvedValue()
 const mockWidgetRegister =
   vi.fn<(id: string, listener: (query: string) => unknown) => void>()
@@ -332,6 +334,7 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
       configurable: true,
       value: {
         __: mockTranslate,
+        api: { realtime: mockRealtime },
         clock: { getTimezone: mockGetTimezone },
         dashboards: { getWidget: mockGetWidget },
         drivers: { getDrivers: mockGetDrivers },
@@ -614,6 +617,12 @@ describe('melCloudApp', () => {
   })
 
   describe('initialization', () => {
+    it('should poke open webviews with the freshness event at boot', async () => {
+      await app.onInit()
+
+      expect(mockRealtime).toHaveBeenCalledWith('webview_hashes_changed', null)
+    })
+
     it('should initialize the API and facade manager', async () => {
       await app.onInit()
 

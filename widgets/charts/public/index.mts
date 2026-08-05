@@ -47,7 +47,10 @@ import {
   surfaceError,
   trySetDocumentLanguage,
 } from '../../../public/homey-api.mts'
-import { ensureFreshWidget } from '../../../public/webview-freshness-boot.mts'
+import {
+  ensureFreshWidget,
+  watchWebviewFreshness,
+} from '../../../public/webview-freshness-boot.mts'
 import { getZoneId, getZonePath } from '../../../public/zones.mts'
 import {
   type DaysQuery,
@@ -878,6 +881,7 @@ class ChartWidget {
     if (await ensureFreshWidget(this.#homey, 'charts')) {
       return
     }
+    watchWebviewFreshness(this.#homey, 'charts')
     await runWebview(this.#homey, this.#run(), {
       onError: showInitError,
       height: () => document.body.scrollHeight,
