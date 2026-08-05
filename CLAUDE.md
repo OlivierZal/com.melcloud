@@ -308,11 +308,17 @@ coverage.
   express (a computed height, a generated path); anything static
   belongs in the stylesheet, following the CSS/HTML lint rules' spirit
   even where no rule captures it.
-- The webview runtime floor (es2023, no `Object.groupBy`, no iterator
-  helpers) is enforced by a scoped lint block over `public/`,
-  `settings/` and `widgets/*/public/` — the tsconfig cannot express two
-  runtimes in one project, and the floor has already caused a
-  production incident once. Node-side code may use the newer APIs
+- The webview runtime floor (es2023: no `Object.groupBy`, no iterator
+  helpers, no `v` regex flag) is enforced by a scoped lint block over
+  `public/`, `settings/` and `widgets/*/public/` — the tsconfig cannot
+  express two runtimes in one project, and the floor has already
+  caused a production incident once. A `tsconfig.webview.json`
+  (target/lib ES2023) would be the stronger form, but was probed and
+  refused (2026-08-06): `include` does not bound the project — tsc
+  checks the import CLOSURE, and the webview-facing types import the
+  drivers' type barrel, reaching node-side es2024/2025 code. Revisit
+  only if webview-facing types get decoupled from driver classes
+  (pure DTOs). Node-side code may use the newer APIs
   freely.
 
 ## Lint doctrine
