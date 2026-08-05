@@ -20,6 +20,7 @@ export interface DirtyGate {
 export interface DirtyGateOptions {
   readonly applyElement: HTMLButtonElement
   readonly fieldsetElements?: readonly HTMLFieldSetElement[]
+  readonly isActionable?: () => boolean
   readonly refreshElements?: readonly HTMLButtonElement[]
   readonly serialize: () => string
 }
@@ -57,10 +58,16 @@ const setFrozen = (
 // desyncs the pristine check. The gate snapshots it at creation, so Apply
 // starts greyed even when no data ever loads; call `markSaved` after every
 // (re)populate and successful save, `wire` on the controls the snapshot
-// reads, and route every request through `runBusy`.
+// reads, and route every request through `runBusy`. When the wire
+// protocol cannot express every form divergence (an emptied field means
+// "no instruction" and is omitted from the request), supply
+// `isActionable`: Apply then arms only when pressing it would send
+// something — the arming predicate gains domain judgment while the
+// baseline bookkeeping stays the pure snapshot.
 export const createDirtyGate = ({
   applyElement,
   fieldsetElements = [],
+  isActionable,
   refreshElements = [],
   serialize,
 }: DirtyGateOptions): DirtyGate => {
@@ -70,7 +77,8 @@ export const createDirtyGate = ({
   // Native `disabled` (not a CSS class): it blocks keyboard activation
   // during in-flight actions and is announced by screen readers.
   const recompute = (): void => {
-    applyElement.disabled = isBusy || serialize() === saved
+    applyElement.disabled =
+      isBusy || !(isActionable?.() ?? serialize() !== saved)
   }
   const markSaved = (): void => {
     saved = serialize()

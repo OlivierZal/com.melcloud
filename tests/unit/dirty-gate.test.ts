@@ -123,6 +123,31 @@ describe('dirty gate', () => {
     expect(refreshElement.disabled).toBe(false)
   })
 
+  it('should arm Apply through isActionable instead of the snapshot diff', () => {
+    const applyElement = mock<HTMLButtonElement>({ disabled: false })
+    const actionable = { value: false }
+    const form = { value: 'pristine' }
+    const gate = createDirtyGate({
+      applyElement,
+      isActionable: () => actionable.value,
+      serialize: () => form.value,
+    })
+
+    form.value = 'edited'
+    gate.recompute()
+
+    expect(applyElement.disabled).toBe(true)
+
+    actionable.value = true
+    gate.recompute()
+
+    expect(applyElement.disabled).toBe(false)
+
+    gate.setBusy(true)
+
+    expect(applyElement.disabled).toBe(true)
+  })
+
   it('should let only the latest claim release the busy state', async () => {
     const { fieldsetElement, gate, refreshElement } = setup()
     const firstClaim = Promise.withResolvers<null>()

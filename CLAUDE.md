@@ -116,7 +116,12 @@ coverage.
   `aria-busy`, so a control's own domain `disabled` survives the thaw):
   every success path rewrites the fields, so a mid-flight edit would be
   silently clobbered — pass every region `serialize` reads through
-  `fieldsetElements`. Its
+  `fieldsetElements`. When a wire protocol cannot express every form
+  divergence (an emptied field means "no instruction" and is omitted
+  from the request), the call site supplies `isActionable` — Apply arms
+  only when the request would carry something — while `serialize` stays
+  the pure snapshot; the ATA group widget arms through its body builder
+  this way. Its
   `serialize` must stay a PURE form snapshot, never a request-body builder
   (those filter null deltas out and desync the pristine check — the
   historical heatzy bug), and disabled greying styles
