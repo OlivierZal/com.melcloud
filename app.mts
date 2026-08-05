@@ -1146,8 +1146,6 @@ export default class MELCloudApp extends App {
     }
   }
 
-  // Type-agnostic device facade lookup for the chart surfaces shared by
-  // both Home device types (temperatures, signal, energy report).
   // The day-chart query every dialect's report reads. Derived once: the
   // window anchor and the timezone source must not drift between the six
   // call sites, which the facades' shared `(query?: ReportQuery)` contract
@@ -1369,6 +1367,8 @@ export default class MELCloudApp extends App {
     }))
   }
 
+  // Type-agnostic device facade lookup for the chart surfaces shared by
+  // both Home device types (temperatures, signal, energy report).
   #getHomeDeviceFacade(
     deviceId: string,
   ): Home.DeviceAtaFacade | Home.DeviceAtwFacade {

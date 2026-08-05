@@ -2,8 +2,8 @@
 // cached across app versions — the HTML itself included (proven in the
 // wild), so a booted page may run stale UI code indefinitely: the
 // cached HTML's `?v=` stamps keep serving the matching cached assets.
-// The page's identity is the SORTED JOIN of every `?v=` stamp it
-// carries (so a CSS-only or markup-only ship moves it too); the app
+// The page's identity is the DOCUMENT-ORDER join of every `?v=` stamp
+// it carries (so a CSS-only or markup-only ship moves it too); the app
 // serves the live identities (`GET /webview-hashes`, emitted at
 // package time), fetched through the app bridge so no HTTP cache can
 // stale them. On mismatch the page reloads ONCE — the reload

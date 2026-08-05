@@ -3,7 +3,6 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import {
   getClassicBuildings,
-  getClassicZones,
   setClassicFacadeManager,
 } from '../../lib/classic-facade-manager.mts'
 import { mock } from '../helpers.ts'
@@ -75,23 +74,6 @@ describe('classic-facade-manager', () => {
 
         expect(mockFacadeManager.getBuildings).toHaveBeenCalledWith({
           type: Classic.DeviceType.Ata,
-        })
-      })
-    })
-
-    describe(getClassicZones, () => {
-      it('should delegate to facadeManager.getZones', () => {
-        const result = getClassicZones()
-
-        expect(result).toBe(mockZones)
-        expect(mockFacadeManager.getZones).toHaveBeenCalledWith({})
-      })
-
-      it('should pass type filter', () => {
-        getClassicZones({ type: Classic.DeviceType.Atw })
-
-        expect(mockFacadeManager.getZones).toHaveBeenCalledWith({
-          type: Classic.DeviceType.Atw,
         })
       })
     })

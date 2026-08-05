@@ -18,8 +18,3 @@ export const getClassicBuildings = ({
   type,
 }: { type?: Classic.DeviceType | undefined } = {}): Classic.BuildingZone[] =>
   getClassicFacadeManager().getBuildings(type === undefined ? {} : { type })
-
-export const getClassicZones = ({
-  type,
-}: { type?: Classic.DeviceType | undefined } = {}): Classic.Zone[] =>
-  getClassicFacadeManager().getZones(type === undefined ? {} : { type })

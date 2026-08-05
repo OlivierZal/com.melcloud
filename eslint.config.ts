@@ -55,8 +55,6 @@ const config: Config[] = defineConfig([
       '.homeybuild/',
       'coverage/',
       // Stale pre-`.homeybuild` esbuild outputs, also gitignored
-      'settings/index.mjs',
-      'widgets/*/public/index.mjs',
     ],
   },
   {

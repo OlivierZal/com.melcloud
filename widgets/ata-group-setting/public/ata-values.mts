@@ -287,20 +287,20 @@ export class AtaValueManager {
   }
 
   public async setValues(): Promise<void> {
+    // The gate's `isActionable` arms Update only on a non-empty body —
+    // never re-derive that invariant here.
     await this.#dirtyGate.runBusy(async () => {
       const body = this.#buildAtaValuesBody()
-      if (Object.keys(body).length > 0) {
-        await homeyApiPut(
-          this.#homey,
-          getAtaStatePath(this.#zone.value),
-          body satisfies Classic.GroupState,
-        )
-        // The zone's known state absorbs the accepted write immediately:
-        // the debounced `deviceupdate` refetch confirms it later, but
-        // until then the body filter (and so `isActionable`) must judge
-        // against what the server now holds, not the pre-write state.
-        this.#updateZoneMapping(body)
-      }
+      await homeyApiPut(
+        this.#homey,
+        getAtaStatePath(this.#zone.value),
+        body satisfies Classic.GroupState,
+      )
+      // The zone's known state absorbs the accepted write immediately:
+      // the debounced `deviceupdate` refetch confirms it later, but
+      // until then the body filter (and so `isActionable`) must judge
+      // against what the server now holds, not the pre-write state.
+      this.#updateZoneMapping(body)
       // New pristine baseline is the just-applied form. A rejected PUT
       // throws before this, so the edit stays dirty for a retry.
       this.#dirtyGate.markSaved()
