@@ -22,7 +22,15 @@ import {
   homeyApiGet,
   homeyApiPut,
 } from '../../../public/homey-api.mts'
-import { getZoneId, getZoneName } from '../../../public/zones.mts'
+import {
+  getHomeBuildingId,
+  getHomeDeviceId,
+  getZoneId,
+  getZoneName,
+  getZonePath,
+  isHomeBuildingValue,
+  isHomeDeviceValue,
+} from '../../../public/zones.mts'
 
 type TargetZone = Classic.Zone | HomeBuildingZone | HomeDeviceZone
 
@@ -155,18 +163,14 @@ const getSubzones = (zone: TargetZone): TargetZone[] => [
   ...('floors' in zone ? zone.floors : []),
 ]
 
-// Routes a `${model}_${id}` option value to its state endpoint. Split at the
-// FIRST underscore only: Home ids may themselves contain underscores.
+// Routes a `${model}_${id}` option value to its state endpoint.
 const getAtaStatePath = (value: string): string => {
-  const separatorIndex = value.indexOf('_')
-  const model = value.slice(0, separatorIndex)
-  const id = value.slice(separatorIndex + 1)
-  if (model === 'homeBuildings') {
-    return `/home/buildings/${encodeURIComponent(id)}/ata`
+  if (isHomeBuildingValue(value)) {
+    return `/home/buildings/${encodeURIComponent(getHomeBuildingId(value))}/ata`
   }
-  return model === 'homeDevices'
-    ? `/home/devices/${encodeURIComponent(id)}/ata`
-    : `/classic/zones/${model}/${id}/ata`
+  return isHomeDeviceValue(value)
+    ? `/home/devices/${encodeURIComponent(getHomeDeviceId(value))}/ata`
+    : `/classic/zones/${getZonePath(value)}/ata`
 }
 
 // ── AtaValueManager class ──
@@ -367,7 +371,7 @@ export class AtaValueManager {
   }
 
   #updateAtaValue(id: keyof Classic.GroupState): void {
-    const ataValue = document.querySelector(`#${id}`)
+    const ataValue = this.#ataValues.querySelector(`#${CSS.escape(id)}`)
     if (
       ataValue !== null &&
       (ataValue instanceof HTMLInputElement ||

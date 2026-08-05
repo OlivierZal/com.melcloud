@@ -22,15 +22,6 @@ import { getLocale, getNow } from '../lib/temporal.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 
-interface TimerOptions {
-  readonly actionType: string
-  readonly timerType: 'setInterval' | 'setTimeout'
-  readonly timerWords: {
-    readonly dateSpecifier: string
-    readonly timeSpecifier: string
-  }
-}
-
 const capitalize = ([first = '', ...rest] = ''): string =>
   first.toUpperCase() + rest.join('')
 
@@ -218,28 +209,26 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  public setInterval(
-    callback: () => Promise<void>,
-    interval: Temporal.DurationLike,
-    actionType: string,
-  ): NodeJS.Timeout {
-    return this.#setTimer(callback, interval, {
-      actionType,
-      timerType: 'setInterval',
-      timerWords: { dateSpecifier: 'starting', timeSpecifier: 'every' },
-    })
-  }
-
   public setTimeout(
     callback: () => Promise<void>,
     interval: Temporal.DurationLike,
     actionType: string,
   ): NodeJS.Timeout {
-    return this.#setTimer(callback, interval, {
-      actionType,
-      timerType: 'setTimeout',
-      timerWords: { dateSpecifier: 'on', timeSpecifier: 'in' },
-    })
+    const duration = Temporal.Duration.from(interval)
+    const locale = getLocale(this.homey)
+    this.log(
+      capitalize(actionType),
+      'will run in',
+      duration.round({ largestUnit: 'days' }).toLocaleString(locale),
+      'on',
+      getNow(this.homey)
+        .add(duration)
+        .toLocaleString(locale, { dateStyle: 'full', timeStyle: 'full' }),
+    )
+    return this.homey.setTimeout(
+      callback,
+      duration.total({ unit: 'milliseconds' }),
+    )
   }
 
   // Homey keeps a warning bubble on the device tile until it is cleared:
@@ -480,30 +469,6 @@ export abstract class BaseMELCloudDevice<
     this.#tagMappings.set = this.cleanMapping(this.driver.tagMappings.set)
     this.#tagMappings.get = this.cleanMapping(this.driver.tagMappings.get)
     this.#tagMappings.list = this.cleanMapping(this.driver.tagMappings.list)
-  }
-
-  #setTimer(
-    callback: () => Promise<void>,
-    interval: Temporal.DurationLike,
-    { actionType, timerType, timerWords }: TimerOptions,
-  ): NodeJS.Timeout {
-    const duration = Temporal.Duration.from(interval)
-    const locale = getLocale(this.homey)
-    this.log(
-      capitalize(actionType),
-      'will run',
-      timerWords.timeSpecifier,
-      duration.round({ largestUnit: 'days' }).toLocaleString(locale),
-      timerWords.dateSpecifier,
-      getNow(this.homey)
-        .add(duration)
-        .toLocaleString(locale, { dateStyle: 'full', timeStyle: 'full' }),
-    )
-
-    return this.homey[timerType](
-      callback,
-      duration.total({ unit: 'milliseconds' }),
-    )
   }
 
   async #syncOptionalCapabilities(

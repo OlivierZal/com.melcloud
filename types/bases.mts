@@ -1,5 +1,12 @@
 import { typedFromEntries } from '../lib/typed-object.mts'
 
+const joinWithAffix = (
+  base: string,
+  affix: string,
+  position: 'prefix' | 'suffix',
+): string =>
+  position === 'prefix' ? `${affix} ${base.toLowerCase()}` : `${base} ${affix}`
+
 export const localizeWithAffix = (
   base: LocalizedStrings,
   affix: LocalizedStrings,
@@ -8,16 +15,14 @@ export const localizeWithAffix = (
   ...typedFromEntries(
     Object.entries(affix).map(([language, localizedAffix]) => [
       language,
-      /* v8 ignore next 2 -- both arms run (atw suffix, ata-erv prefix callers) but v8 misattributes the `??` sub-branches inside this map-callback ternary; the identical bare ternary below records both arms covered */
-      position === 'prefix'
-        ? `${localizedAffix ?? affix.en} ${(base[language] ?? base.en).toLowerCase()}`
-        : `${base[language] ?? base.en} ${localizedAffix ?? affix.en}`,
+      joinWithAffix(
+        base[language] ?? base.en,
+        localizedAffix ?? affix.en,
+        position,
+      ),
     ]),
   ),
-  en:
-    position === 'prefix'
-      ? `${affix.en} ${base.en.toLowerCase()}`
-      : `${base.en} ${affix.en}`,
+  en: joinWithAffix(base.en, affix.en, position),
 })
 
 export interface BaseGetCapabilities {

@@ -8,7 +8,7 @@ import type {
   SetCapabilities,
 } from '../../types/capabilities.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
-import { KILOWATT_TO_WATT } from '../../lib/constants.mts'
+import { KILO } from '../../lib/constants.mts'
 import { getLocale, getTimeZone, toPlainDate } from '../../lib/temporal.mts'
 import { HotWaterMode } from '../../types/atw.mts'
 import {
@@ -23,7 +23,7 @@ const convertFromDeviceMeasurePower =
     tag: 'CurrentEnergyConsumed' | 'CurrentEnergyProduced',
   ): ConvertFromDevice<typeof Classic.DeviceType.Atw> =>
   (data) =>
-    data[tag] * KILOWATT_TO_WATT
+    data[tag] * KILO
 
 const convertFromDeviceOperationZone =
   (

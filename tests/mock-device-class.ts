@@ -55,12 +55,9 @@ export const createMockDeviceClass = (
       __: vi.fn<(key: string) => string>(),
       api: { realtime: vi.fn<(event: string, data: unknown) => void>() },
       app: { getClassicFacade: vi.fn<(kind: string, id: number) => unknown>() },
-      clearInterval: vi.fn<(timer: NodeJS.Timeout | undefined) => void>(),
       clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
       clock: { getTimezone: vi.fn<() => string>(() => 'Europe/Paris') },
       i18n: { getLanguage: vi.fn<() => string>(() => 'en') },
-      setInterval:
-        vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
       setTimeout: vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
     }
 

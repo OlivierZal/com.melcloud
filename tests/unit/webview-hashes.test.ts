@@ -17,9 +17,9 @@ describe(getWebviewHashes, () => {
     await expect(
       getWebviewHashes(fixture('valid.json')),
     ).resolves.toStrictEqual({
-      'ata-group-setting': 'aaaa1111',
-      charts: 'cccc3333',
-      settings: 'bbbb2222',
+      'page-a': 'aaaa1111',
+      'page-b': 'bbbb2222',
+      'page-c': 'cccc3333',
     })
   })
 

@@ -1229,7 +1229,7 @@ class ChartWidget {
  * @param homey - The Homey instance handed to `onHomeyReady`.
  */
 export const start = async (homey: Homey<HomeySettings>): Promise<void> => {
-  // Register only what the two chart types use so esbuild tree-shakes the rest.
+  // Register only what the chart types use so esbuild tree-shakes the rest.
   Chart.register(
     ArcElement,
     BarController,

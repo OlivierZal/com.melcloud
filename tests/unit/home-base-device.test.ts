@@ -110,10 +110,7 @@ vi.mock(import('homey'), async () => {
               .mockImplementation((key: string) => key),
             api: { realtime: realtimeMock },
             app: { getHomeFacade: getHomeFacadeMock },
-            clearInterval: vi.fn<(timer: NodeJS.Timeout | undefined) => void>(),
             clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
-            setInterval:
-              vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
             setTimeout:
               vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
           },

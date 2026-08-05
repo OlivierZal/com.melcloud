@@ -8,11 +8,10 @@ export interface ClassicDeviceFacade {
 
 export interface DeviceDetails<
   T extends Classic.DeviceType = Classic.DeviceType,
-  TId extends number | string = number,
 > {
   readonly capabilities: readonly string[]
   readonly capabilitiesOptions: Partial<CapabilitiesOptions<T>>
-  readonly data: { readonly id: TId }
+  readonly data: { readonly id: number }
   readonly name: string
 }
 

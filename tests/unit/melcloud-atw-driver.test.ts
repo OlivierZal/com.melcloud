@@ -83,5 +83,21 @@ describe(ClassicMELCloudDriverAtw, () => {
       expect(capabilities).toContain('target_temperature.flow_cool')
       expect(capabilities).toContain('thermostat_mode.zone2')
     })
+
+    it('should never include measure_signal_strength, on any profile', () => {
+      expect.assertions(3)
+
+      const profiles = [
+        undefined,
+        mock<Classic.ListDeviceDataAtw>({ CanCool: false, HasZone2: false }),
+        mock<Classic.ListDeviceDataAtw>({ CanCool: true, HasZone2: true }),
+      ]
+
+      for (const data of profiles) {
+        expect(driver.getRequiredCapabilities(data)).not.toContain(
+          'measure_signal_strength',
+        )
+      }
+    })
   })
 })

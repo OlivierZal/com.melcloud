@@ -149,8 +149,8 @@ interface HolidayModeActionArgs {
 }
 
 // Aggregates one device's settings into the per-driver map; a conflicting
-// value across devices marks the setting as indeterminate (`null`) and stops
-// processing the remaining settings of that device.
+// value across devices marks that setting as indeterminate (`null`) while
+// the remaining settings keep folding independently.
 const mergeDeviceSettings = (
   driverSettings: DeviceSetting,
   settings: Record<string, unknown>,
@@ -160,7 +160,6 @@ const mergeDeviceSettings = (
       driverSettings[settingId] = value
     } else if (driverSettings[settingId] !== value) {
       driverSettings[settingId] = null
-      return
     }
   }
 }
@@ -886,16 +885,7 @@ export default class MELCloudApp extends App {
     deviceId: string,
     type: Home.DeviceType,
   ): Home.DeviceAtaFacade | Home.DeviceAtwFacade {
-    const model = this.#homeRegistry.getById(deviceId)
-    if (model?.type === type) {
-      if (model.isAta()) {
-        return this.#homeFacadeManager.get(model)
-      }
-      if (model.isAtw()) {
-        return this.#homeFacadeManager.get(model)
-      }
-    }
-    throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+    return this.#getHomeDeviceFacade(deviceId, type)
   }
 
   public getHomeFrostProtection(deviceId: string): ProtectionState | null {
@@ -1367,17 +1357,21 @@ export default class MELCloudApp extends App {
     }))
   }
 
-  // Type-agnostic device facade lookup for the chart surfaces shared by
-  // both Home device types (temperatures, signal, energy report).
+  // Device facade lookup shared by every Home surface: type-agnostic
+  // for the chart routes both device types serve, type-checked when a
+  // caller names the type it needs.
   #getHomeDeviceFacade(
     deviceId: string,
+    type?: Home.DeviceType,
   ): Home.DeviceAtaFacade | Home.DeviceAtwFacade {
     const model = this.#homeRegistry.getById(deviceId)
-    if (model?.isAta() === true) {
-      return this.#homeFacadeManager.get(model)
-    }
-    if (model?.isAtw() === true) {
-      return this.#homeFacadeManager.get(model)
+    if (type === undefined || model?.type === type) {
+      if (model?.isAta() === true) {
+        return this.#homeFacadeManager.get(model)
+      }
+      if (model?.isAtw() === true) {
+        return this.#homeFacadeManager.get(model)
+      }
     }
     throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
   }

@@ -17,7 +17,11 @@ import {
   homeyApiGet,
   surfaceError,
 } from '../../../public/homey-api.mts'
-import { getZonePath } from '../../../public/zones.mts'
+import {
+  getHomeBuildingId,
+  getZonePath,
+  isHomeBuildingValue,
+} from '../../../public/zones.mts'
 import {
   generateStyleNumber,
   generateStyleString,
@@ -361,7 +365,7 @@ const generateSunShineAnimation = (sun: HTMLDivElement): Animation =>
     iterations: Infinity,
   })
 
-const getPreviousElement = (name: string, index?: string): HTMLElement | null =>
+const getPreviousElement = (name: string, index: string): HTMLElement | null =>
   document.querySelector<HTMLElement>(`#${name}-${String(Number(index) - 1)}`)
 
 // Every removal path ends a flame through its own controller, so
@@ -472,11 +476,9 @@ export class AnimationController {
   #createAnimatedElement(name: AnimatedElement): HTMLDivElement {
     const element = document.createElement('div')
     element.classList.add(name)
-    if (Object.hasOwn(this.#animationMapping, name)) {
-      const mapping = this.#animationMapping[name]
-      element.textContent = mapping.textContent
-      element.id = `${name}-${String(mapping.getIndex())}`
-    }
+    const mapping = this.#animationMapping[name]
+    element.textContent = mapping.textContent
+    element.id = `${name}-${String(mapping.getIndex())}`
     return element
   }
 
@@ -536,25 +538,24 @@ export class AnimationController {
     applyStyles: (element: HTMLDivElement) => void
   }): void {
     const element = this.#createAnimatedElement(name)
-    const [elementName, index] = element.id.split('-', 2)
-    if (elementName !== undefined) {
-      const previousElement = getPreviousElement(elementName, index)
-      const previousPosition =
-        previousElement === null
-          ? -gap * 2
-          : parsePixelValue(previousElement.style[positionProperty])
-      element.style[positionProperty] = generateStyleString(
-        {
-          gap,
-          min:
-            previousPosition > windowDimension ? -gap : previousPosition + gap,
-        },
-        'px',
-      )
-      applyStyles(element)
-      this.#animation.append(element)
-      animate(element)
-    }
+    const previousElement = getPreviousElement(
+      name,
+      element.id.slice(name.length + 1),
+    )
+    const previousPosition =
+      previousElement === null
+        ? -gap * 2
+        : parsePixelValue(previousElement.style[positionProperty])
+    element.style[positionProperty] = generateStyleString(
+      {
+        gap,
+        min: previousPosition > windowDimension ? -gap : previousPosition + gap,
+      },
+      'px',
+    )
+    applyStyles(element)
+    this.#animation.append(element)
+    animate(element)
   }
 
   #createSmokeElement(size: number): HTMLDivElement {
@@ -634,11 +635,10 @@ export class AnimationController {
   // never reach here (a group of one cannot be mixed).
   async #getModes(): Promise<number[]> {
     const { value } = getSelect('zones')
-    const separatorIndex = value.indexOf('_')
-    if (value.slice(0, separatorIndex) === 'homeBuildings') {
+    if (isHomeBuildingValue(value)) {
       return homeyApiGet<number[]>(
         this.#homey,
-        `/home/buildings/${encodeURIComponent(value.slice(separatorIndex + 1))}/ata/modes`,
+        `/home/buildings/${encodeURIComponent(getHomeBuildingId(value))}/ata/modes`,
       )
     }
     const detailedAtaStates = await homeyApiGet<GroupAtaStates>(
@@ -753,36 +753,6 @@ export class AnimationController {
     }
   }
 
-  #runFireAnimation(speed: number): void {
-    this.#generateRecurring(
-      (flameSpeed) => {
-        this.#createFlame(flameSpeed)
-      },
-      AnimationDelay.flame,
-      speed,
-    )
-  }
-
-  #runLeafAnimation(speed: number): void {
-    this.#generateRecurring(
-      (leafSpeed) => {
-        this.#createLeaf(leafSpeed)
-      },
-      AnimationDelay.leaf,
-      speed,
-    )
-  }
-
-  #runSnowAnimation(speed: number): void {
-    this.#generateRecurring(
-      (snowSpeed) => {
-        this.#createSnowflake(snowSpeed)
-      },
-      AnimationDelay.snowflake,
-      speed,
-    )
-  }
-
   #runSunAnimation(speed: number): void {
     const sun = this.#getSunElement()
     this.#sunShine ??= generateSunShineAnimation(sun)
@@ -877,14 +847,37 @@ export class AnimationController {
   // Runs synchronously right after #reset installs the fresh controller,
   // so every spawn loop is bound to it with no interleaving window.
   #startScene(scene: ReadonlySet<SceneElement>, speed: number): void {
-    if (scene.has('fire')) {
-      this.#runFireAnimation(speed)
-    }
-    if (scene.has('leaf')) {
-      this.#runLeafAnimation(speed)
-    }
-    if (scene.has('snow')) {
-      this.#runSnowAnimation(speed)
+    const spawners: readonly {
+      readonly delay: number
+      readonly element: SceneElement
+      readonly spawn: (spawnSpeed: number) => void
+    }[] = [
+      {
+        delay: AnimationDelay.flame,
+        element: 'fire',
+        spawn: (spawnSpeed): void => {
+          this.#createFlame(spawnSpeed)
+        },
+      },
+      {
+        delay: AnimationDelay.leaf,
+        element: 'leaf',
+        spawn: (spawnSpeed): void => {
+          this.#createLeaf(spawnSpeed)
+        },
+      },
+      {
+        delay: AnimationDelay.snowflake,
+        element: 'snow',
+        spawn: (spawnSpeed): void => {
+          this.#createSnowflake(spawnSpeed)
+        },
+      },
+    ]
+    for (const { delay, element, spawn } of spawners) {
+      if (scene.has(element)) {
+        this.#generateRecurring(spawn, delay, speed)
+      }
     }
     if (scene.has('sun')) {
       this.#runSunAnimation(speed)

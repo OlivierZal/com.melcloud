@@ -20,12 +20,12 @@ interface Surface {
 // sources — literal ones exactly, template-built ones by their fixed
 // chunks — and checked against the declared table. The declaration half
 // (manifest ids ↔ handlers, both directions, type level) lives in
-// tests/integration/api-contract.test.ts.
+// tests/unit/api-contract.test.ts.
 const SURFACES: readonly Surface[] = [
   {
     manifest: '.homeycompose/app.json',
     name: 'settings',
-    sourceDirs: ['settings'],
+    sourceDirs: ['settings', 'public'],
   },
   {
     manifest: 'widgets/ata-group-setting/widget.compose.json',
@@ -90,8 +90,8 @@ const extractPathTemplates = (source: string): string[] =>
 
 // The typed helpers carry the verb in their name; the boot beacon calls
 // the raw SDK with the verb as its first argument. Reading the pair
-// matters because eleven declared paths differ only by method —
-// `/classic/sessions` alone is declared under POST, GET and DELETE. The
+// matters because a surface may declare one path under several
+// methods, so a path alone cannot identify its route. The
 // helper name must be followed immediately by its generic or its paren,
 // so the import list is not read as a call site. Template-built paths
 // are swept separately below; a path passed as a variable stays out of
@@ -119,9 +119,9 @@ const extractRouteCalls = (source: string): DeclaredRoute[] => {
   ]
 }
 
-// Every PUT and DELETE call site builds its path from a template, so the
-// literal sweeps above see none of them — the verbs carrying the whole
-// settings surface would go unchecked. A template is still partly known
+// A call site may build its path from a template, which the literal
+// sweeps above cannot see — left alone, such verbs would go
+// unchecked. A template is still partly known
 // at build time: its literal chunks are fixed and ordered, and only the
 // `${…}` holes float (one may expand to nothing, as an optional query
 // string does). Keeping the chunks and letting the holes float is enough
@@ -137,13 +137,13 @@ const escapeRegExp = (chunk: string): string =>
 // literal chunks are found by tracking depth, not by a regex that would
 // stop at the first inner `}`. `${` is folded to one sentinel first so
 // the scan reads a single character per step.
-const HOLE = ''
+const HOLE = '\u{1}'
 
 const toTemplateChunks = (template: string): string[] => {
   const chunks: string[] = []
   let literal = ''
   let depth = 0
-  for (const char of template.replaceAll('${', '')) {
+  for (const char of template.replaceAll('${', '\u{1}')) {
     if (char === HOLE) {
       if (depth === 0) {
         chunks.push(literal)
