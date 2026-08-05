@@ -15,6 +15,7 @@ import {
   type Homey,
   fireAndForget,
   homeyApiGet,
+  homeyApiPost,
   runWebview,
   surfaceError,
   trySetDocumentLanguage,
@@ -62,8 +63,20 @@ class WidgetApp {
     // A stale cached page reloads itself once instead of booting: skip
     // the init — the document is about to be replaced.
     if (
-      await ensureFreshWebview('ata-group-setting', async () =>
-        homeyApiGet(this.#homey, '/webview-hashes'),
+      await ensureFreshWebview(
+        'ata-group-setting',
+        async () => homeyApiGet(this.#homey, '/webview-hashes'),
+        (message) => {
+          fireAndForget(
+            homeyApiPost(this.#homey, '/boot-error', {
+              message,
+              name: 'WebviewFreshness',
+            }),
+            () => {
+              // A missed freshness breadcrumb is acceptable.
+            },
+          )
+        },
       )
     ) {
       return

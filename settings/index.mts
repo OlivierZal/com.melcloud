@@ -1919,8 +1919,19 @@ class SettingsApp {
     // A stale cached page reloads itself once instead of booting: skip
     // the init — the document is about to be replaced.
     if (
-      await ensureFreshWebview('settings', async () =>
-        homeyApiGet(this.#homey, '/webview-hashes'),
+      await ensureFreshWebview(
+        'settings',
+        async () => homeyApiGet(this.#homey, '/webview-hashes'),
+        (message) => {
+          this.#homey.api(
+            'POST',
+            '/boot-error',
+            { message, name: 'WebviewFreshness' },
+            () => {
+              // A missed freshness breadcrumb is acceptable.
+            },
+          )
+        },
       )
     ) {
       return

@@ -43,6 +43,7 @@ import {
   type Homey,
   fireAndForget,
   homeyApiGet,
+  homeyApiPost,
   runWebview,
   surfaceError,
   trySetDocumentLanguage,
@@ -875,8 +876,20 @@ class ChartWidget {
     // A stale cached page reloads itself once instead of booting: skip
     // the init — the document is about to be replaced.
     if (
-      await ensureFreshWebview('charts', async () =>
-        homeyApiGet(this.#homey, '/webview-hashes'),
+      await ensureFreshWebview(
+        'charts',
+        async () => homeyApiGet(this.#homey, '/webview-hashes'),
+        (message) => {
+          fireAndForget(
+            homeyApiPost(this.#homey, '/boot-error', {
+              message,
+              name: 'WebviewFreshness',
+            }),
+            () => {
+              // A missed freshness breadcrumb is acceptable.
+            },
+          )
+        },
       )
     ) {
       return

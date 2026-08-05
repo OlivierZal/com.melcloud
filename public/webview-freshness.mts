@@ -6,14 +6,17 @@
 // it carries (so a CSS-only or markup-only ship moves it too); the app
 // serves the live identities (`GET /webview-hashes`, emitted at
 // package time), fetched through the app bridge so no HTTP cache can
-// stale them. On mismatch the page reloads ONCE — the reload
-// revalidates the HTML, whose fresh stamps pull the fresh assets.
-// Every failure path stays open (unstamped page, unreachable route,
-// unknown entry, denied storage): a wrong guess must never take a
-// working webview down. Byte-identical copies live in the sibling
-// Homey apps — edit all three together.
+// stale them. On mismatch the page refetches itself ONCE, through an
+// address the HTTP cache has never seen: a bare reload can be served
+// the same stale document again (proven on-device by a page mixing
+// asset generations), burning the one-shot guard on a no-op. A
+// mismatch that survives its refetch is reported through the optional
+// `report` channel instead of retried. Every failure path stays open
+// (unstamped page, unreachable route, unknown entry, denied storage):
+// a wrong guess must never take a working webview down. Byte-identical
+// copies live in the sibling Homey apps — edit all three together.
 
-const RELOAD_GUARD_KEY = 'webview_reloaded_for'
+const REFETCH_GUARD_KEY = 'webview_refetched_for'
 
 const STAMP = /\?v=(?<hash>[0-9a-f]+)$/u
 
@@ -55,44 +58,69 @@ const getPageIdentity = (): string | null => {
   return stamps.length > 0 ? stamps.join('.') : null
 }
 
-// Denied storage reads as "already reloaded": without the guard a
-// persistent mismatch would reload forever, and never reloading is the
-// safe side of that trade.
-const hasReloadedFor = (hash: string): boolean => {
+// Denied storage reads as "already refetched": without the guard a
+// persistent mismatch would refetch forever, and never refetching is
+// the safe side of that trade.
+const hasRefetchedFor = (hash: string): boolean => {
   try {
-    return sessionStorage.getItem(RELOAD_GUARD_KEY) === hash
+    return sessionStorage.getItem(REFETCH_GUARD_KEY) === hash
   } catch {
     return true
   }
 }
 
-const markReloadedFor = (hash: string): void => {
+const markRefetchedFor = (hash: string): void => {
   try {
-    sessionStorage.setItem(RELOAD_GUARD_KEY, hash)
+    sessionStorage.setItem(REFETCH_GUARD_KEY, hash)
   } catch {
-    // Denied storage already reads as "reloaded" (`hasReloadedFor`).
+    // Denied storage already reads as "refetched" (`hasRefetchedFor`).
   }
 }
 
-// Returns whether a reload was issued — the caller must then skip its
+// The `fresh` key makes the address one the HTTP cache has never seen,
+// forcing a network fetch of the document; it is overwritten, never
+// accumulated, and carries the stale identity — not a clock or random
+// read, which would mint a new address on every boot and sidestep the
+// per-identity guard.
+const refetchDocument = (identity: string): void => {
+  const url = new URL(location.href)
+  url.searchParams.set('fresh', identity)
+  location.replace(url.href)
+}
+
+// One-shot refetch decision for a confirmed mismatch: refetches unless
+// this identity already spent its attempt, reporting either way.
+const refetchOnce = (
+  identity: string,
+  expected: string,
+  report?: (message: string) => void,
+): boolean => {
+  if (hasRefetchedFor(identity)) {
+    report?.(
+      `Stale webview persists after its refetch: page ${identity}, live ${expected}`,
+    )
+    return false
+  }
+  report?.(`Stale webview: page ${identity}, live ${expected} — refetching`)
+  markRefetchedFor(identity)
+  refetchDocument(identity)
+  return true
+}
+
+// Returns whether a refetch was issued — the caller must then skip its
 // own init: the document is about to be replaced.
 export const ensureFreshWebview = async (
   entry: string,
   fetchHashes: () => Promise<Partial<Record<string, string>>>,
+  report?: (message: string) => void,
 ): Promise<boolean> => {
   const identity = getPageIdentity()
   if (identity === null) {
     return false
   }
   const expected = await fetchExpected(entry, fetchHashes)
-  if (
-    expected === undefined ||
-    expected === identity ||
-    hasReloadedFor(identity)
-  ) {
+  if (expected === undefined || expected === identity) {
     return false
   }
-  markReloadedFor(identity)
-  location.reload()
-  return true
+  return refetchOnce(identity, expected, report)
 }
