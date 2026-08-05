@@ -5,8 +5,4 @@
 /coverage/
 /env.json
 node_modules/
-/settings/index.js
-/settings/index.mjs
-/widgets/*/public/index.js
-/widgets/*/public/index.mjs
 /.claude/

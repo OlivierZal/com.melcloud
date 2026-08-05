@@ -50,18 +50,7 @@ const typeLikeSortOptions = {
 }
 
 const config: Config[] = defineConfig([
-  {
-    ignores: [
-      '.homeybuild/',
-      'coverage/',
-      // Pre-`.homeybuild` leftovers in never-rebuilt trees: gitignored,
-      // and ignored here so a stale tree cannot break the lint run.
-      'settings/index.js',
-      'settings/index.mjs',
-      'widgets/*/public/index.js',
-      'widgets/*/public/index.mjs',
-    ],
-  },
+  { ignores: ['.homeybuild/', 'coverage/'] },
   {
     linterOptions: {
       reportUnusedDisableDirectives: 'error',
