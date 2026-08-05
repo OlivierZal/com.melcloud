@@ -151,7 +151,11 @@ input.homey-form-checkbox-input:indeterminate
    whole dirty-gated form region: none of the UA fieldset chrome (border,
    padding, min-inline-size) may surface. Explicit `display: block`
    because WebKit renders inline fieldsets atomically. */
-fieldset.busy-scope {
+/* The `body` ancestor outweighs the injected sheet's fieldset styling
+   whatever the order — the same device as the hidden and disabled
+   rules, and the reason the panel frames survived a (0,1,1) tie
+   on-device while a headless probe (no injected sheet) showed none. */
+body fieldset.busy-scope {
   border: 0;
   margin: 0;
   min-inline-size: 0;
