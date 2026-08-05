@@ -19,7 +19,7 @@ import {
   surfaceError,
   trySetDocumentLanguage,
 } from '../../../public/homey-api.mts'
-import { ensureFreshWebview } from '../../../public/webview-freshness.mts'
+import { ensureFreshWidget } from '../../../public/webview-freshness-boot.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 
@@ -59,13 +59,10 @@ class WidgetApp {
   // `ready()` always fires — an unbounded await here would hold Homey's
   // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
-    // A stale cached page reloads itself once instead of booting: skip
-    // the init — the document is about to be replaced.
-    if (
-      await ensureFreshWebview('ata-group-setting', async () =>
-        homeyApiGet(this.#homey, '/webview-hashes'),
-      )
-    ) {
+    // A stale cached page refetches itself once (never-cached address)
+    // instead of booting: skip the init — the document is about to be
+    // replaced.
+    if (await ensureFreshWidget(this.#homey, 'ata-group-setting')) {
       return
     }
     await runWebview(this.#homey, this.#run(), {

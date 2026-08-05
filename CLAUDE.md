@@ -46,8 +46,12 @@ caught real failures that the others miss:
   `tests/unit/webview-hashes.test.ts` and the
   `tests/fixtures/webview-hashes/` fixtures are byte-identical in the
   three apps — edit all three together), and a mismatch triggers ONE
-  `location.reload()` (sessionStorage guard, `webview-freshness.mts`),
-  which revalidates the HTML and pulls the fresh bundle. Every failure
+  refetch of the document through a never-cached address
+  (`?fresh=<identity>` — a bare reload can be re-served the same stale
+  document from the HTTP cache; sessionStorage guard,
+  `webview-freshness.mts`), whose fresh stamps pull the fresh assets;
+  a mismatch that survives its refetch is reported to
+  `POST /boot-error`. Every failure
   path stays open: an unstamped page, an absent route or denied
   storage must never take a working webview down.
 - `npm run homey:validate` — Homey validation at publish level; may

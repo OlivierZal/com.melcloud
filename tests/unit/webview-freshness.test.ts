@@ -1,10 +1,10 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { type Mock, afterEach, describe, expect, it, vi } from 'vitest'
 
 import { ensureFreshWebview } from '../../public/webview-freshness.mts'
 
 // The helper reads narrow slices of the page (its stamped references,
-// sessionStorage, location.reload), so plain doubles installed on
-// globalThis are enough — no DOM environment.
+// sessionStorage, location), so plain doubles installed on globalThis
+// are enough — no DOM environment.
 class FakeReference {
   readonly #reference: string
 
@@ -26,26 +26,30 @@ const globals = globalThis as {
   sessionStorage?: unknown
 }
 
+const PAGE_URL = 'https://webview.invalid/page'
+
 const install = ({
+  href = PAGE_URL,
   isStorageDenied = false,
   isWriteDenied = false,
   references,
   stored = null,
 }: {
   references: readonly FakeReference[]
+  href?: string
   isStorageDenied?: boolean
   isWriteDenied?: boolean
   stored?: string | null
-}): { store: Map<string, string>; reload: () => void } => {
-  const reload = vi.fn<() => void>()
+}): { replace: Mock<(url: string) => void>; store: Map<string, string> } => {
+  const replace = vi.fn<(url: string) => void>()
   const store = new Map<string, string>()
   if (stored !== null) {
-    store.set('webview_reloaded_for', stored)
+    store.set('webview_refetched_for', stored)
   }
   globals.document = {
     querySelectorAll: (): readonly FakeReference[] => references,
   }
-  globals.location = { reload }
+  globals.location = { href, replace }
   globals.sessionStorage = {
     getItem: (key: string): string | null => {
       if (isStorageDenied) {
@@ -60,7 +64,7 @@ const install = ({
       store.set(key, value)
     },
   }
-  return { reload, store }
+  return { replace, store }
 }
 
 // The live identity is the DOCUMENT-ORDER join of the page's stamps.
@@ -87,29 +91,56 @@ describe(ensureFreshWebview, () => {
     delete globals.sessionStorage
   })
 
-  it('should reload once on a stale identity and record the guard', async () => {
-    const { reload, store } = install({ references: STALE_PAGE })
+  it('should refetch a stale page through a never-cached address', async () => {
+    const { replace, store } = install({ references: STALE_PAGE })
 
     await expect(
       ensureFreshWebview('ata-group-setting', serveHashes),
     ).resolves.toBe(true)
 
-    expect(reload).toHaveBeenCalledTimes(1)
-    expect(store.get('webview_reloaded_for')).toBe('cccc0000.00000000')
+    // A fresh query key forces a network fetch — a bare reload can be
+    // served the same stale document from the HTTP cache.
+    expect(replace).toHaveBeenCalledTimes(1)
+    expect(replace).toHaveBeenCalledWith(`${PAGE_URL}?fresh=cccc0000.00000000`)
+    expect(store.get('webview_refetched_for')).toBe('cccc0000.00000000')
   })
 
-  it('should not reload when the page identity is live', async () => {
-    const { reload } = install({ references: FRESH_PAGE })
+  it('should overwrite a previous fresh key instead of accumulating', async () => {
+    const { replace } = install({
+      href: `${PAGE_URL}?fresh=deadbeef`,
+      references: STALE_PAGE,
+    })
+
+    await expect(
+      ensureFreshWebview('ata-group-setting', serveHashes),
+    ).resolves.toBe(true)
+
+    expect(replace).toHaveBeenCalledWith(`${PAGE_URL}?fresh=cccc0000.00000000`)
+  })
+
+  it('should report the identities alongside the refetch', async () => {
+    const report = vi.fn<(message: string) => void>()
+    install({ references: STALE_PAGE })
+
+    await ensureFreshWebview('ata-group-setting', serveHashes, report)
+
+    expect(report).toHaveBeenCalledWith(
+      'Stale webview: page cccc0000.00000000, live cccc0000.aaaa1111 — refetching',
+    )
+  })
+
+  it('should not refetch when the page identity is live', async () => {
+    const { replace } = install({ references: FRESH_PAGE })
 
     await expect(
       ensureFreshWebview('ata-group-setting', serveHashes),
     ).resolves.toBe(false)
 
-    expect(reload).not.toHaveBeenCalled()
+    expect(replace).not.toHaveBeenCalled()
   })
 
-  it('should not reload twice for the same stale identity', async () => {
-    const { reload } = install({
+  it('should not refetch twice for the same stale identity', async () => {
+    const { replace } = install({
       references: STALE_PAGE,
       stored: 'cccc0000.00000000',
     })
@@ -118,21 +149,38 @@ describe(ensureFreshWebview, () => {
       ensureFreshWebview('ata-group-setting', serveHashes),
     ).resolves.toBe(false)
 
-    expect(reload).not.toHaveBeenCalled()
+    expect(replace).not.toHaveBeenCalled()
+  })
+
+  it('should report a mismatch that survived its refetch', async () => {
+    const report = vi.fn<(message: string) => void>()
+    const { replace } = install({
+      references: STALE_PAGE,
+      stored: 'cccc0000.00000000',
+    })
+
+    await expect(
+      ensureFreshWebview('ata-group-setting', serveHashes, report),
+    ).resolves.toBe(false)
+
+    expect(replace).not.toHaveBeenCalled()
+    expect(report).toHaveBeenCalledWith(
+      'Stale webview persists after its refetch: page cccc0000.00000000, live cccc0000.aaaa1111',
+    )
   })
 
   it('should stay put on an unstamped page', async () => {
-    const { reload } = install({ references: [] })
+    const { replace } = install({ references: [] })
 
     await expect(
       ensureFreshWebview('ata-group-setting', serveHashes),
     ).resolves.toBe(false)
 
-    expect(reload).not.toHaveBeenCalled()
+    expect(replace).not.toHaveBeenCalled()
   })
 
   it('should ignore references whose stamp is off-shape', async () => {
-    const { reload } = install({
+    const { replace } = install({
       references: [new FakeReference('src', 'index.js?v=NOT-A-HASH')],
     })
 
@@ -140,19 +188,19 @@ describe(ensureFreshWebview, () => {
       ensureFreshWebview('ata-group-setting', serveHashes),
     ).resolves.toBe(false)
 
-    expect(reload).not.toHaveBeenCalled()
+    expect(replace).not.toHaveBeenCalled()
   })
 
   it('should stay put when its entry is not served', async () => {
-    const { reload } = install({ references: STALE_PAGE })
+    const { replace } = install({ references: STALE_PAGE })
 
     await expect(ensureFreshWebview('charts', serveHashes)).resolves.toBe(false)
 
-    expect(reload).not.toHaveBeenCalled()
+    expect(replace).not.toHaveBeenCalled()
   })
 
   it('should stay put when fetching the hashes fails', async () => {
-    const { reload } = install({ references: STALE_PAGE })
+    const { replace } = install({ references: STALE_PAGE })
 
     await expect(
       ensureFreshWebview(
@@ -163,29 +211,58 @@ describe(ensureFreshWebview, () => {
       ),
     ).resolves.toBe(false)
 
-    expect(reload).not.toHaveBeenCalled()
+    expect(replace).not.toHaveBeenCalled()
   })
 
-  it('should reload even when the guard cannot be written', async () => {
-    const { reload } = install({ isWriteDenied: true, references: STALE_PAGE })
+  it('should skip the refetch when the guard cannot be written', async () => {
+    const report = vi.fn<(message: string) => void>()
+    const { replace } = install({ isWriteDenied: true, references: STALE_PAGE })
 
     await expect(
-      ensureFreshWebview('ata-group-setting', serveHashes),
-    ).resolves.toBe(true)
+      ensureFreshWebview('ata-group-setting', serveHashes, report),
+    ).resolves.toBe(false)
 
-    expect(reload).toHaveBeenCalledTimes(1)
+    // Navigating without a persisted guard risks a boot-navigation
+    // livelock: the address is deterministic per identity, so a cached
+    // response to it would be re-attempted on every boot.
+    expect(replace).not.toHaveBeenCalled()
+    expect(report).toHaveBeenCalledWith(
+      'Stale webview: page cccc0000.00000000, live cccc0000.aaaa1111 — guard unwritable, refetch skipped',
+    )
   })
 
-  it('should read denied storage as already reloaded', async () => {
-    const { reload } = install({
+  it('should skip the refetch and say so when storage is denied', async () => {
+    const report = vi.fn<(message: string) => void>()
+    const { replace } = install({
       isStorageDenied: true,
       references: STALE_PAGE,
     })
 
     await expect(
-      ensureFreshWebview('ata-group-setting', serveHashes),
+      ensureFreshWebview('ata-group-setting', serveHashes, report),
     ).resolves.toBe(false)
 
-    expect(reload).not.toHaveBeenCalled()
+    expect(replace).not.toHaveBeenCalled()
+    // Denied storage is its own outcome — reporting it as a spent
+    // refetch would claim an attempt that never happened.
+    expect(report).toHaveBeenCalledWith(
+      'Stale webview: page cccc0000.00000000, live cccc0000.aaaa1111 — storage denied, refetch skipped',
+    )
+  })
+
+  it('should keep the page booting when the navigation fails', async () => {
+    const report = vi.fn<(message: string) => void>()
+    const { replace } = install({ references: STALE_PAGE })
+    replace.mockImplementation(() => {
+      throw new Error('blocked')
+    })
+
+    await expect(
+      ensureFreshWebview('ata-group-setting', serveHashes, report),
+    ).resolves.toBe(false)
+
+    expect(report).toHaveBeenCalledWith(
+      'Stale webview refetch could not navigate: page cccc0000.00000000',
+    )
   })
 })

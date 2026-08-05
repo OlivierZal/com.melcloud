@@ -6,14 +6,17 @@
 // it carries (so a CSS-only or markup-only ship moves it too); the app
 // serves the live identities (`GET /webview-hashes`, emitted at
 // package time), fetched through the app bridge so no HTTP cache can
-// stale them. On mismatch the page reloads ONCE — the reload
-// revalidates the HTML, whose fresh stamps pull the fresh assets.
-// Every failure path stays open (unstamped page, unreachable route,
-// unknown entry, denied storage): a wrong guess must never take a
-// working webview down. Byte-identical copies live in the sibling
-// Homey apps — edit all three together.
+// stale them. On mismatch the page refetches itself ONCE, through an
+// address the HTTP cache has never seen: a bare reload can be served
+// the same stale document again (proven on-device by a page mixing
+// asset generations), burning the one-shot guard on a no-op. A
+// mismatch that survives its refetch is reported through the optional
+// `report` channel instead of retried. Every failure path stays open
+// (unstamped page, unreachable route, unknown entry, denied storage):
+// a wrong guess must never take a working webview down. Byte-identical
+// copies live in the sibling Homey apps — edit all three together.
 
-const RELOAD_GUARD_KEY = 'webview_reloaded_for'
+const REFETCH_GUARD_KEY = 'webview_refetched_for'
 
 const STAMP = /\?v=(?<hash>[0-9a-f]+)$/u
 
@@ -55,44 +58,123 @@ const getPageIdentity = (): string | null => {
   return stamps.length > 0 ? stamps.join('.') : null
 }
 
-// Denied storage reads as "already reloaded": without the guard a
-// persistent mismatch would reload forever, and never reloading is the
-// safe side of that trade.
-const hasReloadedFor = (hash: string): boolean => {
+// Denied storage cannot arm the loop guard, so it must not refetch:
+// the address is deterministic per identity, and an unguarded attempt
+// re-served from the cache would boot-navigate forever. Skipping (and
+// saying so) is the safe side of that trade.
+const DENIED = Symbol('denied')
+
+const readStoredGuard = (): string | symbol | null => {
   try {
-    return sessionStorage.getItem(RELOAD_GUARD_KEY) === hash
+    return sessionStorage.getItem(REFETCH_GUARD_KEY)
   } catch {
+    return DENIED
+  }
+}
+
+const readRefetchGuard = (hash: string): 'armed' | 'denied' | 'spent' => {
+  const stored = readStoredGuard()
+  if (stored === DENIED) {
+    return 'denied'
+  }
+  return stored === hash ? 'spent' : 'armed'
+}
+
+// Returns whether the guard was persisted — navigating without it risks
+// the same livelock as a denied read, so a failed write also skips.
+const markRefetchedFor = (hash: string): boolean => {
+  try {
+    sessionStorage.setItem(REFETCH_GUARD_KEY, hash)
+    return true
+  } catch {
+    return false
+  }
+}
+
+// The `fresh` key makes the address one the HTTP cache has never seen,
+// forcing a network fetch of the document; it is overwritten, never
+// accumulated, and carries the stale identity — not a clock or random
+// read, which would mint a new address on every boot and sidestep the
+// per-identity guard. A navigation failure is reported and swallowed:
+// the stale page must keep booting.
+const refetchDocument = (
+  identity: string,
+  report?: (message: string) => void,
+): boolean => {
+  try {
+    const url = new URL(location.href)
+    url.searchParams.set('fresh', identity)
+    location.replace(url.href)
+    return true
+  } catch {
+    report?.(`Stale webview refetch could not navigate: page ${identity}`)
+    return false
+  }
+}
+
+// Reports the guard outcome that stops a refetch, if any.
+const reportStopped = ({
+  expected,
+  guard,
+  identity,
+  report,
+}: {
+  expected: string
+  guard: 'armed' | 'denied' | 'spent'
+  identity: string
+  report?: ((message: string) => void) | undefined
+}): boolean => {
+  if (guard === 'denied') {
+    report?.(
+      `Stale webview: page ${identity}, live ${expected} — storage denied, refetch skipped`,
+    )
     return true
   }
-}
-
-const markReloadedFor = (hash: string): void => {
-  try {
-    sessionStorage.setItem(RELOAD_GUARD_KEY, hash)
-  } catch {
-    // Denied storage already reads as "reloaded" (`hasReloadedFor`).
+  if (guard === 'spent') {
+    report?.(
+      `Stale webview persists after its refetch: page ${identity}, live ${expected}`,
+    )
+    return true
   }
+  return false
 }
 
-// Returns whether a reload was issued — the caller must then skip its
+// One-shot refetch decision for a confirmed mismatch: refetches unless
+// this identity already spent its attempt or the guard cannot hold one,
+// reporting each outcome distinctly.
+const refetchOnce = (
+  identity: string,
+  expected: string,
+  report?: (message: string) => void,
+): boolean => {
+  const guard = readRefetchGuard(identity)
+  if (reportStopped({ expected, guard, identity, report })) {
+    return false
+  }
+  if (!markRefetchedFor(identity)) {
+    report?.(
+      `Stale webview: page ${identity}, live ${expected} — guard unwritable, refetch skipped`,
+    )
+    return false
+  }
+  report?.(`Stale webview: page ${identity}, live ${expected} — refetching`)
+  return refetchDocument(identity, report)
+}
+
+// Returns whether a refetch was issued — the caller must then skip its
 // own init: the document is about to be replaced.
 export const ensureFreshWebview = async (
   entry: string,
   fetchHashes: () => Promise<Partial<Record<string, string>>>,
+  report?: (message: string) => void,
 ): Promise<boolean> => {
   const identity = getPageIdentity()
   if (identity === null) {
     return false
   }
   const expected = await fetchExpected(entry, fetchHashes)
-  if (
-    expected === undefined ||
-    expected === identity ||
-    hasReloadedFor(identity)
-  ) {
+  if (expected === undefined || expected === identity) {
     return false
   }
-  markReloadedFor(identity)
-  location.reload()
-  return true
+  return refetchOnce(identity, expected, report)
 }
