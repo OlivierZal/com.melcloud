@@ -19,6 +19,7 @@ import {
 } from '../../../public/dom.mts'
 import {
   type Homey,
+  fireAndForget,
   homeyApiGet,
   homeyApiPut,
 } from '../../../public/homey-api.mts'
@@ -184,6 +185,8 @@ export class AtaValueManager {
 
   readonly #homey: Homey
 
+  #lastArmingDump = ''
+
   readonly #zone: HTMLSelectElement
 
   readonly #zoneMapping: Partial<Record<string, Partial<Classic.GroupState>>> =
@@ -207,8 +210,14 @@ export class AtaValueManager {
       applyElement: getButton('apply_values_melcloud'),
       fieldsetElements: [ataValuesElement],
       refreshElements: [getButton('refresh_values_melcloud')],
-      isActionable: (): boolean =>
-        Object.keys(this.#buildAtaValuesBody()).length > 0,
+      isActionable: (): boolean => {
+        const body = this.#buildAtaValuesBody()
+        const isArmed = Object.keys(body).length > 0
+        if (isArmed) {
+          this.#reportArming(body)
+        }
+        return isArmed
+      },
       serialize: (): string => this.#serializeState(),
     })
   }
@@ -347,6 +356,29 @@ export class AtaValueManager {
 
   #isGroupAtaState(value: string): value is keyof Classic.GroupState {
     return Object.hasOwn(this.#defaultAtaValues, value)
+  }
+
+  // TEMPORARY debug probe (remove once the on-device arming mystery is
+  // solved): reports the exact state that armed Update through the
+  // boot-error log channel — the only widget-visible log path.
+  #reportArming(body: Classic.GroupState): void {
+    const dump = JSON.stringify({
+      body,
+      fields: [
+        ...this.#ataValues.querySelectorAll<HTMLValueElement>('input, select'),
+      ].map(({ id, value }) => [id, value]),
+      mapping: this.#zoneMapping[this.#zone.value] ?? null,
+      zone: this.#zone.value,
+    })
+    if (dump !== this.#lastArmingDump) {
+      this.#lastArmingDump = dump
+      fireAndForget(
+        this.#homey.api('POST', '/boot-error', {
+          message: dump,
+          name: 'ArmingProbe',
+        }),
+      )
+    }
   }
 
   // Serializes every control's id and value, in DOM order, into the string

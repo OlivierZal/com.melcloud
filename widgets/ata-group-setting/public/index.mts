@@ -68,6 +68,15 @@ class WidgetApp {
     ) {
       return
     }
+    // TEMPORARY debug probe (paired with `#reportArming`): proves on the
+    // app log that THIS bundle booted — a reproduction with no BootProbe
+    // line means the phone served a cached copy.
+    fireAndForget(
+      this.#homey.api('POST', '/boot-error', {
+        message: 'ata-group-setting booted (arming-probe build)',
+        name: 'BootProbe',
+      }),
+    )
     await runWebview(this.#homey, this.#run(), {
       onError: showInitError,
       height: () => document.body.scrollHeight,
