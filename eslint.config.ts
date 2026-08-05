@@ -945,11 +945,21 @@ const config: Config[] = defineConfig([
         'error',
         {
           message:
+            'The `v` regex flag is es2024: old iOS webview engines throw at parse time (CLAUDE.md webview floor). Use `u`.',
+          selector: 'Literal[regex.flags=/v/]',
+        },
+        {
+          message:
             'Iterator helpers are 2025-era: old iOS webview engines lack them (CLAUDE.md webview floor). Spread into an array first.',
           selector:
             "CallExpression[callee.type='MemberExpression'][callee.property.name=/^(drop|every|filter|find|flatMap|forEach|map|reduce|some|take|toArray)$/][callee.object.type='CallExpression'][callee.object.callee.type='MemberExpression'][callee.object.callee.property.name=/^(entries|keys|values)$/][callee.object.callee.object.name!='Object']",
         },
       ],
+      // The global config requires the `v` regex flag; the floor caps
+      // webview code at `u` (es2024 `v` throws at parse time on old
+      // engines), so the requirement steps down here, it does not
+      // disappear.
+      'require-unicode-regexp': ['error', { requireFlag: 'u' }],
     },
   },
   {

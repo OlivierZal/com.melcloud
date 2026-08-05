@@ -15,7 +15,7 @@
 
 const RELOAD_GUARD_KEY = 'webview_reloaded_for'
 
-const STAMP = /\?v=(?<hash>[0-9a-f]+)$/v
+const STAMP = /\?v=(?<hash>[0-9a-f]+)$/u
 
 const fetchHashesSafely = async (
   fetchHashes: () => Promise<Partial<Record<string, string>>>,
