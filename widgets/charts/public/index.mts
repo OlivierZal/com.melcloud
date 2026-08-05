@@ -47,6 +47,7 @@ import {
   surfaceError,
   trySetDocumentLanguage,
 } from '../../../public/homey-api.mts'
+import { ensureFreshWebview } from '../../../public/webview-freshness.mts'
 import { getZoneId, getZonePath } from '../../../public/zones.mts'
 import {
   type DaysQuery,
@@ -871,6 +872,15 @@ class ChartWidget {
   // `ready()` always fires — an unbounded await here would hold Homey's
   // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
+    // A stale cached page reloads itself once instead of booting: skip
+    // the init — the document is about to be replaced.
+    if (
+      await ensureFreshWebview('charts', async () =>
+        homeyApiGet(this.#homey, '/webview-hashes'),
+      )
+    ) {
+      return
+    }
     await runWebview(this.#homey, this.#run(), {
       onError: showInitError,
       height: () => document.body.scrollHeight,

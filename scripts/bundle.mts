@@ -27,10 +27,17 @@ const entryPoints = [
   'settings/index.mts',
 ]
 
+// The packaged pages, each with the manifest key under which the app
+// serves its bundle hash (`GET /webview-hashes`): a booted page compares
+// its own `?v=` against the live value and reloads itself once when the
+// webview cache served a stale copy.
 const pages = [
-  'settings/index.html',
-  'widgets/ata-group-setting/public/index.html',
-  'widgets/charts/public/index.html',
+  { entry: 'settings', page: 'settings/index.html' },
+  {
+    entry: 'ata-group-setting',
+    page: 'widgets/ata-group-setting/public/index.html',
+  },
+  { entry: 'charts', page: 'widgets/charts/public/index.html' },
 ]
 
 // A local asset reference — an href/src attribute value, with an
@@ -136,24 +143,35 @@ const stampReferences = (
   return stamped + html.slice(cursor)
 }
 
-const stampHtml = async (htmlPath: string): Promise<void> => {
+const stampHtml = async (htmlPath: string): Promise<string | null> => {
   let html: string
   try {
     html = await readFile(htmlPath, 'utf8')
   } catch {
     // The page copy only exists in the CLI flow; a standalone suite run
     // has nothing to stamp.
-    return
+    return null
   }
-  const stamped = stampReferences(
-    html,
-    await collectHashes(html, path.dirname(htmlPath)),
-  )
+  const hashes = await collectHashes(html, path.dirname(htmlPath))
+  const stamped = stampReferences(html, hashes)
   if (stamped !== html) {
     await writeFile(htmlPath, stamped)
   }
+  return hashes.get('index.js') ?? null
 }
 
-await Promise.all(
-  pages.map(async (page) => stampHtml(path.join(OUT_ROOT, page))),
+// Emit the live-hash manifest the app serves (`GET /webview-hashes`) —
+// only in the CLI flow, where every page copy exists: a standalone
+// suite run stamps nothing and must not leave a partial manifest.
+const stampedEntries = await Promise.all(
+  pages.map(async ({ entry, page }): Promise<[string, string | null]> => [
+    entry,
+    await stampHtml(path.join(OUT_ROOT, page)),
+  ]),
 )
+if (stampedEntries.every(([, hash]) => hash !== null)) {
+  await writeFile(
+    path.join(OUT_ROOT, 'webview-hashes.json'),
+    JSON.stringify(Object.fromEntries(stampedEntries)),
+  )
+}

@@ -26,6 +26,7 @@ import type {
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 import { getErrorMessage } from './lib/get-error-message.mts'
 import { toDeviceOrZoneData } from './lib/validation.mts'
+import { getWebviewHashes } from './lib/webview-hashes.mts'
 
 // The user-facing service names, interpolated into the failure
 // messages so the alert says WHICH account failed.
@@ -239,6 +240,8 @@ const api = {
   }): (HomeBuildingZone | HomeDeviceZone)[] => app.getHomeTargets(),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
+  getWebviewHashes: async (): Promise<Partial<Record<string, string>>> =>
+    getWebviewHashes(),
   homeAuthenticate: async ({
     body,
     homey,

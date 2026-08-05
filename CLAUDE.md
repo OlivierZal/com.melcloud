@@ -37,7 +37,16 @@ caught real failures that the others miss:
   there, and nothing needs re-committing when a webview source changes
   (the old re-stamp-and-commit dance is gone). Stamps exist only in the
   packaged app, and only within attribute/import reference contexts,
-  never comments.
+  never comments. A second cache layer covers the HTML
+  itself (phone webviews cache the page across app versions,
+  force-close included): each bundle carries a freshness handshake —
+  the page's `?v=` is its identity, `GET /webview-hashes` serves the
+  live hashes (a manifest `bundle.mts` emits into the packaged app,
+  read by `lib/webview-hashes.mts`), and a mismatch triggers ONE
+  `location.reload()` (sessionStorage guard, `webview-freshness.mts`),
+  which revalidates the HTML and pulls the fresh bundle. Every failure
+  path stays open: an unstamped page, an absent route or denied
+  storage must never take a working webview down.
 - `npm run homey:validate` — Homey validation at publish level; may
   rewrite files (see locales below), re-stage if it does.
 - `node scripts/sync-capability-definitions.mts` — refreshes the

@@ -9,6 +9,7 @@ import type { Homey } from 'homey/lib/Homey'
 import type { HomeDeviceZone } from '../../types/zone.mts'
 import { toDeviceType, toHomeDeviceType } from '../../lib/to-device-type.mts'
 import { toHour, toNonNegativeInt } from '../../lib/validation.mts'
+import { getWebviewHashes } from '../../lib/webview-hashes.mts'
 import {
   type DaysQuery,
   type HourQuery,
@@ -168,6 +169,8 @@ const api = {
     }),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
+  getWebviewHashes: async (): Promise<Partial<Record<string, string>>> =>
+    getWebviewHashes(),
   logWebviewBoot: ({
     body,
     homey: { app },
