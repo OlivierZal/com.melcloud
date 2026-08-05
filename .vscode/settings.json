@@ -1,7 +1,7 @@
 {
+  "js/ts.tsdk.path": "node_modules/@typescript/native",
   "sonarlint.connectedMode.project": {
     "connectionId": "olivierzal",
     "projectKey": "OlivierZal_com.melcloud"
-  },
-  "typescript.native-preview.tsdk": "node_modules/@typescript/native"
+  }
 }
