@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { type Mock, afterEach, describe, expect, it, vi } from 'vitest'
 
 import { ensureFreshWebview } from '../../public/webview-freshness.mts'
 
@@ -40,7 +40,7 @@ const install = ({
   isStorageDenied?: boolean
   isWriteDenied?: boolean
   stored?: string | null
-}): { store: Map<string, string>; replace: (url: string) => void } => {
+}): { replace: Mock<(url: string) => void>; store: Map<string, string> } => {
   const replace = vi.fn<(url: string) => void>()
   const store = new Map<string, string>()
   if (stored !== null) {
@@ -214,26 +214,55 @@ describe(ensureFreshWebview, () => {
     expect(replace).not.toHaveBeenCalled()
   })
 
-  it('should refetch even when the guard cannot be written', async () => {
+  it('should skip the refetch when the guard cannot be written', async () => {
+    const report = vi.fn<(message: string) => void>()
     const { replace } = install({ isWriteDenied: true, references: STALE_PAGE })
 
     await expect(
-      ensureFreshWebview('ata-group-setting', serveHashes),
-    ).resolves.toBe(true)
+      ensureFreshWebview('ata-group-setting', serveHashes, report),
+    ).resolves.toBe(false)
 
-    expect(replace).toHaveBeenCalledTimes(1)
+    // Navigating without a persisted guard risks a boot-navigation
+    // livelock: the address is deterministic per identity, so a cached
+    // response to it would be re-attempted on every boot.
+    expect(replace).not.toHaveBeenCalled()
+    expect(report).toHaveBeenCalledWith(
+      'Stale webview: page cccc0000.00000000, live cccc0000.aaaa1111 — guard unwritable, refetch skipped',
+    )
   })
 
-  it('should read denied storage as already refetched', async () => {
+  it('should skip the refetch and say so when storage is denied', async () => {
+    const report = vi.fn<(message: string) => void>()
     const { replace } = install({
       isStorageDenied: true,
       references: STALE_PAGE,
     })
 
     await expect(
-      ensureFreshWebview('ata-group-setting', serveHashes),
+      ensureFreshWebview('ata-group-setting', serveHashes, report),
     ).resolves.toBe(false)
 
     expect(replace).not.toHaveBeenCalled()
+    // Denied storage is its own outcome — reporting it as a spent
+    // refetch would claim an attempt that never happened.
+    expect(report).toHaveBeenCalledWith(
+      'Stale webview: page cccc0000.00000000, live cccc0000.aaaa1111 — storage denied, refetch skipped',
+    )
+  })
+
+  it('should keep the page booting when the navigation fails', async () => {
+    const report = vi.fn<(message: string) => void>()
+    const { replace } = install({ references: STALE_PAGE })
+    replace.mockImplementation(() => {
+      throw new Error('blocked')
+    })
+
+    await expect(
+      ensureFreshWebview('ata-group-setting', serveHashes, report),
+    ).resolves.toBe(false)
+
+    expect(report).toHaveBeenCalledWith(
+      'Stale webview refetch could not navigate: page cccc0000.00000000',
+    )
   })
 })

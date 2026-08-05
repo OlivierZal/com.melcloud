@@ -1916,7 +1916,8 @@ class SettingsApp {
   // `ready()` always fires — an unbounded await here would hold Homey's
   // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
-    // A stale cached page reloads itself once instead of booting: skip
+    // A stale cached page refetches itself once (never-cached address)
+    // instead of booting: skip
     // the init — the document is about to be replaced.
     if (
       await ensureFreshWebview(

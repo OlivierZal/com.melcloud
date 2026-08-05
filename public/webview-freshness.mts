@@ -58,22 +58,36 @@ const getPageIdentity = (): string | null => {
   return stamps.length > 0 ? stamps.join('.') : null
 }
 
-// Denied storage reads as "already refetched": without the guard a
-// persistent mismatch would refetch forever, and never refetching is
-// the safe side of that trade.
-const hasRefetchedFor = (hash: string): boolean => {
+// Denied storage cannot arm the loop guard, so it must not refetch:
+// the address is deterministic per identity, and an unguarded attempt
+// re-served from the cache would boot-navigate forever. Skipping (and
+// saying so) is the safe side of that trade.
+const DENIED = Symbol('denied')
+
+const readStoredGuard = (): string | symbol | null => {
   try {
-    return sessionStorage.getItem(REFETCH_GUARD_KEY) === hash
+    return sessionStorage.getItem(REFETCH_GUARD_KEY)
   } catch {
-    return true
+    return DENIED
   }
 }
 
-const markRefetchedFor = (hash: string): void => {
+const readRefetchGuard = (hash: string): 'armed' | 'denied' | 'spent' => {
+  const stored = readStoredGuard()
+  if (stored === DENIED) {
+    return 'denied'
+  }
+  return stored === hash ? 'spent' : 'armed'
+}
+
+// Returns whether the guard was persisted — navigating without it risks
+// the same livelock as a denied read, so a failed write also skips.
+const markRefetchedFor = (hash: string): boolean => {
   try {
     sessionStorage.setItem(REFETCH_GUARD_KEY, hash)
+    return true
   } catch {
-    // Denied storage already reads as "refetched" (`hasRefetchedFor`).
+    return false
   }
 }
 
@@ -81,30 +95,70 @@ const markRefetchedFor = (hash: string): void => {
 // forcing a network fetch of the document; it is overwritten, never
 // accumulated, and carries the stale identity — not a clock or random
 // read, which would mint a new address on every boot and sidestep the
-// per-identity guard.
-const refetchDocument = (identity: string): void => {
-  const url = new URL(location.href)
-  url.searchParams.set('fresh', identity)
-  location.replace(url.href)
+// per-identity guard. A navigation failure is reported and swallowed:
+// the stale page must keep booting.
+const refetchDocument = (
+  identity: string,
+  report?: (message: string) => void,
+): boolean => {
+  try {
+    const url = new URL(location.href)
+    url.searchParams.set('fresh', identity)
+    location.replace(url.href)
+    return true
+  } catch {
+    report?.(`Stale webview refetch could not navigate: page ${identity}`)
+    return false
+  }
+}
+
+// Reports the guard outcome that stops a refetch, if any.
+const reportStopped = ({
+  expected,
+  guard,
+  identity,
+  report,
+}: {
+  expected: string
+  guard: 'armed' | 'denied' | 'spent'
+  identity: string
+  report?: ((message: string) => void) | undefined
+}): boolean => {
+  if (guard === 'denied') {
+    report?.(
+      `Stale webview: page ${identity}, live ${expected} — storage denied, refetch skipped`,
+    )
+    return true
+  }
+  if (guard === 'spent') {
+    report?.(
+      `Stale webview persists after its refetch: page ${identity}, live ${expected}`,
+    )
+    return true
+  }
+  return false
 }
 
 // One-shot refetch decision for a confirmed mismatch: refetches unless
-// this identity already spent its attempt, reporting either way.
+// this identity already spent its attempt or the guard cannot hold one,
+// reporting each outcome distinctly.
 const refetchOnce = (
   identity: string,
   expected: string,
   report?: (message: string) => void,
 ): boolean => {
-  if (hasRefetchedFor(identity)) {
+  const guard = readRefetchGuard(identity)
+  if (reportStopped({ expected, guard, identity, report })) {
+    return false
+  }
+  if (!markRefetchedFor(identity)) {
     report?.(
-      `Stale webview persists after its refetch: page ${identity}, live ${expected}`,
+      `Stale webview: page ${identity}, live ${expected} — guard unwritable, refetch skipped`,
     )
     return false
   }
   report?.(`Stale webview: page ${identity}, live ${expected} — refetching`)
-  markRefetchedFor(identity)
-  refetchDocument(identity)
-  return true
+  return refetchDocument(identity, report)
 }
 
 // Returns whether a refetch was issued — the caller must then skip its
