@@ -5,7 +5,6 @@ import {
   type HolidayModeState,
   type HolidayModeUpdate,
   type Hour,
-  type Logger,
   type ProtectionState,
   type ProtectionUpdate,
   type ReportChartLineOptions,
@@ -67,7 +66,7 @@ import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { typedFromEntries } from './lib/typed-object.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
-import { toZoneValueData } from './lib/validation.mts'
+import { toNonNegativeInt, toZoneValueData } from './lib/validation.mts'
 import {
   getHomeBuildingId,
   getHomeDeviceId,
@@ -128,16 +127,6 @@ const chartDaysStart = (days: number, timezone: string): string =>
 // dropped into the field can carry anything at runtime. Only numbers
 // and numeric strings are accepted — coercing other types (false,
 // null, '') would silently read as 0 and turn holiday mode off.
-const toDurationDays = (duration: unknown): number => {
-  if (typeof duration === 'number') {
-    return duration
-  }
-  if (typeof duration === 'string' && duration.trim() !== '') {
-    return Number(duration)
-  }
-  return Number.NaN
-}
-
 // Flow-action arguments shared by the holiday-mode cards: `zone` always,
 // `duration`/`time` only on the cards that declare them. The zone carries
 // its `${model}_${id}` option value as `id` — the shape stored card args
@@ -462,13 +451,7 @@ export default class MELCloudApp extends App {
     // Poke any open webview to re-run its freshness handshake: an app
     // (re)boot is exactly when the served hashes may have moved.
     this.homey.api.realtime('webview_hashes_changed', null)
-    fireAndForget(
-      this.#logBootReady(),
-      (...args: unknown[]) => {
-        this.error(...args)
-      },
-      'Boot readiness tracking failed:',
-    )
+    fireAndForget(this.#logBootReady(), this, 'Boot readiness tracking failed:')
   }
 
   public override async onUninit(): Promise<void> {
@@ -1163,17 +1146,6 @@ export default class MELCloudApp extends App {
     }
   }
 
-  #createLogger(): Logger {
-    return {
-      error: (...args: unknown[]): void => {
-        this.error(...args)
-      },
-      log: (...args: unknown[]): void => {
-        this.log(...args)
-      },
-    }
-  }
-
   #createNotification(language: string): void {
     const { homey } = this
     const {
@@ -1400,16 +1372,15 @@ export default class MELCloudApp extends App {
     )
   }
 
+  // The zero lower bound (`HOLIDAY_MODE_OFF_DURATION`) is what
+  // `toNonNegativeInt` already enforces; the boundary only translates
+  // the failure into the user's language.
   #holidayModeDays(duration: unknown): number {
-    const days = toDurationDays(duration)
-    if (
-      !Number.isSafeInteger(days) ||
-      days < HOLIDAY_MODE_OFF_DURATION ||
-      days > HOLIDAY_MODE_MAX_DURATION_DAYS
-    ) {
+    try {
+      return toNonNegativeInt(duration, { max: HOLIDAY_MODE_MAX_DURATION_DAYS })
+    } catch {
       throw new RangeError(this.homey.__('errors.invalidDuration'))
     }
-    return days
   }
 
   #holidayModeEndTime(time: unknown): Temporal.PlainTime {
@@ -1468,7 +1439,7 @@ export default class MELCloudApp extends App {
           this.#notifySessionRestored('classic')
         },
       },
-      logger: this.#createLogger(),
+      logger: this,
       settingManager: this.#createSettingManager(),
       shouldResumeSessionInBackground: true,
     })
@@ -1502,7 +1473,7 @@ export default class MELCloudApp extends App {
         },
       },
       locale: language,
-      logger: this.#createLogger(),
+      logger: this,
       settingManager: this.#createSettingManager('home'),
       shouldResumeSessionInBackground: true,
       timezone: getTimeZone(this.homey),

@@ -3,21 +3,29 @@ import { describe, expect, it, vi } from 'vitest'
 import { fireAndForget } from '../../lib/fire-and-forget.mts'
 import { settleDetached } from '../helpers.ts'
 
+const createLogger = (): {
+  error: ReturnType<typeof vi.fn<(...args: unknown[]) => void>>
+  log: ReturnType<typeof vi.fn<(...args: unknown[]) => void>>
+} => ({
+  error: vi.fn<(...args: unknown[]) => void>(),
+  log: vi.fn<(...args: unknown[]) => void>(),
+})
+
 describe(fireAndForget, () => {
   it('should keep a resolved promise silent', async () => {
-    const logError = vi.fn<(...args: unknown[]) => void>()
-    fireAndForget(Promise.resolve('done'), logError, 'Detached work failed:')
+    const logger = createLogger()
+    fireAndForget(Promise.resolve('done'), logger, 'Detached work failed:')
     await settleDetached()
 
-    expect(logError).not.toHaveBeenCalled()
+    expect(logger.error).not.toHaveBeenCalled()
   })
 
   it('should log a rejection with the given message', async () => {
     const failure = new Error('boom')
-    const logError = vi.fn<(...args: unknown[]) => void>()
-    fireAndForget(Promise.reject(failure), logError, 'Detached work failed:')
+    const logger = createLogger()
+    fireAndForget(Promise.reject(failure), logger, 'Detached work failed:')
     await settleDetached()
 
-    expect(logError).toHaveBeenCalledWith('Detached work failed:', failure)
+    expect(logger.error).toHaveBeenCalledWith('Detached work failed:', failure)
   })
 })

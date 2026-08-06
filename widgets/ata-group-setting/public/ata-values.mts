@@ -4,18 +4,19 @@ import {
   classicCoolModes,
 } from '@olivierzal/melcloud-api/constants'
 
-import type { Settings } from '../../../types/device-settings.mts'
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import type { AtaGroupSettingWidgetSettings } from '../../../types/widgets.mts'
-import type { HomeBuildingZone, HomeDeviceZone } from '../../../types/zone.mts'
 import { type DirtyGate, createDirtyGate } from '../../../public/dirty-gate.mts'
 import {
   type HTMLValueElement,
-  booleanStrings,
-  configureNumericInput,
-  createOption,
+  appendFormControl,
+  booleanOptions,
+  createInput,
+  createSelect,
   getButton,
   getSelect,
+  parseFormValue,
+  populateZoneOptions,
 } from '../../../public/dom.mts'
 import {
   type Homey,
@@ -23,93 +24,19 @@ import {
   homeyApiPut,
 } from '../../../public/homey-api.mts'
 import {
+  type PickerZone,
   getHomeBuildingId,
   getHomeDeviceId,
   getZoneId,
-  getZoneName,
   getZonePath,
   isHomeBuildingValue,
   isHomeDeviceValue,
 } from '../../../public/zones.mts'
 
-type TargetZone = Classic.Zone | HomeBuildingZone | HomeDeviceZone
-
-// ── DOM helpers ──
-
+// The generated controls are styled by element selectors in
+// `styles/layout.css` (Homey design tokens) — no utility classes needed,
+// so the shared builders run without their class hooks.
 const elementTypes = new Set(['boolean', 'enum'])
-
-// ── DOM creation helpers ──
-
-// Labels, inputs and selects are styled by element selectors in
-// `styles/layout.css` (Homey design tokens) — no utility classes needed.
-const createLabel = (
-  formControl: HTMLValueElement,
-  text: string,
-): HTMLLabelElement => {
-  const label = document.createElement('label')
-  label.htmlFor = formControl.id
-  label.textContent = text
-  label.append(formControl)
-  return label
-}
-
-const appendFormControl = (
-  parent: HTMLElement,
-  {
-    formControl,
-    title,
-  }: { formControl: HTMLValueElement | null; title: string },
-): void => {
-  if (formControl !== null) {
-    parent.append(createLabel(formControl, title))
-  }
-}
-
-const createInput = ({
-  id,
-  max,
-  min,
-  placeholder,
-  type,
-  value,
-}: {
-  id: string
-  type: string
-  max?: number | undefined
-  min?: number | undefined
-  placeholder?: string
-  value?: string
-}): HTMLInputElement => {
-  const input = document.createElement('input')
-  input.id = id
-  input.value = value ?? ''
-  input.type = type
-  configureNumericInput(input, { max, min })
-  if (placeholder !== undefined) {
-    input.placeholder = placeholder
-  }
-  return input
-}
-
-const createSelect = (
-  homey: Homey,
-  id: string,
-  values?: readonly { id: string; label: string }[],
-): HTMLSelectElement => {
-  const select = document.createElement('select')
-  select.id = id
-  for (const option of [
-    { id: '', label: '' },
-    ...(values ??
-      booleanStrings.map((value) => ({
-        id: value,
-        label: homey.__(`settings.boolean.${value}`),
-      }))),
-  ]) {
-    createOption(select, option)
-  }
-  return select
-}
 
 // ── Value processing ──
 
@@ -137,31 +64,6 @@ const clampNumericInput = ({
   }
   return Math.min(Math.max(numberValue, newMin), newMax)
 }
-
-const parseFormValue = (
-  element: HTMLValueElement,
-): Settings[keyof Settings] => {
-  if (element.value !== '') {
-    if (element.type === 'checkbox') {
-      return element.indeterminate ? null : element.checked
-    }
-    if (element.type === 'number' && element.min !== '' && element.max !== '') {
-      return clampNumericInput(element)
-    }
-    if (booleanStrings.includes(element.value)) {
-      return element.value === 'true'
-    }
-    const numberValue = Number(element.value)
-    return Number.isFinite(numberValue) ? numberValue : element.value
-  }
-  return null
-}
-
-const getSubzones = (zone: TargetZone): TargetZone[] => [
-  ...('devices' in zone ? zone.devices : []),
-  ...('areas' in zone ? zone.areas : []),
-  ...('floors' in zone ? zone.floors : []),
-]
 
 // Routes a `${model}_${id}` option value to its state endpoint.
 const getAtaStatePath = (value: string): string => {
@@ -277,17 +179,8 @@ export class AtaValueManager {
     return values
   }
 
-  public populateZoneOptions(zones: TargetZone[] = []): void {
-    if (zones.length > 0) {
-      for (const zone of zones) {
-        const { id, level, model, name } = zone
-        createOption(this.#zone, {
-          id: getZoneId(id, model),
-          label: getZoneName(name, level),
-        })
-        this.populateZoneOptions(getSubzones(zone))
-      }
-    }
+  public populateZoneOptions(zones: PickerZone[] = []): void {
+    populateZoneOptions(this.#zone, zones)
   }
 
   public async setValues(): Promise<void> {
@@ -322,7 +215,10 @@ export class AtaValueManager {
               this.#zoneMapping[this.#zone.value]?.[id]?.toString(),
             ].includes(value),
         )
-        .map((element) => [element.id, parseFormValue(element)]),
+        .map((element) => [
+          element.id,
+          parseFormValue(element, clampNumericInput),
+        ]),
     )
   }
 
@@ -336,7 +232,7 @@ export class AtaValueManager {
     values?: readonly { id: string; label: string }[] | undefined
   }): HTMLValueElement | null {
     if (elementTypes.has(type)) {
-      return createSelect(this.#homey, id, values)
+      return createSelect(id, values ?? booleanOptions(this.#homey))
     }
     if (type === 'number') {
       return createInput({
