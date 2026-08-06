@@ -76,8 +76,11 @@ const setFrozen = (
   }
 }
 
-// The gate evaluates its arming at creation, so Apply starts greyed even
-// when no data ever loads; call `markSaved` after every (re)populate and
+// The gate evaluates its arming at creation: in baseline mode Apply
+// starts greyed even when no data ever loads (the form matches its own
+// snapshot), in predicate mode it starts wherever `isActionable` puts
+// it — a prefilled form may legitimately arm at once. Call `markSaved`
+// after every (re)populate and
 // successful save (in predicate mode it only re-evaluates — there is no
 // baseline to move), `recompute` after any programmatic field write (no
 // `input` event fires for those), `wire` on the controls the arming
