@@ -123,18 +123,15 @@ describe('dirty gate', () => {
     expect(refreshElement.disabled).toBe(false)
   })
 
-  it('should arm Apply through isActionable instead of the snapshot diff', () => {
+  it('should arm Apply through isActionable with no baseline at all', () => {
     const applyElement = mock<HTMLButtonElement>({ disabled: false })
     const actionable = { value: false }
-    const form = { value: 'pristine' }
+    // Predicate mode carries NO serialize: the gate must construct and
+    // recompute without ever reaching for a snapshot.
     const gate = createDirtyGate({
       applyElement,
       isActionable: () => actionable.value,
-      serialize: () => form.value,
     })
-
-    form.value = 'edited'
-    gate.recompute()
 
     expect(applyElement.disabled).toBe(true)
 
@@ -144,6 +141,25 @@ describe('dirty gate', () => {
     expect(applyElement.disabled).toBe(false)
 
     gate.setBusy(true)
+
+    expect(applyElement.disabled).toBe(true)
+  })
+
+  it('should degrade markSaved to a re-evaluation in predicate mode', () => {
+    const applyElement = mock<HTMLButtonElement>({ disabled: false })
+    const actionable = { value: true }
+    const gate = createDirtyGate({
+      applyElement,
+      isActionable: () => actionable.value,
+    })
+
+    expect(applyElement.disabled).toBe(false)
+
+    // A successful save typically drains the predicate (the form now
+    // matches the persisted state); markSaved must pick that up even
+    // though it has no baseline to move.
+    actionable.value = false
+    gate.markSaved()
 
     expect(applyElement.disabled).toBe(true)
   })

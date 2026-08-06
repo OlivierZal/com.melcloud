@@ -500,12 +500,6 @@ class AuthManager {
         const { password, username } = this.#loginInput
         return username !== '' && password !== ''
       },
-      serialize: (): string =>
-        JSON.stringify([
-          this.#apiSelect.value,
-          this.#usernameInput?.value ?? '',
-          this.#passwordInput?.value ?? '',
-        ]),
     })
   }
 
