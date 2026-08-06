@@ -27,7 +27,7 @@
                         const script = document.querySelector('script[src*="index.js"]')
                         const report = (probe) => {
                             homey
-                                .api('POST', '/boot-error', { message: 'The widget bundle did not boot within 10s', name: 'BootTimeout', probe, stack: '', userAgent: navigator.userAgent })
+                                .api('POST', '/boot-error', { message: 'The widget bundle did not boot within 10s', name: 'BootTimeout', probe, userAgent: navigator.userAgent })
                                 .catch(() => {})
                             const message = document.querySelector('#init_error')
                             if (message) {

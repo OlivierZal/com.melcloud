@@ -103,19 +103,17 @@ export class AtaValueManager {
     this.#homey = homey
     this.#ataValues = ataValuesElement
     this.#zone = zoneElement
-    // The gate snapshots its pristine baseline at creation: Update starts
-    // greyed even when no zone resolves and the first fetch never runs.
-    // Arming goes through `isActionable`, not the snapshot diff: an
-    // emptied field means "no instruction" and a value equal to the
-    // zone's known state is filtered out, so Update arms only when the
-    // request would actually carry something.
+    // Update starts greyed even when no zone resolves and the first
+    // fetch never runs. Arming goes through `isActionable`: an emptied
+    // field means "no instruction" and a value equal to the zone's known
+    // state is filtered out, so Update arms only when the request would
+    // actually carry something.
     this.#dirtyGate = createDirtyGate({
       applyElement: getButton('apply_values_melcloud'),
       fieldsetElements: [ataValuesElement],
       refreshElements: [getButton('refresh_values_melcloud')],
       isActionable: (): boolean =>
         Object.keys(this.#buildAtaValuesBody()).length > 0,
-      serialize: (): string => this.#serializeState(),
     })
   }
 
@@ -247,17 +245,6 @@ export class AtaValueManager {
 
   #isGroupAtaState(value: string): value is keyof Classic.GroupState {
     return Object.hasOwn(this.#defaultAtaValues, value)
-  }
-
-  // Serializes every control's id and value, in DOM order, into the string
-  // the dirty check diffs against. A control still on its mixed/empty state
-  // serializes as '', so picking a concrete value registers as a change.
-  #serializeState(): string {
-    return JSON.stringify(
-      [
-        ...this.#ataValues.querySelectorAll<HTMLValueElement>('input, select'),
-      ].map(({ id, value }) => [id, value]),
-    )
   }
 
   #syncAtaValues(): void {

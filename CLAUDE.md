@@ -136,16 +136,18 @@ coverage.
   fieldsets while a request is in flight (container `disabled` +
   `aria-busy`, so a control's own domain `disabled` survives the thaw):
   every success path rewrites the fields, so a mid-flight edit would be
-  silently clobbered — pass every region `serialize` reads through
-  `fieldsetElements`. When a wire protocol cannot express every form
-  divergence (an emptied field means "no instruction" and is omitted
-  from the request), the call site supplies `isActionable` — Apply arms
-  only when the request would carry something — while `serialize` stays
-  the pure snapshot; the ATA group widget arms through its body builder
-  this way, and the credentials section arms only when both fields are
-  filled (its Reset button rides the gate as a Refresh — greyed by busy
-  alone). Its
-  `serialize` must stay a PURE form snapshot, never a request-body builder
+  silently clobbered — pass every region the arming source reads through
+  `fieldsetElements`. Arming comes from exactly ONE source, exclusive by
+  type: baseline mode (`serialize`, a pure snapshot diffed against the
+  saved baseline) or predicate mode (`isActionable`, for wire protocols
+  that cannot express every form divergence — an emptied field means "no
+  instruction" and is omitted from the request — with no baseline to
+  retain stale form state); the ATA group widget arms through its body
+  builder this way, and the credentials section arms only when both
+  fields are filled (its Reset button rides the gate as a Refresh —
+  greyed by busy alone; in predicate mode `markSaved` only re-evaluates).
+  A baseline `serialize` must stay a PURE form snapshot, never a
+  request-body builder
   (those filter null deltas out and desync the pristine check — the
   historical heatzy bug), and disabled greying styles
   `[class*='homey-button']:disabled` generically, never a per-class list
