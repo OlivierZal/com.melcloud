@@ -389,6 +389,11 @@ coverage.
   SECURITY.md, CLAUDE.md) — never a later sweep; the 2026-08 README
   audit caught exactly the drift this prevents (a shipped Home ATW
   driver absent from its README, a stale `Result` kind list).
+- Every substantive wave ends with a targeted cleanup pass over its OWN
+  diff — residue, history-narrating comments, orphaned helpers, missed
+  factorings — before it is considered releasable. Sequence features
+  first, cleanup second, so the pass covers them; a cleanup run before
+  the last change leaves that change unswept.
 
 - `@olivierzal/melcloud-api` is pinned EXACTLY, never with a caret: the
   library's breaking changes are self-published, adoption is an explicit
