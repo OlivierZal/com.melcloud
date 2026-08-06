@@ -96,8 +96,9 @@ coverage.
   and not available offline.
 - The settings page (`settings/`) uses Homey's official `homey-form-*` /
   `homey-button-*` classes; `settings/index.css` only fills documented SDK
-  gaps (date inputs, checkbox `:indeterminate`, `fieldset[hidden]`
-  specificity) and app-specific design.
+  gaps (date inputs, checkbox `:indeterminate`, disabled greying and
+  freeze dim, hidden/injected-cascade specificity) and app-specific
+  design.
 - App-API surface conventions: paths are kebab-case REST (`get*` for
   GET — except `is*` for a boolean GET —, `update*` for PUT — never
   `set*` —, and a business verb for POST: `*Authenticate` on
@@ -154,9 +155,16 @@ coverage.
   WebKit renders inline fieldsets atomically, so SIBLING sets tile side
   by side (the 45.7.5 settings regression; a single set per section had
   hidden it for years). `settings/index.css` restacks them with a
-  higher-specificity block rule. Any markup change that multiplies
-  `homey-form-*` elements needs an on-device cold-open check: the
-  injected sheet's resets make untested combinations render arbitrarily.
+  higher-specificity block rule. That is the general rule for ANY own
+  rule that must beat the injected sheet: its rules sit at (0,1,1) and
+  a tie falls to injection order, so the own rule needs an ancestor
+  selector — `body fieldset[hidden]`, `body fieldset[disabled]`,
+  `body fieldset.busy-scope`, the `.homey-form-group` restack — never a
+  bare (0,1,1) form. Only an on-device open can catch a lost tie (a
+  headless probe has no injected sheet), so any markup change that
+  multiplies `homey-form-*` elements needs an on-device cold-open
+  check: the injected sheet's resets make untested combinations render
+  arbitrarily.
 
 ## Driver conventions
 
