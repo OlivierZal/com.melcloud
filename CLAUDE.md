@@ -130,8 +130,9 @@ coverage.
   instead of a silent pass, and what makes separate "the regex still
   matches" clauses redundant.
 - Dirty-gating: `public/dirty-gate.mts` is the ONE primitive behind every
-  webview Apply/Refresh pair (settings sections, frost/holiday panels, the
-  ATA group widget) — never re-derive its invariant at a call site. The gate also freezes the gated
+  webview Apply/Refresh pair (settings sections, frost/holiday/overheat
+  panels, the credentials section, the ATA group widget) — never
+  re-derive its invariant at a call site. The gate also freezes the gated
   fieldsets while a request is in flight (container `disabled` +
   `aria-busy`, so a control's own domain `disabled` survives the thaw):
   every success path rewrites the fields, so a mid-flight edit would be
@@ -141,7 +142,9 @@ coverage.
   from the request), the call site supplies `isActionable` — Apply arms
   only when the request would carry something — while `serialize` stays
   the pure snapshot; the ATA group widget arms through its body builder
-  this way. Its
+  this way, and the credentials section arms only when both fields are
+  filled (its Reset button rides the gate as a Refresh — greyed by busy
+  alone). Its
   `serialize` must stay a PURE form snapshot, never a request-body builder
   (those filter null deltas out and desync the pristine check — the
   historical heatzy bug), and disabled greying styles

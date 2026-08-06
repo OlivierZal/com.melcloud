@@ -116,8 +116,10 @@ select:not(.zone-select) {
 /* The values container is a fieldset so the dirty gate can freeze every
    control with one `disabled` flip while a request is in flight: no UA
    fieldset chrome, and the frozen state greys like the buttons. Explicit
-   `display: block` because WebKit renders inline fieldsets atomically. */
-fieldset.busy-scope {
+   `display: block` because WebKit renders inline fieldsets atomically.
+   The `body` ancestor lifts both rules above the injected sheet's
+   (0,1,1) fieldset styling, whatever the stylesheet order. */
+body fieldset.busy-scope {
   border: 0;
   display: block;
   margin: 0;
@@ -125,7 +127,7 @@ fieldset.busy-scope {
   padding: 0;
 }
 
-fieldset[disabled] {
+body fieldset[disabled] {
   cursor: not-allowed;
   opacity: 0.5;
   pointer-events: none;
