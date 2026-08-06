@@ -30,9 +30,10 @@ import { getErrorMessage } from '../lib/get-error-message.mts'
 import { type DirtyGate, createDirtyGate } from '../public/dirty-gate.mts'
 import {
   type HTMLValueElement,
-  booleanStrings,
-  configureNumericInput,
-  createOption,
+  booleanOptions,
+  createInput,
+  createLabel as createPlainLabel,
+  createSelect,
   getButton,
   getDetails,
   getDiv,
@@ -40,15 +41,17 @@ import {
   getInput,
   getSelect,
   getSpan,
+  parseFormValue,
+  populateZoneOptions as populateZoneSelect,
   translateAriaLabels,
 } from '../public/dom.mts'
 import { fireAndForget, runWebview } from '../public/homey-api.mts'
 import { ensureFreshWebview } from '../public/webview-freshness.mts'
 import {
+  type PickerZone,
   getHomeBuildingId,
   getHomeDeviceId,
   getZoneId,
-  getZoneName,
   getZonePath,
   isHomeBuildingValue,
   isHomeDeviceValue,
@@ -202,16 +205,13 @@ const createLabel = (
   formControl: HTMLValueElement,
   text: string,
 ): HTMLLabelElement => {
-  const isCheckbox = formControl.type === 'checkbox'
-  const label = document.createElement('label')
-  label.classList.add(isCheckbox ? 'homey-form-checkbox' : 'homey-form-label')
-  label.htmlFor = formControl.id
-  if (isCheckbox) {
-    addTextToCheckbox(label, formControl, text)
-    return label
+  if (formControl.type !== 'checkbox') {
+    return createPlainLabel(formControl, text, 'homey-form-label')
   }
-  label.textContent = text
-  label.append(formControl)
+  const label = document.createElement('label')
+  label.classList.add('homey-form-checkbox')
+  label.htmlFor = formControl.id
+  addTextToCheckbox(label, formControl, text)
   return label
 }
 
@@ -236,33 +236,6 @@ const appendFormControl = (
 
   const label = createLabel(formControl, title)
   parent.append(shouldWrapWithDiv ? createDiv(label) : label)
-}
-
-const createInput = ({
-  id,
-  max,
-  min,
-  placeholder,
-  type,
-  value,
-}: {
-  id: string
-  type: string
-  max?: number
-  min?: number
-  placeholder?: string | undefined
-  value?: string | null
-}): HTMLInputElement => {
-  const input = document.createElement('input')
-  input.classList.add('homey-form-input')
-  input.id = id
-  input.value = value ?? ''
-  input.type = type
-  configureNumericInput(input, { max, min })
-  if (placeholder !== undefined) {
-    input.placeholder = placeholder
-  }
-  return input
 }
 
 const createLegend = (fieldSet: HTMLFieldSetElement, text?: string): void => {
@@ -340,27 +313,6 @@ const createCheckbox = (id: string, driverId: string): HTMLInputElement => {
   return checkbox
 }
 
-const createSelect = (
-  homey: Homey,
-  id: string,
-  values?: readonly { id: string; label: string }[],
-): HTMLSelectElement => {
-  const select = document.createElement('select')
-  select.classList.add('homey-form-select')
-  select.id = id
-  for (const option of [
-    { id: '', label: '' },
-    ...(values ??
-      booleanStrings.map((value) => ({
-        id: value,
-        label: homey.__(`settings.boolean.${value}`),
-      }))),
-  ]) {
-    createOption(select, option)
-  }
-  return select
-}
-
 const parseNumericInput = (
   homey: Homey,
   { id, max, min, value }: HTMLInputElement,
@@ -420,11 +372,6 @@ const createValuesGate = (
       JSON.stringify(elements.map((element) => element.value)),
   })
 
-// Everything the zone picker can list: a Classic zone at any level, or a
-// Home building and its devices. Named once because the three overheat
-// helpers and `populateZoneOptions` all speak it.
-type PickerZone = Classic.Zone | HomeBuildingZone | HomeDeviceZone
-
 // Option values driving the Home-only overheat panel: `capable` lists
 // every Home ATA device plus each building owning one (the flat target
 // list puts a building right before its devices); `atwBuildings` lists
@@ -450,12 +397,6 @@ const collectOverheatZoneValues = (
   }
   return { atwBuildings, capable }
 }
-
-const getSubzones = (zone: PickerZone): Classic.Zone[] => [
-  ...('devices' in zone ? zone.devices : []),
-  ...('areas' in zone ? zone.areas : []),
-  ...('floors' in zone ? zone.floors : []),
-]
 
 // Serialize a device-settings section's controls as a pure form snapshot for
 // its DirtyGate — the same value-only shape the frost/holiday gates use. A
@@ -690,7 +631,12 @@ class AuthManager {
     )
     if (loginSetting !== undefined) {
       const { id, placeholder, title, type } = loginSetting
-      const formControl = createInput({ id, placeholder, type })
+      const formControl = createInput({
+        className: 'homey-form-input',
+        id,
+        placeholder,
+        type,
+      })
       applyCredentialHints(formControl, credentialKey)
       appendFormControl(this.#loginSection, { formControl, title })
       return formControl
@@ -898,7 +844,11 @@ class DeviceSettingsManager {
         continue
       }
 
-      const formControl = createSelect(this.#homey, id, values)
+      const formControl = createSelect(
+        id,
+        values ?? booleanOptions(this.#homey),
+        'homey-form-select',
+      )
       formControl.dataset.settingId = id
       formControl.dataset.driverId = 'common'
       appendFormControl(this.#settingsCommon, { formControl, title })
@@ -949,27 +899,6 @@ class DeviceSettingsManager {
     ) {
       hide(getDiv('auto_adjust_section'), false)
     }
-  }
-
-  #parseFormValue(element: HTMLValueElement): Settings[keyof Settings] {
-    if (element.value !== '') {
-      if (element.type === 'checkbox') {
-        return element.indeterminate ? null : element.checked
-      }
-      if (
-        element.type === 'number' &&
-        element.min !== '' &&
-        element.max !== ''
-      ) {
-        return parseNumericInput(this.#homey, element)
-      }
-      if (booleanStrings.includes(element.value)) {
-        return element.value === 'true'
-      }
-      const numberValue = Number(element.value)
-      return Number.isFinite(numberValue) ? numberValue : element.value
-    }
-    return null
   }
 
   // Re-sync a section's controls from the cached device settings (client-side,
@@ -1034,7 +963,9 @@ class DeviceSettingsManager {
       dataset: { driverId, settingId },
     } = element
     if (settingId !== undefined) {
-      const value = this.#parseFormValue(element)
+      const value = parseFormValue(element, (input) =>
+        parseNumericInput(this.#homey, input),
+      )
       if (
         this.#shouldUpdate(
           settingId,
@@ -1516,14 +1447,7 @@ class ZoneSettingsManager {
 
   public populateZoneOptions(zones: PickerZone[]): void {
     this.#registerOverheatZones(zones)
-    for (const zone of zones) {
-      const { id, level, model, name } = zone
-      createOption(this.#zone, {
-        id: getZoneId(id, model),
-        label: getZoneName(name, level),
-      })
-      this.populateZoneOptions(getSubzones(zone))
-    }
+    populateZoneSelect(this.#zone, zones)
   }
 
   /**

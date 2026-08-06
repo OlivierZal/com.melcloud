@@ -79,7 +79,7 @@ export type EnergyCapabilities<T extends Classic.DeviceType> =
       ? classicAtw.EnergyCapabilities
       : T extends typeof Classic.DeviceType.Erv
         ? classicErv.EnergyCapabilities
-        : Record<string, never>
+        : never
 
 export type EnergyCapabilityTagEntry<T extends Classic.DeviceType> = [
   capability: string & keyof EnergyCapabilities<T>,

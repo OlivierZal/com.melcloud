@@ -260,7 +260,7 @@ describe('api', () => {
           homey,
           query: mock<Partial<ErrorLogQueryParams>>({ offset: '' }),
         }),
-      ).rejects.toThrow('Invalid numeric query param: ""')
+      ).rejects.toThrow('offset: expected non-negative integer, got ')
       expect(mockApp.getErrorLog).not.toHaveBeenCalled()
     })
 
@@ -270,7 +270,7 @@ describe('api', () => {
           homey,
           query: mock<Partial<ErrorLogQueryParams>>({ period: 'abc' }),
         }),
-      ).rejects.toThrow('Invalid numeric query param: "abc"')
+      ).rejects.toThrow('period: expected non-negative integer, got abc')
       expect(mockApp.getErrorLog).not.toHaveBeenCalled()
     })
 
@@ -280,7 +280,7 @@ describe('api', () => {
           homey,
           query: mock<Partial<ErrorLogQueryParams>>({ period: 'Infinity' }),
         }),
-      ).rejects.toThrow('Invalid numeric query param: "Infinity"')
+      ).rejects.toThrow('period: expected non-negative integer, got Infinity')
       expect(mockApp.getErrorLog).not.toHaveBeenCalled()
     })
   })

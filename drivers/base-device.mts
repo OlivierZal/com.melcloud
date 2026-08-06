@@ -381,13 +381,7 @@ export abstract class BaseMELCloudDevice<
 
   async #init(): Promise<void> {
     await this.#setCapabilities()
-    fireAndForget(
-      this.#finishInit(),
-      (...args: unknown[]) => {
-        this.error(...args)
-      },
-      'Deferred device init failed:',
-    )
+    fireAndForget(this.#finishInit(), this, 'Deferred device init failed:')
   }
 
   #isThermostatModeSupportingOff(): boolean {

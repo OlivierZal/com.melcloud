@@ -1,3 +1,19 @@
+import type * as Classic from '@olivierzal/melcloud-api/classic'
+
+import type { HomeBuildingZone, HomeDeviceZone } from '../types/zone.mts'
+
+// Everything the zone pickers can list: a Classic zone at any level, or
+// a Home building and its devices.
+export type PickerZone = Classic.Zone | HomeBuildingZone | HomeDeviceZone
+
+// Only Classic zones nest — the Home entries carry none of the subzone
+// keys, so the walk bottoms out on them.
+export const getSubzones = (zone: PickerZone): Classic.Zone[] => [
+  ...('devices' in zone ? zone.devices : []),
+  ...('areas' in zone ? zone.areas : []),
+  ...('floors' in zone ? zone.floors : []),
+]
+
 export const getZoneId = (id: number | string, model: string): string =>
   `${model}_${String(id)}`
 

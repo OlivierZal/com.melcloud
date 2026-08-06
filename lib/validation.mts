@@ -42,7 +42,12 @@ export const toNonNegativeInt = (
       `${fieldPrefix(field)}expected number or numeric string`,
     )
   }
-  const parsed = Number(value)
+  // `Number('')` (and whitespace) is 0 — a JS coercion wart, not an
+  // integer representation; reject it before the numeric checks.
+  const parsed =
+    typeof value === 'string' && value.trim() === ''
+      ? Number.NaN
+      : Number(value)
   if (!Number.isSafeInteger(parsed) || parsed < 0) {
     throw new RangeError(
       `${fieldPrefix(field)}expected non-negative integer, got ${String(value)}`,

@@ -25,7 +25,7 @@ import type {
 } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 import { getErrorMessage } from './lib/get-error-message.mts'
-import { toDeviceOrZoneData } from './lib/validation.mts'
+import { toDeviceOrZoneData, toNonNegativeInt } from './lib/validation.mts'
 import { getWebviewHashes } from './lib/webview-hashes.mts'
 
 // The user-facing service names, interpolated into the failure
@@ -86,16 +86,13 @@ const logSettingsRoute = (app: Homey['app'], route: string): void => {
   app.log({ dataType: 'Settings page', route })
 }
 
-const toNumber = (value: string | undefined): number | undefined => {
-  if (value === undefined) {
-    return undefined
-  }
-  const parsed = Number(value)
-  if (value === '' || !Number.isFinite(parsed)) {
-    throw new Error(`Invalid numeric query param: ${JSON.stringify(value)}`)
-  }
-  return parsed
-}
+// Optional query params: absent stays absent, present must satisfy the
+// error-log paging contract — a non-negative integer.
+const toOptionalNonNegativeInt = (
+  value: string | undefined,
+  field: string,
+): number | undefined =>
+  value === undefined ? undefined : toNonNegativeInt(value, { field })
 
 const api = {
   classicAuthenticate: async ({
@@ -170,8 +167,8 @@ const api = {
     homey: Homey
     query: Partial<ErrorLogQueryParams>
   }): Promise<FormattedErrorLog> => {
-    const parsedOffset = toNumber(offset)
-    const parsedPeriod = toNumber(period)
+    const parsedOffset = toOptionalNonNegativeInt(offset, 'offset')
+    const parsedPeriod = toOptionalNonNegativeInt(period, 'period')
     return app.getErrorLog({
       from,
       offset: parsedOffset,
