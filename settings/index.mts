@@ -596,6 +596,7 @@ class AuthManager {
   public createCredentialFields(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     credentials: Record<Api, Partial<LoginCredentials>>,
+    unauthenticatedApis: readonly Api[],
   ): void {
     this.#credentialsByApi = credentials
     this.#usernameInput = this.#createCredentialInput(
@@ -606,9 +607,11 @@ class AuthManager {
       'password',
       driverSettings,
     )
-    // Open on the account that needs attention (e.g. the one just
-    // reset) so its empty fields are what the user sees first.
-    this.#selectFirstIncompleteApi()
+    // Open on the account that needs attention so what the user sees
+    // first is the account to fix: a signed-out one before anything
+    // else — stored-but-refused credentials included — then one whose
+    // stored pair lost a field.
+    this.#selectApiNeedingAttention(unauthenticatedApis)
     this.#syncInputsFromCredentials()
     this.#gate.markSaved()
   }
@@ -700,10 +703,13 @@ class AuthManager {
     return (username ?? '') !== '' && (password ?? '') !== ''
   }
 
-  #selectFirstIncompleteApi(): void {
-    const [firstIncomplete] = this.getIncompleteApis()
-    if (firstIncomplete !== undefined) {
-      this.#apiSelect.value = firstIncomplete
+  #selectApiNeedingAttention(unauthenticatedApis: readonly Api[]): void {
+    const [needsAttention] = [
+      ...unauthenticatedApis,
+      ...this.getIncompleteApis(),
+    ]
+    if (needsAttention !== undefined) {
+      this.#apiSelect.value = needsAttention
     }
   }
 
@@ -2071,16 +2077,20 @@ class SettingsApp {
       await this.#deviceSettingsManager.fetchDriverSettings()
     // Homey Settings may return `null` for a cleared key; omit such keys
     // to match `Partial<LoginCredentials>`.
-    this.#authManager.createCredentialFields(driverSettings, {
-      classic: {
-        ...(typeof password === 'string' && { password }),
-        ...(typeof username === 'string' && { username }),
+    this.#authManager.createCredentialFields(
+      driverSettings,
+      {
+        classic: {
+          ...(typeof password === 'string' && { password }),
+          ...(typeof username === 'string' && { username }),
+        },
+        home: {
+          ...(typeof homePassword === 'string' && { password: homePassword }),
+          ...(typeof homeUsername === 'string' && { username: homeUsername }),
+        },
       },
-      home: {
-        ...(typeof homePassword === 'string' && { password: homePassword }),
-        ...(typeof homeUsername === 'string' && { username: homeUsername }),
-      },
-    })
+      API_VALUES.filter((api) => !this.#authState[api]),
+    )
   }
 
   /**
