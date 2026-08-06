@@ -56,34 +56,39 @@
             credentials are settled), expanded while at least one is not. -->
         <details id="authentication" class="homey-form-fieldset">
             <summary class="homey-form-legend" data-i18n="settings.authenticate.legend">Credentials</summary>
-            <div class="homey-form-group">
-                <!-- The accessible name "API" is language-neutral (reads
-                    identically in all 13 locales), so it deliberately
-                    carries no data-i18n-aria-label. -->
-                <select
-                    id="api"
-                    class="homey-form-select"
-                    aria-label="API"
-                >
-                    <option value="classic">Classic</option>
-                    <option value="home">Home</option>
-                </select>
-            </div>
-            <div id="login"></div>
-            <div class="homey-form-group container">
-                <button
-                    id="reset_credentials"
-                    type="button"
-                    class="homey-button-primary-full"
-                    data-i18n="settings.authenticate.reset"
-                >Reset</button>
-                <button
-                    id="authenticate"
-                    type="button"
-                    class="homey-button-primary-full"
-                    data-i18n="settings.authenticate.button"
-                >Log in</button>
-            </div>
+            <!-- One fieldset so a single `disabled` flip freezes every
+                region the credentials snapshot reads (API choice
+                included) while a request is in flight. -->
+            <fieldset id="login_panel" class="busy-scope">
+                <div class="homey-form-group">
+                    <!-- The accessible name "API" is language-neutral (reads
+                        identically in all 13 locales), so it deliberately
+                        carries no data-i18n-aria-label. -->
+                    <select
+                        id="api"
+                        class="homey-form-select"
+                        aria-label="API"
+                    >
+                        <option value="classic">Classic</option>
+                        <option value="home">Home</option>
+                    </select>
+                </div>
+                <div id="login"></div>
+                <div class="homey-form-group container">
+                    <button
+                        id="reset_credentials"
+                        type="button"
+                        class="homey-button-primary-full"
+                        data-i18n="settings.authenticate.reset"
+                    >Reset</button>
+                    <button
+                        id="authenticate"
+                        type="button"
+                        class="homey-button-primary-full"
+                        data-i18n="settings.authenticate.button"
+                    >Log in</button>
+                </div>
+            </fieldset>
         </details>
         <!-- Shown when at least one API is authenticated — hidden by default to prevent flash -->
         <div id="content" hidden>

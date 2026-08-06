@@ -506,6 +506,8 @@ class AuthManager {
     home: {},
   }
 
+  readonly #gate: DirtyGate
+
   readonly #homey: Homey
 
   readonly #loadPostLoginCallback: (api: Api) => Promise<void>
@@ -524,6 +526,15 @@ class AuthManager {
     return this.#apiSelect.value === 'home' ? 'home' : 'classic'
   }
 
+  // Trimmed: mobile keyboards append a space after autocompleted
+  // email addresses, invisible in the field and rejected by MELCloud.
+  get #loginInput(): LoginCredentials {
+    return {
+      password: this.#passwordInput?.value ?? '',
+      username: (this.#usernameInput?.value ?? '').trim(),
+    }
+  }
+
   public constructor(
     homey: Homey,
     loadPostLoginCallback: (api: Api) => Promise<void>,
@@ -537,6 +548,24 @@ class AuthManager {
     this.#authenticationSection = getDetails('authentication')
     this.#loginSection = getDiv('login')
     this.#resetButton = getButton('reset_credentials')
+    this.#gate = createDirtyGate({
+      applyElement: this.#authenticateButton,
+      fieldsetElements: [getFieldset('login_panel')],
+      refreshElements: [this.#resetButton],
+      // Arms only when both fields carry something: an empty field
+      // could only produce the "missing credentials" alert, never a
+      // request.
+      isActionable: (): boolean => {
+        const { password, username } = this.#loginInput
+        return username !== '' && password !== ''
+      },
+      serialize: (): string =>
+        JSON.stringify([
+          this.#apiSelect.value,
+          this.#usernameInput?.value ?? '',
+          this.#passwordInput?.value ?? '',
+        ]),
+    })
   }
 
   public addEventListeners(): void {
@@ -549,6 +578,13 @@ class AuthManager {
     this.#resetButton.addEventListener('click', () => {
       fireAndForget(this.resetCredentials())
     })
+    // Wired last so the dirty recompute runs after the API cascade has
+    // resynced the fields the snapshot reads.
+    this.#gate.wire(
+      [this.#apiSelect, this.#usernameInput, this.#passwordInput].filter(
+        (element) => element !== null,
+      ),
+    )
   }
 
   // Folded when the credentials are settled, expanded while attention
@@ -574,6 +610,7 @@ class AuthManager {
     // reset) so its empty fields are what the user sees first.
     this.#selectFirstIncompleteApi()
     this.#syncInputsFromCredentials()
+    this.#gate.markSaved()
   }
 
   // APIs whose stored credentials are missing a username or password —
@@ -587,17 +624,16 @@ class AuthManager {
    */
   public async login(): Promise<void> {
     const api = this.#currentApi
-    // Trimmed: mobile keyboards append a space after autocompleted
-    // email addresses, invisible in the field and rejected by MELCloud.
-    const username = (this.#usernameInput?.value ?? '').trim()
-    const password = this.#passwordInput?.value ?? ''
+    const { password, username } = this.#loginInput
+    // Belt for the arming predicate: keyboard activation of a stale
+    // reference could still submit an emptied form.
     if (username === '' || password === '') {
       fireAndForget(
         this.#homey.alert(this.#homey.__('settings.authenticate.failure')),
       )
       return
     }
-    await withDisablingButton(this.#authenticateButton.id, async () => {
+    await this.#gate.runBusy(async () => {
       try {
         await homeyApiPost(this.#homey, `/${api}/sessions`, {
           password,
@@ -626,7 +662,7 @@ class AuthManager {
       return
     }
     const api = this.#currentApi
-    await withDisablingButton(this.#resetButton.id, async () => {
+    await this.#gate.runBusy(async () => {
       try {
         // The app-side logout owns the teardown (session, credentials,
         // backoff, sync timer, registry) — the webview never touches the
@@ -634,6 +670,7 @@ class AuthManager {
         await homeyApiDelete(this.#homey, `/${api}/sessions`)
         this.#credentialsByApi[api] = {}
         this.#syncInputsFromCredentials()
+        this.#gate.markSaved()
         this.#onLogOutCallback(api)
       } catch (error) {
         await this.#homey.alert(getErrorMessage(error))
