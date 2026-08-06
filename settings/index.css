@@ -64,12 +64,11 @@ input[type='datetime-local']:focus {
   padding: calc(var(--homey-su-1) - 1px);
 }
 
-/* Ensure `hidden` works on fieldsets: the UA `[hidden] { display: none }`
-   rule ties with the injected sheet's explicit `display` rules and with
-   `fieldset.busy-scope` below, and a tie falls to source order. The
-   `body` ancestor lifts this to (0,1,2) so the `hidden` attribute is
-   authoritative whatever the stylesheet order — the same device as the
-   checkbox-set restack. */
+/* Ensure `hidden` works on fieldsets: explicit `display` rules — the
+   injected sheet's and `fieldset.busy-scope` below — tie with the UA
+   `[hidden]` rule, and a tie falls to stylesheet order. The `body`
+   ancestor keeps the attribute authoritative (see the injected-cascade
+   rule in CLAUDE.md). */
 body fieldset[hidden] {
   display: none;
 }
@@ -148,13 +147,9 @@ input.homey-form-checkbox-input:indeterminate
 }
 
 /* Plain containers promoted to fieldsets so one `disabled` flip freezes a
-   whole dirty-gated form region: none of the UA fieldset chrome (border,
-   padding, min-inline-size) may surface. Explicit `display: block`
-   because WebKit renders inline fieldsets atomically. */
-/* The `body` ancestor outweighs the injected sheet's fieldset styling
-   whatever the order — the same device as the hidden and disabled
-   rules, and the reason the panel frames survived a (0,1,1) tie
-   on-device while a headless probe (no injected sheet) showed none. */
+   whole dirty-gated form region: none of the fieldset chrome (border,
+   padding, min-inline-size) may surface — the `body` ancestor keeps this
+   reset above the injected sheet's own fieldset styling. */
 body fieldset.busy-scope {
   border: 0;
   margin: 0;
@@ -162,9 +157,9 @@ body fieldset.busy-scope {
   padding: 0;
 }
 
-/* `display` split off and gated on `:not([hidden])`: the block display
-   ties (0,1,1) with the hidden rule's old form and won by source order,
-   which kept a hidden panel visible (the overheat panel regression). */
+/* `display` lives apart, gated on `:not([hidden])` so it can never
+   contend with the hidden rule above; explicit `block` because WebKit
+   renders inline fieldsets atomically. */
 fieldset.busy-scope:not([hidden]) {
   display: block;
 }
@@ -173,11 +168,9 @@ fieldset.busy-scope:not([hidden]) {
    request is in flight — grey it like the buttons. Attribute (not
    `:disabled`) so nested fieldsets inside a frozen section do not
    compound the opacity; `pointer-events` because `disabled` only
-   reaches form controls, not arbitrary interactive descendants. */
-/* The `body` ancestor outweighs the injected sheet's `all: unset` on
-   checkbox-set fieldsets whatever the order: without it the section dim
-   lost the cascade on-device and the button neutralizer below left
-   in-flight Apply/Refresh fully opaque. */
+   reaches form controls, not arbitrary interactive descendants; the
+   `body` ancestor keeps the dim above the injected sheet's `all: unset`
+   resets — the button neutralizer below counts on it showing. */
 body fieldset[disabled] {
   cursor: not-allowed;
   opacity: 0.5;
