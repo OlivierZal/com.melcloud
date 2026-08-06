@@ -420,14 +420,18 @@ coverage.
   reasoned reply when it does not — verify claims against sources
   before acting either way (Copilot has been wrong about library
   semantics). Resolve the thread once settled; none left dangling.
-- SonarCloud must be spotless for a PR to merge: quality gate green,
-  zero open issues on its analysis, 100 % coverage (within the
-  exclusions `sonar-project.properties` declares), and 0 % duplicated
-  lines across the WHOLE codebase — new and old alike, not just the
-  gate's new-code window. A Sonar finding is
-  handled like a lint error — the code adapts, or the divergence is
-  settled as a documented verdict (e.g. the `Number.NaN` convention in
-  `eslint.config.ts`) — never merged over.
+- SonarCloud must be spotless for a PR to merge — and the quality gate
+  passing is necessary, NOT sufficient: the free-tier gate tolerates
+  3 % duplication on new code, lets code smells through, and cannot be
+  customized, so the real bar is ours, held in review. That bar is
+  zero on BOTH windows — new code and overall alike: zero open issues
+  of every kind (bugs, code smells, vulnerabilities) across the whole
+  project, 0 % duplicated lines across the whole codebase, and 100 %
+  coverage (within the exclusions `sonar-project.properties`
+  declares). A Sonar finding is handled like a lint error — the code
+  adapts, or the divergence is settled as a documented verdict (e.g.
+  the `Number.NaN` convention in `eslint.config.ts`) — never merged
+  over.
 - Verify claimed library behavior empirically (headless chromium against
   the real dist/bundle in the scratchpad) rather than from memory — this
   repo's PRs document several review claims refuted that way.
