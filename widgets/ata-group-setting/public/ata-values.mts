@@ -47,7 +47,7 @@ const coolModeNumbers: ReadonlySet<number> = classicCoolModes
 const getCoolingAdjustedMin = (id: string, min: string): string =>
   id === 'SetTemperature' &&
   coolModeNumbers.has(Number(getSelect('OperationMode').value))
-    ? String(ClassicTemperature.cooling_min)
+    ? String(ClassicTemperature.coolingMin)
     : min
 
 const clampNumericInput = ({
