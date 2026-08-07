@@ -3382,17 +3382,24 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('notification when language not in changelog', () => {
-    it('should not set timeout when language is not in changelog', async () => {
+  describe('changelog language fallback', () => {
+    it('should still announce in English when the language is not in the changelog', async () => {
       mockGetLanguage.mockReturnValue('ja')
       mockSettingsGet.mockReturnValue('0.9.0')
       app = createApp()
       await app.onInit()
 
-      expect(mockSetTimeout).not.toHaveBeenCalled()
+      expect(mockSetTimeout).toHaveBeenCalledTimes(1)
+
+      const callback = getMockCallArg<() => Promise<void>>(mockSetTimeout, 0, 0)
+      await callback()
+
+      expect(mockCreateNotification).toHaveBeenCalledWith({
+        excerpt: 'English changelog',
+      })
     })
 
-    it('should not set timeout when version is missing from changelog', async () => {
+    it('should still announce the versions in between when the running version has no entry', async () => {
       mockSettingsGet.mockReturnValue('0.9.0')
       app = createApp()
       Object.defineProperty(app.homey, 'manifest', {
@@ -3401,7 +3408,7 @@ describe('melCloudApp', () => {
       })
       await app.onInit()
 
-      expect(mockSetTimeout).not.toHaveBeenCalled()
+      expect(mockSetTimeout).toHaveBeenCalledTimes(1)
     })
   })
 

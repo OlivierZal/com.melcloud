@@ -1,6 +1,11 @@
 import 'source-map-support/register.js'
 
-import { fireAndForget, NotFoundError } from '@olivierzal/homey-kit'
+import {
+  fireAndForget,
+  NotFoundError,
+  selectChangelogEntries,
+  sequential,
+} from '@olivierzal/homey-kit'
 import {
   type DeviceType,
   type HolidayModeState,
@@ -1152,21 +1157,26 @@ export default class MELCloudApp extends App {
       notifications,
       settings,
     } = homey
-    if (settings.get('notifiedVersion') === version) {
-      return
-    }
-    const changelogByVersion = changelog as Record<
-      string,
-      Record<string, string>
-    >
-    const versionChangelog = changelogByVersion[version] ?? {}
-    const excerpt = versionChangelog[language]
-    if (excerpt === undefined) {
+    // Every release since the one already announced, not just the
+    // running one: a user who updates rarely would otherwise never hear
+    // about the versions in between. The SDK read is untyped, as
+    // everywhere else settings are read: a stored value that is not a
+    // string reads as no baseline at all.
+    const notified: unknown = settings.get('notifiedVersion')
+    const { entries } = selectChangelogEntries({
+      changelog,
+      from: typeof notified === 'string' ? notified : null,
+      language,
+      to: version,
+    })
+    if (entries.length === 0) {
       return
     }
     homey.setTimeout(async () => {
       try {
-        await notifications.createNotification({ excerpt })
+        await sequential(entries, async ({ excerpt }) => {
+          await notifications.createNotification({ excerpt })
+        })
         settings.set('notifiedVersion', version)
       } catch {
         // Non-critical: notification display is best-effort
