@@ -18,6 +18,13 @@ updates:
       actions:
         patterns:
           - '*'
+    # The workflow refs and the npm pin are one version on two channels,
+    # and a check enforces their agreement. Dependabot cannot bump both
+    # in one PR (separate ecosystems), so a lone ref bump would fail the
+    # check and deadlock against its npm twin: the npm pin drives, and
+    # the dependabot-fix run carries the refs along.
+    ignore:
+      - dependency-name: OlivierZal/configs
     package-ecosystem: github-actions
     schedule:
       interval: weekly

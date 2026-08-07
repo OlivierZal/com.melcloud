@@ -23,7 +23,7 @@ runs:
         echo "::error::setup-node-and-install: 'npm-token' input is required when 'install' is 'true' (GitHub Packages auth)."
         exit 1
       shell: bash
-    - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+    - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
       with:
         # `''` is falsy in expressions, so `cond && '' || x` can never
         # yield the empty string — the condition must be inverted so
