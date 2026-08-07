@@ -1,3 +1,4 @@
+import { findContractBreach } from '@olivierzal/homey-kit/testing'
 import { describe, expect, expectTypeOf, it } from 'vitest'
 
 import appConfig from '../../.homeycompose/app.json' with { type: 'json' }
@@ -11,6 +12,10 @@ import chartsConfig from '../../widgets/charts/widget.compose.json' with { type:
 // against what its manifest declares. The call-site half (every path a
 // webview writes, under a declared method) lives in
 // tests/unit/api-route-guards.test.ts.
+//
+// The COMPARISON is single-sourced in @olivierzal/homey-kit/testing
+// (`findContractBreach`); what stays here is this app's tables and the
+// assertions they must satisfy.
 const SURFACES = [
   { api, config: appConfig, name: 'app API' },
   {
@@ -28,14 +33,6 @@ type Handler =
   | (typeof ataGroupSettingApi)[keyof typeof ataGroupSettingApi]
   | (typeof chartsApi)[keyof typeof chartsApi]
 
-// Everything below the SURFACES table is the shared contract test,
-// byte-identical in com.melcloud, com.heatzy and com.melcloud.extension
-// — edit all three together. Only the table and the Handler union above
-// differ: they name what each app exposes.
-
-const sortedKeys = (object: object): string[] =>
-  Object.keys(object).toSorted((left, right) => left.localeCompare(right))
-
 describe('api contract', () => {
   // Asserted on the whole union at once: no per-name method reference
   // ever leaves its object (unbound-method).
@@ -43,15 +40,13 @@ describe('api contract', () => {
     expectTypeOf<Handler>().toBeFunction()
   })
 
-  // One equality per surface pins the ids ↔ handlers mapping in both
+  // One comparison per surface pins the ids ↔ handlers mapping in both
   // directions at once: a handler with no declaration and a declaration
-  // with no handler both break it, and the diff names the offender. A
-  // per-id existence sweep alongside it could only ever fail together
-  // with the equality, so it is not kept.
+  // with no handler both break it, and the breach names the offender.
   it.each(SURFACES)(
     '$name should declare exactly the handlers its manifest names',
-    ({ api: surfaceApi, config }) => {
-      expect(sortedKeys(surfaceApi)).toStrictEqual(sortedKeys(config.api))
+    (surface) => {
+      expect(findContractBreach(surface)).toBeNull()
     },
   )
 })

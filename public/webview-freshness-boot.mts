@@ -3,9 +3,9 @@
 // the promise-native widget transport and the boot-error breadcrumb
 // channel.
 import type HomeyWidget from 'homey/lib/HomeyWidget'
+import { ensureFreshWebview } from '@olivierzal/homey-kit/webview'
 
 import { fireAndForget, homeyApiGet, homeyApiPost } from './homey-api.mts'
-import { ensureFreshWebview } from './webview-freshness.mts'
 
 // A stale cached page refetches itself once (never-cached address)
 // instead of booting: when this resolves `true` the caller must skip its

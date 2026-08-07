@@ -1,3 +1,7 @@
+import type {
+  TypedManagerDrivers,
+  TypedManagerSettings,
+} from '@olivierzal/homey-kit/types'
 import type HomeyLib from 'homey/lib/Homey.js'
 
 import type MELCloudApp from './app.mts'
@@ -13,15 +17,16 @@ declare module 'homey' {
     settings: ManagerSettings
   }
 
+  // The SDK interfaces are extended, not replaced: the kit generics
+  // supply the narrowed member SIGNATURES, the base supplies everything
+  // else. Extending both directly conflicts on the members they share.
   interface ManagerDrivers extends HomeyLib.ManagerDrivers {
-    getDrivers: () => Record<string, MELCloudDriver>
+    getDrivers: TypedManagerDrivers<MELCloudDriver>['getDrivers']
   }
 
   interface ManagerSettings extends HomeyLib.ManagerSettings {
-    get: ((key: string) => unknown) &
-      (<T extends keyof HomeySettings>(key: T) => HomeySettings[T])
-    set: ((key: string, value: unknown) => void) &
-      (<T extends keyof HomeySettings>(key: T, value: HomeySettings[T]) => void)
+    get: TypedManagerSettings<HomeySettings>['get']
+    set: TypedManagerSettings<HomeySettings>['set']
   }
 }
 

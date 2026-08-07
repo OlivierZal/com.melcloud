@@ -1,5 +1,6 @@
 import 'source-map-support/register.js'
 
+import { fireAndForget } from '@olivierzal/homey-kit'
 import {
   type DeviceType,
   type HolidayModeState,
@@ -61,7 +62,6 @@ import {
 } from './files.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { NotFoundError } from './lib/errors.mts'
-import { fireAndForget } from './lib/fire-and-forget.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { typedFromEntries } from './lib/typed-object.mts'

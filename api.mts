@@ -1,6 +1,7 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
+import { getErrorMessage } from '@olivierzal/homey-kit'
 import {
   type HolidayModeState,
   type HolidayModeUpdate,
@@ -24,7 +25,6 @@ import type {
   HomeDeviceZone,
 } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
-import { getErrorMessage } from './lib/get-error-message.mts'
 import { toDeviceOrZoneData, toNonNegativeInt } from './lib/validation.mts'
 import { getWebviewHashes } from './lib/webview-hashes.mts'
 

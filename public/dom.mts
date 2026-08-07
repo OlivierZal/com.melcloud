@@ -1,6 +1,6 @@
 import type HomeyWidget from 'homey/lib/HomeyWidget'
+import { getErrorMessage } from '@olivierzal/homey-kit'
 
-import { getErrorMessage } from '../lib/get-error-message.mts'
 import {
   type PickerZone,
   getSubzones,
