@@ -30,6 +30,34 @@ const config: Config[] = defineConfig([
       'settings/**/*.mts',
       'widgets/*/public/**/*.mts',
     ],
+    wireNamingEntries: [
+      // MELCloud Classic state fields: the ATA group widget posts these
+      // names verbatim, so they are the wire's, not ours. Enumerated so
+      // that a new PascalCase property fails until it is recognised as
+      // wire vocabulary.
+      {
+        filter: {
+          match: true,
+          regex:
+            '^(FanSpeed|OperationMode|Power|SetTemperature|VaneHorizontalDirection|VaneHorizontalSwing|VaneVerticalDirection|VaneVerticalSwing)$',
+        },
+        format: null,
+        selector: 'typeProperty',
+      },
+      // The charts widget keys its color maps by the report series and
+      // mode names the wire speaks — the lookup is by runtime name, and
+      // the locales translate the same vocabulary under
+      // `widgets.charts.series.*`.
+      {
+        filter: {
+          match: true,
+          regex:
+            '^(ActualRecovery|Auto|AutoMode|Consumed|CoolMode|Cooling|Dry|DryMode|Fan|FansStopped|FlowTemperature|FlowTemperatureBoiler|FlowTemperatureZone1|FlowTemperatureZone2|FreezeStat|HeatMode|Heating|HotWater|LegionellaPrevention|MixingTankWaterTemperature|Other|OutdoorTemperature|Power|PowerOff|Produced|ProducedCooling|ProducedHeating|ProducedHotWater|ReturnTemperature|ReturnTemperatureBoiler|ReturnTemperatureZone1|ReturnTemperatureZone2|RoomTemperature|RoomTemperatureZone1|RoomTemperatureZone2|SetTankWaterTemperature|SetTemperature|SetTemperatureZone1|SetTemperatureZone2|Stop|TankWaterTemperature|VentilationMode)$',
+        },
+        format: null,
+        selector: 'objectLiteralProperty',
+      },
+    ],
   }),
   {
     // filename-case also checks directory names, but melcloud_atw and
