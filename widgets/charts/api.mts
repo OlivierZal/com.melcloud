@@ -5,11 +5,11 @@ import type {
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
-import { getWebviewHashes } from '@olivierzal/homey-kit/node'
 
 import type { HomeDeviceZone } from '../../types/zone.mts'
 import { toDeviceType, toHomeDeviceType } from '../../lib/to-device-type.mts'
 import { toHour, toNonNegativeInt } from '../../lib/validation.mts'
+import { getWebviewHashes } from '../../lib/webview-hashes.mts'
 import {
   type DaysQuery,
   type HourQuery,
@@ -170,10 +170,7 @@ const api = {
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
   getWebviewHashes: async (): Promise<Partial<Record<string, string>>> =>
-    // The manifest URL is passed explicitly: the kit resolves its
-    // default against its own module, which sits in `node_modules` —
-    // only the caller knows where the bundler stamped the manifest.
-    getWebviewHashes(new URL('../../webview-hashes.json', import.meta.url)),
+    getWebviewHashes(),
   logWebviewBoot: ({
     body,
     homey: { app },
