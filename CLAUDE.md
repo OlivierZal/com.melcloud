@@ -344,6 +344,30 @@ coverage.
   (pure DTOs). Node-side code may use the newer APIs
   freely.
 
+## Tooling boundary (@olivierzal/configs)
+
+The shared tooling lives in `@olivierzal/configs` (exact pin): the
+eslint `homeyApp` preset (plugins are the package's dependencies — no
+plugin devDeps here; the webview floor and the css/html/lifecycle
+blocks come from the preset, parameterized by this repo's globs), the
+prettier config (`"prettier"` key in package.json, no local file), the
+`tsconfig/app` base and the vitest `swcPlugin`. The overlays keep ONLY
+per-repo verdicts: the lint ignores (`.homeybuild/`, `coverage/`), the
+`unicorn/filename-case` off (driver ids `melcloud_atw`/`melcloud_erv`
+must match their folder names), the `settings/index.mts`
+max-classes-per-file off, the `URLSearchParams`
+`templateExpressionAllow` splice, tsconfig `outDir` and the local
+`tsconfig.build.json` (its `rootDir`/`exclude` must resolve against
+THIS directory, never inside node_modules — the trap the configs README
+documents for `outDir`). Do not re-declare family policy locally — a
+rule evaluation or version bump happens in configs, adoption is a
+reviewed pin bump. The CI/audit/claude/dependabot/pr-title/zizmor
+workflows are stubs calling the family reusables in OlivierZal/configs,
+pinned `@<sha> # vX.Y.Z`; `validate.yml` and `publish.yml` stay local
+(no reusable exists), so the composite action stays too — and installs
+pass `npm-token` (the configs dependency lives on GitHub Packages,
+where even reads need auth).
+
 ## Lint doctrine
 
 - Code adapts to the rules, never the reverse. Never add a disable — not

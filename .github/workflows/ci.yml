@@ -1,61 +1,15 @@
-concurrency:
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-  group: ci-${{ github.ref }}
+# Calls the family's reusable CI (both legs on the Homey runtime).
 jobs:
-  check:
-    name: Check
+  ci:
     permissions:
       contents: read
       packages: read
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup-node-and-install
-        with:
-          npm-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: npm run typecheck
-      - run: npm run lint
-      - run: npm run format
-    timeout-minutes: 15
-  test:
-    # Coverage (with its 100% thresholds) and the Sonar upload only run on
-    # the Node 22 leg — the Homey runtime version. The `latest` leg is
-    # non-blocking so a brand-new Node release cannot red the pipeline
-    # without any repo change.
-    continue-on-error: ${{ matrix.node-version == 'latest' }}
-    # Job-level so the Sonar step can gate on the secret's presence: the
-    # `secrets` context is not available in a step-level `if`, `env` is.
-    env:
+    secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    name: Test (Node ${{ matrix.node-version }})
-    permissions:
-      contents: read
-      packages: read
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: ./.github/actions/setup-node-and-install
-        with:
-          node-version: ${{ matrix.node-version }}
-          npm-token: ${{ secrets.GITHUB_TOKEN }}
-      - if: matrix.node-version == 22
-        run: npm test -- --coverage
-      - if: matrix.node-version != 22
-        run: npm test
-      # Self-armed on the secret: until SONAR_TOKEN is provisioned the
-      # upload skips instead of failing the leg.
-      - if: matrix.node-version == 22 && env.SONAR_TOKEN != '' && (github.event_name == 'push' || (github.event.pull_request.user.login != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository))
-        uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [22, latest, 'lts/*']
-    timeout-minutes: 20
+    uses: OlivierZal/configs/.github/workflows/reusable-ci.yml@c498c9308d041f8df580293edd0f39df255198e0 # v1.2.0
+    with:
+      check-node-version: '22'
+      coverage-node-version: '22'
 name: CI
 on:
   merge_group: {}

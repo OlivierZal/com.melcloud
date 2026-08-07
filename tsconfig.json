@@ -1,25 +1,4 @@
 {
-  "compilerOptions": {
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "declaration": true,
-    "erasableSyntaxOnly": true,
-    "exactOptionalPropertyTypes": true,
-    "isolatedDeclarations": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "libReplacement": false,
-    "module": "preserve",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noUncheckedIndexedAccess": true,
-    "outDir": ".homeybuild",
-    "rewriteRelativeImportExtensions": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "es2025",
-    "types": ["node"],
-    "verbatimModuleSyntax": true
-  }
+  "compilerOptions": { "outDir": ".homeybuild" },
+  "extends": "@olivierzal/configs/tsconfig/app"
 }
