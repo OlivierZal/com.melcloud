@@ -16,7 +16,7 @@ jobs:
         with:
           npm-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Validate app
-        uses: athombv/github-action-homey-app-validate@002b7273c2b86032cb20d9bf25a67c8daca13f2c # v1
+        uses: athombv/github-action-homey-app-validate@0f3b42c15d26aab79d7c48cde4d2805524da910e
         with:
           level: publish
     timeout-minutes: 15
