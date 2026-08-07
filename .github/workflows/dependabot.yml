@@ -1,22 +1,11 @@
+# Calls the family workflow of the same name in OlivierZal/configs.
 jobs:
   dependabot:
-    if: github.event.pull_request.user.login == 'dependabot[bot]'
-    name: Dependabot
     permissions:
       contents: write
       pull-requests: write
-    runs-on: ubuntu-24.04
-    steps:
-      - id: metadata
-        name: Dependabot metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98
-      - name: Enable auto-merge for Dependabot PRs
-        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_URL: ${{ github.event.pull_request.html_url }}
-        run: gh pr merge --auto --squash --delete-branch "$PR_URL"
-    timeout-minutes: 10
-name: Dependabot
-on: pull_request
+    uses: OlivierZal/configs/.github/workflows/dependabot.yml@c498c9308d041f8df580293edd0f39df255198e0 # v1.2.0
+name: dependabot
+on:
+  pull_request: {}
 permissions: {}

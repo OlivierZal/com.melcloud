@@ -9,58 +9,16 @@ concurrency:
   group: claude-dependabot-fix-${{ github.event.workflow_run.head_branch }}
 jobs:
   fix:
-    # The actor gate is also the loop guard: Claude's own push re-runs CI
-    # with claude[bot] as actor, so each dependabot push gets one attempt.
-    if: |
-      github.event.workflow_run.conclusion == 'failure' &&
-      github.event.workflow_run.actor.login == 'dependabot[bot]' &&
-      github.event.workflow_run.head_repository.full_name == github.repository &&
-      startsWith(github.event.workflow_run.head_branch, 'dependabot/')
-    name: Fix
     permissions:
       actions: read
       contents: read
       id-token: write
-      packages: read
       pull-requests: read
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 1
-          persist-credentials: false
-          ref: ${{ github.event.workflow_run.head_branch }}
-      - uses: ./.github/actions/setup-node-and-install
-        with:
-          npm-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: anthropics/claude-code-action@be7b93b1907a4abad570368f3c74b6fe3807510b
-        with:
-          additional_permissions: |
-            actions: read
-          claude_args: --model opus
-          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          prompt: |
-            The `${{ github.event.workflow_run.name }}` workflow failed on the
-            dependabot branch `${{ github.event.workflow_run.head_branch }}` of
-            ${{ github.repository }} (run ${{ github.event.workflow_run.id }},
-            PR #${{ github.event.workflow_run.pull_requests[0].number }} — if
-            that number is empty, find it with `gh pr list --head` on the
-            branch). You are checked out on that branch with dependencies
-            installed.
-
-            1. Diagnose from the logs:
-               `gh run view ${{ github.event.workflow_run.id }} --log-failed`.
-            2. Reproduce locally and fix on this branch, following CLAUDE.md.
-               A bug in @olivierzal/melcloud-api is fixed there, never worked
-               around here.
-            3. Verify with the full suite: `npm run format`, `npm run lint`,
-               `npm run typecheck`, `npm test`, `npm run build`.
-            4. Only if everything passes, commit and push to this same branch
-               so CI re-runs and the existing auto-merge can complete.
-            5. If the failure is out of scope (e.g. it needs a melcloud-api
-               change), do NOT push: post one comment on the PR with the root
-               cause and the needed fix.
-    timeout-minutes: 30
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+    uses: OlivierZal/configs/.github/workflows/reusable-claude-dependabot-fix.yml@c498c9308d041f8df580293edd0f39df255198e0 # v1.2.0
+    with:
+      verify-commands: '`npm run format`, `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`'
 name: Claude Dependabot Fix
 on:
   workflow_run:

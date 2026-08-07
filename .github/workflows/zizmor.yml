@@ -1,22 +1,12 @@
-concurrency:
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-  group: zizmor-${{ github.ref }}
+# Calls the family workflow of the same name in OlivierZal/configs.
 jobs:
   zizmor:
-    name: Zizmor
     permissions:
       actions: read
       contents: read
       security-events: write
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          fetch-depth: 1
-          persist-credentials: false
-      - uses: zizmorcore/zizmor-action@6fc4b006235f201fdab3722e17240ab420d580e5
-    timeout-minutes: 15
-name: Zizmor
+    uses: OlivierZal/configs/.github/workflows/zizmor.yml@c498c9308d041f8df580293edd0f39df255198e0 # v1.2.0
+name: zizmor
 on:
   merge_group: {}
   pull_request: {}

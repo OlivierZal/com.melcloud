@@ -1,32 +1,10 @@
-concurrency:
-  cancel-in-progress: true
-  group: pr-title-${{ github.ref }}
+# Calls the family workflow of the same name in OlivierZal/configs.
 jobs:
-  pr-title:
-    name: PR title
+  pr_title:
     permissions:
       pull-requests: read
-    runs-on: ubuntu-24.04
-    steps:
-      # No `types`: the action defaults to the conventional-commit-types set
-      # (build, chore, ci, docs, feat, fix, perf, refactor, revert, style,
-      # test), which is exactly the set in use here. No `scopes` allowlist:
-      # house scopes are free-form. And deliberately no `subjectPattern`:
-      # subjects legitimately open on a proper noun (`feat: MELCloud Home
-      # frost protection`), so a lowercase-first regex would reject correct
-      # titles.
-      - env:
-          # The action re-reads the title over REST rather than trusting the
-          # event payload, so it needs a token even to read its own PR.
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50
-    timeout-minutes: 5
-name: PR title
-# `edited` is load-bearing: without it, fixing a rejected title in place
-# would never re-run the check. `reopened`/`synchronize` keep the status
-# present on every head commit — for a required check, a missing status
-# blocks the merge as hard as a failing one. No `merge_group`: the action
-# reads a pull_request context and throws without one.
+    uses: OlivierZal/configs/.github/workflows/pr-title.yml@c498c9308d041f8df580293edd0f39df255198e0 # v1.2.0
+name: pr-title
 on:
   pull_request:
     types: [edited, opened, reopened, synchronize]
