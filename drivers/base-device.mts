@@ -1,6 +1,7 @@
 import {
   fireAndForget,
   getErrorMessage,
+  NotFoundError,
   sequential,
 } from '@olivierzal/homey-kit'
 import {
@@ -17,7 +18,6 @@ import type {
   EnergyReportMode,
   EnergyReportOperation,
 } from '../types/device.mts'
-import { NotFoundError } from '../lib/errors.mts'
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { getLocale, getNow } from '../lib/temporal.mts'

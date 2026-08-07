@@ -1,9 +1,9 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type HomeyModule from 'homey'
+import { NotFoundError } from '@olivierzal/homey-kit'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { HomeEnergyReportAtw } from '../../drivers/home-report-atw.mts'
-import { NotFoundError } from '../../lib/errors.mts'
 import { homeTagMappingsAtw } from '../../types/home-atw.mts'
 import {
   testEnergyReportConfig,

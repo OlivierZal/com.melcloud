@@ -1,10 +1,10 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type HomeyModule from 'homey'
+import { NotFoundError } from '@olivierzal/homey-kit'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
-import { NotFoundError } from '../../lib/errors.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testEnsureDeviceNull,
