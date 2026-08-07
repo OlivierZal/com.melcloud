@@ -1,5 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
+import { getWebviewHashes } from '@olivierzal/homey-kit/node'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { GroupAtaStates } from '../../types/classic-ata.mts'
@@ -14,7 +15,6 @@ import type {
 import { getClassicBuildings } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
 import { toDeviceOrZoneData, toZoneData } from '../../lib/validation.mts'
-import { getWebviewHashes } from '../../lib/webview-hashes.mts'
 
 const api = {
   getClassicAtaCapabilities: ({
@@ -79,7 +79,10 @@ const api = {
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
   getWebviewHashes: async (): Promise<Partial<Record<string, string>>> =>
-    getWebviewHashes(),
+    // The manifest URL is passed explicitly: the kit resolves its
+    // default against its own module, which sits in `node_modules` —
+    // only the caller knows where the bundler stamped the manifest.
+    getWebviewHashes(new URL('../../webview-hashes.json', import.meta.url)),
   logWebviewBoot: ({
     body,
     homey: { app },

@@ -1,4 +1,4 @@
-import { describe, expect, expectTypeOf, it } from 'vitest'
+import { createApiContractSuite } from '@olivierzal/homey-kit/testing'
 
 import appConfig from '../../.homeycompose/app.json' with { type: 'json' }
 import api from '../../api.mts'
@@ -10,8 +10,18 @@ import chartsConfig from '../../widgets/charts/widget.compose.json' with { type:
 // The declaration half of the API contract: what each surface exposes
 // against what its manifest declares. The call-site half (every path a
 // webview writes, under a declared method) lives in
-// tests/unit/api-route-guards.test.ts.
-const SURFACES = [
+// tests/unit/api-route-guards.test.ts. The suite itself is single-sourced
+// in @olivierzal/homey-kit/testing; only the tables below are this app's.
+
+// Every surface's handler union: the type parameter is the compile-time
+// half of the contract — the call only typechecks when the whole union
+// is callable.
+type Handler =
+  | (typeof api)[keyof typeof api]
+  | (typeof ataGroupSettingApi)[keyof typeof ataGroupSettingApi]
+  | (typeof chartsApi)[keyof typeof chartsApi]
+
+createApiContractSuite<Handler>([
   { api, config: appConfig, name: 'app API' },
   {
     api: ataGroupSettingApi,
@@ -19,39 +29,4 @@ const SURFACES = [
     name: 'ata-group-setting widget API',
   },
   { api: chartsApi, config: chartsConfig, name: 'charts widget API' },
-]
-
-// Every surface's handler union, so the compile-time half is asserted
-// once rather than per surface.
-type Handler =
-  | (typeof api)[keyof typeof api]
-  | (typeof ataGroupSettingApi)[keyof typeof ataGroupSettingApi]
-  | (typeof chartsApi)[keyof typeof chartsApi]
-
-// Everything below the SURFACES table is the shared contract test,
-// byte-identical in com.melcloud, com.heatzy and com.melcloud.extension
-// — edit all three together. Only the table and the Handler union above
-// differ: they name what each app exposes.
-
-const sortedKeys = (object: object): string[] =>
-  Object.keys(object).toSorted((left, right) => left.localeCompare(right))
-
-describe('api contract', () => {
-  // Asserted on the whole union at once: no per-name method reference
-  // ever leaves its object (unbound-method).
-  it('should expose only function handlers', () => {
-    expectTypeOf<Handler>().toBeFunction()
-  })
-
-  // One equality per surface pins the ids ↔ handlers mapping in both
-  // directions at once: a handler with no declaration and a declaration
-  // with no handler both break it, and the diff names the offender. A
-  // per-id existence sweep alongside it could only ever fail together
-  // with the equality, so it is not kept.
-  it.each(SURFACES)(
-    '$name should declare exactly the handlers its manifest names',
-    ({ api: surfaceApi, config }) => {
-      expect(sortedKeys(surfaceApi)).toStrictEqual(sortedKeys(config.api))
-    },
-  )
-})
+])

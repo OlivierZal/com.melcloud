@@ -42,14 +42,15 @@ caught real failures that the others miss:
   force-close included): each bundle carries a freshness handshake —
   the page's identity is the document-order join of its `?v=` stamps (a CSS-only ship moves it too), `GET /webview-hashes` serves the
   live hashes (a manifest `bundle.mts` emits into the packaged app,
-  read by `lib/webview-hashes.mts`; module, test
-  `tests/unit/webview-hashes.test.ts` and the
-  `tests/fixtures/webview-hashes/` fixtures are byte-identical in the
-  three apps — edit all three together), and a mismatch triggers ONE
+  read by `@olivierzal/homey-kit/node`; every `api.mts` — app and both
+  widgets — passes the manifest URL explicitly, the kit's default
+  resolving against its own module inside `node_modules`), and a
+  mismatch triggers ONE
   refetch of the document through a never-cached address
   (`?fresh=<identity>` — a bare reload can be re-served the same stale
   document from the HTTP cache; sessionStorage guard,
-  `webview-freshness.mts`), whose fresh stamps pull the fresh assets;
+  `ensureFreshWebview` from `@olivierzal/homey-kit/webview`), whose
+  fresh stamps pull the fresh assets;
   a mismatch that survives its refetch is reported to
   `POST /boot-error`. The app also emits a `webview_hashes_changed`
   realtime event at its own boot; an open page re-runs the same
@@ -108,28 +109,26 @@ coverage.
   error — legacy aliases were dropped by decision, 2026-07). The
   inter-app grouping route is `GET /devices/groups` (the extension
   degrades to "no grouping" when it is absent).
-  `settings/callback-api.mts` is the settings pages' transport
+  `@olivierzal/homey-kit/settings` is the settings pages' transport
   (the settings SDK is error-first-callback, unlike the widget SDK —
   which is why `public/homey-api.mts` stays a separate, promise-native
-  widget layer); byte-identical copies live in com.heatzy and
-  com.melcloud.extension — edit all three together. The surface is
+  widget layer). The surface is
   test-pinned in two halves, one file each — extend BOTH when touching
   a route: `tests/unit/api-contract.test.ts` (since #1261) pins
   manifest ids ↔ handlers both ways plus the handlers' function type,
-  on all three surfaces — and like the route guard, everything below its
-  own `SURFACES` table is byte-identical in the two sibling apps, only
-  the table and the `Handler` union naming what each app exposes differ;
+  on all three surfaces;
   `tests/unit/api-route-guards.test.ts` pins the
   call sites — every path a webview writes, literal or template-built,
   must match a declared route of its own surface, under a declared
-  method. Everything below its `SURFACES` table is byte-identical in
-  com.heatzy and com.melcloud.extension (only that table differs) —
-  edit all three together. Its load-bearing clause is the call-site
+  method. Both are the kit's table-driven kernels
+  (`@olivierzal/homey-kit/testing`): each file holds this app's tables
+  and the factory call, nothing else. Its load-bearing clause is the call-site
   accounting: every `homeyApi*` site must be parsed or hand over a path
   it does not spell, which is what makes a broken extractor a failure
   instead of a silent pass, and what makes separate "the regex still
   matches" clauses redundant.
-- Dirty-gating: `public/dirty-gate.mts` is the ONE primitive behind every
+- Dirty-gating: `createDirtyGate` (`@olivierzal/homey-kit/webview`) is
+  the ONE primitive behind every
   webview Apply/Refresh pair (settings sections, frost/holiday/overheat
   panels, the credentials section, the ATA group widget) — never
   re-derive its invariant at a call site. The gate also freezes the gated
@@ -152,9 +151,8 @@ coverage.
   historical heatzy bug), and disabled greying styles
   `[class*='homey-button']:disabled` generically, never a per-class list
   (a class list silently missed renamed buttons).
-  `tests/unit/dirty-gate.test.ts` locks the behavior; com.heatzy and
-  com.melcloud.extension carry byte-identical copies
-  (`settings/dirty-gate.mts` in each) — edit all three together.
+  The kit's own suite locks the behavior — a change to the gate is a kit
+  release, adopted here by an exact-pin bump.
 - The injected sheet resets `fieldset.homey-form-checkbox-set` /
   `-radio-set` with `all: unset`, which leaves `display: inline` — and
   WebKit renders inline fieldsets atomically, so SIBLING sets tile side
@@ -367,6 +365,40 @@ pinned `@<sha> # vX.Y.Z`; `validate.yml` and `publish.yml` stay local
 (no reusable exists), so the composite action stays too — and installs
 pass `npm-token` (the configs dependency lives on GitHub Packages,
 where even reads need auth).
+
+## Runtime boundary (@olivierzal/homey-kit)
+
+`@olivierzal/homey-kit` (exact pin, a PRODUCTION dependency — the
+manifest reader runs on the device) owns what used to be copied across
+the three apps: the dirty gate and the freshness handshake
+(`/webview`), the settings transport (`/settings`), the manifest reader
+(`/node`), `fireAndForget`/`getErrorMessage`/`sequential` (root) and the
+two test kernels (`/testing`). A change to any of them is a kit release
+adopted here by a pin bump — never a local edit, never a re-derivation.
+
+What stays local, by measurement rather than omission:
+
+- `public/homey-api.mts`, the promise-native WIDGET layer (the widget
+  SDK differs from the settings one) with its own `fireAndForget`,
+  `runWebview` and `surfaceError`.
+- `public/webview-freshness-boot.mts` — the widget-side wiring around
+  the kit's `ensureFreshWebview`, including the `webview_hashes_changed`
+  realtime subscription.
+- `public/dom.mts`, `public/zones.mts`, and the drivers themselves.
+- `homey-override.d.ts` keeps its `declare module` block: module
+  augmentation cannot be packaged. It EXTENDS the SDK interfaces and
+  takes only the narrowed member signatures from the kit generics
+  (`TypedManagerDrivers['getDrivers']`, `TypedManagerSettings['get' |
+'set']`). Extending the SDK interface and the generic side by side
+  does not work — they both declare those members, and the conflict
+  silently resolves to the SDK's wider type.
+
+Every `api.mts` (app, ata-group-setting, charts) passes the manifest URL
+to `getWebviewHashes` explicitly: the kit's default resolves
+`../webview-hashes.json` against its own module, which sits in
+`node_modules` — only the caller knows where the bundler stamped it.
+Dropping that argument silently disables the freshness handshake (the
+reader fails open with an empty map).
 
 ## Lint doctrine
 

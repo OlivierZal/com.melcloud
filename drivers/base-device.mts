@@ -1,4 +1,9 @@
 import {
+  fireAndForget,
+  getErrorMessage,
+  sequential,
+} from '@olivierzal/homey-kit'
+import {
   type AvailabilityAware,
   EntityNotFoundError,
   isAPIError,
@@ -13,11 +18,8 @@ import type {
   EnergyReportOperation,
 } from '../types/device.mts'
 import { NotFoundError } from '../lib/errors.mts'
-import { fireAndForget } from '../lib/fire-and-forget.mts'
-import { getErrorMessage } from '../lib/get-error-message.mts'
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
-import { sequential } from '../lib/sequential.mts'
 import { getLocale, getNow } from '../lib/temporal.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 import type { EnergyReportConfig } from './base-report.mts'

@@ -1,6 +1,8 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
+import { getErrorMessage } from '@olivierzal/homey-kit'
+import { getWebviewHashes } from '@olivierzal/homey-kit/node'
 import {
   type HolidayModeState,
   type HolidayModeUpdate,
@@ -24,9 +26,12 @@ import type {
   HomeDeviceZone,
 } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
-import { getErrorMessage } from './lib/get-error-message.mts'
 import { toDeviceOrZoneData, toNonNegativeInt } from './lib/validation.mts'
-import { getWebviewHashes } from './lib/webview-hashes.mts'
+
+// The manifest URL is passed explicitly on every read: the kit resolves
+// its default against its own module, which sits in `node_modules` —
+// only the caller knows where the bundler stamped the manifest.
+const WEBVIEW_HASHES_URL = new URL('webview-hashes.json', import.meta.url)
 
 // The user-facing service names, interpolated into the failure
 // messages so the alert says WHICH account failed.
@@ -239,7 +244,7 @@ const api = {
     homey: Homey
   }): Promise<Partial<Record<string, string>>> => {
     logSettingsRoute(app, 'GET /webview-hashes')
-    return getWebviewHashes()
+    return getWebviewHashes(WEBVIEW_HASHES_URL)
   },
   homeAuthenticate: async ({
     body,

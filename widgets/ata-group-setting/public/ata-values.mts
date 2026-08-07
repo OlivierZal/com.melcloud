@@ -1,4 +1,5 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { type DirtyGate, createDirtyGate } from '@olivierzal/homey-kit/webview'
 import {
   ClassicTemperature,
   classicCoolModes,
@@ -6,7 +7,6 @@ import {
 
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import type { AtaGroupSettingWidgetSettings } from '../../../types/widgets.mts'
-import { type DirtyGate, createDirtyGate } from '../../../public/dirty-gate.mts'
 import {
   type HTMLValueElement,
   appendFormControl,

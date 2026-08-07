@@ -7,6 +7,20 @@ import type {
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
+import { getErrorMessage } from '@olivierzal/homey-kit'
+import {
+  homeyApiDelete,
+  homeyApiGet,
+  homeyApiPost,
+  homeyApiPut,
+  homeyCallback,
+  homeyConfirm,
+} from '@olivierzal/homey-kit/settings'
+import {
+  type DirtyGate,
+  createDirtyGate,
+  ensureFreshWebview,
+} from '@olivierzal/homey-kit/webview'
 import { Temporal } from 'temporal-polyfill'
 
 import type { Api } from '../types/api.mts'
@@ -26,8 +40,6 @@ import type {
   FormattedErrorLog,
 } from '../types/error-log.mts'
 import type { HomeBuildingZone, HomeDeviceZone } from '../types/zone.mts'
-import { getErrorMessage } from '../lib/get-error-message.mts'
-import { type DirtyGate, createDirtyGate } from '../public/dirty-gate.mts'
 import {
   type HTMLValueElement,
   booleanOptions,
@@ -46,7 +58,6 @@ import {
   translateAriaLabels,
 } from '../public/dom.mts'
 import { fireAndForget, runWebview } from '../public/homey-api.mts'
-import { ensureFreshWebview } from '../public/webview-freshness.mts'
 import {
   type PickerZone,
   getHomeBuildingId,
@@ -56,14 +67,6 @@ import {
   isHomeBuildingValue,
   isHomeDeviceValue,
 } from '../public/zones.mts'
-import {
-  homeyApiDelete,
-  homeyApiGet,
-  homeyApiPost,
-  homeyApiPut,
-  homeyCallback,
-  homeyConfirm,
-} from './callback-api.mts'
 
 // ── Helpers ──
 
