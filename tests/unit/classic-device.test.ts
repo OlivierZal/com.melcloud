@@ -1,5 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type HomeyModule from 'homey'
+import { NotFoundError } from '@olivierzal/homey-kit'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -12,7 +13,6 @@ import type {
   SetCapabilityTagMapping,
 } from '../../types/capabilities.mts'
 import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
-import { NotFoundError } from '../../lib/errors.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testDeletion,

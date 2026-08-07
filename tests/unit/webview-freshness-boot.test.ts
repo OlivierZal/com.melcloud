@@ -1,10 +1,7 @@
 import type HomeyWidget from 'homey/lib/HomeyWidget'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import {
-  ensureFreshWidget,
-  watchWebviewFreshness,
-} from '../../public/webview-freshness-boot.mts'
+import { watchWidgetFreshness } from '../../public/webview-freshness-boot.mts'
 import { mock } from '../helpers.ts'
 
 // The wrapper feeds the transport-free twin primitive the widget
@@ -45,18 +42,18 @@ const flushMicrotasks = async (): Promise<void> =>
     setTimeout(resolve, 0)
   })
 
-describe(watchWebviewFreshness, () => {
+describe(watchWidgetFreshness, () => {
   afterEach(() => {
     delete globals.document
     delete globals.location
     delete globals.sessionStorage
   })
 
-  it('should subscribe to the app boot poke', () => {
+  it('should subscribe to the app boot poke', async () => {
     const on = vi.fn<(event: string, callback: () => void) => void>()
     installFreshPage()
 
-    watchWebviewFreshness(mock<HomeyWidget>({ on }), 'ata-group-setting')
+    await watchWidgetFreshness(mock<HomeyWidget>({ on }), 'ata-group-setting')
 
     expect(on).toHaveBeenCalledTimes(1)
     expect(on).toHaveBeenCalledWith(
@@ -71,7 +68,10 @@ describe(watchWebviewFreshness, () => {
       .mockResolvedValue({ 'ata-group-setting': 'aaaa1111' })
     const on = vi.fn<(event: string, callback: () => void) => void>()
     installFreshPage()
-    watchWebviewFreshness(mock<HomeyWidget>({ api, on }), 'ata-group-setting')
+    await watchWidgetFreshness(
+      mock<HomeyWidget>({ api, on }),
+      'ata-group-setting',
+    )
 
     on.mock.calls[0]?.[1]()
     await flushMicrotasks()
@@ -85,7 +85,10 @@ describe(watchWebviewFreshness, () => {
       .mockRejectedValue(new Error('bridge down'))
     const on = vi.fn<(event: string, callback: () => void) => void>()
     installFreshPage()
-    watchWebviewFreshness(mock<HomeyWidget>({ api, on }), 'ata-group-setting')
+    await watchWidgetFreshness(
+      mock<HomeyWidget>({ api, on }),
+      'ata-group-setting',
+    )
 
     expect(() => {
       on.mock.calls[0]?.[1]()
@@ -95,7 +98,7 @@ describe(watchWebviewFreshness, () => {
   })
 })
 
-describe(ensureFreshWidget, () => {
+describe(`${watchWidgetFreshness.name} boot check`, () => {
   afterEach(() => {
     delete globals.document
     delete globals.location
@@ -109,7 +112,13 @@ describe(ensureFreshWidget, () => {
     installFreshPage()
 
     await expect(
-      ensureFreshWidget(mock<HomeyWidget>({ api }), 'ata-group-setting'),
+      watchWidgetFreshness(
+        mock<HomeyWidget>({
+          api,
+          on: vi.fn<(event: string, callback: () => void) => void>(),
+        }),
+        'ata-group-setting',
+      ),
     ).resolves.toBe(false)
 
     expect(api).toHaveBeenCalledWith('GET', '/webview-hashes')

@@ -19,10 +19,7 @@ import {
   surfaceError,
   trySetDocumentLanguage,
 } from '../../../public/homey-api.mts'
-import {
-  ensureFreshWidget,
-  watchWebviewFreshness,
-} from '../../../public/webview-freshness-boot.mts'
+import { watchWidgetFreshness } from '../../../public/webview-freshness-boot.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 
@@ -65,10 +62,9 @@ class WidgetApp {
     // A stale cached page refetches itself once (never-cached address)
     // instead of booting: skip the init — the document is about to be
     // replaced.
-    if (await ensureFreshWidget(this.#homey, 'ata-group-setting')) {
+    if (await watchWidgetFreshness(this.#homey, 'ata-group-setting')) {
       return
     }
-    watchWebviewFreshness(this.#homey, 'ata-group-setting')
     await runWebview(this.#homey, this.#run(), {
       onError: showInitError,
       height: () => document.body.scrollHeight,
