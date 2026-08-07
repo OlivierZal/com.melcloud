@@ -16,7 +16,7 @@ jobs:
         with:
           npm-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Validate app
-        uses: athombv/github-action-homey-app-validate@0f3b42c15d26aab79d7c48cde4d2805524da910e
+        uses: athombv/github-action-homey-app-validate@0f3b42c15d26aab79d7c48cde4d2805524da910e # untagged: master carries the `don't npm ci` fix the @typescript/native toolchain needs; v1 predates it
         with:
           level: publish
     timeout-minutes: 15
