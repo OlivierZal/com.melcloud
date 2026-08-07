@@ -817,5 +817,20 @@
     "pl": "Formularze ustawień są teraz blokowane podczas zapisywania zmian — pola, panele i logowanie włącznie — aby nic wpisanego w międzyczasie nie przepadło. Ochrona przed przegrzaniem pojawia się teraz tylko dla urządzeń, które ją obsługują. Po aktualizacji aplikacji strony ustawień i widżety odświeżają się same, zamiast pokazywać nieaktualną stronę. Dane logowania są zapisywane tylko wtedy, gdy logowanie się powiedzie — nieudana próba już ich nie nadpisuje — a logowanie otwiera się na koncie wymagającym uwagi.",
     "ru": "Формы настроек теперь блокируются, пока применяются ваши изменения — включая поля, панели и вход — чтобы ничего из набранного в это время не потерялось. Защита от перегрева теперь появляется только для устройств, которые её поддерживают. После обновления приложения страницы настроек и виджеты обновляются сами, вместо того чтобы показывать устаревшую страницу. Учётные данные сохраняются только при успешном входе — неудачная попытка их больше не перезаписывает — а вход открывается на учётной записи, требующей внимания.",
     "sv": "Inställningsformulären låses nu medan dina ändringar tillämpas — fält, paneler och inloggning inräknade — så att inget du skriver under tiden går förlorat. Överhettningsskyddet visas nu bara för enheter som stöder det. Efter en appuppdatering uppdaterar inställningssidorna och widgetarna sig själva i stället för att visa en föråldrad sida. Inloggningsuppgifter sparas bara när inloggningen lyckas — ett misslyckat försök skriver inte längre över dem — och inloggningen öppnas på kontot som behöver åtgärdas."
+  },
+  "46.1.1": {
+    "ar": "صفحة الإعدادات المتروكة مفتوحة على هاتفك تتحدّث الآن عند العودة إليها بعد تحديث التطبيق، بدلًا من البقاء على النسخة السابقة.",
+    "da": "En indstillingsside, der er ladt åben på din telefon, opdaterer nu sig selv, når du vender tilbage til den efter en app-opdatering, i stedet for at blive stående på den forrige version.",
+    "de": "Eine auf deinem Telefon geöffnet gelassene Einstellungsseite aktualisiert sich jetzt selbst, wenn du nach einem App-Update zu ihr zurückkehrst, statt auf der vorherigen Version zu bleiben.",
+    "en": "A settings page left open on your phone now refreshes itself when you come back to it after an app update, instead of staying on the previous version.",
+    "es": "Una página de ajustes dejada abierta en tu teléfono ahora se actualiza sola cuando vuelves a ella tras una actualización de la app, en lugar de quedarse en la versión anterior.",
+    "fr": "Une page de réglages laissée ouverte sur votre téléphone se met désormais à jour lorsque vous y revenez après une mise à jour de l'app, au lieu de rester sur la version précédente.",
+    "it": "Una pagina delle impostazioni lasciata aperta sul telefono ora si aggiorna da sola quando ci torni dopo un aggiornamento dell'app, invece di restare sulla versione precedente.",
+    "ko": "휴대폰에 열어 둔 설정 페이지가 이제 앱 업데이트 후 다시 열 때 스스로 새로 고쳐지며, 이전 버전에 머물지 않습니다.",
+    "nl": "Een instellingenpagina die op je telefoon open is blijven staan, vernieuwt zichzelf nu wanneer je er na een app-update naar terugkeert, in plaats van op de vorige versie te blijven.",
+    "no": "En innstillingsside som er latt stå åpen på telefonen, oppdaterer nå seg selv når du kommer tilbake til den etter en app-oppdatering, i stedet for å bli værende på forrige versjon.",
+    "pl": "Strona ustawień pozostawiona otwarta w telefonie odświeża się teraz sama, gdy wracasz do niej po aktualizacji aplikacji, zamiast pozostawać na poprzedniej wersji.",
+    "ru": "Страница настроек, оставленная открытой на телефоне, теперь обновляется сама, когда вы возвращаетесь к ней после обновления приложения, вместо того чтобы оставаться на предыдущей версии.",
+    "sv": "En inställningssida som lämnats öppen på telefonen uppdaterar nu sig själv när du återvänder till den efter en appuppdatering, i stället för att stanna kvar på den föregående versionen."
   }
 }
