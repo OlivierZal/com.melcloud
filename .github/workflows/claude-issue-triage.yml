@@ -6,7 +6,7 @@ jobs:
       issues: write
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-    uses: OlivierZal/configs/.github/workflows/claude-issue-triage.yml@6932d7af8f2c21600bd7dc945062fe1a66d7db26 # v1.3.0
+    uses: OlivierZal/configs/.github/workflows/claude-issue-triage.yml@1ecb998b42be945b6963d3a76370b145cf637370 # v1.3.2
 name: claude-issue-triage
 on:
   issues:

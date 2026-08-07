@@ -5,7 +5,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: OlivierZal/configs/.github/workflows/zizmor.yml@6932d7af8f2c21600bd7dc945062fe1a66d7db26 # v1.3.0
+    uses: OlivierZal/configs/.github/workflows/zizmor.yml@1ecb998b42be945b6963d3a76370b145cf637370 # v1.3.2
 name: zizmor
 on:
   merge_group: {}
