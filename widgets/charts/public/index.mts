@@ -31,6 +31,7 @@ import {
 import { Temporal } from 'temporal-polyfill'
 
 import type { HomeDeviceZone } from '../../../types/zone.mts'
+import { showBundleStamp } from '../../../public/bundle-stamp.mts'
 import {
   createOption,
   getDiv,
@@ -1230,6 +1231,7 @@ class ChartWidget {
  * @param homey - The Homey instance handed to `onHomeyReady`.
  */
 export const start = async (homey: Homey<HomeySettings>): Promise<void> => {
+  showBundleStamp()
   // Register only what the chart types use so esbuild tree-shakes the rest.
   Chart.register(
     ArcElement,

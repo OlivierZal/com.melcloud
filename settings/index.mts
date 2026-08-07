@@ -40,6 +40,7 @@ import type {
   FormattedErrorLog,
 } from '../types/error-log.mts'
 import type { HomeBuildingZone, HomeDeviceZone } from '../types/zone.mts'
+import { showBundleStamp } from '../public/bundle-stamp.mts'
 import {
   type HTMLValueElement,
   booleanOptions,
@@ -2117,6 +2118,7 @@ class SettingsApp {
  * @param homey - The Homey instance handed to `onHomeyReady`.
  */
 export const start = async (homey: Homey): Promise<void> => {
+  showBundleStamp()
   translateAriaLabels((key) => homey.__(key))
   const app = new SettingsApp(homey)
   await app.init()

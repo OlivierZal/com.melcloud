@@ -2,6 +2,7 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
 import type { HomeBuildingZone, HomeDeviceZone } from '../../../types/zone.mts'
+import { showBundleStamp } from '../../../public/bundle-stamp.mts'
 import {
   getButton,
   getDiv,
@@ -154,6 +155,7 @@ class WidgetApp {
  * @param homey - The Homey instance handed to `onHomeyReady`.
  */
 export const start = async (homey: Homey<HomeySettings>): Promise<void> => {
+  showBundleStamp()
   const app = new WidgetApp(homey)
   await app.init()
 }
