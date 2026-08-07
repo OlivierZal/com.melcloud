@@ -832,5 +832,20 @@
     "pl": "Strona ustawień pozostawiona otwarta w telefonie odświeża się teraz sama, gdy wracasz do niej po aktualizacji aplikacji, zamiast pozostawać na poprzedniej wersji.",
     "ru": "Страница настроек, оставленная открытой на телефоне, теперь обновляется сама, когда вы возвращаетесь к ней после обновления приложения, вместо того чтобы оставаться на предыдущей версии.",
     "sv": "En inställningssida som lämnats öppen på telefonen uppdaterar nu sig själv när du återvänder till den efter en appuppdatering, i stället för att stanna kvar på den föregående versionen."
+  },
+  "46.1.2": {
+    "ar": "لم يعد التطبيق يثبّت مجموعة كبيرة من ملفات التطوير التي لم يكن بحاجة إليها قط، مما يوفّر مساحة على جهاز Homey ويزيل في الوقت نفسه ثغرة أمنية تم الإبلاغ عنها.",
+    "da": "Appen installerer ikke længere en stor mængde udviklingsfiler, den aldrig havde brug for, hvilket frigør plads på din Homey og samtidig fjerner en rapporteret sårbarhed.",
+    "de": "Die App installiert nicht mehr eine große Menge an Entwicklungsdateien, die sie nie benötigt hat. Das schafft Platz auf deinem Homey und beseitigt zugleich eine gemeldete Sicherheitslücke.",
+    "en": "The app no longer installs a large set of development files it never needed, freeing space on your Homey and removing a reported vulnerability along with them.",
+    "es": "La aplicación ya no instala un amplio conjunto de archivos de desarrollo que nunca necesitó, lo que libera espacio en tu Homey y elimina de paso una vulnerabilidad notificada.",
+    "fr": "L'app n'installe plus un vaste ensemble de fichiers de développement dont elle n'avait aucun besoin, ce qui libère de l'espace sur votre Homey et supprime au passage une vulnérabilité signalée.",
+    "it": "L'app non installa più un ampio insieme di file di sviluppo di cui non aveva alcun bisogno, liberando spazio sul tuo Homey ed eliminando allo stesso tempo una vulnerabilità segnalata.",
+    "ko": "앱이 전혀 필요하지 않던 대량의 개발용 파일을 더 이상 설치하지 않습니다. 덕분에 Homey의 공간이 확보되고 보고된 취약점도 함께 제거됩니다.",
+    "nl": "De app installeert niet langer een grote hoeveelheid ontwikkelbestanden die ze nooit nodig had, wat ruimte vrijmaakt op je Homey en meteen een gemelde kwetsbaarheid verwijdert.",
+    "no": "Appen installerer ikke lenger en stor mengde utviklingsfiler den aldri trengte, noe som frigjør plass på Homey-en din og samtidig fjerner en rapportert sårbarhet.",
+    "pl": "Aplikacja nie instaluje już dużego zestawu plików deweloperskich, których nigdy nie potrzebowała, co zwalnia miejsce na Twoim Homey i przy okazji usuwa zgłoszoną lukę w zabezpieczeniach.",
+    "ru": "Приложение больше не устанавливает большой набор файлов разработки, которые ему никогда не требовались: это освобождает место на вашем Homey и заодно устраняет обнаруженную уязвимость.",
+    "sv": "Appen installerar inte längre en stor mängd utvecklingsfiler som den aldrig behövde, vilket frigör utrymme på din Homey och samtidigt tar bort en rapporterad sårbarhet."
   }
 }
