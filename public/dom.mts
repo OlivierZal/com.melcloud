@@ -1,5 +1,10 @@
-import type HomeyWidget from 'homey/lib/HomeyWidget'
 import { getErrorMessage } from '@olivierzal/homey-kit'
+import {
+  type HTMLValueElement,
+  booleanStrings,
+  createLabel,
+  createOption,
+} from '@olivierzal/homey-kit/dom'
 
 import {
   type PickerZone,
@@ -7,87 +12,6 @@ import {
   getZoneId,
   getZoneName,
 } from './zones.mts'
-
-export type HTMLValueElement = HTMLInputElement | HTMLSelectElement
-
-export const booleanStrings: string[] = [
-  'false',
-  'true',
-] satisfies `${boolean}`[]
-
-const getElement = <T extends HTMLElement>(
-  id: string,
-  elementConstructor: new () => T,
-  elementType: string,
-): T => {
-  const element = document.querySelector(`#${id}`)
-  if (element === null) {
-    throw new TypeError(`Element with id \`${id}\` not found`)
-  }
-  if (!(element instanceof elementConstructor)) {
-    throw new TypeError(`Element with id \`${id}\` is not a ${elementType}`)
-  }
-  return element
-}
-
-export const getButton = (id: string): HTMLButtonElement =>
-  getElement(id, HTMLButtonElement, 'button')
-
-export const getDetails = (id: string): HTMLDetailsElement =>
-  getElement(id, HTMLDetailsElement, 'details')
-
-export const getDiv = (id: string): HTMLDivElement =>
-  getElement(id, HTMLDivElement, 'div')
-
-export const getFieldset = (id: string): HTMLFieldSetElement =>
-  getElement(id, HTMLFieldSetElement, 'fieldset')
-
-export const getInput = (id: string): HTMLInputElement =>
-  getElement(id, HTMLInputElement, 'input')
-
-export const getSelect = (id: string): HTMLSelectElement =>
-  getElement(id, HTMLSelectElement, 'select')
-
-export const getSpan = (id: string): HTMLSpanElement =>
-  getElement(id, HTMLSpanElement, 'span')
-
-export const createOption = (
-  select: HTMLSelectElement,
-  { id, label }: { id: string; label: string },
-): void => {
-  if (select.querySelector(`option[value="${CSS.escape(id)}"]`) === null) {
-    select.append(new Option(label, id))
-  }
-}
-
-// Fallback options for a generated select: the translated boolean pair,
-// shared by every select whose capability declares no explicit values.
-export const booleanOptions = (
-  homey: Pick<HomeyWidget, '__'>,
-): { id: string; label: string }[] =>
-  booleanStrings.map((value) => ({
-    id: value,
-    label: homey.__(`settings.boolean.${value}`),
-  }))
-
-// Shared form-control builders for the generated settings and widget
-// forms. The optional class hooks carry the settings page's
-// `homey-form-*` decoration; the widgets style the bare elements through
-// element selectors instead.
-export const createLabel = (
-  formControl: HTMLValueElement,
-  text: string,
-  className?: string,
-): HTMLLabelElement => {
-  const label = document.createElement('label')
-  if (className !== undefined) {
-    label.classList.add(className)
-  }
-  label.htmlFor = formControl.id
-  label.textContent = text
-  label.append(formControl)
-  return label
-}
 
 export const appendFormControl = (
   parent: HTMLElement,
@@ -99,53 +23,6 @@ export const appendFormControl = (
   if (formControl !== null) {
     parent.append(createLabel(formControl, title))
   }
-}
-
-export const createInput = ({
-  className,
-  id,
-  max,
-  min,
-  placeholder,
-  type,
-  value,
-}: {
-  id: string
-  type: string
-  className?: string
-  max?: number | undefined
-  min?: number | undefined
-  placeholder?: string | undefined
-  value?: string | null
-}): HTMLInputElement => {
-  const input = document.createElement('input')
-  if (className !== undefined) {
-    input.classList.add(className)
-  }
-  input.id = id
-  input.value = value ?? ''
-  input.type = type
-  configureNumericInput(input, { max, min })
-  if (placeholder !== undefined) {
-    input.placeholder = placeholder
-  }
-  return input
-}
-
-export const createSelect = (
-  id: string,
-  values: readonly { id: string; label: string }[],
-  className?: string,
-): HTMLSelectElement => {
-  const select = document.createElement('select')
-  if (className !== undefined) {
-    select.classList.add(className)
-  }
-  select.id = id
-  for (const option of [{ id: '', label: '' }, ...values]) {
-    createOption(select, option)
-  }
-  return select
 }
 
 // Shared form-value reader: checkbox → tri-state, bounded number input →
@@ -205,23 +82,6 @@ export const translateAriaLabels = (
     if (i18nAriaLabel !== undefined && i18nAriaLabel !== '') {
       element.ariaLabel = translate(i18nAriaLabel)
     }
-  }
-}
-
-export const configureNumericInput = (
-  input: HTMLInputElement,
-  { max, min }: { max?: number | undefined; min?: number | undefined },
-): void => {
-  if (input.type !== 'number') {
-    return
-  }
-
-  input.setAttribute('inputmode', 'numeric')
-  if (min !== undefined) {
-    input.min = String(min)
-  }
-  if (max !== undefined) {
-    input.max = String(max)
   }
 }
 

@@ -1,25 +1,26 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-
-import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
-import type { HomeBuildingZone, HomeDeviceZone } from '../../../types/zone.mts'
 import {
   getButton,
   getDiv,
   getFieldset,
   getSelect,
+} from '@olivierzal/homey-kit/dom'
+import {
+  fireAndForget,
+  runWebview,
+  surfaceError,
+  trySetDocumentLanguage,
+} from '@olivierzal/homey-kit/webview'
+
+import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
+import type { HomeBuildingZone, HomeDeviceZone } from '../../../types/zone.mts'
+import {
   hideInitError,
   showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
-import {
-  type Homey,
-  fireAndForget,
-  homeyApiGet,
-  runWebview,
-  surfaceError,
-  trySetDocumentLanguage,
-} from '../../../public/homey-api.mts'
 import { watchWidgetFreshness } from '../../../public/webview-freshness-boot.mts'
+import { type Homey, homeyApiGet } from '../../../public/widget.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 
@@ -129,7 +130,9 @@ class WidgetApp {
   async #run(): Promise<void> {
     translateAriaLabels((key) => this.#homey.__(key))
     await Promise.all([
-      trySetDocumentLanguage(this.#homey),
+      trySetDocumentLanguage(async () =>
+        homeyApiGet<string>(this.#homey, '/language'),
+      ),
       this.#ataValueManager.fetchCapabilities(),
     ])
     await this.#initTargets()

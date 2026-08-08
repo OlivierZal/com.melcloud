@@ -3,9 +3,12 @@
 // the promise-native widget transport and the boot-error breadcrumb
 // channel.
 import type HomeyWidget from 'homey/lib/HomeyWidget'
-import { watchWebviewFreshness } from '@olivierzal/homey-kit/webview'
+import {
+  fireAndForget,
+  watchWebviewFreshness,
+} from '@olivierzal/homey-kit/webview'
 
-import { fireAndForget, homeyApiGet, homeyApiPost } from './homey-api.mts'
+import { homeyApiGet, homeyApiPost } from './widget.mts'
 
 // Boot check plus the triggers that cover a page outliving it. When this
 // resolves `true` the caller must skip its init — the document is about
