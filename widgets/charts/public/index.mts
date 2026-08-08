@@ -5,6 +5,13 @@ import type {
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
+import { createOption, getDiv, getSelect } from '@olivierzal/homey-kit/dom'
+import {
+  fireAndForget,
+  runWebview,
+  surfaceError,
+  trySetDocumentLanguage,
+} from '@olivierzal/homey-kit/webview'
 import {
   ClassicDeviceType,
   HomeDeviceType,
@@ -32,22 +39,12 @@ import { Temporal } from 'temporal-polyfill'
 
 import type { HomeDeviceZone } from '../../../types/zone.mts'
 import {
-  createOption,
-  getDiv,
-  getSelect,
   hideInitError,
   showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
-import {
-  type Homey,
-  fireAndForget,
-  homeyApiGet,
-  runWebview,
-  surfaceError,
-  trySetDocumentLanguage,
-} from '../../../public/homey-api.mts'
 import { watchWidgetFreshness } from '../../../public/webview-freshness-boot.mts'
+import { type Homey, homeyApiGet } from '../../../public/widget.mts'
 import { getZoneId, getZonePath } from '../../../public/zones.mts'
 import {
   type DaysQuery,
@@ -1175,7 +1172,9 @@ class ChartWidget {
     // Sequenced, not parallel: the day picker labels are formatted with
     // the app language, so it must land before the pickers are populated
     // (a failed fetch is cosmetic and falls back to the authored default).
-    await trySetDocumentLanguage(this.#homey)
+    await trySetDocumentLanguage(async () =>
+      homeyApiGet<string>(this.#homey, '/language'),
+    )
     await this.#initControls()
     // A load that outlived its timeout recovers here: drop the message
     // and resize to the recovered content (`ready` heights are one-shot).

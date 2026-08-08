@@ -1,3 +1,4 @@
+import type { DriverSetting } from '@olivierzal/homey-kit/manifest'
 import type {
   HolidayModeState,
   HolidayModeUpdate,
@@ -8,38 +9,6 @@ import type {
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
 import { getErrorMessage } from '@olivierzal/homey-kit'
-import {
-  homeyApiDelete,
-  homeyApiGet,
-  homeyApiPost,
-  homeyApiPut,
-  homeyCallback,
-  homeyConfirm,
-} from '@olivierzal/homey-kit/settings'
-import {
-  type DirtyGate,
-  createDirtyGate,
-  watchWebviewFreshness,
-} from '@olivierzal/homey-kit/webview'
-import { Temporal } from 'temporal-polyfill'
-
-import type { Api } from '../types/api.mts'
-import type { HomeySettings } from '../types/app-settings.mts'
-import type {
-  DeviceSetting,
-  DeviceSettings,
-  Settings,
-} from '../types/device-settings.mts'
-import type {
-  DriverSetting,
-  LoginDriverSetting,
-} from '../types/driver-settings.mts'
-import type {
-  ErrorLogQueryParams,
-  FormattedErrorDetails,
-  FormattedErrorLog,
-} from '../types/error-log.mts'
-import type { HomeBuildingZone, HomeDeviceZone } from '../types/zone.mts'
 import {
   type HTMLValueElement,
   booleanOptions,
@@ -53,11 +22,43 @@ import {
   getInput,
   getSelect,
   getSpan,
+} from '@olivierzal/homey-kit/dom'
+import {
+  homeyApiDelete,
+  homeyApiGet,
+  homeyApiPost,
+  homeyApiPut,
+  homeyCallback,
+  homeyConfirm,
+} from '@olivierzal/homey-kit/settings'
+import {
+  type DirtyGate,
+  createDirtyGate,
+  fireAndForget,
+  runWebview,
+  watchWebviewFreshness,
+} from '@olivierzal/homey-kit/webview'
+import { Temporal } from 'temporal-polyfill'
+
+import type { Api } from '../types/api.mts'
+import type { HomeySettings } from '../types/app-settings.mts'
+import type {
+  DeviceSetting,
+  DeviceSettings,
+  Settings,
+} from '../types/device-settings.mts'
+import type { LoginDriverSetting } from '../types/driver-settings.mts'
+import type {
+  ErrorLogQueryParams,
+  FormattedErrorDetails,
+  FormattedErrorLog,
+} from '../types/error-log.mts'
+import type { HomeBuildingZone, HomeDeviceZone } from '../types/zone.mts'
+import {
   parseFormValue,
   populateZoneOptions as populateZoneSelect,
   translateAriaLabels,
 } from '../public/dom.mts'
-import { fireAndForget, runWebview } from '../public/homey-api.mts'
 import {
   type PickerZone,
   getHomeBuildingId,
@@ -843,7 +844,7 @@ class DeviceSettingsManager {
 
       const formControl = createSelect(
         id,
-        values ?? booleanOptions(this.#homey),
+        values ?? booleanOptions((key) => this.#homey.__(key)),
         'homey-form-select',
       )
       formControl.dataset.settingId = id

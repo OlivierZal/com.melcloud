@@ -27,6 +27,7 @@ declare module 'homey' {
   interface ManagerSettings extends HomeyLib.ManagerSettings {
     get: TypedManagerSettings<HomeySettings>['get']
     set: TypedManagerSettings<HomeySettings>['set']
+    unset: TypedManagerSettings<HomeySettings>['unset']
   }
 }
 
