@@ -1753,5 +1753,20 @@
     "pl": "Aplikacja nie instaluje już dużego zestawu plików deweloperskich, których nigdy nie potrzebowała, co zwalnia miejsce na Twoim Homey i przy okazji usuwa zgłoszoną lukę w zabezpieczeniach.",
     "ru": "Приложение больше не устанавливает большой набор файлов разработки, которые ему никогда не требовались: это освобождает место на вашем Homey и заодно устраняет обнаруженную уязвимость.",
     "sv": "Appen installerar inte längre en stor mängd utvecklingsfiler som den aldrig behövde, vilket frigör utrymme på din Homey och samtidigt tar bort en rapporterad sårbarhet."
+  },
+  "46.2.0": {
+    "ar": "إصلاح تعذّر تشغيل التطبيق على Homey Pro (2016 – 2019).",
+    "da": "Retter at appen ikke kunne starte på Homey Pro (2016 – 2019).",
+    "de": "Behebt, dass die App auf dem Homey Pro (2016 – 2019) nicht starten konnte.",
+    "en": "Fixes the app failing to start on Homey Pro (2016 – 2019).",
+    "es": "Corrige que la aplicación no se iniciara en Homey Pro (2016 – 2019).",
+    "fr": "Corrige l'impossibilité de démarrer l'app sur Homey Pro (2016 – 2019).",
+    "it": "Corregge l'impossibilità di avviare l'app su Homey Pro (2016 – 2019).",
+    "ko": "Homey Pro(2016 – 2019)에서 앱이 시작되지 않던 문제를 수정했습니다.",
+    "nl": "Lost op dat de app niet startte op Homey Pro (2016 – 2019).",
+    "no": "Retter at appen ikke startet på Homey Pro (2016 – 2019).",
+    "pl": "Naprawia problem z uruchamianiem aplikacji na Homey Pro (2016 – 2019).",
+    "ru": "Исправлен запуск приложения на Homey Pro (2016 – 2019).",
+    "sv": "Åtgärdar att appen inte startade på Homey Pro (2016 – 2019)."
   }
 }
