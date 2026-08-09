@@ -1317,7 +1317,7 @@ export default class MELCloudApp extends App {
   #holidayModeEndTime(time: unknown): Temporal.PlainTime {
     if (
       typeof time !== 'string' ||
-      !/^(?:[01]\d|2[0-3]):[0-5]\d$/v.test(time)
+      !/^(?:[01]\d|2[0-3]):[0-5]\d$/u.test(time)
     ) {
       throw new RangeError(this.homey.__('errors.invalidTime'))
     }
@@ -1431,7 +1431,17 @@ export default class MELCloudApp extends App {
 
   async #logBootReady(): Promise<void> {
     await this.homey.ready()
-    this.log('Boot: ready after', process.uptime().toFixed(1), 's')
+    // Measurement breadcrumb (2026-08): the installed base's platform
+    // split (1 = Homey Pro 2016-2019, 2 = Pro 2023+) decides the node
+    // device-floor policy — read it from diagnostics reports.
+    this.log(
+      'Boot: ready after',
+      process.uptime().toFixed(1),
+      's — platform',
+      this.homey.platformVersion ?? 'unknown',
+      '— node',
+      process.version,
+    )
   }
 
   // User-facing half of melcloud-api's onAuthenticationLost contract:

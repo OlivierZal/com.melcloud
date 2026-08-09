@@ -349,8 +349,14 @@ coverage.
   checks the import CLOSURE, and the webview-facing types import the
   drivers' type barrel, reaching node-side es2024/2025 code. Revisit
   only if webview-facing types get decoupled from driver classes
-  (pure DTOs). Node-side code may use the newer APIs
-  freely.
+  (pure DTOs). Node-side use of newer APIs is UNDER
+  REVIEW: the es2024 `v` regex flag proved to be a parse-time
+  SyntaxError on Homey Pro 2016-2019 (Node < 20) and killed the app at
+  boot there (2026-08 crash report) — shipped regexes stay on `u`
+  (overlay verdict), and the full node device-floor decision
+  (`toSorted`, `Object.groupBy`, iterator helpers…) awaits the
+  platform-split measurement now logged at boot. Do not widen shipped
+  node code to newer runtime APIs meanwhile.
 
 ## Tooling boundary (@olivierzal/configs)
 
