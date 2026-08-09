@@ -1,4 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { getSelect } from '@olivierzal/homey-kit/dom'
+import { fireAndForget, surfaceError } from '@olivierzal/homey-kit/webview'
 import {
   CLASSIC_OPERATION_MODE_MIXED,
   ClassicFanSpeed,
@@ -10,13 +12,7 @@ import type {
   GetAtaOptions,
   AtaGroupSettingWidgetSettings as HomeySettings,
 } from '../../../types/widgets.mts'
-import { getSelect } from '../../../public/dom.mts'
-import {
-  type Homey,
-  fireAndForget,
-  homeyApiGet,
-  surfaceError,
-} from '../../../public/homey-api.mts'
+import { type Homey, homeyApiGet } from '../../../public/widget.mts'
 import {
   getHomeBuildingId,
   getZonePath,

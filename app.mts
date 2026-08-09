@@ -7,6 +7,12 @@ import {
   sequential,
 } from '@olivierzal/homey-kit'
 import {
+  type DriverSetting,
+  getDriverLoginSetting,
+  getDriverSettings,
+  mergeDeviceSettings,
+} from '@olivierzal/homey-kit/manifest'
+import {
   type DeviceType,
   type HolidayModeState,
   type HolidayModeUpdate,
@@ -27,27 +33,16 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { Api } from './types/api.mts'
-import type { LocalizedStrings } from './types/bases.mts'
+import type { HomeySettings } from './types/app-settings.mts'
 import type { GroupAtaStates } from './types/classic-ata.mts'
-import type {
-  DeviceSetting,
-  DeviceSettings,
-  Settings,
-} from './types/device-settings.mts'
-import type {
-  DriverCapabilitiesOptions,
-  DriverSetting,
-} from './types/driver-settings.mts'
+import type { DeviceSettings, Settings } from './types/device-settings.mts'
+import type { DriverCapabilitiesOptions } from './types/driver-settings.mts'
 import type {
   FormattedErrorDetails,
   FormattedErrorLog,
 } from './types/error-log.mts'
 import type { HomeDeviceFacade } from './types/home.mts'
-import type {
-  LoginSetting,
-  ManifestDriver,
-  ManifestDriverCapabilitiesOptions,
-} from './types/manifest.mts'
+import type { ManifestDriverCapabilitiesOptions } from './types/manifest.mts'
 import type { MELCloudDevice, MELCloudDriver } from './types/melcloud.mts'
 import type { GetAtaOptions } from './types/widgets.mts'
 import type {
@@ -139,86 +134,6 @@ interface HolidayModeActionArgs {
   zone: FlatZoneItem
   duration?: unknown
   time?: unknown
-}
-
-// Aggregates one device's settings into the per-driver map; a conflicting
-// value across devices marks that setting as indeterminate (`null`) while
-// the remaining settings keep folding independently.
-const mergeDeviceSettings = (
-  driverSettings: DeviceSetting,
-  settings: Record<string, unknown>,
-): void => {
-  for (const [settingId, value] of Object.entries(settings)) {
-    if (!Object.hasOwn(driverSettings, settingId)) {
-      driverSettings[settingId] = value
-    } else if (driverSettings[settingId] !== value) {
-      driverSettings[settingId] = null
-    }
-  }
-}
-
-const localize = (
-  strings: string | LocalizedStrings,
-  language: string,
-): string =>
-  typeof strings === 'string' ? strings : (strings[language] ?? strings.en)
-
-const getDriverSettings = (
-  { id: driverId, name, settings }: ManifestDriver,
-  language: string,
-): DriverSetting[] => {
-  const driverLabel = localize(name, language)
-  return (settings ?? []).flatMap(
-    ({ children, id: groupId, label: groupLabel }) =>
-      (children ?? []).map(({ id, label, max, min, type, units, values }) => ({
-        driverId,
-        driverLabel,
-        groupId,
-        groupLabel: localize(groupLabel, language),
-        id,
-        max,
-        min,
-        title: localize(label, language),
-        type,
-        units,
-        values: values?.map(({ id: valueId, label: valueLabel }) => ({
-          id: valueId,
-          label: localize(valueLabel, language),
-        })),
-      })),
-  )
-}
-
-const getDriverLoginSetting = (
-  { id: driverId, name, pair }: ManifestDriver,
-  language: string,
-): DriverSetting[] => {
-  const driverLabel = localize(name, language)
-  const driverLoginSetting: Record<string, DriverSetting> = {}
-  const loginOptions =
-    pair?.find(
-      (pairSetting): pairSetting is LoginSetting => pairSetting.id === 'login',
-    )?.options ?? []
-  for (const [option, label] of Object.entries(loginOptions)) {
-    const isPassword = option.startsWith('password')
-    const key = isPassword ? 'password' : 'username'
-    driverLoginSetting[key] ??= {
-      driverId,
-      driverLabel,
-      groupId: 'login',
-      id: key,
-      title: '',
-      type: isPassword ? 'password' : 'text',
-    }
-    driverLoginSetting[key] = {
-      ...driverLoginSetting[key],
-      [option.endsWith('Placeholder') ? 'placeholder' : 'title']: localize(
-        label,
-        language,
-      ),
-    }
-  }
-  return Object.values(driverLoginSetting)
 }
 
 const getLocalizedCapabilitiesOptions = (
@@ -1187,10 +1102,17 @@ export default class MELCloudApp extends App {
   #createSettingManager(api: Api = 'classic'): SettingManager {
     // Classic owns the unprefixed keys (legacy); Home is namespaced to
     // avoid collisions (e.g. `username` → `homeUsername`).
-    const prefixKey = (key: string): string =>
-      api === 'classic'
+    // The one boundary where a settings key arrives untyped: the
+    // library's `SettingManager` is keyed by plain strings, and it
+    // derives each key from the name of the accessor its `@setting`
+    // decorator wraps — so the key set belongs to the library and grows
+    // with its releases. The narrowing rides the prefixing that already
+    // happens here, and nowhere else in the app.
+    const prefixKey = (key: string): keyof HomeySettings =>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- the library's SettingManager contract types its keys as plain strings
+      (api === 'classic'
         ? key
-        : `${api}${key.charAt(0).toUpperCase()}${key.slice(1)}`
+        : `${api}${key.charAt(0).toUpperCase()}${key.slice(1)}`) as keyof HomeySettings
     return {
       get: (key: string): string | null | undefined => {
         const value: unknown = this.homey.settings.get(prefixKey(key))

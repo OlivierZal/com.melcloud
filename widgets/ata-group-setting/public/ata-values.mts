@@ -1,4 +1,12 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import {
+  type HTMLValueElement,
+  booleanOptions,
+  createInput,
+  createSelect,
+  getButton,
+  getSelect,
+} from '@olivierzal/homey-kit/dom'
 import { type DirtyGate, createDirtyGate } from '@olivierzal/homey-kit/webview'
 import {
   ClassicTemperature,
@@ -8,13 +16,7 @@ import {
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import type { AtaGroupSettingWidgetSettings } from '../../../types/widgets.mts'
 import {
-  type HTMLValueElement,
   appendFormControl,
-  booleanOptions,
-  createInput,
-  createSelect,
-  getButton,
-  getSelect,
   parseFormValue,
   populateZoneOptions,
 } from '../../../public/dom.mts'
@@ -22,7 +24,7 @@ import {
   type Homey,
   homeyApiGet,
   homeyApiPut,
-} from '../../../public/homey-api.mts'
+} from '../../../public/widget.mts'
 import {
   type PickerZone,
   getHomeBuildingId,
@@ -230,7 +232,10 @@ export class AtaValueManager {
     values?: readonly { id: string; label: string }[] | undefined
   }): HTMLValueElement | null {
     if (elementTypes.has(type)) {
-      return createSelect(id, values ?? booleanOptions(this.#homey))
+      return createSelect(
+        id,
+        values ?? booleanOptions((key) => this.#homey.__(key)),
+      )
     }
     if (type === 'number') {
       return createInput({

@@ -1,3 +1,4 @@
+import type { DriverSetting } from '@olivierzal/homey-kit/manifest'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
@@ -13,7 +14,6 @@ import {
 } from '@olivierzal/melcloud-api'
 
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
-import type { DriverSetting } from './types/driver-settings.mts'
 import type {
   ErrorLogQueryParams,
   FormattedErrorLog,
