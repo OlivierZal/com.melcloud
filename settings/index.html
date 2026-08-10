@@ -1,374 +1,410 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <title>MELCloud Settings</title>
-        <script>
-            // The page bundle loads as a classic defer script, not an ES
-            // module: a static module script stalls the whole boot on a
-            // cold webview open (a stalled module fetch also blocks
-            // onHomeyReady — proven on-device), while classic scripts,
-            // like the stylesheet, load cold. The poll keeps the boot
-            // bounded: it hands the instance to the bundle's start once
-            // it is up, or reports why and ends the overlay if it never
-            // arrives.
-            function onHomeyReady(homey) {
-                const deadline = Date.now() + 10000
-                const waitForBundle = () => {
-                    if (globalThis.MELCloudWebview) {
-                        globalThis.MELCloudWebview.start(homey)
-                    } else if (Date.now() > deadline) {
-                        // Boot beacon: the bundle never booted — report WHY
-                        // before degrading. A 200 probe with no global means
-                        // the script fetched but failed to parse/run (old
-                        // engine); a probe error means the fetch itself
-                        // fails on this device.
-                        const script = document.querySelector('script[src*="index.js"]')
-                        const report = (probe) => {
-                            homey.api('POST', '/boot-error', { message: 'The settings bundle did not boot within 10s', name: 'BootTimeout', probe, userAgent: navigator.userAgent }, () => {})
-                            homey.ready()
-                            homey.alert(homey.__('settings.loadFailed')).catch(() => {})
-                        }
-                        fetch(script ? script.src : 'index.js')
-                            .then((response) => { report('fetch ' + String(response.status)) })
-                            .catch((error) => { report('fetch failed: ' + String(error)) })
-                    } else {
-                        setTimeout(waitForBundle, 50)
-                    }
-                }
-                waitForBundle()
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>MELCloud Settings</title>
+    <script>
+      // The page bundle loads as a classic defer script, not an ES
+      // module: a static module script stalls the whole boot on a
+      // cold webview open (a stalled module fetch also blocks
+      // onHomeyReady — proven on-device), while classic scripts,
+      // like the stylesheet, load cold. The poll keeps the boot
+      // bounded: it hands the instance to the bundle's start once
+      // it is up, or reports why and ends the overlay if it never
+      // arrives.
+      function onHomeyReady(homey) {
+        const deadline = Date.now() + 10000
+        const waitForBundle = () => {
+          if (globalThis.MELCloudWebview) {
+            globalThis.MELCloudWebview.start(homey)
+          } else if (Date.now() > deadline) {
+            // Boot beacon: the bundle never booted — report WHY
+            // before degrading. A 200 probe with no global means
+            // the script fetched but failed to parse/run (old
+            // engine); a probe error means the fetch itself
+            // fails on this device.
+            const script = document.querySelector('script[src*="index.js"]')
+            const report = (probe) => {
+              homey.api(
+                'POST',
+                '/boot-error',
+                {
+                  message: 'The settings bundle did not boot within 10s',
+                  name: 'BootTimeout',
+                  probe,
+                  userAgent: navigator.userAgent,
+                },
+                () => {},
+              )
+              homey.ready()
+              homey.alert(homey.__('settings.loadFailed')).catch(() => {})
             }
-        </script>
-        <link href="index.css" rel="stylesheet">
-        <script defer src="index.js"></script>
-        <script data-origin="settings" defer src="/homey.js"></script>
-        <meta content="MELCloud settings" name="description">
-    </head>
-    <body>
-        <header class="homey-header">
-            <h1
-                class="homey-title"
-                data-i18n="settings.title"
-            >MELCloud settings</h1>
-        </header>
-        <!-- Collapsible: folded when both APIs are signed in (the
+            fetch(script ? script.src : 'index.js')
+              .then((response) => {
+                report('fetch ' + String(response.status))
+              })
+              .catch((error) => {
+                report('fetch failed: ' + String(error))
+              })
+          } else {
+            setTimeout(waitForBundle, 50)
+          }
+        }
+        waitForBundle()
+      }
+    </script>
+    <link href="index.css" rel="stylesheet" />
+    <script defer src="index.js"></script>
+    <script data-origin="settings" defer src="/homey.js"></script>
+    <meta content="MELCloud settings" name="description" />
+  </head>
+  <body>
+    <header class="homey-header">
+      <h1 class="homey-title" data-i18n="settings.title">MELCloud settings</h1>
+    </header>
+    <!-- Collapsible: folded when both APIs are signed in (the
             credentials are settled), expanded while at least one is not. -->
-        <details id="authentication" class="homey-form-fieldset">
-            <summary class="homey-form-legend" data-i18n="settings.authenticate.legend">Credentials</summary>
-            <!-- One fieldset so a single `disabled` flip freezes every
+    <details id="authentication" class="homey-form-fieldset">
+      <summary
+        class="homey-form-legend"
+        data-i18n="settings.authenticate.legend"
+      >
+        Credentials
+      </summary>
+      <!-- One fieldset so a single `disabled` flip freezes every
                 region the credentials snapshot reads (API choice
                 included) while a request is in flight. -->
-            <fieldset id="login_panel" class="busy-scope">
-                <div class="homey-form-group">
-                    <!-- The accessible name "API" is language-neutral (reads
+      <fieldset id="login_panel" class="busy-scope">
+        <div class="homey-form-group">
+          <!-- The accessible name "API" is language-neutral (reads
                         identically in all 13 locales), so it deliberately
                         carries no data-i18n-aria-label. -->
-                    <select
-                        id="api"
-                        class="homey-form-select"
-                        aria-label="API"
-                    >
-                        <option value="classic">Classic</option>
-                        <option value="home">Home</option>
-                    </select>
-                </div>
-                <div id="login"></div>
-                <div class="homey-form-group container">
-                    <button
-                        id="reset_credentials"
-                        type="button"
-                        class="homey-button-primary-full"
-                        data-i18n="settings.authenticate.reset"
-                    >Reset</button>
-                    <button
-                        id="authenticate"
-                        type="button"
-                        class="homey-button-primary-full"
-                        data-i18n="settings.authenticate.button"
-                    >Log in</button>
-                </div>
-            </fieldset>
-        </details>
-        <!-- Shown when at least one API is authenticated — hidden by default to prevent flash -->
-        <div id="content" hidden>
-            <fieldset class="homey-form-fieldset">
-                <legend class="homey-form-legend" data-i18n="settings.errorLog.legend">Error history</legend>
-                <div class="homey-form-group container">
-                    <button
-                        id="see"
-                        type="button"
-                        class="homey-button-secondary-shadow"
-                        data-i18n="settings.errorLog.see"
-                    >See all errors</button>
-                    <div class="container-inline-end">
-                        <label
-                            class="homey-form-label unset-margin"
-                            data-i18n="settings.errorLog.since"
-                            for="since"
-                        >since</label>
-                        <input
-                            id="since"
-                            type="date"
-                        >
-                    </div>
-                </div>
-                <div id="error_log" class="homey-form-group">
-                    <div class="container-inline-end">
-                        <span
-                            id="period"
-                            class="homey-form-label unset-margin bolded"
-                        ></span>
-                        <span
-                            id="error_count"
-                            class="homey-form-label unset-margin"
-                            aria-live="polite"
-                        ></span>
-                    </div>
-                </div>
-            </fieldset>
-            <fieldset id="settings_common_section" class="homey-form-fieldset">
-                <legend class="homey-form-legend" data-i18n="settings.devices.legend">All device settings</legend>
-                <div id="settings_common"></div>
-                <div class="homey-form-group container">
-                    <button
-                        id="refresh_settings_common"
-                        type="button"
-                        class="homey-button-secondary-shadow"
-                        data-i18n="settings.refresh"
-                    >Refresh</button>
-                    <button
-                        id="apply_settings_common"
-                        type="button"
-                        class="homey-button-danger-shadow"
-                        data-i18n="settings.update"
-                    >Update</button>
-                </div>
-            </fieldset>
-            <!-- Air-to-air temperature auto-adjust: a link to the
+          <select id="api" class="homey-form-select" aria-label="API">
+            <option value="classic">Classic</option>
+            <option value="home">Home</option>
+          </select>
+        </div>
+        <div id="login"></div>
+        <div class="homey-form-group container">
+          <button
+            id="reset_credentials"
+            type="button"
+            class="homey-button-primary-full"
+            data-i18n="settings.authenticate.reset"
+          >
+            Reset
+          </button>
+          <button
+            id="authenticate"
+            type="button"
+            class="homey-button-primary-full"
+            data-i18n="settings.authenticate.button"
+          >
+            Log in
+          </button>
+        </div>
+      </fieldset>
+    </details>
+    <!-- Shown when at least one API is authenticated — hidden by default to prevent flash -->
+    <div id="content" hidden>
+      <fieldset class="homey-form-fieldset">
+        <legend class="homey-form-legend" data-i18n="settings.errorLog.legend">
+          Error history
+        </legend>
+        <div class="homey-form-group container">
+          <button
+            id="see"
+            type="button"
+            class="homey-button-secondary-shadow"
+            data-i18n="settings.errorLog.see"
+          >
+            See all errors
+          </button>
+          <div class="container-inline-end">
+            <label
+              class="homey-form-label unset-margin"
+              data-i18n="settings.errorLog.since"
+              for="since"
+              >since</label
+            >
+            <input id="since" type="date" />
+          </div>
+        </div>
+        <div id="error_log" class="homey-form-group">
+          <div class="container-inline-end">
+            <span
+              id="period"
+              class="homey-form-label unset-margin bolded"
+            ></span>
+            <span
+              id="error_count"
+              class="homey-form-label unset-margin"
+              aria-live="polite"
+            ></span>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset id="settings_common_section" class="homey-form-fieldset">
+        <legend class="homey-form-legend" data-i18n="settings.devices.legend">
+          All device settings
+        </legend>
+        <div id="settings_common"></div>
+        <div class="homey-form-group container">
+          <button
+            id="refresh_settings_common"
+            type="button"
+            class="homey-button-secondary-shadow"
+            data-i18n="settings.refresh"
+          >
+            Refresh
+          </button>
+          <button
+            id="apply_settings_common"
+            type="button"
+            class="homey-button-danger-shadow"
+            data-i18n="settings.update"
+          >
+            Update
+          </button>
+        </div>
+      </fieldset>
+      <!-- Air-to-air temperature auto-adjust: a link to the
                 companion extension app, shown when devices of either
                 air-to-air driver (Classic or Home) exist. Not part of
                 the generated per-driver sections. -->
-            <div id="auto_adjust_section" hidden>
-                <fieldset class="homey-form-fieldset">
-                    <legend class="homey-form-legend" data-i18n="settings.devicesAta.legend">All air-to-air device settings</legend>
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            data-i18n="settings.devicesAta.autoAdjust"
-                            for="auto_adjust"
-                        >Auto-adjust air conditioning temperature</label>
-                    </div>
-                    <div class="homey-form-group">
-                        <button
-                            id="auto_adjust"
-                            type="button"
-                            class="homey-button-secondary-shadow-full"
-                            data-i18n="settings.devicesAta.configure"
-                        >Configure</button>
-                    </div>
-                </fieldset>
-            </div>
-            <!-- One section per driver that has devices is generated here at
+      <div id="auto_adjust_section" hidden>
+        <fieldset class="homey-form-fieldset">
+          <legend
+            class="homey-form-legend"
+            data-i18n="settings.devicesAta.legend"
+          >
+            All air-to-air device settings
+          </legend>
+          <div class="homey-form-group">
+            <label
+              class="homey-form-label"
+              data-i18n="settings.devicesAta.autoAdjust"
+              for="auto_adjust"
+              >Auto-adjust air conditioning temperature</label
+            >
+          </div>
+          <div class="homey-form-group">
+            <button
+              id="auto_adjust"
+              type="button"
+              class="homey-button-secondary-shadow-full"
+              data-i18n="settings.devicesAta.configure"
+            >
+              Configure
+            </button>
+          </div>
+        </fieldset>
+      </div>
+      <!-- One section per driver that has devices is generated here at
                 runtime (legend = the driver's own name); no markup is
                 duplicated per driver, so a new driver needs nothing added. -->
-            <div id="device_settings"></div>
-            <fieldset class="homey-form-fieldset zone-device-settings">
-                <legend class="homey-form-legend" data-i18n="settings.zones.legend">Zone and device settings</legend>
-                <div class="homey-form-group">
-                    <select
-                        id="zones"
-                        class="homey-form-select"
-                        aria-label="Zones"
-                        data-i18n-aria-label="widgets.zones"
-                    ></select>
-                </div>
-                <fieldset id="holiday_mode_panel" class="busy-scope">
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            data-i18n="settings.holidayMode.enabled"
-                            for="enabled_holiday_mode"
-                        >Enable holiday mode</label>
-                        <select id="enabled_holiday_mode" class="homey-form-select">
-                            <option
-                                data-i18n="settings.boolean.false"
-                                value="false"
-                            >No</option>
-                            <option
-                                data-i18n="settings.boolean.true"
-                                value="true"
-                            >Yes</option>
-                        </select>
-                    </div>
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            data-i18n="settings.holidayMode.startDate"
-                            for="start_date"
-                        >Start date</label>
-                        <input
-                            id="start_date"
-                            type="datetime-local"
-                        >
-                    </div>
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            data-i18n="settings.holidayMode.endDate"
-                            for="end_date"
-                        >End date</label>
-                        <input
-                            id="end_date"
-                            type="datetime-local"
-                        >
-                    </div>
-                    <div class="homey-form-group container">
-                        <button
-                            id="refresh_holiday_mode"
-                            type="button"
-                            class="homey-button-secondary-shadow"
-                            data-i18n="settings.refresh"
-                        >Refresh</button>
-                        <button
-                            id="apply_holiday_mode"
-                            type="button"
-                            class="homey-button-danger-shadow"
-                            data-i18n="settings.update"
-                        >Update</button>
-                    </div>
-                </fieldset>
-                <fieldset id="frost_protection_panel" class="busy-scope">
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            data-i18n="settings.frostProtection.enabled"
-                            for="enabled_frost_protection"
-                        >Enable frost protection</label>
-                        <select id="enabled_frost_protection" class="homey-form-select">
-                            <option
-                                data-i18n="settings.boolean.false"
-                                value="false"
-                            >No</option>
-                            <option
-                                data-i18n="settings.boolean.true"
-                                value="true"
-                            >Yes</option>
-                        </select>
-                    </div>
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            data-i18n="settings.frostProtection.min"
-                            for="min"
-                        >Minimum temperature</label>
-                        <input
-                            id="min"
-                            type="number"
-                            class="homey-form-input"
-                            inputmode="numeric"
-                        >
-                    </div>
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            data-i18n="settings.frostProtection.max"
-                            for="max"
-                        >Maximum temperature</label>
-                        <input
-                            id="max"
-                            type="number"
-                            class="homey-form-input"
-                            inputmode="numeric"
-                        >
-                    </div>
-                    <div class="homey-form-group container">
-                        <button
-                            id="refresh_frost_protection"
-                            type="button"
-                            class="homey-button-secondary-shadow"
-                            data-i18n="settings.refresh"
-                        >Refresh</button>
-                        <button
-                            id="apply_frost_protection"
-                            type="button"
-                            class="homey-button-danger-shadow"
-                            data-i18n="settings.update"
-                        >Update</button>
-                    </div>
-                </fieldset>
-                <fieldset
-                    id="overheat_protection_panel"
-                    class="busy-scope"
-                    hidden
-                >
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            for="enabled_overheat_protection"
-                        >
-                            <span
-                                data-i18n="settings.overheatProtection.enabled"
-                            >Enable overheat protection</span>
-                            <span
-                                id="overheat_protection_scope"
-                                data-i18n="settings.overheatProtection.airToAir"
-                                hidden
-                            >(air-to-air)</span>
-                        </label>
-                        <select id="enabled_overheat_protection" class="homey-form-select">
-                            <option
-                                data-i18n="settings.boolean.false"
-                                value="false"
-                            >No</option>
-                            <option
-                                data-i18n="settings.boolean.true"
-                                value="true"
-                            >Yes</option>
-                        </select>
-                    </div>
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            data-i18n="settings.overheatProtection.min"
-                            for="overheat_min"
-                        >Minimum temperature</label>
-                        <input
-                            id="overheat_min"
-                            type="number"
-                            class="homey-form-input"
-                            inputmode="numeric"
-                        >
-                    </div>
-                    <div class="homey-form-group">
-                        <label
-                            class="homey-form-label"
-                            data-i18n="settings.overheatProtection.max"
-                            for="overheat_max"
-                        >Maximum temperature</label>
-                        <input
-                            id="overheat_max"
-                            type="number"
-                            class="homey-form-input"
-                            inputmode="numeric"
-                        >
-                    </div>
-                    <div class="homey-form-group container">
-                        <button
-                            id="refresh_overheat_protection"
-                            type="button"
-                            class="homey-button-secondary-shadow"
-                            data-i18n="settings.refresh"
-                        >Refresh</button>
-                        <button
-                            id="apply_overheat_protection"
-                            type="button"
-                            class="homey-button-danger-shadow"
-                            data-i18n="settings.update"
-                        >Update</button>
-                    </div>
-                </fieldset>
-            </fieldset>
+      <div id="device_settings"></div>
+      <fieldset class="homey-form-fieldset zone-device-settings">
+        <legend class="homey-form-legend" data-i18n="settings.zones.legend">
+          Zone and device settings
+        </legend>
+        <div class="homey-form-group">
+          <select
+            id="zones"
+            class="homey-form-select"
+            aria-label="Zones"
+            data-i18n-aria-label="widgets.zones"
+          ></select>
         </div>
-    </body>
+        <fieldset id="holiday_mode_panel" class="busy-scope">
+          <div class="homey-form-group">
+            <label
+              class="homey-form-label"
+              data-i18n="settings.holidayMode.enabled"
+              for="enabled_holiday_mode"
+              >Enable holiday mode</label
+            >
+            <select id="enabled_holiday_mode" class="homey-form-select">
+              <option data-i18n="settings.boolean.false" value="false">
+                No
+              </option>
+              <option data-i18n="settings.boolean.true" value="true">
+                Yes
+              </option>
+            </select>
+          </div>
+          <div class="homey-form-group">
+            <label
+              class="homey-form-label"
+              data-i18n="settings.holidayMode.startDate"
+              for="start_date"
+              >Start date</label
+            >
+            <input id="start_date" type="datetime-local" />
+          </div>
+          <div class="homey-form-group">
+            <label
+              class="homey-form-label"
+              data-i18n="settings.holidayMode.endDate"
+              for="end_date"
+              >End date</label
+            >
+            <input id="end_date" type="datetime-local" />
+          </div>
+          <div class="homey-form-group container">
+            <button
+              id="refresh_holiday_mode"
+              type="button"
+              class="homey-button-secondary-shadow"
+              data-i18n="settings.refresh"
+            >
+              Refresh
+            </button>
+            <button
+              id="apply_holiday_mode"
+              type="button"
+              class="homey-button-danger-shadow"
+              data-i18n="settings.update"
+            >
+              Update
+            </button>
+          </div>
+        </fieldset>
+        <fieldset id="frost_protection_panel" class="busy-scope">
+          <div class="homey-form-group">
+            <label
+              class="homey-form-label"
+              data-i18n="settings.frostProtection.enabled"
+              for="enabled_frost_protection"
+              >Enable frost protection</label
+            >
+            <select id="enabled_frost_protection" class="homey-form-select">
+              <option data-i18n="settings.boolean.false" value="false">
+                No
+              </option>
+              <option data-i18n="settings.boolean.true" value="true">
+                Yes
+              </option>
+            </select>
+          </div>
+          <div class="homey-form-group">
+            <label
+              class="homey-form-label"
+              data-i18n="settings.frostProtection.min"
+              for="min"
+              >Minimum temperature</label
+            >
+            <input
+              id="min"
+              type="number"
+              class="homey-form-input"
+              inputmode="numeric"
+            />
+          </div>
+          <div class="homey-form-group">
+            <label
+              class="homey-form-label"
+              data-i18n="settings.frostProtection.max"
+              for="max"
+              >Maximum temperature</label
+            >
+            <input
+              id="max"
+              type="number"
+              class="homey-form-input"
+              inputmode="numeric"
+            />
+          </div>
+          <div class="homey-form-group container">
+            <button
+              id="refresh_frost_protection"
+              type="button"
+              class="homey-button-secondary-shadow"
+              data-i18n="settings.refresh"
+            >
+              Refresh
+            </button>
+            <button
+              id="apply_frost_protection"
+              type="button"
+              class="homey-button-danger-shadow"
+              data-i18n="settings.update"
+            >
+              Update
+            </button>
+          </div>
+        </fieldset>
+        <fieldset id="overheat_protection_panel" class="busy-scope" hidden>
+          <div class="homey-form-group">
+            <label class="homey-form-label" for="enabled_overheat_protection">
+              <span data-i18n="settings.overheatProtection.enabled"
+                >Enable overheat protection</span
+              >
+              <span
+                id="overheat_protection_scope"
+                data-i18n="settings.overheatProtection.airToAir"
+                hidden
+                >(air-to-air)</span
+              >
+            </label>
+            <select id="enabled_overheat_protection" class="homey-form-select">
+              <option data-i18n="settings.boolean.false" value="false">
+                No
+              </option>
+              <option data-i18n="settings.boolean.true" value="true">
+                Yes
+              </option>
+            </select>
+          </div>
+          <div class="homey-form-group">
+            <label
+              class="homey-form-label"
+              data-i18n="settings.overheatProtection.min"
+              for="overheat_min"
+              >Minimum temperature</label
+            >
+            <input
+              id="overheat_min"
+              type="number"
+              class="homey-form-input"
+              inputmode="numeric"
+            />
+          </div>
+          <div class="homey-form-group">
+            <label
+              class="homey-form-label"
+              data-i18n="settings.overheatProtection.max"
+              for="overheat_max"
+              >Maximum temperature</label
+            >
+            <input
+              id="overheat_max"
+              type="number"
+              class="homey-form-input"
+              inputmode="numeric"
+            />
+          </div>
+          <div class="homey-form-group container">
+            <button
+              id="refresh_overheat_protection"
+              type="button"
+              class="homey-button-secondary-shadow"
+              data-i18n="settings.refresh"
+            >
+              Refresh
+            </button>
+            <button
+              id="apply_overheat_protection"
+              type="button"
+              class="homey-button-danger-shadow"
+              data-i18n="settings.update"
+            >
+              Update
+            </button>
+          </div>
+        </fieldset>
+      </fieldset>
+    </div>
+  </body>
 </html>

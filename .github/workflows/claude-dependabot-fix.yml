@@ -17,7 +17,7 @@ jobs:
       pull-requests: read
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-    uses: OlivierZal/configs/.github/workflows/reusable-claude-dependabot-fix.yml@262b014bfa89bca8ff1bf8799b50a95f8552b3f2 # v1.6.0
+    uses: OlivierZal/configs/.github/workflows/reusable-claude-dependabot-fix.yml@91cfb98049d20d3c62d1f21b34a4769672040d95 # v1.8.0
     with:
       repo-guidance: 'API bugs surfacing through @olivierzal/melcloud-api are fixed in that library, never worked around in this app. When the bump is @olivierzal/configs, realign every `uses: OlivierZal/configs/...` ref in .github/workflows to the tag matching the new npm pin, comment included — one version covers both channels. Stop and leave the pull request failing for human review when that release changes lint policy: adopting it needs per-repository judgement no automated fix can make.'
       verify-commands: '`npm run format`, `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`'

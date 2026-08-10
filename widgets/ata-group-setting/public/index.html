@@ -1,89 +1,100 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <title>Air-to-air device values</title>
-        <script>
-            // Classic defer bundle, not an ES module: a static module
-            // script stalls the whole boot on a cold webview open (a
-            // stalled module fetch also blocks onHomeyReady — proven
-            // on-device), while classic scripts, like the stylesheets,
-            // load cold. The poll keeps the boot bounded: it hands the
-            // instance to the bundle's start once it is up, or reports
-            // why, shows the inline error and ends the overlay if it
-            // never arrives.
-            function onHomeyReady(homey) {
-                const deadline = Date.now() + 10000
-                const waitForBundle = () => {
-                    if (globalThis.MELCloudWebview) {
-                        globalThis.MELCloudWebview.start(homey)
-                    } else if (Date.now() > deadline) {
-                        // Boot beacon: the bundle never booted — report WHY
-                        // before degrading. A 200 probe with no global means
-                        // the script fetched but failed to parse/run (old
-                        // engine); a probe error means the fetch itself
-                        // fails on this device.
-                        const script = document.querySelector('script[src*="index.js"]')
-                        const report = (probe) => {
-                            homey
-                                .api('POST', '/boot-error', { message: 'The widget bundle did not boot within 10s', name: 'BootTimeout', probe, userAgent: navigator.userAgent })
-                                .catch(() => {})
-                            const message = document.querySelector('#init_error')
-                            if (message) {
-                                message.hidden = false
-                                message.textContent = homey.__('widgets.loadFailed')
-                            }
-                            homey.ready()
-                        }
-                        fetch(script ? script.src : 'index.js')
-                            .then((response) => { report('fetch ' + String(response.status)) })
-                            .catch((error) => { report('fetch failed: ' + String(error)) })
-                    } else {
-                        setTimeout(waitForBundle, 50)
-                    }
-                }
-                waitForBundle()
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Air-to-air device values</title>
+    <script>
+      // Classic defer bundle, not an ES module: a static module
+      // script stalls the whole boot on a cold webview open (a
+      // stalled module fetch also blocks onHomeyReady — proven
+      // on-device), while classic scripts, like the stylesheets,
+      // load cold. The poll keeps the boot bounded: it hands the
+      // instance to the bundle's start once it is up, or reports
+      // why, shows the inline error and ends the overlay if it
+      // never arrives.
+      function onHomeyReady(homey) {
+        const deadline = Date.now() + 10000
+        const waitForBundle = () => {
+          if (globalThis.MELCloudWebview) {
+            globalThis.MELCloudWebview.start(homey)
+          } else if (Date.now() > deadline) {
+            // Boot beacon: the bundle never booted — report WHY
+            // before degrading. A 200 probe with no global means
+            // the script fetched but failed to parse/run (old
+            // engine); a probe error means the fetch itself
+            // fails on this device.
+            const script = document.querySelector('script[src*="index.js"]')
+            const report = (probe) => {
+              homey
+                .api('POST', '/boot-error', {
+                  message: 'The widget bundle did not boot within 10s',
+                  name: 'BootTimeout',
+                  probe,
+                  userAgent: navigator.userAgent,
+                })
+                .catch(() => {})
+              const message = document.querySelector('#init_error')
+              if (message) {
+                message.hidden = false
+                message.textContent = homey.__('widgets.loadFailed')
+              }
+              homey.ready()
             }
-        </script>
-        <link href="styles/layout.css" rel="stylesheet">
-        <link href="styles/zone-select.css" rel="stylesheet">
-        <link href="styles/flame.css" rel="stylesheet">
-        <link href="styles/leaf.css" rel="stylesheet">
-        <link href="styles/smoke.css" rel="stylesheet">
-        <link href="styles/snowflake.css" rel="stylesheet">
-        <link href="styles/sun.css" rel="stylesheet">
-        <script defer src="index.js"></script>
-        <meta content="MELCloud air-to-air device setting" name="description">
-    </head>
-    <body class="homey-widget-full homey-text-align-center">
-        <p
-            id="init_error"
-            class="homey-text-small"
-            hidden
-            role="alert"
-        ></p>
-        <select
-            id="zones"
-            class="zone-select"
-            aria-label="Zones"
-            data-i18n-aria-label="widgets.zones"
-        ></select>
-        <div id="animation"></div>
-        <fieldset id="values_melcloud" class="busy-scope homey-text-align-left"></fieldset>
-        <div class="button-row">
-            <button
-                id="refresh_values_melcloud"
-                type="button"
-                class="ghost-button accent"
-                data-i18n="settings.refresh"
-            >Refresh</button>
-            <button
-                id="apply_values_melcloud"
-                type="button"
-                class="ghost-button danger"
-                data-i18n="settings.update"
-            >Update</button>
-        </div>
-    </body>
+            fetch(script ? script.src : 'index.js')
+              .then((response) => {
+                report('fetch ' + String(response.status))
+              })
+              .catch((error) => {
+                report('fetch failed: ' + String(error))
+              })
+          } else {
+            setTimeout(waitForBundle, 50)
+          }
+        }
+        waitForBundle()
+      }
+    </script>
+    <link href="styles/layout.css" rel="stylesheet" />
+    <link href="styles/zone-select.css" rel="stylesheet" />
+    <link href="styles/flame.css" rel="stylesheet" />
+    <link href="styles/leaf.css" rel="stylesheet" />
+    <link href="styles/smoke.css" rel="stylesheet" />
+    <link href="styles/snowflake.css" rel="stylesheet" />
+    <link href="styles/sun.css" rel="stylesheet" />
+    <script defer src="index.js"></script>
+    <meta content="MELCloud air-to-air device setting" name="description" />
+  </head>
+  <body class="homey-widget-full homey-text-align-center">
+    <p id="init_error" class="homey-text-small" hidden role="alert"></p>
+    <select
+      id="zones"
+      class="zone-select"
+      aria-label="Zones"
+      data-i18n-aria-label="widgets.zones"
+    ></select>
+    <div id="animation"></div>
+    <fieldset
+      id="values_melcloud"
+      class="busy-scope homey-text-align-left"
+    ></fieldset>
+    <div class="button-row">
+      <button
+        id="refresh_values_melcloud"
+        type="button"
+        class="ghost-button accent"
+        data-i18n="settings.refresh"
+      >
+        Refresh
+      </button>
+      <button
+        id="apply_values_melcloud"
+        type="button"
+        class="ghost-button danger"
+        data-i18n="settings.update"
+      >
+        Update
+      </button>
+    </div>
+  </body>
 </html>

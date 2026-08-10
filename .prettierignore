@@ -1,4 +1,3 @@
-*.html
 # Written by the Homey CLI on every preprocess, without a trailing
 # newline, and committed in that exact form: Prettier would add the
 # newline back and put the tree out of step with the next CLI run.

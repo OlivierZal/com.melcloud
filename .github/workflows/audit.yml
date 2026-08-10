@@ -4,7 +4,7 @@ jobs:
     permissions:
       contents: read
       packages: read
-    uses: OlivierZal/configs/.github/workflows/reusable-audit.yml@262b014bfa89bca8ff1bf8799b50a95f8552b3f2 # v1.6.0
+    uses: OlivierZal/configs/.github/workflows/reusable-audit.yml@91cfb98049d20d3c62d1f21b34a4769672040d95 # v1.8.0
 name: Audit
 on:
   push:

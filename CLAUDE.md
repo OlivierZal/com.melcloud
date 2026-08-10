@@ -11,9 +11,17 @@ Run the FULL suite before any push — CI runs all of it and each step has
 caught real failures that the others miss:
 
 - `npm run format` / `npm run format:fix` — prettier (eslint does NOT
-  cover formatting).
+  cover formatting). It owns `.html` layout too: indentation, attribute
+  wrapping and the ` />` on void elements are its call, and the
+  `html/` rules that contradicted that output are off in the preset.
+  Only `coverage/` and `.homeybuild/` escape it, through `.gitignore` —
+  the pages under them are generated.
 - `npm run lint` / `npm run lint:fix` — ESLint (needs its 8 GB heap; also
-  lints CSS and HTML via the css/html plugins).
+  lints CSS and HTML via the css/html plugins). What the html plugin
+  keeps is what prettier does NOT do: `head-order`, `sort-attrs` (`id`
+  before `class`, then alphabetical — the pages already comply, so its
+  silence means conformance, not absence) and
+  `no-whitespace-only-children`, plus the quality rules.
 - `npm run typecheck` — `tsc` from `@typescript/native` (TypeScript 7).
 - `npm test` / `npm run test:coverage` — vitest; branches are at 100%,
   keep them there.
@@ -33,6 +41,9 @@ caught real failures that the others miss:
   every local asset reference of the `.homeybuild` page copies with a
   content hash (`?v=<hash>`), so phone webviews (which cache assets
   across app versions) refetch an asset exactly when its bytes change.
+  The pattern anchors on `href="` / `src="` as one unit, so a reference
+  survives prettier splitting a long tag across lines; a leading `/`
+  is barred, which is what keeps the SDK's `/homey.js` unstamped.
   The committed source HTML carries NO stamps — never hand-add a `?v=`
   there, and nothing needs re-committing when a webview source changes
   (the old re-stamp-and-commit dance is gone). Stamps exist only in the
