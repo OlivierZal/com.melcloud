@@ -22,7 +22,6 @@ jobs:
     timeout-minutes: 15
 name: Validate
 on:
-  merge_group: {}
   pull_request: {}
   push:
     branches: [main]

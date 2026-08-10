@@ -19,7 +19,6 @@ jobs:
       node-versions: '[{"node-version": "22"}, {"node-version": "22.20", "coverage": true}, {"node-version": "latest"}, {"node-version": "lts/*"}]'
 name: CI
 on:
-  merge_group: {}
   pull_request: {}
   push:
     branches: [main]
