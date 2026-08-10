@@ -79,11 +79,12 @@ export abstract class ClassicMELCloudDriver<
       string & keyof EnergyCapabilityTagMapping<T>,
       EnergyCapabilityTagMapping<T>[keyof EnergyCapabilityTagMapping<T>]
     >(this.tagMappings.energy)) {
-      const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
-        tag.endsWith('Consumed') ? 'consumed' : 'produced',
+      this.consumedTagMapping[capability] = tags.filter((tag) =>
+        tag.endsWith('Consumed'),
       )
-      this.consumedTagMapping[capability] = consumed
-      this.producedTagMapping[capability] = produced
+      this.producedTagMapping[capability] = tags.filter(
+        (tag) => !tag.endsWith('Consumed'),
+      )
     }
   }
 }

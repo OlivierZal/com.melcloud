@@ -445,11 +445,39 @@ coverage.
   checks the import CLOSURE, and the webview-facing types import the
   drivers' type barrel, reaching node-side es2024/2025 code. Revisit
   only if webview-facing types get decoupled from driver classes
-  (pure DTOs). Node-side code may use the newer APIs
-  freely — with ONE carve-out: shipped regexes stay on the `u` flag.
-  Older Homey Pro (2016-2019) firmwares run a pre-Node-20 runtime
-  where the es2024 `v` flag is a parse-time SyntaxError — it killed
-  the app at boot there (2026-08 crash report).
+  (pure DTOs).
+- The device's own floor is a SEPARATE invariant, and it is about
+  SYNTAX, not APIs: **every shipped module must PARSE on the oldest
+  firmware's engine**. Older Homey Pro (2016-2019) firmwares before
+  13.4 run a pre-Node-20 engine (established from a crash report's
+  stack naming `ESMLoader`, a class Node renamed in 18.19.0), so the
+  language floor is es2022 — es2023 added only library methods, es2024
+  added the regex `v` flag, es2025 added import attributes. A module the engine
+  cannot parse fails BEFORE a line of it runs: the app does not boot,
+  and no try/catch anywhere can recover it. Two shipped incidents, same
+  class: the `v` flag (2026-08 report), then
+  `import … with { type: 'json' }` (2026-08 report, app 46.2.1) — the
+  second a REGRESSION of an explicit fix, `files.mts` having been
+  created in 2024 precisely to avoid it (`e84cf041`, "Make json import
+  compatible for Homey 2016") before a 2025-10 `simplify` commit
+  deleted its `createRequire` fallback and promoted the import-attribute
+  form. That is why the guard is mechanical and not a convention:
+  `tests/unit/node-floor.test.ts` emits the real build and parses every
+  module at the floor, so it is exhaustive BY CONSTRUCTION — it catches
+  syntax nobody thought to look for, not a list of known offenders.
+  Never re-add an import attribute to shipped code: `files.mts` reads
+  its JSON through `createRequire`, with type-only imports keeping tsc's
+  inference.
+- Runtime APIs are the OTHER family and the parser cannot see them:
+  they parse fine and throw on use. `Object.groupBy` (Node 21),
+  `toSorted`/`toReversed` (Node 20) and `Promise.withResolvers`
+  (Node 22) all postdate the floor. Shipped node-side code still calls
+  `toSorted` (6 sites) and `Object.groupBy` (1 site, `getDriverSettings`)
+  — they degrade a feature on use rather than killing the boot, and they
+  cannot be removed here because `unicorn/no-array-sort` MANDATES
+  `toSorted`: the rule lives in `@olivierzal/configs`, so resolving it
+  is a family decision, not a local edit. The boot-path occurrence was
+  removed (`ClassicDriver#onInit` now filters twice instead of grouping).
 
 ## Tooling boundary (@olivierzal/configs)
 
