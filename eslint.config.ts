@@ -75,10 +75,10 @@ const config: Config[] = defineConfig([
     },
   },
   {
-    // Shipped node-side regexes stay on the `u` flag: the es2024 `v`
-    // flag is a parse-time SyntaxError on Homey Pro 2016-2019
-    // (Node < 20) — the 2026-08 boot-crash root cause. The full node
-    // device-floor policy is pending the platform-split measurement.
+    // Shipped node-side regexes stay on the `u` flag: older Homey
+    // Pro (2016-2019) firmwares run a pre-Node-20 runtime where the
+    // es2024 `v` flag is a parse-time SyntaxError — the 2026-08
+    // boot-crash root cause.
     files: ['*.mts', 'drivers/**/*.mts', 'lib/**/*.mts'],
     rules: { 'require-unicode-regexp': ['error', { requireFlag: 'u' }] },
   },
