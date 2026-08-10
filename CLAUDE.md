@@ -185,6 +185,27 @@ coverage.
   (a class list silently missed renamed buttons).
   The kit's own suite locks the behavior — a change to the gate is a kit
   release, adopted here by an exact-pin bump.
+- Settings-CSS sharing — VERDICT (2026-08, after the `./dom` adoption):
+  the cascade fixes STAY LOCAL, in all three apps. Two independent
+  reasons, either sufficient. (1) The kit ships no stylesheet and
+  exports no CSS entry (`.`, `./dom`, `./manifest`, `./node`,
+  `./settings`, `./testing`, `./types`, `./webview`, `./widget` — all
+  JS): sharing them would mean inventing a CSS delivery path, and since
+  webviews load plain `<link>` tags from the packaged app, each app's
+  `bundle.mts` would have to copy the file into `.homeybuild` at
+  package time. That is a new packaging contract, not a 15-line move.
+  (2) Only about a third of the file is generic by construction — the
+  rules encoding a kit or SDK contract rather than app design:
+  `body fieldset[hidden]`, the `.homey-form-group` checkbox-set restack
+  and its sibling margin, `[class*='homey-button']:disabled`, the
+  `busy-scope` pair and the `fieldset[disabled]` pair (the dirty-gate
+  freeze contract), plus the `:indeterminate` checkmark. The rest is
+  this app's own: the zone select, the error-log table, the
+  `datetime-local` holiday inputs, the credentials summary and its
+  reset button. A shared file would therefore carry a minority of the
+  lines while adding a delivery mechanism to three apps. Revisit only
+  if the kit gains a stylesheet export for other reasons — never as a
+  standalone refactor.
 - The injected sheet resets `fieldset.homey-form-checkbox-set` /
   `-radio-set` with `all: unset`, which leaves `display: inline` — and
   WebKit renders inline fieldsets atomically, so SIBLING sets tile side
