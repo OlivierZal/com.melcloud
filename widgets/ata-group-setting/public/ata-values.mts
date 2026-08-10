@@ -1,11 +1,20 @@
+// `Classic.GroupState` is the CROSS-FAMILY group vocabulary, not a
+// Classic-only branch: both families' ATA facades implement `getGroup`
+// and `updateGroupState` against it, the Home ones projecting their own
+// dialect at their boundary. So every value this widget reads or writes
+// — `OperationMode` included, always Classic-numbered — carries one
+// spelling whatever API backs the target, and the constants below apply
+// to both (`ClassicTemperature` is documented universal across ATA
+// models). The only place the family is visible at all is the state
+// path; see `getAtaStatePath`.
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import {
   type HTMLValueElement,
   booleanOptions,
   createInput,
+  createOption,
   createSelect,
   getButton,
-  getSelect,
   parseFormValue,
 } from '@olivierzal/homey-kit/dom'
 import { type DirtyGate, createDirtyGate } from '@olivierzal/homey-kit/webview'
@@ -47,20 +56,78 @@ const coolModeNumbers: ReadonlySet<number> = classicCoolModes
 // #createAtaControl), so the bounded-number strategy IS the temperature
 // clamp — no id dispatch. Cooling modes raise the floor to the API's
 // cooling minimum.
-const clampTemperature = ({ max, min, value }: HTMLInputElement): number => {
-  const numberValue = Number(value)
-  if (!Number.isFinite(numberValue)) {
-    throw new TypeError('Invalid number')
-  }
-  const activeMin = coolModeNumbers.has(
-    Number(getSelect('OperationMode').value),
-  )
+// The target temperature is a SELECT of the grid the driver manifest
+// declares, not a free-text number: a phone keyboard let a decimal
+// separator through and the widget sent the truncated integer
+// ("23," → 23), which a picker cannot express at all — and MELCloud
+// works in half degrees, so a whole-degree picker would forbid what the
+// old input merely mangled.
+//
+// The step and the bounds are READ AT THE SOURCE: they ride on the
+// capability options the app serves straight from the manifest
+// (`target_temperature`: min 10, max 31, step 0.5). Only the
+// cooling floor comes from melcloud-api (`ClassicTemperature.coolingMin`)
+// — it is mode-dependent, which no manifest can express. A capability
+// arriving without a grid falls back to the library's universal
+// envelope, so a manifest that loses its options degrades to whole
+// degrees instead of rendering nothing.
+const FALLBACK_TEMPERATURE_STEP = 1
+
+// The floor follows the mode the user CHOSE: an untouched (or mixed)
+// mode leaves the device's own mode in place, so the widest range is
+// the only honest offer — as does a device with no mode control.
+const getTemperatureMin = (declaredMin: number): number => {
+  const mode = document.querySelector('#OperationMode')
+  return mode instanceof HTMLSelectElement &&
+    coolModeNumbers.has(Number(mode.value))
     ? ClassicTemperature.coolingMin
-    : Number(min)
-  return Math.min(Math.max(numberValue, activeMin), Number(max))
+    : declaredMin
 }
 
-// Routes a `${model}_${id}` option value to its state endpoint.
+// Labels follow the page language (a comma in French); the option VALUE
+// stays the wire form, so what is sent never depends on the locale.
+const formatTemperature = (degrees: number): string => {
+  // An empty `lang` is not a valid tag: hand `undefined` over so the
+  // runtime default applies instead of throwing mid-render.
+  const { lang } = document.documentElement
+  const formatter = new Intl.NumberFormat(lang === '' ? undefined : lang, {
+    maximumFractionDigits: 1,
+    style: 'unit',
+    unit: 'celsius',
+  })
+  return formatter.format(degrees)
+}
+
+// The declared grid for the active floor, plus `current` when the device
+// sits off it: a value with no option would blank the picker and
+// silently drop what the device holds.
+const temperatureOptions = (
+  { max, min, step }: { max: number; min: number; step: number },
+  current: number | null,
+): { id: string; label: string }[] => {
+  const values = new Set<number>()
+  // Stepped by index: adding a fractional step repeatedly drifts.
+  for (let index = 0; min + index * step <= max; index++) {
+    values.add(Number((min + index * step).toFixed(1)))
+  }
+  if (current !== null && current >= min && current <= max) {
+    values.add(current)
+  }
+  // Warmest first: the picker reads like the thermometer it sets, and
+  // the order is pinned by test so it is not "corrected" to ascending.
+  return [...values]
+    .toSorted((first, second) => second - first)
+    .map((degrees) => ({
+      id: String(degrees),
+      label: formatTemperature(degrees),
+    }))
+}
+
+// Routes a `${model}_${id}` option value to its state endpoint — the one
+// place the API family surfaces, and it is ADDRESSING, not semantics: the
+// two families name their targets differently (a Home building or device
+// id versus a Classic zone type + id), so they are reachable only through
+// distinct routes. Everything downstream of the fetch is single-vocabulary.
 const getAtaStatePath = (value: string): string => {
   if (isHomeBuildingValue(value)) {
     return `/home/buildings/${encodeURIComponent(getHomeBuildingId(value))}/ata`
@@ -138,6 +205,7 @@ export class AtaValueManager {
       }
       appendFormControl(this.#ataValues, { formControl, title })
     }
+    this.#wireTemperatureRange()
     // Every control feeds the dirty check so Update tracks edits live; the
     // freshly built (still empty) controls are the pristine baseline.
     this.#dirtyGate.wire(formControls)
@@ -208,10 +276,7 @@ export class AtaValueManager {
               this.#zoneMapping[this.#zone.value]?.[id]?.toString(),
             ].includes(value),
         )
-        .map((element) => [
-          element.id,
-          parseFormValue(element, clampTemperature),
-        ]),
+        .map((element) => [element.id, parseFormValue(element)]),
     )
   }
 
@@ -230,13 +295,11 @@ export class AtaValueManager {
         values ?? booleanOptions((key) => this.#homey.__(key)),
       )
     }
+    if (id === 'SetTemperature') {
+      return createSelect(id, temperatureOptions(this.#temperatureGrid(), null))
+    }
     if (type === 'number') {
-      return createInput({
-        id,
-        max: id === 'SetTemperature' ? ClassicTemperature.max : undefined,
-        min: id === 'SetTemperature' ? ClassicTemperature.min : undefined,
-        type,
-      })
+      return createInput({ id, type })
     }
     return null
   }
@@ -245,9 +308,46 @@ export class AtaValueManager {
     return Object.hasOwn(this.#defaultAtaValues, value)
   }
 
+  // Rebuilds the temperature picker for the active floor, keeping the
+  // wanted value when the new range still offers it (an out-of-range one
+  // falls back to blank, i.e. "no instruction").
+  #refreshTemperatureOptions(wanted: string): void {
+    const select = document.querySelector('#SetTemperature')
+    if (!(select instanceof HTMLSelectElement)) {
+      return
+    }
+    const current = this.#zoneMapping[this.#zone.value]?.SetTemperature
+    const options = temperatureOptions(
+      this.#temperatureGrid(),
+      typeof current === 'number' ? current : null,
+    )
+    select.replaceChildren()
+    createOption(select, { id: '', label: '' })
+    for (const option of options) {
+      createOption(select, option)
+    }
+    select.value = wanted
+  }
+
   #syncAtaValues(): void {
     for (const [ataKey] of this.#ataCapabilities) {
       this.#updateAtaValue(ataKey)
+    }
+  }
+
+  // The grid the app served for `SetTemperature`, with the mode-dependent
+  // floor applied. A capability without declared bounds degrades to the
+  // library's universal envelope in whole degrees rather than rendering
+  // an empty picker.
+  #temperatureGrid(): { max: number; min: number; step: number } {
+    const declared = this.#ataCapabilities.find(
+      ([key]) => key === 'SetTemperature',
+    )?.[1]
+    const min = declared?.min ?? ClassicTemperature.min
+    return {
+      max: declared?.max ?? ClassicTemperature.max,
+      min: getTemperatureMin(min),
+      step: declared?.step ?? FALLBACK_TEMPERATURE_STEP,
     }
   }
 
@@ -258,13 +358,33 @@ export class AtaValueManager {
       (ataValue instanceof HTMLInputElement ||
         ataValue instanceof HTMLSelectElement)
     ) {
-      ataValue.value =
-        this.#zoneMapping[this.#zone.value]?.[id]?.toString() ?? ''
+      const value = this.#zoneMapping[this.#zone.value]?.[id]?.toString() ?? ''
+      // The picker must offer the device's own value before taking it —
+      // a half degree set elsewhere would otherwise blank the control.
+      if (id === 'SetTemperature') {
+        this.#refreshTemperatureOptions(value)
+        return
+      }
+      ataValue.value = value
     }
   }
 
   #updateZoneMapping(data: Partial<Classic.GroupState>): void {
     const { value } = this.#zone
     this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
+  }
+
+  // The offered temperatures depend on the chosen mode, so the picker is
+  // rebuilt whenever that choice moves.
+  #wireTemperatureRange(): void {
+    const mode = document.querySelector('#OperationMode')
+    if (mode instanceof HTMLSelectElement) {
+      mode.addEventListener('change', () => {
+        const temperature = document.querySelector('#SetTemperature')
+        this.#refreshTemperatureOptions(
+          temperature instanceof HTMLSelectElement ? temperature.value : '',
+        )
+      })
+    }
   }
 }

@@ -264,6 +264,19 @@ coverage.
   wire dialect (`HomeAtwZoneMode`, `operationalState`), degrading
   unknown zone modes to the room modes, so the app-side converters are
   plain field picks.
+- The ATA GROUP vocabulary is already cross-family, and its `Classic`
+  prefix is history, not a branch: `ClassicGroupState` is the one shape
+  both families' ATA facades implement (`getGroup` / `updateGroupState`),
+  the Home device and building facades projecting their own dialect at
+  their boundary (`toClassicAtaGroupState` / `toHomeAtaValues`) —
+  `OperationMode` included, so a group state is ALWAYS Classic-numbered
+  whatever API served it, and `classicCoolModes` / `ClassicTemperature`
+  (documented universal across ATA models) apply to both. Consumers
+  therefore never branch on the family to READ or WRITE a group state;
+  the only family-visible step is ADDRESSING, because a Home building or
+  device id and a Classic zone type + id are reachable only through
+  distinct routes. The prefix has twice been misread as a missing
+  abstraction (2026-08) — it is the common surface.
 - Flow-card device filters are `driver_id=<manifest owners>&capabilities=<cap>`,
   both parts mechanical: `capabilities=` is the card's real precondition
   (the run listeners are capability-generic and triggers fire through
@@ -341,6 +354,35 @@ coverage.
   (`app.error`) before degrading, so a diagnostic report distinguishes
   a fetch failure (probe error / non-200) from a parse-or-runtime crash
   (probe 200, global absent — think pre-es2020 engines).
+- The ATA group widget's target temperature is a SELECT, never a
+  free-text number: a phone keyboard let a decimal separator through and
+  the widget sent the truncated integer ("23," → 23). Its options are
+  GENERATED from the grid the app serves with each capability, never
+  hardcoded: MELCloud accepts HALF degrees, and a whole-degree picker
+  would forbid what the truncating input merely mangled. The bounds are
+  the DRIVER MANIFEST's narrowing (`target_temperature`: 10–31) over the
+  vendored node-homey-lib generic definition (4–35). The STEP is the
+  capability's own: node-homey-lib declares no root `step` for
+  `target_temperature` (only `decimals: 1`), and states 0.5 on its flow
+  action's range argument — `lib/capability-flow-step.mts` reads exactly
+  that. Using a flow-arg field as a UI grid IS an inference; it is
+  taken deliberately because the value is Athom's own and the vendored
+  copy sits under the drift test, so an upstream change surfaces
+  instead of rotting. NEVER re-declare a `step` in the driver manifests
+  to get one: a partial explicitation (declared on some capabilities,
+  absent on others) is an asymmetry no reader can explain — all or
+  nothing (decision, 2026-08). Only the cooling floor comes from
+  melcloud-api (`ClassicTemperature.coolingMin`): it is mode-dependent,
+  which no manifest can express. An untouched or mixed mode keeps the
+  widest range, since the device's own mode stays in place, and a device
+  reporting an off-grid value keeps it as an option, so nothing it holds
+  becomes unselectable or gets silently dropped. Labels are formatted in
+  the page language (a comma in French) while the option VALUE stays the
+  wire form. The offered envelope is deliberately the UNIVERSAL one: a
+  group may mix models, and each device's own per-mode limits narrow the
+  write API-side (the Classic ATA facade clamps against its reported
+  `MinTempCoolDry`/`MaxTempHeat` and friends). Never duplicate that
+  clamp widget-side.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`

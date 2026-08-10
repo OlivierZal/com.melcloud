@@ -60,6 +60,7 @@ import {
   thermostatMode,
   vertical,
 } from './files.mts'
+import { getCapabilityFlowStep } from './lib/capability-flow-step.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
@@ -143,6 +144,9 @@ const getLocalizedCapabilitiesOptions = (
 ): DriverCapabilitiesOptions => ({
   title: options.title[language] ?? options.title.en,
   type: options.type,
+  ...(options.max !== undefined && { max: options.max }),
+  ...(options.min !== undefined && { min: options.min }),
+  ...(options.step !== undefined && { step: options.step }),
   values: options.values?.map(({ id, title }) => ({
     id:
       enumType !== undefined && Object.hasOwn(enumType, id)
@@ -1134,7 +1138,20 @@ export default class MELCloudApp extends App {
   }[] {
     return [
       { key: 'Power', options: power },
-      { key: 'SetTemperature', options: targetTemperature },
+      {
+        key: 'SetTemperature',
+        // The vendored capability is the generic definition (4–35);
+        // this driver's manifest narrows the bounds (10–31), and the
+        // step comes from the capability's own flow argument — see
+        // `getCapabilityFlowStep` for why that field, and what keeps it
+        // honest — and why neither API's increment is read instead.
+        options: {
+          ...targetTemperature,
+          ...this.homey.manifest.drivers.find(({ id }) => id === 'melcloud')
+            ?.capabilitiesOptions?.target_temperature,
+          step: getCapabilityFlowStep(targetTemperature),
+        },
+      },
       {
         enumType: Classic.FanSpeed,
         key: 'FanSpeed',

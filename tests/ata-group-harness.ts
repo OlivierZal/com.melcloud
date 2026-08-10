@@ -22,6 +22,8 @@ export const loadWidgetPage = (): void => {
   const parsed = parser.parseFromString(widgetHtml, 'text/html')
   document.head.replaceChildren(...parsed.head.children)
   document.body.replaceChildren(...parsed.body.children)
+  // The authored page declares it; only the parsed fragments move over.
+  document.documentElement.lang = 'en'
 }
 
 // ── Web Animations API stand-in ──
@@ -130,7 +132,10 @@ export const ataCapabilitiesFixture = (): [
       ],
     },
   ],
-  ['SetTemperature', { title: 'Temperature', type: 'number' }],
+  [
+    'SetTemperature',
+    { max: 31, min: 10, step: 0.5, title: 'Temperature', type: 'number' },
+  ],
   ['FanSpeed', { title: 'Fan speed', type: 'number' }],
   // A capability no control type maps to: the builder yields null and
   // the form skips it.
