@@ -491,9 +491,14 @@ max-classes-per-file off, the `URLSearchParams`
 THIS directory, never inside node_modules — the trap the configs README
 documents for `outDir`). Do not re-declare family policy locally — a
 rule evaluation or version bump happens in configs, adoption is a
-reviewed pin bump. The CI/audit/claude/dependabot/pr-title/zizmor
-workflows are stubs calling the family reusables in OlivierZal/configs,
-pinned `@<sha> # vX.Y.Z`; `validate.yml` and `publish.yml` stay local
+reviewed pin bump. The
+CI/claude/dependabot/dependency-review/pr-title/zizmor workflows are
+stubs calling the family reusables in OlivierZal/configs, pinned
+`@<sha> # vX.Y.Z`; dependency vulnerabilities are GitHub's own —
+Dependabot alerts scan continuously and carry the named, reasoned
+dismissals (an exception lives on the advisory, so it cannot outlive
+it), while `dependency-review` judges what a PR introduces;
+`validate.yml` and `publish.yml` stay local
 (no reusable exists), so the composite action stays too — and installs
 pass `npm-token` (the configs dependency lives on GitHub Packages,
 where even reads need auth).
