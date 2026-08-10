@@ -3,13 +3,15 @@
 
 import { readFileSync } from 'node:fs'
 
-import type { ChartConfiguration, Plugin } from 'chart.js'
+import type * as ChartJs from 'chart.js'
+import type { ChartConfiguration, Plugin as ChartPlugin } from 'chart.js'
 import { getDiv, getSelect } from '@olivierzal/homey-kit/dom'
 import { Temporal } from 'temporal-polyfill'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Homey } from '../../public/widget.mts'
 import type { ChartsWidgetSettings } from '../../types/widgets.mts'
+import { ChartArcElement } from '../chart-arc.ts'
 import { mock, settleDetached } from '../helpers.ts'
 
 // ── Chart.js stand-in ──
@@ -27,14 +29,6 @@ interface FakeContext {
   readonly save: ReturnType<typeof vi.fn<() => void>>
   textAlign: string
   textBaseline: string
-}
-
-class FakeArcElement {
-  public props: Record<string, number | null> = {}
-
-  public getProps(): Record<string, number | null> {
-    return this.props
-  }
 }
 
 const createContext = (): FakeContext => ({
@@ -74,7 +68,7 @@ class FakeChart {
 
   public readonly hiddenPoints = new Set<number>()
 
-  public readonly meta: { data: FakeArcElement[] } = { data: [] }
+  public readonly meta: { data: ChartArcElement[] } = { data: [] }
 
   public options: ChartConfiguration['options']
 
@@ -87,14 +81,14 @@ class FakeChart {
 
   public readonly update = vi.fn<() => void>()
 
-  public constructor(canvas: HTMLCanvasElement, config: ChartConfiguration) {
+  public constructor(_canvas: HTMLCanvasElement, config: ChartConfiguration) {
     this.config = config
     this.data = config.data
     this.options = config.options
     FakeChart.instances.push(this)
   }
 
-  public readonly getDatasetMeta = (): { data: FakeArcElement[] } => this.meta
+  public readonly getDatasetMeta = (): { data: ChartArcElement[] } => this.meta
 
   public readonly getDataVisibility = (index: number): boolean =>
     !this.hiddenPoints.has(index)
@@ -113,8 +107,8 @@ class FakeChart {
 }
 
 vi.mock(import('chart.js'), () =>
-  mock<typeof import('chart.js')>({
-    ArcElement: FakeArcElement,
+  mock<typeof ChartJs>({
+    ArcElement: ChartArcElement,
     BarController: {},
     BarElement: {},
     CategoryScale: {},
@@ -181,14 +175,6 @@ const defaultRoutes = (): Record<string, unknown> => ({
   'GET /language': 'fr',
 })
 
-const LOG_ROUTES = [
-  'temperatures',
-  'operation-modes',
-  'hourly-temperatures',
-  'signal',
-  'report',
-]
-
 const withLogs = (routes = defaultRoutes()): Record<string, unknown> => ({
   ...routes,
   line: lineOptions(),
@@ -217,6 +203,7 @@ const createHarness = (
   const api = vi
     .fn<(method: string, path: string) => Promise<unknown>>()
     .mockImplementation(async (method, path) => {
+      await Promise.resolve()
       const key = `${method} ${path}`
       const failure = failures[key]
       if (failure !== undefined) {
@@ -281,24 +268,34 @@ const commit = (select: HTMLSelectElement, value: string): void => {
   select.dispatchEvent(new Event('change', { bubbles: true }))
 }
 
-type HookArguments = Parameters<NonNullable<Plugin['afterDatasetsDraw']>>
+// `beforeDatasetsDraw` carries the cancelable flag in its ARGS (its
+// second parameter); `afterDatasetsDraw` takes a bare object there and a
+// trailing `false`. Calling through a union of both demands the
+// intersection, so the args argument comes from the cancelable hook.
+type CancelableArguments = Parameters<
+  NonNullable<ChartPlugin['beforeDatasetsDraw']>
+>
+
+type HookArguments = Parameters<NonNullable<ChartPlugin['afterDatasetsDraw']>>
 
 // The hooks read the live chart and its context; everything past that
 // is renderer bookkeeping the widget's plugins never touch.
 type PluginHook = 'afterDatasetsDraw' | 'beforeDatasetsDraw'
 
 const runPlugin = (id: string, hook: PluginHook, chart: FakeChart): void => {
-  const run = pluginOf(id)[hook]
-  run?.(
+  // Called through the plugin rather than extracted: the hook keeps its
+  // own `this`, as the renderer would give it.
+  pluginOf(id)[hook]?.(
     mock<HookArguments[0]>(chart),
-    mock<HookArguments[1]>(),
-    // The renderer's own draw options; only `cancelable` is required.
-    { cancelable: true },
+    mock<CancelableArguments[1] & HookArguments[1]>({ cancelable: true }),
+    // The renderer's own draw options and trailing flag; the widget's
+    // plugins never read either.
+    mock<HookArguments[2]>(),
     mock<HookArguments[3]>(),
   )
 }
 
-const pluginOf = (id: string): Plugin => {
+const pluginOf = (id: string): ChartPlugin => {
   const plugin = lastChart().config.plugins?.find(
     (candidate) => candidate.id === id,
   )
@@ -584,15 +581,16 @@ describe('charts widget', () => {
   it('should skip a pie slice with no resolved centre', async () => {
     await boot({ settings: { chart: 'operation_modes' } })
     const chart = lastChart()
-    const detached = new FakeArcElement()
-    detached.props = {
-      circumference: Math.PI,
-      endAngle: Math.PI,
-      outerRadius: 50,
-      startAngle: 0,
-      x: null,
-      y: null,
-    }
+    const detached = new ChartArcElement(
+      new Map([
+        ['circumference', Math.PI],
+        ['endAngle', Math.PI],
+        ['outerRadius', 50],
+        ['startAngle', 0],
+        ['x', null],
+        ['y', null],
+      ]),
+    )
     chart.meta.data = [detached]
     runPlugin('pieDataLabels', 'afterDatasetsDraw', chart)
 
@@ -606,6 +604,7 @@ describe('charts widget', () => {
     // survives because it is re-applied by label.
     lastChart().hiddenPoints.add(0)
     harness.api.mockImplementation(async (method, path) => {
+      await Promise.resolve()
       if (path.includes('/logs/operation-modes')) {
         return pieOptions({ labels: ['Heating', 'Cooling'], series: [3, 2] })
       }
@@ -621,6 +620,7 @@ describe('charts widget', () => {
     const harness = await boot({ settings: { chart: 'operation_modes' } })
     const first = lastChart()
     harness.api.mockImplementation(async (method, path) => {
+      await Promise.resolve()
       if (path.includes('/logs/operation-modes')) {
         return pieOptions({ labels: ['Heating'], series: [3] })
       }
@@ -683,15 +683,16 @@ describe('charts widget', () => {
     const chart = lastChart()
     // Hiding the 1-unit slice leaves 3 of 3 visible units.
     chart.hiddenPoints.add(1)
-    const arc = new FakeArcElement()
-    arc.props = {
-      circumference: Math.PI,
-      endAngle: Math.PI,
-      outerRadius: 50,
-      startAngle: 0,
-      x: 100,
-      y: 100,
-    }
+    const arc = new ChartArcElement(
+      new Map([
+        ['circumference', Math.PI],
+        ['endAngle', Math.PI],
+        ['outerRadius', 50],
+        ['startAngle', 0],
+        ['x', 100],
+        ['y', 100],
+      ]),
+    )
     chart.meta.data = [arc]
     runPlugin('pieDataLabels', 'afterDatasetsDraw', chart)
 
@@ -735,8 +736,13 @@ describe('charts widget', () => {
 
   it('should localize a series name when a translation exists', async () => {
     const harness = createHarness()
-    vi.spyOn(harness.homey, '__').mockImplementation((key: object | string) =>
-      key === 'widgets.charts.series.RoomTemperature' ? 'Pièce' : String(key),
+    vi.spyOn(harness.homey, '__').mockImplementation(
+      (key: object | string): string => {
+        if (typeof key !== 'string') {
+          return ''
+        }
+        return key === 'widgets.charts.series.RoomTemperature' ? 'Pièce' : key
+      },
     )
     await start(harness.homey)
     await settleDetached()
@@ -812,24 +818,26 @@ describe('charts widget', () => {
   it('should label the wide pie slices only', async () => {
     await boot({ settings: { chart: 'operation_modes' } })
     const chart = lastChart()
-    const wide = new FakeArcElement()
-    wide.props = {
-      circumference: Math.PI,
-      endAngle: Math.PI,
-      outerRadius: 50,
-      startAngle: 0,
-      x: 100,
-      y: 100,
-    }
-    const narrow = new FakeArcElement()
-    narrow.props = {
-      circumference: 0.01,
-      endAngle: 0.01,
-      outerRadius: 50,
-      startAngle: 0,
-      x: 100,
-      y: 100,
-    }
+    const wide = new ChartArcElement(
+      new Map([
+        ['circumference', Math.PI],
+        ['endAngle', Math.PI],
+        ['outerRadius', 50],
+        ['startAngle', 0],
+        ['x', 100],
+        ['y', 100],
+      ]),
+    )
+    const narrow = new ChartArcElement(
+      new Map([
+        ['circumference', 0.01],
+        ['endAngle', 0.01],
+        ['outerRadius', 50],
+        ['startAngle', 0],
+        ['x', 100],
+        ['y', 100],
+      ]),
+    )
     chart.meta.data = [wide, narrow]
     runPlugin('pieDataLabels', 'afterDatasetsDraw', chart)
 
@@ -839,5 +847,73 @@ describe('charts widget', () => {
       expect.any(Number),
       expect.any(Number),
     )
+  })
+
+  it('should draw no band for a chart the band map never saw', async () => {
+    await boot({
+      routes: {
+        ...withLogs(),
+        line: lineOptions({ bands: [{ from: 0, label: 'Heating', to: 1 }] }),
+      },
+    })
+    const orphan = new FakeChart(
+      document.createElement('canvas'),
+      lastChart().config,
+    )
+    // Constructing it registered it as the latest; restore the real one so
+    // the plugin is still looked up on the booted chart.
+    FakeChart.instances.pop()
+    runPlugin('modeBands', 'beforeDatasetsDraw', orphan)
+
+    expect(orphan.ctx.fillRect).not.toHaveBeenCalled()
+  })
+
+  it.each(['bold', 'bolder', 'lighter', 'normal'])(
+    'should read the %s font weight from the live tokens',
+    async (weight) => {
+      document.documentElement.style.setProperty(
+        '--homey-font-weight-regular',
+        weight,
+      )
+      await boot()
+
+      expect(lastChart().config.options?.plugins?.title?.font).toMatchObject({
+        weight,
+      })
+    },
+  )
+
+  it('should fall back to the default chart when the picker holds an unknown value', async () => {
+    const harness = await boot()
+    const charts = getSelect('charts')
+    const unknown = document.createElement('option')
+    unknown.value = 'not_a_chart'
+    charts.append(unknown)
+    harness.api.mockClear()
+    commit(charts, 'not_a_chart')
+    await settleDetached()
+
+    expect(harness.api).toHaveBeenCalledWith(
+      'GET',
+      expect.stringContaining('/logs/operation-modes'),
+    )
+  })
+
+  it('should resize when a load that outlived its timeout recovers', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    const harness = createHarness()
+    // The language fetch is held open past the overlay's own timeout.
+    const { promise: gate, resolve: release } = Promise.withResolvers<string>()
+    harness.api.mockImplementationOnce(async () => gate)
+    const booting = start(harness.homey)
+    // The overlay gives up first: `runWebview` resolves on its own
+    // timeout, so the boot is "ready" while the load is still in flight.
+    await vi.advanceTimersByTimeAsync(10_000)
+    harness.setHeight.mockClear()
+    release('fr')
+    await booting
+    await settleDetached()
+
+    expect(harness.setHeight).toHaveBeenCalledWith(expect.any(Number))
   })
 })
