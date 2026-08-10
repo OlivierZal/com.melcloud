@@ -3,8 +3,6 @@ import type {
   HolidayModeState,
   HolidayModeUpdate,
   LoginCredentials,
-  ProtectionState,
-  ProtectionUpdate,
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type Homey from 'homey/lib/HomeySettings'
@@ -39,6 +37,13 @@ import {
   runWebview,
   watchWebviewFreshness,
 } from '@olivierzal/homey-kit/webview'
+import {
+  type ProtectionState,
+  type ProtectionUpdate,
+  FROST_PROTECTION_RANGE,
+  OVERHEAT_PROTECTION_RANGE,
+  PROTECTION_GAP,
+} from '@olivierzal/melcloud-api/protection'
 import { Temporal } from 'temporal-polyfill'
 
 import type { Api } from '../types/api.mts'
@@ -126,10 +131,6 @@ const Modulo = { base10: 10, base100: 100 } as const
 // form, except 12-14 which use the regular plural
 const PLURAL_THRESHOLD = 2
 const slavicPaucal = { maxEnding: 4, minEnding: 2, teenMax: 14, teenMin: 12 }
-
-const frostProtectionTemperatureRange = { max: 16, min: 4 }
-const overheatProtectionTemperatureRange = { max: 40, min: 31 }
-const PROTECTION_TEMPERATURE_GAP = 2
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
@@ -338,7 +339,7 @@ const initProtectionMin = (
 ): HTMLInputElement => {
   const element = getInput(id)
   element.min = String(range.min)
-  element.max = String(range.max - PROTECTION_TEMPERATURE_GAP)
+  element.max = String(range.max - PROTECTION_GAP)
   return element
 }
 
@@ -347,7 +348,7 @@ const initProtectionMax = (
   range: { max: number; min: number },
 ): HTMLInputElement => {
   const element = getInput(id)
-  element.min = String(range.min + PROTECTION_TEMPERATURE_GAP)
+  element.min = String(range.min + PROTECTION_GAP)
   element.max = String(range.max)
   return element
 }
@@ -1239,12 +1240,12 @@ class ZoneSettingsManager {
 
   readonly #frostProtectionMaxTemperature = initProtectionMax(
     'max',
-    frostProtectionTemperatureRange,
+    FROST_PROTECTION_RANGE,
   )
 
   readonly #frostProtectionMinTemperature = initProtectionMin(
     'min',
-    frostProtectionTemperatureRange,
+    FROST_PROTECTION_RANGE,
   )
 
   readonly #holidayModeDirtyGate: DirtyGate
@@ -1269,12 +1270,12 @@ class ZoneSettingsManager {
 
   readonly #overheatProtectionMaxTemperature = initProtectionMax(
     'overheat_max',
-    overheatProtectionTemperatureRange,
+    OVERHEAT_PROTECTION_RANGE,
   )
 
   readonly #overheatProtectionMinTemperature = initProtectionMin(
     'overheat_min',
-    overheatProtectionTemperatureRange,
+    OVERHEAT_PROTECTION_RANGE,
   )
 
   readonly #overheatScope = getSpan('overheat_protection_scope')
@@ -1685,7 +1686,7 @@ class ZoneSettingsManager {
     if (max < min) {
       ;[min, max] = [max, min]
     }
-    return { max: Math.max(max, min + PROTECTION_TEMPERATURE_GAP), min }
+    return { max: Math.max(max, min + PROTECTION_GAP), min }
   }
 
   // Read one panel's settings for the selected target. Every target kind
