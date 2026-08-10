@@ -15,15 +15,9 @@ import { stampPackagedPages } from './webview-stamp.mts'
 // The IIFE global each page's inline `onHomeyReady` reads `start` from.
 const GLOBAL_NAME = 'MELCloudWebview'
 
-// esbuild runs its build in a service process with its own working
-// directory, while the stamping pass reads and writes through `node:fs`
-// (the launcher's cwd): both are anchored at the repo root so they
-// cannot disagree about where the packaged app lives.
-const ROOT = path.resolve(import.meta.dirname, '..')
-
 // The Homey CLI's packaging target: `tsc` already emits here (its
 // validated `outDir`), and the CLI packs exactly this directory.
-const OUT_ROOT = path.join(ROOT, '.homeybuild')
+const OUT_ROOT = '.homeybuild'
 
 const entryPoints = [
   'widgets/ata-group-setting/public/index.mts',
@@ -45,7 +39,12 @@ const pages = [
 ]
 
 const sharedOptions: BuildOptions = {
-  absWorkingDir: ROOT,
+  // Pinned at load: esbuild's service process outlives this module and
+  // keeps its own working directory, so relative entries must be
+  // anchored to the app root explicitly. The stamping pass reads and
+  // writes through `node:fs` (the launcher's cwd), so both halves land
+  // in the same packaged app.
+  absWorkingDir: process.cwd(),
   bundle: true,
   legalComments: 'none',
   logLevel: 'info',
