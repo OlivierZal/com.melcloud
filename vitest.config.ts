@@ -16,11 +16,7 @@ const config: ViteUserConfig = defineConfig({
       // the template for closing these two.
       //
       // Every webview surface of this app is at a real 100 %.
-      exclude: [
-        '.homeybuild/**',
-        'scripts/bundle.mts',
-        'scripts/sync-capability-definitions.mts',
-      ],
+      exclude: ['.homeybuild/**'],
       include: ['**/*.mts'],
       reporter: ['text', 'lcov'],
       thresholds: {
