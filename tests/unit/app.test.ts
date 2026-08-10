@@ -56,7 +56,13 @@ vi.mock(import('../../files.mts'), async (importOriginal) => {
       values: [{ id: 'auto', title: { en: 'Auto' } }],
     },
     power: { title: { en: 'Power' }, type: 'boolean' },
-    targetTemperature: { title: { en: 'Set temperature' }, type: 'number' },
+    targetTemperature: {
+      // Shaped like the vendored capability: no root step, the stated
+      // one riding on its flow argument.
+      $flow: { actions: [{ args: [{ step: 0.5 }] }] },
+      title: { en: 'Set temperature' },
+      type: 'number',
+    },
     thermostatMode: { title: { en: 'Thermostat mode' }, type: 'enum' },
     vertical: {
       title: { en: 'Vertical' },
@@ -209,7 +215,6 @@ const mockManifestDrivers: ManifestDriver[] = [
       target_temperature: {
         max: 31,
         min: 10,
-        step: 0.5,
         title: { en: 'Target temperature' },
         type: 'number',
       },
@@ -1024,8 +1029,9 @@ describe('melCloudApp', () => {
         capabilities.find(([key]) => key === 'SetTemperature') ?? []
       const [, power] = capabilities.find(([key]) => key === 'Power') ?? []
 
-      // The picker reads its grid at the source: the manifest's own
-      // bounds and step travel with the capability.
+      // The picker reads its grid at the source: the manifest narrows
+      // the bounds, and the step is the capability's own stated one —
+      // neither is written here.
       expect(temperature).toMatchObject({ max: 31, min: 10, step: 0.5 })
       // A capability with no numeric grid carries none.
       expect(power).not.toHaveProperty('step')

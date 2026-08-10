@@ -60,6 +60,7 @@ import {
   thermostatMode,
   vertical,
 } from './files.mts'
+import { getCapabilityFlowStep } from './lib/capability-flow-step.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
@@ -1139,13 +1140,16 @@ export default class MELCloudApp extends App {
       { key: 'Power', options: power },
       {
         key: 'SetTemperature',
-        // The vendored capability is the generic definition; this
-        // driver's manifest narrows it (10–31, half degrees), and that
-        // narrowing is what the widget picker must offer.
+        // The vendored capability is the generic definition (4–35);
+        // this driver's manifest narrows the bounds (10–31), and the
+        // step comes from the capability's own flow argument — see
+        // `getCapabilityFlowStep` for why that field, and what keeps it
+        // honest.
         options: {
           ...targetTemperature,
           ...this.homey.manifest.drivers.find(({ id }) => id === 'melcloud')
             ?.capabilitiesOptions?.target_temperature,
+          step: getCapabilityFlowStep(targetTemperature),
         },
       },
       {

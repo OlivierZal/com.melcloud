@@ -344,15 +344,21 @@ coverage.
 - The ATA group widget's target temperature is a SELECT, never a
   free-text number: a phone keyboard let a decimal separator through and
   the widget sent the truncated integer ("23," → 23). Its options are
-  GENERATED from the grid the app serves with each capability, which is
-  the DRIVER MANIFEST's own (`target_temperature`: 10–31, step 0.5 —
-  MELCloud accepts half degrees, and a whole-degree picker would forbid
-  what the truncating input merely mangled). The vendored node-homey-lib
-  capability is only the generic definition (4–35): the driver's
-  `capabilitiesOptions` narrowing is what `getClassicAtaCapabilities`
-  overlays and hands to the widget, so the picker reads its grid at the
-  source instead of hardcoding one — add a bound or a step in the
-  manifest, and the picker follows. Only the cooling floor comes from
+  GENERATED from the grid the app serves with each capability, never
+  hardcoded: MELCloud accepts HALF degrees, and a whole-degree picker
+  would forbid what the truncating input merely mangled. The bounds are
+  the DRIVER MANIFEST's narrowing (`target_temperature`: 10–31) over the
+  vendored node-homey-lib generic definition (4–35). The STEP is the
+  capability's own: node-homey-lib declares no root `step` for
+  `target_temperature` (only `decimals: 1`), and states 0.5 on its flow
+  action's range argument — `lib/capability-flow-step.mts` reads exactly
+  that. Using a flow-arg field as a UI grid IS an inference; it is
+  taken deliberately because the value is Athom's own and the vendored
+  copy sits under the drift test, so an upstream change surfaces
+  instead of rotting. NEVER re-declare a `step` in the driver manifests
+  to get one: a partial explicitation (declared on some capabilities,
+  absent on others) is an asymmetry no reader can explain — all or
+  nothing (decision, 2026-08). Only the cooling floor comes from
   melcloud-api (`ClassicTemperature.coolingMin`): it is mode-dependent,
   which no manifest can express. An untouched or mixed mode keeps the
   widest range, since the device's own mode stays in place, and a device
