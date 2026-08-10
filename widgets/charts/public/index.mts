@@ -18,6 +18,8 @@ import {
 } from '@olivierzal/melcloud-api/constants'
 import {
   type ChartConfiguration,
+  type ChartData,
+  type ChartDataset,
   type ChartOptions,
   type Plugin as ChartPlugin,
   type Scale,
@@ -79,15 +81,40 @@ interface ChartSelection {
 
 type FontWeight = number | 'bold' | 'bolder' | 'lighter' | 'normal'
 
-type WidgetChartConfig = ChartConfiguration<
-  WidgetChartType,
-  (number | null)[],
-  string
-> & { options: WidgetChartOptions }
+// Chart.js leaves `labels` and every dataset `label` optional, but this
+// widget always builds what each chart kind needs: a pie names its slices
+// through `labels` and carries one unlabelled dataset, while bar and line
+// name every series. Splitting the two states that shape, so each read
+// below stands without a fallback the data can never reach.
+type WidgetChartConfig = WidgetPieChartConfig | WidgetSeriesChartConfig
+
+type WidgetChartData<T extends WidgetChartType> = Omit<
+  ChartData<T, (number | null)[], string>,
+  'labels'
+> & { labels: string[] }
 
 type WidgetChartOptions = ChartOptions<WidgetChartType>
 
 type WidgetChartType = 'bar' | 'line' | 'pie'
+
+type WidgetPieChartConfig = Omit<
+  ChartConfiguration<'pie', (number | null)[], string>,
+  'data' | 'options'
+> & { data: WidgetChartData<'pie'>; options: WidgetChartOptions }
+
+type WidgetSeriesChartConfig = Omit<
+  ChartConfiguration<'bar' | 'line', (number | null)[], string>,
+  'data' | 'options'
+> & {
+  data: Omit<WidgetChartData<'bar' | 'line'>, 'datasets'> & {
+    datasets: WidgetSeriesDataset[]
+  }
+  options: WidgetChartOptions
+}
+
+type WidgetSeriesDataset = ChartDataset<'bar' | 'line', (number | null)[]> & {
+  label: string
+}
 
 // Picker line-up, in the order the widget settings dropdown lists them.
 const CHARTS: readonly HomeySettings['chart'][] = [
@@ -201,8 +228,17 @@ const seriesColors: Record<string, string> = {
   VentilationMode: '#17BECF',
 }
 
-const colorForSeries = (name: string, index: number): string =>
-  seriesColors[name] ?? colors[index % colors.length] ?? '#7F7F7F'
+// The palette packed into one string of 7-character hex codes and read
+// back with `slice`: a string read is total where an indexed array read
+// is not, so the cyclic pick stands without an unreachable undefined
+// fallback — every entry above must keep that length.
+const packedColors = colors.join('')
+const COLOR_LENGTH = '#000000'.length
+
+const colorForSeries = (name: string, index: number): string => {
+  const offset = (index % colors.length) * COLOR_LENGTH
+  return seriesColors[name] ?? packedColors.slice(offset, offset + COLOR_LENGTH)
+}
 // ── Style helpers ──
 
 // Read live, never memoized: the injected design tokens change with the
@@ -496,7 +532,7 @@ const getLegendConfig = (
 const getLineDatasets = (
   series: ReportChartLineOptions['series'],
   localize: SeriesLocalizer,
-): WidgetChartConfig['data']['datasets'] =>
+): WidgetSeriesChartConfig['data']['datasets'] =>
   series.map(({ data, name }, index) => {
     const color = colorForSeries(name, index)
     return {
@@ -567,7 +603,7 @@ const getLineScalesConfig = (
 // mode labels).
 const getModeLegendDatasets = (
   bands: readonly RenderBand[],
-): WidgetChartConfig['data']['datasets'] => {
+): WidgetSeriesChartConfig['data']['datasets'] => {
   const byLabel = new Map(bands.map((band) => [band.label, band.color]))
   return [...byLabel].map(([label, color]) => ({
     backgroundColor: color,
@@ -595,9 +631,9 @@ const toRenderBands = (
 const getChartLineConfig = (
   { bands = [], labels, series, unit }: ReportChartLineOptions,
   localize: SeriesLocalizer,
-): WidgetChartConfig => {
+): WidgetSeriesChartConfig => {
   const renderBands = toRenderBands(bands, localize)
-  const config: WidgetChartConfig = {
+  const config: WidgetSeriesChartConfig = {
     data: {
       datasets: [
         ...getLineDatasets(series, localize),
@@ -645,7 +681,7 @@ const getChartLineConfig = (
 const getChartBarConfig = (
   { labels, series, unit }: ReportChartLineOptions,
   localize: SeriesLocalizer,
-): WidgetChartConfig => ({
+): WidgetSeriesChartConfig => ({
   data: {
     datasets: series.map(({ data, name }, index) => {
       const color = colorForSeries(name, index)
@@ -692,7 +728,7 @@ const getBarScalesConfig = (
 const getChartPieConfig = (
   { labels, series }: ReportChartPieOptions,
   localize: SeriesLocalizer,
-): WidgetChartConfig => ({
+): WidgetPieChartConfig => ({
   data: {
     datasets: [
       {
@@ -792,8 +828,7 @@ const applyHiddenByLabel = (
     return
   }
   for (const dataset of config.data.datasets) {
-    const isHidden =
-      dataset.label === undefined ? undefined : hiddenByLabel.get(dataset.label)
+    const isHidden = hiddenByLabel.get(dataset.label)
     if (isHidden !== undefined) {
       dataset.hidden = isHidden
     }
@@ -805,10 +840,10 @@ const applyHiddenByLabel = (
 // re-applies the captured state by label after construction.
 const applyPieHiddenByLabel = (
   chart: Chart<WidgetChartType, (number | null)[], string>,
-  config: WidgetChartConfig,
+  config: WidgetPieChartConfig,
   hiddenByLabel: ReadonlyMap<string, boolean>,
 ): void => {
-  const hiddenIndices = (config.data.labels ?? []).flatMap((label, index) =>
+  const hiddenIndices = config.data.labels.flatMap((label, index) =>
     hiddenByLabel.get(label) === true ? [index] : [],
   )
   if (hiddenIndices.length > 0) {
@@ -926,24 +961,37 @@ class ChartWidget {
   // widget's refreshes (line metas key on dataset object identity) or a pie
   // recreation (`_hiddenIndices` is index-keyed), so the live visibility is
   // captured by label and re-applied to each freshly fetched config.
+  // Names come from the config this widget built, visibility from the
+  // live chart: the two stay index-aligned because the capture runs
+  // before `#config` is replaced by the incoming one.
   #captureHiddenByLabel(): ReadonlyMap<string, boolean> {
     const chart = this.#chart
-    if (chart === null || this.#config === null) {
+    const config = this.#config
+    if (chart === null || config === null) {
       return new Map()
     }
-    if (this.#config.type === 'pie') {
+    if (config.type === 'pie') {
       return new Map(
-        (chart.data.labels ?? []).map((label, index): [string, boolean] => [
+        config.data.labels.map((label, index): [string, boolean] => [
           label,
           !chart.getDataVisibility(index),
         ]),
       )
     }
     return new Map(
-      chart.data.datasets.flatMap<[string, boolean]>(({ label }, index) =>
-        label === undefined ? [] : [[label, !chart.isDatasetVisible(index)]],
-      ),
+      config.data.datasets.map(({ label }, index): [string, boolean] => [
+        label,
+        !chart.isDatasetVisible(index),
+      ]),
     )
+  }
+
+  #clearRefreshTimer(): void {
+    if (this.#timeout === null) {
+      return
+    }
+    clearTimeout(this.#timeout)
+    this.#timeout = null
   }
 
   #createChart(
@@ -976,9 +1024,7 @@ class ChartWidget {
       // A picker change can start a second draw while this one is in
       // flight; clearing the tracked timer here collapses both chains back
       // into one instead of leaving an orphaned timer refreshing forever.
-      if (this.#timeout !== null) {
-        clearTimeout(this.#timeout)
-      }
+      this.#clearRefreshTimer()
       this.#timeout = setTimeout(() => {
         fireAndForget(this.#draw())
       }, getTimeout(this.#getChart()))
@@ -1114,9 +1160,7 @@ class ChartWidget {
   }
 
   #redraw(): void {
-    if (this.#timeout !== null) {
-      clearTimeout(this.#timeout)
-    }
+    this.#clearRefreshTimer()
     fireAndForget(this.#draw())
   }
 
@@ -1191,20 +1235,20 @@ class ChartWidget {
   // (line <-> pie, reachable from the chart picker) always recreates:
   // a live Chart.js instance keeps the type it was constructed with.
   #shouldRecreateChart({ data, type }: WidgetChartConfig): boolean {
-    if (this.#config === null) {
+    const previous = this.#config
+    if (previous === null) {
       return false
     }
-    if (type !== this.#config.type) {
+    if (type !== previous.type) {
       return true
     }
     if (type !== 'pie') {
       return false
     }
-    const previous = this.#config.data.labels ?? []
-    const next = data.labels ?? []
+    const previousLabels = previous.data.labels
     return (
-      previous.length !== next.length ||
-      previous.some((label, index) => label !== next[index])
+      previousLabels.length !== data.labels.length ||
+      previousLabels.some((label, index) => label !== data.labels[index])
     )
   }
 
