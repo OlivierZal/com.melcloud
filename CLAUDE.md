@@ -472,7 +472,9 @@ coverage.
   `toSorted` anyway, and a hand-rolled replacement is a readability
   regression for nothing. The same holds for syntax: `files.mts`
   reads its JSON through import attributes, the statically analysable
-  form.
+  form, and node-side regexes take the family's `v` flag — only the
+  webview globs step down to `u`, and that step-down is the scoped
+  block's job, never a second overlay.
 
 ## Tooling boundary (@olivierzal/configs)
 

@@ -1334,7 +1334,7 @@ export default class MELCloudApp extends App {
   #holidayModeEndTime(time: unknown): Temporal.PlainTime {
     if (
       typeof time !== 'string' ||
-      !/^(?:[01]\d|2[0-3]):[0-5]\d$/u.test(time)
+      !/^(?:[01]\d|2[0-3]):[0-5]\d$/v.test(time)
     ) {
       throw new RangeError(this.homey.__('errors.invalidTime'))
     }

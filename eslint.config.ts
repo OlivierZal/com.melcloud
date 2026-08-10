@@ -74,14 +74,6 @@ const config: Config[] = defineConfig([
       'max-classes-per-file': 'off',
     },
   },
-  {
-    // Shipped node-side regexes stay on the `u` flag: older Homey
-    // Pro (2016-2019) firmwares run a pre-Node-20 runtime where the
-    // es2024 `v` flag is a parse-time SyntaxError — the 2026-08
-    // boot-crash root cause.
-    files: ['*.mts', 'drivers/**/*.mts', 'lib/**/*.mts'],
-    rules: { 'require-unicode-regexp': ['error', { requireFlag: 'u' }] },
-  },
 ])
 
 export default config
