@@ -80,8 +80,14 @@ const collectHashes = async (
   )
 
 /**
- * Stamps only within a reference context, so the same filename written
- * elsewhere (e.g. a comment) is never rewritten.
+ * Stamps only within a reference context (`href="`/`src="`), so a bare
+ * filename written elsewhere (e.g. prose in a comment) is never
+ * rewritten. A FULL reference inside an HTML comment still matches:
+ * pointing at a missing file it fails the packaging pass (ENOENT);
+ * pointing at a real file it earns a stamp the page-side DOM query
+ * never sees, splitting the builder identity from the page identity —
+ * one refetch, then a boot-error on every open. No page carries a
+ * commented reference today; delete, never comment out.
  * @param html - The page to rewrite.
  * @param hashes - Content hash per referenced file.
  * @returns The page with every local reference stamped.
