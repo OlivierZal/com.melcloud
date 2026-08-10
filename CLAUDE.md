@@ -47,8 +47,13 @@ caught real failures that the others miss:
   The committed source HTML carries NO stamps — never hand-add a `?v=`
   there, and nothing needs re-committing when a webview source changes
   (the old re-stamp-and-commit dance is gone). Stamps exist only in the
-  packaged app, and only within attribute/import reference contexts,
-  never comments. A second cache layer covers the HTML
+  packaged app, within attribute/import reference contexts
+  (`href="`/`src="`) — matched WHEREVER they appear, HTML comments
+  included: a commented reference to a missing file fails the packaging
+  pass, and one to a real file would be stamped by the builder yet
+  invisible to the page-side DOM query, splitting the two identities
+  into an endless refetch handshake. Delete a dead reference, never
+  comment it out. A second cache layer covers the HTML
   itself (phone webviews cache the page across app versions,
   force-close included): each bundle carries a freshness handshake —
   the page's identity is the document-order join of its UNIQUE `?v=`
@@ -336,8 +341,9 @@ coverage.
   timeout ends it if the bundle never loads (`#init_error` / post-ready
   alert), and `runWebview`/`withInitTimeout` end it if a DATA fetch hangs
   during init (`Homey.ready()` in a `finally`). `scripts/bundle.mts`
-  stamps the PACKAGED `.homeybuild` page copies — only inside an
-  attribute/import context, never a comment — with a content hash
+  stamps the PACKAGED `.homeybuild` page copies — full references
+  (`href="`/`src="`) wherever they appear, comments included; only a
+  bare filename in prose is safe — with a content hash
   (`?v=`): phone webviews cache assets across app versions; the source
   HTML stays unstamped. Webview runtime-API floor: es2023 array
   methods are accepted (`toSorted`/`toReversed` — the lint mandates

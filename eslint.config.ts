@@ -28,6 +28,10 @@ const config: Config[] = defineConfig([
     webviewFloorFiles: [
       'public/**/*.mts',
       'settings/**/*.mts',
+      // Cross-surface by contract: `DAYS_MAX` ships into the charts
+      // bundle, so the file holds the floor even though node-side code
+      // reads it too. `webview-floor.test.ts` recomputes the closure.
+      'types/widgets.mts',
       'widgets/*/public/**/*.mts',
     ],
     wireNamingEntries: [
