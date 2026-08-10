@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 // @vitest-environment-options {"settings": {"disableCSSFileLoading": true, "disableJavaScriptFileLoading": true, "navigation": {"disableMainFrameNavigation": true}}}
 
-import { getButton, getInput, getSelect } from '@olivierzal/homey-kit/dom'
+import { getButton, getSelect } from '@olivierzal/homey-kit/dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { HomeDeviceZone } from '../../types/zone.mts'
@@ -70,7 +70,7 @@ describe('ata group setting widget', () => {
       'homeBuildings_b_1',
       'homeDevices_ata_1',
     ])
-    expect(getInput('SetTemperature').value).toBe('22')
+    expect(getSelect('SetTemperature').value).toBe('22')
     expect(harness.ready).toHaveBeenCalledTimes(1)
   })
 
@@ -143,7 +143,7 @@ describe('ata group setting widget', () => {
     commit(getSelect('zones'), 'devices_11')
     await settleDetached()
 
-    expect(getInput('SetTemperature').value).toBe('19')
+    expect(getSelect('SetTemperature').value).toBe('19')
     expect(harness.ready).toHaveBeenCalledTimes(1)
   })
 
@@ -153,7 +153,7 @@ describe('ata group setting widget', () => {
 
     expect(apply.disabled).toBe(true)
 
-    commit(getInput('SetTemperature'), '25')
+    commit(getSelect('SetTemperature'), '25')
 
     expect(apply.disabled).toBe(false)
 
@@ -169,10 +169,10 @@ describe('ata group setting widget', () => {
 
   it('should refresh the form back to the known state', async () => {
     const harness = await bootWidget()
-    commit(getInput('SetTemperature'), '25')
+    commit(getSelect('SetTemperature'), '25')
     getButton('refresh_values_melcloud').click()
 
-    expect(getInput('SetTemperature').value).toBe('22')
+    expect(getSelect('SetTemperature').value).toBe('22')
     expect(getButton('apply_values_melcloud').disabled).toBe(true)
     expect(harness.hapticFeedback).toHaveBeenCalledTimes(1)
   })

@@ -3,9 +3,9 @@ import {
   type HTMLValueElement,
   booleanOptions,
   createInput,
+  createOption,
   createSelect,
   getButton,
-  getSelect,
   parseFormValue,
 } from '@olivierzal/homey-kit/dom'
 import { type DirtyGate, createDirtyGate } from '@olivierzal/homey-kit/webview'
@@ -47,17 +47,55 @@ const coolModeNumbers: ReadonlySet<number> = classicCoolModes
 // #createAtaControl), so the bounded-number strategy IS the temperature
 // clamp — no id dispatch. Cooling modes raise the floor to the API's
 // cooling minimum.
-const clampTemperature = ({ max, min, value }: HTMLInputElement): number => {
-  const numberValue = Number(value)
-  if (!Number.isFinite(numberValue)) {
-    throw new TypeError('Invalid number')
-  }
-  const activeMin = coolModeNumbers.has(
-    Number(getSelect('OperationMode').value),
-  )
+// The target temperature is a SELECT of whole degrees, not a free-text
+// number: a phone keyboard let a decimal separator through and the
+// widget sent the truncated integer ("23," → 23). A picker cannot
+// express a malformed or out-of-range value at all, which also settles
+// the bounds question — the library publishes the limits but clamps
+// nothing, so an out-of-range write would reach MELCloud untouched.
+//
+// STEP: neither `@olivierzal/melcloud-api` nor the driver manifest
+// publishes one (the manifest declares max/min only), so the grid is
+// whole degrees rather than a half-degree step invented here. A device
+// already reporting an off-grid value keeps it — see
+// `temperatureOptions` — so nothing a device holds becomes
+// unselectable; offering half degrees needs the step published at the
+// source first.
+const TEMPERATURE_STEP = 1
+
+// The floor follows the mode the user CHOSE: an untouched (or mixed)
+// mode leaves the device's own mode in place, so the widest range is
+// the only honest offer — as does a device with no mode control.
+const getTemperatureMin = (): number => {
+  const mode = document.querySelector('#OperationMode')
+  return mode instanceof HTMLSelectElement &&
+    coolModeNumbers.has(Number(mode.value))
     ? ClassicTemperature.coolingMin
-    : Number(min)
-  return Math.min(Math.max(numberValue, activeMin), Number(max))
+    : ClassicTemperature.min
+}
+
+// The whole-degree grid for the active floor, plus `current` when the
+// device sits off it (a half degree set elsewhere): a value with no
+// option would blank the picker and silently drop what the device
+// holds.
+const temperatureOptions = (
+  min: number,
+  current: number | null,
+): { id: string; label: string }[] => {
+  const values = new Set<number>()
+  for (
+    let degrees = min;
+    degrees <= ClassicTemperature.max;
+    degrees += TEMPERATURE_STEP
+  ) {
+    values.add(degrees)
+  }
+  if (current !== null && current >= min && current <= ClassicTemperature.max) {
+    values.add(current)
+  }
+  return [...values]
+    .toSorted((first, second) => first - second)
+    .map((degrees) => ({ id: String(degrees), label: `${String(degrees)} °C` }))
 }
 
 // Routes a `${model}_${id}` option value to its state endpoint.
@@ -138,6 +176,7 @@ export class AtaValueManager {
       }
       appendFormControl(this.#ataValues, { formControl, title })
     }
+    this.#wireTemperatureRange()
     // Every control feeds the dirty check so Update tracks edits live; the
     // freshly built (still empty) controls are the pristine baseline.
     this.#dirtyGate.wire(formControls)
@@ -208,10 +247,7 @@ export class AtaValueManager {
               this.#zoneMapping[this.#zone.value]?.[id]?.toString(),
             ].includes(value),
         )
-        .map((element) => [
-          element.id,
-          parseFormValue(element, clampTemperature),
-        ]),
+        .map((element) => [element.id, parseFormValue(element)]),
     )
   }
 
@@ -230,19 +266,38 @@ export class AtaValueManager {
         values ?? booleanOptions((key) => this.#homey.__(key)),
       )
     }
+    if (id === 'SetTemperature') {
+      return createSelect(id, temperatureOptions(getTemperatureMin(), null))
+    }
     if (type === 'number') {
-      return createInput({
-        id,
-        max: id === 'SetTemperature' ? ClassicTemperature.max : undefined,
-        min: id === 'SetTemperature' ? ClassicTemperature.min : undefined,
-        type,
-      })
+      return createInput({ id, type })
     }
     return null
   }
 
   #isGroupAtaState(value: string): value is keyof Classic.GroupState {
     return Object.hasOwn(this.#defaultAtaValues, value)
+  }
+
+  // Rebuilds the temperature picker for the active floor, keeping the
+  // wanted value when the new range still offers it (an out-of-range one
+  // falls back to blank, i.e. "no instruction").
+  #refreshTemperatureOptions(wanted: string): void {
+    const select = document.querySelector('#SetTemperature')
+    if (!(select instanceof HTMLSelectElement)) {
+      return
+    }
+    const current = this.#zoneMapping[this.#zone.value]?.SetTemperature
+    const options = temperatureOptions(
+      getTemperatureMin(),
+      typeof current === 'number' ? current : null,
+    )
+    select.replaceChildren()
+    createOption(select, { id: '', label: '' })
+    for (const option of options) {
+      createOption(select, option)
+    }
+    select.value = wanted
   }
 
   #syncAtaValues(): void {
@@ -258,13 +313,33 @@ export class AtaValueManager {
       (ataValue instanceof HTMLInputElement ||
         ataValue instanceof HTMLSelectElement)
     ) {
-      ataValue.value =
-        this.#zoneMapping[this.#zone.value]?.[id]?.toString() ?? ''
+      const value = this.#zoneMapping[this.#zone.value]?.[id]?.toString() ?? ''
+      // The picker must offer the device's own value before taking it —
+      // a half degree set elsewhere would otherwise blank the control.
+      if (id === 'SetTemperature') {
+        this.#refreshTemperatureOptions(value)
+        return
+      }
+      ataValue.value = value
     }
   }
 
   #updateZoneMapping(data: Partial<Classic.GroupState>): void {
     const { value } = this.#zone
     this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
+  }
+
+  // The offered temperatures depend on the chosen mode, so the picker is
+  // rebuilt whenever that choice moves.
+  #wireTemperatureRange(): void {
+    const mode = document.querySelector('#OperationMode')
+    if (mode instanceof HTMLSelectElement) {
+      mode.addEventListener('change', () => {
+        const temperature = document.querySelector('#SetTemperature')
+        this.#refreshTemperatureOptions(
+          temperature instanceof HTMLSelectElement ? temperature.value : '',
+        )
+      })
+    }
   }
 }

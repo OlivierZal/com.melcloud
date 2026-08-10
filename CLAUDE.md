@@ -341,6 +341,19 @@ coverage.
   (`app.error`) before degrading, so a diagnostic report distinguishes
   a fetch failure (probe error / non-200) from a parse-or-runtime crash
   (probe 200, global absent — think pre-es2020 engines).
+- The ATA group widget's target temperature is a SELECT, never a
+  free-text number: a phone keyboard let a decimal separator through and
+  the widget sent the truncated integer ("23," → 23). Its options are
+  GENERATED from `ClassicTemperature` (melcloud-api) — the floor rises
+  to `coolingMin` for the modes in `classicCoolModes`, and an untouched
+  or mixed mode keeps the widest range, since the device's own mode
+  stays in place. No STEP is published by the library or the manifest,
+  so the grid is whole degrees rather than a half-degree step invented
+  here; a device already reporting an off-grid value keeps it as an
+  option, so nothing it holds becomes unselectable or gets silently
+  dropped. The library publishes the limits but clamps nothing, so a
+  control that cannot express an out-of-range value is the guarantee —
+  never a clamp bolted on after it.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`

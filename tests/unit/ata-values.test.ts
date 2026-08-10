@@ -40,6 +40,14 @@ const createManager = async (
   return { ...harness, manager }
 }
 
+const optionValues = (select: HTMLSelectElement): string[] =>
+  [...select.options].map(({ value }) => value)
+
+const commit = (element: HTMLSelectElement, value: string): void => {
+  element.value = value
+  element.dispatchEvent(new Event('change', { bubbles: true }))
+}
+
 const lastPutBody = (harness: WidgetHarness): unknown =>
   harness.api.mock.calls.findLast(([method]) => method === 'PUT')?.[2]
 
@@ -55,8 +63,9 @@ describe('ata value manager', () => {
     // Each select opens on the blank "no instruction" option.
     expect(getSelect('Power').options).toHaveLength(3)
     expect(getSelect('OperationMode').options).toHaveLength(6)
-    expect(getInput('SetTemperature').min).toBe('10')
-    expect(getInput('SetTemperature').max).toBe('31')
+    // Whole degrees over the published range, plus the blank
+    // "no instruction" entry.
+    expect(getSelect('SetTemperature').options).toHaveLength(23)
     expect(getInput('FanSpeed').min).toBe('')
     // The unmappable capability yields no control and no label.
     expect(fieldset.querySelector('#SilentMode')).toBeNull()
@@ -69,7 +78,7 @@ describe('ata value manager', () => {
 
     expect(getSelect('Power').value).toBe('true')
     expect(getSelect('OperationMode').value).toBe('1')
-    expect(getInput('SetTemperature').value).toBe('22')
+    expect(getSelect('SetTemperature').value).toBe('22')
     expect(getInput('FanSpeed').value).toBe('3')
   })
 
@@ -130,7 +139,7 @@ describe('ata value manager', () => {
     // Same as the zone state → filtered; emptied → no instruction.
     getSelect('OperationMode').value = '1'
     getInput('FanSpeed').value = ''
-    getInput('SetTemperature').value = '25'
+    getSelect('SetTemperature').value = '25'
     getSelect('Power').value = 'true'
     await manager.setValues()
 
@@ -144,61 +153,122 @@ describe('ata value manager', () => {
     rogue.id = 'NotACapability'
     rogue.value = '7'
     getFieldset('values_melcloud').append(rogue)
-    getInput('SetTemperature').value = '25'
+    getSelect('SetTemperature').value = '25'
     await manager.setValues()
 
     expect(lastPutBody(harness)).toStrictEqual({ SetTemperature: 25 })
   })
 
-  it('should clamp the temperature to the mode floor', async () => {
-    const { manager, ...harness } = await createManager()
+  it('should raise the offered floor in a cooling mode', async () => {
+    const { manager } = await createManager()
     await manager.fetchValues()
-    getSelect('OperationMode').value = '3'
-    getInput('SetTemperature').value = '12'
-    await manager.setValues()
+    const temperature = getSelect('SetTemperature')
 
-    // Cooling raises the floor to the API's cooling minimum.
-    expect(lastPutBody(harness)).toStrictEqual({
-      OperationMode: 3,
-      SetTemperature: 16,
+    expect(optionValues(temperature)).toContain('12')
+
+    commit(temperature, '12')
+    commit(getSelect('OperationMode'), '3')
+
+    // Cooling raises the floor to the API's cooling minimum, and the
+    // now-unofferable choice falls back to "no instruction" rather than
+    // being sent as something the user never picked.
+    expect(optionValues(temperature)).not.toContain('12')
+    expect(optionValues(temperature).at(1)).toBe('16')
+    expect(temperature.value).toBe('')
+  })
+
+  it('should keep a still-offered choice across a mode change', async () => {
+    const { manager } = await createManager()
+    await manager.fetchValues()
+    const temperature = getSelect('SetTemperature')
+    commit(temperature, '25')
+    commit(getSelect('OperationMode'), '3')
+
+    expect(temperature.value).toBe('25')
+  })
+
+  it('should offer only the published range', async () => {
+    const { manager } = await createManager()
+    await manager.fetchValues()
+    const offered = optionValues(getSelect('SetTemperature')).slice(1)
+
+    // An out-of-range temperature is unexpressible: the library
+    // publishes the limits but clamps nothing, so nothing here may send
+    // one.
+    expect(offered.at(0)).toBe('10')
+    expect(offered.at(-1)).toBe('31')
+    expect(offered).not.toContain('9')
+    expect(offered).not.toContain('32')
+  })
+
+  it('should offer the widest range without a mode control', async () => {
+    const { manager } = await createManager({
+      routes: {
+        ...widgetRoutes(),
+        'GET /classic/capabilities/ata': [
+          ['SetTemperature', { title: 'Temperature', type: 'number' }],
+        ],
+      },
     })
+    await manager.fetchValues()
+
+    // No mode to read: the floor stays the widest published one.
+    expect(optionValues(getSelect('SetTemperature')).at(1)).toBe('10')
   })
 
-  it('should clamp the temperature to the manifest bounds', async () => {
-    const { manager, ...harness } = await createManager()
+  it('should stay quiet on a device without a temperature control', async () => {
+    const { manager } = await createManager({
+      routes: {
+        ...widgetRoutes(),
+        'GET /classic/capabilities/ata': [
+          ['Power', { title: 'Power', type: 'boolean' }],
+          [
+            'OperationMode',
+            {
+              title: 'Mode',
+              type: 'enum',
+              values: [{ id: '3', label: 'Cool' }],
+            },
+          ],
+        ],
+      },
+    })
     await manager.fetchValues()
-    getInput('SetTemperature').value = '5'
-    await manager.setValues()
 
-    expect(lastPutBody(harness)).toStrictEqual({ SetTemperature: 10 })
-
-    getInput('SetTemperature').value = '40'
-    await manager.setValues()
-
-    expect(lastPutBody(harness)).toStrictEqual({ SetTemperature: 31 })
+    // A mode change with nothing to rebuild must not throw.
+    expect(() => {
+      commit(getSelect('OperationMode'), '3')
+    }).not.toThrow()
+    expect(document.querySelector('#SetTemperature')).toBeNull()
   })
 
-  it('should reject a non-finite temperature before the wire', async () => {
-    const { api, manager } = await createManager()
+  it('should keep an off-grid device value selectable', async () => {
+    const { manager } = await createManager({
+      routes: {
+        ...widgetRoutes(),
+        'GET /classic/zones/buildings/1/ata': {
+          ...groupStateFixture(),
+          SetTemperature: 22.5,
+        },
+      },
+    })
     await manager.fetchValues()
-    // Valid floating-point syntax the control keeps, overflowing to
-    // Infinity — the one non-finite value a number input can carry.
-    getInput('SetTemperature').value = '1e999'
+    const temperature = getSelect('SetTemperature')
 
-    await expect(manager.setValues()).rejects.toThrow('Invalid number')
-    expect(harnessPaths(api)).not.toContain(
-      'PUT /classic/zones/buildings/1/ata',
-    )
+    // No step is published anywhere, so the grid is whole degrees — a
+    // half degree set elsewhere must still show, and stay sendable.
+    expect(temperature.value).toBe('22.5')
+    expect(optionValues(temperature)).toContain('22.5')
   })
 
   it('should absorb an accepted write into the zone state', async () => {
     const { manager, ...harness } = await createManager()
     await manager.fetchValues()
-    getInput('SetTemperature').value = '25'
+    getSelect('SetTemperature').value = '25'
     await manager.setValues()
     // The known state took the write: re-sending the same form value
     // nets an empty body, so the gate cannot arm.
-    getInput('SetTemperature').value = '25'
+    getSelect('SetTemperature').value = '25'
 
     expect(
       getButtonDisabled('apply_values_melcloud') || lastPutBody(harness),
@@ -208,10 +278,10 @@ describe('ata value manager', () => {
   it('should restore the known state on refresh', async () => {
     const { manager } = await createManager()
     await manager.fetchValues()
-    getInput('SetTemperature').value = '25'
+    getSelect('SetTemperature').value = '25'
     manager.displayValues()
 
-    expect(getInput('SetTemperature').value).toBe('22')
+    expect(getSelect('SetTemperature').value).toBe('22')
   })
 
   it('should skip a value slot without a control', async () => {
