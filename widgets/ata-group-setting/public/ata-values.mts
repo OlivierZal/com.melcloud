@@ -49,10 +49,13 @@ const coolModeNumbers: ReadonlySet<number> = classicCoolModes
 // cooling minimum.
 // The target temperature is a SELECT of whole degrees, not a free-text
 // number: a phone keyboard let a decimal separator through and the
-// widget sent the truncated integer ("23," → 23). A picker cannot
-// express a malformed or out-of-range value at all, which also settles
-// the bounds question — the library publishes the limits but clamps
-// nothing, so an out-of-range write would reach MELCloud untouched.
+// widget sent the truncated integer ("23," → 23), which a picker cannot
+// express at all. The offered envelope is the UNIVERSAL one
+// (`ClassicTemperature`), which is the only honest offer for a control
+// spanning a whole group of possibly different models; each device's
+// own per-mode limits then narrow the write API-side (the Classic ATA
+// facade clamps against its reported `MinTempCoolDry`/`MaxTempHeat`
+// and friends), so no local clamp is duplicated here.
 //
 // STEP: neither `@olivierzal/melcloud-api` nor the driver manifest
 // publishes one (the manifest declares max/min only), so the grid is

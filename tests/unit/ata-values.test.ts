@@ -192,9 +192,8 @@ describe('ata value manager', () => {
     await manager.fetchValues()
     const offered = optionValues(getSelect('SetTemperature')).slice(1)
 
-    // An out-of-range temperature is unexpressible: the library
-    // publishes the limits but clamps nothing, so nothing here may send
-    // one.
+    // The universal envelope: a group may mix models, and each device's
+    // own per-mode limits narrow the write API-side.
     expect(offered.at(0)).toBe('10')
     expect(offered.at(-1)).toBe('31')
     expect(offered).not.toContain('9')

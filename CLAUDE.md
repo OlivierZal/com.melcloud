@@ -351,9 +351,11 @@ coverage.
   so the grid is whole degrees rather than a half-degree step invented
   here; a device already reporting an off-grid value keeps it as an
   option, so nothing it holds becomes unselectable or gets silently
-  dropped. The library publishes the limits but clamps nothing, so a
-  control that cannot express an out-of-range value is the guarantee —
-  never a clamp bolted on after it.
+  dropped. The offered envelope is deliberately the UNIVERSAL one: a
+  group may mix models, and each device's own per-mode limits narrow the
+  write API-side (the Classic ATA facade clamps against its reported
+  `MinTempCoolDry`/`MaxTempHeat` and friends). Never duplicate that
+  clamp widget-side.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`
