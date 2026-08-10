@@ -600,9 +600,11 @@ reader fails open with an empty map).
   reviewed PR per release, and a caret is what silently held heatzy-api's
   published auth fix away from its app for six days (2026-08). The
   library's own Releasing doctrine mirrors this from the publisher side.
-- `main` is protected (PRs only, squash merges, 6 required contexts,
-  `strict=false`); merge queue is impossible (user-owned repo, org-only
-  feature).
+- `main` is protected (PRs only, squash merges, 8 required contexts,
+  `strict=false`); merge queue is impossible — GitHub gates it on
+  ORGANISATION ownership, and these repos are user-owned (verified
+  2026-08 against the docs source). The workflows therefore declare no
+  `merge_group` trigger: an event that cannot fire needs no handling.
 - The PR title IS the commit that lands: `squash_merge_commit_title` is
   `PR_TITLE` on all five repos, so the title is the single source (under
   the former `COMMIT_OR_PR_TITLE`, a one-commit PR silently took its
