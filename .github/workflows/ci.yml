@@ -6,9 +6,11 @@ jobs:
       packages: read
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    uses: OlivierZal/configs/.github/workflows/reusable-ci.yml@2acd68afe1a72f8bfdabdab88ba18f213b2927db # v1.4.0
+    uses: OlivierZal/configs/.github/workflows/reusable-ci.yml@262b014bfa89bca8ff1bf8799b50a95f8552b3f2 # v1.6.0
     with:
       check-node-version: '22'
+      # The fleet's Node major — measured 22.20/22.23 on-device
+      # (2026-08); the coverage/Sonar leg tracks it, not lts/*.
       coverage-node-version: '22'
 name: CI
 on:
