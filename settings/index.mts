@@ -22,6 +22,7 @@ import {
   getInput,
   getSelect,
   getSpan,
+  parseFormValue,
 } from '@olivierzal/homey-kit/dom'
 import {
   homeyApiDelete,
@@ -55,7 +56,6 @@ import type {
 } from '../types/error-log.mts'
 import type { HomeBuildingZone, HomeDeviceZone } from '../types/zone.mts'
 import {
-  parseFormValue,
   populateZoneOptions as populateZoneSelect,
   translateAriaLabels,
 } from '../public/dom.mts'
@@ -228,26 +228,17 @@ const createDiv = (label: HTMLLabelElement): HTMLDivElement => {
 
 const appendFormControl = (
   parent: HTMLElement,
-  {
-    formControl,
-    title,
-  }: { formControl: HTMLValueElement | null; title: string },
+  { formControl, title }: { formControl: HTMLValueElement; title: string },
   shouldWrapWithDiv = true,
 ): void => {
-  if (formControl === null) {
-    return
-  }
-
   const label = createLabel(formControl, title)
   parent.append(shouldWrapWithDiv ? createDiv(label) : label)
 }
 
-const createLegend = (fieldSet: HTMLFieldSetElement, text?: string): void => {
+const createLegend = (fieldSet: HTMLFieldSetElement, text: string): void => {
   const legend = document.createElement('legend')
   legend.classList.add('homey-form-checkbox-set-title')
-  if (text !== undefined) {
-    legend.textContent = text
-  }
+  legend.textContent = text
   fieldSet.append(legend)
 }
 
@@ -786,19 +777,12 @@ class DeviceSettingsManager {
     await this.#homey.alert(this.#homey.__('settings.success'))
   }
 
+  // The section controls are selects and checkboxes only, so the value
+  // reads cannot throw (the bounded-number strategy never runs).
   #buildSettingsBody(elements: HTMLValueElement[]): Settings {
-    const errors: string[] = []
     const settings: Settings = {}
     for (const element of elements) {
-      try {
-        this.#setSetting(settings, element)
-      } catch (error) {
-        errors.push(getErrorMessage(error))
-      }
-    }
-    if (errors.length > 0) {
-      const message = errors.join('\n')
-      throw new Error(message === '' ? 'Unknown error' : message)
+      this.#setSetting(settings, element)
     }
     return settings
   }
@@ -961,9 +945,7 @@ class DeviceSettingsManager {
       dataset: { driverId, settingId },
     } = element
     if (settingId !== undefined) {
-      const value = parseFormValue(element, (input) =>
-        parseNumericInput(this.#homey, input),
-      )
+      const value = parseFormValue(element)
       if (
         this.#shouldUpdate(
           settingId,
@@ -1070,24 +1052,24 @@ class DeviceSettingsManager {
   }
 
   #updateDriverSetting(element: HTMLInputElement): void {
+    // Generated checkboxes always carry both ids; the defaults only keep
+    // the dataset reads total.
     const {
-      dataset: { driverId, settingId },
+      dataset: { driverId = '', settingId = '' },
     } = element
-    if (settingId !== undefined && driverId !== undefined) {
-      const isChecked = this.#deviceSettings[driverId]?.[settingId]
-      if (typeof isChecked === 'boolean') {
-        element.checked = isChecked
-        return
-      }
-      element.indeterminate = true
-      element.addEventListener(
-        'change',
-        () => {
-          element.indeterminate = false
-        },
-        { once: true },
-      )
+    const isChecked = this.#deviceSettings[driverId]?.[settingId]
+    if (typeof isChecked === 'boolean') {
+      element.checked = isChecked
+      return
     }
+    element.indeterminate = true
+    element.addEventListener(
+      'change',
+      () => {
+        element.indeterminate = false
+      },
+      { once: true },
+    )
   }
 
   // Run a section's apply with its buttons busy-locked, unlocking in a
@@ -1446,6 +1428,11 @@ class ZoneSettingsManager {
   public populateZoneOptions(zones: PickerZone[]): void {
     this.#registerOverheatZones(zones)
     populateZoneSelect(this.#zone, zones)
+    // Only after the options land: on a Home-only boot the selection
+    // settles during the populate, and refreshing visibility before it
+    // read the pre-populate value — hiding the panel for a capable
+    // first target until the user moved the picker away and back.
+    this.#refreshOverheatVisibility()
   }
 
   /**
@@ -1682,17 +1669,18 @@ class ZoneSettingsManager {
     maxElement: HTMLInputElement,
   ): { max: number; min: number } {
     const errors: string[] = []
-    let [min = null, max = null] = [minElement, maxElement].map((element) => {
+    const parse = (element: HTMLInputElement): number | null => {
       try {
         return parseNumericInput(this.#homey, element)
       } catch (error) {
         errors.push(getErrorMessage(error))
         return null
       }
-    })
-    if (min === null || max === null || errors.length > 0) {
-      const message = errors.join('\n')
-      throw new Error(message === '' ? 'Unknown error' : message)
+    }
+    let min = parse(minElement)
+    let max = parse(maxElement)
+    if (min === null || max === null) {
+      throw new Error(errors.join('\n'))
     }
     if (max < min) {
       ;[min, max] = [max, min]
@@ -1800,7 +1788,6 @@ class ZoneSettingsManager {
     for (const value of atwBuildings) {
       this.#atwBuildingValues.add(value)
     }
-    this.#refreshOverheatVisibility()
   }
 
   // A blank enabled select means a Home building's devices disagree

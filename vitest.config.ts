@@ -4,12 +4,9 @@ import { type ViteUserConfig, defineConfig } from 'vitest/config'
 const config: ViteUserConfig = defineConfig({
   test: {
     coverage: {
-      exclude: [
-        '.homeybuild/**',
-        '**/public/**/*.mts',
-        'scripts/**/*.mts',
-        'settings/**/*.mts',
-      ],
+      // The remaining webview exclusion shrinks as the real-coverage
+      // campaign lands zone by zone; never widen it.
+      exclude: ['.homeybuild/**', '**/public/**/*.mts', 'scripts/**/*.mts'],
       include: ['**/*.mts'],
       reporter: ['text', 'lcov'],
       thresholds: {

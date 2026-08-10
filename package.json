@@ -46,6 +46,7 @@
     "chart.js": "^4.5.1",
     "esbuild": "^0.28.1",
     "eslint": "^10.8.0",
+    "happy-dom": "20.11.2",
     "homey-apps-sdk-v3-types": "^0.3.12",
     "homey-lib": "^2.51.4",
     "jiti": "^2.7.0",
