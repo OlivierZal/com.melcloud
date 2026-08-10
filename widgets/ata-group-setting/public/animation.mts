@@ -122,10 +122,9 @@ const generateDelay = (delay: number, speed: number): number => {
     (SPEED_FACTOR_MAX / SPEED_FACTOR_MIN) **
       ((speed - ClassicFanSpeed.very_slow) /
         (ClassicFanSpeed.very_fast - ClassicFanSpeed.very_slow))
-  return (
-    (randomFraction() * delay) /
-    (speedFactor === 0 || Number.isNaN(speedFactor) ? 1 : speedFactor)
-  )
+  // An extreme wire speed underflows the exponential to zero — divide
+  // by one instead of freezing the cadence at Infinity.
+  return (randomFraction() * delay) / (speedFactor === 0 ? 1 : speedFactor)
 }
 
 const getZoneValue = (): string => getZonePath(getSelect('zones').value)
@@ -163,29 +162,33 @@ const isAbortError = (error: unknown): boolean =>
 // soon as `signal` aborts.
 const sleep = async (ms: number, signal: AbortSignal): Promise<void> =>
   new Promise((resolve, reject) => {
+    // A signal that is already aborted would never fire `abort`: fail
+    // fast (the executor turns the throw into a rejection) instead of
+    // wiring a listener that cannot fire.
+    signal.throwIfAborted()
     const done = AbortSignal.any([signal, AbortSignal.timeout(ms)])
-    const settle = (): void => {
-      if (signal.aborted) {
-        reject(newAbortError())
-        return
-      }
-      resolve()
-    }
-    // A signal that is already aborted never fires `abort`; settling
-    // synchronously keeps the promise from hanging in that case.
-    if (done.aborted) {
-      settle()
-      return
-    }
-    done.addEventListener('abort', settle, { once: true })
+    done.addEventListener(
+      'abort',
+      () => {
+        if (signal.aborted) {
+          reject(newAbortError())
+          return
+        }
+        resolve()
+      },
+      { once: true },
+    )
   })
 
+// The loop's only exit is the abort error: `sleep` rejects as soon as
+// the signal aborts, so a loop condition could never observe the abort
+// itself.
 const spawnUntilAborted = async (
   generateSpawnDelay: () => number,
   signal: AbortSignal,
   spawn: () => void,
 ): Promise<void> => {
-  while (!signal.aborted) {
+  for (;;) {
     // eslint-disable-next-line no-await-in-loop -- sequential by design: each spawn waits out its own randomized delay
     await sleep(generateSpawnDelay(), signal)
     // The abort can land between the sleep settling and this continuation
@@ -378,11 +381,10 @@ const expireFlame = async (
 ): Promise<void> => {
   try {
     await sleep(delayMs, controller.signal)
-  } catch (error) {
-    if (isAbortError(error)) {
-      return
-    }
-    throw error
+  } catch {
+    // Only the abort can reject the sleep: the flame already ended
+    // through another path.
+    return
   }
   cancelAnimations(flame)
   flame.remove()

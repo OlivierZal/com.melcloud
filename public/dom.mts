@@ -1,7 +1,6 @@
 import { getErrorMessage } from '@olivierzal/homey-kit'
 import {
   type HTMLValueElement,
-  booleanStrings,
   createLabel,
   createOption,
 } from '@olivierzal/homey-kit/dom'
@@ -23,30 +22,6 @@ export const appendFormControl = (
   if (formControl !== null) {
     parent.append(createLabel(formControl, title))
   }
-}
-
-// Shared form-value reader: checkbox → tri-state, bounded number input →
-// the caller's number strategy (the settings page throws on an
-// out-of-range value, the ATA widget clamps it), boolean string →
-// boolean, anything else → number when finite, else the raw string.
-export const parseFormValue = (
-  element: HTMLValueElement,
-  parseNumber: (input: HTMLInputElement) => number,
-): boolean | number | string | null => {
-  if (element.value !== '') {
-    if (element.type === 'checkbox') {
-      return element.indeterminate ? null : element.checked
-    }
-    if (element.type === 'number' && element.min !== '' && element.max !== '') {
-      return parseNumber(element)
-    }
-    if (booleanStrings.includes(element.value)) {
-      return element.value === 'true'
-    }
-    const numberValue = Number(element.value)
-    return Number.isFinite(numberValue) ? numberValue : element.value
-  }
-  return null
 }
 
 // Fills a zone select by walking the picker tree in list order, one
