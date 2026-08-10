@@ -4,18 +4,6 @@ import { type ViteUserConfig, defineConfig } from 'vitest/config'
 const config: ViteUserConfig = defineConfig({
   test: {
     coverage: {
-      // Named, file-scoped residue — never a directory sweep, and every
-      // line below carries its own count.
-      //
-      // The two packaging orchestrators measure 0 %: they are thin —
-      // table constants plus the esbuild and fs calls that consume them,
-      // with their logic already extracted into `webview-stamp.mts` and
-      // `sort-keys-deep.mts`, both at 100 %. They are FINISHABLE, not
-      // out of scope: com.melcloud.extension covers its own `bundle.mts`
-      // end to end on a temporary filesystem (7 cases), and that suite is
-      // the template for closing these two.
-      //
-      // Every webview surface of this app is at a real 100 %.
       exclude: ['.homeybuild/**'],
       include: ['**/*.mts'],
       reporter: ['text', 'lcov'],
