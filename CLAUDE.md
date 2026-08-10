@@ -451,8 +451,8 @@ coverage.
   firmware's engine**. Older Homey Pro (2016-2019) firmwares before
   13.4 run a pre-Node-20 engine (established from a crash report's
   stack naming `ESMLoader`, a class Node renamed in 18.19.0), so the
-  language floor is es2022 — es2023 added no syntax, es2024 added the
-  regex `v` flag, es2025 added import attributes. A module the engine
+  language floor is es2022 — es2023 added only library methods, es2024
+  added the regex `v` flag, es2025 added import attributes. A module the engine
   cannot parse fails BEFORE a line of it runs: the app does not boot,
   and no try/catch anywhere can recover it. Two shipped incidents, same
   class: the `v` flag (2026-08 report), then

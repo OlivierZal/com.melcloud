@@ -18,8 +18,8 @@ import { describe, expect, it } from 'vitest'
 // Pro (2016-2019) firmwares before 13.4 run a pre-Node-20 engine —
 // established from a crash report's own stack, which names `ESMLoader`,
 // a class Node renamed in 18.19.0. es2022 is the last language level
-// that engine parses whole: es2023 added no syntax, es2024 added the `v`
-// flag, es2025 added import attributes.
+// that engine parses whole: es2023 added only library methods, es2024
+// added the `v` flag, es2025 added import attributes.
 //
 // This guard is exhaustive BY CONSTRUCTION rather than by a list: it
 // parses the real emitted output at the floor, so any future syntax the
