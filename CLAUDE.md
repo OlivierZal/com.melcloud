@@ -264,6 +264,19 @@ coverage.
   wire dialect (`HomeAtwZoneMode`, `operationalState`), degrading
   unknown zone modes to the room modes, so the app-side converters are
   plain field picks.
+- The ATA GROUP vocabulary is already cross-family, and its `Classic`
+  prefix is history, not a branch: `ClassicGroupState` is the one shape
+  both families' ATA facades implement (`getGroup` / `updateGroupState`),
+  the Home device and building facades projecting their own dialect at
+  their boundary (`toClassicAtaGroupState` / `toHomeAtaValues`) —
+  `OperationMode` included, so a group state is ALWAYS Classic-numbered
+  whatever API served it, and `classicCoolModes` / `ClassicTemperature`
+  (documented universal across ATA models) apply to both. Consumers
+  therefore never branch on the family to READ or WRITE a group state;
+  the only family-visible step is ADDRESSING, because a Home building or
+  device id and a Classic zone type + id are reachable only through
+  distinct routes. The prefix has twice been misread as a missing
+  abstraction (2026-08) — it is the common surface.
 - Flow-card device filters are `driver_id=<manifest owners>&capabilities=<cap>`,
   both parts mechanical: `capabilities=` is the card's real precondition
   (the run listeners are capability-generic and triggers fire through

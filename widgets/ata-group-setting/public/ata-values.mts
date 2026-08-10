@@ -1,3 +1,12 @@
+// `Classic.GroupState` is the CROSS-FAMILY group vocabulary, not a
+// Classic-only branch: both families' ATA facades implement `getGroup`
+// and `updateGroupState` against it, the Home ones projecting their own
+// dialect at their boundary. So every value this widget reads or writes
+// — `OperationMode` included, always Classic-numbered — carries one
+// spelling whatever API backs the target, and the constants below apply
+// to both (`ClassicTemperature` is documented universal across ATA
+// models). The only place the family is visible at all is the state
+// path; see `getAtaStatePath`.
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import {
   type HTMLValueElement,
@@ -114,7 +123,11 @@ const temperatureOptions = (
     }))
 }
 
-// Routes a `${model}_${id}` option value to its state endpoint.
+// Routes a `${model}_${id}` option value to its state endpoint — the one
+// place the API family surfaces, and it is ADDRESSING, not semantics: the
+// two families name their targets differently (a Home building or device
+// id versus a Classic zone type + id), so they are reachable only through
+// distinct routes. Everything downstream of the fetch is single-vocabulary.
 const getAtaStatePath = (value: string): string => {
   if (isHomeBuildingValue(value)) {
     return `/home/buildings/${encodeURIComponent(getHomeBuildingId(value))}/ata`
