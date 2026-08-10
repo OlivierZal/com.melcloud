@@ -206,6 +206,13 @@ const mockManifestDrivers: ManifestDriver[] = [
   {
     capabilities: [],
     capabilitiesOptions: {
+      target_temperature: {
+        max: 31,
+        min: 10,
+        step: 0.5,
+        title: { en: 'Target temperature' },
+        type: 'number',
+      },
       thermostat_mode: {
         title: { en: 'Mode' },
         type: 'enum',
@@ -1008,6 +1015,22 @@ describe('melCloudApp', () => {
       expect(firstKey).toBe('Power')
       expect(firstOptions).toHaveProperty('title')
       expect(firstOptions).toHaveProperty('type')
+    })
+
+    it('should carry the declared numeric grid to the widget', async () => {
+      await app.onInit()
+      const capabilities = app.getClassicAtaCapabilities()
+      const [, temperature] =
+        capabilities.find(([key]) => key === 'SetTemperature') ?? []
+      const [, power] = capabilities.find(([key]) => key === 'Power') ?? []
+
+      // The picker reads its grid at the source: the manifest's own
+      // bounds and step travel with the capability.
+      expect(temperature).toMatchObject({ max: 31, min: 10, step: 0.5 })
+      // A capability with no numeric grid carries none.
+      expect(power).not.toHaveProperty('step')
+      expect(power).not.toHaveProperty('min')
+      expect(power).not.toHaveProperty('max')
     })
 
     it('should filter out off mode from thermostat values', async () => {

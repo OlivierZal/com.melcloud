@@ -47,58 +47,69 @@ const coolModeNumbers: ReadonlySet<number> = classicCoolModes
 // #createAtaControl), so the bounded-number strategy IS the temperature
 // clamp — no id dispatch. Cooling modes raise the floor to the API's
 // cooling minimum.
-// The target temperature is a SELECT of whole degrees, not a free-text
-// number: a phone keyboard let a decimal separator through and the
-// widget sent the truncated integer ("23," → 23), which a picker cannot
-// express at all. The offered envelope is the UNIVERSAL one
-// (`ClassicTemperature`), which is the only honest offer for a control
-// spanning a whole group of possibly different models; each device's
-// own per-mode limits then narrow the write API-side (the Classic ATA
-// facade clamps against its reported `MinTempCoolDry`/`MaxTempHeat`
-// and friends), so no local clamp is duplicated here.
+// The target temperature is a SELECT of the grid the driver manifest
+// declares, not a free-text number: a phone keyboard let a decimal
+// separator through and the widget sent the truncated integer
+// ("23," → 23), which a picker cannot express at all — and MELCloud
+// works in half degrees, so a whole-degree picker would forbid what the
+// old input merely mangled.
 //
-// STEP: neither `@olivierzal/melcloud-api` nor the driver manifest
-// publishes one (the manifest declares max/min only), so the grid is
-// whole degrees rather than a half-degree step invented here. A device
-// already reporting an off-grid value keeps it — see
-// `temperatureOptions` — so nothing a device holds becomes
-// unselectable; offering half degrees needs the step published at the
-// source first.
-const TEMPERATURE_STEP = 1
+// The step and the bounds are READ AT THE SOURCE: they ride on the
+// capability options the app serves straight from the manifest
+// (`target_temperature`: min 10, max 31, step 0.5). Only the
+// cooling floor comes from melcloud-api (`ClassicTemperature.coolingMin`)
+// — it is mode-dependent, which no manifest can express. A capability
+// arriving without a grid falls back to the library's universal
+// envelope, so a manifest that loses its options degrades to whole
+// degrees instead of rendering nothing.
+const FALLBACK_TEMPERATURE_STEP = 1
 
 // The floor follows the mode the user CHOSE: an untouched (or mixed)
 // mode leaves the device's own mode in place, so the widest range is
 // the only honest offer — as does a device with no mode control.
-const getTemperatureMin = (): number => {
+const getTemperatureMin = (declaredMin: number): number => {
   const mode = document.querySelector('#OperationMode')
   return mode instanceof HTMLSelectElement &&
     coolModeNumbers.has(Number(mode.value))
     ? ClassicTemperature.coolingMin
-    : ClassicTemperature.min
+    : declaredMin
 }
 
-// The whole-degree grid for the active floor, plus `current` when the
-// device sits off it (a half degree set elsewhere): a value with no
-// option would blank the picker and silently drop what the device
-// holds.
+// Labels follow the page language (a comma in French); the option VALUE
+// stays the wire form, so what is sent never depends on the locale.
+const formatTemperature = (degrees: number): string => {
+  // An empty `lang` is not a valid tag: hand `undefined` over so the
+  // runtime default applies instead of throwing mid-render.
+  const { lang } = document.documentElement
+  const formatter = new Intl.NumberFormat(lang === '' ? undefined : lang, {
+    maximumFractionDigits: 1,
+    style: 'unit',
+    unit: 'celsius',
+  })
+  return formatter.format(degrees)
+}
+
+// The declared grid for the active floor, plus `current` when the device
+// sits off it: a value with no option would blank the picker and
+// silently drop what the device holds.
 const temperatureOptions = (
-  min: number,
+  { max, min, step }: { max: number; min: number; step: number },
   current: number | null,
 ): { id: string; label: string }[] => {
   const values = new Set<number>()
-  for (
-    let degrees = min;
-    degrees <= ClassicTemperature.max;
-    degrees += TEMPERATURE_STEP
-  ) {
-    values.add(degrees)
+  // Stepped by index: adding a fractional step repeatedly drifts.
+  for (let index = 0; min + index * step <= max; index++) {
+    values.add(Number((min + index * step).toFixed(1)))
   }
-  if (current !== null && current >= min && current <= ClassicTemperature.max) {
+  if (current !== null && current >= min && current <= max) {
     values.add(current)
   }
   return [...values]
     .toSorted((first, second) => first - second)
-    .map((degrees) => ({ id: String(degrees), label: `${String(degrees)} °C` }))
+    .map((degrees) => ({
+      id: String(degrees),
+      label: formatTemperature(degrees),
+    }))
 }
 
 // Routes a `${model}_${id}` option value to its state endpoint.
@@ -270,7 +281,7 @@ export class AtaValueManager {
       )
     }
     if (id === 'SetTemperature') {
-      return createSelect(id, temperatureOptions(getTemperatureMin(), null))
+      return createSelect(id, temperatureOptions(this.#temperatureGrid(), null))
     }
     if (type === 'number') {
       return createInput({ id, type })
@@ -292,7 +303,7 @@ export class AtaValueManager {
     }
     const current = this.#zoneMapping[this.#zone.value]?.SetTemperature
     const options = temperatureOptions(
-      getTemperatureMin(),
+      this.#temperatureGrid(),
       typeof current === 'number' ? current : null,
     )
     select.replaceChildren()
@@ -306,6 +317,22 @@ export class AtaValueManager {
   #syncAtaValues(): void {
     for (const [ataKey] of this.#ataCapabilities) {
       this.#updateAtaValue(ataKey)
+    }
+  }
+
+  // The grid the app served for `SetTemperature`, with the mode-dependent
+  // floor applied. A capability without declared bounds degrades to the
+  // library's universal envelope in whole degrees rather than rendering
+  // an empty picker.
+  #temperatureGrid(): { max: number; min: number; step: number } {
+    const declared = this.#ataCapabilities.find(
+      ([key]) => key === 'SetTemperature',
+    )?.[1]
+    const min = declared?.min ?? ClassicTemperature.min
+    return {
+      max: declared?.max ?? ClassicTemperature.max,
+      min: getTemperatureMin(min),
+      step: declared?.step ?? FALLBACK_TEMPERATURE_STEP,
     }
   }
 

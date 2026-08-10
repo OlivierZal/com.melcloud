@@ -58,5 +58,10 @@ export interface ManifestDriver {
 export interface ManifestDriverCapabilitiesOptions {
   readonly title: LocalizedStrings
   readonly type: string
+  // Numeric bounds as the manifest declares them: the widgets build
+  // their pickers from these rather than from constants of their own.
+  readonly max?: number | undefined
+  readonly min?: number | undefined
+  readonly step?: number | undefined
   readonly values?: readonly CapabilitiesOptionsValues<string>[] | undefined
 }

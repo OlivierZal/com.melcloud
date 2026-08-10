@@ -61,11 +61,10 @@ describe('ata value manager', () => {
     const fieldset = getFieldset('values_melcloud')
 
     // Each select opens on the blank "no instruction" option.
-    expect(getSelect('Power').options).toHaveLength(3)
-    expect(getSelect('OperationMode').options).toHaveLength(6)
-    // Whole degrees over the published range, plus the blank
-    // "no instruction" entry.
-    expect(getSelect('SetTemperature').options).toHaveLength(23)
+    expect(optionValues(getSelect('Power'))).toHaveLength(3)
+    expect(optionValues(getSelect('OperationMode'))).toHaveLength(6)
+    // The manifest grid (10→31 by 0.5) plus that blank entry.
+    expect(optionValues(getSelect('SetTemperature'))).toHaveLength(44)
     expect(getInput('FanSpeed').min).toBe('')
     // The unmappable capability yields no control and no label.
     expect(fieldset.querySelector('#SilentMode')).toBeNull()
@@ -241,23 +240,78 @@ describe('ata value manager', () => {
     expect(document.querySelector('#SetTemperature')).toBeNull()
   })
 
+  it('should offer the half degrees MELCloud accepts', async () => {
+    const { manager } = await createManager()
+    await manager.fetchValues()
+    const offered = optionValues(getSelect('SetTemperature'))
+
+    // The step is read from the manifest the app serves, never invented
+    // here: a whole-degree grid would forbid what the old input mangled.
+    expect(offered).toContain('23.5')
+    expect(offered).toContain('10.5')
+    expect(offered).toContain('30.5')
+  })
+
+  it('should label the temperatures in the page language', async () => {
+    document.documentElement.lang = 'fr'
+    const { manager } = await createManager()
+    await manager.fetchValues()
+    const half = [...getSelect('SetTemperature').options].find(
+      ({ value }) => value === '23.5',
+    )
+
+    // A comma in French (with the locale's own spacing before the unit),
+    // while the value stays the wire form.
+    expect(half?.textContent).toMatch(/^23,5\s*°C$/v)
+    expect(half?.value).toBe('23.5')
+  })
+
+  it('should format on the runtime default when no language is set', async () => {
+    document.documentElement.lang = ''
+    const { manager } = await createManager()
+    await manager.fetchValues()
+    const half = [...getSelect('SetTemperature').options].find(
+      ({ value }) => value === '23.5',
+    )
+
+    // An empty tag is not a valid locale: the picker still renders.
+    expect(half?.textContent).toContain('23')
+  })
+
+  it('should fall back to whole degrees without a declared grid', async () => {
+    const { manager } = await createManager({
+      routes: {
+        ...widgetRoutes(),
+        'GET /classic/capabilities/ata': [
+          ['SetTemperature', { title: 'Temperature', type: 'number' }],
+        ],
+      },
+    })
+    await manager.fetchValues()
+    const offered = optionValues(getSelect('SetTemperature'))
+
+    expect(offered).not.toContain('23.5')
+    expect(offered.at(1)).toBe('10')
+    expect(offered.at(-1)).toBe('31')
+  })
+
   it('should keep an off-grid device value selectable', async () => {
     const { manager } = await createManager({
       routes: {
         ...widgetRoutes(),
         'GET /classic/zones/buildings/1/ata': {
           ...groupStateFixture(),
-          SetTemperature: 22.5,
+          SetTemperature: 22.3,
         },
       },
     })
     await manager.fetchValues()
     const temperature = getSelect('SetTemperature')
 
-    // No step is published anywhere, so the grid is whole degrees — a
-    // half degree set elsewhere must still show, and stay sendable.
-    expect(temperature.value).toBe('22.5')
-    expect(optionValues(temperature)).toContain('22.5')
+    // A tenth set elsewhere sits off the declared half-degree grid: it
+    // must still show, and stay sendable.
+    expect(temperature.value).toBe('22.3')
+    expect(optionValues(temperature)).toContain('22.3')
   })
 
   it('should absorb an accepted write into the zone state', async () => {

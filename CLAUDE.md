@@ -344,14 +344,22 @@ coverage.
 - The ATA group widget's target temperature is a SELECT, never a
   free-text number: a phone keyboard let a decimal separator through and
   the widget sent the truncated integer ("23," → 23). Its options are
-  GENERATED from `ClassicTemperature` (melcloud-api) — the floor rises
-  to `coolingMin` for the modes in `classicCoolModes`, and an untouched
-  or mixed mode keeps the widest range, since the device's own mode
-  stays in place. No STEP is published by the library or the manifest,
-  so the grid is whole degrees rather than a half-degree step invented
-  here; a device already reporting an off-grid value keeps it as an
-  option, so nothing it holds becomes unselectable or gets silently
-  dropped. The offered envelope is deliberately the UNIVERSAL one: a
+  GENERATED from the grid the app serves with each capability, which is
+  the DRIVER MANIFEST's own (`target_temperature`: 10–31, step 0.5 —
+  MELCloud accepts half degrees, and a whole-degree picker would forbid
+  what the truncating input merely mangled). The vendored node-homey-lib
+  capability is only the generic definition (4–35): the driver's
+  `capabilitiesOptions` narrowing is what `getClassicAtaCapabilities`
+  overlays and hands to the widget, so the picker reads its grid at the
+  source instead of hardcoding one — add a bound or a step in the
+  manifest, and the picker follows. Only the cooling floor comes from
+  melcloud-api (`ClassicTemperature.coolingMin`): it is mode-dependent,
+  which no manifest can express. An untouched or mixed mode keeps the
+  widest range, since the device's own mode stays in place, and a device
+  reporting an off-grid value keeps it as an option, so nothing it holds
+  becomes unselectable or gets silently dropped. Labels are formatted in
+  the page language (a comma in French) while the option VALUE stays the
+  wire form. The offered envelope is deliberately the UNIVERSAL one: a
   group may mix models, and each device's own per-mode limits narrow the
   write API-side (the Classic ATA facade clamps against its reported
   `MinTempCoolDry`/`MaxTempHeat` and friends). Never duplicate that

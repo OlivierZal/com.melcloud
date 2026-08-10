@@ -14,7 +14,7 @@
     "measure_signal_strength"
   ],
   "capabilitiesOptions": {
-    "target_temperature": { "max": 31, "min": 10 },
+    "target_temperature": { "max": 31, "min": 10, "step": 0.5 },
     "thermostat_mode": {
       "values": [
         {

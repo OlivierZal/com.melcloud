@@ -143,6 +143,9 @@ const getLocalizedCapabilitiesOptions = (
 ): DriverCapabilitiesOptions => ({
   title: options.title[language] ?? options.title.en,
   type: options.type,
+  ...(options.max !== undefined && { max: options.max }),
+  ...(options.min !== undefined && { min: options.min }),
+  ...(options.step !== undefined && { step: options.step }),
   values: options.values?.map(({ id, title }) => ({
     id:
       enumType !== undefined && Object.hasOwn(enumType, id)
@@ -1134,7 +1137,17 @@ export default class MELCloudApp extends App {
   }[] {
     return [
       { key: 'Power', options: power },
-      { key: 'SetTemperature', options: targetTemperature },
+      {
+        key: 'SetTemperature',
+        // The vendored capability is the generic definition; this
+        // driver's manifest narrows it (10–31, half degrees), and that
+        // narrowing is what the widget picker must offer.
+        options: {
+          ...targetTemperature,
+          ...this.homey.manifest.drivers.find(({ id }) => id === 'melcloud')
+            ?.capabilitiesOptions?.target_temperature,
+        },
+      },
       {
         enumType: Classic.FanSpeed,
         key: 'FanSpeed',
