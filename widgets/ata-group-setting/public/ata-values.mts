@@ -6,6 +6,7 @@ import {
   createSelect,
   getButton,
   getSelect,
+  parseFormValue,
 } from '@olivierzal/homey-kit/dom'
 import { type DirtyGate, createDirtyGate } from '@olivierzal/homey-kit/webview'
 import {
@@ -15,11 +16,7 @@ import {
 
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import type { AtaGroupSettingWidgetSettings } from '../../../types/widgets.mts'
-import {
-  appendFormControl,
-  parseFormValue,
-  populateZoneOptions,
-} from '../../../public/dom.mts'
+import { appendFormControl, populateZoneOptions } from '../../../public/dom.mts'
 import {
   type Homey,
   homeyApiGet,
@@ -46,25 +43,21 @@ const elementTypes = new Set(['boolean', 'enum'])
 // asserting it down to ClassicOperationMode.
 const coolModeNumbers: ReadonlySet<number> = classicCoolModes
 
-const getCoolingAdjustedMin = (id: string, min: string): string =>
-  id === 'SetTemperature' &&
-  coolModeNumbers.has(Number(getSelect('OperationMode').value))
-    ? String(ClassicTemperature.coolingMin)
-    : min
-
-const clampNumericInput = ({
-  id,
-  max,
-  min,
-  value,
-}: HTMLInputElement): number => {
+// `SetTemperature` is the only control built with bounds (see
+// #createAtaControl), so the bounded-number strategy IS the temperature
+// clamp — no id dispatch. Cooling modes raise the floor to the API's
+// cooling minimum.
+const clampTemperature = ({ max, min, value }: HTMLInputElement): number => {
   const numberValue = Number(value)
-  const newMin = Number(getCoolingAdjustedMin(id, min))
-  const newMax = Number(max)
   if (!Number.isFinite(numberValue)) {
     throw new TypeError('Invalid number')
   }
-  return Math.min(Math.max(numberValue, newMin), newMax)
+  const activeMin = coolModeNumbers.has(
+    Number(getSelect('OperationMode').value),
+  )
+    ? ClassicTemperature.coolingMin
+    : Number(min)
+  return Math.min(Math.max(numberValue, activeMin), Number(max))
 }
 
 // Routes a `${model}_${id}` option value to its state endpoint.
@@ -217,7 +210,7 @@ export class AtaValueManager {
         )
         .map((element) => [
           element.id,
-          parseFormValue(element, clampNumericInput),
+          parseFormValue(element, clampTemperature),
         ]),
     )
   }

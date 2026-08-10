@@ -6,7 +6,11 @@ const config: ViteUserConfig = defineConfig({
     coverage: {
       // The remaining webview exclusion shrinks as the real-coverage
       // campaign lands zone by zone; never widen it.
-      exclude: ['.homeybuild/**', '**/public/**/*.mts', 'scripts/**/*.mts'],
+      exclude: [
+        '.homeybuild/**',
+        'scripts/**/*.mts',
+        'widgets/charts/public/**/*.mts',
+      ],
       include: ['**/*.mts'],
       reporter: ['text', 'lcov'],
       thresholds: {

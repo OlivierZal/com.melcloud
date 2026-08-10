@@ -7,16 +7,17 @@ const UINT32_RANGE = 4_294_967_296
 const UINT32_FRACTION_SCALE = 1 / UINT32_RANGE
 
 // Refilled in place on every sample so the per-frame jitter does not
-// allocate
+// allocate; the DataView reads the same bytes back without the indexed
+// access that would demand an unreachable undefined fallback.
 const randomSampleBuffer = new Uint32Array(1)
+const randomSampleView = new DataView(randomSampleBuffer.buffer)
 
 // Uniform fraction in [0, 1) backed by the Web Crypto API — the jitter is
 // purely cosmetic, but a CSPRNG costs nothing and satisfies security
 // analyzers flagging Math.random
 export const randomFraction = (): number => {
   crypto.getRandomValues(randomSampleBuffer)
-  const [value = 0] = randomSampleBuffer
-  return value * UINT32_FRACTION_SCALE
+  return randomSampleView.getUint32(0, true) * UINT32_FRACTION_SCALE
 }
 
 export const generateStyleNumber = ({
