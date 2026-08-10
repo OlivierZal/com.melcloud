@@ -6,20 +6,24 @@
 // the current classic-defer HTML, index.mjs (ESM) for cached ESM-era
 // HTMLs — and npm dependencies (Chart.js) are inlined so widgets work
 // offline with versions pinned by the lockfile.
-import { createHash } from 'node:crypto'
-import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { type BuildOptions, build } from 'esbuild'
 
+import { stampPackagedPages } from './webview-stamp.mts'
+
 // The IIFE global each page's inline `onHomeyReady` reads `start` from.
 const GLOBAL_NAME = 'MELCloudWebview'
 
+// esbuild runs its build in a service process with its own working
+// directory, while the stamping pass reads and writes through `node:fs`
+// (the launcher's cwd): both are anchored at the repo root so they
+// cannot disagree about where the packaged app lives.
+const ROOT = path.resolve(import.meta.dirname, '..')
+
 // The Homey CLI's packaging target: `tsc` already emits here (its
 // validated `outDir`), and the CLI packs exactly this directory.
-const OUT_ROOT = '.homeybuild'
-
-const HASH_LENGTH = 8
+const OUT_ROOT = path.join(ROOT, '.homeybuild')
 
 const entryPoints = [
   'widgets/ata-group-setting/public/index.mts',
@@ -40,12 +44,8 @@ const pages = [
   { entry: 'charts', page: 'widgets/charts/public/index.html' },
 ]
 
-// A local asset reference — an href/src attribute value, with an
-// optional existing stamp.
-const REFERENCE =
-  /(?<prefix>href="|src=")(?<file>[^"':?\/][^"':?]*)(?:\?v=[0-9a-f]+)?(?<suffix>")/gv
-
 const sharedOptions: BuildOptions = {
+  absWorkingDir: ROOT,
   bundle: true,
   legalComments: 'none',
   logLevel: 'info',
@@ -74,95 +74,4 @@ await Promise.all(
   }),
 )
 
-// Cache-bust the PACKAGED pages: phone webviews cache assets across app
-// versions, so a content hash per file forces a refetch exactly when a
-// file changes. The committed source HTML stays unstamped — `?v=` is a
-// package-time transform of the `.homeybuild` copy, which exists in the
-// CLI flow (its pre-process copy runs before `npm run build`) and is
-// absent in a standalone suite run, which only proves the bundles
-// compile.
-const hashOf = async (filePath: string): Promise<string> => {
-  const content = await readFile(filePath)
-  return createHash('sha256')
-    .update(content)
-    .digest('hex')
-    .slice(0, HASH_LENGTH)
-}
-
-const collectHashes = async (
-  html: string,
-  directory: string,
-): Promise<ReadonlyMap<string, string>> => {
-  const files = new Set<string>()
-  for (const match of html.matchAll(REFERENCE)) {
-    const { file = '' } = match.groups ?? {}
-    if (file !== '') {
-      files.add(file)
-    }
-  }
-  return new Map(
-    await Promise.all(
-      [...files].map(async (file): Promise<[string, string]> => [
-        file,
-        await hashOf(path.join(directory, file)),
-      ]),
-    ),
-  )
-}
-
-// Stamp only within a reference context, so the same filename written
-// elsewhere (e.g. a comment) is never rewritten. Rebuilt cursor-wise
-// rather than through a `replaceAll` callback, whose loosely typed rest
-// arguments cannot carry the named groups safely.
-const stampReferences = (
-  html: string,
-  hashes: ReadonlyMap<string, string>,
-): string => {
-  let stamped = ''
-  let cursor = 0
-  for (const match of html.matchAll(REFERENCE)) {
-    const { file = '', prefix = '', suffix = '' } = match.groups ?? {}
-    const hash = hashes.get(file) ?? ''
-    stamped += `${html.slice(cursor, match.index)}${prefix}${file}?v=${hash}${suffix}`
-    cursor = match.index + match[0].length
-  }
-  return stamped + html.slice(cursor)
-}
-
-const stampHtml = async (htmlPath: string): Promise<string | null> => {
-  let html: string
-  try {
-    html = await readFile(htmlPath, 'utf8')
-  } catch {
-    // The page copy only exists in the CLI flow; a standalone suite run
-    // has nothing to stamp.
-    return null
-  }
-  const hashes = await collectHashes(html, path.dirname(htmlPath))
-  const stamped = stampReferences(html, hashes)
-  if (stamped !== html) {
-    await writeFile(htmlPath, stamped)
-  }
-  // The page's identity is the join of every stamp it carries, in
-  // DOCUMENT order (the match order of `REFERENCE`, which the page's
-  // own collection mirrors): a change to any packaged asset (bundle,
-  // stylesheet) moves the identity, so CSS-only or markup-only ships
-  // self-heal too.
-  return hashes.size > 0 ? hashes.values().toArray().join('.') : null
-}
-
-// Emit the live-hash manifest the app serves (`GET /webview-hashes`) —
-// only in the CLI flow, where every page copy exists: a standalone
-// suite run stamps nothing and must not leave a partial manifest.
-const stampedEntries = await Promise.all(
-  pages.map(async ({ entry, page }): Promise<[string, string | null]> => [
-    entry,
-    await stampHtml(path.join(OUT_ROOT, page)),
-  ]),
-)
-if (stampedEntries.every(([, hash]) => hash !== null)) {
-  await writeFile(
-    path.join(OUT_ROOT, 'webview-hashes.json'),
-    JSON.stringify(Object.fromEntries(stampedEntries)),
-  )
-}
+await stampPackagedPages(OUT_ROOT, pages)

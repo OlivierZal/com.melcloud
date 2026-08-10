@@ -4,6 +4,8 @@
 // exactly homey-lib's, pinned by tests/unit/capability-definitions.test.ts.
 import { readFile, writeFile } from 'node:fs/promises'
 
+import { sortKeysDeep } from './sort-keys-deep.mts'
+
 const CAPABILITIES = [
   'fan_speed',
   'onoff',
@@ -12,20 +14,6 @@ const CAPABILITIES = [
 ]
 
 const JSON_INDENT = 2
-
-const sortKeysDeep = (value: unknown): unknown => {
-  if (Array.isArray(value)) {
-    return value.map((entry: unknown) => sortKeysDeep(entry))
-  }
-  if (value !== null && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value)
-        .toSorted(([left], [right]) => left.localeCompare(right, 'en'))
-        .map(([key, entry]) => [key, sortKeysDeep(entry)]),
-    )
-  }
-  return value
-}
 
 await Promise.all(
   CAPABILITIES.map(async (capability) => {
