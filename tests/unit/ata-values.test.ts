@@ -158,6 +158,23 @@ describe('ata value manager', () => {
     expect(lastPutBody(harness)).toStrictEqual({ SetTemperature: 25 })
   })
 
+  it('should offer the temperature grid warmest first', async () => {
+    await createManager()
+    // Deliberate product decision, pinned so it is not "corrected" to
+    // ascending: the picker reads like the thermometer it sets, warmest
+    // at the top. Index 0 is the blank "no instruction" entry.
+    const [blank, ...degrees] = optionValues(getSelect('SetTemperature'))
+
+    expect(blank).toBe('')
+    expect(degrees.at(0)).toBe('31')
+    expect(degrees.at(-1)).toBe('10')
+    // Half degrees survive the ordering, and the run is monotonic.
+    expect(degrees).toContain('23.5')
+    expect(degrees.map(Number)).toStrictEqual(
+      degrees.map(Number).toSorted((first, second) => second - first),
+    )
+  })
+
   it('should raise the offered floor in a cooling mode', async () => {
     const { manager } = await createManager()
     await manager.fetchValues()
@@ -172,7 +189,8 @@ describe('ata value manager', () => {
     // now-unofferable choice falls back to "no instruction" rather than
     // being sent as something the user never picked.
     expect(optionValues(temperature)).not.toContain('12')
-    expect(optionValues(temperature).at(1)).toBe('16')
+    // Warmest first, so the raised floor is the LAST option offered.
+    expect(optionValues(temperature).at(-1)).toBe('16')
     expect(temperature.value).toBe('')
   })
 
@@ -192,9 +210,9 @@ describe('ata value manager', () => {
     const offered = optionValues(getSelect('SetTemperature')).slice(1)
 
     // The universal envelope: a group may mix models, and each device's
-    // own per-mode limits narrow the write API-side.
-    expect(offered.at(0)).toBe('10')
-    expect(offered.at(-1)).toBe('31')
+    // own per-mode limits narrow the write API-side. Warmest first.
+    expect(offered.at(0)).toBe('31')
+    expect(offered.at(-1)).toBe('10')
     expect(offered).not.toContain('9')
     expect(offered).not.toContain('32')
   })
@@ -210,8 +228,9 @@ describe('ata value manager', () => {
     })
     await manager.fetchValues()
 
-    // No mode to read: the floor stays the widest published one.
-    expect(optionValues(getSelect('SetTemperature')).at(1)).toBe('10')
+    // No mode to read: the floor stays the widest published one, and
+    // warmest-first puts it last.
+    expect(optionValues(getSelect('SetTemperature')).at(-1)).toBe('10')
   })
 
   it('should stay quiet on a device without a temperature control', async () => {
@@ -291,8 +310,9 @@ describe('ata value manager', () => {
     const offered = optionValues(getSelect('SetTemperature'))
 
     expect(offered).not.toContain('23.5')
-    expect(offered.at(1)).toBe('10')
-    expect(offered.at(-1)).toBe('31')
+    // Warmest first: the blank entry, then 31 down to 10.
+    expect(offered.at(1)).toBe('31')
+    expect(offered.at(-1)).toBe('10')
   })
 
   it('should keep an off-grid device value selectable', async () => {

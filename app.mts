@@ -1144,7 +1144,7 @@ export default class MELCloudApp extends App {
         // this driver's manifest narrows the bounds (10–31), and the
         // step comes from the capability's own flow argument — see
         // `getCapabilityFlowStep` for why that field, and what keeps it
-        // honest.
+        // honest — and why neither API's increment is read instead.
         options: {
           ...targetTemperature,
           ...this.homey.manifest.drivers.find(({ id }) => id === 'melcloud')

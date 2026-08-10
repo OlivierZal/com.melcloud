@@ -104,8 +104,10 @@ const temperatureOptions = (
   if (current !== null && current >= min && current <= max) {
     values.add(current)
   }
+  // Warmest first: the picker reads like the thermometer it sets, and
+  // the order is pinned by test so it is not "corrected" to ascending.
   return [...values]
-    .toSorted((first, second) => first - second)
+    .toSorted((first, second) => second - first)
     .map((degrees) => ({
       id: String(degrees),
       label: formatTemperature(degrees),

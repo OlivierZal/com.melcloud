@@ -11,6 +11,12 @@
  * surfaces here instead of rotting silently. A capability stating none
  * yields `undefined`, and every consumer falls back to its own
  * default.
+ *
+ * Neither wire API's increment is read instead, by decision: Homey
+ * derives no capability option from `Home`'s `temperatureStep` nor from
+ * `Classic`'s `CanSetTemperatureIncrementOverride`, so reading either
+ * would buy a device round trip and a second code path for a grid the
+ * platform ignores.
  * @param capability - A vendored capability definition.
  * @param capability.$flow - Its flow-card declarations, if any.
  * @returns The stated step, or `undefined` when the capability has none.
