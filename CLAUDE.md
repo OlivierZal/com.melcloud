@@ -618,6 +618,13 @@ reader fails open with an empty map).
   landed a different style per repo (`Build(deps): Bump …` here,
   bare `Bump …` there). No commitlint: in squash-only repos the title
   check already covers everything that reaches `main`.
+  The **subject** casing stays inferred and cannot be pinned:
+  `commit-message` accepts only `prefix`, `prefix-development` and
+  `include`, so Dependabot keeps matching each repo's own history
+  (`Bump undici` in one, `bump temporal-polyfill` in another). Left
+  alone by decision (2026-08): a Dependabot commit subject is not a
+  contract, the PR title is — and the `PR title` check already holds
+  that one.
 - After every push, monitor the triggered pipelines to completion — the
   PR checks after a push, the publish run after a release tag — and act
   on the outcome: rerun transient infra failures (a SonarCloud 504 is
