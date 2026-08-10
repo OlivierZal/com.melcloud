@@ -570,6 +570,40 @@ describe('charts widget', () => {
     expect(scales.yAxis).toMatchObject({ max: 0, min: -100 })
   })
 
+  // The palette is picked by position and cycles: a twelfth unnamed
+  // series takes the colour of the first, which pins both the order of
+  // the palette and the arithmetic reading it back.
+  it('should cycle the palette over series the vocabulary does not name', async () => {
+    await boot({
+      routes: {
+        ...withLogs(),
+        line: lineOptions({
+          series: Array.from({ length: 12 }, (_unusedValue, index) => ({
+            data: [index],
+            name: `Device ${String(index)}`,
+          })),
+        }),
+      },
+      settings: { chart: 'signal' },
+    })
+    const { datasets } = lastChart().data
+
+    expect(datasets.map(({ borderColor }) => borderColor)).toStrictEqual([
+      '#1F77B4',
+      '#D62728',
+      '#2CA02C',
+      '#FF7F0E',
+      '#9467BD',
+      '#FFDB58',
+      '#17BECF',
+      '#E377C2',
+      '#7F7F7F',
+      '#393B79',
+      '#E7BA52',
+      '#1F77B4',
+    ])
+  })
+
   it('should leave a bandless line chart unpainted', async () => {
     await boot()
     const chart = lastChart()
