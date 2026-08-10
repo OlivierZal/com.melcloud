@@ -425,6 +425,22 @@ describe('charts widget', () => {
     expect(optionValues(getSelect('days')).at(0)).not.toBe('0')
   })
 
+  it('should open on the rolling window when it is the stored default', async () => {
+    await boot({ settings: { days: 0 } })
+
+    expect(getSelect('days').value).toBe('0')
+  })
+
+  it('should fall back to a real day count when the rolling window is gone', async () => {
+    await boot({ settings: { chart: 'report', days: 0 } })
+    commit(getSelect('zones'), 'devices_12')
+    await settleDetached()
+
+    // A default no option can express must not empty the picker: the
+    // guarded write leaves the first real day count selected.
+    expect(getSelect('days').value).toBe('1')
+  })
+
   it('should keep the day choices within the published bounds', async () => {
     await boot({ settings: { days: 9999 } })
 
