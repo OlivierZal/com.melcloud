@@ -446,38 +446,41 @@ coverage.
   drivers' type barrel, reaching node-side es2024/2025 code. Revisit
   only if webview-facing types get decoupled from driver classes
   (pure DTOs).
-- The device's own floor is a SEPARATE invariant, and it is about
-  SYNTAX, not APIs: **every shipped module must PARSE on the oldest
-  firmware's engine**. Older Homey Pro (2016-2019) firmwares before
-  13.4 run a pre-Node-20 engine (established from a crash report's
-  stack naming `ESMLoader`, a class Node renamed in 18.19.0), so the
-  language floor is es2022 — es2023 added only library methods, es2024
-  added the regex `v` flag, es2025 added import attributes. A module the engine
-  cannot parse fails BEFORE a line of it runs: the app does not boot,
-  and no try/catch anywhere can recover it. Two shipped incidents, same
-  class: the `v` flag (2026-08 report), then
-  `import … with { type: 'json' }` (2026-08 report, app 46.2.1) — the
-  second a REGRESSION of an explicit fix, `files.mts` having been
-  created in 2024 precisely to avoid it (`e84cf041`, "Make json import
-  compatible for Homey 2016") before a 2025-10 `simplify` commit
-  deleted its `createRequire` fallback and promoted the import-attribute
-  form. That is why the guard is mechanical and not a convention:
-  `tests/unit/node-floor.test.ts` emits the real build and parses every
-  module at the floor, so it is exhaustive BY CONSTRUCTION — it catches
-  syntax nobody thought to look for, not a list of known offenders.
-  Never re-add an import attribute to shipped code: `files.mts` reads
-  its JSON through `createRequire`, with type-only imports keeping tsc's
-  inference.
-- Runtime APIs are the OTHER family and the parser cannot see them:
-  they parse fine and throw on use. `Object.groupBy` (Node 21),
-  `toSorted`/`toReversed` (Node 20) and `Promise.withResolvers`
-  (Node 22) all postdate the floor. Shipped node-side code still calls
-  `toSorted` (6 sites) and `Object.groupBy` (1 site, `getDriverSettings`)
-  — they degrade a feature on use rather than killing the boot, and they
-  cannot be removed here because `unicorn/no-array-sort` MANDATES
-  `toSorted`: the rule lives in `@olivierzal/configs`, so resolving it
-  is a family decision, not a local edit. The boot-path occurrence was
-  removed (`ClassicDriver#onInit` now filters twice instead of grouping).
+- TWO floors coexist, on UNRELATED engines — never let one move the
+  other. The **webview** floor above is es2023 and is set by the
+  phone's WebKit, which no Homey firmware can rejuvenate: it stays
+  enforced by the scoped lint block, and the danger there is APIs,
+  because esbuild lowers syntax but NEVER polyfills. The **node-side**
+  floor is the Homey's own Node, and it is held by the manifest's
+  `compatibility` declaration, NOT by a check.
+- That node-side floor is a DECLARATION, deliberately. Two shipped
+  incidents crashed the app at PARSE time on Homey Pro (2016-2019)
+  firmwares before 13.4, which run a pre-Node-20 engine (established
+  from a crash report's stack naming `ESMLoader`, a class Node renamed
+  in 18.19.0): the regex `v` flag, then
+  `import … with { type: 'json' }` (app 46.2.1) — the second a
+  REGRESSION of an explicit fix, `files.mts` having been created in
+  2024 precisely to avoid it (`e84cf041`, "Make json import compatible
+  for Homey 2016") before a 2025-10 `simplify` commit deleted its
+  `createRequire` fallback. A parse-level guard over the emitted build
+  was built and then REFUSED (2026-08): no acorn `ecmaVersion`
+  corresponds to "what Node 22.19 accepts" — es2025 is only partly
+  implemented there (regex modifiers and duplicate named groups are
+  Node 23, `using` is Node 24) — so any calibration is either too lax
+  to catch anything or too strict, forcing rewrites of perfectly valid
+  code. A guard that cannot be calibrated honestly guards nothing. The
+  net is the declaration, kept aligned with the `engines` of the
+  shipped dependencies (`>=22.19.0`); supporting an engine older than
+  that is a product decision, not a code one, and the answer to a
+  report from such a firmware is a free update. `files.mts` still reads
+  its JSON through `createRequire` — not to satisfy a floor, but
+  because it is the robust form and costs nothing.
+- Node-side runtime APIs above the floor are therefore LEGITIMATE:
+  `toSorted`/`toReversed` (Node 20), `Object.groupBy` (Node 21) and
+  `Promise.withResolvers` (Node 22) all predate the declared engine.
+  Never rewrite one away for compatibility — `unicorn/no-array-sort`
+  mandates `toSorted` anyway, and a hand-rolled replacement is a
+  readability regression for nothing.
 
 ## Tooling boundary (@olivierzal/configs)
 
