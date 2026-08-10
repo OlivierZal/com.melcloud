@@ -203,16 +203,14 @@ const seriesColors: Record<string, string> = {
 
 const colorForSeries = (name: string, index: number): string =>
   seriesColors[name] ?? colors[index % colors.length] ?? '#7F7F7F'
-const styleCache: Record<string, string> = {}
-
 // ── Style helpers ──
 
-const getStyle = (property: string): string => {
-  styleCache[property] ??= getComputedStyle(document.documentElement)
-    .getPropertyValue(property)
-    .trim()
-  return styleCache[property]
-}
+// Read live, never memoized: the injected design tokens change with the
+// Homey theme, and a widget outlives that change on an open dashboard —
+// a cached palette would keep painting the previous theme until the
+// dashboard recreated the page.
+const getStyle = (property: string): string =>
+  getComputedStyle(document.documentElement).getPropertyValue(property).trim()
 
 const getFontWeight = (property: string): FontWeight => {
   const value = getStyle(property)
