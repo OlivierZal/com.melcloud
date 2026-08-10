@@ -40,7 +40,13 @@ caught real failures that the others miss:
   never comments. A second cache layer covers the HTML
   itself (phone webviews cache the page across app versions,
   force-close included): each bundle carries a freshness handshake —
-  the page's identity is the document-order join of its `?v=` stamps (a CSS-only ship moves it too), `GET /webview-hashes` serves the
+  the page's identity is the document-order join of its UNIQUE `?v=`
+  stamps — a CSS-only ship moves it too, and the dedup is by HASH VALUE
+  on BOTH sides (the kit's page-side join and `webview-stamp.mts`):
+  two assets with identical bytes carry one stamp on the page, so a
+  bundler counting them twice would mint an identity no page could ever
+  match — an endless refetch handshake (fixed and pinned, 2026-08) —,
+  `GET /webview-hashes` serves the
   live hashes (a manifest `bundle.mts` emits into the packaged app,
   read by `@olivierzal/homey-kit/node`; every `api.mts` — app and both
   widgets — passes the manifest URL explicitly, the kit's default
@@ -68,6 +74,16 @@ caught real failures that the others miss:
   breadcrumb). Never fold the visibility trigger into it. Every failure
   path stays open: an unstamped page, an absent route or denied
   storage must never take a working webview down.
+  The stamping pass itself lives in `scripts/webview-stamp.mts` (and the
+  vendored-JSON key sort in `scripts/sort-keys-deep.mts`), unit-tested
+  against a temp packaging tree; `bundle.mts` and
+  `sync-capability-definitions.mts` keep only their tables and the
+  esbuild/fs calls consuming them — the two named, file-scoped coverage
+  exclusions left in `vitest.config.ts` and `sonar-project.properties`
+  (never a directory sweep, and `npm run build` plus the drift test
+  exercise them end to end). esbuild runs in a service process with its
+  own cwd, so both the build and the stamping anchor on an explicit
+  repo root (`absWorkingDir`), never the launcher's.
 - `npm run homey:validate` — Homey validation at publish level; may
   rewrite files (see locales below), re-stage if it does.
 - `node scripts/sync-capability-definitions.mts` — refreshes the
@@ -79,6 +95,12 @@ caught real failures that the others miss:
   The `homey:*` wrappers are plain CLI calls: the CLI's own
   `npm run build` (post-copy) emits everything the package needs into
   `.homeybuild`, so no pre-build step is required anywhere.
+
+Test harnesses that simulate the clock stub `Temporal.Now`, NEVER
+`Date`: `temporal-polyfill` delegates to `globalThis.Temporal` wherever
+the runtime ships one (Node 26, i.e. the CI's "Node latest" leg), so a
+faked `Date` never reaches the page's clock — the failure mode is a
+suite that passes locally and fails only on that leg.
 
 Check real exit codes; never pipe a check's output through `tail`/`grep`
 to judge success. Remove any `.claude/worktrees/**` leftovers before

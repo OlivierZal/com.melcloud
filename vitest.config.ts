@@ -4,11 +4,18 @@ import { type ViteUserConfig, defineConfig } from 'vitest/config'
 const config: ViteUserConfig = defineConfig({
   test: {
     coverage: {
-      // The remaining webview exclusion shrinks as the real-coverage
-      // campaign lands zone by zone; never widen it.
+      // Named, file-scoped residue — never a directory sweep. The two
+      // packaging orchestrators hold no logic left to unit-test: table
+      // constants plus the esbuild and fs calls that consume them, every
+      // one of which `npm run build` and the vendored-definitions drift
+      // test already exercise end to end. Their logic lives in
+      // `webview-stamp.mts` and `sort-keys-deep.mts`, both covered. The
+      // charts exclusion shrinks to nothing as the campaign lands;
+      // never widen either.
       exclude: [
         '.homeybuild/**',
-        'scripts/**/*.mts',
+        'scripts/bundle.mts',
+        'scripts/sync-capability-definitions.mts',
         'widgets/charts/public/**/*.mts',
       ],
       include: ['**/*.mts'],
