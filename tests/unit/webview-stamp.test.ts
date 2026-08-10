@@ -135,6 +135,28 @@ describe('webview stamping', () => {
     expect(stampsOf(html)).toHaveLength(1)
   })
 
+  it('should stamp a tag Prettier exploded over several lines', async () => {
+    // Prettier owns the page's shape and breaks a tag past the print
+    // width into one attribute per line. A pattern scoped to a tag or to
+    // a single line would still stamp the inline form and silently miss
+    // this one, so both shapes share a page here.
+    const htmlPath = await writePage(
+      'settings/index.html',
+      `<link href="index.css" rel="stylesheet" />
+<script
+  data-testid="a-tag-past-the-print-width-that-prettier-explodes"
+  defer
+  src="index.js"
+></script>`,
+      { 'index.css': 'body{}', 'index.js': 'console.log(1)' },
+    )
+
+    const identity = await stampHtml(htmlPath)
+
+    expect(stampsOf(await readPage(htmlPath))).toHaveLength(2)
+    expect(identity).not.toBeNull()
+  })
+
   it('should leave remote and rooted references alone', async () => {
     const htmlPath = await writePage(
       'settings/index.html',
