@@ -447,40 +447,32 @@ coverage.
   only if webview-facing types get decoupled from driver classes
   (pure DTOs).
 - TWO floors coexist, on UNRELATED engines — never let one move the
-  other. The **webview** floor above is es2023 and is set by the
-  phone's WebKit, which no Homey firmware can rejuvenate: it stays
-  enforced by the scoped lint block, and the danger there is APIs,
-  because esbuild lowers syntax but NEVER polyfills. The **node-side**
-  floor is the Homey's own Node, and it is held by the manifest's
-  `compatibility` declaration, NOT by a check.
-- That node-side floor is a DECLARATION, deliberately. Two shipped
-  incidents crashed the app at PARSE time on Homey Pro (2016-2019)
-  firmwares before 13.4, which run a pre-Node-20 engine (established
-  from a crash report's stack naming `ESMLoader`, a class Node renamed
-  in 18.19.0): the regex `v` flag, then
-  `import … with { type: 'json' }` (app 46.2.1) — the second a
-  REGRESSION of an explicit fix, `files.mts` having been created in
-  2024 precisely to avoid it (`e84cf041`, "Make json import compatible
-  for Homey 2016") before a 2025-10 `simplify` commit deleted its
-  `createRequire` fallback. A parse-level guard over the emitted build
-  was built and then REFUSED (2026-08): no acorn `ecmaVersion`
-  corresponds to "what Node 22.19 accepts" — es2025 is only partly
-  implemented there (regex modifiers and duplicate named groups are
-  Node 23, `using` is Node 24) — so any calibration is either too lax
-  to catch anything or too strict, forcing rewrites of perfectly valid
-  code. A guard that cannot be calibrated honestly guards nothing. The
-  net is the declaration, kept aligned with the `engines` of the
-  shipped dependencies (`>=22.19.0`); supporting an engine older than
-  that is a product decision, not a code one, and the answer to a
-  report from such a firmware is a free update. `files.mts` still reads
-  its JSON through `createRequire` — not to satisfy a floor, but
-  because it is the robust form and costs nothing.
-- Node-side runtime APIs above the floor are therefore LEGITIMATE:
+  other. The **webview** floor is es2023, set by the phone's WebKit,
+  which no Homey firmware can rejuvenate: it stays enforced by the
+  scoped lint block above, and the danger there is APIs, because
+  esbuild lowers syntax but NEVER polyfills. The **node-side** floor is
+  the Homey's own Node, held by the manifest's `compatibility`
+  declaration, NOT by a check.
+- A floor is declared from WHERE THE CODE RUNS, never from what a
+  dependency happens to require. `compatibility: ">=12.9.0"` is
+  Athom's own documented Node 22 boundary ("as of Homey v12.9.0, all
+  Homey platforms run apps on Node.js v22"), and it already covers the
+  `engines` of every shipped dependency. Raising it
+  cannot express more than it already does: the two firmware lines are
+  numbered independently, so one semver range cannot say "has Node 22"
+  across both — and on Homey Pro (2016-2019) the Node 22 firmware is
+  still only a release candidate, so a raise would cut off that whole
+  stable install base rather than a few laggards.
+- Node-side runtime APIs above es2022 are therefore LEGITIMATE:
   `toSorted`/`toReversed` (Node 20), `Object.groupBy` (Node 21) and
-  `Promise.withResolvers` (Node 22) all predate the declared engine.
-  Never rewrite one away for compatibility — `unicorn/no-array-sort`
-  mandates `toSorted` anyway, and a hand-rolled replacement is a
-  readability regression for nothing.
+  `Promise.withResolvers` (Node 22) all predate the declared engine,
+  and `@olivierzal/homey-kit` already calls `toSorted` inside the
+  boot path every app runs. Never rewrite one away for an engine the
+  manifest does not claim — `unicorn/no-array-sort` mandates
+  `toSorted` anyway, and a hand-rolled replacement is a readability
+  regression for nothing. The same holds for syntax: `files.mts`
+  reads its JSON through import attributes, the statically analysable
+  form.
 
 ## Tooling boundary (@olivierzal/configs)
 
