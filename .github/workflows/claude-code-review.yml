@@ -8,7 +8,7 @@ jobs:
       pull-requests: write
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-    uses: OlivierZal/configs/.github/workflows/claude-code-review.yml@802b7e1bd61d37420efa982eb471356711b46251 # v3.2.0
+    uses: OlivierZal/configs/.github/workflows/claude-code-review.yml@dd5ebe19d5b7f3381c34aa25ccba6ce7f324116f # v4.0.0
 name: claude-code-review
 on:
   pull_request:

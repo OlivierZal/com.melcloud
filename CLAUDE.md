@@ -349,8 +349,8 @@ coverage.
   methods are accepted (`toSorted`/`toReversed` — the lint mandates
   them and they ship today), but nothing newer — no iterator helpers
   (`.entries().map()`, 2025-era), no `Object.groupBy` & co.: esbuild
-  lowers syntax only, and old iOS engines are real. Never load the
-  bundle as a STATIC
+  lowers syntax only, and the floor derives from the mobile app's
+  iOS 16.4 minimum (below). Never load the bundle as a STATIC
   `<script type="module">`: 45.2.5 shipped that and every webview spun
   forever on a cold open (proven with breadcrumbs over `homey app run`;
   reverted). Dynamic `import()` is merely unnecessary, not broken — its
@@ -443,22 +443,33 @@ coverage.
   even where no rule captures it.
 - The webview runtime floor (es2023: no `Object.groupBy`, no iterator
   helpers, no `v` regex flag) is enforced by a scoped lint block over
-  `public/`, `settings/` and `widgets/*/public/` — the tsconfig cannot
-  express two runtimes in one project, and the floor has already
-  caused a production incident once. A `tsconfig.webview.json`
-  (target/lib ES2023) would be the stronger form, but was probed and
-  refused (2026-08-06): `include` does not bound the project — tsc
-  checks the import CLOSURE, and the webview-facing types import the
-  drivers' type barrel, reaching node-side es2024/2025 code. Revisit
-  only if webview-facing types get decoupled from driver classes
-  (pure DTOs).
+  `public/`, `settings/`, `types/widgets.mts` and `widgets/*/public/`
+  — the tsconfig cannot express two runtimes in one project. It is
+  DERIVED, not preventive: the Homey mobile app requires iOS 16.4 or
+  later (App Store, read 2026-08-11), and a Homey app only ever gets
+  the system WebKit, so the worst legitimate engine is iOS 16.4's —
+  es2023-complete, short of every es2024 gain (`Object.groupBy` and
+  `Promise.withResolvers` need Safari 17.4, the `v` flag 17). es2024
+  becomes derivable the day that App Store minimum reaches 17.4;
+  Android never binds the floor, its System WebView being evergreen. A
+  `tsconfig.webview.json` (target/lib ES2023) would be the stronger
+  form, but was probed and refused (2026-08-06): `include` does not
+  bound the project — tsc checks the import CLOSURE, and the
+  webview-facing types import the drivers' type barrel, reaching
+  node-side es2024/2025 code. Revisit only if webview-facing types get
+  decoupled from driver classes (pure DTOs).
 - TWO floors coexist, on UNRELATED engines — never let one move the
-  other. The **webview** floor is es2023, set by the phone's WebKit,
-  which no Homey firmware can rejuvenate: it stays enforced by the
-  scoped lint block above, and the danger there is APIs, because
-  esbuild lowers syntax but NEVER polyfills. The **node-side** floor is
-  the Homey's own Node, held by the manifest's `compatibility`
-  declaration, NOT by a check.
+  other. The **webview** floor is es2023, held by the system WebKit
+  that iOS 16.4 minimum implies and no Homey firmware can rejuvenate:
+  it stays enforced by the scoped lint block above, and the danger
+  there is APIs, because esbuild lowers syntax but NEVER polyfills.
+  Severity differs by channel: under a sub-es2024 target esbuild
+  defers a `v` literal to a `new RegExp` call, so a webview escapee
+  throws at RUNTIME inside the feature that runs it, not at parse — a
+  narrower blast radius than the node-side tsc path, which emits the
+  literal verbatim; the ban is the same either way. The **node-side**
+  floor is the Homey's own Node, held by the manifest's
+  `compatibility` declaration, NOT by a check.
 - A floor is declared from WHERE THE CODE RUNS, never from what a
   dependency happens to require. `compatibility: ">=12.9.0"` is
   Athom's own documented Node 22 boundary ("as of Homey v12.9.0, all
