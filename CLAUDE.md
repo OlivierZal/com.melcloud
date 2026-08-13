@@ -400,6 +400,21 @@ coverage.
   write API-side (the Classic ATA facade clamps against its reported
   `MinTempCoolDry`/`MaxTempHeat` and friends). Never duplicate that
   clamp widget-side.
+- The ATA group widget's real-time path (`deviceupdate`, debounced)
+  resyncs only PRISTINE controls: one still showing what the zone held
+  follows the stream, one the user moved keeps the edit, and no
+  baseline moves — the gate runs in predicate mode, so the body builder
+  re-judges the kept edits against the zone's NEW state: Update greys
+  exactly when every edit was caught up (a button that would send
+  nothing must not arm) and re-arms the moment one diverges again. A
+  caught-up control has, by the same value judgment, rejoined the
+  stream. `SetTemperature` resyncs LAST so its grid rebuild reads the
+  mode the same sync settled, and a kept edit the new floor no longer
+  offers blanks to "no instruction" — the form never displays a value
+  no request could carry. Full resyncs stay full: initial load, zone
+  switch (an edit is a zone-scoped statement, not a portable one) and
+  Refresh, which remains the deliberate way back to the zone's current
+  state.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`

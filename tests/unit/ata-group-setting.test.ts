@@ -193,6 +193,24 @@ describe('ata group setting widget', () => {
     expect(stateFetches()).toBe(before + 1)
   })
 
+  it('should keep an in-progress edit across a device update', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    const routes = widgetRoutes()
+    const harness = await bootWidget({ routes })
+    commit(getSelect('SetTemperature'), '25')
+    routes['GET /classic/zones/buildings/1/ata'] = {
+      ...groupStateFixture(),
+      Power: false,
+    }
+    harness.emit('deviceupdate')
+    await vi.advanceTimersByTimeAsync(1000)
+    await settleDetached()
+
+    expect(getSelect('Power').value).toBe('false')
+    expect(getSelect('SetTemperature').value).toBe('25')
+    expect(getButton('apply_values_melcloud').disabled).toBe(false)
+  })
+
   it('should recover a load that outlives the overlay timeout', async () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
     const targets = Promise.withResolvers<unknown>()
