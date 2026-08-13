@@ -360,18 +360,30 @@ describe('ata value manager', () => {
   it('should keep an in-progress edit across a real-time sync', async () => {
     const routes = widgetRoutes()
     const { manager } = await createManager({ routes })
+    // The zone starts without a fan-speed reading: the control opens
+    // blank, and blank-vs-absent must read as pristine, not as an edit.
+    routes['GET /classic/zones/buildings/1/ata'] = {
+      OperationMode: 1,
+      Power: true,
+      SetTemperature: 22,
+    }
     await manager.fetchValues()
     commit(getSelect('SetTemperature'), '25')
+    const fanSpeed = getInput('FanSpeed')
+    fanSpeed.value = '5'
+    fanSpeed.dispatchEvent(new Event('change', { bubbles: true }))
     routes['GET /classic/zones/buildings/1/ata'] = {
       ...groupStateFixture(),
       Power: false,
     }
     await manager.fetchValuesKeepingEdits()
 
-    // The untouched control follows the stream; the edit stays the
-    // user's, so pressing Update would still carry it.
+    // The untouched control follows the stream; the edits — the picker
+    // and the free input alike — stay the user's, so pressing Update
+    // would still carry them.
     expect(getSelect('Power').value).toBe('false')
     expect(getSelect('SetTemperature').value).toBe('25')
+    expect(getInput('FanSpeed').value).toBe('5')
     expect(getButtonDisabled('apply_values_melcloud')).toBe(false)
   })
 
