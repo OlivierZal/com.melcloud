@@ -357,6 +357,69 @@ describe('ata value manager', () => {
     expect(getSelect('SetTemperature').value).toBe('22')
   })
 
+  it('should keep an in-progress edit across a real-time sync', async () => {
+    const routes = widgetRoutes()
+    const { manager } = await createManager({ routes })
+    await manager.fetchValues()
+    commit(getSelect('SetTemperature'), '25')
+    routes['GET /classic/zones/buildings/1/ata'] = {
+      ...groupStateFixture(),
+      Power: false,
+    }
+    await manager.fetchValuesKeepingEdits()
+
+    // The untouched control follows the stream; the edit stays the
+    // user's, so pressing Update would still carry it.
+    expect(getSelect('Power').value).toBe('false')
+    expect(getSelect('SetTemperature').value).toBe('25')
+    expect(getButtonDisabled('apply_values_melcloud')).toBe(false)
+  })
+
+  it('should grey Update when the zone catches up with the edit', async () => {
+    const routes = widgetRoutes()
+    const { manager } = await createManager({ routes })
+    await manager.fetchValues()
+    commit(getSelect('SetTemperature'), '25')
+    routes['GET /classic/zones/buildings/1/ata'] = {
+      ...groupStateFixture(),
+      SetTemperature: 25,
+    }
+    await manager.fetchValuesKeepingEdits()
+
+    // The edit became a no-op: nothing to send, so the gate cannot arm.
+    expect(getSelect('SetTemperature').value).toBe('25')
+    expect(getButtonDisabled('apply_values_melcloud')).toBe(true)
+
+    // Caught up means released: the control follows the stream again.
+    routes['GET /classic/zones/buildings/1/ata'] = {
+      ...groupStateFixture(),
+      SetTemperature: 23,
+    }
+    await manager.fetchValuesKeepingEdits()
+
+    expect(getSelect('SetTemperature').value).toBe('23')
+  })
+
+  it('should blank an edit the incoming mode pushed off the grid', async () => {
+    const routes = widgetRoutes()
+    const { manager } = await createManager({ routes })
+    await manager.fetchValues()
+    commit(getSelect('SetTemperature'), '12')
+    routes['GET /classic/zones/buildings/1/ata'] = {
+      ...groupStateFixture(),
+      OperationMode: 3,
+    }
+    await manager.fetchValuesKeepingEdits()
+
+    // The synced cooling mode raised the floor past the edit: a value
+    // no request could carry blanks to "no instruction", and an empty
+    // body cannot arm.
+    expect(getSelect('OperationMode').value).toBe('3')
+    expect(getSelect('SetTemperature').value).toBe('')
+    expect(optionValues(getSelect('SetTemperature'))).not.toContain('12')
+    expect(getButtonDisabled('apply_values_melcloud')).toBe(true)
+  })
+
   it('should skip a value slot without a control', async () => {
     const { manager } = await createManager()
     // A rogue non-control carrying a capability id must not take the

@@ -93,11 +93,14 @@ class WidgetApp {
         clearTimeout(this.#debounceTimeout)
       }
       this.#debounceTimeout = setTimeout(() => {
-        fireAndForget(this.#fetchAndAnimate())
+        fireAndForget(this.#refreshKeepingEdits())
       }, AnimationDelay.debounce)
     })
   }
 
+  // Zone switch and initial load take the full sync ("show me the zone
+  // as it stands"); the real-time stream must not clobber an edit in
+  // progress, so it goes through the edit-keeping sync instead.
   async #fetchAndAnimate(): Promise<void> {
     const values = await this.#ataValueManager.fetchValues()
     await this.#animationController.applyAnimation(values)
@@ -125,6 +128,11 @@ class WidgetApp {
       this.#ataValueManager.applyDefaultZone(defaultZone)
       await this.#fetchAndAnimate()
     }
+  }
+
+  async #refreshKeepingEdits(): Promise<void> {
+    const values = await this.#ataValueManager.fetchValuesKeepingEdits()
+    await this.#animationController.applyAnimation(values)
   }
 
   async #run(): Promise<void> {

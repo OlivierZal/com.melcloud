@@ -226,6 +226,10 @@ export class AtaValueManager {
     )
   }
 
+  // The FULL sync: initial load, zone switch and Refresh all mean "show
+  // me the zone as it stands", so every control takes the server state,
+  // edits included — an edit is a zone-scoped statement, not a portable
+  // one. The real-time path is `fetchValuesKeepingEdits`.
   public async fetchValues(): Promise<Classic.GroupState> {
     const values = await homeyApiGet<Classic.GroupState>(
       this.#homey,
@@ -233,10 +237,27 @@ export class AtaValueManager {
     )
     this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
     this.#syncAtaValues()
-    // The incoming server state becomes the new baseline (a background
-    // re-fetch mid-edit re-snapshots here); `runBusy`'s generation guard
-    // keeps this from releasing a save that a live PUT still owns.
+    // `runBusy`'s generation guard keeps this from releasing a save
+    // that a live PUT still owns.
     this.#dirtyGate.markSaved()
+    return values
+  }
+
+  // The real-time sync (`deviceupdate`): a control still showing what
+  // the zone held follows the stream; one the user moved keeps the
+  // edit. No baseline moves — the gate runs in predicate mode, so
+  // `recompute` re-judges the kept edits against the zone's NEW state:
+  // Update greys exactly when every edit was caught up (a no-op button
+  // must not arm) and re-arms the moment one diverges again.
+  public async fetchValuesKeepingEdits(): Promise<Classic.GroupState> {
+    const previous = { ...this.#zoneMapping[this.#zone.value] }
+    const values = await homeyApiGet<Classic.GroupState>(
+      this.#homey,
+      getAtaStatePath(this.#zone.value),
+    )
+    this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
+    this.#syncPristineAtaValues(previous)
+    this.#dirtyGate.recompute()
     return values
   }
 
@@ -332,6 +353,35 @@ export class AtaValueManager {
   #syncAtaValues(): void {
     for (const [ataKey] of this.#ataCapabilities) {
       this.#updateAtaValue(ataKey)
+    }
+  }
+
+  // `SetTemperature` runs LAST so its grid rebuild reads the mode this
+  // same sync settled (a programmatic mode write fires no `change`
+  // event for the rebuild wiring to catch). A kept edit the new floor
+  // no longer offers blanks to "no instruction": the form never
+  // displays a value no request could carry.
+  #syncPristineAtaValues(previous: Partial<Classic.GroupState>): void {
+    const ataKeys = this.#ataCapabilities
+      .map(([ataKey]) => ataKey)
+      .toSorted(
+        (first, second) =>
+          Number(first === 'SetTemperature') -
+          Number(second === 'SetTemperature'),
+      )
+    for (const ataKey of ataKeys) {
+      const control = this.#ataValues.querySelector(`#${CSS.escape(ataKey)}`)
+      if (
+        !(control instanceof HTMLInputElement) &&
+        !(control instanceof HTMLSelectElement)
+      ) {
+        continue
+      }
+      if (control.value === (previous[ataKey]?.toString() ?? '')) {
+        this.#updateAtaValue(ataKey)
+      } else if (ataKey === 'SetTemperature') {
+        this.#refreshTemperatureOptions(control.value)
+      }
     }
   }
 
