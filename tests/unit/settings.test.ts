@@ -1445,18 +1445,22 @@ describe('settings page', () => {
       })
     })
 
-    it('should default an empty start date to now', async () => {
+    // The page no longer stamps a clock at all: an absent bound is the
+    // app's to complete, on the HOMEY's clock — the phone stamping its
+    // own here was #1595.
+    it('should submit an empty start date as absent', async () => {
       const harness = await bootPage()
       commit(getInput('start_date'), '')
       commit(getInput('end_date'), '2026-09-15T18:00')
       getButton('apply_holiday_mode').click()
       await settleDetached()
-      const body = lastCallBody(
-        harness,
-        'PUT /classic/zones/buildings/1/settings/holiday-mode',
-      ) as { startDate: string }
 
-      expect(body.startDate).not.toBe('')
+      expect(
+        lastCallBody(
+          harness,
+          'PUT /classic/zones/buildings/1/settings/holiday-mode',
+        ),
+      ).toStrictEqual({ endDate: '2026-09-15T18:00', isEnabled: true })
     })
 
     it('should require an end date to enable the window', async () => {
@@ -1483,12 +1487,13 @@ describe('settings page', () => {
       commit(getSelect('enabled_holiday_mode'), 'false')
       getButton('apply_holiday_mode').click()
       await settleDetached()
-      const body = lastCallBody(
-        harness,
-        'PUT /classic/zones/buildings/1/settings/holiday-mode',
-      ) as { isEnabled: boolean }
 
-      expect(body.isEnabled).toBe(false)
+      expect(
+        lastCallBody(
+          harness,
+          'PUT /classic/zones/buildings/1/settings/holiday-mode',
+        ),
+      ).toStrictEqual({ isEnabled: false })
       // Disabling cleared the dates in the form.
       expect(getInput('start_date').value).toBe('')
       expect(getInput('end_date').value).toBe('')

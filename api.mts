@@ -5,7 +5,6 @@ import type { Homey } from 'homey/lib/Homey'
 import { getErrorMessage } from '@olivierzal/homey-kit'
 import {
   type HolidayModeState,
-  type HolidayModeUpdate,
   type LoginCredentials,
   type ProtectionState,
   type ProtectionUpdate,
@@ -13,6 +12,7 @@ import {
   AuthenticationThrottledError,
 } from '@olivierzal/melcloud-api'
 
+import type { HolidayModeSettings } from './types/api.mts'
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
 import type {
   ErrorLogQueryParams,
@@ -297,7 +297,7 @@ const api = {
     homey: { app },
     params,
   }: {
-    body: HolidayModeUpdate
+    body: HolidayModeSettings
     homey: Homey
     params: DeviceOrZoneData
   }): Promise<void> =>
@@ -328,7 +328,7 @@ const api = {
     homey: { app },
     params: { buildingId },
   }: {
-    body: HolidayModeUpdate
+    body: HolidayModeSettings
     homey: Homey
     params: { buildingId: string }
   }): Promise<void> => app.updateHomeBuildingHolidayMode(buildingId, body),
@@ -356,7 +356,7 @@ const api = {
     homey: { app },
     params: { deviceId },
   }: {
-    body: HolidayModeUpdate
+    body: HolidayModeSettings
     homey: Homey
     params: { deviceId: string }
   }): Promise<void> => app.updateHomeHolidayMode([deviceId], body),

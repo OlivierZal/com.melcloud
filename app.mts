@@ -32,7 +32,7 @@ import { Intl, Temporal } from 'temporal-polyfill'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
-import type { Api } from './types/api.mts'
+import type { Api, HolidayModeSettings } from './types/api.mts'
 import type { HomeySettings } from './types/app-settings.mts'
 import type { GroupAtaStates } from './types/classic-ata.mts'
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
@@ -901,8 +901,10 @@ export default class MELCloudApp extends App {
     settings,
     zoneId,
     zoneType,
-  }: DeviceOrZoneData & { settings: HolidayModeUpdate }): Promise<void> {
-    await this.getClassicFacade(zoneType, zoneId).updateHolidayMode(settings)
+  }: DeviceOrZoneData & { settings: HolidayModeSettings }): Promise<void> {
+    await this.getClassicFacade(zoneType, zoneId).updateHolidayMode(
+      this.#completeHolidayModeWindow(settings),
+    )
   }
 
   public async updateDeviceSettings({
@@ -973,7 +975,7 @@ export default class MELCloudApp extends App {
 
   public async updateHomeBuildingHolidayMode(
     buildingId: string,
-    settings: HolidayModeUpdate,
+    settings: HolidayModeSettings,
   ): Promise<void> {
     await this.updateHomeHolidayMode(
       this.#getHomeBuildingDeviceIds(buildingId),
@@ -1000,9 +1002,12 @@ export default class MELCloudApp extends App {
 
   public async updateHomeHolidayMode(
     deviceIds: readonly string[],
-    settings: HolidayModeUpdate,
+    settings: HolidayModeSettings,
   ): Promise<void> {
-    await this.#homeFacadeManager.updateHolidayMode(deviceIds, settings)
+    await this.#homeFacadeManager.updateHolidayMode(
+      deviceIds,
+      this.#completeHolidayModeWindow(settings),
+    )
   }
 
   public async updateHomeOverheatProtection(
@@ -1066,6 +1071,24 @@ export default class MELCloudApp extends App {
       if (result.status === 'rejected') {
         this.error('Device sync failed:', result.reason)
       }
+    }
+  }
+
+  // One clock for every entry point: the Homey's. An absent bound means
+  // "now" — the settings page no longer stamps the phone's clock, whose
+  // divergence from the flow cards' Homey clock was #1595.
+  #completeHolidayModeWindow({
+    endDate,
+    isEnabled,
+    startDate,
+  }: HolidayModeSettings): HolidayModeUpdate {
+    const nowAtHomey = Temporal.Now.plainDateTimeISO(
+      getTimeZone(this.homey),
+    ).toString()
+    return {
+      endDate: endDate ?? nowAtHomey,
+      isEnabled,
+      startDate: startDate ?? nowAtHomey,
     }
   }
 

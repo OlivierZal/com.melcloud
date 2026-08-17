@@ -1813,5 +1813,20 @@
     "pl": "Edycja w widżecie powietrze-powietrze nie jest już przerywana przez aktualizacje na żywo: nietknięte pola nadal podążają za urządzeniami, a wprowadzone zmiany pozostają na miejscu, dopóki ich nie zastosujesz lub nie odświeżysz.",
     "ru": "Редактирование в виджете «воздух-воздух» больше не прерывается живыми обновлениями: нетронутые поля продолжают следовать за устройствами, а ваши изменения остаются на месте, пока вы их не примените или не обновите.",
     "sv": "Redigering i luft-till-luft-widgeten avbryts inte längre av liveuppdateringar: orörda fält fortsätter att följa dina enheter, och dina ändringar står kvar tills du tillämpar dem eller uppdaterar."
+  },
+  "46.4.2": {
+    "ar": "أصبحت أوقات وضع الإجازة تُحفظ وتُعرض الآن بتوقيتك المحلي الصحيح، ويستخدم وقت البدء التلقائي ساعة Homey.",
+    "da": "Ferietilstandens tidspunkter gemmes og vises nu korrekt i din egen tidszone, og det automatiske starttidspunkt følger din Homeys ur.",
+    "de": "Die Zeiten des Urlaubsmodus werden jetzt korrekt in Ihrer eigenen Zeitzone gespeichert und angezeigt, und die automatische Startzeit folgt der Uhr Ihres Homey.",
+    "en": "Holiday mode times are now stored and shown correctly in your own timezone, and the automatic start time follows your Homey’s clock.",
+    "es": "Las horas del modo vacaciones ahora se guardan y muestran correctamente en tu zona horaria, y la hora de inicio automática sigue el reloj de tu Homey.",
+    "fr": "Les horaires du mode vacances sont désormais enregistrés et affichés correctement dans votre fuseau horaire, et l’heure de début automatique suit l’horloge de votre Homey.",
+    "it": "Gli orari della modalità vacanza ora vengono salvati e mostrati correttamente nel tuo fuso orario, e l’ora di inizio automatica segue l’orologio del tuo Homey.",
+    "ko": "휴가 모드 시간이 이제 사용자의 시간대에 맞게 올바르게 저장되고 표시되며, 자동 시작 시간은 Homey의 시계를 따릅니다.",
+    "nl": "De tijden van de vakantiemodus worden nu correct in je eigen tijdzone opgeslagen en getoond, en de automatische starttijd volgt de klok van je Homey.",
+    "no": "Feriemodusens tidspunkter lagres og vises nå riktig i din egen tidssone, og den automatiske starttiden følger Homey-klokken din.",
+    "pl": "Godziny trybu wakacyjnego są teraz zapisywane i wyświetlane poprawnie w Twojej strefie czasowej, a automatyczny czas rozpoczęcia korzysta z zegara Homey.",
+    "ru": "Время режима отпуска теперь сохраняется и отображается корректно в вашем часовом поясе, а автоматическое время начала следует часам вашего Homey.",
+    "sv": "Semesterlägets tider sparas och visas nu korrekt i din egen tidszon, och den automatiska starttiden följer din Homeys klocka."
   }
 }
