@@ -1798,5 +1798,20 @@
     "pl": "Edycja w widżecie powietrze-powietrze nie jest już przerywana przez aktualizacje na żywo: nietknięte pola nadal podążają za urządzeniami, a wprowadzone zmiany pozostają na miejscu, dopóki ich nie zastosujesz lub nie odświeżysz.",
     "ru": "Редактирование в виджете «воздух-воздух» больше не прерывается живыми обновлениями: нетронутые поля продолжают следовать за устройствами, а ваши изменения остаются на месте, пока вы их не примените или не обновите.",
     "sv": "Redigering i luft-till-luft-widgeten avbryts inte längre av liveuppdateringar: orörda fält fortsätter att följa dina enheter, och dina ändringar står kvar tills du tillämpar dem eller uppdaterar."
+  },
+  "46.4.1": {
+    "ar": "لم يعد التعديل الجاري في ودجت الهواء-هواء يتوقف بسبب التحديثات المباشرة: تستمر الحقول غير المعدَّلة في متابعة أجهزتك، وتبقى تغييراتك في مكانها حتى تطبّقها أو تحدّث الصفحة.",
+    "da": "Redigering i luft-til-luft-widgetten afbrydes ikke længere af liveopdateringer: uændrede felter følger fortsat dine enheder, og dine ændringer bliver stående, indtil du anvender dem eller opdaterer.",
+    "de": "Eine laufende Änderung im Luft-Luft-Widget wird nicht mehr von Live-Aktualisierungen unterbrochen: unveränderte Felder folgen weiterhin deinen Geräten, und deine Änderungen bleiben bestehen, bis du sie anwendest oder aktualisierst.",
+    "en": "Editing in the air-to-air widget is no longer interrupted by live updates: untouched fields keep following your devices, and your changes stay in place until you apply them or refresh.",
+    "es": "Editar en el widget aire-aire ya no se ve interrumpido por las actualizaciones en directo: los campos sin tocar siguen a tus dispositivos, y tus cambios se mantienen hasta que los apliques o refresques.",
+    "fr": "Une modification dans le widget air-air n'est plus interrompue par les mises à jour en direct : les champs non modifiés continuent de suivre vos appareils, et vos changements restent en place jusqu'à ce que vous les appliquiez ou rafraîchissiez.",
+    "it": "Le modifiche nel widget aria-aria non vengono più interrotte dagli aggiornamenti in tempo reale: i campi non toccati continuano a seguire i tuoi dispositivi, e le tue modifiche restano al loro posto finché non le applichi o aggiorni.",
+    "ko": "공기-공기 위젯에서 편집 중인 값이 더 이상 실시간 업데이트로 사라지지 않습니다. 손대지 않은 항목은 계속 기기를 따라가고, 변경한 값은 적용하거나 새로 고칠 때까지 그대로 유지됩니다.",
+    "nl": "Bewerken in de lucht-lucht-widget wordt niet meer onderbroken door live-updates: onaangeroerde velden blijven je apparaten volgen, en je wijzigingen blijven staan totdat je ze toepast of ververst.",
+    "no": "Redigering i luft-til-luft-widgeten avbrytes ikke lenger av liveoppdateringer: urørte felter fortsetter å følge enhetene dine, og endringene dine blir stående til du bruker dem eller oppdaterer.",
+    "pl": "Edycja w widżecie powietrze-powietrze nie jest już przerywana przez aktualizacje na żywo: nietknięte pola nadal podążają za urządzeniami, a wprowadzone zmiany pozostają na miejscu, dopóki ich nie zastosujesz lub nie odświeżysz.",
+    "ru": "Редактирование в виджете «воздух-воздух» больше не прерывается живыми обновлениями: нетронутые поля продолжают следовать за устройствами, а ваши изменения остаются на месте, пока вы их не примените или не обновите.",
+    "sv": "Redigering i luft-till-luft-widgeten avbryts inte längre av liveuppdateringar: orörda fält fortsätter att följa dina enheter, och dina ändringar står kvar tills du tillämpar dem eller uppdaterar."
   }
 }
