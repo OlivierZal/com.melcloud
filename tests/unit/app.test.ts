@@ -2613,6 +2613,32 @@ describe('melCloudApp', () => {
       ).resolves.toBeUndefined()
     })
 
+    // One clock for every entry point: an absent bound is completed on
+    // the HOMEY's clock, never the caller's — the settings page used to
+    // stamp the phone's here (#1595).
+    it("should complete absent bounds on the Homey's clock", async () => {
+      const updateHolidayMode = mockUpdateResult(null)
+      await initWithFacade(app, mock<Classic.ZoneFacade>({ updateHolidayMode }))
+      vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+        Temporal.PlainDateTime.from('2026-08-18T09:30:00'),
+      )
+      try {
+        await app.updateClassicHolidayMode({
+          settings: { endDate: '2026-08-25T12:00', isEnabled: true },
+          zoneId: '1',
+          zoneType: 'buildings',
+        })
+      } finally {
+        vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+      }
+
+      expect(updateHolidayMode).toHaveBeenCalledWith({
+        endDate: '2026-08-25T12:00',
+        isEnabled: true,
+        startDate: '2026-08-18T09:30:00',
+      })
+    })
+
     it('should throw on attribute errors', async () => {
       const mockFacade = mock<Classic.ZoneFacade>({
         updateHolidayMode: mockUpdateResult({ date: ['Invalid date'] }),

@@ -1,7 +1,6 @@
 import type { DriverSetting } from '@olivierzal/homey-kit/manifest'
 import type {
   HolidayModeState,
-  HolidayModeUpdate,
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
@@ -46,7 +45,7 @@ import {
 } from '@olivierzal/melcloud-api/protection'
 import { Temporal } from 'temporal-polyfill'
 
-import type { Api } from '../types/api.mts'
+import type { Api, HolidayModeSettings } from '../types/api.mts'
 import type { HomeySettings } from '../types/app-settings.mts'
 import type {
   DeviceSetting,
@@ -1460,7 +1459,7 @@ class ZoneSettingsManager {
   /**
    * @alerts Displays save errors to the user.
    */
-  public async setHolidayModeData(update: HolidayModeUpdate): Promise<void> {
+  public async setHolidayModeData(update: HolidayModeSettings): Promise<void> {
     const { endDate, isEnabled, startDate } = update
     await this.#putZoneSetting(
       {
@@ -1472,10 +1471,14 @@ class ZoneSettingsManager {
       },
       update,
       {
+        // A bound the form left absent is completed on the Homey's
+        // clock app-side: unknown here, so the optimistic cache holds
+        // null until the display refresh reads the real window back —
+        // which also makes any stale bound on a disable harmless.
         holiday_mode: {
-          endDate: isEnabled ? endDate : null,
+          endDate: endDate ?? null,
           isEnabled,
-          startDate: isEnabled ? startDate : null,
+          startDate: startDate ?? null,
         },
       },
     )
@@ -1721,7 +1724,7 @@ class ZoneSettingsManager {
   // the panel, alert success or failure.
   async #putZoneSetting(
     { display, id, path }: ZoneSettingDescriptor,
-    query: HolidayModeUpdate | ProtectionUpdate,
+    query: HolidayModeSettings | ProtectionUpdate,
     zoneSettings: MixableZoneSettings,
   ): Promise<void> {
     await this.#gateFor(id).runBusy(async () => {
@@ -1743,7 +1746,7 @@ class ZoneSettingsManager {
   // Build the holiday-mode update from the form, alerting and returning
   // `null` on a validation failure (a mixed enabled not chosen, or an
   // enabled window with no end date).
-  #readHolidayModeForm(): HolidayModeUpdate | null {
+  #readHolidayModeForm(): HolidayModeSettings | null {
     if (!this.#requireEnabledChosen(this.#holidayModeEnabled)) {
       return null
     }
@@ -1761,13 +1764,13 @@ class ZoneSettingsManager {
       )
       return null
     }
-    // The window defaults its start to now (an empty field); the dates are
-    // ignored when disabling.
-    const now = Temporal.Now.plainDateTimeISO().toString()
+    // An empty bound is submitted as absent: the app completes it on
+    // the HOMEY's clock, the one every entry point shares — the page
+    // stamping the phone's clock here was #1595.
     return {
-      endDate: endDate ?? now,
       isEnabled,
-      startDate: startDateValue === '' ? now : startDateValue,
+      ...(endDate !== undefined && { endDate }),
+      ...(startDateValue !== '' && { startDate: startDateValue }),
     }
   }
 
