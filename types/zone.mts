@@ -25,6 +25,16 @@ export interface DeviceOrZoneData {
 // same-named devices on different buildings apart.
 export interface HomeBuildingZone {
   readonly buildingName: string
+  /**
+   * Whether the building holds at least one air-to-air unit — gates the
+   * per-building overheat panel without a positional scan.
+   */
+  readonly hasAta: boolean
+  /**
+   * Whether the building holds at least one air-to-water unit — with
+   * `hasAta`, qualifies a mixed building's bulk-write scope.
+   */
+  readonly hasAtw: boolean
   readonly id: string
   readonly level: 0
   readonly model: 'homeBuildings'

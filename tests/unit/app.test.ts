@@ -2,7 +2,6 @@ import {
   type HolidayModeState,
   type HolidayModeUpdate,
   type LoginCredentials,
-  type ProtectionState,
   type ProtectionUpdate,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
@@ -546,41 +545,6 @@ const stubHomeDevice = (facade: unknown): void => {
     isAtw: (): boolean => false,
   })
   mockHomeFacadeManagerGet.mockReturnValue(facade)
-}
-
-// Two ATA devices in building 'b1', each with its own frost/holiday, so the
-// building aggregate can be exercised across agreement and disagreement.
-const stubBuilding = (
-  frostById: Record<string, unknown>,
-  holidayById: Record<string, unknown> = {},
-  overheatById: Record<string, unknown> = {},
-): void => {
-  const devices = [
-    {
-      building: { id: 'b1' },
-      id: 'd1',
-      isAta: (): boolean => true,
-      isAtw: (): boolean => false,
-    },
-    {
-      building: { id: 'b1' },
-      id: 'd2',
-      isAta: (): boolean => true,
-      isAtw: (): boolean => false,
-    },
-  ]
-  mockHomeRegistry.getDevices.mockReturnValue(devices)
-  mockHomeRegistry.getById.mockImplementation((id) =>
-    devices.find((device) => device.id === id),
-  )
-  mockHomeFacadeManagerGet.mockImplementation((model) => ({
-    frostProtection: frostById[(model as { id: string }).id] ?? null,
-    holidayMode: holidayById[(model as { id: string }).id] ?? null,
-    overheatProtection: overheatById[(model as { id: string }).id] ?? null,
-    // The facade guards read the discriminator the wave added, so the
-    // stub carries it instead of relying on structural sniffing.
-    type: Home.DeviceType.Ata,
-  }))
 }
 
 const getSyncCallbackFrom = (
@@ -1322,10 +1286,10 @@ describe('melCloudApp', () => {
 
     const stubHomeAtaDevice = (
       entries: {
-        clearedTimestamp: string | null
-        errorCode: string
-        errorReason: string | null
-        timestamp: string
+        at: string
+        deviceId: string
+        code?: string
+        message?: string
       }[],
     ): void => {
       mockHomeRegistry.getDevicesByType.mockImplementation((type) =>
@@ -1346,8 +1310,8 @@ describe('melCloudApp', () => {
     it('should merge Home errors chronologically into the Classic window', async () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
-          errors: [
-            { date: '2026-03-28T14:30:00.000Z', deviceId: 42, error: 'test' },
+          entries: [
+            { at: '2026-03-28T14:30:00.000Z', deviceId: 42, message: 'test' },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -1359,22 +1323,17 @@ describe('melCloudApp', () => {
       })
       stubHomeAtaDevice([
         {
-          clearedTimestamp: null,
-          errorCode: 'E101',
-          errorReason: 'Sensor failure',
-          timestamp: '2026-03-20T10:00:00Z',
+          at: '2026-03-20T10:00:00Z',
+          code: 'E101',
+          deviceId: 'guid-1',
+          message: 'Sensor failure',
         },
+        { at: '2026-03-25T08:00:00Z', code: 'E202', deviceId: 'guid-1' },
         {
-          clearedTimestamp: null,
-          errorCode: 'E202',
-          errorReason: null,
-          timestamp: '2026-03-25T08:00:00Z',
-        },
-        {
-          clearedTimestamp: null,
-          errorCode: 'E303',
-          errorReason: 'Too old',
-          timestamp: '2026-02-15T10:00:00Z',
+          at: '2026-02-15T10:00:00Z',
+          code: 'E303',
+          deviceId: 'guid-1',
+          message: 'Too old',
         },
       ])
       await app.onInit()
@@ -1389,16 +1348,33 @@ describe('melCloudApp', () => {
       expect(errorLog.errors[1]?.device).toBe('Studeerkamer')
     })
 
+    it('renders an empty text for a Home entry with neither message nor code', async () => {
+      mockApiInstance.getErrorLog.mockResolvedValue(
+        ok({
+          entries: [],
+          fromDate: '2026-03-01',
+          nextFromDate: '2026-03-15',
+          nextToDate: '2026-03-31',
+        }),
+      )
+      stubHomeAtaDevice([{ at: '2026-03-20T10:00:00Z', deviceId: 'guid-1' }])
+      await app.onInit()
+
+      const errorLog = await app.getErrorLog(mock<Classic.ErrorLogQuery>())
+
+      expect(errorLog.errors[0]?.error).toBe('')
+    })
+
     it('should show an em dash for sentinel dates and sink them last', async () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
-          errors: [
+          entries: [
             {
-              date: '0001-01-01T00:09:00',
+              at: '0001-01-01T00:09:00',
               deviceId: 42,
-              error: 'Unknown Error',
+              message: 'Unknown Error',
             },
-            { date: '2026-03-28T14:30:00.000Z', deviceId: 42, error: 'test' },
+            { at: '2026-03-28T14:30:00.000Z', deviceId: 42, message: 'test' },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -1420,8 +1396,8 @@ describe('melCloudApp', () => {
     it('should keep the log when a Home device fails to answer', async () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
-          errors: [
-            { date: '2026-03-28T14:30:00.000Z', deviceId: 42, error: 'test' },
+          entries: [
+            { at: '2026-03-28T14:30:00.000Z', deviceId: 42, message: 'test' },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -1465,10 +1441,10 @@ describe('melCloudApp', () => {
       mockApiInstance.isAuthenticated.mockReturnValue(false)
       stubHomeAtaDevice([
         {
-          clearedTimestamp: null,
-          errorCode: 'E101',
-          errorReason: 'Sensor failure',
-          timestamp: '2026-03-15T10:00:00Z',
+          at: '2026-03-15T10:00:00Z',
+          code: 'E101',
+          deviceId: 'guid-1',
+          message: 'Sensor failure',
         },
       ])
       await app.onInit()
@@ -1502,10 +1478,10 @@ describe('melCloudApp', () => {
       mockApiInstance.isAuthenticated.mockReturnValue(false)
       stubHomeAtaDevice([
         {
-          clearedTimestamp: null,
-          errorCode: 'E101',
-          errorReason: 'Sensor failure',
-          timestamp: '2026-01-05T10:00:00Z',
+          at: '2026-01-05T10:00:00Z',
+          code: 'E101',
+          deviceId: 'guid-1',
+          message: 'Sensor failure',
         },
       ])
       await app.onInit()
@@ -1530,8 +1506,8 @@ describe('melCloudApp', () => {
       const deviceName = 'Living Room'
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
-          errors: [
-            { date: '2026-03-28T14:30:00.000Z', deviceId: 42, error: 'test' },
+          entries: [
+            { at: '2026-03-28T14:30:00.000Z', deviceId: 42, message: 'test' },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -1564,8 +1540,8 @@ describe('melCloudApp', () => {
     it('should fall back to empty device name when device is not in registry', async () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
-          errors: [
-            { date: '2026-03-28T14:30:00', deviceId: 999, error: 'test' },
+          entries: [
+            { at: '2026-03-28T14:30:00', deviceId: 999, message: 'test' },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -1849,7 +1825,7 @@ describe('melCloudApp', () => {
 
     it('should return the building group state', async () => {
       mockHomeFacadeManagerGetBuilding.mockReturnValue(
-        mock<Home.BuildingAtaFacade>({
+        mock<Home.BuildingFacade>({
           getGroup: vi
             .fn<() => Promise<unknown>>()
             .mockResolvedValue({ ok: true, value: groupState }),
@@ -1870,9 +1846,7 @@ describe('melCloudApp', () => {
         .fn<(state: unknown) => Promise<unknown>>()
         .mockResolvedValue({ AttributeErrors: null, Success: true })
       mockHomeFacadeManagerGetBuilding.mockReturnValue(
-        mock<Home.BuildingAtaFacade>({
-          updateGroupState: mockUpdateGroupState,
-        }),
+        mock<Home.BuildingFacade>({ updateGroupState: mockUpdateGroupState }),
       )
       await app.onInit()
 
@@ -1885,9 +1859,9 @@ describe('melCloudApp', () => {
     })
 
     it('should list the member modes in the classic vocabulary', async () => {
-      const member = { id: 'device-1' }
+      const member = { id: 'device-1', isAta: (): boolean => true }
       mockHomeFacadeManagerGetBuilding.mockReturnValue(
-        mock<Home.BuildingAtaFacade>({ devices: [member] }),
+        mock<Home.BuildingFacade>({ devices: [member] }),
       )
       mockHomeFacadeManagerGet.mockReturnValue(
         mock<Home.DeviceAtaFacade>({ operationMode: 'Heat' }),
@@ -1920,10 +1894,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const frostProtection = await app.getClassicFrostProtection({
-        zoneId: '1',
-        zoneType: 'buildings',
-      })
+      const frostProtection = await app.getTargetFrostProtection('buildings_1')
 
       expect(frostProtection).toBe(mockData)
     })
@@ -1939,10 +1910,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const holidayMode = await app.getClassicHolidayMode({
-        zoneId: '1',
-        zoneType: 'buildings',
-      })
+      const holidayMode = await app.getTargetHolidayMode('buildings_1')
 
       expect(holidayMode).toBe(mockData)
     })
@@ -2571,11 +2539,10 @@ describe('melCloudApp', () => {
       )
 
       await expect(
-        app.updateClassicFrostProtection({
-          settings: mock<ProtectionUpdate>(),
-          zoneId: '1',
-          zoneType: 'buildings',
-        }),
+        app.updateTargetFrostProtection(
+          'buildings_1',
+          mock<ProtectionUpdate>(),
+        ),
       ).resolves.toBeUndefined()
     })
 
@@ -2588,11 +2555,10 @@ describe('melCloudApp', () => {
       )
 
       await expect(
-        app.updateClassicFrostProtection({
-          settings: mock<ProtectionUpdate>(),
-          zoneId: '1',
-          zoneType: 'buildings',
-        }),
+        app.updateTargetFrostProtection(
+          'buildings_1',
+          mock<ProtectionUpdate>(),
+        ),
       ).rejects.toThrow('min: Too low')
     })
   })
@@ -2605,11 +2571,7 @@ describe('melCloudApp', () => {
       )
 
       await expect(
-        app.updateClassicHolidayMode({
-          settings: mock<HolidayModeUpdate>(),
-          zoneId: '1',
-          zoneType: 'buildings',
-        }),
+        app.updateTargetHolidayMode('buildings_1', mock<HolidayModeUpdate>()),
       ).resolves.toBeUndefined()
     })
 
@@ -2623,10 +2585,9 @@ describe('melCloudApp', () => {
         Temporal.PlainDateTime.from('2026-08-18T09:30:00'),
       )
       try {
-        await app.updateClassicHolidayMode({
-          settings: { endDate: '2026-08-25T12:00', isEnabled: true },
-          zoneId: '1',
-          zoneType: 'buildings',
+        await app.updateTargetHolidayMode('buildings_1', {
+          endDate: '2026-08-25T12:00',
+          isEnabled: true,
         })
       } finally {
         vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
@@ -2646,11 +2607,7 @@ describe('melCloudApp', () => {
       await initWithFacade(app, mockFacade)
 
       await expect(
-        app.updateClassicHolidayMode({
-          settings: mock<HolidayModeUpdate>(),
-          zoneId: '1',
-          zoneType: 'buildings',
-        }),
+        app.updateTargetHolidayMode('buildings_1', mock<HolidayModeUpdate>()),
       ).rejects.toThrow('date: Invalid date')
     })
   })
@@ -2819,20 +2776,20 @@ describe('melCloudApp', () => {
         )
         try {
           await app.onInit()
-          stubHomeDevice({})
+          const updateHolidayMode = vi
+            .fn<() => Promise<void>>()
+            .mockResolvedValue()
+          stubHomeDevice({ updateHolidayMode })
 
           await getActionRunListener()({ duration: 3, zone: homeHolidayZone })
 
           // Start = now (matching the Classic path's omitted `from`), end =
-          // midnight 3 days out; the single device is sent as a one-item set.
-          expect(mockHomeFacadeManagerUpdateHolidayMode).toHaveBeenCalledWith(
-            ['guid-1'],
-            {
-              endDate: '2026-07-22T00:00:00',
-              isEnabled: true,
-              startDate: '2026-07-19T08:30:00',
-            },
-          )
+          // midnight 3 days out; the device facade writes its own unit.
+          expect(updateHolidayMode).toHaveBeenCalledWith({
+            endDate: '2026-07-22T00:00:00',
+            isEnabled: true,
+            startDate: '2026-07-19T08:30:00',
+          })
         } finally {
           vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
         }
@@ -2844,22 +2801,25 @@ describe('melCloudApp', () => {
         )
         try {
           await app.onInit()
-          stubBuilding({})
+          const updateHolidayMode = vi
+            .fn<() => Promise<void>>()
+            .mockResolvedValue()
+          mockHomeFacadeManagerGetBuilding.mockReturnValue({
+            updateHolidayMode,
+          })
 
           await getActionRunListener()({
             duration: 3,
             zone: { id: 'homeBuildings_b1' },
           })
 
-          // A whole Home building fans the one window out over every device.
-          expect(mockHomeFacadeManagerUpdateHolidayMode).toHaveBeenCalledWith(
-            ['d1', 'd2'],
-            {
-              endDate: '2026-07-22T00:00:00',
-              isEnabled: true,
-              startDate: '2026-07-19T08:30:00',
-            },
-          )
+          // A whole Home building batches the one window over its members
+          // — the fan-out lives in the library's building facade.
+          expect(updateHolidayMode).toHaveBeenCalledWith({
+            endDate: '2026-07-22T00:00:00',
+            isEnabled: true,
+            startDate: '2026-07-19T08:30:00',
+          })
         } finally {
           vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
         }
@@ -3056,18 +3016,18 @@ describe('melCloudApp', () => {
         )
         try {
           await app.onInit()
-          stubHomeDevice({})
+          const updateHolidayMode = vi
+            .fn<() => Promise<void>>()
+            .mockResolvedValue()
+          stubHomeDevice({ updateHolidayMode })
 
           await getFalseRunListener()({ zone: homeHolidayZone })
 
-          expect(mockHomeFacadeManagerUpdateHolidayMode).toHaveBeenCalledWith(
-            ['guid-1'],
-            {
-              endDate: '2026-07-19T08:30:00',
-              isEnabled: false,
-              startDate: '2026-07-19T08:30:00',
-            },
-          )
+          expect(updateHolidayMode).toHaveBeenCalledWith({
+            endDate: '2026-07-19T08:30:00',
+            isEnabled: false,
+            startDate: '2026-07-19T08:30:00',
+          })
         } finally {
           vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
         }
@@ -3101,7 +3061,11 @@ describe('melCloudApp', () => {
         'should mirror a Home device holiday state ($shouldBeOn)',
         async ({ holidayMode, shouldBeOn }) => {
           await app.onInit()
-          stubHomeDevice({ holidayMode })
+          stubHomeDevice({
+            getHolidayMode: vi
+              .fn<() => Promise<unknown>>()
+              .mockResolvedValue(ok(holidayMode)),
+          })
 
           const run = getMockCallArg<
             (args: { zone: TestHolidayZone }) => Promise<boolean>
@@ -3112,20 +3076,24 @@ describe('melCloudApp', () => {
       )
 
       it.each([
-        {
-          holidayById: { d1: { isEnabled: true }, d2: { isEnabled: true } },
-          shouldBeOn: true,
-        },
+        { isAggregateEnabled: true, shouldBeOn: true },
         // Devices disagree: the building aggregate is "mixed", read as off.
-        {
-          holidayById: { d1: { isEnabled: true }, d2: { isEnabled: false } },
-          shouldBeOn: false,
-        },
+        { isAggregateEnabled: null, shouldBeOn: false },
       ])(
         'should mirror a Home building holiday state ($shouldBeOn)',
-        async ({ holidayById, shouldBeOn }) => {
+        async ({ isAggregateEnabled, shouldBeOn }) => {
           await app.onInit()
-          stubBuilding({}, holidayById)
+          mockHomeFacadeManagerGetBuilding.mockReturnValue({
+            getHolidayMode: vi
+              .fn<() => Promise<unknown>>()
+              .mockResolvedValue(
+                ok({
+                  endDate: null,
+                  isEnabled: isAggregateEnabled,
+                  startDate: null,
+                }),
+              ),
+          })
 
           const run = getMockCallArg<
             (args: { zone: TestHolidayZone }) => Promise<boolean>
@@ -3139,229 +3107,142 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('home frost protection', () => {
-    it('should read a Home device frost protection off the facade', async () => {
+  describe('home target settings', () => {
+    it('reads a Home device frost protection through the target route', async () => {
       await app.onInit()
-      const frostProtection = mock<Home.FrostProtection>({ active: true })
-      stubHomeDevice({ frostProtection })
+      const state = { isEnabled: true, max: 12, min: 6 }
+      stubHomeDevice({
+        getFrostProtection: vi
+          .fn<() => Promise<unknown>>()
+          .mockResolvedValue(ok(state)),
+      })
 
-      expect(app.getHomeFrostProtection('guid-1')).toBe(frostProtection)
+      await expect(
+        app.getTargetFrostProtection('homeDevices_guid-1'),
+      ).resolves.toBe(state)
     })
 
-    it('should batch a frost protection update across the given devices', async () => {
+    it('writes a Home device frost protection through its facade', async () => {
       await app.onInit()
+      const updateFrostProtection = vi
+        .fn<() => Promise<void>>()
+        .mockResolvedValue()
+      stubHomeDevice({ updateFrostProtection })
 
-      await app.updateHomeFrostProtection(['guid-1', 'guid-2'], {
+      await app.updateTargetFrostProtection('homeDevices_guid-1', {
         isEnabled: true,
         max: 16,
         min: 4,
       })
 
-      expect(mockHomeFacadeManagerUpdateFrostProtection).toHaveBeenCalledWith(
-        ['guid-1', 'guid-2'],
-        { isEnabled: true, max: 16, min: 4 },
-      )
-    })
-  })
-
-  describe('home overheat protection', () => {
-    it('should read a Home ATA device overheat protection off the facade', async () => {
-      await app.onInit()
-      const overheatProtection = mock<ProtectionState>({ isEnabled: true })
-      stubHomeDevice({ overheatProtection, type: Home.DeviceType.Ata })
-
-      expect(app.getHomeOverheatProtection('guid-1')).toBe(overheatProtection)
-    })
-
-    it('should read null for an ATW facade, which never carries it', async () => {
-      await app.onInit()
-      stubHomeDevice({ frostProtection: null, type: Home.DeviceType.Atw })
-
-      expect(app.getHomeOverheatProtection('guid-1')).toBeNull()
-    })
-
-    it('should batch an overheat protection update across the given devices', async () => {
-      await app.onInit()
-
-      await app.updateHomeOverheatProtection(['guid-1', 'guid-2'], {
-        isEnabled: true,
-        max: 37,
-        min: 35,
-      })
-
-      expect(
-        mockHomeFacadeManagerUpdateOverheatProtection,
-      ).toHaveBeenCalledWith(['guid-1', 'guid-2'], {
-        isEnabled: true,
-        max: 37,
-        min: 35,
-      })
-    })
-  })
-
-  describe('home building frost protection and holiday mode', () => {
-    it('keeps shared frost values and nulls the disagreements', async () => {
-      await app.onInit()
-      stubBuilding({
-        d1: { isEnabled: true, max: 12, min: 6 },
-        d2: { isEnabled: true, max: 14, min: 6 },
-      })
-
-      expect(app.getHomeBuildingFrostProtection('b1')).toStrictEqual({
-        isEnabled: true,
-        max: null,
-        min: 6,
-      })
-    })
-
-    it('reads an all-unconfigured building as off, not mixed', async () => {
-      await app.onInit()
-      stubBuilding({})
-
-      expect(app.getHomeBuildingFrostProtection('b1')).toStrictEqual({
-        isEnabled: false,
-        max: null,
-        min: null,
-      })
-    })
-
-    it('aggregates holiday mode across the building devices', async () => {
-      await app.onInit()
-      stubBuilding(
-        {},
-        {
-          d1: { endDate: 'e', isEnabled: true, startDate: 's' },
-          d2: { endDate: 'e', isEnabled: true, startDate: 'x' },
-        },
-      )
-
-      expect(app.getHomeBuildingHolidayMode('b1')).toStrictEqual({
-        endDate: 'e',
-        isEnabled: true,
-        startDate: null,
-      })
-    })
-
-    it('reads an all-unconfigured holiday building as off', async () => {
-      await app.onInit()
-      stubBuilding({}, {})
-
-      expect(app.getHomeBuildingHolidayMode('b1')).toStrictEqual({
-        endDate: null,
-        isEnabled: false,
-        startDate: null,
-      })
-    })
-
-    it('keeps shared overheat values and nulls the disagreements', async () => {
-      await app.onInit()
-      stubBuilding(
-        {},
-        {},
-        {
-          d1: { isEnabled: true, max: 37, min: 35 },
-          d2: { isEnabled: true, max: 38, min: 35 },
-        },
-      )
-
-      expect(app.getHomeBuildingOverheatProtection('b1')).toStrictEqual({
-        isEnabled: true,
-        max: null,
-        min: 35,
-      })
-    })
-
-    it('reads an all-unconfigured overheat building as off, not mixed', async () => {
-      await app.onInit()
-      stubBuilding({}, {}, {})
-
-      expect(app.getHomeBuildingOverheatProtection('b1')).toStrictEqual({
-        isEnabled: false,
-        max: null,
-        min: null,
-      })
-    })
-
-    it('aggregates overheat over the ATA devices only', async () => {
-      await app.onInit()
-      stubBuilding({}, {}, { d1: { isEnabled: true, max: 37, min: 35 } })
-      // Turn d2 into an ATW device: it must not drag the aggregate to
-      // "mixed" — the feature is ATA-only.
-      const devices = [
-        {
-          building: { id: 'b1' },
-          id: 'd1',
-          isAta: (): boolean => true,
-          isAtw: (): boolean => false,
-        },
-        {
-          building: { id: 'b1' },
-          id: 'd2',
-          isAta: (): boolean => false,
-          isAtw: (): boolean => true,
-        },
-      ]
-      mockHomeRegistry.getDevices.mockReturnValue(devices)
-      mockHomeRegistry.getById.mockImplementation((id) =>
-        devices.find((device) => device.id === id),
-      )
-
-      expect(app.getHomeBuildingOverheatProtection('b1')).toStrictEqual({
-        isEnabled: true,
-        max: 37,
-        min: 35,
-      })
-    })
-
-    it('batches a building overheat update across all its devices', async () => {
-      await app.onInit()
-      stubBuilding({})
-
-      await app.updateHomeBuildingOverheatProtection('b1', {
-        isEnabled: false,
-        max: 37,
-        min: 35,
-      })
-
-      expect(
-        mockHomeFacadeManagerUpdateOverheatProtection,
-      ).toHaveBeenCalledWith(['d1', 'd2'], {
-        isEnabled: false,
-        max: 37,
-        min: 35,
-      })
-    })
-
-    it('batches a building frost update across all its devices', async () => {
-      await app.onInit()
-      stubBuilding({})
-
-      await app.updateHomeBuildingFrostProtection('b1', {
+      expect(updateFrostProtection).toHaveBeenCalledWith({
         isEnabled: true,
         max: 16,
         min: 4,
       })
-
-      expect(mockHomeFacadeManagerUpdateFrostProtection).toHaveBeenCalledWith(
-        ['d1', 'd2'],
-        { isEnabled: true, max: 16, min: 4 },
-      )
     })
 
-    it('batches a building holiday update across all its devices', async () => {
+    it('reads a Home device overheat protection without a type guard', async () => {
       await app.onInit()
-      stubBuilding({})
+      const state = { isEnabled: true, max: 37, min: 35 }
+      stubHomeDevice({
+        getOverheatProtection: vi
+          .fn<() => Promise<unknown>>()
+          .mockResolvedValue(ok(state)),
+      })
 
-      await app.updateHomeBuildingHolidayMode('b1', {
+      await expect(
+        app.getTargetOverheatProtection('homeDevices_guid-1'),
+      ).resolves.toBe(state)
+    })
+
+    it('reads null overheat protection for a Classic target', async () => {
+      await app.onInit()
+
+      await expect(
+        app.getTargetOverheatProtection('devices_1'),
+      ).resolves.toBeNull()
+    })
+
+    it('refuses an overheat write addressed to a Classic target', async () => {
+      await app.onInit()
+
+      await expect(
+        app.updateTargetOverheatProtection('devices_1', {
+          isEnabled: true,
+          max: 37,
+          min: 35,
+        }),
+      ).rejects.toThrow('errors.deviceNotFound')
+    })
+
+    it('writes a Home device overheat protection through its facade', async () => {
+      await app.onInit()
+      const updateOverheatProtection = vi
+        .fn<() => Promise<void>>()
+        .mockResolvedValue()
+      stubHomeDevice({ updateOverheatProtection })
+
+      await app.updateTargetOverheatProtection('homeDevices_guid-1', {
+        isEnabled: true,
+        max: 37,
+        min: 35,
+      })
+
+      expect(updateOverheatProtection).toHaveBeenCalledWith({
+        isEnabled: true,
+        max: 37,
+        min: 35,
+      })
+    })
+
+    it('reads the building aggregates through the building facade', async () => {
+      await app.onInit()
+      const aggregate = { isEnabled: true, max: null, min: 6 }
+      mockHomeFacadeManagerGetBuilding.mockReturnValue({
+        getFrostProtection: vi
+          .fn<() => Promise<unknown>>()
+          .mockResolvedValue(ok(aggregate)),
+      })
+
+      await expect(
+        app.getTargetFrostProtection('homeBuildings_b1'),
+      ).resolves.toBe(aggregate)
+      expect(mockHomeFacadeManagerGetBuilding).toHaveBeenCalledWith('b1')
+    })
+
+    it('writes the building batches through the building facade', async () => {
+      await app.onInit()
+      const updateHolidayMode = vi.fn<() => Promise<void>>().mockResolvedValue()
+      const updateOverheatProtection = vi
+        .fn<() => Promise<void>>()
+        .mockResolvedValue()
+      mockHomeFacadeManagerGetBuilding.mockReturnValue({
+        updateHolidayMode,
+        updateOverheatProtection,
+      })
+
+      await app.updateTargetHolidayMode('homeBuildings_b1', {
         endDate: 'e',
         isEnabled: true,
         startDate: 's',
       })
+      await app.updateTargetOverheatProtection('homeBuildings_b1', {
+        isEnabled: false,
+        max: 37,
+        min: 35,
+      })
 
-      expect(mockHomeFacadeManagerUpdateHolidayMode).toHaveBeenCalledWith(
-        ['d1', 'd2'],
-        { endDate: 'e', isEnabled: true, startDate: 's' },
-      )
+      expect(updateHolidayMode).toHaveBeenCalledWith({
+        endDate: 'e',
+        isEnabled: true,
+        startDate: 's',
+      })
+      expect(updateOverheatProtection).toHaveBeenCalledWith({
+        isEnabled: false,
+        max: 37,
+        min: 35,
+      })
     })
 
     it('serves the library picker list unfiltered when no type is given', async () => {

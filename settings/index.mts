@@ -63,15 +63,7 @@ import {
   populateZoneOptions as populateZoneSelect,
   translateAriaLabels,
 } from '../public/dom.mts'
-import {
-  type PickerZone,
-  getHomeBuildingId,
-  getHomeDeviceId,
-  getZoneId,
-  getZonePath,
-  isHomeBuildingValue,
-  isHomeDeviceValue,
-} from '../public/zones.mts'
+import { type PickerZone, getZoneId } from '../public/zones.mts'
 
 // ── Helpers ──
 
@@ -367,31 +359,26 @@ const createValuesGate = (
       JSON.stringify(elements.map((element) => element.value)),
   })
 
-// Option values driving the Home-only overheat panel: `capable` lists
-// every Home ATA device plus each building owning one (the flat target
-// list puts a building right before its devices); `atwBuildings` lists
-// the buildings owning at least one ATW, so a capable building can show
-// the "(air-to-air)" scope qualifier when its bulk write skips ATW.
+// Option values driving the Home-only overheat panel, read off the
+// membership flags each served building node carries: `capable` lists
+// every Home ATA device plus each building owning one; `atwBuildings`
+// lists the buildings owning at least one ATW, so a capable building
+// can show the "(air-to-air)" scope qualifier when its bulk write
+// skips ATW.
 const collectOverheatZoneValues = (
   zones: readonly PickerZone[],
-): { atwBuildings: string[]; capable: string[] } => {
-  const atwBuildings: string[] = []
-  const capable: string[] = []
-  let buildingValue: string | null = null
-  for (const zone of zones) {
-    if (zone.model === 'homeBuildings') {
-      buildingValue = getZoneId(zone.id, zone.model)
-    } else if (zone.model === 'homeDevices' && zone.deviceType === 'ata') {
-      capable.push(
-        getZoneId(zone.id, zone.model),
-        ...(buildingValue === null ? [] : [buildingValue]),
-      )
-    } else if (buildingValue !== null && zone.model === 'homeDevices') {
-      atwBuildings.push(buildingValue)
-    }
-  }
-  return { atwBuildings, capable }
-}
+): { atwBuildings: string[]; capable: string[] } => ({
+  atwBuildings: zones
+    .filter((zone) => zone.model === 'homeBuildings' && zone.hasAtw)
+    .map((zone) => getZoneId(zone.id, zone.model)),
+  capable: zones
+    .filter(
+      (zone) =>
+        (zone.model === 'homeBuildings' && zone.hasAta) ||
+        (zone.model === 'homeDevices' && zone.deviceType === 'ata'),
+    )
+    .map((zone) => getZoneId(zone.id, zone.model)),
+})
 
 // Serialize a device-settings section's controls as a pure form snapshot for
 // its DirtyGate — the same value-only shape the frost/holiday gates use. A
@@ -1710,14 +1697,10 @@ class ZoneSettingsManager {
     }
   }
 
+  // The picker value IS the targetId of the neutral settings routes:
+  // addressing needs no family branch at all anymore.
   #getZoneSettingsBase(): string {
-    const { value } = this.#zone
-    if (isHomeBuildingValue(value)) {
-      return `/home/buildings/${getHomeBuildingId(value)}`
-    }
-    return isHomeDeviceValue(value)
-      ? `/home/devices/${getHomeDeviceId(value)}`
-      : `/classic/zones/${getZonePath(value)}`
+    return `/targets/${this.#zone.value}`
   }
 
   // PUT one zone-setting panel: refresh the cached zone mapping and

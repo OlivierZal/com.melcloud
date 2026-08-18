@@ -3,9 +3,10 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
 import {
+  type HolidayModeState,
   type HolidayModeUpdate,
   type LoginCredentials,
-  type ProtectionUpdate,
+  type ProtectionState,
   AuthenticationError,
   AuthenticationThrottledError,
 } from '@olivierzal/melcloud-api'
@@ -16,11 +17,7 @@ import type {
   ErrorLogQueryParams,
   FormattedErrorLog,
 } from '../../types/error-log.mts'
-import type {
-  HomeBuildingZone,
-  HomeDeviceZone,
-  ZoneData,
-} from '../../types/zone.mts'
+import type { HomeBuildingZone, HomeDeviceZone } from '../../types/zone.mts'
 import { mock } from '../helpers.ts'
 
 const mockGetBuildings =
@@ -38,6 +35,7 @@ const { default: api } = await import('../../api.mts')
 
 const mockIsAuthenticated = vi.fn<() => boolean>()
 const mockIsHomeAuthenticated = vi.fn<() => boolean>()
+const mockEnsureClassicAuthenticated = vi.fn<() => Promise<boolean>>()
 const mockEnsureHomeAuthenticated = vi.fn<() => Promise<boolean>>()
 const mockGetHomeBuildings = vi.fn<Home.Registry['getBuildings']>()
 const mockClassicAuthenticate = vi.fn<() => Promise<void>>()
@@ -48,45 +46,19 @@ const mockHomeLogOut = vi.fn<() => void>()
 const mockApp = {
   classicApi: {
     authenticate: mockClassicAuthenticate,
+    ensureAuthenticated: mockEnsureClassicAuthenticated,
     isAuthenticated: mockIsAuthenticated,
     logOut: mockClassicLogOut,
   },
   error: vi.fn<(...args: readonly unknown[]) => void>(),
-  getClassicFrostProtection:
-    vi.fn<() => Promise<Classic.FrostProtectionData>>(),
-  getClassicHolidayMode: vi.fn<() => Promise<Classic.HolidayModeData>>(),
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
   getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
-  getHomeBuildingFrostProtection:
-    vi.fn<
-      () => {
-        FPEnabled: boolean | null
-        FPMaxTemperature: number | null
-        FPMinTemperature: number | null
-      }
-    >(),
-  getHomeBuildingHolidayMode:
-    vi.fn<
-      () => {
-        HMEnabled: boolean | null
-        HMEndDate: string | null
-        HMStartDate: string | null
-      }
-    >(),
-  getHomeBuildingOverheatProtection:
-    vi.fn<
-      () => {
-        OHEnabled: boolean | null
-        OHMaxTemperature: number | null
-        OHMinTemperature: number | null
-      }
-    >(),
   getHomeDeviceZones: vi.fn<() => HomeDeviceZone[]>(),
-  getHomeFrostProtection: vi.fn<() => Home.FrostProtection | null>(),
-  getHomeHolidayMode: vi.fn<() => Home.HolidayMode | null>(),
-  getHomeOverheatProtection: vi.fn<() => Home.OverheatProtection | null>(),
   getHomeTargets: vi.fn<() => (HomeBuildingZone | HomeDeviceZone)[]>(),
+  getTargetFrostProtection: vi.fn<() => Promise<ProtectionState | null>>(),
+  getTargetHolidayMode: vi.fn<() => Promise<HolidayModeState | null>>(),
+  getTargetOverheatProtection: vi.fn<() => Promise<ProtectionState | null>>(),
   homeApi: {
     authenticate: mockHomeAuthenticate,
     ensureAuthenticated: mockEnsureHomeAuthenticated,
@@ -95,15 +67,10 @@ const mockApp = {
     registry: { getBuildings: mockGetHomeBuildings },
   },
   log: vi.fn<(...args: readonly unknown[]) => void>(),
-  updateClassicFrostProtection: vi.fn<() => Promise<void>>(),
-  updateClassicHolidayMode: vi.fn<() => Promise<void>>(),
   updateDeviceSettings: vi.fn<() => Promise<void>>(),
-  updateHomeBuildingFrostProtection: vi.fn<() => Promise<void>>(),
-  updateHomeBuildingHolidayMode: vi.fn<() => Promise<void>>(),
-  updateHomeBuildingOverheatProtection: vi.fn<() => Promise<void>>(),
-  updateHomeFrostProtection: vi.fn<() => Promise<void>>(),
-  updateHomeHolidayMode: vi.fn<() => Promise<void>>(),
-  updateHomeOverheatProtection: vi.fn<() => Promise<void>>(),
+  updateTargetFrostProtection: vi.fn<() => Promise<void>>(),
+  updateTargetHolidayMode: vi.fn<() => Promise<void>>(),
+  updateTargetOverheatProtection: vi.fn<() => Promise<void>>(),
 }
 
 const mockI18n = { getLanguage: vi.fn<() => string>() }
@@ -285,83 +252,12 @@ describe('api', () => {
     })
   })
 
-  describe('frost protection settings retrieval', () => {
-    it('should delegate to app.getClassicFrostProtection with params', async () => {
-      const frostProtection = mock<Classic.FrostProtectionData>()
-      const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
-      mockApp.getClassicFrostProtection.mockResolvedValue(frostProtection)
-
-      const result = await api.getClassicFrostProtection({ homey, params })
-
-      expect(result).toBe(frostProtection)
-      expect(mockApp.getClassicFrostProtection).toHaveBeenCalledWith(params)
-    })
-  })
-
-  describe('holiday mode settings retrieval', () => {
-    it('should delegate to app.getClassicHolidayMode with params', async () => {
-      const holidayMode = mock<Classic.HolidayModeData>()
-      const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
-      mockApp.getClassicHolidayMode.mockResolvedValue(holidayMode)
-
-      const result = await api.getClassicHolidayMode({ homey, params })
-
-      expect(result).toBe(holidayMode)
-      expect(mockApp.getClassicHolidayMode).toHaveBeenCalledWith(params)
-    })
-  })
-
   describe('home devices retrieval', () => {
     it('should delegate to app.getHomeDeviceZones', () => {
       const devices = [mock<HomeDeviceZone>({ id: 'guid-1' })]
       mockApp.getHomeDeviceZones.mockReturnValue(devices)
 
       expect(api.getHomeDevices({ homey })).toBe(devices)
-    })
-  })
-
-  describe('home frost protection settings retrieval', () => {
-    it('should delegate to app.getHomeFrostProtection with the device id', () => {
-      const frostProtection = mock<Home.FrostProtection>()
-      mockApp.getHomeFrostProtection.mockReturnValue(frostProtection)
-
-      const result = api.getHomeFrostProtection({
-        homey,
-        params: { deviceId: 'guid-1' },
-      })
-
-      expect(result).toBe(frostProtection)
-      expect(mockApp.getHomeFrostProtection).toHaveBeenCalledWith('guid-1')
-    })
-  })
-
-  describe('home overheat protection settings retrieval', () => {
-    it('should delegate to app.getHomeOverheatProtection with the device id', () => {
-      const overheatProtection = mock<Home.OverheatProtection>()
-      mockApp.getHomeOverheatProtection.mockReturnValue(overheatProtection)
-
-      const result = api.getHomeOverheatProtection({
-        homey,
-        params: { deviceId: 'guid-1' },
-      })
-
-      expect(result).toBe(overheatProtection)
-      expect(mockApp.getHomeOverheatProtection).toHaveBeenCalledWith('guid-1')
-    })
-  })
-
-  describe('home holiday mode settings retrieval', () => {
-    it('should delegate to app.getHomeHolidayMode with the device id', () => {
-      const holidayMode = mock<Home.HolidayMode>()
-      mockApp.getHomeHolidayMode.mockReturnValue(holidayMode)
-
-      const result = api.getHomeHolidayMode({
-        homey,
-        params: { deviceId: 'guid-1' },
-      })
-
-      expect(result).toBe(holidayMode)
-      expect(mockApp.getHomeHolidayMode).toHaveBeenCalledWith('guid-1')
     })
   })
 
@@ -374,92 +270,50 @@ describe('api', () => {
     })
   })
 
-  describe('home building frost protection retrieval', () => {
-    it('should delegate to app.getHomeBuildingFrostProtection with the id', () => {
-      const aggregate = {
-        FPEnabled: true,
-        FPMaxTemperature: null,
-        FPMinTemperature: 6,
-      }
-      mockApp.getHomeBuildingFrostProtection.mockReturnValue(aggregate)
+  describe('target settings retrieval', () => {
+    it.each([
+      'getTargetFrostProtection',
+      'getTargetHolidayMode',
+      'getTargetOverheatProtection',
+    ] as const)('delegates %s with the raw targetId', async (handler) => {
+      const value = mock<HolidayModeState & ProtectionState>()
+      mockApp[handler].mockResolvedValue(value)
 
-      const result = api.getHomeBuildingFrostProtection({
+      const result = await api[handler]({
         homey,
-        params: { buildingId: 'b1' },
+        params: { targetId: 'homeDevices_guid-1' },
       })
 
-      expect(result).toBe(aggregate)
-      expect(mockApp.getHomeBuildingFrostProtection).toHaveBeenCalledWith('b1')
+      expect(result).toBe(value)
+      expect(mockApp[handler]).toHaveBeenCalledWith('homeDevices_guid-1')
     })
   })
 
-  describe('home building overheat protection retrieval', () => {
-    it('should delegate to app.getHomeBuildingOverheatProtection with the id', () => {
-      const aggregate = {
-        OHEnabled: true,
-        OHMaxTemperature: null,
-        OHMinTemperature: 35,
-      }
-      mockApp.getHomeBuildingOverheatProtection.mockReturnValue(aggregate)
-
-      const result = api.getHomeBuildingOverheatProtection({
-        homey,
-        params: { buildingId: 'b1' },
-      })
-
-      expect(result).toBe(aggregate)
-      expect(mockApp.getHomeBuildingOverheatProtection).toHaveBeenCalledWith(
-        'b1',
-      )
-    })
-  })
-
-  describe('home building holiday mode retrieval', () => {
-    it('should delegate to app.getHomeBuildingHolidayMode with the id', () => {
-      const aggregate = { HMEnabled: null, HMEndDate: 'e', HMStartDate: null }
-      mockApp.getHomeBuildingHolidayMode.mockReturnValue(aggregate)
-
-      const result = api.getHomeBuildingHolidayMode({
-        homey,
-        params: { buildingId: 'b1' },
-      })
-
-      expect(result).toBe(aggregate)
-      expect(mockApp.getHomeBuildingHolidayMode).toHaveBeenCalledWith('b1')
-    })
-  })
-
-  describe('home building frost protection update', () => {
-    it('should delegate to app.updateHomeBuildingFrostProtection', async () => {
+  describe('target settings update', () => {
+    it.each([
+      'updateTargetFrostProtection',
+      'updateTargetOverheatProtection',
+    ] as const)('delegates %s with targetId and body', async (handler) => {
       const body = { isEnabled: true, max: 16, min: 4 }
-      mockApp.updateHomeBuildingFrostProtection.mockResolvedValue()
+      mockApp[handler].mockResolvedValue()
 
-      await api.updateHomeBuildingFrostProtection({
-        body,
-        homey,
-        params: { buildingId: 'b1' },
-      })
+      await api[handler]({ body, homey, params: { targetId: 'buildings_1' } })
 
-      expect(mockApp.updateHomeBuildingFrostProtection).toHaveBeenCalledWith(
-        'b1',
-        body,
-      )
+      expect(mockApp[handler]).toHaveBeenCalledWith('buildings_1', body)
     })
-  })
 
-  describe('home building holiday mode update', () => {
-    it('should delegate to app.updateHomeBuildingHolidayMode', async () => {
+    it('delegates updateTargetHolidayMode with targetId and body', async () => {
       const body = mock<HolidayModeUpdate>()
-      mockApp.updateHomeBuildingHolidayMode.mockResolvedValue()
+      mockApp.updateTargetHolidayMode.mockResolvedValue()
 
-      await api.updateHomeBuildingHolidayMode({
+      await api.updateTargetHolidayMode({
         body,
         homey,
-        params: { buildingId: 'b1' },
+        params: { targetId: 'homeBuildings_b1' },
       })
 
-      expect(mockApp.updateHomeBuildingHolidayMode).toHaveBeenCalledWith(
-        'b1',
+      expect(mockApp.updateTargetHolidayMode).toHaveBeenCalledWith(
+        'homeBuildings_b1',
         body,
       )
     })
@@ -557,21 +411,17 @@ describe('api', () => {
   })
 
   describe('classic session retrieval', () => {
-    it('should delegate to app.classicApi.isAuthenticated', () => {
-      mockIsAuthenticated.mockReturnValue(true)
+    it('should delegate to app.classicApi.ensureAuthenticated', async () => {
+      mockEnsureClassicAuthenticated.mockResolvedValue(true)
 
-      const isAuthenticated = api.isClassicAuthenticated({ homey })
-
-      expect(isAuthenticated).toBe(true)
-      expect(mockIsAuthenticated).toHaveBeenCalledTimes(1)
+      await expect(api.isClassicAuthenticated({ homey })).resolves.toBe(true)
+      expect(mockEnsureClassicAuthenticated).toHaveBeenCalledTimes(1)
     })
 
-    it('should return false when not authenticated', () => {
-      mockIsAuthenticated.mockReturnValue(false)
+    it('should return false when not authenticated', async () => {
+      mockEnsureClassicAuthenticated.mockResolvedValue(false)
 
-      const isAuthenticated = api.isClassicAuthenticated({ homey })
-
-      expect(isAuthenticated).toBe(false)
+      await expect(api.isClassicAuthenticated({ homey })).resolves.toBe(false)
     })
   })
 
@@ -644,106 +494,6 @@ describe('api', () => {
         driverId: undefined,
         settings: body,
       })
-    })
-  })
-
-  describe('frost protection settings update', () => {
-    it('should delegate to app.updateClassicFrostProtection', async () => {
-      const body = mock<ProtectionUpdate>()
-      const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
-      mockApp.updateClassicFrostProtection.mockResolvedValue()
-
-      await api.updateClassicFrostProtection({ body, homey, params })
-
-      expect(mockApp.updateClassicFrostProtection).toHaveBeenCalledWith({
-        settings: body,
-        ...params,
-      })
-    })
-  })
-
-  describe('holiday mode settings update', () => {
-    it('should delegate to app.updateClassicHolidayMode', async () => {
-      const body = mock<HolidayModeUpdate>()
-      const params = mock<ZoneData>({ zoneId: '1', zoneType: 'buildings' })
-      mockApp.updateClassicHolidayMode.mockResolvedValue()
-
-      await api.updateClassicHolidayMode({ body, homey, params })
-
-      expect(mockApp.updateClassicHolidayMode).toHaveBeenCalledWith({
-        settings: body,
-        ...params,
-      })
-    })
-  })
-
-  describe('home frost protection settings update', () => {
-    it('should delegate to app.updateHomeFrostProtection for the device', async () => {
-      const body = { isEnabled: true, max: 16, min: 4 }
-      mockApp.updateHomeFrostProtection.mockResolvedValue()
-
-      await api.updateHomeFrostProtection({
-        body,
-        homey,
-        params: { deviceId: 'guid-1' },
-      })
-
-      expect(mockApp.updateHomeFrostProtection).toHaveBeenCalledWith(
-        ['guid-1'],
-        body,
-      )
-    })
-  })
-
-  describe('home overheat protection settings update', () => {
-    it('should delegate to app.updateHomeOverheatProtection for the device', async () => {
-      const body = { isEnabled: true, max: 37, min: 35 }
-      mockApp.updateHomeOverheatProtection.mockResolvedValue()
-
-      await api.updateHomeOverheatProtection({
-        body,
-        homey,
-        params: { deviceId: 'guid-1' },
-      })
-
-      expect(mockApp.updateHomeOverheatProtection).toHaveBeenCalledWith(
-        ['guid-1'],
-        body,
-      )
-    })
-
-    it('should delegate to app.updateHomeBuildingOverheatProtection for the building', async () => {
-      const body = { isEnabled: false, max: 37, min: 35 }
-      mockApp.updateHomeBuildingOverheatProtection.mockResolvedValue()
-
-      await api.updateHomeBuildingOverheatProtection({
-        body,
-        homey,
-        params: { buildingId: 'b1' },
-      })
-
-      expect(mockApp.updateHomeBuildingOverheatProtection).toHaveBeenCalledWith(
-        'b1',
-        body,
-      )
-    })
-  })
-
-  describe('home holiday mode settings update', () => {
-    it('should delegate to app.updateHomeHolidayMode for the device', async () => {
-      const body = mock<HolidayModeUpdate>()
-      mockApp.updateHomeHolidayMode.mockResolvedValue()
-
-      await api.updateHomeHolidayMode({
-        body,
-        homey,
-        params: { deviceId: 'guid-1' },
-      })
-
-      expect(mockApp.updateHomeHolidayMode).toHaveBeenCalledWith(
-        ['guid-1'],
-        body,
-      )
     })
   })
 

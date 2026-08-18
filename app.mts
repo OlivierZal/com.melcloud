@@ -13,6 +13,8 @@ import {
   mergeDeviceSettings,
 } from '@olivierzal/homey-kit/manifest'
 import {
+  type AggregatedHolidayModeState,
+  type AggregatedProtectionState,
   type DeviceType,
   type HolidayModeState,
   type HolidayModeUpdate,
@@ -21,12 +23,13 @@ import {
   type ProtectionUpdate,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
+  type Result,
   type SettingManager,
   type SyncCallback,
   isClassicAtaFacade,
-  isHomeAtaFacade,
   NoChangesError,
   operationModeToClassic,
+  resolveErrorLogWindow,
 } from '@olivierzal/melcloud-api'
 import { Intl, Temporal } from 'temporal-polyfill'
 import * as Classic from '@olivierzal/melcloud-api/classic'
@@ -82,20 +85,24 @@ const byName = (
   other: { readonly name: string },
 ): number => first.name.localeCompare(other.name)
 
-// The value shared by every entry, or `null` when they disagree — a Home
-// building aggregates per-device frost/holiday, and a field the devices do
-// not agree on reads as "mixed" (`null`).
-const commonValue = <T,>(values: readonly T[]): NonNullable<T> | null => {
-  const [first, ...rest] = values
-  return values.length > 0 && rest.every((value) => value === first)
-    ? (first ?? null)
-    : null
-}
-
 const HOLIDAY_MODE_MAX_DURATION_DAYS = 365
 const HOLIDAY_MODE_OFF_DURATION = 0
 
 const NOTIFICATION_DELAY_MS = 10_000
+
+// The one surface every settings target answers — Classic zone/device
+// facades, Home device facades and the Home building facade alike; the
+// widened return unions absorb the building aggregates' per-field nulls.
+interface SettingsTarget {
+  readonly getFrostProtection: () => Promise<
+    Result<AggregatedProtectionState | ProtectionState | null>
+  >
+  readonly getHolidayMode: () => Promise<
+    Result<AggregatedHolidayModeState | HolidayModeState | null>
+  >
+  readonly updateFrostProtection: (update: ProtectionUpdate) => Promise<void>
+  readonly updateHolidayMode: (update: HolidayModeUpdate) => Promise<void>
+}
 
 const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
   [Classic.DeviceType.Ata]: 'melcloud',
@@ -232,32 +239,6 @@ interface RawErrorEntry {
   readonly device: string
   readonly error: string
   readonly instant: Temporal.Instant
-}
-
-// Mirrors the Classic pagination tiling (a page spans `period` days, the
-// next one ends the day before it starts) so a Home-only account still
-// browses windows when Classic is signed out.
-const syntheticErrorLogWindow = (
-  { from, period, to }: Classic.ErrorLogQuery,
-  timeZone: string,
-): Omit<Classic.ErrorLog, 'errors'> => {
-  const periodDays = period ?? DEFAULT_ERROR_LOG_PERIOD_DAYS
-  const toDate =
-    to !== undefined && to !== ''
-      ? Temporal.PlainDate.from(to)
-      : Temporal.Now.plainDateISO(timeZone)
-  // A user-picked "since" date pins the window start, like the
-  // library's own parseErrorLogQuery does on the Classic path.
-  const fromDate =
-    from !== undefined && from !== ''
-      ? Temporal.PlainDate.from(from)
-      : toDate.subtract({ days: periodDays })
-  const nextToDate = fromDate.subtract({ days: 1 })
-  return {
-    fromDate: fromDate.toString(),
-    nextFromDate: nextToDate.subtract({ days: periodDays }).toString(),
-    nextToDate: nextToDate.toString(),
-  }
 }
 
 const isWithinErrorLogWindow = (
@@ -498,24 +479,6 @@ export default class MELCloudApp extends App {
     return this.#facadeManager.get(instance)
   }
 
-  public async getClassicFrostProtection({
-    zoneId,
-    zoneType,
-  }: DeviceOrZoneData): Promise<ProtectionState | null> {
-    return unwrapResult(
-      await this.getClassicFacade(zoneType, zoneId).getFrostProtection(),
-    )
-  }
-
-  public async getClassicHolidayMode({
-    zoneId,
-    zoneType,
-  }: DeviceOrZoneData): Promise<HolidayModeState | null> {
-    return unwrapResult(
-      await this.getClassicFacade(zoneType, zoneId).getHolidayMode(),
-    )
-  }
-
   public async getClassicHourlyTemperatures({
     deviceId,
     hour,
@@ -615,7 +578,7 @@ export default class MELCloudApp extends App {
   ): Promise<FormattedErrorLog> {
     const locale = this.homey.i18n.getLanguage()
     const timeZone = getTimeZone(this.homey)
-    const { errors, fromDate, ...rest } = await this.#getClassicErrorLogPage(
+    const { entries, fromDate, ...rest } = await this.#getClassicErrorLogPage(
       query,
       timeZone,
     )
@@ -631,11 +594,11 @@ export default class MELCloudApp extends App {
     const homeEntries = allHomeEntries.filter((entry) =>
       isWithinErrorLogWindow(entry.instant, window),
     )
-    const classicEntries = errors.map(
-      ({ date, deviceId, error }): RawErrorEntry => ({
+    const classicEntries = entries.map(
+      ({ at, deviceId, message }): RawErrorEntry => ({
         device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
-        error,
-        instant: parseErrorDate(date, timeZone),
+        error: message,
+        instant: parseErrorDate(at, timeZone),
       }),
     )
     return {
@@ -661,12 +624,14 @@ export default class MELCloudApp extends App {
   // Member operation modes in the Classic vocabulary — what the widget's
   // mixed-mode scene resolver consumes.
   public getHomeBuildingAtaModes(buildingId: string): number[] {
-    return this.#getHomeBuildingFacade(buildingId).devices.map(
-      (device) =>
-        operationModeToClassic[
-          this.#homeFacadeManager.get(device).operationMode
-        ],
-    )
+    return this.#getHomeBuildingFacade(buildingId)
+      .devices.filter((device) => device.isAta())
+      .map(
+        (device) =>
+          operationModeToClassic[
+            this.#homeFacadeManager.get(device).operationMode
+          ],
+      )
   }
 
   public async getHomeBuildingAtaState(
@@ -675,87 +640,6 @@ export default class MELCloudApp extends App {
     return unwrapResult(
       await this.#getHomeBuildingFacade(buildingId).getGroup(),
     )
-  }
-
-  // Aggregate frost protection across a Home building's devices: each field
-  // is the shared value, or `null` when the devices disagree ("mixed").
-  public getHomeBuildingFrostProtection(buildingId: string): {
-    isEnabled: boolean | null
-    max: number | null
-    min: number | null
-  } {
-    const frostProtections = this.#getHomeBuildingDeviceIds(buildingId).map(
-      (deviceId) => this.getHomeFrostProtection(deviceId),
-    )
-    return {
-      // A device with no frost config counts as off, so an all-unconfigured
-      // building reads "No" rather than "mixed".
-      isEnabled: commonValue(
-        frostProtections.map(
-          (frostProtection) => frostProtection?.isEnabled ?? false,
-        ),
-      ),
-      max: commonValue(
-        frostProtections.map((frostProtection) => frostProtection?.max),
-      ),
-      min: commonValue(
-        frostProtections.map((frostProtection) => frostProtection?.min),
-      ),
-    }
-  }
-
-  // Aggregate holiday mode across a Home building's devices, `null` per
-  // field on disagreement ("mixed").
-  public getHomeBuildingHolidayMode(buildingId: string): {
-    endDate: string | null
-    isEnabled: boolean | null
-    startDate: string | null
-  } {
-    const holidayModes = this.#getHomeBuildingDeviceIds(buildingId).map(
-      (deviceId) => this.getHomeHolidayMode(deviceId),
-    )
-    return {
-      endDate: commonValue(
-        holidayModes.map((holidayMode) => holidayMode?.endDate),
-      ),
-      isEnabled: commonValue(
-        holidayModes.map((holidayMode) => holidayMode?.isEnabled ?? false),
-      ),
-      startDate: commonValue(
-        holidayModes.map((holidayMode) => holidayMode?.startDate),
-      ),
-    }
-  }
-
-  // Aggregate overheat protection across a Home building's ATA devices
-  // (the feature is ATA-only), `null` per field on disagreement ("mixed").
-  public getHomeBuildingOverheatProtection(buildingId: string): {
-    isEnabled: boolean | null
-    max: number | null
-    min: number | null
-  } {
-    const overheatProtections = this.#getHomeBuildingAtaDeviceIds(
-      buildingId,
-    ).map((deviceId) => this.getHomeOverheatProtection(deviceId))
-    return {
-      // A device with no overheat config counts as off, so an
-      // all-unconfigured building reads "No" rather than "mixed".
-      isEnabled: commonValue(
-        overheatProtections.map(
-          (overheatProtection) => overheatProtection?.isEnabled ?? false,
-        ),
-      ),
-      max: commonValue(
-        overheatProtections.map(
-          (overheatProtection) => overheatProtection?.max,
-        ),
-      ),
-      min: commonValue(
-        overheatProtections.map(
-          (overheatProtection) => overheatProtection?.min,
-        ),
-      ),
-    }
   }
 
   public getHomeDevicesByType(type: Home.DeviceType): Home.Device[] {
@@ -797,14 +681,6 @@ export default class MELCloudApp extends App {
     return this.#getHomeDeviceFacade(deviceId, type)
   }
 
-  public getHomeFrostProtection(deviceId: string): ProtectionState | null {
-    return this.#getHomeDeviceFacade(deviceId).frostProtection
-  }
-
-  public getHomeHolidayMode(deviceId: string): HolidayModeState | null {
-    return this.#getHomeDeviceFacade(deviceId).holidayMode
-  }
-
   public async getHomeHourlyTemperatures({
     deviceId,
     hour,
@@ -832,13 +708,6 @@ export default class MELCloudApp extends App {
         this.#chartDaysQuery(days),
       ),
     )
-  }
-
-  public getHomeOverheatProtection(deviceId: string): ProtectionState | null {
-    const facade = this.#getHomeDeviceFacade(deviceId)
-    // ATA-only: the wire carries the field on ATW too, but the official
-    // app never offers the feature there — only the ATA facade exposes it.
-    return isHomeAtaFacade(facade) ? facade.overheatProtection : null
   }
 
   public async getHomeSignal({
@@ -877,6 +746,33 @@ export default class MELCloudApp extends App {
     )
   }
 
+  public async getTargetFrostProtection(
+    targetId: string,
+  ): Promise<AggregatedProtectionState | ProtectionState | null> {
+    return unwrapResult(
+      await this.#getSettingsTarget(targetId).getFrostProtection(),
+    )
+  }
+
+  public async getTargetHolidayMode(
+    targetId: string,
+  ): Promise<AggregatedHolidayModeState | HolidayModeState | null> {
+    return unwrapResult(
+      await this.#getSettingsTarget(targetId).getHolidayMode(),
+    )
+  }
+
+  // Overheat protection exists on Home targets only: a Classic target
+  // reads `null`, like a Home target that never configured it.
+  public async getTargetOverheatProtection(
+    targetId: string,
+  ): Promise<AggregatedProtectionState | ProtectionState | null> {
+    const target = this.#getOverheatTarget(targetId)
+    return target === null
+      ? null
+      : unwrapResult(await target.getOverheatProtection())
+  }
+
   public async updateClassicAtaState({
     state,
     zoneId,
@@ -884,26 +780,6 @@ export default class MELCloudApp extends App {
   }: DeviceOrZoneData & { state: Classic.GroupState }): Promise<void> {
     await this.#getClassicAtaGroupFacade({ zoneId, zoneType }).updateGroupState(
       state,
-    )
-  }
-
-  public async updateClassicFrostProtection({
-    settings,
-    zoneId,
-    zoneType,
-  }: DeviceOrZoneData & { settings: ProtectionUpdate }): Promise<void> {
-    await this.getClassicFacade(zoneType, zoneId).updateFrostProtection(
-      settings,
-    )
-  }
-
-  public async updateClassicHolidayMode({
-    settings,
-    zoneId,
-    zoneType,
-  }: DeviceOrZoneData & { settings: HolidayModeSettings }): Promise<void> {
-    await this.getClassicFacade(zoneType, zoneId).updateHolidayMode(
-      this.#completeHolidayModeWindow(settings),
     )
   }
 
@@ -963,58 +839,33 @@ export default class MELCloudApp extends App {
     await this.#getHomeBuildingFacade(buildingId).updateGroupState(state)
   }
 
-  public async updateHomeBuildingFrostProtection(
-    buildingId: string,
+  public async updateTargetFrostProtection(
+    targetId: string,
     settings: ProtectionUpdate,
   ): Promise<void> {
-    await this.updateHomeFrostProtection(
-      this.#getHomeBuildingDeviceIds(buildingId),
-      settings,
-    )
+    await this.#getSettingsTarget(targetId).updateFrostProtection(settings)
   }
 
-  public async updateHomeBuildingHolidayMode(
-    buildingId: string,
+  public async updateTargetHolidayMode(
+    targetId: string,
     settings: HolidayModeSettings,
   ): Promise<void> {
-    await this.updateHomeHolidayMode(
-      this.#getHomeBuildingDeviceIds(buildingId),
-      settings,
-    )
-  }
-
-  public async updateHomeBuildingOverheatProtection(
-    buildingId: string,
-    settings: ProtectionUpdate,
-  ): Promise<void> {
-    await this.updateHomeOverheatProtection(
-      this.#getHomeBuildingDeviceIds(buildingId),
-      settings,
-    )
-  }
-
-  public async updateHomeFrostProtection(
-    deviceIds: readonly string[],
-    settings: ProtectionUpdate,
-  ): Promise<void> {
-    await this.#homeFacadeManager.updateFrostProtection(deviceIds, settings)
-  }
-
-  public async updateHomeHolidayMode(
-    deviceIds: readonly string[],
-    settings: HolidayModeSettings,
-  ): Promise<void> {
-    await this.#homeFacadeManager.updateHolidayMode(
-      deviceIds,
+    await this.#getSettingsTarget(targetId).updateHolidayMode(
       this.#completeHolidayModeWindow(settings),
     )
   }
 
-  public async updateHomeOverheatProtection(
-    deviceIds: readonly string[],
+  public async updateTargetOverheatProtection(
+    targetId: string,
     settings: ProtectionUpdate,
   ): Promise<void> {
-    await this.#homeFacadeManager.updateOverheatProtection(deviceIds, settings)
+    const target = this.#getOverheatTarget(targetId)
+    if (target === null) {
+      // Overheat protection does not exist on the Classic wire: a write
+      // addressed to a Classic target is a caller error, not a no-op.
+      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+    }
+    await target.updateOverheatProtection(settings)
   }
 
   readonly #onSync: SyncCallback = async ({ ids, type } = {}) => {
@@ -1224,7 +1075,13 @@ export default class MELCloudApp extends App {
     timeZone: string,
   ): Promise<Classic.ErrorLog> {
     if (!this.classicApi.isAuthenticated()) {
-      return { errors: [], ...syntheticErrorLogWindow(query, timeZone) }
+      // A Home-only account pages the same windows the Classic API
+      // would have answered: the library publishes its own tiling.
+      const { fromDate, nextFromDate, nextToDate } = resolveErrorLogWindow(
+        { period: DEFAULT_ERROR_LOG_PERIOD_DAYS, ...query },
+        timeZone,
+      )
+      return { entries: [], fromDate, nextFromDate, nextToDate }
     }
     return unwrapResult(await this.#classicApi.getErrorLog(query))
   }
@@ -1263,21 +1120,7 @@ export default class MELCloudApp extends App {
   }
 
   // The ids of every device (ATA and ATW) in a `/context` building.
-  #getHomeBuildingAtaDeviceIds(buildingId: string): string[] {
-    return this.#homeRegistry
-      .getDevices()
-      .filter((device) => device.building.id === buildingId && device.isAta())
-      .map((device) => device.id)
-  }
-
-  #getHomeBuildingDeviceIds(buildingId: string): string[] {
-    return this.#homeRegistry
-      .getDevices()
-      .filter((device) => device.building.id === buildingId)
-      .map((device) => device.id)
-  }
-
-  #getHomeBuildingFacade(buildingId: string): Home.BuildingAtaFacade {
+  #getHomeBuildingFacade(buildingId: string): Home.BuildingFacade {
     const facade = this.#homeFacadeManager.getBuilding(buildingId)
     if (facade === null) {
       throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
@@ -1296,10 +1139,10 @@ export default class MELCloudApp extends App {
       this.error('Home error log fetch failed:', name, result.error)
       return []
     }
-    return result.value.map(({ errorCode, errorReason, timestamp }) => ({
+    return result.value.map(({ at, code, message }) => ({
       device: name,
-      error: errorReason ?? errorCode,
-      instant: parseErrorDate(timestamp, timeZone),
+      error: message ?? code ?? '',
+      instant: parseErrorDate(at, timeZone),
     }))
   }
 
@@ -1331,6 +1174,33 @@ export default class MELCloudApp extends App {
       ),
     )
     return logs.flat()
+  }
+
+  // Overheat protection exists on Home targets only; a Classic value
+  // resolves to `null` rather than a facade.
+  #getOverheatTarget(
+    targetId: string,
+  ): Home.BuildingFacade | Home.DeviceAtaFacade | Home.DeviceAtwFacade | null {
+    if (isHomeBuildingValue(targetId)) {
+      return this.#getHomeBuildingFacade(getHomeBuildingId(targetId))
+    }
+    return isHomeDeviceValue(targetId)
+      ? this.#getHomeDeviceFacade(getHomeDeviceId(targetId))
+      : null
+  }
+
+  // The one target resolver behind the neutral settings routes: the
+  // targetId is the picker value verbatim (`${model}_${id}`), so
+  // addressing is the only family-visible step left.
+  #getSettingsTarget(targetId: string): SettingsTarget {
+    if (isHomeBuildingValue(targetId)) {
+      return this.#getHomeBuildingFacade(getHomeBuildingId(targetId))
+    }
+    if (isHomeDeviceValue(targetId)) {
+      return this.#getHomeDeviceFacade(getHomeDeviceId(targetId))
+    }
+    const { zoneId, zoneType } = toZoneValueData(targetId)
+    return this.getClassicFacade(zoneType, zoneId)
   }
 
   // Driver ids are a store compat contract: Home drivers are namespaced
@@ -1452,20 +1322,11 @@ export default class MELCloudApp extends App {
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
   }
 
-  // Is holiday mode on for a flat target value? A single Home device, or a
-  // whole Home building (on only when every device agrees), or a Classic
-  // zone/device — routed by parsing the option value.
+  // Is holiday mode on for a flat target value? The option value IS the
+  // targetId, so the neutral read answers directly — a building is "on"
+  // only when every member agrees (the aggregate's `null` reads false).
   async #isHolidayModeEnabled(value: string): Promise<boolean> {
-    if (isHomeDeviceValue(value)) {
-      return this.getHomeHolidayMode(getHomeDeviceId(value))?.isEnabled === true
-    }
-    if (isHomeBuildingValue(value)) {
-      return (
-        this.getHomeBuildingHolidayMode(getHomeBuildingId(value)).isEnabled ===
-        true
-      )
-    }
-    const holidayMode = await this.getClassicHolidayMode(toZoneValueData(value))
+    const holidayMode = await this.getTargetHolidayMode(value)
     return holidayMode?.isEnabled === true
   }
 
@@ -1613,25 +1474,12 @@ export default class MELCloudApp extends App {
     return false
   }
 
-  // Route a holiday-mode write from a flat target value: a single Home
-  // device, a whole Home building (its devices batched), or a Classic
-  // zone/device — the same value parsing the settings page uses.
+  // Route a holiday-mode write from a flat target value: the option
+  // value IS the targetId the neutral write takes.
   async #updateHolidayModeTarget(
     value: string,
     settings: HolidayModeUpdate,
   ): Promise<void> {
-    if (isHomeDeviceValue(value)) {
-      await this.updateHomeHolidayMode([getHomeDeviceId(value)], settings)
-    } else if (isHomeBuildingValue(value)) {
-      await this.updateHomeBuildingHolidayMode(
-        getHomeBuildingId(value),
-        settings,
-      )
-    } else {
-      await this.updateClassicHolidayMode({
-        settings,
-        ...toZoneValueData(value),
-      })
-    }
+    await this.updateTargetHolidayMode(value, settings)
   }
 }

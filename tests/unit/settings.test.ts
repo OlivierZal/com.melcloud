@@ -187,6 +187,8 @@ const classicBuildingsFixture = (): unknown => [
 const homeTargetsFixture = (): unknown => [
   {
     buildingName: 'Villa',
+    hasAta: true,
+    hasAtw: true,
     id: 'building_1',
     level: 0,
     model: 'homeBuildings',
@@ -237,13 +239,12 @@ const defaultRoutes = (): Record<string, unknown> => ({
   'DELETE /home/sessions': undefined,
   'GET /classic/buildings': classicBuildingsFixture(),
   'GET /classic/sessions': true,
-  'GET /classic/zones/buildings/1/settings/frost-protection':
-    protectionFixture(),
-  'GET /classic/zones/buildings/1/settings/holiday-mode': holidayFixture(),
   'GET /home/sessions': false,
   'GET /language': 'fr',
   'GET /settings/devices': deviceSettingsFixture(),
   'GET /settings/drivers': driverSettingsFixture(),
+  'GET /targets/buildings_1/settings/frost-protection': protectionFixture(),
+  'GET /targets/buildings_1/settings/holiday-mode': holidayFixture(),
   'GET /webview-hashes': {},
   'POST /boot-error': undefined,
   'POST /classic/sessions': undefined,
@@ -1219,15 +1220,15 @@ describe('settings page', () => {
       await settleDetached()
 
       expect(calledPaths(harness)).toStrictEqual([
-        'GET /classic/zones/devices/11/settings/frost-protection',
-        'GET /classic/zones/devices/11/settings/holiday-mode',
+        'GET /targets/devices_11/settings/frost-protection',
+        'GET /targets/devices_11/settings/holiday-mode',
       ])
     })
 
     it('should fall back to defaults when the panel fetch fails', async () => {
       await bootPage({
         failures: {
-          'GET /classic/zones/buildings/1/settings/frost-protection': new Error(
+          'GET /targets/buildings_1/settings/frost-protection': new Error(
             'panel down',
           ),
         },
@@ -1240,10 +1241,10 @@ describe('settings page', () => {
     it('should keep the form on a refresh of an uncached panel', async () => {
       await bootPage({
         failures: {
-          'GET /classic/zones/buildings/1/settings/frost-protection': new Error(
+          'GET /targets/buildings_1/settings/frost-protection': new Error(
             'panel down',
           ),
-          'GET /classic/zones/buildings/1/settings/holiday-mode': new Error(
+          'GET /targets/buildings_1/settings/holiday-mode': new Error(
             'panel down',
           ),
         },
@@ -1266,12 +1267,12 @@ describe('settings page', () => {
       await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /classic/zones/buildings/1/settings/frost-protection': {
+          'GET /targets/buildings_1/settings/frost-protection': {
             isEnabled: null,
             max: null,
             min: null,
           },
-          'GET /classic/zones/buildings/1/settings/holiday-mode': {
+          'GET /targets/buildings_1/settings/holiday-mode': {
             endDate: null,
             isEnabled: null,
             startDate: null,
@@ -1289,7 +1290,7 @@ describe('settings page', () => {
       await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /classic/zones/buildings/1/settings/holiday-mode': null,
+          'GET /targets/buildings_1/settings/holiday-mode': null,
         },
       })
 
@@ -1307,7 +1308,7 @@ describe('settings page', () => {
       expect(
         lastCallBody(
           harness,
-          'PUT /classic/zones/buildings/1/settings/frost-protection',
+          'PUT /targets/buildings_1/settings/frost-protection',
         ),
       ).toStrictEqual({ isEnabled: true, max: 10, min: 6 })
       expect(harness.alert).toHaveBeenCalledWith('settings.success')
@@ -1325,7 +1326,7 @@ describe('settings page', () => {
       expect(
         lastCallBody(
           harness,
-          'PUT /classic/zones/buildings/1/settings/frost-protection',
+          'PUT /targets/buildings_1/settings/frost-protection',
         ),
       ).toStrictEqual({ isEnabled: true, max: 12, min: 10 })
     })
@@ -1337,7 +1338,7 @@ describe('settings page', () => {
       await settleDetached()
 
       expect(calledPaths(harness)).not.toContain(
-        'PUT /classic/zones/buildings/1/settings/frost-protection',
+        'PUT /targets/buildings_1/settings/frost-protection',
       )
 
       const [message] = harness.alert.mock.calls.at(-1) ?? []
@@ -1360,7 +1361,7 @@ describe('settings page', () => {
       await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /classic/zones/buildings/1/settings/frost-protection': {
+          'GET /targets/buildings_1/settings/frost-protection': {
             isEnabled: false,
             max: 12,
             min: 8,
@@ -1379,7 +1380,7 @@ describe('settings page', () => {
       const harness = await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /classic/zones/buildings/1/settings/frost-protection': {
+          'GET /targets/buildings_1/settings/frost-protection': {
             isEnabled: null,
             max: 12,
             min: 8,
@@ -1398,7 +1399,7 @@ describe('settings page', () => {
         'settings.zones.enabledRequired',
       )
       expect(calledPaths(harness)).not.toContain(
-        'PUT /classic/zones/buildings/1/settings/frost-protection',
+        'PUT /targets/buildings_1/settings/frost-protection',
       )
     })
 
@@ -1414,7 +1415,7 @@ describe('settings page', () => {
     it('should alert when the frost write fails', async () => {
       const harness = await bootPage({
         failures: {
-          'PUT /classic/zones/buildings/1/settings/frost-protection': new Error(
+          'PUT /targets/buildings_1/settings/frost-protection': new Error(
             'frost down',
           ),
         },
@@ -1434,10 +1435,7 @@ describe('settings page', () => {
       await settleDetached()
 
       expect(
-        lastCallBody(
-          harness,
-          'PUT /classic/zones/buildings/1/settings/holiday-mode',
-        ),
+        lastCallBody(harness, 'PUT /targets/buildings_1/settings/holiday-mode'),
       ).toStrictEqual({
         endDate: '2026-09-15T18:00',
         isEnabled: true,
@@ -1456,10 +1454,7 @@ describe('settings page', () => {
       await settleDetached()
 
       expect(
-        lastCallBody(
-          harness,
-          'PUT /classic/zones/buildings/1/settings/holiday-mode',
-        ),
+        lastCallBody(harness, 'PUT /targets/buildings_1/settings/holiday-mode'),
       ).toStrictEqual({ endDate: '2026-09-15T18:00', isEnabled: true })
     })
 
@@ -1467,7 +1462,7 @@ describe('settings page', () => {
       const harness = await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /classic/zones/buildings/1/settings/holiday-mode': null,
+          'GET /targets/buildings_1/settings/holiday-mode': null,
         },
       })
       commit(getSelect('enabled_holiday_mode'), 'true')
@@ -1478,7 +1473,7 @@ describe('settings page', () => {
         'settings.holidayMode.endDateMissing',
       )
       expect(calledPaths(harness)).not.toContain(
-        'PUT /classic/zones/buildings/1/settings/holiday-mode',
+        'PUT /targets/buildings_1/settings/holiday-mode',
       )
     })
 
@@ -1489,10 +1484,7 @@ describe('settings page', () => {
       await settleDetached()
 
       expect(
-        lastCallBody(
-          harness,
-          'PUT /classic/zones/buildings/1/settings/holiday-mode',
-        ),
+        lastCallBody(harness, 'PUT /targets/buildings_1/settings/holiday-mode'),
       ).toStrictEqual({ isEnabled: false })
       // Disabling cleared the dates in the form.
       expect(getInput('start_date').value).toBe('')
@@ -1503,7 +1495,7 @@ describe('settings page', () => {
       await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /classic/zones/buildings/1/settings/holiday-mode': {
+          'GET /targets/buildings_1/settings/holiday-mode': {
             endDate: null,
             isEnabled: false,
             startDate: null,
@@ -1519,7 +1511,7 @@ describe('settings page', () => {
       await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /classic/zones/buildings/1/settings/holiday-mode': {
+          'GET /targets/buildings_1/settings/holiday-mode': {
             endDate: null,
             isEnabled: true,
             startDate: null,
@@ -1536,7 +1528,7 @@ describe('settings page', () => {
       const harness = await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /classic/zones/buildings/1/settings/holiday-mode': {
+          'GET /targets/buildings_1/settings/holiday-mode': {
             endDate: null,
             isEnabled: null,
             startDate: null,
@@ -1555,7 +1547,7 @@ describe('settings page', () => {
         'settings.zones.enabledRequired',
       )
       expect(calledPaths(harness)).not.toContain(
-        'PUT /classic/zones/buildings/1/settings/holiday-mode',
+        'PUT /targets/buildings_1/settings/holiday-mode',
       )
     })
 
@@ -1605,7 +1597,7 @@ describe('settings page', () => {
       expect(getSpan('overheat_protection_scope').hidden).toBe(true)
       // The capable target also fetched its overheat panel.
       expect(calledPaths(harness)).toContain(
-        'GET /home/devices/ata_device/settings/overheat-protection',
+        'GET /targets/homeDevices_ata_device/settings/overheat-protection',
       )
     })
 
@@ -1617,7 +1609,7 @@ describe('settings page', () => {
 
       expect(getFieldset('overheat_protection_panel').hidden).toBe(true)
       expect(calledPaths(harness)).not.toContain(
-        'GET /home/devices/atw_device/settings/overheat-protection',
+        'GET /targets/homeDevices_atw_device/settings/overheat-protection',
       )
     })
 
@@ -1634,7 +1626,7 @@ describe('settings page', () => {
       expect(
         lastCallBody(
           harness,
-          'PUT /home/buildings/building_1/settings/overheat-protection',
+          'PUT /targets/homeBuildings_building_1/settings/overheat-protection',
         ),
       ).toStrictEqual({ isEnabled: true, max: 38, min: 33 })
     })
@@ -1649,7 +1641,7 @@ describe('settings page', () => {
       await settleDetached()
 
       expect(calledPaths(harness)).not.toContain(
-        'PUT /home/devices/ata_device/settings/overheat-protection',
+        'PUT /targets/homeDevices_ata_device/settings/overheat-protection',
       )
 
       const [message] = harness.alert.mock.calls.at(-1) ?? []
@@ -1660,11 +1652,8 @@ describe('settings page', () => {
     it('should require a choice on a mixed building overheat', async () => {
       const harness = await bootHome({
         routes: {
-          'GET /home/buildings/building_1/settings/overheat-protection': {
-            isEnabled: null,
-            max: null,
-            min: null,
-          },
+          'GET /targets/homeBuildings_building_1/settings/overheat-protection':
+            { isEnabled: null, max: null, min: null },
         },
       })
       commit(getSelect('zones'), 'homeBuildings_building_1')
@@ -1680,20 +1669,18 @@ describe('settings page', () => {
         'settings.zones.enabledRequired',
       )
       expect(calledPaths(harness)).not.toContain(
-        'PUT /home/buildings/building_1/settings/overheat-protection',
+        'PUT /targets/homeBuildings_building_1/settings/overheat-protection',
       )
     })
 
     it('should keep the form on a refresh of an unfetched target', async () => {
       await bootHome({
         failures: {
-          'GET /home/devices/ata_device/settings/frost-protection': new Error(
-            'down',
-          ),
-          'GET /home/devices/ata_device/settings/holiday-mode': new Error(
-            'down',
-          ),
-          'GET /home/devices/ata_device/settings/overheat-protection':
+          'GET /targets/homeDevices_ata_device/settings/frost-protection':
+            new Error('down'),
+          'GET /targets/homeDevices_ata_device/settings/holiday-mode':
+            new Error('down'),
+          'GET /targets/homeDevices_ata_device/settings/overheat-protection':
             new Error('down'),
         },
       })
