@@ -22,9 +22,8 @@ export interface AuthenticationAPI {
 /**
  * Holiday-mode window as the settings webview submits it: an absent
  * bound means "start (or end) now", completed app-side on the HOMEY's
- * clock — the one clock every entry point shares. The page used to
- * stamp the PHONE's clock instead, which diverges from the flow cards'
- * whenever the two sit in different timezones (#1595).
+ * clock — the one clock every entry point shares, whatever timezone
+ * the phone sits in.
  */
 export interface HolidayModeSettings {
   readonly isEnabled: boolean

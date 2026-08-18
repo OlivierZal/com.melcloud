@@ -14,6 +14,7 @@ import {
 } from '@olivierzal/homey-kit/manifest'
 import {
   type DeviceType,
+  type FlatZone,
   type HolidayModeUpdate,
   type HomeBuildingZone,
   type HomeDeviceZone,
@@ -173,18 +174,13 @@ interface FlatZoneItem {
   readonly name: string
 }
 
-// A node from either zone source: a Classic zone (carrying its building
-// name) or a Home building/device (same shape). The single vocabulary
-// every picker draws from.
-type PickerNode = Classic.FlatZone | HomeBuildingZone | HomeDeviceZone
-
 // A flat picker lists every node at one level, so a leaf's bare name can
 // collide with a same-named leaf on another building; suffixing it with its
 // owning building keeps them apart. Building nodes locate themselves and
 // keep the bare name — as do tree-shaped lists, where the hierarchy already
 // places each node. The one suffix rule for every flat surface (holiday
 // flow, chart and group widget pickers).
-const toFlatName = ({ buildingName, model, name }: PickerNode): string => {
+const toFlatName = ({ buildingName, model, name }: FlatZone): string => {
   const trimmed = name.trim()
   return model === 'buildings' || model === 'homeBuildings'
     ? trimmed
@@ -193,7 +189,7 @@ const toFlatName = ({ buildingName, model, name }: PickerNode): string => {
 
 // Flat autocomplete items over the given nodes, name-sorted. The selected
 // item's `id` carries the `${model}_${id}` routing value run listeners parse.
-const toFlatZoneItems = (nodes: readonly PickerNode[]): FlatZoneItem[] =>
+const toFlatZoneItems = (nodes: readonly FlatZone[]): FlatZoneItem[] =>
   nodes
     .map((node) => ({
       id: getZoneId(node.id, node.model),
@@ -224,11 +220,6 @@ const parseErrorDate = (date: string, timeZone: string): Temporal.Instant => {
 // The webview always asks for 29-day pages; mirrored here for the synthetic
 // window served when Classic is signed out.
 const DEFAULT_ERROR_LOG_PERIOD_DAYS = 29
-const HOME_ERROR_DEVICE_TYPES: readonly Home.DeviceType[] = [
-  Home.DeviceType.Ata,
-  Home.DeviceType.Atw,
-]
-
 interface RawErrorEntry {
   readonly device: string
   readonly error: string
@@ -336,14 +327,9 @@ export default class MELCloudApp extends App {
     // initialized — the discriminators for 2018-hardware
     // `ready_timeout` diagnostics.
     this.log('Boot: onInit after', process.uptime().toFixed(1), 's')
-    const language = this.homey.i18n.getLanguage()
-    await this.#initClassicApi({
-      language,
-      locale: language,
-      timezone: getTimeZone(this.homey),
-    })
+    await this.#initClassicApi()
     await this.#initHomeApi()
-    this.#createNotification(language)
+    this.#createNotification(this.homey.i18n.getLanguage())
     this.#registerWidgetListeners()
     this.#registerFlowListeners()
     // Poke any open webview to re-run its freshness handshake: an app
@@ -394,17 +380,17 @@ export default class MELCloudApp extends App {
     if (devices.length === 0) {
       throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
     }
+    const ataData = devices
+      .filter((device) =>
+        Classic.isDeviceOfType(device, Classic.DeviceType.Ata),
+      )
+      .map(({ data }) => data)
+      .filter((data) => status !== 'on' || data.Power)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic Classic.GroupState to typed GroupAtaStates
     return typedFromEntries(
-      this.getClassicAtaCapabilities().map(([key]) => [
+      this.#getAtaCapabilityConfigs().map(({ key }) => [
         key,
-        devices
-          .filter((device) =>
-            Classic.isDeviceOfType(device, Classic.DeviceType.Ata),
-          )
-          .map(({ data }) => data)
-          .filter((data) => status !== 'on' || data.Power)
-          .map((data) => data[key]),
+        ataData.map((data) => data[key]),
       ]),
     ) as GroupAtaStates
   }
@@ -462,15 +448,15 @@ export default class MELCloudApp extends App {
     zoneType: DeviceOrZoneData['zoneType'],
     id: number | string,
   ): Classic.Facade {
-    const instance = this.#classicRegistry[zoneType].getById(Number(id))
-    if (instance === undefined) {
+    const facade = this.#facadeManager.getById(zoneType, Number(id))
+    if (facade === null) {
       throw new NotFoundError(
         this.homey.__(
           `errors.${zoneType === 'devices' ? 'device' : 'zone'}NotFound`,
         ),
       )
     }
-    return this.#facadeManager.get(instance)
+    return facade
   }
 
   public async getClassicHourlyTemperatures({
@@ -518,7 +504,7 @@ export default class MELCloudApp extends App {
   // narrowed to one device type. Every flat Classic picker draws from
   // here with the filters it needs.
   public getClassicTargets(type?: Classic.DeviceType): Classic.FlatZone[] {
-    return this.#facadeManager.getZones(type === undefined ? {} : { type })
+    return this.#facadeManager.getZones({ type })
   }
 
   public async getClassicTemperatures({
@@ -719,7 +705,7 @@ export default class MELCloudApp extends App {
   // The flattened Home picker list — name-sorted buildings (level 0) each
   // followed by its own devices (level 1); `type` narrows to one
   // connection type (the ATA group widget), omitted spans both (the
-  // settings selector). The tree itself now comes from the library.
+  // settings selector).
   public getHomeTargets(
     type?: Home.DeviceType,
   ): (HomeBuildingZone | HomeDeviceZone)[] {
@@ -761,7 +747,7 @@ export default class MELCloudApp extends App {
   public async getTargetOverheatProtection(
     targetId: string,
   ): Promise<TargetProtectionState> {
-    const target = this.#getOverheatTarget(targetId)
+    const target = this.#getHomeTarget(targetId)
     return target === null
       ? null
       : unwrapResult(await target.getOverheatProtection())
@@ -853,7 +839,7 @@ export default class MELCloudApp extends App {
     targetId: string,
     settings: ProtectionUpdate,
   ): Promise<void> {
-    const target = this.#getOverheatTarget(targetId)
+    const target = this.#getHomeTarget(targetId)
     if (target === null) {
       // Overheat protection does not exist on the Classic wire: a write
       // addressed to a Classic target is a caller error, not a no-op.
@@ -920,8 +906,8 @@ export default class MELCloudApp extends App {
   }
 
   // One clock for every entry point: the Homey's. An absent bound means
-  // "now" — the settings page no longer stamps the phone's clock, whose
-  // divergence from the flow cards' Homey clock was #1595.
+  // "now" — stamping here keeps the settings page and the flow cards on
+  // the same clock whatever timezone the phone sits in.
   #completeHolidayModeWindow({
     endDate,
     isEnabled,
@@ -1004,6 +990,9 @@ export default class MELCloudApp extends App {
     options: ManifestDriverCapabilitiesOptions
     enumType?: Record<string, number | string>
   }[] {
+    const ataOptions = this.homey.manifest.drivers.find(
+      ({ id }) => id === 'melcloud',
+    )?.capabilitiesOptions
     return [
       { key: 'Power', options: power },
       {
@@ -1015,8 +1004,7 @@ export default class MELCloudApp extends App {
         // honest — and why neither API's increment is read instead.
         options: {
           ...targetTemperature,
-          ...this.homey.manifest.drivers.find(({ id }) => id === 'melcloud')
-            ?.capabilitiesOptions?.target_temperature,
+          ...ataOptions?.target_temperature,
           step: getCapabilityFlowStep(targetTemperature),
         },
       },
@@ -1040,11 +1028,9 @@ export default class MELCloudApp extends App {
         key: 'OperationMode',
         options: {
           ...thermostatMode,
-          values: this.homey.manifest.drivers
-            .find(({ id }) => id === 'melcloud')
-            ?.capabilitiesOptions?.thermostat_mode?.values?.filter(
-              ({ id }) => id !== 'off',
-            ),
+          values: ataOptions?.thermostat_mode?.values?.filter(
+            ({ id }) => id !== 'off',
+          ),
         },
       },
     ]
@@ -1068,7 +1054,7 @@ export default class MELCloudApp extends App {
     query: Classic.ErrorLogQuery,
     timeZone: string,
   ): Promise<Classic.ErrorLog> {
-    if (!this.classicApi.isAuthenticated()) {
+    if (!this.#classicApi.isAuthenticated()) {
       // A Home-only account pages the same windows the Classic API
       // would have answered: the library publishes its own tiling.
       const { fromDate, nextFromDate, nextToDate } = resolveErrorLogWindow(
@@ -1113,11 +1099,12 @@ export default class MELCloudApp extends App {
       : drivers.filter((driver) => driver.id === driverId)
   }
 
-  // The ids of every device (ATA and ATW) in a `/context` building.
+  // A Home building is a zone in the picker vocabulary, so a missing
+  // one answers the same error class as its Classic counterpart.
   #getHomeBuildingFacade(buildingId: string): Home.BuildingFacade {
     const facade = this.#homeFacadeManager.getBuilding(buildingId)
     if (facade === null) {
-      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+      throw new NotFoundError(this.homey.__('errors.zoneNotFound'))
     }
     return facade
   }
@@ -1147,32 +1134,28 @@ export default class MELCloudApp extends App {
     deviceId: string,
     type?: Home.DeviceType,
   ): Home.DeviceAtaFacade | Home.DeviceAtwFacade {
-    const model = this.#homeRegistry.getById(deviceId)
-    if (type === undefined || model?.type === type) {
-      if (model?.isAta() === true) {
-        return this.#homeFacadeManager.get(model)
-      }
-      if (model?.isAtw() === true) {
-        return this.#homeFacadeManager.get(model)
-      }
+    const facade = this.#homeFacadeManager.getById(deviceId)
+    if (facade === null || (type !== undefined && facade.type !== type)) {
+      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
     }
-    throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+    return facade
   }
 
   async #getHomeErrorEntries(timeZone: string): Promise<RawErrorEntry[]> {
     const logs = await Promise.all(
-      HOME_ERROR_DEVICE_TYPES.flatMap((type) =>
-        this.getHomeDevicesByType(type),
-      ).map(async (device) =>
-        this.#getHomeDeviceErrorEntries(device, timeZone),
-      ),
+      this.#homeRegistry
+        .getDevices()
+        .map(async (device) =>
+          this.#getHomeDeviceErrorEntries(device, timeZone),
+        ),
     )
     return logs.flat()
   }
 
-  // Overheat protection exists on Home targets only; a Classic value
-  // resolves to `null` rather than a facade.
-  #getOverheatTarget(
+  // The Home target for a picker value, or `null` when the value
+  // addresses the Classic family. Doubles as the overheat resolver:
+  // overheat protection exists on Home targets only.
+  #getHomeTarget(
     targetId: string,
   ): Home.BuildingFacade | Home.DeviceAtaFacade | Home.DeviceAtwFacade | null {
     if (isHomeBuildingValue(targetId)) {
@@ -1187,11 +1170,9 @@ export default class MELCloudApp extends App {
   // targetId is the picker value verbatim (`${model}_${id}`), so
   // addressing is the only family-visible step left.
   #getSettingsTarget(targetId: string): SettingsTarget {
-    if (isHomeBuildingValue(targetId)) {
-      return this.#getHomeBuildingFacade(getHomeBuildingId(targetId))
-    }
-    if (isHomeDeviceValue(targetId)) {
-      return this.#getHomeDeviceFacade(getHomeDeviceId(targetId))
+    const homeTarget = this.#getHomeTarget(targetId)
+    if (homeTarget !== null) {
+      return homeTarget
     }
     const { zoneId, zoneType } = toZoneValueData(targetId)
     return this.getClassicFacade(zoneType, zoneId)
@@ -1228,15 +1209,6 @@ export default class MELCloudApp extends App {
     return Temporal.PlainTime.from(time)
   }
 
-  // Disabling holiday mode: both APIs ignore the window when off, so the
-  // bounds are stamped at now for a valid, self-consistent payload.
-  #holidayModeOff(): HolidayModeUpdate {
-    const now = Temporal.Now.plainDateTimeISO(
-      getTimeZone(this.homey),
-    ).toString()
-    return { endDate: now, isEnabled: false, startDate: now }
-  }
-
   // The window a holiday card applies: start = now, end = `days` calendar
   // days after today at `endTime` (default 00:00 — the start of that day,
   // not 24:00). The end is rejected when it is not after now (e.g. 0 days
@@ -1257,13 +1229,9 @@ export default class MELCloudApp extends App {
     }
   }
 
-  async #initClassicApi(config: {
-    language: string
-    locale: string
-    timezone: string
-  }): Promise<void> {
+  async #initClassicApi(): Promise<void> {
+    const language = this.homey.i18n.getLanguage()
     this.#classicApi = await Classic.API.create({
-      ...config,
       abortSignal: this.#abortController.signal,
       events: {
         onSyncComplete: this.#onSync,
@@ -1274,9 +1242,12 @@ export default class MELCloudApp extends App {
           this.#notifySessionRestored('classic')
         },
       },
+      language,
+      locale: language,
       logger: this,
       settingManager: this.#createSettingManager(),
       shouldResumeSessionInBackground: true,
+      timezone: getTimeZone(this.homey),
     })
     this.#facadeManager = new Classic.FacadeManager(this.#classicApi)
     setClassicFacadeManager(this.#facadeManager)
@@ -1372,7 +1343,7 @@ export default class MELCloudApp extends App {
       const days = this.#holidayModeDays(duration)
       return days > HOLIDAY_MODE_OFF_DURATION
         ? this.#holidayModeWindow(days)
-        : this.#holidayModeOff()
+        : { isEnabled: false }
     })
     this.#registerHolidayModeCard(
       'holiday_mode_with_time_action',
@@ -1382,22 +1353,22 @@ export default class MELCloudApp extends App {
           this.#holidayModeEndTime(time),
         ),
     )
-    this.#registerHolidayModeCard('holiday_mode_false_action', () =>
-      this.#holidayModeOff(),
-    )
+    this.#registerHolidayModeCard('holiday_mode_false_action', () => ({
+      isEnabled: false,
+    }))
     this.#registerHolidayModeCondition()
   }
 
   #registerHolidayModeCard(
     id: string,
-    toSettings: (args: HolidayModeActionArgs) => HolidayModeUpdate,
+    toSettings: (args: HolidayModeActionArgs) => HolidayModeSettings,
   ): void {
     const card = this.homey.flow.getActionCard(id)
     card.registerArgumentAutocompleteListener('zone', (query) =>
       this.#searchHolidayModeTargets(query),
     )
     card.registerRunListener(async (args: HolidayModeActionArgs) => {
-      await this.#updateHolidayModeTarget(args.zone.id, toSettings(args))
+      await this.updateTargetHolidayMode(args.zone.id, toSettings(args))
     })
   }
 
@@ -1466,14 +1437,5 @@ export default class MELCloudApp extends App {
     this.#sessionLossStates.delete(api)
     this.log('Session lost on', api, 'ignored: no paired device')
     return false
-  }
-
-  // Route a holiday-mode write from a flat target value: the option
-  // value IS the targetId the neutral write takes.
-  async #updateHolidayModeTarget(
-    value: string,
-    settings: HolidayModeUpdate,
-  ): Promise<void> {
-    await this.updateTargetHolidayMode(value, settings)
   }
 }

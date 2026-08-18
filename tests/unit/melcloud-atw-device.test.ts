@@ -210,11 +210,11 @@ describe(ClassicMELCloudDeviceAtw, () => {
   })
 
   describe('operation mode state mapping', () => {
+    // One row per code path: the hot-water, zone1 and zone2 reads each
+    // pass their facade state through unmapped.
     it.each([
       ['hot_water', 'hotWater', Classic.OperationModeStateHotWater.dhw],
-      ['hot_water', 'hotWater', Classic.OperationModeStateHotWater.prohibited],
       ['zone1', 'zone1', Classic.OperationModeStateZone.prohibited],
-      ['zone1', 'zone1', Classic.OperationModeStateZone.idle],
       ['zone2', 'zone2', Classic.OperationModeStateZone.heating],
     ] as const)(
       'should set operational_state.%s from facade %s state %s',

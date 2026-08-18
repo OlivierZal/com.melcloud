@@ -34,8 +34,6 @@ vi.mock(import('../../lib/classic-facade-manager.mts'), () => ({
 
 const { default: api } = await import('../../api.mts')
 
-const mockIsAuthenticated = vi.fn<() => boolean>()
-const mockIsHomeAuthenticated = vi.fn<() => boolean>()
 const mockEnsureClassicAuthenticated = vi.fn<() => Promise<boolean>>()
 const mockEnsureHomeAuthenticated = vi.fn<() => Promise<boolean>>()
 const mockGetHomeBuildings = vi.fn<Home.Registry['getBuildings']>()
@@ -48,14 +46,12 @@ const mockApp = {
   classicApi: {
     authenticate: mockClassicAuthenticate,
     ensureAuthenticated: mockEnsureClassicAuthenticated,
-    isAuthenticated: mockIsAuthenticated,
     logOut: mockClassicLogOut,
   },
   error: vi.fn<(...args: readonly unknown[]) => void>(),
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
   getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
-  getHomeDeviceZones: vi.fn<() => HomeDeviceZone[]>(),
   getHomeTargets: vi.fn<() => (HomeBuildingZone | HomeDeviceZone)[]>(),
   getTargetFrostProtection: vi.fn<() => Promise<ProtectionState | null>>(),
   getTargetHolidayMode: vi.fn<() => Promise<HolidayModeState | null>>(),
@@ -63,7 +59,6 @@ const mockApp = {
   homeApi: {
     authenticate: mockHomeAuthenticate,
     ensureAuthenticated: mockEnsureHomeAuthenticated,
-    isAuthenticated: mockIsHomeAuthenticated,
     logOut: mockHomeLogOut,
     registry: { getBuildings: mockGetHomeBuildings },
   },
@@ -253,15 +248,6 @@ describe('api', () => {
     })
   })
 
-  describe('home devices retrieval', () => {
-    it('should delegate to app.getHomeDeviceZones', () => {
-      const devices = [mock<HomeDeviceZone>({ id: 'guid-1' })]
-      mockApp.getHomeDeviceZones.mockReturnValue(devices)
-
-      expect(api.getHomeDevices({ homey })).toBe(devices)
-    })
-  })
-
   describe('home targets retrieval', () => {
     it('should delegate to app.getHomeTargets', () => {
       const targets = [mock<HomeBuildingZone>({ id: 'b1' })]
@@ -276,7 +262,7 @@ describe('api', () => {
       'getTargetFrostProtection',
       'getTargetHolidayMode',
       'getTargetOverheatProtection',
-    ] as const)('delegates %s with the raw targetId', async (handler) => {
+    ] as const)('should delegate %s with the raw targetId', async (handler) => {
       const value = mock<HolidayModeState & ProtectionState>()
       mockApp[handler].mockResolvedValue(value)
 
@@ -294,16 +280,19 @@ describe('api', () => {
     it.each([
       'updateTargetFrostProtection',
       'updateTargetOverheatProtection',
-    ] as const)('delegates %s with targetId and body', async (handler) => {
-      const body = { isEnabled: true, max: 16, min: 4 }
-      mockApp[handler].mockResolvedValue()
+    ] as const)(
+      'should delegate %s with targetId and body',
+      async (handler) => {
+        const body = { isEnabled: true, max: 16, min: 4 }
+        mockApp[handler].mockResolvedValue()
 
-      await api[handler]({ body, homey, params: { targetId: 'buildings_1' } })
+        await api[handler]({ body, homey, params: { targetId: 'buildings_1' } })
 
-      expect(mockApp[handler]).toHaveBeenCalledWith('buildings_1', body)
-    })
+        expect(mockApp[handler]).toHaveBeenCalledWith('buildings_1', body)
+      },
+    )
 
-    it('delegates updateTargetHolidayMode with targetId and body', async () => {
+    it('should delegate updateTargetHolidayMode with targetId and body', async () => {
       const body = mock<HolidayModeUpdate>()
       mockApp.updateTargetHolidayMode.mockResolvedValue()
 
@@ -336,14 +325,6 @@ describe('api', () => {
 
       expect(result).toBe('en')
       expect(mockI18n.getLanguage).toHaveBeenCalledTimes(1)
-    })
-
-    it('should return non-English language', () => {
-      mockI18n.getLanguage.mockReturnValue('fr')
-
-      const result = api.getLanguage({ homey })
-
-      expect(result).toBe('fr')
     })
   })
 

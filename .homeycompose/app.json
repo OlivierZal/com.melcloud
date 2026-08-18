@@ -28,10 +28,6 @@
       "method": "GET",
       "path": "/logs/errors"
     },
-    "getHomeDevices": {
-      "method": "GET",
-      "path": "/home/devices"
-    },
     "getHomeTargets": {
       "method": "GET",
       "path": "/home/targets"

@@ -108,7 +108,7 @@ const thermostatModeValuesAtw = [
   createCoolObject(flow),
 ]
 
-export const getThermostatModeValuesAtw = (
+const getThermostatModeValuesAtw = (
   canCool: boolean,
 ): CapabilitiesOptionsValues<keyof typeof Classic.OperationModeZone>[] =>
   canCool
@@ -134,9 +134,7 @@ const thermostatModeZone2TitleAtw: LocalizedStrings = addSuffixToTitle(
   },
 )
 
-//
 // The runtime `thermostat_mode` options both ATW dialects compute.
-//
 export interface ThermostatModeOptionsAtw {
   readonly thermostat_mode: {
     readonly values: readonly CapabilitiesOptionsValues<

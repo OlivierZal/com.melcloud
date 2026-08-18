@@ -10,22 +10,33 @@ import { describe, expect, it } from 'vitest'
 // the defaults or lean on the template precedence CLAUDE.md forbids.
 // The twins stay; this pin is what turns an edit to one without the
 // other into a failure instead of a silent drift.
-const readThermostatModeOptions = async (driver: string): Promise<unknown> => {
-  const compose = JSON.parse(
-    await readFile(`drivers/${driver}/driver.compose.json`, 'utf8'),
-  ) as { capabilitiesOptions: Record<string, unknown> }
-  return compose.capabilitiesOptions.thermostat_mode
+//
+// Raw text, not parsed JSON: byte identity is the pin (the widget-styles
+// twin pattern), so formatting or key-order drift fails too. The slice
+// is stable because `thermostat_mode` closes at the only 4-space `}` of
+// the block in these prettier-formatted files.
+const readThermostatModeBlock = async (driver: string): Promise<string> => {
+  const compose = await readFile(
+    `drivers/${driver}/driver.compose.json`,
+    'utf8',
+  )
+  const lines = compose.split('\n')
+  const start = lines.indexOf('    "thermostat_mode": {')
+  const end = lines.indexOf('    }', start)
+  return start === -1 || end === -1
+    ? ''
+    : lines.slice(start, end + 1).join('\n')
 }
 
 describe('ata driver compose twins', () => {
   it('should keep the thermostat_mode options byte-identical', async () => {
     const [classic, home] = await Promise.all(
       ['melcloud', 'home-melcloud'].map(async (driver) =>
-        readThermostatModeOptions(driver),
+        readThermostatModeBlock(driver),
       ),
     )
 
-    expect(classic).toBeDefined()
-    expect(classic).toStrictEqual(home)
+    expect(classic).not.toBe('')
+    expect(classic).toBe(home)
   })
 })

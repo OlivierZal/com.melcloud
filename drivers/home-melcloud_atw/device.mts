@@ -2,15 +2,16 @@ import type * as Home from '@olivierzal/melcloud-api/home'
 
 import type { HomeEnergyMeasureName } from '../../types/device.mts'
 import type {
-  HomeCapabilitiesAtw,
-  HomeSetCapabilitiesAtw,
-} from '../../types/home-atw.mts'
-import type {
   HomeConvertFromDevice,
   HomeConvertToDevice,
 } from '../../types/home.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
 import { HotWaterMode } from '../../types/atw.mts'
+import {
+  type HomeCapabilitiesAtw,
+  type HomeSetCapabilitiesAtw,
+  hasAtwEnergyDirection,
+} from '../../types/home-atw.mts'
 import { HomeMELCloudDevice } from '../home-device.mts'
 import { HomeEnergyReportAtw } from '../home-report-atw.mts'
 
@@ -89,10 +90,6 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     if (capabilities === undefined) {
       return true
     }
-    return measure === 'consumed'
-      ? capabilities.hasEstimatedEnergyConsumption ||
-          capabilities.hasMeasuredEnergyConsumption
-      : capabilities.hasEstimatedEnergyProduction ||
-          capabilities.hasMeasuredEnergyProduction
+    return hasAtwEnergyDirection(capabilities, measure)
   }
 }
