@@ -3,6 +3,7 @@ import * as Home from '@olivierzal/melcloud-api/home'
 import {
   type HomeAtwDeviceProfile,
   type HomeCapabilitiesAtw,
+  hasAtwEnergyDirection,
   homeGetCapabilitiesOptionsAtw,
   homeTagMappingsAtw,
 } from '../../types/home-atw.mts'
@@ -12,22 +13,15 @@ import { HomeMELCloudDriver } from '../home-driver.mts'
 // user toggle: each capability appears when the unit can report its
 // direction. Consumed power/meters need a consumption estimate or
 // meter; produced ones a production one; COP needs both.
-const hasEnergyDirection = (
-  capabilities: HomeAtwDeviceProfile['capabilities'] | undefined,
-  flags: readonly (keyof NonNullable<HomeAtwDeviceProfile['capabilities']>)[],
-): boolean => flags.some((flag) => capabilities?.[flag] === true)
-
 const energyCapabilities = (
   capabilities: HomeAtwDeviceProfile['capabilities'] | undefined,
 ): string[] => {
-  const hasConsumed = hasEnergyDirection(capabilities, [
-    'hasEstimatedEnergyConsumption',
-    'hasMeasuredEnergyConsumption',
-  ])
-  const hasProduced = hasEnergyDirection(capabilities, [
-    'hasEstimatedEnergyProduction',
-    'hasMeasuredEnergyProduction',
-  ])
+  const hasConsumed =
+    capabilities !== undefined &&
+    hasAtwEnergyDirection(capabilities, 'consumed')
+  const hasProduced =
+    capabilities !== undefined &&
+    hasAtwEnergyDirection(capabilities, 'produced')
   return [
     ...(hasConsumed
       ? ['measure_power', 'meter_power', 'meter_power.daily']

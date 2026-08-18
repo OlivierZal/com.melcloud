@@ -85,6 +85,26 @@ vi.mock(import('homey'), async () => {
   })
 })
 
+const createListDevicesSession = (): {
+  listHandler: ReturnType<typeof vi.fn<(...args: unknown[]) => unknown>>
+  session: PairSession
+} => {
+  const listHandler = vi.fn<(...args: unknown[]) => unknown>()
+  const session = mock<PairSession>({
+    setHandler: vi
+      .fn<(event: string, handler: (...args: unknown[]) => unknown) => void>()
+      .mockImplementation(
+        (event: string, handler: (...args: unknown[]) => unknown) => {
+          if (event === 'list_devices') {
+            listHandler.mockImplementation(handler)
+          }
+        },
+      ),
+    showView: showViewMock,
+  })
+  return { listHandler, session }
+}
+
 describe(ClassicMELCloudDriver, () => {
   let driver: TestDriver
 
@@ -93,6 +113,16 @@ describe(ClassicMELCloudDriver, () => {
 
     driver = createTestDriver()
   })
+
+  const stubDiscoverableDevice = (): void => {
+    vi.spyOn(driver.homey.app, 'getDevicesByType').mockReturnValue([
+      mock<Classic.Device<TestDriverType>>({
+        data: { Power: true },
+        id: 1,
+        name: 'Device 1',
+      }),
+    ])
+  }
 
   describe('initialization', () => {
     it('should set produced and consumed tag mappings', async () => {
@@ -114,34 +144,36 @@ describe(ClassicMELCloudDriver, () => {
 
   describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
-      const listHandler = vi.fn<(...args: unknown[]) => unknown>()
-      const session = mock<PairSession>({
-        setHandler: vi
-          .fn<
-            (event: string, handler: (...args: unknown[]) => unknown) => void
-          >()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'list_devices') {
-                listHandler.mockImplementation(handler)
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
-      vi.spyOn(driver.homey.app, 'getDevicesByType').mockReturnValue([
-        mock<Classic.Device<TestDriverType>>({
-          data: { Power: true },
-          id: 1,
-          name: 'Device 1',
-        }),
-      ])
+      const { listHandler, session } = createListDevicesSession()
+      stubDiscoverableDevice()
       await driver.onPair(session)
       const devices = await listHandler()
 
       expect(devices).toStrictEqual([
         {
           capabilities: ['onoff', 'thermostat_mode'],
+          capabilitiesOptions: {},
+          data: { id: 1 },
+          name: 'Device 1',
+        },
+      ])
+    })
+
+    // The opt-in rule at the pairing-details call site: the raw required
+    // list carries measure_signal_strength, the listed device must not.
+    it('should exclude the opt-in measure_signal_strength from pairing details', async () => {
+      const { listHandler, session } = createListDevicesSession()
+      stubDiscoverableDevice()
+      vi.spyOn(driver, 'getRequiredCapabilities').mockReturnValue([
+        'onoff',
+        'measure_signal_strength',
+      ])
+      await driver.onPair(session)
+      const devices = await listHandler()
+
+      expect(devices).toStrictEqual([
+        {
+          capabilities: ['onoff'],
           capabilitiesOptions: {},
           data: { id: 1 },
           name: 'Device 1',

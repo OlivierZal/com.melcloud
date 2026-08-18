@@ -578,6 +578,32 @@ describe(ClassicMELCloudDevice, () => {
 
       expect(superRemoveCapabilityMock).toHaveBeenCalledWith('fan_speed')
     })
+
+    // The opt-in rule at the init-reconciliation call site: the raw
+    // required list carries measure_signal_strength (and the manifest
+    // declares it), yet only the shared options setting may add it.
+    it('should not add the opt-in measure_signal_strength from the required list', async () => {
+      const driverWithSignal = Object.create(mockDriver) as typeof mockDriver
+      Object.assign(driverWithSignal, {
+        getRequiredCapabilities: vi
+          .fn<() => string[]>()
+          .mockReturnValue(['onoff', 'measure_signal_strength']),
+        manifest: mock({
+          capabilities: ['onoff', 'measure_signal_strength'],
+          id: 'test',
+        }),
+      })
+      setDriver(device, driverWithSignal)
+      vi.spyOn(device, 'getSettings').mockReturnValue({})
+      vi.spyOn(device, 'getCapabilities').mockReturnValue([])
+      vi.spyOn(device, 'hasCapability').mockReturnValue(false)
+      await device.onInit()
+
+      expect(superAddCapabilityMock).toHaveBeenCalledWith('onoff')
+      expect(superAddCapabilityMock).not.toHaveBeenCalledWith(
+        'measure_signal_strength',
+      )
+    })
   })
 
   describe('capability options setup', () => {

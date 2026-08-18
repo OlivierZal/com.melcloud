@@ -159,8 +159,6 @@ const api = {
       ...(to !== undefined && { to }),
     })
   },
-  getHomeDevices: ({ homey: { app } }: { homey: Homey }): HomeDeviceZone[] =>
-    app.getHomeDeviceZones(),
   getHomeTargets: ({
     homey: { app },
   }: {

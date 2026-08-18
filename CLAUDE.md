@@ -94,10 +94,12 @@ caught real failures that the others miss:
   vendored-JSON key sort in `scripts/sort-keys-deep.mts`), unit-tested
   against a temp packaging tree; `bundle.mts` and
   `sync-capability-definitions.mts` keep only their tables and the
-  esbuild/fs calls consuming them — the two named, file-scoped coverage
-  exclusions left in `vitest.config.ts` and `sonar-project.properties`
-  (never a directory sweep, and `npm run build` plus the drift test
-  exercise them end to end). esbuild runs in a service process with its
+  esbuild/fs calls consuming them, unit-tested directly
+  (`tests/unit/bundle.test.ts`,
+  `tests/unit/sync-capability-definitions.test.ts`) — no file-scoped
+  coverage exclusion remains in `vitest.config.ts` or
+  `sonar-project.properties`, and `npm run build` plus the drift test
+  exercise them end to end. esbuild runs in a service process with its
   own cwd, so both the build and the stamping anchor on an explicit
   repo root (`absWorkingDir`), never the launcher's.
 - `npm run homey:validate` — Homey validation at publish level; may

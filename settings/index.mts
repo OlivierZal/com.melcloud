@@ -1699,7 +1699,7 @@ class ZoneSettingsManager {
   }
 
   // The picker value IS the targetId of the neutral settings routes:
-  // addressing needs no family branch at all anymore.
+  // addressing needs no family branch.
   #getZoneSettingsBase(): string {
     return `/targets/${this.#zone.value}`
   }

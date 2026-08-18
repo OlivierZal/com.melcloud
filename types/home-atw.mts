@@ -5,11 +5,13 @@ import type {
   BaseGetCapabilities,
   BaseListCapabilities,
   BaseSetCapabilities,
-  CapabilitiesOptionsValues,
-  LocalizedStrings,
 } from './bases.mts'
 import type { HomeEnergyMeasureName } from './device.mts'
-import { type HotWaterMode, buildAtwThermostatModeOptions } from './atw.mts'
+import {
+  type HotWaterMode,
+  type ThermostatModeOptionsAtw,
+  buildAtwThermostatModeOptions,
+} from './atw.mts'
 
 interface HomeGetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'measure_temperature.tank_water': number
@@ -73,16 +75,6 @@ export const homeTagMappingsAtw: {
   set: homeSetCapabilityTagMappingAtw,
 }
 
-interface HomeCapabilitiesOptionsAtw {
-  readonly thermostat_mode: {
-    readonly values: readonly CapabilitiesOptionsValues<Home.AtwZoneMode>[]
-  }
-  readonly 'thermostat_mode.zone2': {
-    readonly title: LocalizedStrings
-    readonly values: readonly CapabilitiesOptionsValues<Home.AtwZoneMode>[]
-  }
-}
-
 /**
  * Structural slice of {@link Home.DeviceAtwFacade} driving which capabilities
  * a Home ATW device gets and their options. Satisfied by the facade itself;
@@ -96,8 +88,22 @@ export type HomeAtwDeviceProfile = Pick<
   'capabilities' | 'hasCoolingMode'
 >
 
+// One spelling of "the unit can report this energy direction": a
+// consumption estimate or meter for `consumed`, a production one for
+// `produced`. Shared by the driver's capability derivation and the
+// device's measure gate.
+export const hasAtwEnergyDirection = (
+  capabilities: HomeAtwDeviceProfile['capabilities'],
+  measure: HomeEnergyMeasureName,
+): boolean =>
+  measure === 'consumed'
+    ? capabilities.hasEstimatedEnergyConsumption ||
+      capabilities.hasMeasuredEnergyConsumption
+    : capabilities.hasEstimatedEnergyProduction ||
+      capabilities.hasMeasuredEnergyProduction
+
 export const homeGetCapabilitiesOptionsAtw = ({
   capabilities: { hasZone2 },
   hasCoolingMode,
-}: HomeAtwDeviceProfile): Partial<HomeCapabilitiesOptionsAtw> =>
+}: HomeAtwDeviceProfile): Partial<ThermostatModeOptionsAtw> =>
   buildAtwThermostatModeOptions(hasCoolingMode, hasZone2)

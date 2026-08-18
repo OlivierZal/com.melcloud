@@ -19,20 +19,9 @@ const mockBuildings = [
   },
 ]
 
-const mockZones = [
-  { id: 10, level: 0, model: 'buildings' as const, name: 'ClassicBuilding 1' },
-  { id: 1, level: 1, model: 'devices' as const, name: 'Device 1' },
-]
-
-const mockFacadeManager = {
-  get: vi.fn<(instance: unknown) => unknown>().mockReturnValue(null),
-  getBuildings: vi
-    .fn<(options?: { type?: Classic.DeviceType }) => unknown[]>()
-    .mockReturnValue(mockBuildings),
-  getZones: vi
-    .fn<(options?: { type?: Classic.DeviceType }) => unknown[]>()
-    .mockReturnValue(mockZones),
-}
+const mockGetBuildings = vi
+  .fn<(options?: { type?: Classic.DeviceType }) => unknown[]>()
+  .mockReturnValue(mockBuildings)
 
 describe('classic-facade-manager', () => {
   describe('when Classic.FacadeManager is not initialized', () => {
@@ -50,15 +39,10 @@ describe('classic-facade-manager', () => {
   describe('when Classic.FacadeManager is initialized', () => {
     beforeEach(() => {
       setClassicFacadeManager(
-        mock<Classic.FacadeManager>({
-          get: mockFacadeManager.get,
-          getBuildings: mockFacadeManager.getBuildings,
-          getZones: mockFacadeManager.getZones,
-        }),
+        mock<Classic.FacadeManager>({ getBuildings: mockGetBuildings }),
       )
       vi.clearAllMocks()
-      mockFacadeManager.getBuildings.mockReturnValue(mockBuildings)
-      mockFacadeManager.getZones.mockReturnValue(mockZones)
+      mockGetBuildings.mockReturnValue(mockBuildings)
     })
 
     describe(getClassicBuildings, () => {
@@ -66,13 +50,13 @@ describe('classic-facade-manager', () => {
         const result = getClassicBuildings()
 
         expect(result).toBe(mockBuildings)
-        expect(mockFacadeManager.getBuildings).toHaveBeenCalledWith({})
+        expect(mockGetBuildings).toHaveBeenCalledWith({ type: undefined })
       })
 
       it('should pass type filter', () => {
         getClassicBuildings({ type: Classic.DeviceType.Ata })
 
-        expect(mockFacadeManager.getBuildings).toHaveBeenCalledWith({
+        expect(mockGetBuildings).toHaveBeenCalledWith({
           type: Classic.DeviceType.Ata,
         })
       })

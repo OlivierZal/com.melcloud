@@ -17,4 +17,4 @@ export const setClassicFacadeManager = (value: Classic.FacadeManager): void => {
 export const getClassicBuildings = ({
   type,
 }: { type?: Classic.DeviceType | undefined } = {}): Classic.BuildingZone[] =>
-  getClassicFacadeManager().getBuildings(type === undefined ? {} : { type })
+  getClassicFacadeManager().getBuildings({ type })
