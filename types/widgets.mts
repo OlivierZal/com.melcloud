@@ -1,8 +1,11 @@
-import type { Hour } from '@olivierzal/melcloud-api'
+import type {
+  HomeBuildingZone,
+  HomeDeviceZone,
+  Hour,
+} from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { BaseSettings } from './bases.mts'
-import type { HomeBuildingZone, HomeDeviceZone } from './zone.mts'
 
 // Report-history cap shared by the charts widget API validation, the
 // widget day picker and the settings manifest bound: a full year.

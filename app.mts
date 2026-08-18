@@ -15,6 +15,8 @@ import {
 import {
   type DeviceType,
   type HolidayModeUpdate,
+  type HomeBuildingZone,
+  type HomeDeviceZone,
   type Hour,
   type ProtectionUpdate,
   type ReportChartLineOptions,
@@ -49,12 +51,7 @@ import type { HomeDeviceFacade } from './types/home.mts'
 import type { ManifestDriverCapabilitiesOptions } from './types/manifest.mts'
 import type { MELCloudDevice, MELCloudDriver } from './types/melcloud.mts'
 import type { GetAtaOptions } from './types/widgets.mts'
-import type {
-  DeviceOrZoneData,
-  HomeBuildingZone,
-  HomeDeviceZone,
-  ZoneData,
-} from './types/zone.mts'
+import type { DeviceOrZoneData, ZoneData } from './types/zone.mts'
 import {
   changelog,
   fanSpeed,

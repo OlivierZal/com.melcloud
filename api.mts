@@ -4,6 +4,8 @@ import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
 import { getErrorMessage } from '@olivierzal/homey-kit'
 import {
+  type HomeBuildingZone,
+  type HomeDeviceZone,
   type LoginCredentials,
   type ProtectionUpdate,
   AuthenticationError,
@@ -20,11 +22,7 @@ import type {
   ErrorLogQueryParams,
   FormattedErrorLog,
 } from './types/error-log.mts'
-import type {
-  DeviceGroup,
-  HomeBuildingZone,
-  HomeDeviceZone,
-} from './types/zone.mts'
+import type { DeviceGroup } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 import { toNonNegativeInt } from './lib/validation.mts'
 import { getWebviewHashes } from './lib/webview-hashes.mts'

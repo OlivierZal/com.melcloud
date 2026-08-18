@@ -82,7 +82,8 @@ const mockAtwFacade = (
       zone1: overrides.zone1 ?? {
         operationalState: Classic.OperationModeStateZone.idle,
       },
-      ...('zone2' in overrides && { zone2: overrides.zone2 }),
+      // The 51.0.0 contract: zone2 is a nullable read, never absent.
+      zone2: overrides.zone2 ?? null,
     },
   })
 }

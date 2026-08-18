@@ -1,3 +1,4 @@
+import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import {
   getButton,
@@ -13,7 +14,6 @@ import {
 } from '@olivierzal/homey-kit/webview'
 
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
-import type { HomeBuildingZone, HomeDeviceZone } from '../../../types/zone.mts'
 import {
   hideInitError,
   showInitError,

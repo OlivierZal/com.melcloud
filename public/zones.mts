@@ -1,6 +1,5 @@
+import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-
-import type { HomeBuildingZone, HomeDeviceZone } from '../types/zone.mts'
 
 // Everything the zone pickers can list: a Classic zone at any level, or
 // a Home building and its devices.

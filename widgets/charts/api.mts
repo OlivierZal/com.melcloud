@@ -1,4 +1,5 @@
 import type {
+  HomeDeviceZone,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
@@ -6,7 +7,6 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
 
-import type { HomeDeviceZone } from '../../types/zone.mts'
 import { toDeviceType, toHomeDeviceType } from '../../lib/to-device-type.mts'
 import { toHour, toNonNegativeInt } from '../../lib/validation.mts'
 import { getWebviewHashes } from '../../lib/webview-hashes.mts'

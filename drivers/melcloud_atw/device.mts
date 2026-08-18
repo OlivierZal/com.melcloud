@@ -1,4 +1,4 @@
-import { hasClassicZone2, isClassicAtwFacade } from '@olivierzal/melcloud-api'
+import { isClassicAtwFacade } from '@olivierzal/melcloud-api'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {
@@ -149,13 +149,11 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
       'operational_state.zone1',
       facade.zone1.operationalState,
     )
-    if (
-      this.hasCapability('operational_state.zone2') &&
-      hasClassicZone2(facade)
-    ) {
+    const { zone2 } = facade
+    if (zone2 !== null && this.hasCapability('operational_state.zone2')) {
       await this.setCapabilityValue(
         'operational_state.zone2',
-        facade.zone2.operationalState,
+        zone2.operationalState,
       )
     }
   }
