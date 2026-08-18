@@ -22,21 +22,27 @@ caught real failures that the others miss:
   before `class`, then alphabetical — the pages already comply, so its
   silence means conformance, not absence) and
   `no-whitespace-only-children`, plus the quality rules.
-- `npm run typecheck` — `tsc` from `@typescript/native` (TypeScript 7).
+- `npm run typecheck` — TypeScript 7, reached by its explicit path,
+  `node ./node_modules/@typescript/native/bin/tsc`. The path is
+  load-bearing: the native compiler ships NO `.bin` shim, and the `tsc`
+  slot belongs to the `@typescript/typescript6` compat package (which
+  itself depends on `npm:typescript@^6` under the name
+  `@typescript/old`), so a bare `tsc` — or `tsc6` — would silently
+  typecheck with TypeScript 6 instead. Never shorten it.
 - `npm test` / `npm run test:coverage` — vitest; branches are at 100%,
   keep them there.
-- `npm run build` — esbuild bundles (`scripts/bundle.mts`) + `tsc`
-  emit, BOTH into `.homeybuild`. The Homey CLI runs `npm run build`
-  when it detects TypeScript (`devDependencies.typescript`; it
-  validates `outDir: .homeybuild`) — but only AFTER its pre-process
-  copy into `.homeybuild`, so the source tree stays sources-only and
-  everything the package needs must be emitted there: tsc does it via
-  `outDir`, and `bundle.mts` emits the webview bundles there too (its
-  former source-tree outfiles landed too late to be copied — the #1404
-  root cause: every store install 404'd the bundles). The CLI's own
-  build invocation is therefore sufficient for install, run, validate
-  and publish alike; a standalone suite run (no `.homeybuild` page
-  copies) still proves the bundles compile.
+- `npm run build` — esbuild bundles (`scripts/bundle.mts`) + a `tsc`
+  emit through that same explicit path, BOTH into `.homeybuild`. The
+  Homey CLI runs `npm run build` when it detects TypeScript
+  (`devDependencies.typescript`; it validates `outDir: .homeybuild`) —
+  but only AFTER its pre-process copy into `.homeybuild`, so the source
+  tree stays sources-only and everything the package needs must be
+  emitted there: tsc does it via `outDir`, and `bundle.mts` emits the
+  webview bundles there too (its former source-tree outfiles landed too
+  late to be copied — the #1404 root cause: every store install 404'd
+  the bundles). The CLI's own build invocation is therefore sufficient
+  for install, run, validate and publish alike; a standalone suite run
+  (no `.homeybuild` page copies) still proves the bundles compile.
 - Cache-busting `?v=` — a PACKAGE-TIME transform: `bundle.mts` stamps
   every local asset reference of the `.homeybuild` page copies with a
   content hash (`?v=<hash>`), so phone webviews (which cache assets
