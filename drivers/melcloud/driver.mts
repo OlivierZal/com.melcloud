@@ -19,6 +19,6 @@ export default class ClassicMELCloudDriverAta extends ClassicMELCloudDriver<AtaT
       ...this.tagMappings.set,
       ...this.tagMappings.get,
       ...this.tagMappings.list,
-    }).filter((capability) => capability !== 'measure_signal_strength')
+    })
   }
 }

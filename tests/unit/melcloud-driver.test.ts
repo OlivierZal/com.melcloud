@@ -27,10 +27,10 @@ describe(ClassicMELCloudDriverAta, () => {
   testTagMappings(() => driver, tagMappings)
 
   describe('required capabilities', () => {
-    it('should return all operational capabilities except measure_signal_strength', () => {
+    it('should return every operational capability, opt-ins included', () => {
       const capabilities = driver.getRequiredCapabilities()
 
-      expect(capabilities).not.toContain('measure_signal_strength')
+      expect(capabilities).toContain('measure_signal_strength')
       expect(capabilities).toContain('onoff')
       expect(capabilities).toContain('measure_temperature')
     })
@@ -41,7 +41,7 @@ describe(ClassicMELCloudDriverAta, () => {
         ...tagMappings.set,
         ...tagMappings.get,
         ...tagMappings.list,
-      }).filter((key) => key !== 'measure_signal_strength')
+      })
 
       expect(capabilities).toStrictEqual(allKeys)
     })

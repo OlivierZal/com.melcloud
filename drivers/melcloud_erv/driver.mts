@@ -4,11 +4,9 @@ import { getCapabilitiesOptionsAtaErv } from '../../types/ata-erv.mts'
 import { tagMappings } from '../../types/classic-erv.mts'
 import { ClassicMELCloudDriver } from '../classic-driver.mts'
 
-const measureCapabilities = new Set([
-  'measure_co2',
-  'measure_pm25',
-  'measure_signal_strength',
-])
+// The sensor-gated measures: re-added below exactly when the unit
+// reports the matching sensor.
+const measureCapabilities = new Set(['measure_co2', 'measure_pm25'])
 
 type ErvType = typeof Classic.DeviceType.Erv
 

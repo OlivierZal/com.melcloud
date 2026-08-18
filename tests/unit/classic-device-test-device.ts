@@ -5,7 +5,7 @@ import type {
   ConvertToDevice,
   OperationalCapabilities,
   SetCapabilities,
-} from '../../types/capabilities.mts'
+} from '../../types/classic-capabilities.mts'
 import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import { createInstance } from './create-test-instance.ts'
 

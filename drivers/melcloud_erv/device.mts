@@ -5,7 +5,7 @@ import type {
   ConvertToDevice,
   OperationalCapabilities,
   SetCapabilities,
-} from '../../types/capabilities.mts'
+} from '../../types/classic-capabilities.mts'
 import {
   ThermostatModeErv,
   ventilationModeFromDevice,

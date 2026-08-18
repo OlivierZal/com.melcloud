@@ -12,7 +12,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 
-import type { CapabilityConverter } from '../types/capabilities.mts'
+import type { CapabilityConverter } from '../types/bases.mts'
 import type {
   ClassicDeviceFacade,
   EnergyReportMode,
@@ -20,6 +20,7 @@ import type {
 } from '../types/device.mts'
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
+import { withoutOptInCapabilities } from '../lib/opt-in-capabilities.mts'
 import { getLocale, getNow } from '../lib/temporal.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 import type { EnergyReportConfig } from './base-report.mts'
@@ -449,7 +450,7 @@ export abstract class BaseMELCloudDevice<
         ...Object.keys(settings).filter(
           (setting) => settings[setting] === true,
         ),
-        ...this.getRequiredCapabilities(),
+        ...withoutOptInCapabilities(this.getRequiredCapabilities()),
       ].filter((capability) => this.isCapabilitySupported(capability)),
     )
 

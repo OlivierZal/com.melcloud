@@ -105,8 +105,8 @@ describe(BaseMELCloudDriver, () => {
   })
 
   describe('required capabilities', () => {
-    it('should exclude measure_signal_strength from required capabilities', () => {
-      expect(driver.getRequiredCapabilities()).not.toContain(
+    it('should include the opt-in measure_signal_strength in the raw list', () => {
+      expect(driver.getRequiredCapabilities()).toContain(
         'measure_signal_strength',
       )
     })

@@ -6,9 +6,10 @@ import type {
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
-} from '../types/capabilities.mts'
+} from '../types/classic-capabilities.mts'
 import type { ClassicMELCloudDevice } from '../types/classic.mts'
 import type { DeviceDetails } from '../types/device.mts'
+import { withoutOptInCapabilities } from '../lib/opt-in-capabilities.mts'
 import { typedEntries } from '../lib/typed-object.mts'
 import { BaseMELCloudDriver } from './base-driver.mts'
 
@@ -67,7 +68,9 @@ export abstract class ClassicMELCloudDriver<
     name: string
   }): DeviceDetails<T> {
     return {
-      capabilities: this.getRequiredCapabilities(data),
+      capabilities: withoutOptInCapabilities(
+        this.getRequiredCapabilities(data),
+      ),
       capabilitiesOptions: this.getCapabilitiesOptions(data),
       data: { id },
       name,

@@ -1,6 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { CapabilitiesOptions } from './capabilities.mts'
+import type { CapabilitiesOptions } from './classic-capabilities.mts'
 
 export interface ClassicDeviceFacade {
   readonly updateValues: (data: Record<string, unknown>) => Promise<unknown>

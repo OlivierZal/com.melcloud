@@ -6,7 +6,7 @@ import type {
   ConvertToDevice,
   OperationalCapabilities,
   SetCapabilities,
-} from '../../types/capabilities.mts'
+} from '../../types/classic-capabilities.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
 import { KILO } from '../../lib/constants.mts'
 import { getLocale, getTimeZone, toPlainDate } from '../../lib/temporal.mts'

@@ -1,5 +1,7 @@
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
+import { invertEnum } from '../lib/typed-object.mts'
+
 export const ThermostatModeErv = {
   auto: 'auto',
   bypass: 'bypass',
@@ -13,8 +15,4 @@ export type ThermostatModeErv =
 export const ventilationModeFromDevice: Record<
   Classic.VentilationMode,
   keyof typeof Classic.VentilationMode
-> = {
-  [Classic.VentilationMode.auto]: 'auto',
-  [Classic.VentilationMode.bypass]: 'bypass',
-  [Classic.VentilationMode.recovery]: 'recovery',
-}
+> = invertEnum(Classic.VentilationMode)

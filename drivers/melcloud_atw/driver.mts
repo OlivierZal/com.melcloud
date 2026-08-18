@@ -1,6 +1,6 @@
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { Capabilities } from '../../types/capabilities.mts'
+import type { Capabilities } from '../../types/classic-capabilities.mts'
 import {
   getCapabilitiesOptions,
   tagMappings,

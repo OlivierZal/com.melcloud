@@ -1,8 +1,8 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { CapabilitiesOptionsAtaErv } from './capabilities.mts'
 import type { HomeAtaDeviceProfile } from './home-ata.mts'
 import {
+  type CapabilitiesOptionsAtaErv,
   type CapabilitiesOptionsValues,
   type LocalizedStrings,
   localizeWithAffix,

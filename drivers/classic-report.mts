@@ -4,7 +4,7 @@ import type {
   Capabilities,
   EnergyCapabilities,
   EnergyCapabilityTagEntry,
-} from '../types/capabilities.mts'
+} from '../types/classic-capabilities.mts'
 import { KILO } from '../lib/constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { typedEntries } from '../lib/typed-object.mts'
