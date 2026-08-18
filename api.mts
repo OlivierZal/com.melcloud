@@ -4,17 +4,17 @@ import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
 import { getErrorMessage } from '@olivierzal/homey-kit'
 import {
-  type AggregatedHolidayModeState,
-  type AggregatedProtectionState,
-  type HolidayModeState,
   type LoginCredentials,
-  type ProtectionState,
   type ProtectionUpdate,
   AuthenticationError,
   AuthenticationThrottledError,
 } from '@olivierzal/melcloud-api'
 
-import type { HolidayModeSettings } from './types/api.mts'
+import type {
+  HolidayModeSettings,
+  TargetHolidayModeState,
+  TargetProtectionState,
+} from './types/api.mts'
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
 import type {
   ErrorLogQueryParams,
@@ -176,23 +176,21 @@ const api = {
   }: {
     homey: Homey
     params: { targetId: string }
-  }): Promise<AggregatedProtectionState | ProtectionState | null> =>
-    app.getTargetFrostProtection(targetId),
+  }): Promise<TargetProtectionState> => app.getTargetFrostProtection(targetId),
   getTargetHolidayMode: async ({
     homey: { app },
     params: { targetId },
   }: {
     homey: Homey
     params: { targetId: string }
-  }): Promise<AggregatedHolidayModeState | HolidayModeState | null> =>
-    app.getTargetHolidayMode(targetId),
+  }): Promise<TargetHolidayModeState> => app.getTargetHolidayMode(targetId),
   getTargetOverheatProtection: async ({
     homey: { app },
     params: { targetId },
   }: {
     homey: Homey
     params: { targetId: string }
-  }): Promise<AggregatedProtectionState | ProtectionState | null> =>
+  }): Promise<TargetProtectionState> =>
     app.getTargetOverheatProtection(targetId),
   getWebviewHashes: async ({
     homey: { app },

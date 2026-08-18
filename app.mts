@@ -13,13 +13,9 @@ import {
   mergeDeviceSettings,
 } from '@olivierzal/homey-kit/manifest'
 import {
-  type AggregatedHolidayModeState,
-  type AggregatedProtectionState,
   type DeviceType,
-  type HolidayModeState,
   type HolidayModeUpdate,
   type Hour,
-  type ProtectionState,
   type ProtectionUpdate,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
@@ -35,7 +31,12 @@ import { Intl, Temporal } from 'temporal-polyfill'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
-import type { Api, HolidayModeSettings } from './types/api.mts'
+import type {
+  Api,
+  HolidayModeSettings,
+  TargetHolidayModeState,
+  TargetProtectionState,
+} from './types/api.mts'
 import type { HomeySettings } from './types/app-settings.mts'
 import type { GroupAtaStates } from './types/classic-ata.mts'
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
@@ -94,12 +95,8 @@ const NOTIFICATION_DELAY_MS = 10_000
 // facades, Home device facades and the Home building facade alike; the
 // widened return unions absorb the building aggregates' per-field nulls.
 interface SettingsTarget {
-  readonly getFrostProtection: () => Promise<
-    Result<AggregatedProtectionState | ProtectionState | null>
-  >
-  readonly getHolidayMode: () => Promise<
-    Result<AggregatedHolidayModeState | HolidayModeState | null>
-  >
+  readonly getFrostProtection: () => Promise<Result<TargetProtectionState>>
+  readonly getHolidayMode: () => Promise<Result<TargetHolidayModeState>>
   readonly updateFrostProtection: (update: ProtectionUpdate) => Promise<void>
   readonly updateHolidayMode: (update: HolidayModeUpdate) => Promise<void>
 }
@@ -748,7 +745,7 @@ export default class MELCloudApp extends App {
 
   public async getTargetFrostProtection(
     targetId: string,
-  ): Promise<AggregatedProtectionState | ProtectionState | null> {
+  ): Promise<TargetProtectionState> {
     return unwrapResult(
       await this.#getSettingsTarget(targetId).getFrostProtection(),
     )
@@ -756,7 +753,7 @@ export default class MELCloudApp extends App {
 
   public async getTargetHolidayMode(
     targetId: string,
-  ): Promise<AggregatedHolidayModeState | HolidayModeState | null> {
+  ): Promise<TargetHolidayModeState> {
     return unwrapResult(
       await this.#getSettingsTarget(targetId).getHolidayMode(),
     )
@@ -766,7 +763,7 @@ export default class MELCloudApp extends App {
   // reads `null`, like a Home target that never configured it.
   public async getTargetOverheatProtection(
     targetId: string,
-  ): Promise<AggregatedProtectionState | ProtectionState | null> {
+  ): Promise<TargetProtectionState> {
     const target = this.#getOverheatTarget(targetId)
     return target === null
       ? null

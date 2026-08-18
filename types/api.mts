@@ -1,4 +1,10 @@
-import type { LoginCredentials } from '@olivierzal/melcloud-api'
+import type {
+  AggregatedHolidayModeState,
+  AggregatedProtectionState,
+  HolidayModeState,
+  LoginCredentials,
+  ProtectionState,
+} from '@olivierzal/melcloud-api'
 
 /**
  * Identifier for one of the two MELCloud APIs.
@@ -25,3 +31,18 @@ export interface HolidayModeSettings {
   readonly endDate?: string
   readonly startDate?: string
 }
+
+/**
+ * What a settings target answers for its holiday window: a single
+ * target's state, a multi-device target's per-field aggregate, or
+ * `null` when never configured.
+ */
+export type TargetHolidayModeState =
+  AggregatedHolidayModeState | HolidayModeState | null
+
+/**
+ * What a settings target answers for a protection read — the
+ * protection twin of {@link TargetHolidayModeState}.
+ */
+export type TargetProtectionState =
+  AggregatedProtectionState | ProtectionState | null
