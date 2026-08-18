@@ -1,7 +1,7 @@
+import type { HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { describe, expect, it } from 'vitest'
 
-import type { HomeDeviceZone } from '../../types/zone.mts'
 import {
   getHomeBuildingId,
   getHomeDeviceId,

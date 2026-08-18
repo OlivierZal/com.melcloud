@@ -16,40 +16,6 @@ export interface DeviceOrZoneData {
   readonly zoneType: 'areas' | 'buildings' | 'devices' | 'floors'
 }
 
-// MELCloud-Home targets: each `/context` building (the account-level
-// group) is a selectable root entry, its devices one level below. The
-// models are camelCase because option values split `${model}_${id}` at
-// the FIRST underscore — a Home id may itself contain underscores.
-// `buildingName` mirrors `Classic.FlatZone`: it names the owning building
-// (a building carries its own) so a flat picker can suffix leaves and keep
-// same-named devices on different buildings apart.
-export interface HomeBuildingZone {
-  readonly buildingName: string
-  /**
-   * Whether the building holds at least one air-to-air unit — gates the
-   * per-building overheat panel without a positional scan.
-   */
-  readonly hasAta: boolean
-  /**
-   * Whether the building holds at least one air-to-water unit — with
-   * `hasAta`, qualifies a mixed building's bulk-write scope.
-   */
-  readonly hasAtw: boolean
-  readonly id: string
-  readonly level: 0
-  readonly model: 'homeBuildings'
-  readonly name: string
-}
-
-export interface HomeDeviceZone {
-  readonly buildingName: string
-  readonly deviceType: 'ata' | 'atw'
-  readonly id: string
-  readonly level: 1
-  readonly model: 'homeDevices'
-  readonly name: string
-}
-
 export interface ZoneData {
   readonly zoneId: string
   readonly zoneType: 'areas' | 'buildings' | 'floors'

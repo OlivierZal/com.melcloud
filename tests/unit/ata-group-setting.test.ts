@@ -1,10 +1,10 @@
 // @vitest-environment happy-dom
 // @vitest-environment-options {"settings": {"disableCSSFileLoading": true, "disableJavaScriptFileLoading": true, "navigation": {"disableMainFrameNavigation": true}}}
 
+import type { HomeDeviceZone } from '@olivierzal/melcloud-api'
 import { getButton, getSelect } from '@olivierzal/homey-kit/dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { HomeDeviceZone } from '../../types/zone.mts'
 import { start } from '../../widgets/ata-group-setting/public/index.mts'
 import {
   type WidgetHarness,

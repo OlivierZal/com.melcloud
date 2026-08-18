@@ -1,4 +1,5 @@
 import type {
+  HomeDeviceZone,
   ReportChartBand,
   ReportChartLineOptions,
   ReportChartPieOptions,
@@ -39,7 +40,6 @@ import {
 } from 'chart.js'
 import { Temporal } from 'temporal-polyfill'
 
-import type { HomeDeviceZone } from '../../../types/zone.mts'
 import {
   hideInitError,
   showInitError,

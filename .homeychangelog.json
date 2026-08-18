@@ -1843,5 +1843,20 @@
     "pl": "Wewnętrzne ulepszenia niezawodności i ustawień stref.",
     "ru": "Внутренние улучшения надёжности и настроек зон.",
     "sv": "Interna förbättringar av tillförlitlighet och zoninställningar."
+  },
+  "46.6.0": {
+    "ar": "تحسينات داخلية لدعم المناطق والموثوقية.",
+    "da": "Interne forbedringer af zoneunderstøttelse og pålidelighed.",
+    "de": "Interne Verbesserungen der Zonenunterstützung und Zuverlässigkeit.",
+    "en": "Internal improvements to zone support and reliability.",
+    "es": "Mejoras internas en la compatibilidad de zonas y la fiabilidad.",
+    "fr": "Améliorations internes du support des zones et de la fiabilité.",
+    "it": "Miglioramenti interni al supporto delle zone e all’affidabilità.",
+    "ko": "구역 지원 및 안정성에 대한 내부 개선.",
+    "nl": "Interne verbeteringen aan zone-ondersteuning en betrouwbaarheid.",
+    "no": "Interne forbedringer av sonestøtte og pålitelighet.",
+    "pl": "Wewnętrzne ulepszenia obsługi stref i niezawodności.",
+    "ru": "Внутренние улучшения поддержки зон и надёжности.",
+    "sv": "Interna förbättringar av zonstöd och tillförlitlighet."
   }
 }

@@ -279,6 +279,23 @@ coverage.
   verdict (2026-08): two lines each, the destructured fields and enum
   hops differ per dialect, and the inverse off-handling lives in the
   base listener — a shared factory would outweigh the duplication.
+- The Home ATA read tables' composed bijections stay as written, by
+  verdict (2026-08): the four double-hop reads
+  (`horizontalFromDevice[horizontalToClassic[…]]` and kin) compose ONLY
+  published bijections with the app's `invertEnum` tables. Routing them
+  through `toClassicAtaGroupState` would trade the enum hops for null
+  handling of the group sentinels (its fields are nullable by group
+  semantics), and a Classic-numbered read surface on the Home facades
+  would mint a second neutral vocabulary — the exact move the
+  ClassicGroupState precedent forbids. The ATW side already needs no
+  conversion at all (the facades speak the normalized vocabularies).
+- Zone types come from the library: `types/zone.mts` keeps only the
+  app's routing shapes (`DeviceGroup`, `DeviceOrZoneData`, `ZoneData`);
+  `HomeBuildingZone`/`HomeDeviceZone` — and the cross-dialect
+  `FlatZone` union — are melcloud-api's, imported type-only (erased,
+  so webview bundles never touch the barrel). A second ATW zone is a
+  nullable read (`facade.zone2`), never a type guard: `hasClassicZone2`
+  died with melcloud-api 51.0.0.
 - Home drivers only ship surfaces the MELCloud Home app itself exposes,
   even when the API facade can read more — no outdoor temperature on
   Home ATW (not in the app UI; an absent setting would read as 0).

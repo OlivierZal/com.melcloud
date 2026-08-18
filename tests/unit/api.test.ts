@@ -5,6 +5,8 @@ import type { Homey } from 'homey/lib/Homey'
 import {
   type HolidayModeState,
   type HolidayModeUpdate,
+  type HomeBuildingZone,
+  type HomeDeviceZone,
   type LoginCredentials,
   type ProtectionState,
   AuthenticationError,
@@ -17,7 +19,6 @@ import type {
   ErrorLogQueryParams,
   FormattedErrorLog,
 } from '../../types/error-log.mts'
-import type { HomeBuildingZone, HomeDeviceZone } from '../../types/zone.mts'
 import { mock } from '../helpers.ts'
 
 const mockGetBuildings =

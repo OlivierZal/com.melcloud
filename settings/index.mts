@@ -1,6 +1,8 @@
 import type { DriverSetting } from '@olivierzal/homey-kit/manifest'
 import type {
   HolidayModeState,
+  HomeBuildingZone,
+  HomeDeviceZone,
   LoginCredentials,
 } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
@@ -58,7 +60,6 @@ import type {
   FormattedErrorDetails,
   FormattedErrorLog,
 } from '../types/error-log.mts'
-import type { HomeBuildingZone, HomeDeviceZone } from '../types/zone.mts'
 import {
   populateZoneOptions as populateZoneSelect,
   translateAriaLabels,

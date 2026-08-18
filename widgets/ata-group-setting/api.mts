@@ -1,3 +1,4 @@
+import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import * as Home from '@olivierzal/melcloud-api/home'
@@ -5,12 +6,7 @@ import * as Home from '@olivierzal/melcloud-api/home'
 import type { GroupAtaStates } from '../../types/classic-ata.mts'
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
 import type { GetAtaOptions } from '../../types/widgets.mts'
-import type {
-  DeviceOrZoneData,
-  HomeBuildingZone,
-  HomeDeviceZone,
-  ZoneData,
-} from '../../types/zone.mts'
+import type { DeviceOrZoneData, ZoneData } from '../../types/zone.mts'
 import { getClassicBuildings } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
 import { toDeviceOrZoneData, toZoneData } from '../../lib/validation.mts'
