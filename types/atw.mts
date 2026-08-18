@@ -115,7 +115,7 @@ export const getThermostatModeValuesAtw = (
     ? thermostatModeValuesAtw
     : thermostatModeValuesAtw.filter(({ id }) => !id.endsWith(COOL_SUFFIX))
 
-export const thermostatModeZone2TitleAtw: LocalizedStrings = addSuffixToTitle(
+const thermostatModeZone2TitleAtw: LocalizedStrings = addSuffixToTitle(
   thermostatMode.title,
   {
     ar: '- المنطقة 2',
@@ -133,3 +133,38 @@ export const thermostatModeZone2TitleAtw: LocalizedStrings = addSuffixToTitle(
     sv: '- zon 2',
   },
 )
+
+//
+// The runtime `thermostat_mode` options both ATW dialects compute.
+//
+export interface ThermostatModeOptionsAtw {
+  readonly thermostat_mode: {
+    readonly values: readonly CapabilitiesOptionsValues<
+      keyof typeof Classic.OperationModeZone
+    >[]
+  }
+  readonly 'thermostat_mode.zone2': {
+    readonly title: LocalizedStrings
+    readonly values: readonly CapabilitiesOptionsValues<
+      keyof typeof Classic.OperationModeZone
+    >[]
+  }
+}
+
+// Only complete option objects, and only for capabilities the device will
+// actually have: device-level options shadow the manifest's per capability,
+// and setting options on an absent capability fails. Both dialects share
+// this body; their adapters only translate the wire spelling of
+// "can cool" and "has a second zone".
+export const buildAtwThermostatModeOptions = (
+  canCool: boolean,
+  hasZone2: boolean,
+): Partial<ThermostatModeOptionsAtw> => {
+  const values = getThermostatModeValuesAtw(canCool)
+  return {
+    thermostat_mode: { values },
+    ...(hasZone2 && {
+      'thermostat_mode.zone2': { title: thermostatModeZone2TitleAtw, values },
+    }),
+  }
+}

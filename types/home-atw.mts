@@ -9,11 +9,7 @@ import type {
   LocalizedStrings,
 } from './bases.mts'
 import type { HomeEnergyMeasureName } from './device.mts'
-import {
-  type HotWaterMode,
-  getThermostatModeValuesAtw,
-  thermostatModeZone2TitleAtw,
-} from './atw.mts'
+import { type HotWaterMode, buildAtwThermostatModeOptions } from './atw.mts'
 
 interface HomeGetCapabilitiesAtw extends BaseGetCapabilities {
   readonly 'measure_temperature.tank_water': number
@@ -100,20 +96,8 @@ export type HomeAtwDeviceProfile = Pick<
   'capabilities' | 'hasCoolingMode'
 >
 
-// Only complete option objects, and only for capabilities the device will
-// actually have: device-level options shadow the manifest's per capability
-// (temperature ranges/steps/titles stay in the compose manifest — the facade
-// clamps setpoints device-side anyway), and setting options on an absent
-// capability fails.
 export const homeGetCapabilitiesOptionsAtw = ({
   capabilities: { hasZone2 },
   hasCoolingMode,
-}: HomeAtwDeviceProfile): Partial<HomeCapabilitiesOptionsAtw> => {
-  const values = getThermostatModeValuesAtw(hasCoolingMode)
-  return {
-    thermostat_mode: { values },
-    ...(hasZone2 && {
-      'thermostat_mode.zone2': { title: thermostatModeZone2TitleAtw, values },
-    }),
-  }
-}
+}: HomeAtwDeviceProfile): Partial<HomeCapabilitiesOptionsAtw> =>
+  buildAtwThermostatModeOptions(hasCoolingMode, hasZone2)

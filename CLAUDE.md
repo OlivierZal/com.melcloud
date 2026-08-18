@@ -251,10 +251,24 @@ coverage.
   Template entries for capabilities a driver lacks are inert, but a
   capability another driver configures differently stays per-driver
   (e.g. `target_temperature`: ATA 10–31, ATW 10–30) — precedence would
-  resolve the collision, relying on it is a trap.
-- `measure_signal_strength` is never a default capability, on any driver:
-  it stays manifest-declared but opt-in through the shared `options`
-  settings group. Keep it out of every required-capability list.
+  resolve the collision, relying on it is a trap. A SECOND template
+  cannot carve out a subset either: template-over-template merging is
+  shallow per top-level property (measured 2026-08-18 — an `ata`
+  template's `capabilitiesOptions` erased every `defaults`-inherited
+  entry), so a block shared by only some drivers stays duplicated in
+  their compose files, pinned byte-identical by
+  `tests/unit/driver-compose.test.ts` (the widget-styles twin pattern).
+- `measure_signal_strength` is never a default capability, on any
+  driver: it stays manifest-declared but opt-in through the shared
+  `options` settings group. That rule is structural, not per-driver:
+  `withoutOptInCapabilities` (`lib/opt-in-capabilities.mts`) filters it
+  at the two default-capability consumers (pairing details in both
+  `toDeviceDetails`, init reconciliation in `#setCapabilities`), so
+  `getRequiredCapabilities` implementations return their raw lists.
+- The power-gated `thermostat_mode` read converters stay per-driver by
+  verdict (2026-08): two lines each, the destructured fields and enum
+  hops differ per dialect, and the inverse off-handling lives in the
+  base listener — a shared factory would outweigh the duplication.
 - Home drivers only ship surfaces the MELCloud Home app itself exposes,
   even when the API facade can read more — no outdoor temperature on
   Home ATW (not in the app UI; an absent setting would read as 0).

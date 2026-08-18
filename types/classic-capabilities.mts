@@ -1,6 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { RangeOptions } from './bases.mts'
+import type { CapabilitiesOptionsAtaErv } from './bases.mts'
 import type * as classicAta from './classic-ata.mts'
 import type * as classicAtw from './classic-atw.mts'
 import type * as classicErv from './classic-erv.mts'
@@ -36,18 +36,6 @@ export type CapabilitiesOptions<T extends Classic.DeviceType> =
   T extends typeof Classic.DeviceType.Atw
     ? classicAtw.CapabilitiesOptions
     : CapabilitiesOptionsAtaErv
-
-export interface CapabilitiesOptionsAtaErv {
-  readonly fan_speed: RangeOptions
-}
-
-/**
- * Base write-converter type for capability-to-device transforms.
- */
-export type CapabilityConverter = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to their capability's type
-  bivariant(value: unknown): unknown
-}['bivariant']
 
 /**
  * Converter from the classic device payload to the corresponding Homey

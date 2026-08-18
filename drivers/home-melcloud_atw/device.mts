@@ -65,12 +65,6 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     values: { millisecond: 0, second: 0 },
   }
 
-  protected override readonly energyReportTotal: EnergyReportConfig = {
-    duration: { hours: 1 },
-    mode: 'total',
-    values: { millisecond: 0, minute: 5, second: 0 },
-  }
-
   protected override readonly createEnergyReport = (
     config: EnergyReportConfig,
   ): HomeEnergyReportAtw => new HomeEnergyReportAtw(this, config)

@@ -2,6 +2,7 @@ import type * as Home from '@olivierzal/melcloud-api/home'
 
 import type { HomeEnergyMeasureName } from '../types/device.mts'
 import type { HomeDeviceDetails, HomeMELCloudDevice } from '../types/home.mts'
+import { withoutOptInCapabilities } from '../lib/opt-in-capabilities.mts'
 import { BaseMELCloudDriver } from './base-driver.mts'
 
 export abstract class HomeMELCloudDriver extends BaseMELCloudDriver {
@@ -43,7 +44,9 @@ export abstract class HomeMELCloudDriver extends BaseMELCloudDriver {
   }): HomeDeviceDetails {
     const facade = this.homey.app.getHomeFacade(id, this.type)
     return {
-      capabilities: this.getRequiredCapabilities(facade),
+      capabilities: withoutOptInCapabilities(
+        this.getRequiredCapabilities(facade),
+      ),
       capabilitiesOptions: this.getCapabilitiesOptions(facade),
       data: { id },
       name,

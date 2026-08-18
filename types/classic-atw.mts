@@ -3,6 +3,7 @@
 import type { HomeAtwOperationalState } from '@olivierzal/melcloud-api'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
+import { invertEnum } from '../lib/typed-object.mts'
 import type {
   BaseGetCapabilities,
   BaseListCapabilities,
@@ -11,11 +12,7 @@ import type {
   LocalizedStrings,
   RangeOptions,
 } from './bases.mts'
-import {
-  type HotWaterMode,
-  getThermostatModeValuesAtw,
-  thermostatModeZone2TitleAtw,
-} from './atw.mts'
+import { type HotWaterMode, buildAtwThermostatModeOptions } from './atw.mts'
 
 export const operationModeStateFromDevice: Record<
   Classic.OperationModeState,
@@ -32,26 +29,13 @@ export const operationModeStateFromDevice: Record<
 export const operationModeZoneFromDevice: Record<
   Classic.OperationModeZone,
   keyof typeof Classic.OperationModeZone
-> = {
-  [Classic.OperationModeZone.curve]: 'curve',
-  [Classic.OperationModeZone.flow]: 'flow',
-  [Classic.OperationModeZone.flow_cool]: 'flow_cool',
-  [Classic.OperationModeZone.room]: 'room',
-  [Classic.OperationModeZone.room_cool]: 'room_cool',
-}
+> = invertEnum(Classic.OperationModeZone)
 
 export const getCapabilitiesOptions = ({
   CanCool: canCool,
   HasZone2: hasClassicZone2,
-}: Readonly<Classic.ListDeviceDataAtw>): Partial<CapabilitiesOptions> => {
-  const values = getThermostatModeValuesAtw(canCool)
-  return {
-    thermostat_mode: { values },
-    ...(hasClassicZone2 && {
-      'thermostat_mode.zone2': { title: thermostatModeZone2TitleAtw, values },
-    }),
-  }
-}
+}: Readonly<Classic.ListDeviceDataAtw>): Partial<CapabilitiesOptions> =>
+  buildAtwThermostatModeOptions(canCool, hasClassicZone2)
 
 export interface Capabilities
   extends

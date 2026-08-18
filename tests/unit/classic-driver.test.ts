@@ -5,7 +5,7 @@ import type FlowCardCondition from 'homey/lib/FlowCardCondition'
 import type PairSession from 'homey/lib/PairSession'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { EnergyCapabilityTagMapping } from '../../types/capabilities.mts'
+import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
 import { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import {
   testFlowListenerRegistration,

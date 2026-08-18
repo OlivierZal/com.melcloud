@@ -11,7 +11,7 @@ import type {
   GetCapabilityTagMapping,
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
-} from '../../types/capabilities.mts'
+} from '../../types/classic-capabilities.mts'
 import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import {
   createCapabilityListenerCallbackGetter,

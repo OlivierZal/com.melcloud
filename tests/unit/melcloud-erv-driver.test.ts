@@ -59,7 +59,7 @@ describe(ClassicMELCloudDriverErv, () => {
       expect(capabilities).toContain('thermostat_mode')
       expect(capabilities).not.toContain('measure_co2')
       expect(capabilities).not.toContain('measure_pm25')
-      expect(capabilities).not.toContain('measure_signal_strength')
+      expect(capabilities).toContain('measure_signal_strength')
     })
 
     it('should include measure_co2 when HasCO2Sensor is true', () => {

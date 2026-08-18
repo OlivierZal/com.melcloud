@@ -15,7 +15,7 @@ import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type { Homey } from '../../lib/homey.mts'
-import type { EnergyCapabilityTagMapping } from '../../types/capabilities.mts'
+import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
 import { EnergyReport } from '../../drivers/classic-report.mts'
 import { getMockCallArg, mock } from '../helpers.ts'
 

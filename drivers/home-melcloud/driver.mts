@@ -14,12 +14,10 @@ export default class HomeMELCloudDriverAta extends HomeMELCloudDriver {
   public override readonly type: typeof Home.DeviceType.Ata =
     Home.DeviceType.Ata
 
-  // Signal strength stays manifest-declared but opt-in through the
-  // shared options settings group; everything else — the energy
-  // capabilities included — is mandatory.
+  // Everything the manifest declares — the energy capabilities
+  // included — is mandatory; the base handles the signal-strength
+  // opt-in.
   public override getRequiredCapabilities(): string[] {
-    return this.manifest.capabilities.filter(
-      (capability) => capability !== 'measure_signal_strength',
-    )
+    return [...this.manifest.capabilities]
   }
 }

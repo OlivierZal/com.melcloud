@@ -39,10 +39,22 @@ export interface BaseSetCapabilities {
 
 export type BaseSettings = Partial<Record<string, unknown>>
 
+export interface CapabilitiesOptionsAtaErv {
+  readonly fan_speed: RangeOptions
+}
+
 export interface CapabilitiesOptionsValues<T extends string> {
   readonly id: T
   readonly title: LocalizedStrings
 }
+
+/**
+ * Base write-converter type for capability-to-device transforms.
+ */
+export type CapabilityConverter = {
+  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to their capability's type
+  bivariant(value: unknown): unknown
+}['bivariant']
 
 export interface LocalizedStrings extends Partial<Record<string, string>> {
   readonly en: string
