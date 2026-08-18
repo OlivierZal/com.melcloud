@@ -1,5 +1,3 @@
-import type * as Classic from '@olivierzal/melcloud-api/classic'
-
 // Shared between settings/index.mts (URLSearchParams source) and api.mts
 // (Homey-routed query receiver). Defined as strings because URL query params
 // are inherently strings — api.mts converts to numbers for the Classic
@@ -11,17 +9,17 @@ export interface ErrorLogQueryParams {
   readonly to: string
 }
 
-export interface FormattedErrorDetails extends Omit<
-  Classic.ErrorDetails,
-  'deviceId'
-> {
+// The display row the settings table renders: the neutral entry's
+// moment and message localized, its device id resolved to a name.
+export interface FormattedErrorDetails {
+  readonly date: string
   readonly device: string
+  readonly error: string
 }
 
-export interface FormattedErrorLog extends Omit<
-  Classic.ErrorLog,
-  'errors' | 'fromDate'
-> {
+export interface FormattedErrorLog {
   readonly errors: readonly FormattedErrorDetails[]
   readonly fromDateHuman: string
+  readonly nextFromDate: string
+  readonly nextToDate: string
 }

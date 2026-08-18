@@ -13,14 +13,6 @@
       "method": "GET",
       "path": "/classic/buildings"
     },
-    "getClassicFrostProtection": {
-      "method": "GET",
-      "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"
-    },
-    "getClassicHolidayMode": {
-      "method": "GET",
-      "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
-    },
     "getDeviceGroups": {
       "method": "GET",
       "path": "/devices/groups"
@@ -37,33 +29,9 @@
       "method": "GET",
       "path": "/logs/errors"
     },
-    "getHomeBuildingFrostProtection": {
-      "method": "GET",
-      "path": "/home/buildings/:buildingId/settings/frost-protection"
-    },
-    "getHomeBuildingHolidayMode": {
-      "method": "GET",
-      "path": "/home/buildings/:buildingId/settings/holiday-mode"
-    },
-    "getHomeBuildingOverheatProtection": {
-      "method": "GET",
-      "path": "/home/buildings/:buildingId/settings/overheat-protection"
-    },
     "getHomeDevices": {
       "method": "GET",
       "path": "/home/devices"
-    },
-    "getHomeFrostProtection": {
-      "method": "GET",
-      "path": "/home/devices/:deviceId/settings/frost-protection"
-    },
-    "getHomeHolidayMode": {
-      "method": "GET",
-      "path": "/home/devices/:deviceId/settings/holiday-mode"
-    },
-    "getHomeOverheatProtection": {
-      "method": "GET",
-      "path": "/home/devices/:deviceId/settings/overheat-protection"
     },
     "getHomeTargets": {
       "method": "GET",
@@ -72,6 +40,18 @@
     "getLanguage": {
       "method": "GET",
       "path": "/language"
+    },
+    "getTargetFrostProtection": {
+      "method": "GET",
+      "path": "/targets/:targetId/settings/frost-protection"
+    },
+    "getTargetHolidayMode": {
+      "method": "GET",
+      "path": "/targets/:targetId/settings/holiday-mode"
+    },
+    "getTargetOverheatProtection": {
+      "method": "GET",
+      "path": "/targets/:targetId/settings/overheat-protection"
     },
     "getWebviewHashes": {
       "method": "GET",
@@ -97,41 +77,21 @@
       "method": "POST",
       "path": "/boot-error"
     },
-    "updateClassicFrostProtection": {
-      "method": "PUT",
-      "path": "/classic/zones/:zoneType/:zoneId/settings/frost-protection"
-    },
-    "updateClassicHolidayMode": {
-      "method": "PUT",
-      "path": "/classic/zones/:zoneType/:zoneId/settings/holiday-mode"
-    },
     "updateDeviceSettings": {
       "method": "PUT",
       "path": "/settings/devices"
     },
-    "updateHomeBuildingFrostProtection": {
+    "updateTargetFrostProtection": {
       "method": "PUT",
-      "path": "/home/buildings/:buildingId/settings/frost-protection"
+      "path": "/targets/:targetId/settings/frost-protection"
     },
-    "updateHomeBuildingHolidayMode": {
+    "updateTargetHolidayMode": {
       "method": "PUT",
-      "path": "/home/buildings/:buildingId/settings/holiday-mode"
+      "path": "/targets/:targetId/settings/holiday-mode"
     },
-    "updateHomeBuildingOverheatProtection": {
+    "updateTargetOverheatProtection": {
       "method": "PUT",
-      "path": "/home/buildings/:buildingId/settings/overheat-protection"
-    },
-    "updateHomeFrostProtection": {
-      "method": "PUT",
-      "path": "/home/devices/:deviceId/settings/frost-protection"
-    },
-    "updateHomeHolidayMode": {
-      "method": "PUT",
-      "path": "/home/devices/:deviceId/settings/holiday-mode"
-    },
-    "updateHomeOverheatProtection": {
-      "method": "PUT",
-      "path": "/home/devices/:deviceId/settings/overheat-protection"
+      "path": "/targets/:targetId/settings/overheat-protection"
     }
   },
   "author": {
@@ -343,7 +303,7 @@
       "värmeåtervinning"
     ]
   },
-  "version": "46.4.2",
+  "version": "46.5.0",
   "flow": {
     "triggers": [
       {

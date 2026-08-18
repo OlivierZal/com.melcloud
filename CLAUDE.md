@@ -154,7 +154,17 @@ coverage.
   `/sessions`, `logWebviewBoot` on `/boot-error`); handler renames are
   wire-invisible (routing is method+path), path renames are NOT (phone
   webviews cache bundles across versions; stale callers now surface an
-  error — legacy aliases were dropped by decision, 2026-07). The
+  error — legacy aliases were dropped by decision, 2026-07, and the
+  settings routes migrated once more under the same policy, 2026-08).
+  The zone SETTINGS routes are target-neutral:
+  `/targets/:targetId/settings/{frost-protection,holiday-mode,overheat-protection}`,
+  where `targetId` is the picker value verbatim (`buildings_1`,
+  `homeDevices_<guid>` — split at the FIRST underscore) — one route
+  family for every dialect and level; the app model resolves the facade
+  (`#getSettingsTarget`) and the melcloud-api 50.0.0 facades answer the
+  same read/write methods on every target, so no per-family route or
+  aggregation code remains app-side. Overheat stays Home-only: a
+  Classic target reads `null` and refuses the write. The
   inter-app grouping route is `GET /devices/groups` (the extension
   degrades to "no grouping" when it is absent).
   `@olivierzal/homey-kit/settings` is the settings pages' transport

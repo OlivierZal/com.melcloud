@@ -1828,5 +1828,20 @@
     "pl": "Godziny trybu wakacyjnego są teraz zapisywane i wyświetlane poprawnie w Twojej strefie czasowej, a automatyczny czas rozpoczęcia korzysta z zegara Homey.",
     "ru": "Время режима отпуска теперь сохраняется и отображается корректно в вашем часовом поясе, а автоматическое время начала следует часам вашего Homey.",
     "sv": "Semesterlägets tider sparas och visas nu korrekt i din egen tidszon, och den automatiska starttiden följer din Homeys klocka."
+  },
+  "46.5.0": {
+    "ar": "تحسينات داخلية في الموثوقية وإعدادات المناطق.",
+    "da": "Interne forbedringer af pålidelighed og zoneindstillinger.",
+    "de": "Interne Verbesserungen der Zuverlässigkeit und der Zoneneinstellungen.",
+    "en": "Internal improvements to reliability and zone settings.",
+    "es": "Mejoras internas de fiabilidad y de los ajustes de zonas.",
+    "fr": "Améliorations internes de la fiabilité et des réglages de zones.",
+    "it": "Miglioramenti interni all'affidabilità e alle impostazioni delle zone.",
+    "ko": "안정성 및 구역 설정에 대한 내부 개선.",
+    "nl": "Interne verbeteringen aan betrouwbaarheid en zone-instellingen.",
+    "no": "Interne forbedringer av pålitelighet og soneinnstillinger.",
+    "pl": "Wewnętrzne ulepszenia niezawodności i ustawień stref.",
+    "ru": "Внутренние улучшения надёжности и настроек зон.",
+    "sv": "Interna förbättringar av tillförlitlighet och zoninställningar."
   }
 }

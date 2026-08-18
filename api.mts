@@ -4,15 +4,17 @@ import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
 import { getErrorMessage } from '@olivierzal/homey-kit'
 import {
-  type HolidayModeState,
   type LoginCredentials,
-  type ProtectionState,
   type ProtectionUpdate,
   AuthenticationError,
   AuthenticationThrottledError,
 } from '@olivierzal/melcloud-api'
 
-import type { HolidayModeSettings } from './types/api.mts'
+import type {
+  HolidayModeSettings,
+  TargetHolidayModeState,
+  TargetProtectionState,
+} from './types/api.mts'
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
 import type {
   ErrorLogQueryParams,
@@ -20,12 +22,11 @@ import type {
 } from './types/error-log.mts'
 import type {
   DeviceGroup,
-  DeviceOrZoneData,
   HomeBuildingZone,
   HomeDeviceZone,
 } from './types/zone.mts'
 import { getClassicBuildings } from './lib/classic-facade-manager.mts'
-import { toDeviceOrZoneData, toNonNegativeInt } from './lib/validation.mts'
+import { toNonNegativeInt } from './lib/validation.mts'
 import { getWebviewHashes } from './lib/webview-hashes.mts'
 
 // The user-facing service names, interpolated into the failure
@@ -113,22 +114,6 @@ const api = {
     app.classicApi.logOut()
   },
   getClassicBuildings: (): Classic.BuildingZone[] => getClassicBuildings(),
-  getClassicFrostProtection: async ({
-    homey: { app },
-    params,
-  }: {
-    homey: Homey
-    params: DeviceOrZoneData
-  }): Promise<ProtectionState | null> =>
-    app.getClassicFrostProtection(toDeviceOrZoneData(params)),
-  getClassicHolidayMode: async ({
-    homey: { app },
-    params,
-  }: {
-    homey: Homey
-    params: DeviceOrZoneData
-  }): Promise<HolidayModeState | null> =>
-    app.getClassicHolidayMode(toDeviceOrZoneData(params)),
   /**
    * Lists the MELCloud buildings of both dialects with the device ids
    * they own, for the extension app's per-building settings grouping.
@@ -170,62 +155,14 @@ const api = {
     const parsedOffset = toOptionalNonNegativeInt(offset, 'offset')
     const parsedPeriod = toOptionalNonNegativeInt(period, 'period')
     return app.getErrorLog({
-      from,
-      offset: parsedOffset,
-      period: parsedPeriod,
-      to,
+      ...(from !== undefined && { from }),
+      ...(parsedOffset !== undefined && { offset: parsedOffset }),
+      ...(parsedPeriod !== undefined && { period: parsedPeriod }),
+      ...(to !== undefined && { to }),
     })
   },
-  getHomeBuildingFrostProtection: ({
-    homey: { app },
-    params: { buildingId },
-  }: {
-    homey: Homey
-    params: { buildingId: string }
-  }): { isEnabled: boolean | null; max: number | null; min: number | null } =>
-    app.getHomeBuildingFrostProtection(buildingId),
-  getHomeBuildingHolidayMode: ({
-    homey: { app },
-    params: { buildingId },
-  }: {
-    homey: Homey
-    params: { buildingId: string }
-  }): {
-    endDate: string | null
-    isEnabled: boolean | null
-    startDate: string | null
-  } => app.getHomeBuildingHolidayMode(buildingId),
-  getHomeBuildingOverheatProtection: ({
-    homey: { app },
-    params: { buildingId },
-  }: {
-    homey: Homey
-    params: { buildingId: string }
-  }): { isEnabled: boolean | null; max: number | null; min: number | null } =>
-    app.getHomeBuildingOverheatProtection(buildingId),
   getHomeDevices: ({ homey: { app } }: { homey: Homey }): HomeDeviceZone[] =>
     app.getHomeDeviceZones(),
-  getHomeFrostProtection: ({
-    homey: { app },
-    params: { deviceId },
-  }: {
-    homey: Homey
-    params: { deviceId: string }
-  }): ProtectionState | null => app.getHomeFrostProtection(deviceId),
-  getHomeHolidayMode: ({
-    homey: { app },
-    params: { deviceId },
-  }: {
-    homey: Homey
-    params: { deviceId: string }
-  }): HolidayModeState | null => app.getHomeHolidayMode(deviceId),
-  getHomeOverheatProtection: ({
-    homey: { app },
-    params: { deviceId },
-  }: {
-    homey: Homey
-    params: { deviceId: string }
-  }): ProtectionState | null => app.getHomeOverheatProtection(deviceId),
   getHomeTargets: ({
     homey: { app },
   }: {
@@ -233,6 +170,28 @@ const api = {
   }): (HomeBuildingZone | HomeDeviceZone)[] => app.getHomeTargets(),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
+  getTargetFrostProtection: async ({
+    homey: { app },
+    params: { targetId },
+  }: {
+    homey: Homey
+    params: { targetId: string }
+  }): Promise<TargetProtectionState> => app.getTargetFrostProtection(targetId),
+  getTargetHolidayMode: async ({
+    homey: { app },
+    params: { targetId },
+  }: {
+    homey: Homey
+    params: { targetId: string }
+  }): Promise<TargetHolidayModeState> => app.getTargetHolidayMode(targetId),
+  getTargetOverheatProtection: async ({
+    homey: { app },
+    params: { targetId },
+  }: {
+    homey: Homey
+    params: { targetId: string }
+  }): Promise<TargetProtectionState> =>
+    app.getTargetOverheatProtection(targetId),
   getWebviewHashes: async ({
     homey: { app },
   }: {
@@ -258,9 +217,13 @@ const api = {
     logSettingsRoute(app, 'DELETE /home/sessions')
     app.homeApi.logOut()
   },
-  isClassicAuthenticated: ({ homey: { app } }: { homey: Homey }): boolean => {
+  isClassicAuthenticated: async ({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): Promise<boolean> => {
     logSettingsRoute(app, 'GET /classic/sessions')
-    return app.classicApi.isAuthenticated()
+    return app.classicApi.ensureAuthenticated()
   },
   isHomeAuthenticated: async ({
     homey: { app },
@@ -279,32 +242,6 @@ const api = {
   }): void => {
     app.error('Settings webview boot failed:', JSON.stringify(body))
   },
-  updateClassicFrostProtection: async ({
-    body,
-    homey: { app },
-    params,
-  }: {
-    body: ProtectionUpdate
-    homey: Homey
-    params: DeviceOrZoneData
-  }): Promise<void> =>
-    app.updateClassicFrostProtection({
-      settings: body,
-      ...toDeviceOrZoneData(params),
-    }),
-  updateClassicHolidayMode: async ({
-    body,
-    homey: { app },
-    params,
-  }: {
-    body: HolidayModeSettings
-    homey: Homey
-    params: DeviceOrZoneData
-  }): Promise<void> =>
-    app.updateClassicHolidayMode({
-      settings: body,
-      ...toDeviceOrZoneData(params),
-    }),
   updateDeviceSettings: async ({
     body,
     homey: { app },
@@ -314,61 +251,33 @@ const api = {
     homey: Homey
     query: { driverId?: string }
   }): Promise<void> => app.updateDeviceSettings({ driverId, settings: body }),
-  updateHomeBuildingFrostProtection: async ({
+  updateTargetFrostProtection: async ({
     body,
     homey: { app },
-    params: { buildingId },
+    params: { targetId },
   }: {
     body: ProtectionUpdate
     homey: Homey
-    params: { buildingId: string }
-  }): Promise<void> => app.updateHomeBuildingFrostProtection(buildingId, body),
-  updateHomeBuildingHolidayMode: async ({
+    params: { targetId: string }
+  }): Promise<void> => app.updateTargetFrostProtection(targetId, body),
+  updateTargetHolidayMode: async ({
     body,
     homey: { app },
-    params: { buildingId },
+    params: { targetId },
   }: {
     body: HolidayModeSettings
     homey: Homey
-    params: { buildingId: string }
-  }): Promise<void> => app.updateHomeBuildingHolidayMode(buildingId, body),
-  updateHomeBuildingOverheatProtection: async ({
+    params: { targetId: string }
+  }): Promise<void> => app.updateTargetHolidayMode(targetId, body),
+  updateTargetOverheatProtection: async ({
     body,
     homey: { app },
-    params: { buildingId },
+    params: { targetId },
   }: {
     body: ProtectionUpdate
     homey: Homey
-    params: { buildingId: string }
-  }): Promise<void> =>
-    app.updateHomeBuildingOverheatProtection(buildingId, body),
-  updateHomeFrostProtection: async ({
-    body,
-    homey: { app },
-    params: { deviceId },
-  }: {
-    body: ProtectionUpdate
-    homey: Homey
-    params: { deviceId: string }
-  }): Promise<void> => app.updateHomeFrostProtection([deviceId], body),
-  updateHomeHolidayMode: async ({
-    body,
-    homey: { app },
-    params: { deviceId },
-  }: {
-    body: HolidayModeSettings
-    homey: Homey
-    params: { deviceId: string }
-  }): Promise<void> => app.updateHomeHolidayMode([deviceId], body),
-  updateHomeOverheatProtection: async ({
-    body,
-    homey: { app },
-    params: { deviceId },
-  }: {
-    body: ProtectionUpdate
-    homey: Homey
-    params: { deviceId: string }
-  }): Promise<void> => app.updateHomeOverheatProtection([deviceId], body),
+    params: { targetId: string }
+  }): Promise<void> => app.updateTargetOverheatProtection(targetId, body),
 }
 
 export default api
