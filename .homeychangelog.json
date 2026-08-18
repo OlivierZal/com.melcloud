@@ -1858,5 +1858,20 @@
     "pl": "Wewnętrzne ulepszenia obsługi stref i niezawodności.",
     "ru": "Внутренние улучшения поддержки зон и надёжности.",
     "sv": "Interna förbättringar av zonstöd och tillförlitlighet."
+  },
+  "46.6.1": {
+    "ar": "صيانة داخلية وتحسينات في الاستقرار.",
+    "da": "Intern vedligeholdelse og stabilitetsforbedringer.",
+    "de": "Interne Wartung und Stabilitätsverbesserungen.",
+    "en": "Internal maintenance and stability improvements.",
+    "es": "Mantenimiento interno y mejoras de estabilidad.",
+    "fr": "Maintenance interne et améliorations de stabilité.",
+    "it": "Manutenzione interna e miglioramenti di stabilità.",
+    "ko": "내부 유지 보수 및 안정성 개선.",
+    "nl": "Intern onderhoud en stabiliteitsverbeteringen.",
+    "no": "Internt vedlikehold og stabilitetsforbedringer.",
+    "pl": "Wewnętrzna konserwacja i poprawa stabilności.",
+    "ru": "Внутреннее обслуживание и повышение стабильности.",
+    "sv": "Internt underhåll och stabilitetsförbättringar."
   }
 }
