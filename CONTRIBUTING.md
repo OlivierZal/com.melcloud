@@ -37,6 +37,11 @@ npm run build           # esbuild bundles + tsc emit, both into .homeybuild
 npm run homey:validate  # Homey validation at publish level
 ```
 
+`typecheck` and `build` call the native TypeScript 7 compiler by its
+explicit path (`node ./node_modules/@typescript/native/bin/tsc`). Leave
+it explicit: `tsc` and `tsc6` on the `PATH` are the TypeScript 6 compat
+package, so a shortened script would check against the wrong compiler.
+
 `npm run homey:validate` **may rewrite files** — `app.json` and
 `locales/*.json` are generated. If it touches anything, amend before
 pushing.
