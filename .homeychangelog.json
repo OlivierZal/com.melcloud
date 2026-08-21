@@ -1873,5 +1873,20 @@
     "pl": "Wewnętrzna konserwacja i poprawa stabilności.",
     "ru": "Внутреннее обслуживание и повышение стабильности.",
     "sv": "Internt underhåll och stabilitetsförbättringar."
+  },
+  "46.6.2": {
+    "ar": "إصلاح أمني: كان من الممكن أن تُكتب بيانات تسجيل دخولك في سجل التطبيق، ومنه إلى تقرير تشخيصي تشاركه. ولم تعد الحسابات التي لا تملك منزلًا في MELCloud Home تسبب فشل تسجيل دخول متكررًا.",
+    "da": "Sikkerhedsrettelse: dine loginoplysninger kunne blive skrevet til appens log og derfra havne i en diagnostikrapport, du deler. Konti uden et MELCloud Home-hjem giver ikke længere gentagne loginfejl.",
+    "de": "Sicherheitskorrektur: Deine Anmeldedaten konnten in das Protokoll der App geschrieben werden und von dort in einen von dir geteilten Diagnosebericht gelangen. Konten ohne ein MELCloud Home-Zuhause führen nicht mehr zu wiederholten Anmeldefehlern.",
+    "en": "Security fix: your sign-in details could be written to the app’s log, and from there end up in a diagnostic report you share. Accounts without a MELCloud Home home no longer cause repeated sign-in failures.",
+    "es": "Corrección de seguridad: tus datos de inicio de sesión podían escribirse en el registro de la app y, desde ahí, acabar en un informe de diagnóstico que compartes. Las cuentas sin un hogar en MELCloud Home ya no provocan fallos de inicio de sesión repetidos.",
+    "fr": "Correctif de sécurité : vos identifiants de connexion pouvaient être écrits dans le journal de l’app et, de là, se retrouver dans un rapport de diagnostic que vous partagez. Les comptes sans domicile MELCloud Home ne provoquent plus d’échecs de connexion répétés.",
+    "it": "Correzione di sicurezza: le tue credenziali di accesso potevano essere scritte nel registro dell’app e finire da lì in un rapporto diagnostico che condividi. Gli account senza una casa MELCloud Home non causano più errori di accesso ripetuti.",
+    "ko": "보안 수정: 로그인 정보가 앱 로그에 기록되어 공유하는 진단 보고서에까지 포함될 수 있었습니다. MELCloud Home 집이 없는 계정에서 더 이상 로그인 실패가 반복되지 않습니다.",
+    "nl": "Beveiligingsfix: je inloggegevens konden in het logboek van de app terechtkomen en van daaruit in een diagnoserapport dat je deelt. Accounts zonder een MELCloud Home-huis veroorzaken niet langer herhaalde aanmeldfouten.",
+    "no": "Sikkerhetsfiks: påloggingsinformasjonen din kunne bli skrevet til appens logg og derfra havne i en diagnoserapport du deler. Kontoer uten et MELCloud Home-hjem gir ikke lenger gjentatte påloggingsfeil.",
+    "pl": "Poprawka bezpieczeństwa: Twoje dane logowania mogły trafić do dziennika aplikacji, a stamtąd do udostępnianego raportu diagnostycznego. Konta bez domu w MELCloud Home nie powodują już powtarzających się błędów logowania.",
+    "ru": "Исправление безопасности: ваши данные для входа могли попасть в журнал приложения, а оттуда — в диагностический отчёт, которым вы делитесь. Учётные записи без дома в MELCloud Home больше не вызывают повторяющихся ошибок входа.",
+    "sv": "Säkerhetsfix: dina inloggningsuppgifter kunde skrivas till appens logg och därifrån hamna i en diagnosrapport som du delar. Konton utan ett MELCloud Home-hem orsakar inte längre upprepade inloggningsfel."
   }
 }
