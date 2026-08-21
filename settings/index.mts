@@ -146,6 +146,15 @@ const CLASSIC_DRIVER_IDS: readonly string[] = [
 // order when auto-selecting an account whose credentials are missing.
 const API_VALUES: readonly Api[] = ['classic', 'home']
 
+// What deciding "which account needs attention" takes: who is signed
+// out, and where the devices are — the second known only to the page,
+// the first only meaningful together with the credential state the
+// authentication manager owns.
+interface AttentionInputs {
+  readonly unauthenticatedApis: readonly Api[]
+  readonly hasDevices: (api: Api) => boolean
+}
+
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
 
@@ -522,8 +531,7 @@ class AuthManager {
   public createCredentialFields(
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     credentials: Record<Api, Partial<LoginCredentials>>,
-    unauthenticatedApis: readonly Api[],
-    hasDevices: (api: Api) => boolean,
+    attention: AttentionInputs,
   ): void {
     this.#credentialsByApi = credentials
     this.#usernameInput = this.#createCredentialInput(
@@ -537,9 +545,7 @@ class AuthManager {
     // Open on the account that needs attention so what the user sees
     // first is the account to fix; the caller owns which accounts
     // qualify, because only it knows where the devices are.
-    this.#selectApiNeedingAttention(
-      this.getApisNeedingAttention(unauthenticatedApis, hasDevices),
-    )
+    this.#selectApiNeedingAttention(this.getApisNeedingAttention(attention))
     this.#syncInputsFromCredentials()
     this.#gate.markSaved()
   }
@@ -552,10 +558,10 @@ class AuthManager {
   // never steals the form from the one in use. A signed-out account
   // outranks one that merely lost half its pair: the first stopped
   // serving devices, the second still does.
-  public getApisNeedingAttention(
-    unauthenticatedApis: readonly Api[],
-    hasDevices: (api: Api) => boolean,
-  ): Api[] {
+  public getApisNeedingAttention({
+    hasDevices,
+    unauthenticatedApis,
+  }: AttentionInputs): Api[] {
     const apisInUse = API_VALUES.filter((api) => hasDevices(api))
     const incompleteApis = new Set(this.getIncompleteApis())
     return [
@@ -1911,6 +1917,13 @@ class SettingsApp {
     })
   }
 
+  #attentionInputs(): AttentionInputs {
+    return {
+      unauthenticatedApis: API_VALUES.filter((api) => !this.#authState[api]),
+      hasDevices: (api) => this.#hasDevices(api),
+    }
+  }
+
   async #ensureDevicesForApi(api: Api): Promise<void> {
     if (api === 'classic') {
       await this.#fetchClassicBuildings()
@@ -1996,8 +2009,7 @@ class SettingsApp {
           ...(typeof homeUsername === 'string' && { username: homeUsername }),
         },
       },
-      API_VALUES.filter((api) => !this.#authState[api]),
-      (api) => this.#hasDevices(api),
+      this.#attentionInputs(),
     )
   }
 
@@ -2042,10 +2054,8 @@ class SettingsApp {
     // open on its empty fields, but only while it still has devices:
     // an account the user never paired anything to is not a chore.
     this.#authManager.collapseAuthenticationSection(
-      this.#authManager.getApisNeedingAttention(
-        API_VALUES.filter((api) => !this.#authState[api]),
-        (api) => this.#hasDevices(api),
-      ).length === 0,
+      this.#authManager.getApisNeedingAttention(this.#attentionInputs())
+        .length === 0,
     )
     hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
     toggleZoneDeviceSettings(isClassicAuthenticated || isHomeAuthenticated)
