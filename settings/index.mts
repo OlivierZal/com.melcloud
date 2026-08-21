@@ -134,6 +134,14 @@ const HOME_DRIVER_IDS: readonly string[] = [
   'home-melcloud_atw',
 ]
 
+// Classic counterpart of HOME_DRIVER_IDS: a Classic account counts as
+// "has devices" when any of its three drivers paired one.
+const CLASSIC_DRIVER_IDS: readonly string[] = [
+  'melcloud',
+  'melcloud_atw',
+  'melcloud_erv',
+]
+
 // The two APIs, in the order the picker offers them; also the priority
 // order when auto-selecting an account whose credentials are missing.
 const API_VALUES: readonly Api[] = ['classic', 'home']
@@ -515,6 +523,7 @@ class AuthManager {
     driverSettings: Partial<Record<string, DriverSetting[]>>,
     credentials: Record<Api, Partial<LoginCredentials>>,
     unauthenticatedApis: readonly Api[],
+    hasDevices: (api: Api) => boolean,
   ): void {
     this.#credentialsByApi = credentials
     this.#usernameInput = this.#createCredentialInput(
@@ -526,12 +535,35 @@ class AuthManager {
       driverSettings,
     )
     // Open on the account that needs attention so what the user sees
-    // first is the account to fix: a signed-out one before anything
-    // else — stored-but-refused credentials included — then one whose
-    // stored pair lost a field.
-    this.#selectApiNeedingAttention(unauthenticatedApis)
+    // first is the account to fix; the caller owns which accounts
+    // qualify, because only it knows where the devices are.
+    this.#selectApiNeedingAttention(
+      this.getApisNeedingAttention(unauthenticatedApis, hasDevices),
+    )
     this.#syncInputsFromCredentials()
     this.#gate.markSaved()
+  }
+
+  // The accounts the user actually relies on and that cannot serve them
+  // right now: signed out, or holding half a credential pair, while
+  // they have paired devices. Residual credentials on an account with
+  // no device are nothing to fix — the same rule the app applies before
+  // nagging the timeline about a lost session — so such an account
+  // never steals the form from the one in use. A signed-out account
+  // outranks one that merely lost half its pair: the first stopped
+  // serving devices, the second still does.
+  public getApisNeedingAttention(
+    unauthenticatedApis: readonly Api[],
+    hasDevices: (api: Api) => boolean,
+  ): Api[] {
+    const apisInUse = API_VALUES.filter((api) => hasDevices(api))
+    const incompleteApis = new Set(this.getIncompleteApis())
+    return [
+      ...apisInUse.filter((api) => unauthenticatedApis.includes(api)),
+      ...apisInUse.filter(
+        (api) => !unauthenticatedApis.includes(api) && incompleteApis.has(api),
+      ),
+    ]
   }
 
   // APIs whose stored credentials are missing a username or password —
@@ -626,11 +658,8 @@ class AuthManager {
     return (username ?? '') !== '' && (password ?? '') !== ''
   }
 
-  #selectApiNeedingAttention(unauthenticatedApis: readonly Api[]): void {
-    const [needsAttention] = [
-      ...unauthenticatedApis,
-      ...this.getIncompleteApis(),
-    ]
+  #selectApiNeedingAttention(apisNeedingAttention: readonly Api[]): void {
+    const [needsAttention] = apisNeedingAttention
     if (needsAttention !== undefined) {
       this.#apiSelect.value = needsAttention
     }
@@ -1934,10 +1963,15 @@ class SettingsApp {
     }
   }
 
-  #hasHomeDevices(): boolean {
-    return HOME_DRIVER_IDS.some((driverId) =>
-      Object.hasOwn(this.#deviceSettingsManager.deviceSettings, driverId),
+  #hasDevices(api: Api): boolean {
+    return (api === 'classic' ? CLASSIC_DRIVER_IDS : HOME_DRIVER_IDS).some(
+      (driverId) =>
+        Object.hasOwn(this.#deviceSettingsManager.deviceSettings, driverId),
     )
+  }
+
+  #hasHomeDevices(): boolean {
+    return this.#hasDevices('home')
   }
 
   async #initCredentialFields({
@@ -1963,6 +1997,7 @@ class SettingsApp {
         },
       },
       API_VALUES.filter((api) => !this.#authState[api]),
+      (api) => this.#hasDevices(api),
     )
   }
 
@@ -2002,14 +2037,15 @@ class SettingsApp {
   #refreshVisibility(): void {
     const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
       this.#authState
-    // Fold only when nothing needs attention: both accounts signed in
-    // AND both still hold complete credentials. A reset account (signed
-    // out immediately, credentials deleted) keeps the panel open on the
-    // empty fields.
+    // Fold when no account in use needs attention. A reset account
+    // (signed out immediately, credentials deleted) keeps the panel
+    // open on its empty fields, but only while it still has devices:
+    // an account the user never paired anything to is not a chore.
     this.#authManager.collapseAuthenticationSection(
-      isClassicAuthenticated &&
-        isHomeAuthenticated &&
-        this.#authManager.getIncompleteApis().length === 0,
+      this.#authManager.getApisNeedingAttention(
+        API_VALUES.filter((api) => !this.#authState[api]),
+        (api) => this.#hasDevices(api),
+      ).length === 0,
     )
     hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
     toggleZoneDeviceSettings(isClassicAuthenticated || isHomeAuthenticated)
