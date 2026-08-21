@@ -984,6 +984,7 @@ describe('settings page', () => {
 
     it('should alert after a home sign-in with no home device', async () => {
       const harness = await bootPage()
+      commit(getSelect('api'), 'home')
       commit(getInput('username'), 'home@example.com')
       commit(getInput('password'), 'secret')
       swapRoutes(harness, { ...defaultRoutes(), 'GET /home/sessions': true })
@@ -1022,11 +1023,11 @@ describe('settings page', () => {
           username: 'classic@example.com',
         },
       })
-      // Both accounts signed in? classic yes, home no: the picker opened
-      // on home (needs attention), so switch back and forth.
+      // Home holds no device here, so it never grabs the form: select it
+      // and switch back, checking each account keeps its own pair.
       const api = getSelect('api')
+      commit(api, 'home')
 
-      expect(api.value).toBe('home')
       expect(getInput('username').value).toBe('home@example.com')
 
       commit(api, 'classic')
@@ -1051,7 +1052,15 @@ describe('settings page', () => {
 
     it('should open the picker on an incomplete stored account', async () => {
       await bootPage({
-        routes: { ...defaultRoutes(), 'GET /home/sessions': true },
+        routes: {
+          ...defaultRoutes(),
+          'GET /home/sessions': true,
+          'GET /home/targets': homeTargetsFixture(),
+          'GET /settings/devices': {
+            ...deviceSettingsFixture(),
+            'home-melcloud': { always_on: true },
+          },
+        },
         storedSettings: {
           homeUsername: 'home@example.com',
           password: 'classic-secret',
@@ -1059,7 +1068,46 @@ describe('settings page', () => {
         },
       })
 
-      // Both signed in, but home lost its password: attention there.
+      // Both signed in and both in use, but home lost its password:
+      // attention there.
+      expect(getSelect('api').value).toBe('home')
+      expect(getDetails('authentication').open).toBe(true)
+    })
+
+    it('should leave an unused account alone', async () => {
+      // Classic signed in and in use, home signed out with nothing
+      // paired to it: the panel has no chore to show, and the form must
+      // not open on an account the user never adopted.
+      await bootPage({
+        routes: { ...defaultRoutes(), 'GET /home/sessions': false },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(getSelect('api').value).toBe('classic')
+      expect(getDetails('authentication').open).toBe(false)
+    })
+
+    it('should open on a signed-out account that has devices', async () => {
+      await bootPage({
+        routes: {
+          ...defaultRoutes(),
+          'GET /home/sessions': false,
+          'GET /settings/devices': {
+            ...deviceSettingsFixture(),
+            'home-melcloud': { always_on: true },
+          },
+        },
+        storedSettings: {
+          homePassword: 'home-secret',
+          homeUsername: 'home@example.com',
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
       expect(getSelect('api').value).toBe('home')
       expect(getDetails('authentication').open).toBe(true)
     })
