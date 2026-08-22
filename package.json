@@ -35,7 +35,7 @@
     "@olivierzal/homey-kit": "5.0.0",
     "@olivierzal/melcloud-api": "52.0.0",
     "source-map-support": "^0.5.21",
-    "temporal-polyfill": "^1.0.1"
+    "temporal-polyfill": "^1.0.4"
   },
   "devDependencies": {
     "@olivierzal/configs": "4.2.1",
@@ -44,7 +44,7 @@
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^4.1.10",
     "chart.js": "^4.5.1",
-    "esbuild": "^0.28.1",
+    "esbuild": "^0.28.2",
     "eslint": "^10.8.1",
     "happy-dom": "20.11.2",
     "homey-apps-sdk-v3-types": "^0.3.12",
