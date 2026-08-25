@@ -24,10 +24,10 @@ caught real failures that the others miss:
   `no-whitespace-only-children`, plus the quality rules.
 - `npm run typecheck` — TypeScript 7, reached by its explicit path,
   `node ./node_modules/@typescript/native/bin/tsc`. The path is
-  load-bearing: the native compiler ships NO `.bin` shim, and the `tsc`
-  slot belongs to the `@typescript/typescript6` compat package (which
-  itself depends on `npm:typescript@^6` under the name
-  `@typescript/old`), so a bare `tsc` — or `tsc6` — would silently
+  load-bearing: the native compiler declares a `tsc` bin of its own but
+  LOSES the `.bin/tsc` slot to `@typescript/old` (the TS 6 the
+  `@typescript/typescript6` compat package depends on) under npm's
+  bin-conflict resolution, so a bare `tsc` — or `tsc6` — would silently
   typecheck with TypeScript 6 instead. Never shorten it.
 - `npm test` / `npm run test:coverage` — vitest; branches are at 100%,
   keep them there.
@@ -219,6 +219,14 @@ coverage.
   (a class list silently missed renamed buttons).
   The kit's own suite locks the behavior — a change to the gate is a kit
   release, adopted here by an exact-pin bump.
+- The credentials prompt is for accounts IN USE only (#1608): an
+  account with no paired device never takes the credentials form nor
+  keeps the settings panel open — residual credentials on it are
+  nothing to fix, the same rule that gates the session-lost timeline
+  notification (a form offered for an unused account is where a user
+  types the wrong password). Among the accounts in use, signed-out
+  outranks incomplete (missing half the credential pair): the first
+  stopped serving devices, the second still does.
 - Settings-CSS sharing — VERDICT (2026-08, after the `./dom` adoption):
   the cascade fixes STAY LOCAL, in all three apps. Two independent
   reasons, either sufficient. (1) The kit ships no stylesheet and
@@ -313,6 +321,14 @@ coverage.
   (live-observed: a legionella cycle shows the zone idle), which is
   exactly what `operationalStateZone1/2` derive API-side — the Classic
   flag refinements do not exist on the Home wire.
+- `isAuthenticated()` on the Home API answers "can this session serve
+  requests", never "is there an identity" (melcloud-api ≥ 52.0.0): an
+  account with no MELCloud Home home settles authenticated with
+  `user`/`context` null and an empty registry. Pairing routes on that
+  answer — such an account gets the empty device list, not the login
+  form, which is correct: its session is valid and simply has nothing
+  to offer. Anything deriving a name or email from `getUser()` must
+  handle the `null`.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
   (`getRequiredCapabilities`). `isOwner` gates NOTHING, on any driver:
