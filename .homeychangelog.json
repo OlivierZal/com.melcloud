@@ -1903,5 +1903,20 @@
     "pl": "Ustawienia ochrony przed mrozem i trybu wakacyjnego działają teraz także w budynkach udostępnionych Tobie.",
     "ru": "Настройки защиты от замерзания и режима отпуска теперь работают и в зданиях, к которым вам предоставлен доступ.",
     "sv": "Frostskydds- och semesterlägesinställningar fungerar nu även i byggnader som delats med dig."
+  },
+  "46.7.0": {
+    "ar": "صيانة داخلية وإعادة هيكلة للشفرة البرمجية.",
+    "da": "Intern vedligeholdelse og omstrukturering af koden.",
+    "de": "Interne Wartung und Code-Umstrukturierung.",
+    "en": "Internal maintenance and code restructuring.",
+    "es": "Mantenimiento interno y reestructuración del código.",
+    "fr": "Maintenance interne et restructuration du code.",
+    "it": "Manutenzione interna e ristrutturazione del codice.",
+    "ko": "내부 유지 보수 및 코드 구조 개선.",
+    "nl": "Intern onderhoud en herstructurering van de code.",
+    "no": "Internt vedlikehold og omstrukturering av koden.",
+    "pl": "Wewnętrzna konserwacja i restrukturyzacja kodu.",
+    "ru": "Внутреннее обслуживание и реструктуризация кода.",
+    "sv": "Internt underhåll och omstrukturering av koden."
   }
 }
