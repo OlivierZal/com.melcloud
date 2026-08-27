@@ -4,6 +4,7 @@ import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
 import { getErrorMessage } from '@olivierzal/homey-kit'
 import {
+  type BaseAPIAdapter,
   type HomeBuildingZone,
   type HomeDeviceZone,
   type LoginCredentials,
@@ -13,6 +14,7 @@ import {
 } from '@olivierzal/melcloud-api'
 
 import type {
+  Api,
   HolidayModeSettings,
   TargetHolidayModeState,
   TargetProtectionState,
@@ -33,6 +35,27 @@ const API_DISPLAY_NAMES = {
   classic: 'MELCloud Classic',
   home: 'MELCloud Home',
 } as const
+
+// The client behind each API id — the addressing map of the one
+// `/sessions/:api` resource, where the family is the only visible step.
+const API_CLIENTS: Record<Api, (app: Homey['app']) => BaseAPIAdapter> = {
+  classic: (app) => app.classicApi,
+  home: (app) => app.homeApi,
+}
+
+const isApi = (value: string): value is Api => Object.hasOwn(API_CLIENTS, value)
+
+// A session path names one of the two APIs; anything else is a stale
+// or hand-built address.
+const toApi = (value: string): Api => {
+  if (!isApi(value)) {
+    throw new RangeError(`Invalid API: ${value}`)
+  }
+  return value
+}
+
+const getApiClient = ({ app }: Homey, service: Api): BaseAPIAdapter =>
+  API_CLIENTS[service](app)
 
 // The webview only receives an error MESSAGE across the app bridge, so
 // login failures are classified here, where `instanceof` still works:
@@ -94,22 +117,21 @@ const toOptionalNonNegativeInt = (
   value === undefined ? undefined : toNonNegativeInt(value, { field })
 
 const api = {
-  classicAuthenticate: async ({
+  authenticate: async ({
     body,
     homey,
+    params,
   }: {
     body: LoginCredentials
     homey: Homey
+    params: { api: string }
   }): Promise<void> => {
+    const service = toApi(params.api)
     try {
-      await homey.app.classicApi.authenticate(body)
+      await getApiClient(homey, service).authenticate(body)
     } catch (error) {
-      throw toLoginFailure(homey, 'classic', error)
+      throw toLoginFailure(homey, service, error)
     }
-  },
-  classicLogOut: ({ homey: { app } }: { homey: Homey }): void => {
-    logSettingsRoute(app, 'DELETE /classic/sessions')
-    app.classicApi.logOut()
   },
   getClassicBuildings: (): Classic.BuildingZone[] => getClassicBuildings(),
   /**
@@ -196,38 +218,27 @@ const api = {
     logSettingsRoute(app, 'GET /webview-hashes')
     return getWebviewHashes()
   },
-  homeAuthenticate: async ({
-    body,
+  isAuthenticated: async ({
     homey,
-  }: {
-    body: LoginCredentials
-    homey: Homey
-  }): Promise<void> => {
-    try {
-      await homey.app.homeApi.authenticate(body)
-    } catch (error) {
-      throw toLoginFailure(homey, 'home', error)
-    }
-  },
-  homeLogOut: ({ homey: { app } }: { homey: Homey }): void => {
-    logSettingsRoute(app, 'DELETE /home/sessions')
-    app.homeApi.logOut()
-  },
-  isClassicAuthenticated: async ({
-    homey: { app },
+    params,
   }: {
     homey: Homey
+    params: { api: string }
   }): Promise<boolean> => {
-    logSettingsRoute(app, 'GET /classic/sessions')
-    return app.classicApi.ensureAuthenticated()
+    const service = toApi(params.api)
+    logSettingsRoute(homey.app, `GET /sessions/${service}`)
+    return getApiClient(homey, service).ensureAuthenticated()
   },
-  isHomeAuthenticated: async ({
-    homey: { app },
+  logOut: ({
+    homey,
+    params,
   }: {
     homey: Homey
-  }): Promise<boolean> => {
-    logSettingsRoute(app, 'GET /home/sessions')
-    return app.homeApi.ensureAuthenticated()
+    params: { api: string }
+  }): void => {
+    const service = toApi(params.api)
+    logSettingsRoute(homey.app, `DELETE /sessions/${service}`)
+    getApiClient(homey, service).logOut()
   },
   logWebviewBoot: ({
     body,

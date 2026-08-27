@@ -142,8 +142,11 @@ const loadChartsPage = (): void => {
 const device = (
   id: number | string,
   name: string,
-  model = 'devices',
-): unknown => ({ id, level: 1, model, name })
+  {
+    deviceType = 'ata',
+    model = 'devices',
+  }: { deviceType?: string; model?: string } = {},
+): unknown => ({ deviceType, id, level: 1, model, name })
 
 const lineOptions = (
   overrides: Record<string, unknown> = {},
@@ -166,12 +169,14 @@ const pieOptions = (
   ...overrides,
 })
 
+// The one merged listing arrives app-sorted; the widget derives every
+// per-chart line-up from the `deviceType`/`model` tags.
 const defaultRoutes = (): Record<string, unknown> => ({
-  'GET /classic/devices': [device(11, 'Bedroom'), device(12, 'Kitchen')],
-  'GET /classic/devices?type=0': [device(11, 'Bedroom')],
-  'GET /classic/devices?type=1': [device(12, 'Kitchen')],
-  'GET /home/devices': [device('h1', 'Attic', 'homeDevices')],
-  'GET /home/devices?type=airToWater': [device('h1', 'Attic', 'homeDevices')],
+  'GET /devices': [
+    device('h1', 'Attic', { deviceType: 'atw', model: 'homeDevices' }),
+    device(11, 'Bedroom'),
+    device(12, 'Kitchen', { deviceType: 'atw' }),
+  ],
   'GET /language': 'fr',
 })
 
@@ -353,14 +358,7 @@ describe('charts widget', () => {
 
   it('should build nothing without a single device', async () => {
     const harness = await boot({
-      routes: withLogs({
-        'GET /classic/devices': [],
-        'GET /classic/devices?type=0': [],
-        'GET /classic/devices?type=1': [],
-        'GET /home/devices': [],
-        'GET /home/devices?type=airToWater': [],
-        'GET /language': 'fr',
-      }),
+      routes: withLogs({ 'GET /devices': [], 'GET /language': 'fr' }),
     })
 
     expect(FakeChart.instances).toHaveLength(0)
@@ -461,7 +459,7 @@ describe('charts widget', () => {
       called.includes('/logs/'),
     )?.[1]
 
-    expect(path).toBe('/classic/devices/11/logs/report?days=30')
+    expect(path).toBe('/targets/devices_11/logs/report?days=30')
   })
 
   it('should route a home device to its own endpoint', async () => {
@@ -472,7 +470,7 @@ describe('charts widget', () => {
       called.includes('/logs/'),
     )?.[1]
 
-    expect(path).toBe('/home/devices/h1/logs/temperatures?days=7')
+    expect(path).toBe('/targets/homeDevices_h1/logs/temperatures?days=7')
   })
 
   it('should update the live chart in place on a refresh', async () => {
@@ -512,7 +510,9 @@ describe('charts widget', () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
     const harness = await boot({
       failures: {
-        'GET /home/devices/h1/logs/temperatures?days=7': new Error('logs down'),
+        'GET /targets/homeDevices_h1/logs/temperatures?days=7': new Error(
+          'logs down',
+        ),
       },
     })
 
@@ -804,8 +804,7 @@ describe('charts widget', () => {
     await boot({
       routes: withLogs({
         ...defaultRoutes(),
-        'GET /classic/devices?type=1': [],
-        'GET /home/devices?type=airToWater': [],
+        'GET /devices': [device(11, 'Bedroom')],
       }),
     })
 

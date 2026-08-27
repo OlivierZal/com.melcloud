@@ -94,7 +94,7 @@ describe('ata group setting widget', () => {
       failures: { 'GET /classic/buildings?type=0': new Error('classic down') },
       routes: {
         ...widgetRoutes(),
-        'GET /home/buildings/b_1/ata': groupStateFixture(),
+        'GET /targets/homeBuildings_b_1/ata': groupStateFixture(),
       },
     })
 
@@ -114,9 +114,7 @@ describe('ata group setting widget', () => {
     })
 
     expect(document.querySelector('#values_melcloud select')).toBeNull()
-    expect(calledPaths(harness)).not.toContain(
-      'GET /classic/zones/buildings/1/ata',
-    )
+    expect(calledPaths(harness)).not.toContain('GET /targets/buildings_1/ata')
     expect(harness.ready).toHaveBeenCalledTimes(1)
   })
 
@@ -134,7 +132,7 @@ describe('ata group setting widget', () => {
     const harness = await bootWidget({
       routes: {
         ...widgetRoutes(),
-        'GET /classic/zones/devices/11/ata': {
+        'GET /targets/devices_11/ata': {
           ...groupStateFixture(),
           SetTemperature: 19,
         },
@@ -182,7 +180,7 @@ describe('ata group setting widget', () => {
     const harness = await bootWidget()
     const stateFetches = (): number =>
       calledPaths(harness).filter(
-        (key) => key === 'GET /classic/zones/buildings/1/ata',
+        (key) => key === 'GET /targets/buildings_1/ata',
       ).length
     const before = stateFetches()
     harness.emit('deviceupdate')
@@ -198,7 +196,7 @@ describe('ata group setting widget', () => {
     const routes = widgetRoutes()
     const harness = await bootWidget({ routes })
     commit(getSelect('SetTemperature'), '25')
-    routes['GET /classic/zones/buildings/1/ata'] = {
+    routes['GET /targets/buildings_1/ata'] = {
       ...groupStateFixture(),
       Power: false,
     }

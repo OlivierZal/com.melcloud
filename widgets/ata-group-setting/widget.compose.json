@@ -4,42 +4,19 @@
       "method": "GET",
       "path": "/classic/capabilities/ata"
     },
-    "getClassicAtaDetailedStates": {
-      "method": "GET",
-      "path": "/classic/zones/:zoneType/:zoneId/ata/details"
-    },
-    "getClassicAtaState": {
-      "method": "GET",
-      "path": "/classic/zones/:zoneType/:zoneId/ata"
-    },
     "getClassicBuildings": { "method": "GET", "path": "/classic/buildings" },
-    "getHomeAtaState": {
-      "method": "GET",
-      "path": "/home/devices/:deviceId/ata"
-    },
     "getHomeAtaTargets": { "method": "GET", "path": "/home/targets/ata" },
-    "getHomeBuildingAtaModes": {
-      "method": "GET",
-      "path": "/home/buildings/:buildingId/ata/modes"
-    },
-    "getHomeBuildingAtaState": {
-      "method": "GET",
-      "path": "/home/buildings/:buildingId/ata"
-    },
     "getLanguage": { "method": "GET", "path": "/language" },
+    "getTargetAtaModes": {
+      "method": "GET",
+      "path": "/targets/:targetId/ata/modes"
+    },
+    "getTargetAtaState": { "method": "GET", "path": "/targets/:targetId/ata" },
     "getWebviewHashes": { "method": "GET", "path": "/webview-hashes" },
     "logWebviewBoot": { "method": "POST", "path": "/boot-error" },
-    "updateClassicAtaState": {
+    "updateTargetAtaState": {
       "method": "PUT",
-      "path": "/classic/zones/:zoneType/:zoneId/ata"
-    },
-    "updateHomeAtaState": {
-      "method": "PUT",
-      "path": "/home/devices/:deviceId/ata"
-    },
-    "updateHomeBuildingAtaState": {
-      "method": "PUT",
-      "path": "/home/buildings/:buildingId/ata"
+      "path": "/targets/:targetId/ata"
     }
   },
   "name": {

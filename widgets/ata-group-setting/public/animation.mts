@@ -7,17 +7,8 @@ import {
   ClassicOperationMode,
 } from '@olivierzal/melcloud-api/constants'
 
-import type { GroupAtaStates } from '../../../types/classic-ata.mts'
-import type {
-  GetAtaOptions,
-  AtaGroupSettingWidgetSettings as HomeySettings,
-} from '../../../types/widgets.mts'
+import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
 import { type Homey, homeyApiGet } from '../../../public/widget.mts'
-import {
-  getHomeBuildingId,
-  getZonePath,
-  isHomeBuildingValue,
-} from '../../../public/zones.mts'
 import {
   generateStyleNumber,
   generateStyleString,
@@ -126,8 +117,6 @@ const generateDelay = (delay: number, speed: number): number => {
   // by one instead of freezing the cadence at Infinity.
   return (randomFraction() * delay) / (speedFactor === 0 ? 1 : speedFactor)
 }
-
-const getZoneValue = (): string => getZonePath(getSelect('zones').value)
 
 const parseStateParams = (
   state: Classic.GroupState,
@@ -628,24 +617,15 @@ export class AnimationController {
     return motion
   }
 
-  // A mixed Home building fetches its members' modes from the dedicated
-  // endpoint; Classic zones keep the detailed-states one. Home devices
-  // never reach here (a group of one cannot be mixed).
+  // A mixed group resolves its members' modes through the one neutral
+  // modes route — powered members only, whatever family serves the
+  // target. Single devices never reach here (a group of one cannot be
+  // mixed).
   async #getModes(): Promise<number[]> {
-    const { value } = getSelect('zones')
-    if (isHomeBuildingValue(value)) {
-      return homeyApiGet<number[]>(
-        this.#homey,
-        `/home/buildings/${encodeURIComponent(getHomeBuildingId(value))}/ata/modes`,
-      )
-    }
-    const detailedAtaStates = await homeyApiGet<GroupAtaStates>(
+    return homeyApiGet<number[]>(
       this.#homey,
-      `/classic/zones/${getZoneValue()}/ata/details?${new URLSearchParams({
-        status: 'on',
-      } satisfies Required<GetAtaOptions>)}`,
+      `/targets/${getSelect('zones').value}/ata/modes`,
     )
-    return detailedAtaStates.OperationMode
   }
 
   #getSunElement(): HTMLDivElement {

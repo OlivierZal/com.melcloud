@@ -8,7 +8,6 @@ import {
   type Result,
   type SyncCallback,
   err,
-  NoChangesError,
   ok,
   UpdateRejectedError,
 } from '@olivierzal/melcloud-api'
@@ -106,7 +105,6 @@ const mockFacadeManagerGetById =
 const mockFacadeManagerGetZones = vi
   .fn<(options?: { type?: Classic.DeviceType }) => unknown[]>()
   .mockReturnValue([])
-const mockHomeFacadeManagerGet = vi.fn<(model: unknown) => unknown>()
 const mockHomeFacadeManagerGetById = vi.fn<(id: string) => unknown>()
 const mockHomeFacadeManagerGetZones =
   vi.fn<(params?: { type?: Home.DeviceType }) => unknown[]>()
@@ -285,7 +283,6 @@ const newMockFacadeManager =
 const newMockHomeFacadeManager =
   function newMockHomeFacadeManager(): Home.FacadeManager {
     return mock<Home.FacadeManager>({
-      get: mockHomeFacadeManagerGet,
       getBuilding: mockHomeFacadeManagerGetBuilding,
       getById: mockHomeFacadeManagerGetById,
       getZones: mockHomeFacadeManagerGetZones,
@@ -1013,70 +1010,36 @@ describe('melCloudApp', () => {
     })
   })
 
-  describe('ata detailed states', () => {
-    it('should return detailed states for ATA devices', async () => {
-      const mockFacade = mock<Classic.BuildingFacade>({
-        devices: [
-          {
-            data: { FanSpeed: 3, Power: true, SetTemperature: 21 },
-            type: Classic.DeviceType.Ata,
-          },
-        ],
-      })
-      await initWithFacade(app, mockFacade)
+  describe('target ata modes', () => {
+    it('should ask the classic zone facade for powered member modes', async () => {
+      const getMemberOperationModes = vi
+        .fn<() => Classic.OperationMode[]>()
+        .mockReturnValue([
+          Classic.OperationMode.cool,
+          Classic.OperationMode.heat,
+        ])
+      await initWithFacade(
+        app,
+        mock<Classic.ZoneFacade>({ getMemberOperationModes }),
+      )
 
-      const detailedValues = app.getClassicAtaDetailedStates({
-        zoneId: '1',
-        zoneType: 'buildings',
+      expect(app.getTargetAtaModes('buildings_1')).toStrictEqual([
+        Classic.OperationMode.cool,
+        Classic.OperationMode.heat,
+      ])
+      expect(getMemberOperationModes).toHaveBeenCalledWith({
+        poweredOnly: true,
       })
-
-      expect(detailedValues).toBeDefined()
-      expect(detailedValues.Power).toStrictEqual([true])
     })
 
-    it('should filter by power status when status is on', async () => {
-      const mockFacade = mock<Classic.BuildingFacade>({
-        devices: [
-          {
-            data: mock<Classic.ListDeviceDataAta>({
-              FanSpeed: 3,
-              Power: true,
-              SetTemperature: 21,
-            }),
-            type: Classic.DeviceType.Ata,
-          },
-          {
-            data: mock<Classic.ListDeviceDataAta>({
-              FanSpeed: 2,
-              Power: false,
-              SetTemperature: 19,
-            }),
-            type: Classic.DeviceType.Ata,
-          },
-        ],
-      })
-      await initWithFacade(app, mockFacade)
+    it('should reject an invalid classic zone type', async () => {
+      await app.onInit()
 
-      const detailedValues = app.getClassicAtaDetailedStates({
-        status: 'on',
-        zoneId: '1',
-        zoneType: 'buildings',
-      })
-
-      expect(detailedValues.Power).toStrictEqual([true])
-    })
-
-    it('should throw when no devices found', async () => {
-      const mockFacade = mock<Classic.BuildingFacade>({ devices: [] })
-      await initWithFacade(app, mockFacade)
-
-      expect(() =>
-        app.getClassicAtaDetailedStates({ zoneId: '1', zoneType: 'buildings' }),
-      ).toThrow('errors.deviceNotFound')
+      expect(() => app.getTargetAtaModes('constructor_1')).toThrow(RangeError)
     })
   })
 
-  describe('ata values', () => {
+  describe('target ata state', () => {
     it('should delegate to facade getGroup', async () => {
       const mockGroupState = mock<Classic.GroupState>()
       const mockFacade = mock<Classic.BuildingFacade>({
@@ -1086,10 +1049,7 @@ describe('melCloudApp', () => {
       })
       await initWithFacade(app, mockFacade)
 
-      const groupState = await app.getClassicAtaState({
-        zoneId: '1',
-        zoneType: 'buildings',
-      })
+      const groupState = await app.getTargetAtaState('buildings_1')
 
       expect(groupState).toBe(mockGroupState)
     })
@@ -1105,10 +1065,7 @@ describe('melCloudApp', () => {
       mockFacadeManagerGetById.mockReturnValue(mockFacade)
       await app.onInit()
 
-      const groupState = await app.getClassicAtaState({
-        zoneId: '1',
-        zoneType: 'devices',
-      })
+      const groupState = await app.getTargetAtaState('devices_1')
 
       expect(groupState).toBe(mockGroupState)
       expect(mockFacadeManagerGetById).toHaveBeenCalledWith('devices', 1)
@@ -1122,9 +1079,9 @@ describe('melCloudApp', () => {
       )
       await app.onInit()
 
-      await expect(
-        app.getClassicAtaState({ zoneId: '1', zoneType: 'devices' }),
-      ).rejects.toThrow('errors.deviceNotFound')
+      await expect(app.getTargetAtaState('devices_1')).rejects.toThrow(
+        'errors.deviceNotFound',
+      )
     })
   })
 
@@ -1695,9 +1652,9 @@ describe('melCloudApp', () => {
       })
       await app.onInit()
 
-      await expect(app.getHomeAtaState('device-1')).resolves.toStrictEqual(
-        groupState,
-      )
+      await expect(
+        app.getTargetAtaState('homeDevices_device-1'),
+      ).resolves.toStrictEqual(groupState)
     })
 
     it('should push the update delta through the group contract', async () => {
@@ -1707,9 +1664,9 @@ describe('melCloudApp', () => {
       setupHomeAtaFacade({ updateGroupState: mockUpdateGroupState })
       await app.onInit()
 
-      await app.updateHomeAtaState({
-        deviceId: 'device-1',
-        state: { Power: true, SetTemperature: 20 },
+      await app.updateTargetAtaState('homeDevices_device-1', {
+        Power: true,
+        SetTemperature: 20,
       })
 
       expect(mockUpdateGroupState).toHaveBeenCalledWith({
@@ -1718,23 +1675,10 @@ describe('melCloudApp', () => {
       })
     })
 
-    it('should swallow a no-changes rejection', async () => {
-      setupHomeAtaFacade({
-        updateGroupState: vi
-          .fn<(state: unknown) => Promise<unknown>>()
-          .mockRejectedValue(new NoChangesError('device-1')),
-      })
-      await app.onInit()
-
-      await expect(
-        app.updateHomeAtaState({
-          deviceId: 'device-1',
-          state: { Power: true },
-        }),
-      ).resolves.toBeUndefined()
-    })
-
-    it('should propagate other update failures', async () => {
+    // No-change tolerance is the library's own (every `updateGroupState`
+    // resolves an already-matching delta as success), so the app-side
+    // contract is plain propagation of whatever the facade rejects.
+    it('should propagate update failures', async () => {
       setupHomeAtaFacade({
         updateGroupState: vi
           .fn<(state: unknown) => Promise<unknown>>()
@@ -1743,10 +1687,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       await expect(
-        app.updateHomeAtaState({
-          deviceId: 'device-1',
-          state: { Power: true },
-        }),
+        app.updateTargetAtaState('homeDevices_device-1', { Power: true }),
       ).rejects.toThrow('BFF failure')
     })
   })
@@ -1765,7 +1706,7 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       await expect(
-        app.getHomeBuildingAtaState('building-1'),
+        app.getTargetAtaState('homeBuildings_building-1'),
       ).resolves.toStrictEqual(groupState)
       expect(mockHomeFacadeManagerGetBuilding).toHaveBeenCalledWith(
         'building-1',
@@ -1781,28 +1722,26 @@ describe('melCloudApp', () => {
       )
       await app.onInit()
 
-      await app.updateHomeBuildingAtaState({
-        buildingId: 'building-1',
-        state: groupState,
-      })
+      await app.updateTargetAtaState('homeBuildings_building-1', groupState)
 
       expect(mockUpdateGroupState).toHaveBeenCalledWith(groupState)
     })
 
     it('should list the member modes in the classic vocabulary', async () => {
-      const member = { id: 'device-1', isAta: (): boolean => true }
+      const getMemberOperationModes = vi
+        .fn<() => Classic.OperationMode[]>()
+        .mockReturnValue([Classic.OperationMode.heat])
       mockHomeFacadeManagerGetBuilding.mockReturnValue(
-        mock<Home.BuildingFacade>({ devices: [member] }),
-      )
-      mockHomeFacadeManagerGet.mockReturnValue(
-        mock<Home.DeviceAtaFacade>({ operationMode: 'Heat' }),
+        mock<Home.BuildingFacade>({ getMemberOperationModes }),
       )
       await app.onInit()
 
-      expect(app.getHomeBuildingAtaModes('building-1')).toStrictEqual([
+      expect(app.getTargetAtaModes('homeBuildings_building-1')).toStrictEqual([
         Classic.OperationMode.heat,
       ])
-      expect(mockHomeFacadeManagerGet).toHaveBeenCalledWith(member)
+      expect(getMemberOperationModes).toHaveBeenCalledWith({
+        poweredOnly: true,
+      })
     })
 
     it('should throw not-found for an unknown building', async () => {
@@ -1811,9 +1750,9 @@ describe('melCloudApp', () => {
 
       // A Home building is a zone in the picker vocabulary, so a missing
       // one answers the same error class as its Classic counterpart.
-      await expect(app.getHomeBuildingAtaState('missing')).rejects.toThrow(
-        'errors.zoneNotFound',
-      )
+      await expect(
+        app.getTargetAtaState('homeBuildings_missing'),
+      ).rejects.toThrow('errors.zoneNotFound')
     })
   })
 
@@ -1850,13 +1789,13 @@ describe('melCloudApp', () => {
   })
 
   describe('hourly temperature retrieval', () => {
-    it('should delegate to device facade', async () => {
+    it('should delegate to the classic device facade', async () => {
       const mockData = mock<ReportChartLineOptions>()
       await initWithDeviceFacade(app, 'getHourlyTemperatures', mockData)
 
-      const temperatures = await app.getClassicHourlyTemperatures({
-        deviceId: '1',
+      const temperatures = await app.getTargetHourlyTemperatures({
         hour: 10,
+        targetId: 'devices_1',
       })
 
       expect(temperatures).toBe(mockData)
@@ -1864,13 +1803,13 @@ describe('melCloudApp', () => {
   })
 
   describe('operation mode retrieval', () => {
-    it('should delegate to device facade with date range', async () => {
+    it('should delegate to the classic device facade with date range', async () => {
       const mockData = mock<ReportChartPieOptions>()
       await initWithDeviceFacade(app, 'getOperationModes', mockData)
 
-      const operationModes = await app.getClassicOperationModes({
+      const operationModes = await app.getTargetOperationModes({
         days: 7,
-        deviceId: '1',
+        targetId: 'devices_1',
       })
 
       expect(operationModes).toBe(mockData)
@@ -1878,24 +1817,35 @@ describe('melCloudApp', () => {
   })
 
   describe('signal retrieval', () => {
-    it('should delegate to device facade', async () => {
+    it('should delegate to the classic device facade', async () => {
       const mockData = mock<ReportChartLineOptions>()
       await initWithDeviceFacade(app, 'getSignalStrength', mockData)
 
-      const signal = await app.getClassicSignal({ deviceId: '1', hour: 5 })
+      const signal = await app.getTargetSignal({
+        hour: 5,
+        targetId: 'devices_1',
+      })
 
       expect(signal).toBe(mockData)
+    })
+
+    it('should reject a classic zone target above the device leaves', async () => {
+      await app.onInit()
+
+      await expect(
+        app.getTargetSignal({ targetId: 'buildings_1' }),
+      ).rejects.toThrow('errors.deviceNotFound')
     })
   })
 
   describe('temperature retrieval', () => {
-    it('should delegate to device facade with date range', async () => {
+    it('should delegate to the classic device facade with date range', async () => {
       const mockData = mock<ReportChartLineOptions>()
       await initWithDeviceFacade(app, 'getTemperatures', mockData)
 
-      const temperatures = await app.getClassicTemperatures({
+      const temperatures = await app.getTargetTemperatures({
         days: 30,
-        deviceId: '1',
+        targetId: 'devices_1',
       })
 
       expect(temperatures).toBe(mockData)
@@ -1907,9 +1857,9 @@ describe('melCloudApp', () => {
       const mockData = mock<ReportChartLineOptions>()
       await initWithDeviceFacade(app, 'getEnergyReport', mockData)
 
-      const report = await app.getClassicEnergyReport({
+      const report = await app.getTargetEnergyReport({
         days: 7,
-        deviceId: '1',
+        targetId: 'devices_1',
       })
 
       expect(report).toBe(mockData)
@@ -1923,9 +1873,9 @@ describe('melCloudApp', () => {
         mockData,
       })
 
-      const report = await app.getHomeEnergyReport({
+      const report = await app.getTargetEnergyReport({
         days: 7,
-        deviceId: 'guid-1',
+        targetId: 'homeDevices_guid-1',
       })
 
       expect(report).toBe(mockData)
@@ -1942,7 +1892,7 @@ describe('melCloudApp', () => {
         mockFacadeManagerGetById.mockReturnValue(mock({ getEnergyReport }))
         await app.onInit()
 
-        await app.getClassicEnergyReport({ days: 2, deviceId: '1' })
+        await app.getTargetEnergyReport({ days: 2, targetId: 'devices_1' })
 
         // Two days: yesterday and today, from yesterday's local midnight.
         expect(getEnergyReport).toHaveBeenCalledWith({
@@ -1970,7 +1920,10 @@ describe('melCloudApp', () => {
         mockHomeFacadeManagerGetById.mockReturnValue(mock({ getEnergyReport }))
         await app.onInit()
 
-        await app.getHomeEnergyReport({ days: 0, deviceId: 'guid-1' })
+        await app.getTargetEnergyReport({
+          days: 0,
+          targetId: 'homeDevices_guid-1',
+        })
 
         expect(getEnergyReport).toHaveBeenCalledWith({
           from: '2026-07-18T08:30:00',
@@ -1990,9 +1943,9 @@ describe('melCloudApp', () => {
         mockData,
       })
 
-      const temperatures = await app.getHomeTemperatures({
+      const temperatures = await app.getTargetTemperatures({
         days: 1,
-        deviceId: 'guid-1',
+        targetId: 'homeDevices_guid-1',
       })
 
       expect(temperatures).toBe(mockData)
@@ -2006,7 +1959,10 @@ describe('melCloudApp', () => {
         mockData,
       })
 
-      const signal = await app.getHomeSignal({ deviceId: 'guid-1', hour: 5 })
+      const signal = await app.getTargetSignal({
+        hour: 5,
+        targetId: 'homeDevices_guid-1',
+      })
 
       expect(signal).toBe(mockData)
     })
@@ -2020,9 +1976,9 @@ describe('melCloudApp', () => {
         type: Home.DeviceType.Atw,
       })
 
-      const temperatures = await app.getHomeTemperatures({
+      const temperatures = await app.getTargetTemperatures({
         days: 1,
-        deviceId: 'guid-1',
+        targetId: 'homeDevices_guid-1',
       })
 
       expect(temperatures).toBe(mockData)
@@ -2032,9 +1988,9 @@ describe('melCloudApp', () => {
       mockHomeFacadeManagerGetById.mockReturnValue(null)
       await app.onInit()
 
-      await expect(app.getHomeSignal({ deviceId: 'missing' })).rejects.toThrow(
-        'errors.deviceNotFound',
-      )
+      await expect(
+        app.getTargetSignal({ targetId: 'homeDevices_missing' }),
+      ).rejects.toThrow('errors.deviceNotFound')
     })
 
     it('should delegate hourly temperatures to the ATW facade', async () => {
@@ -2046,9 +2002,9 @@ describe('melCloudApp', () => {
         type: Home.DeviceType.Atw,
       })
 
-      const temperatures = await app.getHomeHourlyTemperatures({
-        deviceId: 'guid-1',
+      const temperatures = await app.getTargetHourlyTemperatures({
         hour: 10,
+        targetId: 'homeDevices_guid-1',
       })
 
       expect(temperatures).toBe(mockData)
@@ -2063,14 +2019,16 @@ describe('melCloudApp', () => {
         type: Home.DeviceType.Atw,
       })
 
-      const operationModes = await app.getHomeOperationModes({
+      const operationModes = await app.getTargetOperationModes({
         days: 7,
-        deviceId: 'guid-1',
+        targetId: 'homeDevices_guid-1',
       })
 
       expect(operationModes).toBe(mockData)
     })
 
+    // The ATW-only charts pin the Home leg: absence stays absent, so a
+    // Home ATA target answers not-found instead of an emulated chart.
     it('should reject an ATW-only chart for an ATA device', async () => {
       const mockData = mock<ReportChartPieOptions>()
       await initWithHomeDeviceFacade({
@@ -2080,72 +2038,21 @@ describe('melCloudApp', () => {
       })
 
       await expect(
-        app.getHomeOperationModes({ days: 7, deviceId: 'guid-1' }),
+        app.getTargetOperationModes({
+          days: 7,
+          targetId: 'homeDevices_guid-1',
+        }),
       ).rejects.toThrow('errors.deviceNotFound')
     })
   })
 
-  describe('home device zones', () => {
-    it('should suffix the building and sort for the flat pickers', async () => {
-      stubHomeZones([
-        { buildingName: 'Vinkenstraat 22', id: 'b', name: 'Garage' },
-        { buildingName: 'Verkstan', id: 'a', name: 'Garage ' },
-      ])
-      await app.onInit()
-
-      // Same-named devices on different buildings stay tellable apart;
-      // wire names are trimmed before suffixing.
-      expect(app.getHomeDeviceZones()).toStrictEqual([
-        {
-          buildingName: 'Verkstan',
-          deviceType: 'ata',
-          id: 'a',
-          level: 1,
-          model: 'homeDevices',
-          name: 'Garage (Verkstan)',
-        },
-        {
-          buildingName: 'Vinkenstraat 22',
-          deviceType: 'ata',
-          id: 'b',
-          level: 1,
-          model: 'homeDevices',
-          name: 'Garage (Vinkenstraat 22)',
-        },
-      ])
-    })
-
-    it('should filter by device type when one is given', async () => {
-      stubHomeZones([
-        {
-          buildingName: 'Huis',
-          deviceType: 'atw',
-          id: 'atw-1',
-          name: 'Warmtepomp',
-        },
-      ])
-      await app.onInit()
-
-      expect(app.getHomeDeviceZones(Home.DeviceType.Atw)).toStrictEqual([
-        {
-          buildingName: 'Huis',
-          deviceType: 'atw',
-          id: 'atw-1',
-          level: 1,
-          model: 'homeDevices',
-          name: 'Warmtepomp (Huis)',
-        },
-      ])
-      expect(mockHomeFacadeManagerGetZones).toHaveBeenCalledWith({
-        type: Home.DeviceType.Atw,
-      })
-    })
-  })
-
-  describe('classic device zones', () => {
-    it('should keep only the device leaves, suffixed and sorted', async () => {
-      // The shared source flattens the whole tree, each zone stamped with its
-      // building; the chart pickers keep just the devices.
+  describe('device zones', () => {
+    it('should merge both dialects into one suffixed, sorted device list', async () => {
+      // The Classic source flattens the whole tree, each zone stamped
+      // with its building; only the device leaves survive. Same-named
+      // devices on different buildings stay tellable apart, wire names
+      // are trimmed before suffixing, and the two dialects sort as one
+      // alphabetical list.
       mockFacadeManagerGetZones.mockReturnValue([
         {
           buildingName: 'Casa',
@@ -2171,15 +2078,35 @@ describe('melCloudApp', () => {
           name: 'Hydrobox',
         },
       ])
+      stubHomeZones([
+        { buildingName: 'Vinkenstraat 22', id: 'b', name: 'Garage' },
+        { buildingName: 'Verkstan', id: 'a', name: 'Garage ' },
+      ])
       await app.onInit()
 
-      expect(app.getClassicDeviceZones()).toStrictEqual([
+      expect(app.getDeviceZones()).toStrictEqual([
         {
           deviceType: 'ata',
           id: 20,
           level: 1,
           model: 'devices',
           name: 'Garage (Verkstan)',
+        },
+        {
+          buildingName: 'Verkstan',
+          deviceType: 'ata',
+          id: 'a',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Garage (Verkstan)',
+        },
+        {
+          buildingName: 'Vinkenstraat 22',
+          deviceType: 'ata',
+          id: 'b',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Garage (Vinkenstraat 22)',
         },
         {
           deviceType: 'atw',
@@ -2189,33 +2116,6 @@ describe('melCloudApp', () => {
           name: 'Hydrobox (Casa)',
         },
       ])
-    })
-
-    it('should narrow the source to a device type when one is given', async () => {
-      mockFacadeManagerGetZones.mockReturnValue([
-        {
-          buildingName: 'Huis',
-          deviceType: 'ata',
-          id: 30,
-          level: 1,
-          model: 'devices',
-          name: 'AC',
-        },
-      ])
-      await app.onInit()
-
-      expect(app.getClassicDeviceZones(Classic.DeviceType.Ata)).toStrictEqual([
-        {
-          deviceType: 'ata',
-          id: 30,
-          level: 1,
-          model: 'devices',
-          name: 'AC (Huis)',
-        },
-      ])
-      expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
-        type: Classic.DeviceType.Ata,
-      })
     })
   })
 
@@ -2257,7 +2157,7 @@ describe('melCloudApp', () => {
       expect(app.homeApi).toBe(mockHomeApiInstance)
     })
 
-    it('should delegate homeAuthenticate to homeApi authenticate', async () => {
+    it('should delegate the home login to homeApi authenticate', async () => {
       mockHomeApiInstance.authenticate.mockResolvedValue()
       await app.onInit()
       const credentials = mock<LoginCredentials>()
@@ -2368,11 +2268,7 @@ describe('melCloudApp', () => {
       )
 
       await expect(
-        app.updateClassicAtaState({
-          state: mock<Classic.GroupState>(),
-          zoneId: '1',
-          zoneType: 'buildings',
-        }),
+        app.updateTargetAtaState('buildings_1', mock<Classic.GroupState>()),
       ).resolves.toBeUndefined()
     })
 
@@ -2385,11 +2281,7 @@ describe('melCloudApp', () => {
       )
 
       await expect(
-        app.updateClassicAtaState({
-          state: mock<Classic.GroupState>(),
-          zoneId: '1',
-          zoneType: 'buildings',
-        }),
+        app.updateTargetAtaState('buildings_1', mock<Classic.GroupState>()),
       ).rejects.toThrow('temp: Invalid value')
     })
   })

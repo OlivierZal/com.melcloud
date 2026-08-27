@@ -85,8 +85,8 @@ describe('ata value manager', () => {
     const { api, manager } = await createManager({
       routes: {
         ...widgetRoutes(),
-        'GET /home/buildings/b_1/ata': {},
-        'GET /home/devices/ata_1/ata': {},
+        'GET /targets/homeBuildings_b_1/ata': {},
+        'GET /targets/homeDevices_ata_1/ata': {},
       },
     })
     const zone = getSelect('zones')
@@ -102,8 +102,8 @@ describe('ata value manager', () => {
     }
     const paths = harnessPaths(api)
 
-    expect(paths).toContain('GET /home/buildings/b_1/ata')
-    expect(paths).toContain('GET /home/devices/ata_1/ata')
+    expect(paths).toContain('GET /targets/homeBuildings_b_1/ata')
+    expect(paths).toContain('GET /targets/homeDevices_ata_1/ata')
   })
 
   it('should apply a matching default zone and skip the rest', async () => {
@@ -319,7 +319,7 @@ describe('ata value manager', () => {
     const { manager } = await createManager({
       routes: {
         ...widgetRoutes(),
-        'GET /classic/zones/buildings/1/ata': {
+        'GET /targets/buildings_1/ata': {
           ...groupStateFixture(),
           SetTemperature: 22.3,
         },
@@ -362,7 +362,7 @@ describe('ata value manager', () => {
     const { manager } = await createManager({ routes })
     // The zone starts without a fan-speed reading: the control opens
     // blank, and blank-vs-absent must read as pristine, not as an edit.
-    routes['GET /classic/zones/buildings/1/ata'] = {
+    routes['GET /targets/buildings_1/ata'] = {
       OperationMode: 1,
       Power: true,
       SetTemperature: 22,
@@ -372,7 +372,7 @@ describe('ata value manager', () => {
     const fanSpeed = getInput('FanSpeed')
     fanSpeed.value = '5'
     fanSpeed.dispatchEvent(new Event('change', { bubbles: true }))
-    routes['GET /classic/zones/buildings/1/ata'] = {
+    routes['GET /targets/buildings_1/ata'] = {
       ...groupStateFixture(),
       Power: false,
     }
@@ -392,7 +392,7 @@ describe('ata value manager', () => {
     const { manager } = await createManager({ routes })
     await manager.fetchValues()
     commit(getSelect('SetTemperature'), '25')
-    routes['GET /classic/zones/buildings/1/ata'] = {
+    routes['GET /targets/buildings_1/ata'] = {
       ...groupStateFixture(),
       SetTemperature: 25,
     }
@@ -403,7 +403,7 @@ describe('ata value manager', () => {
     expect(getButtonDisabled('apply_values_melcloud')).toBe(true)
 
     // Caught up means released: the control follows the stream again.
-    routes['GET /classic/zones/buildings/1/ata'] = {
+    routes['GET /targets/buildings_1/ata'] = {
       ...groupStateFixture(),
       SetTemperature: 23,
     }
@@ -417,7 +417,7 @@ describe('ata value manager', () => {
     const { manager } = await createManager({ routes })
     await manager.fetchValues()
     commit(getSelect('SetTemperature'), '12')
-    routes['GET /classic/zones/buildings/1/ata'] = {
+    routes['GET /targets/buildings_1/ata'] = {
       ...groupStateFixture(),
       OperationMode: 3,
     }

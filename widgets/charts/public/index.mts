@@ -1,11 +1,8 @@
 import type {
-  HomeDeviceZone,
   ReportChartBand,
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
-import type * as Classic from '@olivierzal/melcloud-api/classic'
-import type * as Home from '@olivierzal/melcloud-api/home'
 import { createOption, getDiv, getSelect } from '@olivierzal/homey-kit/dom'
 import {
   fireAndForget,
@@ -13,10 +10,6 @@ import {
   surfaceError,
   trySetDocumentLanguage,
 } from '@olivierzal/homey-kit/webview'
-import {
-  ClassicDeviceType,
-  HomeDeviceType,
-} from '@olivierzal/melcloud-api/constants'
 import {
   type ChartConfiguration,
   type ChartData,
@@ -40,6 +33,7 @@ import {
 } from 'chart.js'
 import { Temporal } from 'temporal-polyfill'
 
+import type { FlatDeviceZone } from '../../../types/zone.mts'
 import {
   hideInitError,
   showInitError,
@@ -47,7 +41,7 @@ import {
 } from '../../../public/dom.mts'
 import { watchWidgetFreshness } from '../../../public/webview-freshness-boot.mts'
 import { type Homey, homeyApiGet } from '../../../public/widget.mts'
-import { getZoneId, getZonePath } from '../../../public/zones.mts'
+import { getZoneId } from '../../../public/zones.mts'
 import {
   type DaysQuery,
   type ChartsWidgetSettings as HomeySettings,
@@ -70,8 +64,6 @@ const PERCENT_FACTOR = 100
 // Slices narrower than this angle get no percentage label.
 const PIE_LABEL_MIN_ANGLE_DEGREES = 10
 const PIE_LABEL_RADIUS_RATIO = 0.8
-
-type ChartDeviceZone = Classic.DeviceZone | HomeDeviceZone
 
 interface ChartSelection {
   readonly chart: HomeySettings['chart']
@@ -300,11 +292,6 @@ const getDayValues = (defaultDays: number): number[] =>
       (days) => Number.isSafeInteger(days) && days > 0 && days <= DAYS_MAX,
     )
     .toSorted((first, second) => first - second)
-
-// The per-vendor device lists arrive sorted, their concatenation is
-// not: re-sort so Classic and Home read as one alphabetical list.
-const byDeviceName = (zone: ChartDeviceZone, other: ChartDeviceZone): number =>
-  zone.name.localeCompare(other.name)
 
 // The rolling last-24-hours picker entry, localized like the day
 // counts (no locale files needed).
@@ -773,8 +760,6 @@ const getChartConfig = (
 
 // ── Chart data fetching ──
 
-const HOME_DEVICES_PATH_PREFIX = 'homeDevices/'
-
 const fetchChartData = async (
   homey: Homey,
   { chart, days, zoneValue }: ChartSelection,
@@ -782,13 +767,9 @@ const fetchChartData = async (
   const daysQuery = chartsWithDays.has(chart)
     ? `?${new URLSearchParams({ days: String(days) } satisfies DaysQuery)}`
     : ''
-  const isHome = zoneValue.startsWith(HOME_DEVICES_PATH_PREFIX)
-  const path = isHome
-    ? `home/devices/${zoneValue.slice(HOME_DEVICES_PATH_PREFIX.length)}`
-    : `classic/${zoneValue}`
   return homeyApiGet<ReportChartLineOptions | ReportChartPieOptions>(
     homey,
-    `/${path}/logs/${chart.replaceAll('_', '-')}${daysQuery}`,
+    `/targets/${zoneValue}/logs/${chart.replaceAll('_', '-')}${daysQuery}`,
   )
 }
 
@@ -920,7 +901,7 @@ class ChartWidget {
     devicesForChart,
   }: {
     canUseLast24Hours: () => boolean
-    devicesForChart: () => readonly ChartDeviceZone[]
+    devicesForChart: () => readonly FlatDeviceZone[]
   }): void {
     this.#chartSelect.addEventListener('change', () => {
       this.#repopulateZoneOptions(devicesForChart())
@@ -948,7 +929,7 @@ class ChartWidget {
   // midnight-anchored windows start near-empty each morning. The one
   // exception is the Classic ATW report, whose wire never buckets
   // energy under a day.
-  #buildLast24HoursGate(classicAtw: readonly ChartDeviceZone[]): () => boolean {
+  #buildLast24HoursGate(classicAtw: readonly FlatDeviceZone[]): () => boolean {
     const dailyOnlyZones = new Set(
       classicAtw.map(({ id, model }) => getZoneId(id, model)),
     )
@@ -1031,19 +1012,6 @@ class ChartWidget {
     }
   }
 
-  // One fetcher for both vendors: `String(type)` is an identity on the
-  // Home string enum and stringifies the Classic numeric one.
-  async #fetchDeviceZones<T extends ChartDeviceZone>(
-    vendor: 'classic' | 'home',
-    type?: Classic.DeviceType | Home.DeviceType,
-  ): Promise<T[]> {
-    const typeQuery =
-      type === undefined
-        ? ''
-        : `?${new URLSearchParams({ type: String(type) })}`
-    return homeyApiGet<T[]>(this.#homey, `/${vendor}/devices${typeQuery}`)
-  }
-
   // Resolves to null when a picker change landed while the fetch was in
   // flight: the response is stale, and the change listener's own draw
   // renders the new selection.
@@ -1065,40 +1033,37 @@ class ChartWidget {
   }
 
   async #initControls(): Promise<void> {
-    const [classicAll, classicAta, classicAtw, homeAll, homeAtw] =
-      await Promise.all([
-        this.#fetchDeviceZones<Classic.DeviceZone>('classic'),
-        this.#fetchDeviceZones<Classic.DeviceZone>(
-          'classic',
-          ClassicDeviceType.Ata,
-        ),
-        this.#fetchDeviceZones<Classic.DeviceZone>(
-          'classic',
-          ClassicDeviceType.Atw,
-        ),
-        this.#fetchDeviceZones<HomeDeviceZone>('home'),
-        this.#fetchDeviceZones<HomeDeviceZone>('home', HomeDeviceType.Atw),
-      ])
+    // ONE fetch: the app serves both dialects' device leaves as a single
+    // alphabetical list, each tagged with its `deviceType` and `model`,
+    // so every line-up below is a filter that preserves the order.
+    const devices = await homeyApiGet<FlatDeviceZone[]>(this.#homey, '/devices')
     // Per-chart device line-up: temperature and signal history exist for
     // every device; the hourly temperatures and the operation modes are
     // ATW-only on the Home side (comfort-graph) and, for the hourly one,
     // on the Classic side too; the energy report skips Classic ERV
-    // (no energy data). Classic and Home merge into one alphabetical
-    // list.
+    // (no energy data).
     const devicesByChart: Record<
       HomeySettings['chart'],
-      readonly ChartDeviceZone[]
+      readonly FlatDeviceZone[]
     > = {
-      hourly_temperatures: [...classicAtw, ...homeAtw].toSorted(byDeviceName),
-      operation_modes: [...classicAll, ...homeAtw].toSorted(byDeviceName),
-      report: [...classicAta, ...classicAtw, ...homeAll].toSorted(byDeviceName),
-      signal: [...classicAll, ...homeAll].toSorted(byDeviceName),
-      temperatures: [...classicAll, ...homeAll].toSorted(byDeviceName),
+      hourly_temperatures: devices.filter((zone) => zone.deviceType === 'atw'),
+      operation_modes: devices.filter(
+        (zone) => zone.model === 'devices' || zone.deviceType === 'atw',
+      ),
+      report: devices.filter(
+        (zone) => !(zone.model === 'devices' && zone.deviceType === 'erv'),
+      ),
+      signal: devices,
+      temperatures: devices,
     }
     if (Object.values(devicesByChart).some((list) => list.length > 0)) {
-      const canUseLast24Hours = this.#buildLast24HoursGate(classicAtw)
+      const canUseLast24Hours = this.#buildLast24HoursGate(
+        devices.filter(
+          (zone) => zone.model === 'devices' && zone.deviceType === 'atw',
+        ),
+      )
       this.#populateChartOptions(devicesByChart)
-      const devicesForChart = (): readonly ChartDeviceZone[] =>
+      const devicesForChart = (): readonly FlatDeviceZone[] =>
         devicesByChart[this.#getChart()]
       this.#repopulateZoneOptions(devicesForChart())
       this.#populateDayOptions(canUseLast24Hours())
@@ -1112,7 +1077,7 @@ class ChartWidget {
   // Home-only ATA account); the picker then falls back to its first option
   // if the configured default was omitted.
   #populateChartOptions(
-    devicesByChart: Record<HomeySettings['chart'], readonly ChartDeviceZone[]>,
+    devicesByChart: Record<HomeySettings['chart'], readonly FlatDeviceZone[]>,
   ): void {
     for (const chart of CHARTS) {
       if (devicesByChart[chart].length > 0) {
@@ -1155,7 +1120,7 @@ class ChartWidget {
     return {
       chart: this.#getChart(),
       days: Number(this.#daySelect.value),
-      zoneValue: getZonePath(this.#zoneSelect.value),
+      zoneValue: this.#zoneSelect.value,
     }
   }
 
@@ -1197,7 +1162,7 @@ class ChartWidget {
   // temperatures), so the options are rebuilt on every chart change: the
   // previous selection wins, then the configured default, then the first
   // option as the final fallback.
-  #repopulateZoneOptions(devices: readonly ChartDeviceZone[]): void {
+  #repopulateZoneOptions(devices: readonly FlatDeviceZone[]): void {
     const previous = this.#zoneSelect.value
     this.#zoneSelect.replaceChildren()
     for (const { id, model, name } of devices) {

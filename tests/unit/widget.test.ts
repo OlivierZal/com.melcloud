@@ -39,9 +39,9 @@ describe('widget transport', () => {
 
   it('should put a body', async () => {
     const { api, homey } = createWidgetHomey()
-    await homeyApiPut(homey, '/classic/zones/devices/1/ata', { Power: true })
+    await homeyApiPut(homey, '/targets/devices_1/ata', { Power: true })
 
-    expect(api).toHaveBeenCalledWith('PUT', '/classic/zones/devices/1/ata', {
+    expect(api).toHaveBeenCalledWith('PUT', '/targets/devices_1/ata', {
       Power: true,
     })
   })

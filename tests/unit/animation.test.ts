@@ -280,10 +280,8 @@ describe('animation controller', () => {
     const { container, controller } = createController({
       routes: {
         ...widgetRoutes(),
-        'GET /classic/zones/devices/11/ata/details?status=on': {
-          // The unknown vocabulary entry maps to no scene element.
-          OperationMode: [HEAT, COOL, 99],
-        },
+        // The unknown vocabulary entry maps to no scene element.
+        'GET /targets/devices_11/ata/modes': [HEAT, COOL, 99],
       },
     })
     addZone('devices_11')
@@ -301,7 +299,7 @@ describe('animation controller', () => {
     const { container, controller } = createController({
       routes: {
         ...widgetRoutes(),
-        'GET /home/buildings/b_1/ata/modes': [COOL],
+        'GET /targets/homeBuildings_b_1/ata/modes': [COOL],
       },
     })
     addZone('homeBuildings_b_1')
@@ -315,9 +313,7 @@ describe('animation controller', () => {
   it('should keep the running scene when the mode fetch fails', async () => {
     const { container, controller } = createController({
       failures: {
-        'GET /classic/zones/devices/11/ata/details?status=on': new Error(
-          'modes down',
-        ),
+        'GET /targets/devices_11/ata/modes': new Error('modes down'),
       },
     })
     addZone('devices_11')
@@ -335,14 +331,13 @@ describe('animation controller', () => {
     const modes = Promise.withResolvers<unknown>()
     const { container, controller } = createController({
       deferredRoutes: {
-        'GET /classic/zones/devices/11/ata/details?status=on': async () =>
-          modes.promise,
+        'GET /targets/devices_11/ata/modes': async () => modes.promise,
       },
     })
     addZone('devices_11')
     const slower = controller.applyAnimation(state({ OperationMode: MIXED }))
     await controller.applyAnimation(state({ OperationMode: HEAT }))
-    modes.resolve({ OperationMode: [COOL] })
+    modes.resolve([COOL])
     await slower
     await waitForSpawnTicks()
 

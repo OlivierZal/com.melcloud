@@ -1,13 +1,9 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "api": {
-    "classicAuthenticate": {
+    "authenticate": {
       "method": "POST",
-      "path": "/classic/sessions"
-    },
-    "classicLogOut": {
-      "method": "DELETE",
-      "path": "/classic/sessions"
+      "path": "/sessions/:api"
     },
     "getClassicBuildings": {
       "method": "GET",
@@ -53,21 +49,13 @@
       "method": "GET",
       "path": "/webview-hashes"
     },
-    "homeAuthenticate": {
-      "method": "POST",
-      "path": "/home/sessions"
+    "isAuthenticated": {
+      "method": "GET",
+      "path": "/sessions/:api"
     },
-    "homeLogOut": {
+    "logOut": {
       "method": "DELETE",
-      "path": "/home/sessions"
-    },
-    "isClassicAuthenticated": {
-      "method": "GET",
-      "path": "/classic/sessions"
-    },
-    "isHomeAuthenticated": {
-      "method": "GET",
-      "path": "/home/sessions"
+      "path": "/sessions/:api"
     },
     "logWebviewBoot": {
       "method": "POST",
@@ -11227,37 +11215,25 @@
           "method": "GET",
           "path": "/classic/capabilities/ata"
         },
-        "getClassicAtaDetailedStates": {
-          "method": "GET",
-          "path": "/classic/zones/:zoneType/:zoneId/ata/details"
-        },
-        "getClassicAtaState": {
-          "method": "GET",
-          "path": "/classic/zones/:zoneType/:zoneId/ata"
-        },
         "getClassicBuildings": {
           "method": "GET",
           "path": "/classic/buildings"
-        },
-        "getHomeAtaState": {
-          "method": "GET",
-          "path": "/home/devices/:deviceId/ata"
         },
         "getHomeAtaTargets": {
           "method": "GET",
           "path": "/home/targets/ata"
         },
-        "getHomeBuildingAtaModes": {
-          "method": "GET",
-          "path": "/home/buildings/:buildingId/ata/modes"
-        },
-        "getHomeBuildingAtaState": {
-          "method": "GET",
-          "path": "/home/buildings/:buildingId/ata"
-        },
         "getLanguage": {
           "method": "GET",
           "path": "/language"
+        },
+        "getTargetAtaModes": {
+          "method": "GET",
+          "path": "/targets/:targetId/ata/modes"
+        },
+        "getTargetAtaState": {
+          "method": "GET",
+          "path": "/targets/:targetId/ata"
         },
         "getWebviewHashes": {
           "method": "GET",
@@ -11267,17 +11243,9 @@
           "method": "POST",
           "path": "/boot-error"
         },
-        "updateClassicAtaState": {
+        "updateTargetAtaState": {
           "method": "PUT",
-          "path": "/classic/zones/:zoneType/:zoneId/ata"
-        },
-        "updateHomeAtaState": {
-          "method": "PUT",
-          "path": "/home/devices/:deviceId/ata"
-        },
-        "updateHomeBuildingAtaState": {
-          "method": "PUT",
-          "path": "/home/buildings/:buildingId/ata"
+          "path": "/targets/:targetId/ata"
         }
       },
       "name": {
@@ -11341,57 +11309,33 @@
     },
     "charts": {
       "api": {
-        "getClassicDevices": {
+        "getDevices": {
           "method": "GET",
-          "path": "/classic/devices"
-        },
-        "getClassicEnergyReport": {
-          "method": "GET",
-          "path": "/classic/devices/:deviceId/logs/report"
-        },
-        "getClassicHourlyTemperatures": {
-          "method": "GET",
-          "path": "/classic/devices/:deviceId/logs/hourly-temperatures"
-        },
-        "getClassicOperationModes": {
-          "method": "GET",
-          "path": "/classic/devices/:deviceId/logs/operation-modes"
-        },
-        "getClassicSignal": {
-          "method": "GET",
-          "path": "/classic/devices/:deviceId/logs/signal"
-        },
-        "getClassicTemperatures": {
-          "method": "GET",
-          "path": "/classic/devices/:deviceId/logs/temperatures"
-        },
-        "getHomeDevices": {
-          "method": "GET",
-          "path": "/home/devices"
-        },
-        "getHomeEnergyReport": {
-          "method": "GET",
-          "path": "/home/devices/:deviceId/logs/report"
-        },
-        "getHomeHourlyTemperatures": {
-          "method": "GET",
-          "path": "/home/devices/:deviceId/logs/hourly-temperatures"
-        },
-        "getHomeOperationModes": {
-          "method": "GET",
-          "path": "/home/devices/:deviceId/logs/operation-modes"
-        },
-        "getHomeSignal": {
-          "method": "GET",
-          "path": "/home/devices/:deviceId/logs/signal"
-        },
-        "getHomeTemperatures": {
-          "method": "GET",
-          "path": "/home/devices/:deviceId/logs/temperatures"
+          "path": "/devices"
         },
         "getLanguage": {
           "method": "GET",
           "path": "/language"
+        },
+        "getTargetEnergyReport": {
+          "method": "GET",
+          "path": "/targets/:targetId/logs/report"
+        },
+        "getTargetHourlyTemperatures": {
+          "method": "GET",
+          "path": "/targets/:targetId/logs/hourly-temperatures"
+        },
+        "getTargetOperationModes": {
+          "method": "GET",
+          "path": "/targets/:targetId/logs/operation-modes"
+        },
+        "getTargetSignal": {
+          "method": "GET",
+          "path": "/targets/:targetId/logs/signal"
+        },
+        "getTargetTemperatures": {
+          "method": "GET",
+          "path": "/targets/:targetId/logs/temperatures"
         },
         "getWebviewHashes": {
           "method": "GET",
