@@ -1289,7 +1289,13 @@ describe('melCloudApp', () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
           entries: [
-            { at: '2026-03-28T14:30:00.000Z', deviceId: 42, message: 'test' },
+            {
+              at: '2026-03-28T14:30:00.000Z',
+              atEpochMs: Temporal.Instant.from('2026-03-28T14:30:00.000Z')
+                .epochMilliseconds,
+              deviceId: 42,
+              message: 'test',
+            },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -1349,10 +1355,17 @@ describe('melCloudApp', () => {
           entries: [
             {
               at: '0001-01-01T00:09:00',
+              atEpochMs: null,
               deviceId: 42,
               message: 'Unknown Error',
             },
-            { at: '2026-03-28T14:30:00.000Z', deviceId: 42, message: 'test' },
+            {
+              at: '2026-03-28T14:30:00.000Z',
+              atEpochMs: Temporal.Instant.from('2026-03-28T14:30:00.000Z')
+                .epochMilliseconds,
+              deviceId: 42,
+              message: 'test',
+            },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -1375,7 +1388,13 @@ describe('melCloudApp', () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
           entries: [
-            { at: '2026-03-28T14:30:00.000Z', deviceId: 42, message: 'test' },
+            {
+              at: '2026-03-28T14:30:00.000Z',
+              atEpochMs: Temporal.Instant.from('2026-03-28T14:30:00.000Z')
+                .epochMilliseconds,
+              deviceId: 42,
+              message: 'test',
+            },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -1457,7 +1476,13 @@ describe('melCloudApp', () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
           entries: [
-            { at: '2026-03-28T14:30:00.000Z', deviceId: 42, message: 'test' },
+            {
+              at: '2026-03-28T14:30:00.000Z',
+              atEpochMs: Temporal.Instant.from('2026-03-28T14:30:00.000Z')
+                .epochMilliseconds,
+              deviceId: 42,
+              message: 'test',
+            },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -1491,7 +1516,14 @@ describe('melCloudApp', () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
           entries: [
-            { at: '2026-03-28T14:30:00', deviceId: 999, message: 'test' },
+            {
+              at: '2026-03-28T14:30:00',
+              atEpochMs: Temporal.ZonedDateTime.from(
+                '2026-03-28T14:30:00[Europe/Paris]',
+              ).epochMilliseconds,
+              deviceId: 999,
+              message: 'test',
+            },
           ],
           fromDate: '2026-03-01',
           nextFromDate: '2026-03-15',
@@ -2124,6 +2156,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Verkstan',
+          deviceType: 'ata',
           id: 20,
           level: 1,
           model: 'devices',
@@ -2131,6 +2164,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Casa',
+          deviceType: 'atw',
           id: 10,
           level: 1,
           model: 'devices',
@@ -2140,8 +2174,20 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       expect(app.getClassicDeviceZones()).toStrictEqual([
-        { id: 20, level: 1, model: 'devices', name: 'Garage (Verkstan)' },
-        { id: 10, level: 1, model: 'devices', name: 'Hydrobox (Casa)' },
+        {
+          deviceType: 'ata',
+          id: 20,
+          level: 1,
+          model: 'devices',
+          name: 'Garage (Verkstan)',
+        },
+        {
+          deviceType: 'atw',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Hydrobox (Casa)',
+        },
       ])
     })
 
@@ -2149,6 +2195,7 @@ describe('melCloudApp', () => {
       mockFacadeManagerGetZones.mockReturnValue([
         {
           buildingName: 'Huis',
+          deviceType: 'ata',
           id: 30,
           level: 1,
           model: 'devices',
@@ -2158,7 +2205,13 @@ describe('melCloudApp', () => {
       await app.onInit()
 
       expect(app.getClassicDeviceZones(Classic.DeviceType.Ata)).toStrictEqual([
-        { id: 30, level: 1, model: 'devices', name: 'AC (Huis)' },
+        {
+          deviceType: 'ata',
+          id: 30,
+          level: 1,
+          model: 'devices',
+          name: 'AC (Huis)',
+        },
       ])
       expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
         type: Classic.DeviceType.Ata,
@@ -3357,6 +3410,7 @@ describe('melCloudApp', () => {
       mockFacadeManagerGetZones.mockReturnValue([
         {
           buildingName: 'Casa',
+          deviceType: 'ata',
           id: 10,
           level: 1,
           model: 'devices',
@@ -3364,6 +3418,7 @@ describe('melCloudApp', () => {
         },
         {
           buildingName: 'Casa',
+          deviceType: 'ata',
           id: 11,
           level: 1,
           model: 'devices',
@@ -3393,7 +3448,13 @@ describe('melCloudApp', () => {
           model: 'homeDevices',
           name: 'Device 1 (Antwerpen)',
         },
-        { id: 10, level: 1, model: 'devices', name: 'Device 1 (Casa)' },
+        {
+          deviceType: 'ata',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Device 1 (Casa)',
+        },
       ])
     })
   })

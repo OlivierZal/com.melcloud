@@ -408,8 +408,9 @@ export default class MELCloudApp extends App {
   // suffixed with its building, drawn from the shared zone source.
   public getClassicDeviceZones(type?: Classic.DeviceType): Classic.Zone[] {
     return this.getClassicTargets(type)
-      .filter(({ model }) => model === 'devices')
+      .filter((node) => node.model === 'devices')
       .map((node) => ({
+        deviceType: node.deviceType,
         id: node.id,
         level: node.level,
         model: 'devices' as const,
