@@ -1888,5 +1888,20 @@
     "pl": "Poprawka bezpieczeństwa: Twoje dane logowania mogły trafić do dziennika aplikacji, a stamtąd do udostępnianego raportu diagnostycznego. Konta bez domu w MELCloud Home nie powodują już powtarzających się błędów logowania.",
     "ru": "Исправление безопасности: ваши данные для входа могли попасть в журнал приложения, а оттуда — в диагностический отчёт, которым вы делитесь. Учётные записи без дома в MELCloud Home больше не вызывают повторяющихся ошибок входа.",
     "sv": "Säkerhetsfix: dina inloggningsuppgifter kunde skrivas till appens logg och därifrån hamna i en diagnosrapport som du delar. Konton utan ett MELCloud Home-hem orsakar inte längre upprepade inloggningsfel."
+  },
+  "46.6.3": {
+    "ar": "تعمل إعدادات الحماية من الصقيع ووضع العطلة الآن أيضًا في المباني المشتركة معك.",
+    "da": "Frostbeskyttelse og ferietilstand virker nu også i bygninger, der er delt med dig.",
+    "de": "Frostschutz- und Urlaubsmodus-Einstellungen funktionieren jetzt auch in Gebäuden, die mit dir geteilt wurden.",
+    "en": "Frost-protection and holiday-mode settings now also work in buildings shared with you.",
+    "es": "Los ajustes de protección antiheladas y modo vacaciones ahora también funcionan en edificios compartidos contigo.",
+    "fr": "Les réglages de protection antigel et du mode vacances fonctionnent désormais aussi dans les bâtiments partagés avec vous.",
+    "it": "Le impostazioni di protezione antigelo e modalità vacanza ora funzionano anche negli edifici condivisi con te.",
+    "ko": "서리 방지 및 휴가 모드 설정이 이제 공유된 건물에서도 작동합니다.",
+    "nl": "Vorstbeveiliging- en vakantiemodus-instellingen werken nu ook in gebouwen die met je zijn gedeeld.",
+    "no": "Frostbeskyttelse- og feriemodusinnstillinger fungerer nå også i bygninger som er delt med deg.",
+    "pl": "Ustawienia ochrony przed mrozem i trybu wakacyjnego działają teraz także w budynkach udostępnionych Tobie.",
+    "ru": "Настройки защиты от замерзания и режима отпуска теперь работают и в зданиях, к которым вам предоставлен доступ.",
+    "sv": "Frostskydds- och semesterlägesinställningar fungerar nu även i byggnader som delats med dig."
   }
 }
