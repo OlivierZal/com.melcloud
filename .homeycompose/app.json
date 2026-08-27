@@ -1,12 +1,8 @@
 {
   "api": {
-    "classicAuthenticate": {
+    "authenticate": {
       "method": "POST",
-      "path": "/classic/sessions"
-    },
-    "classicLogOut": {
-      "method": "DELETE",
-      "path": "/classic/sessions"
+      "path": "/sessions/:api"
     },
     "getClassicBuildings": {
       "method": "GET",
@@ -52,21 +48,13 @@
       "method": "GET",
       "path": "/webview-hashes"
     },
-    "homeAuthenticate": {
-      "method": "POST",
-      "path": "/home/sessions"
+    "isAuthenticated": {
+      "method": "GET",
+      "path": "/sessions/:api"
     },
-    "homeLogOut": {
+    "logOut": {
       "method": "DELETE",
-      "path": "/home/sessions"
-    },
-    "isClassicAuthenticated": {
-      "method": "GET",
-      "path": "/classic/sessions"
-    },
-    "isHomeAuthenticated": {
-      "method": "GET",
-      "path": "/home/sessions"
+      "path": "/sessions/:api"
     },
     "logWebviewBoot": {
       "method": "POST",

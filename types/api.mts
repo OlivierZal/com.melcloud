@@ -1,8 +1,8 @@
 import type {
   AggregatedHolidayModeState,
   AggregatedProtectionState,
+  BaseAPIAdapter,
   HolidayModeState,
-  LoginCredentials,
   ProtectionState,
 } from '@olivierzal/melcloud-api'
 
@@ -12,12 +12,14 @@ import type {
 export type Api = 'classic' | 'home'
 
 /**
- * Minimal API-client surface used by drivers during pairing/repair.
+ * Minimal API-client surface used by drivers during pairing/repair —
+ * the library's published adapter contract, narrowed to what pairing
+ * touches.
  */
-export interface AuthenticationAPI {
-  readonly authenticate: (credentials: LoginCredentials) => Promise<void>
-  readonly isAuthenticated: () => boolean
-}
+export type AuthenticationAPI = Pick<
+  BaseAPIAdapter,
+  'authenticate' | 'isAuthenticated'
+>
 
 /**
  * Holiday-mode window as the settings webview submits it: an absent

@@ -328,23 +328,57 @@ describe('api', () => {
     })
   })
 
-  describe('home authentication', () => {
-    it('should delegate to app.homeApi.authenticate with body', async () => {
+  describe('authentication', () => {
+    it('should delegate the classic login to app.classicApi.authenticate', async () => {
+      const credentials = mock<LoginCredentials>({
+        password: 'pass',
+        username: 'user',
+      })
+      mockClassicAuthenticate.mockResolvedValue()
+
+      await api.authenticate({
+        body: credentials,
+        homey,
+        params: { api: 'classic' },
+      })
+
+      expect(mockClassicAuthenticate).toHaveBeenCalledWith(credentials)
+      expect(mockHomeAuthenticate).not.toHaveBeenCalled()
+    })
+
+    it('should delegate the home login to app.homeApi.authenticate', async () => {
       mockHomeAuthenticate.mockResolvedValue()
       const body = mock<LoginCredentials>()
 
-      await api.homeAuthenticate({ body, homey })
+      await api.authenticate({ body, homey, params: { api: 'home' } })
 
       expect(mockHomeAuthenticate).toHaveBeenCalledWith(body)
+      expect(mockClassicAuthenticate).not.toHaveBeenCalled()
     })
 
-    it('should propagate errors from app.homeApi.authenticate', async () => {
+    it('should propagate authenticate errors', async () => {
       const error = new Error('invalid credentials')
-      mockHomeAuthenticate.mockRejectedValue(error)
+      mockClassicAuthenticate.mockRejectedValue(error)
 
       await expect(
-        api.homeAuthenticate({ body: mock<LoginCredentials>(), homey }),
+        api.authenticate({
+          body: mock<LoginCredentials>(),
+          homey,
+          params: { api: 'classic' },
+        }),
       ).rejects.toThrow(error)
+    })
+
+    it('should reject an unknown API id before touching any client', async () => {
+      await expect(
+        api.authenticate({
+          body: mock<LoginCredentials>(),
+          homey,
+          params: { api: 'legacy' },
+        }),
+      ).rejects.toThrow('Invalid API: legacy')
+      expect(mockClassicAuthenticate).not.toHaveBeenCalled()
+      expect(mockHomeAuthenticate).not.toHaveBeenCalled()
     })
   })
 
@@ -355,7 +389,11 @@ describe('api', () => {
       )
 
       await expect(
-        api.classicAuthenticate({ body: mock<LoginCredentials>(), homey }),
+        api.authenticate({
+          body: mock<LoginCredentials>(),
+          homey,
+          params: { api: 'classic' },
+        }),
       ).rejects.toThrow('settings.authenticate.rejected')
       expect(mockTranslate).toHaveBeenCalledWith(
         'settings.authenticate.rejected',
@@ -369,7 +407,11 @@ describe('api', () => {
       )
 
       await expect(
-        api.homeAuthenticate({ body: mock<LoginCredentials>(), homey }),
+        api.authenticate({
+          body: mock<LoginCredentials>(),
+          homey,
+          params: { api: 'home' },
+        }),
       ).rejects.toThrow('settings.authenticate.throttled')
       expect(mockTranslate).toHaveBeenCalledWith(
         'settings.authenticate.throttled',
@@ -380,72 +422,45 @@ describe('api', () => {
 
   describe('logout', () => {
     it('should delegate the Classic logout to app.classicApi.logOut', () => {
-      api.classicLogOut({ homey })
+      api.logOut({ homey, params: { api: 'classic' } })
 
       expect(mockClassicLogOut).toHaveBeenCalledTimes(1)
+      expect(mockHomeLogOut).not.toHaveBeenCalled()
     })
 
     it('should delegate the Home logout to app.homeApi.logOut', () => {
-      api.homeLogOut({ homey })
+      api.logOut({ homey, params: { api: 'home' } })
 
       expect(mockHomeLogOut).toHaveBeenCalledTimes(1)
+      expect(mockClassicLogOut).not.toHaveBeenCalled()
     })
   })
 
-  describe('classic session retrieval', () => {
-    it('should delegate to app.classicApi.ensureAuthenticated', async () => {
+  describe('session retrieval', () => {
+    it('should delegate the classic probe to app.classicApi.ensureAuthenticated', async () => {
       mockEnsureClassicAuthenticated.mockResolvedValue(true)
 
-      await expect(api.isClassicAuthenticated({ homey })).resolves.toBe(true)
+      await expect(
+        api.isAuthenticated({ homey, params: { api: 'classic' } }),
+      ).resolves.toBe(true)
       expect(mockEnsureClassicAuthenticated).toHaveBeenCalledTimes(1)
     })
 
-    it('should return false when not authenticated', async () => {
-      mockEnsureClassicAuthenticated.mockResolvedValue(false)
-
-      await expect(api.isClassicAuthenticated({ homey })).resolves.toBe(false)
-    })
-  })
-
-  describe('home session retrieval', () => {
-    it('should delegate the lazy self-heal to the SDK contract', async () => {
+    it('should delegate the home lazy self-heal to the SDK contract', async () => {
       mockEnsureHomeAuthenticated.mockResolvedValue(true)
 
-      const isAuthenticated = await api.isHomeAuthenticated({ homey })
-
-      expect(isAuthenticated).toBe(true)
+      await expect(
+        api.isAuthenticated({ homey, params: { api: 'home' } }),
+      ).resolves.toBe(true)
       expect(mockEnsureHomeAuthenticated).toHaveBeenCalledTimes(1)
     })
 
     it('should return false when the SDK cannot restore the session', async () => {
       mockEnsureHomeAuthenticated.mockResolvedValue(false)
 
-      const isAuthenticated = await api.isHomeAuthenticated({ homey })
-
-      expect(isAuthenticated).toBe(false)
-    })
-  })
-
-  describe('authentication', () => {
-    it('should delegate to app.classicApi.authenticate with body', async () => {
-      const credentials = mock<LoginCredentials>({
-        password: 'pass',
-        username: 'user',
-      })
-      mockClassicAuthenticate.mockResolvedValue()
-
-      await api.classicAuthenticate({ body: credentials, homey })
-
-      expect(mockClassicAuthenticate).toHaveBeenCalledWith(credentials)
-    })
-
-    it('should propagate errors from app.classicApi.authenticate', async () => {
-      const error = new Error('invalid credentials')
-      mockClassicAuthenticate.mockRejectedValue(error)
-
       await expect(
-        api.classicAuthenticate({ body: mock<LoginCredentials>(), homey }),
-      ).rejects.toThrow(error)
+        api.isAuthenticated({ homey, params: { api: 'home' } }),
+      ).resolves.toBe(false)
     })
   })
 

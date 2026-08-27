@@ -235,20 +235,20 @@ const errorLogFixture = (
 })
 
 const defaultRoutes = (): Record<string, unknown> => ({
-  'DELETE /classic/sessions': undefined,
-  'DELETE /home/sessions': undefined,
+  'DELETE /sessions/classic': undefined,
+  'DELETE /sessions/home': undefined,
   'GET /classic/buildings': classicBuildingsFixture(),
-  'GET /classic/sessions': true,
-  'GET /home/sessions': false,
   'GET /language': 'fr',
+  'GET /sessions/classic': true,
+  'GET /sessions/home': false,
   'GET /settings/devices': deviceSettingsFixture(),
   'GET /settings/drivers': driverSettingsFixture(),
   'GET /targets/buildings_1/settings/frost-protection': protectionFixture(),
   'GET /targets/buildings_1/settings/holiday-mode': holidayFixture(),
   'GET /webview-hashes': {},
   'POST /boot-error': undefined,
-  'POST /classic/sessions': undefined,
-  'POST /home/sessions': undefined,
+  'POST /sessions/classic': undefined,
+  'POST /sessions/home': undefined,
   'PUT /settings/devices': undefined,
 })
 
@@ -363,9 +363,9 @@ const bootHome = async (options: HarnessOptions = {}): Promise<Harness> =>
     ...options,
     routes: {
       ...defaultRoutes(),
-      'GET /classic/sessions': false,
-      'GET /home/sessions': true,
       'GET /home/targets': homeTargetsFixture(),
+      'GET /sessions/classic': false,
+      'GET /sessions/home': true,
       'GET /settings/devices': { 'home-melcloud': { always_on: true } },
       'GET /settings/drivers': {
         login: loginSettings(),
@@ -509,7 +509,7 @@ describe('settings page', () => {
 
     it('should hide the content when no account is signed in', async () => {
       const harness = await bootPage({
-        routes: { ...defaultRoutes(), 'GET /classic/sessions': false },
+        routes: { ...defaultRoutes(), 'GET /sessions/classic': false },
       })
 
       expect(getDiv('content').hidden).toBe(true)
@@ -538,9 +538,9 @@ describe('settings page', () => {
       await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /classic/sessions': false,
-          'GET /home/sessions': true,
           'GET /home/targets': homeTargetsFixture(),
+          'GET /sessions/classic': false,
+          'GET /sessions/home': true,
           'GET /settings/devices': { 'home-melcloud': { always_on: true } },
         },
       })
@@ -562,8 +562,8 @@ describe('settings page', () => {
       const harness = await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /classic/sessions': false,
-          'GET /home/sessions': true,
+          'GET /sessions/classic': false,
+          'GET /sessions/home': true,
           'GET /settings/devices': {},
         },
       })
@@ -589,7 +589,7 @@ describe('settings page', () => {
 
     it('should alert after ready when the boot load fails', async () => {
       const harness = await bootPage({
-        failures: { 'GET /classic/sessions': new Error('boot down') },
+        failures: { 'GET /sessions/classic': new Error('boot down') },
       })
 
       expect(harness.ready).toHaveBeenCalledTimes(1)
@@ -857,7 +857,7 @@ describe('settings page', () => {
   describe('credentials', () => {
     it('should sign in and reveal the account content', async () => {
       const harness = await bootPage({
-        routes: { ...defaultRoutes(), 'GET /classic/sessions': false },
+        routes: { ...defaultRoutes(), 'GET /sessions/classic': false },
       })
 
       expect(getDiv('content').hidden).toBe(true)
@@ -874,7 +874,7 @@ describe('settings page', () => {
       await settleDetached()
       await settleDetached()
 
-      expect(lastCallBody(harness, 'POST /classic/sessions')).toStrictEqual({
+      expect(lastCallBody(harness, 'POST /sessions/classic')).toStrictEqual({
         password: 'secret',
         username: 'user@example.com',
       })
@@ -889,7 +889,7 @@ describe('settings page', () => {
       getButton('authenticate').click()
       await settleDetached()
 
-      expect(lastCallBody(harness, 'POST /classic/sessions')).toStrictEqual({
+      expect(lastCallBody(harness, 'POST /sessions/classic')).toStrictEqual({
         password: 'secret',
         username: 'user@example.com',
       })
@@ -904,7 +904,7 @@ describe('settings page', () => {
       getButton('authenticate').dispatchEvent(new Event('click'))
       await settleDetached()
 
-      expect(calledPaths(harness)).not.toContain('POST /classic/sessions')
+      expect(calledPaths(harness)).not.toContain('POST /sessions/classic')
       expect(harness.alert).toHaveBeenCalledWith(
         'settings.authenticate.failure',
       )
@@ -912,7 +912,7 @@ describe('settings page', () => {
 
     it('should alert the classified reason when the login fails', async () => {
       const harness = await bootPage({
-        failures: { 'POST /classic/sessions': new Error('Wrong credentials') },
+        failures: { 'POST /sessions/classic': new Error('Wrong credentials') },
       })
       commit(getSelect('api'), 'classic')
       commit(getInput('username'), 'user@example.com')
@@ -926,7 +926,7 @@ describe('settings page', () => {
     it('should alert unverified when the session probe denies', async () => {
       const routes: Record<string, unknown> = {
         ...defaultRoutes(),
-        'GET /classic/sessions': false,
+        'GET /sessions/classic': false,
       }
       const harness = await bootPage({ routes })
       commit(getInput('username'), 'user@example.com')
@@ -943,7 +943,7 @@ describe('settings page', () => {
       const harness = await bootPage()
       // The probe only fails after boot: the login path reads it fresh.
       swapRoutes(harness, defaultRoutes(), {
-        'GET /home/sessions': new Error('probe down'),
+        'GET /sessions/home': new Error('probe down'),
       })
       commit(getSelect('api'), 'home')
       commit(getInput('username'), 'user@example.com')
@@ -971,8 +971,8 @@ describe('settings page', () => {
       commit(getInput('password'), 'secret')
       swapRoutes(harness, {
         ...defaultRoutes(),
-        'GET /home/sessions': true,
         'GET /home/targets': homeTargetsFixture(),
+        'GET /sessions/home': true,
       })
       getButton('authenticate').click()
       await settleDetached()
@@ -987,7 +987,7 @@ describe('settings page', () => {
       commit(getSelect('api'), 'home')
       commit(getInput('username'), 'home@example.com')
       commit(getInput('password'), 'secret')
-      swapRoutes(harness, { ...defaultRoutes(), 'GET /home/sessions': true })
+      swapRoutes(harness, { ...defaultRoutes(), 'GET /sessions/home': true })
       getButton('authenticate').click()
       await settleDetached()
 
@@ -1005,7 +1005,7 @@ describe('settings page', () => {
       commit(getInput('password'), 'secret')
       swapRoutes(
         harness,
-        { ...defaultRoutes(), 'GET /home/sessions': true },
+        { ...defaultRoutes(), 'GET /sessions/home': true },
         { 'GET /home/targets': new Error('targets down') },
       )
       getButton('authenticate').click()
@@ -1038,7 +1038,7 @@ describe('settings page', () => {
 
     it('should collapse the auth panel when both accounts settle', async () => {
       await bootPage({
-        routes: { ...defaultRoutes(), 'GET /home/sessions': true },
+        routes: { ...defaultRoutes(), 'GET /sessions/home': true },
         storedSettings: {
           homePassword: 'home-secret',
           homeUsername: 'home@example.com',
@@ -1054,8 +1054,8 @@ describe('settings page', () => {
       await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /home/sessions': true,
           'GET /home/targets': homeTargetsFixture(),
+          'GET /sessions/home': true,
           'GET /settings/devices': {
             ...deviceSettingsFixture(),
             'home-melcloud': { always_on: true },
@@ -1079,7 +1079,7 @@ describe('settings page', () => {
       // paired to it: the panel has no chore to show, and the form must
       // not open on an account the user never adopted.
       await bootPage({
-        routes: { ...defaultRoutes(), 'GET /home/sessions': false },
+        routes: { ...defaultRoutes(), 'GET /sessions/home': false },
         storedSettings: {
           password: 'classic-secret',
           username: 'classic@example.com',
@@ -1094,7 +1094,7 @@ describe('settings page', () => {
       await bootPage({
         routes: {
           ...defaultRoutes(),
-          'GET /home/sessions': false,
+          'GET /sessions/home': false,
           'GET /settings/devices': {
             ...deviceSettingsFixture(),
             'home-melcloud': { always_on: true },
@@ -1123,7 +1123,7 @@ describe('settings page', () => {
       getButton('reset_credentials').click()
       await settleDetached()
 
-      expect(calledPaths(harness)).toContain('DELETE /classic/sessions')
+      expect(calledPaths(harness)).toContain('DELETE /sessions/classic')
       expect(getInput('username').value).toBe('')
       expect(getInput('password').value).toBe('')
       // Logged out: the content follows the remaining account (none).
@@ -1140,13 +1140,13 @@ describe('settings page', () => {
       getButton('reset_credentials').click()
       await settleDetached()
 
-      expect(calledPaths(harness)).not.toContain('DELETE /classic/sessions')
+      expect(calledPaths(harness)).not.toContain('DELETE /sessions/classic')
       expect(getInput('username').value).toBe('user@example.com')
     })
 
     it('should alert when the reset fails', async () => {
       const harness = await bootPage({
-        failures: { 'DELETE /classic/sessions': new Error('reset down') },
+        failures: { 'DELETE /sessions/classic': new Error('reset down') },
         storedSettings: { password: 'secret', username: 'user@example.com' },
       })
       commit(getSelect('api'), 'classic')

@@ -1,5 +1,9 @@
 import 'source-map-support/register.js'
 
+import type {
+  FullReportSurface,
+  ReportSurface,
+} from '@olivierzal/melcloud-api/report'
 import {
   fireAndForget,
   NotFoundError,
@@ -26,8 +30,6 @@ import {
   type SettingManager,
   type SyncCallback,
   isClassicAtaFacade,
-  NoChangesError,
-  operationModeToClassic,
   resolveErrorLogWindow,
 } from '@olivierzal/melcloud-api'
 import { Intl, Temporal } from 'temporal-polyfill'
@@ -41,7 +43,6 @@ import type {
   TargetProtectionState,
 } from './types/api.mts'
 import type { HomeySettings } from './types/app-settings.mts'
-import type { GroupAtaStates } from './types/classic-ata.mts'
 import type { DeviceSettings, Settings } from './types/device-settings.mts'
 import type { DriverCapabilitiesOptions } from './types/driver-settings.mts'
 import type {
@@ -51,8 +52,11 @@ import type {
 import type { HomeDeviceFacade } from './types/home.mts'
 import type { ManifestDriverCapabilitiesOptions } from './types/manifest.mts'
 import type { MELCloudDevice, MELCloudDriver } from './types/melcloud.mts'
-import type { GetAtaOptions } from './types/widgets.mts'
-import type { DeviceOrZoneData, ZoneData } from './types/zone.mts'
+import type {
+  DeviceOrZoneData,
+  FlatDeviceZone,
+  ZoneData,
+} from './types/zone.mts'
 import {
   changelog,
   fanSpeed,
@@ -66,7 +70,6 @@ import { getCapabilityFlowStep } from './lib/capability-flow-step.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
-import { typedFromEntries } from './lib/typed-object.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
 import { toNonNegativeInt, toZoneValueData } from './lib/validation.mts'
 import {
@@ -158,12 +161,14 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
-// The ATA group surface shared by the zone facades and — per the
-// melcloud-api contract this feature tracks — the ATA device facade, which
-// emulates it as a group of one.
-type ClassicAtaGroupFacade = Pick<
+// The ATA group surface every target answers — Classic zone facades,
+// both families' ATA device facades (each a group of one) and the Home
+// building facade — per the melcloud-api contract this feature tracks:
+// state and member modes speak the ONE Classic-numbered vocabulary
+// whichever API serves the target.
+type AtaGroupTarget = Pick<
   Classic.ZoneFacade,
-  'getGroup' | 'updateGroupState'
+  'getGroup' | 'getMemberOperationModes' | 'updateGroupState'
 >
 
 // A flat autocomplete/select item: the `${model}_${id}` option value as
@@ -368,71 +373,6 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public getClassicAtaDetailedStates({
-    status,
-    zoneId,
-    zoneType,
-  }: GetAtaOptions & ZoneData): GroupAtaStates {
-    // Annotated to collapse the BuildingFacade | ZoneFacade `devices` union
-    // into one array type, so the `.filter` type guard below can narrow.
-    const { devices }: { devices: readonly Classic.DeviceAny[] } =
-      this.getClassicFacade(zoneType, zoneId)
-    if (devices.length === 0) {
-      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
-    }
-    const ataData = devices
-      .filter((device) =>
-        Classic.isDeviceOfType(device, Classic.DeviceType.Ata),
-      )
-      .map(({ data }) => data)
-      .filter((data) => status !== 'on' || data.Power)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing generic Classic.GroupState to typed GroupAtaStates
-    return typedFromEntries(
-      this.#getAtaCapabilityConfigs().map(({ key }) => [
-        key,
-        ataData.map((data) => data[key]),
-      ]),
-    ) as GroupAtaStates
-  }
-
-  public async getClassicAtaState({
-    zoneId,
-    zoneType,
-  }: DeviceOrZoneData): Promise<Classic.GroupState> {
-    return unwrapResult(
-      await this.#getClassicAtaGroupFacade({ zoneId, zoneType }).getGroup(),
-    )
-  }
-
-  // The chart pickers' Classic vocabulary: the flat device leaves, each
-  // suffixed with its building, drawn from the shared zone source.
-  public getClassicDeviceZones(type?: Classic.DeviceType): Classic.Zone[] {
-    return this.getClassicTargets(type)
-      .filter((node) => node.model === 'devices')
-      .map((node) => ({
-        deviceType: node.deviceType,
-        id: node.id,
-        level: node.level,
-        model: 'devices' as const,
-        name: toFlatName(node),
-      }))
-      .toSorted(byName)
-  }
-
-  public async getClassicEnergyReport({
-    days,
-    deviceId,
-  }: {
-    days: number
-    deviceId: string
-  }): Promise<ReportChartLineOptions> {
-    return unwrapResult(
-      await this.getClassicFacade('devices', deviceId).getEnergyReport(
-        this.#chartDaysQuery(days),
-      ),
-    )
-  }
-
   public getClassicFacade<T extends Classic.DeviceType>(
     zoneType: 'devices',
     id: number | string,
@@ -460,66 +400,12 @@ export default class MELCloudApp extends App {
     return facade
   }
 
-  public async getClassicHourlyTemperatures({
-    deviceId,
-    hour,
-  }: {
-    deviceId: string
-    hour?: Hour | undefined
-  }): Promise<ReportChartLineOptions> {
-    return unwrapResult(
-      await this.getClassicFacade('devices', deviceId).getHourlyTemperatures(
-        hour,
-      ),
-    )
-  }
-
-  public async getClassicOperationModes({
-    days,
-    deviceId,
-  }: {
-    days: number
-    deviceId: string
-  }): Promise<ReportChartPieOptions> {
-    return unwrapResult(
-      await this.getClassicFacade('devices', deviceId).getOperationModes(
-        this.#chartDaysQuery(days),
-      ),
-    )
-  }
-
-  public async getClassicSignal({
-    deviceId,
-    hour,
-  }: {
-    deviceId: string
-    hour?: Hour | undefined
-  }): Promise<ReportChartLineOptions> {
-    return unwrapResult(
-      await this.getClassicFacade('devices', deviceId).getSignalStrength(hour),
-    )
-  }
-
   // The Classic zone source: every zone (buildings, floors, areas, devices)
   // flattened, each stamped with its owning building name, optionally
   // narrowed to one device type. Every flat Classic picker draws from
   // here with the filters it needs.
   public getClassicTargets(type?: Classic.DeviceType): Classic.FlatZone[] {
     return this.#facadeManager.getZones({ type })
-  }
-
-  public async getClassicTemperatures({
-    days,
-    deviceId,
-  }: {
-    days: number
-    deviceId: string
-  }): Promise<ReportChartLineOptions> {
-    return unwrapResult(
-      await this.getClassicFacade('devices', deviceId).getTemperatures(
-        this.#chartDaysQuery(days),
-      ),
-    )
   }
 
   public getDeviceSettings(): DeviceSettings {
@@ -538,6 +424,27 @@ export default class MELCloudApp extends App {
     type: T,
   ): Classic.Device<T>[] {
     return this.#classicRegistry.getDevicesByType(type)
+  }
+
+  // The chart pickers' vocabulary: the flat device leaves of BOTH
+  // dialects as one alphabetical list, each suffixed with its building
+  // and carrying its `deviceType` tag, so the widget derives every
+  // per-chart line-up from a single fetch.
+  public getDeviceZones(): FlatDeviceZone[] {
+    return [
+      ...this.getClassicTargets()
+        .filter((node) => node.model === 'devices')
+        .map((node) => ({
+          deviceType: node.deviceType,
+          id: node.id,
+          level: node.level,
+          model: 'devices' as const,
+          name: toFlatName(node),
+        })),
+      ...this.getHomeTargets()
+        .filter((node): node is HomeDeviceZone => node.model === 'homeDevices')
+        .map((node) => ({ ...node, name: toFlatName(node) })),
+    ].toSorted(byName)
   }
 
   public getDriverSettings(): Partial<Record<string, DriverSetting[]>> {
@@ -596,59 +503,8 @@ export default class MELCloudApp extends App {
     }
   }
 
-  public async getHomeAtaState(deviceId: string): Promise<Classic.GroupState> {
-    return unwrapResult(
-      await this.getHomeFacade(deviceId, Home.DeviceType.Ata).getGroup(),
-    )
-  }
-
-  // Member operation modes in the Classic vocabulary — what the widget's
-  // mixed-mode scene resolver consumes.
-  public getHomeBuildingAtaModes(buildingId: string): number[] {
-    return this.#getHomeBuildingFacade(buildingId)
-      .devices.filter((device) => device.isAta())
-      .map(
-        (device) =>
-          operationModeToClassic[
-            this.#homeFacadeManager.get(device).operationMode
-          ],
-      )
-  }
-
-  public async getHomeBuildingAtaState(
-    buildingId: string,
-  ): Promise<Classic.GroupState> {
-    return unwrapResult(
-      await this.#getHomeBuildingFacade(buildingId).getGroup(),
-    )
-  }
-
   public getHomeDevicesByType(type: Home.DeviceType): Home.Device[] {
     return this.#homeRegistry.getDevicesByType(type)
-  }
-
-  // The charts widget vocabulary: Home devices as flat selectable entries
-  // (no building nodes), each suffixed with its building, alpha-sorted, both
-  // types by default — the device leaves of the shared Home source.
-  public getHomeDeviceZones(type?: Home.DeviceType): HomeDeviceZone[] {
-    return this.getHomeTargets(type)
-      .filter((node): node is HomeDeviceZone => node.model === 'homeDevices')
-      .map((node) => ({ ...node, name: toFlatName(node) }))
-      .toSorted(byName)
-  }
-
-  public async getHomeEnergyReport({
-    days,
-    deviceId,
-  }: {
-    days: number
-    deviceId: string
-  }): Promise<ReportChartLineOptions> {
-    return unwrapResult(
-      await this.#getHomeDeviceFacade(deviceId).getEnergyReport(
-        this.#chartDaysQuery(days),
-      ),
-    )
   }
 
   public getHomeFacade<T extends Home.DeviceType>(
@@ -662,47 +518,6 @@ export default class MELCloudApp extends App {
     return this.#getHomeDeviceFacade(deviceId, type)
   }
 
-  public async getHomeHourlyTemperatures({
-    deviceId,
-    hour,
-  }: {
-    deviceId: string
-    hour?: Hour | undefined
-  }): Promise<ReportChartLineOptions> {
-    return unwrapResult(
-      await this.getHomeFacade(
-        deviceId,
-        Home.DeviceType.Atw,
-      ).getHourlyTemperatures(hour),
-    )
-  }
-
-  public async getHomeOperationModes({
-    days,
-    deviceId,
-  }: {
-    days: number
-    deviceId: string
-  }): Promise<ReportChartPieOptions> {
-    return unwrapResult(
-      await this.getHomeFacade(deviceId, Home.DeviceType.Atw).getOperationModes(
-        this.#chartDaysQuery(days),
-      ),
-    )
-  }
-
-  public async getHomeSignal({
-    deviceId,
-    hour,
-  }: {
-    deviceId: string
-    hour?: Hour | undefined
-  }): Promise<ReportChartLineOptions> {
-    return unwrapResult(
-      await this.#getHomeDeviceFacade(deviceId).getSignalStrength(hour),
-    )
-  }
-
   // The flattened Home picker list — name-sorted buildings (level 0) each
   // followed by its own devices (level 1); `type` narrows to one
   // connection type (the ATA group widget), omitted spans both (the
@@ -713,15 +528,30 @@ export default class MELCloudApp extends App {
     return this.#homeFacadeManager.getZones({ type })
   }
 
-  public async getHomeTemperatures({
+  // Member operation modes for the widget's mixed-mode scene resolver —
+  // powered units only (an off unit paints no scene), Classic-numbered
+  // whichever API serves the members.
+  public getTargetAtaModes(targetId: string): Classic.OperationMode[] {
+    return this.#getAtaGroupTarget(targetId).getMemberOperationModes({
+      poweredOnly: true,
+    })
+  }
+
+  public async getTargetAtaState(
+    targetId: string,
+  ): Promise<Classic.GroupState> {
+    return unwrapResult(await this.#getAtaGroupTarget(targetId).getGroup())
+  }
+
+  public async getTargetEnergyReport({
     days,
-    deviceId,
+    targetId,
   }: {
     days: number
-    deviceId: string
+    targetId: string
   }): Promise<ReportChartLineOptions> {
     return unwrapResult(
-      await this.#getHomeDeviceFacade(deviceId).getTemperatures(
+      await this.#getReportTarget(targetId).getEnergyReport(
         this.#chartDaysQuery(days),
       ),
     )
@@ -743,6 +573,32 @@ export default class MELCloudApp extends App {
     )
   }
 
+  public async getTargetHourlyTemperatures({
+    hour,
+    targetId,
+  }: {
+    targetId: string
+    hour?: Hour | undefined
+  }): Promise<ReportChartLineOptions> {
+    return unwrapResult(
+      await this.#getFullReportTarget(targetId).getHourlyTemperatures(hour),
+    )
+  }
+
+  public async getTargetOperationModes({
+    days,
+    targetId,
+  }: {
+    days: number
+    targetId: string
+  }): Promise<ReportChartPieOptions> {
+    return unwrapResult(
+      await this.#getFullReportTarget(targetId).getOperationModes(
+        this.#chartDaysQuery(days),
+      ),
+    )
+  }
+
   // Overheat protection exists on Home targets only: a Classic target
   // reads `null`, like a Home target that never configured it.
   public async getTargetOverheatProtection(
@@ -754,13 +610,29 @@ export default class MELCloudApp extends App {
       : unwrapResult(await target.getOverheatProtection())
   }
 
-  public async updateClassicAtaState({
-    state,
-    zoneId,
-    zoneType,
-  }: DeviceOrZoneData & { state: Classic.GroupState }): Promise<void> {
-    await this.#getClassicAtaGroupFacade({ zoneId, zoneType }).updateGroupState(
-      state,
+  public async getTargetSignal({
+    hour,
+    targetId,
+  }: {
+    targetId: string
+    hour?: Hour | undefined
+  }): Promise<ReportChartLineOptions> {
+    return unwrapResult(
+      await this.#getReportTarget(targetId).getSignalStrength(hour),
+    )
+  }
+
+  public async getTargetTemperatures({
+    days,
+    targetId,
+  }: {
+    days: number
+    targetId: string
+  }): Promise<ReportChartLineOptions> {
+    return unwrapResult(
+      await this.#getReportTarget(targetId).getTemperatures(
+        this.#chartDaysQuery(days),
+      ),
     )
   }
 
@@ -791,33 +663,19 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public async updateHomeAtaState({
-    deviceId,
-    state,
-  }: {
-    deviceId: string
-    state: Classic.GroupState
-  }): Promise<void> {
-    try {
-      await this.getHomeFacade(deviceId, Home.DeviceType.Ata).updateGroupState(
-        state,
-      )
-    } catch (error) {
-      // A delta the device already matches is fine by definition.
-      if (!(error instanceof NoChangesError)) {
-        throw error
-      }
-    }
-  }
-
-  public async updateHomeBuildingAtaState({
-    buildingId,
-    state,
-  }: {
-    buildingId: string
-    state: Classic.GroupState
-  }): Promise<void> {
-    await this.#getHomeBuildingFacade(buildingId).updateGroupState(state)
+  // VERDICT (2026-08): no app-side no-change handling, on any leg. The
+  // pre-unification handlers disagreed (the Home device leg swallowed
+  // `NoChangesError`, its twins propagated), but melcloud-api 53.0.0
+  // pins no-op tolerance in the library itself — every `updateGroupState`
+  // resolves a delta the target already matches as the success it is —
+  // so nothing can propagate and a catch here would re-derive a library
+  // invariant. The widget's arming gate blocks empty bodies, not bodies
+  // the device caught up with meanwhile; those are successes too.
+  public async updateTargetAtaState(
+    targetId: string,
+    state: Classic.GroupState,
+  ): Promise<void> {
+    await this.#getAtaGroupTarget(targetId).updateGroupState(state)
   }
 
   public async updateTargetFrostProtection(
@@ -1037,10 +895,23 @@ export default class MELCloudApp extends App {
     ]
   }
 
+  // The ATA group twin of `#getSettingsTarget`: the targetId is the
+  // picker value verbatim, and addressing is the only family-visible
+  // step — everything downstream speaks the one group vocabulary.
+  #getAtaGroupTarget(targetId: string): AtaGroupTarget {
+    if (isHomeBuildingValue(targetId)) {
+      return this.#getHomeBuildingFacade(getHomeBuildingId(targetId))
+    }
+    if (isHomeDeviceValue(targetId)) {
+      return this.getHomeFacade(getHomeDeviceId(targetId), Home.DeviceType.Ata)
+    }
+    return this.#getClassicAtaGroupFacade(toZoneValueData(targetId))
+  }
+
   #getClassicAtaGroupFacade({
     zoneId,
     zoneType,
-  }: DeviceOrZoneData): ClassicAtaGroupFacade {
+  }: DeviceOrZoneData): AtaGroupTarget {
     if (zoneType !== 'devices') {
       return this.getClassicFacade(zoneType, zoneId)
     }
@@ -1065,6 +936,16 @@ export default class MELCloudApp extends App {
       return { entries: [], fromDate, nextFromDate, nextToDate }
     }
     return unwrapResult(await this.#classicApi.getErrorLog(query))
+  }
+
+  // The Classic leg both chart resolvers share: only the flat device
+  // leaves chart, so any other zone level answers the device error.
+  #getClassicReportDevice(targetId: string): FullReportSurface {
+    const { zoneId, zoneType } = toZoneValueData(targetId)
+    if (zoneType !== 'devices') {
+      throw new NotFoundError(this.homey.__('errors.deviceNotFound'))
+    }
+    return this.getClassicFacade('devices', zoneId)
   }
 
   #getDevices({
@@ -1098,6 +979,17 @@ export default class MELCloudApp extends App {
     return driverId === undefined
       ? drivers
       : drivers.filter((driver) => driver.id === driverId)
+  }
+
+  // Chart-target resolver for the ATW-only reads (hourly temperatures,
+  // operation modes): the Home leg pins the ATW type — a Home ATA
+  // target answers NotFoundError, nothing emulated, because its wire
+  // has no such report — while every Classic device answers the full
+  // surface (non-ATW types resolve empty charts wire-side).
+  #getFullReportTarget(targetId: string): FullReportSurface {
+    return isHomeDeviceValue(targetId)
+      ? this.getHomeFacade(getHomeDeviceId(targetId), Home.DeviceType.Atw)
+      : this.#getClassicReportDevice(targetId)
   }
 
   // A Home building is a zone in the picker vocabulary, so a missing
@@ -1165,6 +1057,14 @@ export default class MELCloudApp extends App {
     return isHomeDeviceValue(targetId)
       ? this.#getHomeDeviceFacade(getHomeDeviceId(targetId))
       : null
+  }
+
+  // Chart-target resolver for the reads every device-level target
+  // answers, on either dialect.
+  #getReportTarget(targetId: string): ReportSurface {
+    return isHomeDeviceValue(targetId)
+      ? this.#getHomeDeviceFacade(getHomeDeviceId(targetId))
+      : this.#getClassicReportDevice(targetId)
   }
 
   // The one target resolver behind the neutral settings routes: the
@@ -1392,10 +1292,7 @@ export default class MELCloudApp extends App {
     this.homey.dashboards
       .getWidget('charts')
       .registerSettingAutocompleteListener('default_zone', (query) =>
-        [
-          ...filterZonesByName(this.getClassicDeviceZones(), query),
-          ...filterZonesByName(this.getHomeDeviceZones(), query),
-        ].toSorted(byName),
+        filterZonesByName(this.getDeviceZones(), query),
       )
   }
 

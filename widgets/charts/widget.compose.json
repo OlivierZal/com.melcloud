@@ -1,48 +1,27 @@
 {
   "api": {
-    "getClassicDevices": { "method": "GET", "path": "/classic/devices" },
-    "getClassicEnergyReport": {
-      "method": "GET",
-      "path": "/classic/devices/:deviceId/logs/report"
-    },
-    "getClassicHourlyTemperatures": {
-      "method": "GET",
-      "path": "/classic/devices/:deviceId/logs/hourly-temperatures"
-    },
-    "getClassicOperationModes": {
-      "method": "GET",
-      "path": "/classic/devices/:deviceId/logs/operation-modes"
-    },
-    "getClassicSignal": {
-      "method": "GET",
-      "path": "/classic/devices/:deviceId/logs/signal"
-    },
-    "getClassicTemperatures": {
-      "method": "GET",
-      "path": "/classic/devices/:deviceId/logs/temperatures"
-    },
-    "getHomeDevices": { "method": "GET", "path": "/home/devices" },
-    "getHomeEnergyReport": {
-      "method": "GET",
-      "path": "/home/devices/:deviceId/logs/report"
-    },
-    "getHomeHourlyTemperatures": {
-      "method": "GET",
-      "path": "/home/devices/:deviceId/logs/hourly-temperatures"
-    },
-    "getHomeOperationModes": {
-      "method": "GET",
-      "path": "/home/devices/:deviceId/logs/operation-modes"
-    },
-    "getHomeSignal": {
-      "method": "GET",
-      "path": "/home/devices/:deviceId/logs/signal"
-    },
-    "getHomeTemperatures": {
-      "method": "GET",
-      "path": "/home/devices/:deviceId/logs/temperatures"
-    },
+    "getDevices": { "method": "GET", "path": "/devices" },
     "getLanguage": { "method": "GET", "path": "/language" },
+    "getTargetEnergyReport": {
+      "method": "GET",
+      "path": "/targets/:targetId/logs/report"
+    },
+    "getTargetHourlyTemperatures": {
+      "method": "GET",
+      "path": "/targets/:targetId/logs/hourly-temperatures"
+    },
+    "getTargetOperationModes": {
+      "method": "GET",
+      "path": "/targets/:targetId/logs/operation-modes"
+    },
+    "getTargetSignal": {
+      "method": "GET",
+      "path": "/targets/:targetId/logs/signal"
+    },
+    "getTargetTemperatures": {
+      "method": "GET",
+      "path": "/targets/:targetId/logs/temperatures"
+    },
     "getWebviewHashes": { "method": "GET", "path": "/webview-hashes" },
     "logWebviewBoot": { "method": "POST", "path": "/boot-error" }
   },

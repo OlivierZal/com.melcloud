@@ -182,10 +182,10 @@ export const homeAtaTargetsFixture = (): unknown => [
 export const widgetRoutes = (): Record<string, unknown> => ({
   'GET /classic/buildings?type=0': classicAtaBuildingsFixture(),
   'GET /classic/capabilities/ata': ataCapabilitiesFixture(),
-  'GET /classic/zones/buildings/1/ata': groupStateFixture(),
   'GET /home/targets/ata': homeAtaTargetsFixture(),
   'GET /language': 'fr',
-  'PUT /classic/zones/buildings/1/ata': undefined,
+  'GET /targets/buildings_1/ata': groupStateFixture(),
+  'PUT /targets/buildings_1/ata': undefined,
 })
 
 // ── Widget SDK mock ──

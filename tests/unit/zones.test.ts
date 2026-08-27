@@ -8,7 +8,6 @@ import {
   getSubzones,
   getZoneId,
   getZoneName,
-  getZonePath,
   isHomeBuildingValue,
   isHomeDeviceValue,
 } from '../../public/zones.mts'
@@ -34,11 +33,6 @@ describe('zones', () => {
     expect(getZoneId('building_1', 'homeBuildings')).toBe(
       'homeBuildings_building_1',
     )
-  })
-
-  it('should replace only the first underscore in a zone path', () => {
-    expect(getZonePath('devices_11')).toBe('devices/11')
-    expect(getZonePath('floors_2_1')).toBe('floors/2_1')
   })
 
   it('should indent a zone name by its level', () => {

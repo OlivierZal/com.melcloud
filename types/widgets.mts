@@ -37,10 +37,6 @@ export interface DaysQuery {
   readonly days?: string
 }
 
-export interface GetAtaOptions {
-  readonly status?: 'on' | undefined
-}
-
 export interface HourQuery {
   readonly hour?: `${Hour}`
 }

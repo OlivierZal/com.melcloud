@@ -594,7 +594,7 @@ class AuthManager {
     }
     await this.#gate.runBusy(async () => {
       try {
-        await homeyApiPost(this.#homey, `/${api}/sessions`, {
+        await homeyApiPost(this.#homey, `/sessions/${api}`, {
           password,
           username,
         } satisfies LoginCredentials)
@@ -626,7 +626,7 @@ class AuthManager {
         // The app-side logout owns the teardown (session, credentials,
         // backoff, sync timer, registry) — the webview never touches the
         // library's persisted keys.
-        await homeyApiDelete(this.#homey, `/${api}/sessions`)
+        await homeyApiDelete(this.#homey, `/sessions/${api}`)
         this.#credentialsByApi[api] = {}
         this.#syncInputsFromCredentials()
         this.#gate.markSaved()
@@ -1970,7 +1970,7 @@ class SettingsApp {
   // caller must not turn an accepted login into a failure alert.
   async #fetchSessionState(api: Api): Promise<boolean> {
     try {
-      return await homeyApiGet<boolean>(this.#homey, `/${api}/sessions`)
+      return await homeyApiGet<boolean>(this.#homey, `/sessions/${api}`)
     } catch {
       return false
     }
@@ -2065,8 +2065,8 @@ class SettingsApp {
     const [settings, isClassicAuthenticated, isHomeAuthenticated] =
       await Promise.all([
         SettingsApp.#fetchHomeySettings(this.#homey),
-        homeyApiGet<boolean>(this.#homey, '/classic/sessions'),
-        homeyApiGet<boolean>(this.#homey, '/home/sessions'),
+        homeyApiGet<boolean>(this.#homey, '/sessions/classic'),
+        homeyApiGet<boolean>(this.#homey, '/sessions/home'),
         SettingsApp.#setDocumentLanguage(this.#homey),
         this.#deviceSettingsManager.fetchDeviceSettings(),
       ])

@@ -5,8 +5,8 @@
 // — `OperationMode` included, always Classic-numbered — carries one
 // spelling whatever API backs the target, and the constants below apply
 // to both (`ClassicTemperature` is documented universal across ATA
-// models). The only place the family is visible at all is the state
-// path; see `getAtaStatePath`.
+// models). Even the address is family-neutral: the option value IS the
+// `/targets/:targetId/ata` targetId, resolved app-side.
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import {
   type HTMLValueElement,
@@ -31,15 +31,7 @@ import {
   homeyApiGet,
   homeyApiPut,
 } from '../../../public/widget.mts'
-import {
-  type PickerZone,
-  getHomeBuildingId,
-  getHomeDeviceId,
-  getZoneId,
-  getZonePath,
-  isHomeBuildingValue,
-  isHomeDeviceValue,
-} from '../../../public/zones.mts'
+import { type PickerZone, getZoneId } from '../../../public/zones.mts'
 
 // The generated controls are styled by element selectors in
 // `styles/layout.css` (Homey design tokens) — no utility classes needed,
@@ -123,19 +115,10 @@ const temperatureOptions = (
     }))
 }
 
-// Routes a `${model}_${id}` option value to its state endpoint — the one
-// place the API family surfaces, and it is ADDRESSING, not semantics: the
-// two families name their targets differently (a Home building or device
-// id versus a Classic zone type + id), so they are reachable only through
-// distinct routes. Everything downstream of the fetch is single-vocabulary.
-const getAtaStatePath = (value: string): string => {
-  if (isHomeBuildingValue(value)) {
-    return `/home/buildings/${encodeURIComponent(getHomeBuildingId(value))}/ata`
-  }
-  return isHomeDeviceValue(value)
-    ? `/home/devices/${encodeURIComponent(getHomeDeviceId(value))}/ata`
-    : `/classic/zones/${getZonePath(value)}/ata`
-}
+// The one state route for every target: the `${model}_${id}` option
+// value is the targetId verbatim (the settings routes' addressing), so
+// no family branch remains in the path.
+const getAtaStatePath = (value: string): string => `/targets/${value}/ata`
 
 // ── AtaValueManager class ──
 

@@ -158,21 +158,36 @@ coverage.
   design.
 - App-API surface conventions: paths are kebab-case REST (`get*` for
   GET — except `is*` for a boolean GET —, `update*` for PUT — never
-  `set*` —, and a business verb for POST: `*Authenticate` on
-  `/sessions`, `logWebviewBoot` on `/boot-error`); handler renames are
-  wire-invisible (routing is method+path), path renames are NOT (phone
-  webviews cache bundles across versions; stale callers now surface an
-  error — legacy aliases were dropped by decision, 2026-07, and the
-  settings routes migrated once more under the same policy, 2026-08).
-  The zone SETTINGS routes are target-neutral:
-  `/targets/:targetId/settings/{frost-protection,holiday-mode,overheat-protection}`,
-  where `targetId` is the picker value verbatim (`buildings_1`,
-  `homeDevices_<guid>` — split at the FIRST underscore) — one route
-  family for every dialect and level; the app model resolves the facade
-  (`#getSettingsTarget`) and the melcloud-api 50.0.0 facades answer the
-  same read/write methods on every target, so no per-family route or
-  aggregation code remains app-side. Overheat stays Home-only: a
-  Classic target reads `null` and refuses the write. The
+  `set*` —, and a business verb for POST: `authenticate` on
+  `/sessions/:api`, `logWebviewBoot` on `/boot-error`); handler renames
+  are wire-invisible (routing is method+path), path renames are NOT
+  (phone webviews cache bundles across versions; stale callers now
+  surface an error — legacy aliases were dropped by decision, 2026-07,
+  and the settings, session, ATA-group and chart routes migrated under
+  the same policy, 2026-08).
+  The session resource is ONE route for both accounts —
+  `GET/POST/DELETE /sessions/:api` (`classic` | `home`, resolved over a
+  client map on the `Api` union) — and every zone-addressed surface is
+  target-neutral under `/targets/:targetId/…`, where `targetId` is the
+  picker value verbatim (`buildings_1`, `homeDevices_<guid>` — split at
+  the FIRST underscore): the SETTINGS routes
+  (`…/settings/{frost-protection,holiday-mode,overheat-protection}`,
+  resolver `#getSettingsTarget`), the ATA GROUP routes (`…/ata` GET/PUT
+  and `…/ata/modes`, resolver `#getAtaGroupTarget`; the modes read is
+  the library's `getMemberOperationModes({poweredOnly: true})`) and the
+  CHART routes
+  (`…/logs/{report,hourly-temperatures,operation-modes,signal,temperatures}`,
+  resolvers `#getReportTarget`/`#getFullReportTarget` over the
+  melcloud-api `/report` interfaces — the ATW-only charts pin the Home
+  leg: a Home ATA target answers NotFoundError, nothing emulated). The
+  charts widget lists its pickers from ONE `GET /devices` route (both
+  dialects' device leaves merged, alpha-sorted, `deviceType`-tagged —
+  the widget filters per chart client-side). No-change group writes are
+  the LIBRARY's business: every melcloud-api `updateGroupState` leg
+  resolves an already-matching delta as success, so the app-side
+  handlers are plain delegations (verdict 2026-08, recorded on
+  `updateTargetAtaState`). Overheat stays Home-only: a Classic target
+  reads `null` and refuses the write. The
   inter-app grouping route is `GET /devices/groups` (the extension
   degrades to "no grouping" when it is absent).
   `@olivierzal/homey-kit/settings` is the settings pages' transport
@@ -354,10 +369,11 @@ coverage.
   whatever API served it, and `classicCoolModes` / `ClassicTemperature`
   (documented universal across ATA models) apply to both. Consumers
   therefore never branch on the family to READ or WRITE a group state;
-  the only family-visible step is ADDRESSING, because a Home building or
-  device id and a Classic zone type + id are reachable only through
-  distinct routes. The prefix has twice been misread as a missing
-  abstraction (2026-08) — it is the common surface.
+  the only family-visible step is ADDRESSING — the widget's
+  `${model}_${id}` option value rides `/targets/:targetId/ata`
+  verbatim and the app's `#getAtaGroupTarget` resolves the facade, so
+  even that step is app-side only. The prefix has twice been misread as
+  a missing abstraction (2026-08) — it is the common surface.
 - Flow-card device filters are `driver_id=<manifest owners>&capabilities=<cap>`,
   both parts mechanical: `capabilities=` is the card's real precondition
   (the run listeners are capability-generic and triggers fire through

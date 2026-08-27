@@ -3,13 +3,9 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
 import * as Home from '@olivierzal/melcloud-api/home'
 
-import type { GroupAtaStates } from '../../types/classic-ata.mts'
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
-import type { GetAtaOptions } from '../../types/widgets.mts'
-import type { DeviceOrZoneData, ZoneData } from '../../types/zone.mts'
 import { getClassicBuildings } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
-import { toDeviceOrZoneData, toZoneData } from '../../lib/validation.mts'
 import { getWebviewHashes } from '../../lib/webview-hashes.mts'
 
 const api = {
@@ -19,24 +15,6 @@ const api = {
     homey: Homey
   }): [keyof Classic.GroupState, DriverCapabilitiesOptions][] =>
     app.getClassicAtaCapabilities(),
-  getClassicAtaDetailedStates: ({
-    homey: { app },
-    params,
-    query: { status },
-  }: {
-    homey: Homey
-    params: ZoneData
-    query: GetAtaOptions
-  }): GroupAtaStates =>
-    app.getClassicAtaDetailedStates({ ...toZoneData(params), status }),
-  getClassicAtaState: async ({
-    homey: { app },
-    params,
-  }: {
-    homey: Homey
-    params: DeviceOrZoneData
-  }): Promise<Classic.GroupState> =>
-    app.getClassicAtaState(toDeviceOrZoneData(params)),
   getClassicBuildings: ({
     query: { type },
   }: {
@@ -45,35 +23,28 @@ const api = {
     getClassicBuildings({
       type: type === undefined ? undefined : toDeviceType(type),
     }),
-  getHomeAtaState: async ({
-    homey: { app },
-    params: { deviceId },
-  }: {
-    homey: Homey
-    params: { deviceId: string }
-  }): Promise<Classic.GroupState> => app.getHomeAtaState(deviceId),
   getHomeAtaTargets: ({
     homey: { app },
   }: {
     homey: Homey
   }): (HomeBuildingZone | HomeDeviceZone)[] =>
     app.getHomeTargets(Home.DeviceType.Ata),
-  getHomeBuildingAtaModes: ({
-    homey: { app },
-    params: { buildingId },
-  }: {
-    homey: Homey
-    params: { buildingId: string }
-  }): number[] => app.getHomeBuildingAtaModes(buildingId),
-  getHomeBuildingAtaState: async ({
-    homey: { app },
-    params: { buildingId },
-  }: {
-    homey: Homey
-    params: { buildingId: string }
-  }): Promise<Classic.GroupState> => app.getHomeBuildingAtaState(buildingId),
   getLanguage: ({ homey: { i18n } }: { homey: Homey }): string =>
     i18n.getLanguage(),
+  getTargetAtaModes: ({
+    homey: { app },
+    params: { targetId },
+  }: {
+    homey: Homey
+    params: { targetId: string }
+  }): Classic.OperationMode[] => app.getTargetAtaModes(targetId),
+  getTargetAtaState: async ({
+    homey: { app },
+    params: { targetId },
+  }: {
+    homey: Homey
+    params: { targetId: string }
+  }): Promise<Classic.GroupState> => app.getTargetAtaState(targetId),
   getWebviewHashes: async (): Promise<Partial<Record<string, string>>> =>
     getWebviewHashes(),
   logWebviewBoot: ({
@@ -85,35 +56,15 @@ const api = {
   }): void => {
     app.error('Widget boot failed:', JSON.stringify(body))
   },
-  updateClassicAtaState: async ({
+  updateTargetAtaState: async ({
     body,
     homey: { app },
-    params,
+    params: { targetId },
   }: {
     body: Classic.GroupState
     homey: Homey
-    params: DeviceOrZoneData
-  }): Promise<void> =>
-    app.updateClassicAtaState({ state: body, ...toDeviceOrZoneData(params) }),
-  updateHomeAtaState: async ({
-    body,
-    homey: { app },
-    params: { deviceId },
-  }: {
-    body: Classic.GroupState
-    homey: Homey
-    params: { deviceId: string }
-  }): Promise<void> => app.updateHomeAtaState({ deviceId, state: body }),
-  updateHomeBuildingAtaState: async ({
-    body,
-    homey: { app },
-    params: { buildingId },
-  }: {
-    body: Classic.GroupState
-    homey: Homey
-    params: { buildingId: string }
-  }): Promise<void> =>
-    app.updateHomeBuildingAtaState({ buildingId, state: body }),
+    params: { targetId: string }
+  }): Promise<void> => app.updateTargetAtaState(targetId, body),
 }
 
 export default api
