@@ -13,6 +13,7 @@ import {
   testTagMappings,
 } from '../driver-descriptors.ts'
 import { type InteropModule, mock } from '../helpers.ts'
+import { createListDevicesSession } from '../pair-session.ts'
 import HomeMELCloudDriverAtw from '../../drivers/home-melcloud_atw/driver.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -78,19 +79,7 @@ const createProfile = ({
 const registerListHandler = async (driver: {
   onPair: (session: PairSession) => Promise<void>
 }): Promise<(...args: unknown[]) => unknown> => {
-  const listHandler = vi.fn<(...args: unknown[]) => unknown>()
-  const session = mock<PairSession>({
-    setHandler: vi
-      .fn<(event: string, handler: (...args: unknown[]) => unknown) => void>()
-      .mockImplementation(
-        (event: string, handler: (...args: unknown[]) => unknown) => {
-          if (event === 'list_devices') {
-            listHandler.mockImplementation(handler)
-          }
-        },
-      ),
-    showView: showViewMock,
-  })
+  const { listHandler, session } = createListDevicesSession(showViewMock)
   await driver.onPair(session)
   return listHandler
 }

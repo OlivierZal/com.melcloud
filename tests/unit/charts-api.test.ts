@@ -2,10 +2,13 @@ import type {
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
-import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { mock } from '../helpers.ts'
+import {
+  createWidgetApiHarness,
+  describeWebviewBootLogging,
+} from '../widget-api.ts'
 
 const { default: api } = await import('../../widgets/charts/api.mts')
 
@@ -19,22 +22,16 @@ const mockApp = {
   getTargetTemperatures: vi.fn<() => Promise<ReportChartLineOptions>>(),
 }
 
-const mockI18n = { getLanguage: vi.fn<() => string>() }
-
-const homey = mock<Homey>({ app: mockApp, i18n: mockI18n })
+const { homey, mockI18n } = createWidgetApiHarness(mockApp)
 
 describe('charts api', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  describe('webview boot logging', () => {
-    it('should log the boot failure body via app.error', () => {
-      api.logWebviewBoot({ body: { message: 'boom' }, homey })
-
-      expect(mockApp.error).toHaveBeenCalledTimes(1)
-    })
-  })
+  describeWebviewBootLogging(() => {
+    api.logWebviewBoot({ body: { message: 'boom' }, homey })
+  }, mockApp.error)
 
   describe('device retrieval', () => {
     it('should serve the one merged device-zone list', () => {

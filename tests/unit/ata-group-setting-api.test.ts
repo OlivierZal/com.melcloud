@@ -1,11 +1,14 @@
 import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-import type { Homey } from 'homey/lib/Homey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
 import { mock } from '../helpers.ts'
+import {
+  createWidgetApiHarness,
+  describeWebviewBootLogging,
+} from '../widget-api.ts'
 
 const mockGetBuildings = vi.fn<() => Classic.BuildingZone[]>()
 
@@ -29,22 +32,16 @@ const mockApp = {
   updateTargetAtaState: vi.fn<() => Promise<void>>(),
 }
 
-const mockI18n = { getLanguage: vi.fn<() => string>() }
-
-const homey = mock<Homey>({ app: mockApp, i18n: mockI18n })
+const { homey, mockI18n } = createWidgetApiHarness(mockApp)
 
 describe('ata-group-setting api', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  describe('webview boot logging', () => {
-    it('should log the boot failure body via app.error', () => {
-      api.logWebviewBoot({ body: { message: 'boom' }, homey })
-
-      expect(mockApp.error).toHaveBeenCalledTimes(1)
-    })
-  })
+  describeWebviewBootLogging(() => {
+    api.logWebviewBoot({ body: { message: 'boom' }, homey })
+  }, mockApp.error)
 
   describe('ata capability retrieval', () => {
     it('should delegate to app.getClassicAtaCapabilities', () => {
