@@ -114,7 +114,25 @@ caught real failures that the others miss:
   vendored node-homey-lib capability JSONs under `vendor/capabilities/`
   (homey-lib is a devDependency and must not ship to the device); the
   drift test in `tests/unit/capability-definitions.test.ts` fails when
-  the copies fall behind.
+  the copies fall behind. A homey-lib bump re-checks a SECOND thing the
+  same way: beyond the definitions, the app copies homey-lib's canonical
+  WORDING into labels of its own capabilities and flow cards, and
+  `tests/unit/borrowed-labels.test.ts` pins those copies — an explicit
+  table, one row per app site (file + JSON path) against the homey-lib
+  label it borrows, compared per locale. Membership states an INTENT,
+  never a measured string collision: a label enters the table only where
+  it deliberately speaks homey-lib's wording — today the `horizontal` /
+  `vertical` `auto` position with its flow-card copies (homey-lib
+  declares no vane capability, so `auto` is the one value that can
+  borrow) and the ATA drivers' `thermostat_mode` `cool` value. A
+  coincidence stays OUT: `operational_state` names a state
+  ("Heating"/"Cooling") where `thermostat_mode` names a command
+  ("Heat"/"Cool") and they meet in ar/it/ko/pl/ru only, while the app's
+  own `hot_water_mode` and `thermostat_mode` values keep their own
+  Russian ("Авто") — pinning either would force an edit upstream never
+  asked for. When a row breaks, the APP copy follows: adopt the new
+  wording there and revisit that label's other locales, never edit
+  `vendor/capabilities/` to make it pass.
 - `npm run homey:start` — `homey app run --remote` for on-device testing.
   The `homey:*` wrappers are plain CLI calls: the CLI's own
   `npm run build` (post-copy) emits everything the package needs into
