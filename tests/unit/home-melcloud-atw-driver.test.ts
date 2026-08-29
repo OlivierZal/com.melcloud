@@ -24,16 +24,10 @@ const {
   isAuthenticatedMock,
   setHandlerMock,
   showViewMock,
-} = vi.hoisted(() => ({
-  authenticateMock: vi.fn<(data: unknown) => Promise<boolean>>(),
-  getHomeDevicesByTypeMock:
-    vi.fn<(type: Home.DeviceType) => readonly unknown[]>(),
-  getHomeFacadeMock: vi.fn<(id: string, type: Home.DeviceType) => unknown>(),
-  isAuthenticatedMock: vi.fn<() => boolean>(),
-  setHandlerMock:
-    vi.fn<(event: string, handler: (...args: unknown[]) => unknown) => void>(),
-  showViewMock: vi.fn<(view: string) => Promise<void>>(),
-}))
+} = await vi.hoisted(async () => {
+  const { createHomeDriverMocks } = await import('../home-driver-mocks.ts')
+  return createHomeDriverMocks()
+})
 
 vi.mock(import('homey'), async () => {
   const { createMockDriverClass, mock: mockModule } =

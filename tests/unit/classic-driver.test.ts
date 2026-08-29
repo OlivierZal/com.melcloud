@@ -231,23 +231,32 @@ describe(ClassicMELCloudDriver, () => {
     })
   })
 
+  // Every clause here drives a registered condition listener, so the
+  // suite captures them by standing in for the card registry.
+  const captureConditionListeners = async (): Promise<
+    Record<string, (args: Record<string, unknown>) => unknown>
+  > => {
+    const conditionListeners: Record<
+      string,
+      (args: Record<string, unknown>) => unknown
+    > = {}
+    vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
+      (cardName: string) =>
+        mock<FlowCardCondition>({
+          registerRunListener: (
+            listener: (args: Record<string, unknown>) => unknown,
+          ): void => {
+            conditionListeners[cardName] = listener
+          },
+        }),
+    )
+    await driver.onInit()
+    return conditionListeners
+  }
+
   describe('condition run listener registration', () => {
     it('should return boolean capability value for boolean capabilities', async () => {
-      const conditionListeners: Record<
-        string,
-        (args: Record<string, unknown>) => unknown
-      > = {}
-      vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
-        (cardName: string) =>
-          mock<FlowCardCondition>({
-            registerRunListener: (
-              listener: (args: Record<string, unknown>) => unknown,
-            ): void => {
-              conditionListeners[cardName] = listener
-            },
-          }),
-      )
-      await driver.onInit()
+      const conditionListeners = await captureConditionListeners()
 
       const { onoff_condition: onoffListener } = conditionListeners
       assertDefined(onoffListener)
@@ -264,21 +273,7 @@ describe(ClassicMELCloudDriver, () => {
     })
 
     it('should compare string/number capability values with arg', async () => {
-      const conditionListeners: Record<
-        string,
-        (args: Record<string, unknown>) => unknown
-      > = {}
-      vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
-        (cardName: string) =>
-          mock<FlowCardCondition>({
-            registerRunListener: (
-              listener: (args: Record<string, unknown>) => unknown,
-            ): void => {
-              conditionListeners[cardName] = listener
-            },
-          }),
-      )
-      await driver.onInit()
+      const conditionListeners = await captureConditionListeners()
 
       const { thermostat_mode_condition: thermostatListener } =
         conditionListeners
