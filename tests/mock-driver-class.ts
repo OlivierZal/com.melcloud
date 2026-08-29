@@ -1,5 +1,7 @@
 import { vi } from 'vitest'
 
+import { createFlowCardsStub } from './flow-card-mocks.ts'
+
 const applyOverrides = (
   target: object,
   overrides?: Record<string, unknown>,
@@ -29,36 +31,7 @@ export const createMockDriverClass = (
           .fn<(type: number) => readonly unknown[]>()
           .mockReturnValue([]),
       },
-      flow: {
-        getActionCard: vi
-          .fn<
-            (id: string) => {
-              registerRunListener: (
-                listener: (args: Record<string, unknown>) => unknown,
-              ) => void
-            }
-          >()
-          .mockReturnValue({
-            registerRunListener:
-              vi.fn<
-                (listener: (args: Record<string, unknown>) => unknown) => void
-              >(),
-          }),
-        getConditionCard: vi
-          .fn<
-            (id: string) => {
-              registerRunListener: (
-                listener: (args: Record<string, unknown>) => unknown,
-              ) => void
-            }
-          >()
-          .mockReturnValue({
-            registerRunListener:
-              vi.fn<
-                (listener: (args: Record<string, unknown>) => unknown) => void
-              >(),
-          }),
-      },
+      flow: createFlowCardsStub(),
     }
 
     public log = vi.fn<(...args: readonly unknown[]) => void>()

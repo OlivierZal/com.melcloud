@@ -1,5 +1,4 @@
 import type HomeyModule from 'homey'
-import type PairSession from 'homey/lib/PairSession'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Home from '@olivierzal/melcloud-api/home'
 
@@ -10,6 +9,7 @@ import {
   testRepairing,
 } from '../driver-descriptors.ts'
 import { type InteropModule, mock } from '../helpers.ts'
+import { createListDevicesSession } from '../pair-session.ts'
 import HomeMELCloudDriverAta from '../../drivers/home-melcloud/driver.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -33,6 +33,7 @@ const {
 
 vi.mock(import('homey'), async () => {
   const { mock: mockModule } = await import('../helpers.ts')
+  const { createFlowCardsStub } = await import('../flow-card-mocks.ts')
   class MockDriver {
     public homey = {
       app: {
@@ -43,36 +44,7 @@ vi.mock(import('homey'), async () => {
           isAuthenticated: isAuthenticatedMock,
         },
       },
-      flow: {
-        getActionCard: vi
-          .fn<
-            (id: string) => {
-              registerRunListener: (
-                listener: (args: Record<string, unknown>) => unknown,
-              ) => void
-            }
-          >()
-          .mockReturnValue({
-            registerRunListener:
-              vi.fn<
-                (listener: (args: Record<string, unknown>) => unknown) => void
-              >(),
-          }),
-        getConditionCard: vi
-          .fn<
-            (id: string) => {
-              registerRunListener: (
-                listener: (args: Record<string, unknown>) => unknown,
-              ) => void
-            }
-          >()
-          .mockReturnValue({
-            registerRunListener:
-              vi.fn<
-                (listener: (args: Record<string, unknown>) => unknown) => void
-              >(),
-          }),
-      },
+      flow: createFlowCardsStub(),
     }
 
     public log = vi.fn<(...args: readonly unknown[]) => void>()
@@ -137,21 +109,7 @@ describe(BaseMELCloudDriver, () => {
         capabilities: { hasAutomaticFanSpeed: true, numberOfFanSpeeds: 5 },
       })
 
-      const listHandler = vi.fn<(...args: unknown[]) => unknown>()
-      const session = mock<PairSession>({
-        setHandler: vi
-          .fn<
-            (event: string, handler: (...args: unknown[]) => unknown) => void
-          >()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'list_devices') {
-                listHandler.mockImplementation(handler)
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
+      const { listHandler, session } = createListDevicesSession(showViewMock)
       await driver.onPair(session)
       const result = await listHandler()
 
@@ -191,21 +149,7 @@ describe(BaseMELCloudDriver, () => {
     it('should return empty array when getHomeDevicesByType returns empty', async () => {
       getHomeDevicesByTypeMock.mockReturnValue([])
 
-      const listHandler = vi.fn<(...args: unknown[]) => unknown>()
-      const session = mock<PairSession>({
-        setHandler: vi
-          .fn<
-            (event: string, handler: (...args: unknown[]) => unknown) => void
-          >()
-          .mockImplementation(
-            (event: string, handler: (...args: unknown[]) => unknown) => {
-              if (event === 'list_devices') {
-                listHandler.mockImplementation(handler)
-              }
-            },
-          ),
-        showView: showViewMock,
-      })
+      const { listHandler, session } = createListDevicesSession(showViewMock)
       await driver.onPair(session)
       const result = await listHandler()
 

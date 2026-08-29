@@ -18,27 +18,17 @@ import type { Homey } from '../../lib/homey.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
 import { EnergyReport } from '../../drivers/classic-report.mts'
 import { getMockCallArg, mock } from '../helpers.ts'
+import { createReportDeviceMocks, FAKE_NOW } from '../report-mocks.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
 
-const FAKE_NOW = Temporal.Instant.from(
-  '2026-03-18T12:00:00.000+01:00',
-).epochMilliseconds
-
-const setCapabilityValueMock =
-  vi.fn<(capability: string, value: unknown) => Promise<void>>()
-const ensureDeviceMock = vi.fn<() => Promise<unknown>>()
-const cleanMappingMock = vi.fn<(mapping: unknown) => Record<string, unknown>>()
-const clearTimeoutMock = vi.fn<(timeout: NodeJS.Timeout | null) => void>()
-const setTimeoutMock = vi
-  .fn<
-    (
-      callback: () => Promise<void>,
-      interval: unknown,
-      actionType: string,
-    ) => number
-  >()
-  .mockReturnValue(1)
+const {
+  cleanMappingMock,
+  clearTimeoutMock,
+  ensureDeviceMock,
+  setCapabilityValueMock,
+  setTimeoutMock,
+} = createReportDeviceMocks()
 const logMock = vi.fn<(...args: unknown[]) => void>()
 const errorMock = vi.fn<(...args: unknown[]) => void>()
 const setWarningMock = vi.fn<(warning: string | null) => Promise<void>>()

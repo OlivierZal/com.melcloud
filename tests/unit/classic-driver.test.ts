@@ -2,7 +2,6 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type HomeyModule from 'homey'
 import type FlowCardAction from 'homey/lib/FlowCardAction'
 import type FlowCardCondition from 'homey/lib/FlowCardCondition'
-import type PairSession from 'homey/lib/PairSession'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
@@ -13,6 +12,7 @@ import {
   testRepairing,
 } from '../driver-descriptors.ts'
 import { type InteropModule, assertDefined, mock } from '../helpers.ts'
+import { createListDevicesSession } from '../pair-session.ts'
 import {
   type TestDriver,
   type TestDriverType,
@@ -85,26 +85,6 @@ vi.mock(import('homey'), async () => {
   })
 })
 
-const createListDevicesSession = (): {
-  listHandler: ReturnType<typeof vi.fn<(...args: unknown[]) => unknown>>
-  session: PairSession
-} => {
-  const listHandler = vi.fn<(...args: unknown[]) => unknown>()
-  const session = mock<PairSession>({
-    setHandler: vi
-      .fn<(event: string, handler: (...args: unknown[]) => unknown) => void>()
-      .mockImplementation(
-        (event: string, handler: (...args: unknown[]) => unknown) => {
-          if (event === 'list_devices') {
-            listHandler.mockImplementation(handler)
-          }
-        },
-      ),
-    showView: showViewMock,
-  })
-  return { listHandler, session }
-}
-
 describe(ClassicMELCloudDriver, () => {
   let driver: TestDriver
 
@@ -144,7 +124,7 @@ describe(ClassicMELCloudDriver, () => {
 
   describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {
-      const { listHandler, session } = createListDevicesSession()
+      const { listHandler, session } = createListDevicesSession(showViewMock)
       stubDiscoverableDevice()
       await driver.onPair(session)
       const devices = await listHandler()
@@ -162,7 +142,7 @@ describe(ClassicMELCloudDriver, () => {
     // The opt-in rule at the pairing-details call site: the raw required
     // list carries measure_signal_strength, the listed device must not.
     it('should exclude the opt-in measure_signal_strength from pairing details', async () => {
-      const { listHandler, session } = createListDevicesSession()
+      const { listHandler, session } = createListDevicesSession(showViewMock)
       stubDiscoverableDevice()
       vi.spyOn(driver, 'getRequiredCapabilities').mockReturnValue([
         'onoff',
