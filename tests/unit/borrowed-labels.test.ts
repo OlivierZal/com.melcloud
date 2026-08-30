@@ -6,19 +6,29 @@ import verticalCapability from '../../.homeycompose/capabilities/vertical.json' 
 import horizontalAction from '../../.homeycompose/flow/actions/horizontal_action.json' with { type: 'json' }
 import verticalAction from '../../.homeycompose/flow/actions/vertical_action.json' with { type: 'json' }
 import horizontalCondition from '../../.homeycompose/flow/conditions/horizontal_condition.json' with { type: 'json' }
+import thermostatZone2Condition from '../../.homeycompose/flow/conditions/thermostat_mode.zone2_condition.json' with { type: 'json' }
 import verticalCondition from '../../.homeycompose/flow/conditions/vertical_condition.json' with { type: 'json' }
 import horizontalChanged from '../../.homeycompose/flow/triggers/horizontal_changed.json' with { type: 'json' }
+import thermostatZone2Changed from '../../.homeycompose/flow/triggers/thermostat_mode.zone2_changed.json' with { type: 'json' }
 import verticalChanged from '../../.homeycompose/flow/triggers/vertical_changed.json' with { type: 'json' }
 import homeAtaCompose from '../../drivers/home-melcloud/driver.compose.json' with { type: 'json' }
 import classicAtaCompose from '../../drivers/melcloud/driver.compose.json' with { type: 'json' }
 
 // The companion of tests/unit/capability-definitions.test.ts: that one
 // pins the vendored DEFINITIONS against node-homey-lib, this one pins
-// the LABELS the app copies out of them. Nothing derives those copies at
-// build time, so a homey-lib re-wording would leave the app spelling a
-// value one way where Homey spells it another — on the same device page,
-// since the ATA drivers ship `thermostat_mode` next to their own vane
-// pickers.
+// the LABELS the app takes from them. Nothing derives those at build
+// time, so a homey-lib re-wording would leave the app spelling a value
+// one way where Homey spells it another — on the same device page, since
+// the ATA drivers ship `thermostat_mode` next to their own vane pickers,
+// and in the same flow-card list, since the ATW drivers ship the app's
+// zone-2 cards next to Homey's own.
+//
+// The app leans on that wording in TWO shapes, one table each. A COPY is
+// byte-equal to its homey-lib label, so `BORROWED_LABELS` compares whole
+// strings. A DERIVATIVE only embeds homey-lib's term inside a sentence of
+// the app's own ("… in zone 2", "- zone 2", its own `!{{…|…}}`
+// inflection), so nothing is byte-equal and `DERIVED_WORDINGS` pins the
+// TERM instead — see its own note below.
 //
 // Membership states an INTENT, not a measurement: a row exists because
 // the app site deliberately speaks homey-lib's wording. A label that
@@ -118,6 +128,119 @@ const BORROWED_LABELS = [
   ]),
 ]
 
+const THERMOSTAT_CAPABILITY: LabelSite = {
+  json: libThermostatMode,
+  path: 'title',
+  source: 'thermostat_mode',
+}
+
+const THERMOSTAT_CONDITION: LabelSite = {
+  json: libThermostatMode,
+  path: '$flow.conditions[0].title',
+  source: 'thermostat_mode',
+}
+
+const THERMOSTAT_TRIGGER: LabelSite = {
+  json: libThermostatMode,
+  path: '$flow.triggers[0].title',
+  source: 'thermostat_mode',
+}
+
+// The noun as homey-lib's CARDS spell it. It is not always the noun the
+// capability header spells: 2.52.1 re-worded the nl cards to
+// "thermostaatstand" and the ru ones to "Режим работы термостата" while
+// leaving both capability titles alone.
+const CARD_TERMS = {
+  ar: 'وضع الثرموستات',
+  da: 'termostattilstand',
+  de: 'thermostat-modus',
+  en: 'thermostat mode',
+  es: 'modo del termostato',
+  fr: 'mode du thermostat',
+  it: 'modalità termostato',
+  ko: '온도조절기 모드',
+  nl: 'thermostaatstand',
+  no: 'termostatmodus',
+  pl: 'tryb termostatu',
+  ru: 'режим работы термостата',
+  sv: 'termostatläge',
+}
+
+// The noun as the capability HEADER spells it — what Homey shows on the
+// device page and on the tag its own capability trigger exposes.
+const CAPABILITY_TERMS = {
+  ...CARD_TERMS,
+  nl: 'thermostaatmodus',
+  ru: 'режим термостата',
+}
+
+// Italian is the one locale whose app cards speak the capability header
+// ("modalità termostato") where homey-lib's cards say "modalità del
+// termostato". Pinning it against the header keeps the row biting there
+// instead of dropping the locale, and states which upstream label an
+// Italian re-wording has to move for the app to follow.
+const CARD_EXCEPTIONS = { it: THERMOSTAT_CAPABILITY }
+
+// The ATW drivers ship `thermostat_mode.zone2` beside Homey's own
+// `thermostat_mode`, so the app's zone-2 cards stand next to Homey's in
+// one flow-card list and must name the concept with Homey's word. Which
+// homey-lib label each one follows is a per-site judgement, and it is
+// the `lib` column that records it: a card TITLE follows the card of the
+// same kind (Homey's condition card is what the app's condition card
+// sits beside), while the trigger's TOKEN title follows the capability
+// header, because a token is a tag name — Homey titles the zone-1 tag
+// from the header, and the app's other zone-2 tags ("Operational state -
+// zone 2", "Temperature - zone 2") are built the same way.
+//
+// Out by the same judgement: the zone-2 ACTION card, whose every locale
+// names "the mode in zone 2" rather than the thermostat mode. It embeds
+// no homey-lib term, so it has none to follow — a row for it would have
+// to invent an upstream wording the app never spoke.
+const DERIVED_WORDINGS = [
+  {
+    app: {
+      json: thermostatZone2Changed,
+      path: 'title',
+      source: '.homeycompose/flow/triggers/thermostat_mode.zone2_changed.json',
+    },
+    lib: THERMOSTAT_TRIGGER,
+    libExceptions: CARD_EXCEPTIONS,
+    terms: CARD_TERMS,
+  },
+  {
+    app: {
+      json: thermostatZone2Changed,
+      path: 'tokens[0].title',
+      source: '.homeycompose/flow/triggers/thermostat_mode.zone2_changed.json',
+    },
+    lib: THERMOSTAT_CAPABILITY,
+    libExceptions: {},
+    terms: CAPABILITY_TERMS,
+  },
+  {
+    app: {
+      json: thermostatZone2Condition,
+      path: 'title',
+      source:
+        '.homeycompose/flow/conditions/thermostat_mode.zone2_condition.json',
+    },
+    lib: THERMOSTAT_CONDITION,
+    libExceptions: CARD_EXCEPTIONS,
+    terms: CARD_TERMS,
+  },
+  {
+    app: {
+      json: thermostatZone2Condition,
+      path: 'titleFormatted',
+      source:
+        '.homeycompose/flow/conditions/thermostat_mode.zone2_condition.json',
+    },
+    lib: THERMOSTAT_CONDITION,
+    libExceptions: CARD_EXCEPTIONS,
+    terms: CARD_TERMS,
+  },
+]
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
 
@@ -164,6 +287,61 @@ const findWordingBreaches = ({
   return breaches
 }
 
+const listLocales = (labels: Record<string, unknown>): string =>
+  Object.keys(labels)
+    .toSorted((one, other) => one.localeCompare(other))
+    .join(', ')
+
+const speaks = (wording: string | undefined, term: string): boolean =>
+  wording?.toLowerCase().includes(term.toLowerCase()) ?? false
+
+// A derivative cannot be compared whole, so the row's TERM carries the
+// comparison: it is pinned to sit inside BOTH sides. Against homey-lib it
+// is the tripwire — the day upstream re-words the noun, the term stops
+// being found there and the row fails with the new wording in hand.
+// Against the app it holds the adoption, so a later edit cannot quietly
+// walk the app's sentence away from Homey's word. A term is a whole
+// localized noun phrase, authored per locale as an intent: it cannot hold
+// by accident the way a bare `includes` of a common word would, and it
+// cannot keep matching a phrase upstream has rewritten.
+const findTermBreaches = ({
+  app,
+  lib,
+  libExceptions,
+  terms,
+}: {
+  app: LabelSite
+  lib: LabelSite
+  libExceptions: Record<string, LabelSite>
+  terms: Record<string, string>
+}): string[] => {
+  const appLabels = readLabels(app)
+  const breaches: string[] = []
+  const pinned = listLocales(terms)
+  const localized = listLocales(readLabels(lib))
+  if (pinned !== localized) {
+    breaches.push(
+      `${app.source} ${app.path} pins a term for [${pinned}] where node-homey-lib ${lib.source} ${lib.path} is localized into [${localized}]: translate the app string into the locales upstream gained, or drop the ones it lost, then re-pin the terms here.`,
+    )
+  }
+  for (const [locale, term] of Object.entries(terms)) {
+    const source = libExceptions[locale] ?? lib
+    const libWording = readLabels(source)[locale]
+    const appWording = appLabels[locale]
+    if (!speaks(libWording, term)) {
+      breaches.push(
+        `node-homey-lib ${source.source} ${source.path} [${locale}] says ${JSON.stringify(libWording)}, which no longer contains the term ${JSON.stringify(term)} that ${app.source} ${app.path} embeds: upstream re-worded it — carry the new noun into the app string, keeping the app's own additions around it, then re-pin the term here.`,
+      )
+    }
+    if (!speaks(appWording, term)) {
+      breaches.push(
+        `${app.source} ${app.path} [${locale}] says ${JSON.stringify(appWording)}, which does not contain node-homey-lib's term ${JSON.stringify(term)} from ${source.source} ${source.path}: speak the upstream noun and keep the app's own additions around it — never edit vendor/capabilities to make this pass.`,
+      )
+    }
+  }
+  return breaches
+}
+
 describe('borrowed capability labels', () => {
   it.each(BORROWED_LABELS)(
     'should spell $app.source $app.path as homey-lib $lib.source $lib.path',
@@ -174,6 +352,20 @@ describe('borrowed capability labels', () => {
       expect(Object.keys(readLabels(row.lib))).not.toStrictEqual([])
 
       expect(findWordingBreaches(row)).toStrictEqual([])
+    },
+  )
+})
+
+describe('derived flow-card wording', () => {
+  it.each(DERIVED_WORDINGS)(
+    'should embed homey-lib $lib.source $lib.path in $app.source $app.path',
+    (row) => {
+      expect.assertions(2)
+
+      // A mistyped homey-lib path would otherwise pin nothing.
+      expect(Object.keys(readLabels(row.lib))).not.toStrictEqual([])
+
+      expect(findTermBreaches(row)).toStrictEqual([])
     },
   )
 })
