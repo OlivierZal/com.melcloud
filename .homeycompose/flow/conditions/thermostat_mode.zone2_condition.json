@@ -126,10 +126,10 @@
     "fr": "Mode du thermostat !{{est|n'est pas}} dans la zone 2",
     "it": "La modalità termostato !{{è|non è}} nella zona 2",
     "ko": "구역 2의 온도조절기 모드가 !{{맞습니다|아닙니다}}",
-    "nl": "Thermostaatmodus !{{is|is niet}} in zone 2",
+    "nl": "Thermostaatstand !{{is|is niet}} in zone 2",
     "no": "Termostatmodus !{{er|er ikke}} i sone 2",
     "pl": "Tryb termostatu !{{jest|nie jest}} w strefie 2",
-    "ru": "Режим термостата !{{соответствует|не соответствует}} в зоне 2",
+    "ru": "Режим работы термостата !{{соответствует|не соответствует}} в зоне 2",
     "sv": "Termostatläge !{{är|är inte}} i zon 2"
   },
   "titleFormatted": {
@@ -141,10 +141,10 @@
     "fr": "Mode du thermostat !{{est|n'est pas}} [[thermostat_mode]] dans la zone 2",
     "it": "La modalità termostato !{{è|non è}} [[thermostat_mode]] nella zona 2",
     "ko": "구역 2의 온도조절기 모드가 [[thermostat_mode]] !{{입니다|이(가) 아닙니다}}",
-    "nl": "Thermostaatmodus !{{is|is niet}} [[thermostat_mode]] in zone 2",
+    "nl": "Thermostaatstand !{{is|is niet}} [[thermostat_mode]] in zone 2",
     "no": "Termostatmodus !{{er|er ikke}} [[thermostat_mode]] i sone 2",
     "pl": "Tryb termostatu !{{jest|nie jest}} [[thermostat_mode]] w strefie 2",
-    "ru": "Режим термостата !{{соответствует|не соответствует}} [[thermostat_mode]] в зоне 2",
+    "ru": "Режим работы термостата !{{соответствует|не соответствует}} [[thermostat_mode]] в зоне 2",
     "sv": "Termostatläge !{{är|är inte}} [[thermostat_mode]] i zon 2"
   }
 }
