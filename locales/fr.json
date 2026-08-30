@@ -18,7 +18,8 @@
       "reset": "Réinitialiser",
       "resetConfirm": "Ceci déconnecte immédiatement le compte sélectionné et efface ses identifiants enregistrés.",
       "rejected": "__name__ a refusé ces identifiants — vérifiez l'adresse e-mail et le mot de passe.",
-      "throttled": "__name__ bloque temporairement les connexions après trop de tentatives — réessayez plus tard."
+      "throttled": "__name__ bloque temporairement les connexions après trop de tentatives — réessayez plus tard.",
+      "staleDevices": "Connexion réussie, mais la liste des appareils n'a pas pu être actualisée — réessayez plus tard."
     },
     "boolean": {
       "false": "Non",

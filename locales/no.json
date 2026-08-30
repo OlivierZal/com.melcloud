@@ -18,7 +18,8 @@
       "reset": "Tilbakestill",
       "resetConfirm": "Dette logger den valgte kontoen ut umiddelbart og sletter de lagrede påloggingsopplysningene.",
       "rejected": "__name__ avviste disse påloggingsopplysningene — kontroller e-postadressen og passordet.",
-      "throttled": "__name__ blokkerer pålogginger midlertidig etter for mange forsøk — prøv igjen senere."
+      "throttled": "__name__ blokkerer pålogginger midlertidig etter for mange forsøk — prøv igjen senere.",
+      "staleDevices": "Logget inn, men enhetslisten kunne ikke oppdateres — prøv igjen senere."
     },
     "boolean": {
       "false": "Nei",

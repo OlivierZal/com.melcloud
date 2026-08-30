@@ -247,8 +247,8 @@ const defaultRoutes = (): Record<string, unknown> => ({
   'GET /targets/buildings_1/settings/holiday-mode': holidayFixture(),
   'GET /webview-hashes': {},
   'POST /boot-error': undefined,
-  'POST /sessions/classic': undefined,
-  'POST /sessions/home': undefined,
+  'POST /sessions/classic': { isDeviceListStale: false },
+  'POST /sessions/home': { isDeviceListStale: false },
   'PUT /settings/devices': undefined,
 })
 
@@ -1012,6 +1012,55 @@ describe('settings page', () => {
       await settleDetached()
 
       expect(harness.alert).toHaveBeenCalledWith('targets down')
+    })
+
+    // The route answers a stale device list on a sign-in the server
+    // accepted but whose registry refresh failed. That is a warning
+    // over a live session, never a credential failure: the page must
+    // keep the account, open its content and say what actually broke.
+    it('should reveal the account content when the device list came back stale', async () => {
+      const harness = await bootPage({
+        routes: { ...defaultRoutes(), 'GET /sessions/classic': false },
+      })
+      commit(getInput('username'), 'user@example.com')
+      commit(getInput('password'), 'secret')
+      swapRoutes(harness, {
+        ...defaultRoutes(),
+        'POST /sessions/classic': { isDeviceListStale: true },
+      })
+      getButton('authenticate').click()
+      await settleDetached()
+      await settleDetached()
+
+      expect(getDiv('content').hidden).toBe(false)
+      expect(harness.alert).toHaveBeenCalledWith(
+        'settings.authenticate.staleDevices',
+      )
+      expect(harness.alert).not.toHaveBeenCalledWith(
+        'settings.authenticate.rejected',
+      )
+    })
+
+    // A refresh that failed is WHY the list came back empty, so it is
+    // the message the user gets — "add a device" would send them after
+    // a device they already own.
+    it('should let the stale warning outrank the device check complaint', async () => {
+      const harness = await bootPage()
+      commit(getSelect('api'), 'home')
+      commit(getInput('username'), 'home@example.com')
+      commit(getInput('password'), 'secret')
+      swapRoutes(harness, {
+        ...defaultRoutes(),
+        'GET /sessions/home': true,
+        'POST /sessions/home': { isDeviceListStale: true },
+      })
+      getButton('authenticate').click()
+      await settleDetached()
+
+      expect(harness.alert).toHaveBeenCalledWith(
+        'settings.authenticate.staleDevices',
+      )
+      expect(harness.alert).not.toHaveBeenCalledWith('settings.devices.none')
     })
 
     it('should swap the fields when switching accounts', async () => {

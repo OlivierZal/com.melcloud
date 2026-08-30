@@ -15,6 +15,7 @@ import {
 
 import type {
   Api,
+  AuthenticationResult,
   HolidayModeSettings,
   TargetHolidayModeState,
   TargetProtectionState,
@@ -125,13 +126,23 @@ const api = {
     body: LoginCredentials
     homey: Homey
     params: { api: string }
-  }): Promise<void> => {
+  }): Promise<AuthenticationResult> => {
     const service = toApi(params.api)
+    const client = getApiClient(homey, service)
     try {
-      await getApiClient(homey, service).authenticate(body)
+      await client.authenticate(body)
     } catch (error) {
-      throw toLoginFailure(homey, service, error)
+      // A rejection is not proof the credentials were refused: the
+      // library enforces a registry sync AFTER the server accepted the
+      // sign-in, and that sync throws on its own. The session is the
+      // arbiter — a live one means the account is in, and only the
+      // device list is stale.
+      if (error instanceof AuthenticationError || !client.isAuthenticated()) {
+        throw toLoginFailure(homey, service, error)
+      }
+      return { isDeviceListStale: true }
     }
+    return { isDeviceListStale: false }
   },
   getClassicBuildings: (): Classic.BuildingZone[] => getClassicBuildings(),
   /**

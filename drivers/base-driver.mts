@@ -131,10 +131,18 @@ export abstract class BaseMELCloudDriver extends Driver {
         await this.api.authenticate(data)
         return true
       } catch (error) {
-        if (!(error instanceof AuthenticationError)) {
+        if (error instanceof AuthenticationError) {
+          return false
+        }
+        // The library enforces a registry sync AFTER the server
+        // accepted the sign-in, so a non-credential rejection can leave
+        // a perfectly live session behind. Pairing follows the session,
+        // not the rejection: an account that IS signed in continues to
+        // the device list instead of failing the wizard.
+        if (!this.api.isAuthenticated()) {
           throw error
         }
-        return false
+        return true
       }
     })
   }

@@ -18,7 +18,8 @@
       "reset": "Reset",
       "resetConfirm": "This immediately signs out the selected account and clears its saved credentials.",
       "rejected": "__name__ rejected these credentials — please check the email address and password.",
-      "throttled": "__name__ is temporarily blocking sign-ins after too many attempts — please try again later."
+      "throttled": "__name__ is temporarily blocking sign-ins after too many attempts — please try again later.",
+      "staleDevices": "Signed in, but the device list could not be refreshed — please try again later."
     },
     "boolean": {
       "false": "No",
