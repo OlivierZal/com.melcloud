@@ -27,6 +27,7 @@
       "rejected": "__name__ heeft deze inloggegevens geweigerd — controleer het e-mailadres en het wachtwoord.",
       "reset": "Opnieuw instellen",
       "resetConfirm": "Dit meldt het geselecteerde account onmiddellijk af en wist de opgeslagen inloggegevens.",
+      "staleDevices": "Aangemeld, maar de apparatenlijst kon niet worden vernieuwd — probeer het later opnieuw.",
       "throttled": "__name__ blokkeert aanmeldingen tijdelijk na te veel pogingen — probeer het later opnieuw.",
       "unverified": "Aangemeld, maar de sessie kon niet worden geverifieerd — probeer het opnieuw."
     },

@@ -1,6 +1,7 @@
 import { findContractBreach } from '@olivierzal/homey-kit/testing'
 import { describe, expect, expectTypeOf, it } from 'vitest'
 
+import type { AuthenticationResult } from '../../types/api.mts'
 import appConfig from '../../.homeycompose/app.json' with { type: 'json' }
 import api from '../../api.mts'
 import ataGroupSettingApi from '../../widgets/ata-group-setting/api.mts'
@@ -38,6 +39,17 @@ describe('api contract', () => {
   // ever leaves its object (unbound-method).
   it('should expose only function handlers', () => {
     expectTypeOf<Handler>().toBeFunction()
+  })
+
+  // The sign-in route ANSWERS a payload rather than resolving empty:
+  // the library enforces a post-auth registry sync, so an accepted
+  // sign-in whose refresh failed is reported in the result instead of
+  // as a rejection. Pinned at the type level, where the handler and
+  // the webview that destructures the answer actually meet.
+  it('should declare the sign-in result the webview reads back', () => {
+    expectTypeOf<
+      typeof api.authenticate
+    >().returns.resolves.toEqualTypeOf<AuthenticationResult>()
   })
 
   // One comparison per surface pins the ids ↔ handlers mapping in both

@@ -47,7 +47,11 @@ import {
 } from '@olivierzal/melcloud-api/protection'
 import { Temporal } from 'temporal-polyfill'
 
-import type { Api, HolidayModeSettings } from '../types/api.mts'
+import type {
+  Api,
+  AuthenticationResult,
+  HolidayModeSettings,
+} from '../types/api.mts'
 import type { HomeySettings } from '../types/app-settings.mts'
 import type {
   DeviceSetting,
@@ -451,7 +455,10 @@ class AuthManager {
 
   readonly #homey: Homey
 
-  readonly #loadPostLoginCallback: (api: Api) => Promise<void>
+  readonly #loadPostLoginCallback: (
+    api: Api,
+    isDeviceListStale: boolean,
+  ) => Promise<void>
 
   readonly #loginSection: HTMLDivElement
 
@@ -478,7 +485,10 @@ class AuthManager {
 
   public constructor(
     homey: Homey,
-    loadPostLoginCallback: (api: Api) => Promise<void>,
+    loadPostLoginCallback: (
+      api: Api,
+      isDeviceListStale: boolean,
+    ) => Promise<void>,
     onLogOutCallback: (api: Api) => void,
   ) {
     this.#homey = homey
@@ -594,12 +604,13 @@ class AuthManager {
     }
     await this.#gate.runBusy(async () => {
       try {
-        await homeyApiPost(this.#homey, `/sessions/${api}`, {
-          password,
-          username,
-        } satisfies LoginCredentials)
+        const { isDeviceListStale } = await homeyApiPost<AuthenticationResult>(
+          this.#homey,
+          `/sessions/${api}`,
+          { password, username } satisfies LoginCredentials,
+        )
         this.#credentialsByApi[api] = { password, username }
-        await this.#loadPostLoginCallback(api)
+        await this.#loadPostLoginCallback(api, isDeviceListStale)
       } catch (error) {
         // The app-side handler already classified the failure into a
         // user-facing reason (rejected / throttled / transport).
@@ -1856,7 +1867,7 @@ class SettingsApp {
     this.#errorLogManager = new ErrorLogManager(homey)
     this.#authManager = new AuthManager(
       homey,
-      async (api) => this.#onLogin(api),
+      async (api, isDeviceListStale) => this.#onLogin(api, isDeviceListStale),
       (api) => {
         this.#onLogOut(api)
       },
@@ -2013,22 +2024,42 @@ class SettingsApp {
     )
   }
 
+  // Fills the zone panel from the registry and ANSWERS its failure
+  // instead of throwing it, so the caller can rank that failure against
+  // the sign-in's own device warning rather than alert both.
+  async #loadDevicesForApi(api: Api): Promise<string | null> {
+    try {
+      await this.#ensureDevicesForApi(api)
+    } catch (error) {
+      return error instanceof NoDeviceError
+        ? error.message
+        : getErrorMessage(error)
+    }
+    return null
+  }
+
   /**
    * @alerts Displays post-login errors to the user.
    */
-  async #onLogin(api: Api): Promise<void> {
+  async #onLogin(api: Api, isDeviceListStale: boolean): Promise<void> {
     // Reflect the server truth instead of assuming success: the login
-    // POST resolves even when the post-login device sync fails.
+    // POST resolves on a sign-in the server accepted even when the
+    // enforced post-login device sync failed, which the route reports
+    // as `isDeviceListStale` rather than as a login failure.
     this.#authState[api] = await this.#fetchSessionState(api)
     if (this.#authState[api]) {
-      try {
-        await this.#ensureDevicesForApi(api)
-      } catch (error) {
-        await this.#homey.alert(
-          error instanceof NoDeviceError
-            ? error.message
-            : getErrorMessage(error),
-        )
+      // The panel is filled from whatever the registry holds — a list
+      // the sign-in could not refresh still describes real devices —
+      // but a failed refresh is what the user hears about: it EXPLAINS
+      // a list that came back empty or out of date, where the device
+      // check's own "add a device" would send them off after a device
+      // they already own.
+      const failure = await this.#loadDevicesForApi(api)
+      const message = isDeviceListStale
+        ? this.#homey.__('settings.authenticate.staleDevices')
+        : failure
+      if (message !== null) {
+        await this.#homey.alert(message)
       }
     } else {
       await this.#homey.alert(

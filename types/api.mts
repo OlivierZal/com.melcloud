@@ -22,6 +22,18 @@ export type AuthenticationAPI = Pick<
 >
 
 /**
+ * What the sign-in route answers once the server accepted the
+ * credentials. The library enforces a registry sync after the sign-in
+ * itself, so an accepted account can still end up with a device list
+ * the app could not refresh: `isDeviceListStale` carries that
+ * half-failure to the page, which reports it WITHOUT sending the user
+ * back to the login form.
+ */
+export interface AuthenticationResult {
+  readonly isDeviceListStale: boolean
+}
+
+/**
  * Holiday-mode window as the settings webview submits it: an absent
  * bound means "start (or end) now", completed app-side on the HOMEY's
  * clock — the one clock every entry point shares, whatever timezone

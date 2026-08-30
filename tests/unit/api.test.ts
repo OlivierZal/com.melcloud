@@ -39,6 +39,8 @@ const mockEnsureHomeAuthenticated = vi.fn<() => Promise<boolean>>()
 const mockGetHomeBuildings = vi.fn<Home.Registry['getBuildings']>()
 const mockClassicAuthenticate = vi.fn<() => Promise<void>>()
 const mockHomeAuthenticate = vi.fn<() => Promise<void>>()
+const mockClassicIsAuthenticated = vi.fn<() => boolean>()
+const mockHomeIsAuthenticated = vi.fn<() => boolean>()
 const mockClassicLogOut = vi.fn<() => void>()
 const mockHomeLogOut = vi.fn<() => void>()
 
@@ -46,6 +48,7 @@ const mockApp = {
   classicApi: {
     authenticate: mockClassicAuthenticate,
     ensureAuthenticated: mockEnsureClassicAuthenticated,
+    isAuthenticated: mockClassicIsAuthenticated,
     logOut: mockClassicLogOut,
   },
   error: vi.fn<(...args: readonly unknown[]) => void>(),
@@ -59,6 +62,7 @@ const mockApp = {
   homeApi: {
     authenticate: mockHomeAuthenticate,
     ensureAuthenticated: mockEnsureHomeAuthenticated,
+    isAuthenticated: mockHomeIsAuthenticated,
     logOut: mockHomeLogOut,
     registry: { getBuildings: mockGetHomeBuildings },
   },
@@ -336,12 +340,13 @@ describe('api', () => {
       })
       mockClassicAuthenticate.mockResolvedValue()
 
-      await api.authenticate({
+      const result = await api.authenticate({
         body: credentials,
         homey,
         params: { api: 'classic' },
       })
 
+      expect(result).toStrictEqual({ isDeviceListStale: false })
       expect(mockClassicAuthenticate).toHaveBeenCalledWith(credentials)
       expect(mockHomeAuthenticate).not.toHaveBeenCalled()
     })
@@ -356,9 +361,10 @@ describe('api', () => {
       expect(mockClassicAuthenticate).not.toHaveBeenCalled()
     })
 
-    it('should propagate authenticate errors', async () => {
+    it('should propagate authenticate errors when no session survived', async () => {
       const error = new Error('invalid credentials')
       mockClassicAuthenticate.mockRejectedValue(error)
+      mockClassicIsAuthenticated.mockReturnValue(false)
 
       await expect(
         api.authenticate({
@@ -417,6 +423,69 @@ describe('api', () => {
         'settings.authenticate.throttled',
         { name: 'MELCloud Home' },
       )
+    })
+  })
+
+  // The library enforces a registry sync AFTER the server accepted the
+  // credentials, so `authenticate()` rejects over a session that is
+  // live. The session is the arbiter: such a rejection reports a stale
+  // device list, never a login failure.
+  describe('accepted sign-in whose registry sync failed', () => {
+    it.each([
+      {
+        authenticateMock: mockClassicAuthenticate,
+        isAuthenticatedMock: mockClassicIsAuthenticated,
+        service: 'classic',
+      },
+      {
+        authenticateMock: mockHomeAuthenticate,
+        isAuthenticatedMock: mockHomeIsAuthenticated,
+        service: 'home',
+      },
+    ])(
+      'should answer a stale device list on $service rather than reject',
+      async ({ authenticateMock, isAuthenticatedMock, service }) => {
+        authenticateMock.mockRejectedValueOnce(new Error('registry sync down'))
+        isAuthenticatedMock.mockReturnValue(true)
+
+        await expect(
+          api.authenticate({
+            body: mock<LoginCredentials>(),
+            homey,
+            params: { api: service },
+          }),
+        ).resolves.toStrictEqual({ isDeviceListStale: true })
+        expect(mockTranslate).not.toHaveBeenCalled()
+      },
+    )
+
+    it('should still report a login failure when no session survived', async () => {
+      mockClassicAuthenticate.mockRejectedValueOnce(new Error('transport down'))
+      mockClassicIsAuthenticated.mockReturnValue(false)
+
+      await expect(
+        api.authenticate({
+          body: mock<LoginCredentials>(),
+          homey,
+          params: { api: 'classic' },
+        }),
+      ).rejects.toThrow('transport down')
+    })
+
+    it('should never rescue a credential rejection over a live session', async () => {
+      mockHomeAuthenticate.mockRejectedValueOnce(
+        new AuthenticationError('MELCloud Home rejected the credentials'),
+      )
+      mockHomeIsAuthenticated.mockReturnValue(true)
+
+      await expect(
+        api.authenticate({
+          body: mock<LoginCredentials>(),
+          homey,
+          params: { api: 'home' },
+        }),
+      ).rejects.toThrow('settings.authenticate.rejected')
+      expect(mockHomeIsAuthenticated).not.toHaveBeenCalled()
     })
   })
 
