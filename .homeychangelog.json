@@ -1918,5 +1918,20 @@
     "pl": "Wewnętrzna konserwacja i restrukturyzacja kodu.",
     "ru": "Внутреннее обслуживание и реструктуризация кода.",
     "sv": "Internt underhåll och omstrukturering av koden."
+  },
+  "46.7.1": {
+    "ar": "لم يعد تسجيل الدخول الناجح يُبلَّغ عنه كفشل: إذا تعذّر عرض أجهزتك على الفور، يخبرك التطبيق الآن بأن القائمة قديمة بدلاً من إعادتك إلى شاشة تسجيل الدخول. ولم يعد طراز جهاز لا يعرفه التطبيق بعد يُخفي بقية أجهزتك.",
+    "da": "Et vellykket login rapporteres ikke længere som en fejl: hvis dine enheder ikke kan vises med det samme, fortæller appen dig nu, at listen er forældet, i stedet for at sende dig tilbage til login-skærmen. Og en enhedsmodel, som appen endnu ikke kender, skjuler ikke længere alle dine andre enheder.",
+    "de": "Eine erfolgreiche Anmeldung wird nicht mehr als Fehler gemeldet: Wenn deine Geräte nicht sofort aufgelistet werden können, sagt dir die App jetzt, dass die Liste veraltet ist, statt dich zurück zum Anmeldebildschirm zu schicken. Und ein Gerätemodell, das die App noch nicht kennt, verbirgt nicht mehr alle deine anderen Geräte.",
+    "en": "A successful sign-in is no longer reported as a login failure: when your devices cannot be listed right away, the app now tells you the list is out of date instead of sending you back to the sign-in screen. And a device model the app does not recognise yet no longer hides all your other devices.",
+    "es": "Un inicio de sesión correcto ya no se notifica como un fallo: si tus dispositivos no se pueden listar de inmediato, la app ahora te indica que la lista está desactualizada en lugar de devolverte a la pantalla de inicio de sesión. Y un modelo de dispositivo que la app aún no reconoce ya no oculta el resto de tus dispositivos.",
+    "fr": "Une connexion réussie n’est plus signalée comme un échec : si vos appareils ne peuvent pas être listés tout de suite, l’app vous indique désormais que la liste n’est pas à jour au lieu de vous renvoyer à l’écran de connexion. Et un modèle d’appareil que l’app ne reconnaît pas encore ne masque plus tous vos autres appareils.",
+    "it": "Un accesso riuscito non viene più segnalato come un errore: se i tuoi dispositivi non possono essere elencati subito, l’app ora ti avvisa che l’elenco non è aggiornato invece di riportarti alla schermata di accesso. E un modello di dispositivo che l’app non riconosce ancora non nasconde più tutti gli altri dispositivi.",
+    "ko": "로그인에 성공했는데도 실패로 표시되던 문제를 해결했습니다. 기기 목록을 바로 가져오지 못하면 로그인 화면으로 되돌리는 대신 목록이 오래되었다고 알려 줍니다. 또한 앱이 아직 모르는 기기 모델이 있어도 나머지 기기가 모두 사라지지 않습니다.",
+    "nl": "Een geslaagde aanmelding wordt niet langer als een mislukking gemeld: als je apparaten niet meteen kunnen worden opgehaald, meldt de app nu dat de lijst verouderd is in plaats van je terug te sturen naar het aanmeldscherm. En een apparaatmodel dat de app nog niet kent, verbergt niet langer al je andere apparaten.",
+    "no": "En vellykket pålogging rapporteres ikke lenger som en feil: hvis enhetene dine ikke kan vises med én gang, forteller appen deg nå at listen er utdatert, i stedet for å sende deg tilbake til påloggingsskjermen. Og en enhetsmodell som appen ennå ikke kjenner, skjuler ikke lenger alle de andre enhetene dine.",
+    "pl": "Udane logowanie nie jest już zgłaszane jako błąd: jeśli lista urządzeń nie może zostać od razu pobrana, aplikacja informuje teraz, że jest nieaktualna, zamiast odsyłać Cię z powrotem do ekranu logowania. A model urządzenia, którego aplikacja jeszcze nie rozpoznaje, nie ukrywa już wszystkich pozostałych urządzeń.",
+    "ru": "Успешный вход больше не отображается как ошибка: если список устройств не удаётся получить сразу, приложение теперь сообщает, что список устарел, вместо того чтобы возвращать вас на экран входа. А модель устройства, которую приложение ещё не знает, больше не скрывает все остальные ваши устройства.",
+    "sv": "En lyckad inloggning rapporteras inte längre som ett fel: om dina enheter inte kan listas direkt berättar appen nu att listan är inaktuell i stället för att skicka tillbaka dig till inloggningsskärmen. Och en enhetsmodell som appen ännu inte känner till döljer inte längre alla dina andra enheter."
   }
 }
