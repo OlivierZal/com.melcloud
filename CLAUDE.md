@@ -792,11 +792,17 @@ reader fails open with an empty map).
   2026-08 against the docs source). The workflows therefore declare no
   `merge_group` trigger: an event that cannot fire needs no handling.
 - The PR title IS the commit that lands: `squash_merge_commit_title` is
-  `PR_TITLE` on all five repos, so the title is the single source (under
-  the former `COMMIT_OR_PR_TITLE`, a one-commit PR silently took its
-  commit subject instead). It must follow Conventional Commits, which
+  `PR_TITLE` on SEVEN of the family's eight repos, so the title is the
+  single source (under the former `COMMIT_OR_PR_TITLE`, a one-commit PR
+  silently took its commit subject instead). `api-core` is the
+  exception and still sits on `COMMIT_OR_PR_TITLE` — read from the API
+  2026-08-30, not assumed; the count read five here until `api-core`
+  joined the family, and rounding it up to eight would have asserted a
+  setting that is not there. It must follow Conventional Commits, which
   the required `PR title` check enforces
-  (`.github/workflows/pr-title.yml`, byte-identical in the five). The
+  (`.github/workflows/pr-title.yml`, byte-identical in the seven repos
+  that call the family reusables — every repo but `configs`, which
+  hosts them and whose own copy differs; md5-verified the same day). The
   default type set is the convention's own — no custom list, no scope
   allowlist (house scopes are free-form), and deliberately no
   `subjectPattern`: subjects legitimately open on a proper noun
