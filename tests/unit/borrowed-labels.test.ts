@@ -40,6 +40,13 @@ import classicAtaCompose from '../../drivers/melcloud/driver.compose.json' with 
 // siblings already decline homey-lib's wording; and the app's own
 // `hot_water_mode` and `thermostat_mode` values, which keep their own
 // Russian ("Авто") and are therefore the app's wording, not Homey's.
+//
+// When a row breaks, the APP string follows: adopt the new wording
+// there — reasoning about the sentence, not substituting a substring,
+// where the locale's grammar demands it — and revisit that label's
+// other locales; or, when the site no longer borrows homey-lib's
+// wording, delete the row, since membership states an intent. Never
+// edit vendor/capabilities to make a row pass.
 interface LabelSite {
   readonly json: unknown
   readonly path: string
@@ -149,7 +156,8 @@ const THERMOSTAT_TRIGGER: LabelSite = {
 // The noun as homey-lib's CARDS spell it. It is not always the noun the
 // capability header spells: 2.52.1 re-worded the nl cards to
 // "thermostaatstand" and the ru ones to "Режим работы термостата" while
-// leaving both capability titles alone.
+// leaving both capability titles alone, and the it cards say "modalità
+// del termostato" where the header drops the "del".
 const CARD_TERMS = {
   ar: 'وضع الثرموستات',
   da: 'termostattilstand',
@@ -157,7 +165,7 @@ const CARD_TERMS = {
   en: 'thermostat mode',
   es: 'modo del termostato',
   fr: 'mode du thermostat',
-  it: 'modalità termostato',
+  it: 'modalità del termostato',
   ko: '온도조절기 모드',
   nl: 'thermostaatstand',
   no: 'termostatmodus',
@@ -167,19 +175,15 @@ const CARD_TERMS = {
 }
 
 // The noun as the capability HEADER spells it — what Homey shows on the
-// device page and on the tag its own capability trigger exposes.
+// device page and on the tag its own capability trigger exposes. Where
+// the two diverge, the zone-2 token rightly keeps the header's noun
+// ("Thermostaatmodus - zone 2").
 const CAPABILITY_TERMS = {
   ...CARD_TERMS,
+  it: 'modalità termostato',
   nl: 'thermostaatmodus',
   ru: 'режим термостата',
 }
-
-// Italian is the one locale whose app cards speak the capability header
-// ("modalità termostato") where homey-lib's cards say "modalità del
-// termostato". Pinning it against the header keeps the row biting there
-// instead of dropping the locale, and states which upstream label an
-// Italian re-wording has to move for the app to follow.
-const CARD_EXCEPTIONS = { it: THERMOSTAT_CAPABILITY }
 
 // The ATW drivers ship `thermostat_mode.zone2` beside Homey's own
 // `thermostat_mode`, so the app's zone-2 cards stand next to Homey's in
@@ -204,7 +208,6 @@ const DERIVED_WORDINGS = [
       source: '.homeycompose/flow/triggers/thermostat_mode.zone2_changed.json',
     },
     lib: THERMOSTAT_TRIGGER,
-    libExceptions: CARD_EXCEPTIONS,
     terms: CARD_TERMS,
   },
   {
@@ -214,7 +217,6 @@ const DERIVED_WORDINGS = [
       source: '.homeycompose/flow/triggers/thermostat_mode.zone2_changed.json',
     },
     lib: THERMOSTAT_CAPABILITY,
-    libExceptions: {},
     terms: CAPABILITY_TERMS,
   },
   {
@@ -225,7 +227,6 @@ const DERIVED_WORDINGS = [
         '.homeycompose/flow/conditions/thermostat_mode.zone2_condition.json',
     },
     lib: THERMOSTAT_CONDITION,
-    libExceptions: CARD_EXCEPTIONS,
     terms: CARD_TERMS,
   },
   {
@@ -236,7 +237,6 @@ const DERIVED_WORDINGS = [
         '.homeycompose/flow/conditions/thermostat_mode.zone2_condition.json',
     },
     lib: THERMOSTAT_CONDITION,
-    libExceptions: CARD_EXCEPTIONS,
     terms: CARD_TERMS,
   },
 ]
@@ -265,8 +265,9 @@ const readLabels = (site: LabelSite): Record<string, string> => {
   return labels
 }
 
-// One entry per diverging locale, each carrying the remedy: the app
-// label follows homey-lib, so the app file is what moves.
+// One entry per diverging locale, each carrying both exits: the app
+// label follows homey-lib, so the app file is what moves — unless the
+// label stopped borrowing, in which case the row goes.
 const findWordingBreaches = ({
   app,
   lib,
@@ -280,7 +281,7 @@ const findWordingBreaches = ({
   for (const [locale, wording] of libLabels) {
     if (appLabels[locale] !== wording) {
       breaches.push(
-        `${app.source} ${app.path} [${locale}] says ${JSON.stringify(appLabels[locale])} where node-homey-lib ${lib.source} ${lib.path} says ${JSON.stringify(wording)}: adopt the upstream wording in the app file and revisit this label's other locales — never edit vendor/capabilities to make this pass.`,
+        `${app.source} ${app.path} [${locale}] says ${JSON.stringify(appLabels[locale])} where node-homey-lib ${lib.source} ${lib.path} says ${JSON.stringify(wording)}: adopt the upstream wording in the app file and revisit this label's other locales, or, if this label no longer borrows homey-lib's wording, delete its row: membership states an intent — never edit vendor/capabilities to make this pass.`,
       )
     }
   }
@@ -307,35 +308,31 @@ const speaks = (wording: string | undefined, term: string): boolean =>
 const findTermBreaches = ({
   app,
   lib,
-  libExceptions,
   terms,
 }: {
   app: LabelSite
   lib: LabelSite
-  libExceptions: Record<string, LabelSite>
   terms: Record<string, string>
 }): string[] => {
   const appLabels = readLabels(app)
+  const libLabels = readLabels(lib)
   const breaches: string[] = []
   const pinned = listLocales(terms)
-  const localized = listLocales(readLabels(lib))
+  const localized = listLocales(libLabels)
   if (pinned !== localized) {
     breaches.push(
       `${app.source} ${app.path} pins a term for [${pinned}] where node-homey-lib ${lib.source} ${lib.path} is localized into [${localized}]: translate the app string into the locales upstream gained, or drop the ones it lost, then re-pin the terms here.`,
     )
   }
   for (const [locale, term] of Object.entries(terms)) {
-    const source = libExceptions[locale] ?? lib
-    const libWording = readLabels(source)[locale]
-    const appWording = appLabels[locale]
-    if (!speaks(libWording, term)) {
+    if (!speaks(libLabels[locale], term)) {
       breaches.push(
-        `node-homey-lib ${source.source} ${source.path} [${locale}] says ${JSON.stringify(libWording)}, which no longer contains the term ${JSON.stringify(term)} that ${app.source} ${app.path} embeds: upstream re-worded it — carry the new noun into the app string, keeping the app's own additions around it, then re-pin the term here.`,
+        `node-homey-lib ${lib.source} ${lib.path} [${locale}] says ${JSON.stringify(libLabels[locale])}, which no longer contains the term ${JSON.stringify(term)} that ${app.source} ${app.path} embeds: upstream re-worded it — carry the new noun into the app string, keeping the app's own additions around it, then re-pin the term here.`,
       )
     }
-    if (!speaks(appWording, term)) {
+    if (!speaks(appLabels[locale], term)) {
       breaches.push(
-        `${app.source} ${app.path} [${locale}] says ${JSON.stringify(appWording)}, which does not contain node-homey-lib's term ${JSON.stringify(term)} from ${source.source} ${source.path}: speak the upstream noun and keep the app's own additions around it — never edit vendor/capabilities to make this pass.`,
+        `${app.source} ${app.path} [${locale}] says ${JSON.stringify(appLabels[locale])}, which does not contain node-homey-lib's term ${JSON.stringify(term)} from ${lib.source} ${lib.path}: speak the upstream noun and keep the app's own additions around it — never edit vendor/capabilities to make this pass.`,
       )
     }
   }

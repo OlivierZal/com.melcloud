@@ -116,57 +116,12 @@ caught real failures that the others miss:
   drift test in `tests/unit/capability-definitions.test.ts` fails when
   the copies fall behind. A homey-lib bump re-checks a SECOND thing the
   same way: beyond the definitions, the app takes homey-lib's canonical
-  WORDING into labels of its own capabilities and flow cards, and
-  `tests/unit/borrowed-labels.test.ts` pins it. The wording arrives in
-  TWO shapes and the file holds a table for each — check BOTH on a bump,
-  a re-wording usually moves only one.
-  A **copy** is byte-equal to its homey-lib label, so `BORROWED_LABELS`
-  compares whole strings, one row per app site (file + JSON path)
-  against the label it borrows, per locale — today the `horizontal` /
-  `vertical` `auto` position with its flow-card copies (homey-lib
-  declares no vane capability, so `auto` is the one value that can
-  borrow) and the ATA drivers' `thermostat_mode` `cool` value.
-  A **derivative** only embeds homey-lib's term inside a sentence of the
-  app's own ("… in zone 2", "- zone 2", its own `!{{…|…}}` inflection):
-  nothing is byte-equal, so an equality table cannot see it — that is
-  how homey-lib 2.52.1 re-worded the nl `thermostat_mode` cards to
-  "thermostaatstand" and the ru ones to "Режим работы термостата" while
-  the app's zone-2 cards kept the old nouns, two words for one concept
-  in one flow-card list (fixed 2026-08-30). `DERIVED_WORDINGS` pins the
-  TERM instead: a whole localized noun phrase, per row and per locale,
-  asserted to sit inside BOTH sides. Against homey-lib it is the
-  tripwire — an upstream re-wording stops the term being found there;
-  against the app it holds the adoption. A noun phrase cannot hold by
-  accident the way a bare `includes` of a common word would, which is
-  what keeps the table from crying wolf.
-  Which homey-lib label a derivative follows is a per-site judgement,
-  recorded in the row's `lib` column: a card TITLE follows the card of
-  the same kind (the app's condition card sits beside Homey's condition
-  card), while a trigger's TOKEN title follows the capability HEADER,
-  because a token is a tag name — Homey titles the zone-1 tag from the
-  header, and the app's other zone-2 tags ("Operational state - zone 2")
-  are built the same way. The two diverge: 2.52.1 re-worded the nl/ru
-  cards and left both capability titles alone, so the zone-2 token
-  rightly still says "Thermostaatmodus - zone 2". Per-locale
-  `libExceptions` cover a locale whose app string speaks a different
-  upstream label than its row's default — today Italian alone, whose
-  cards say "modalità termostato" (the header) where homey-lib's cards
-  say "modalità del termostato".
-  Membership states an INTENT in both tables, never a measured string
-  collision. A coincidence stays OUT: `operational_state` names a state
-  ("Heating"/"Cooling") where `thermostat_mode` names a command
-  ("Heat"/"Cool") and they meet in ar/it/ko/pl/ru only, while the app's
-  own `hot_water_mode` and `thermostat_mode` values keep their own
-  Russian ("Авто") — pinning either would force an edit upstream never
-  asked for. So does a site that names the concept in the app's OWN
-  voice: the zone-2 ACTION card says "the mode in zone 2" in all 13
-  locales, embedding no homey-lib term, so it has none to follow and a
-  row for it would have to invent an upstream wording the app never
-  spoke. When a row breaks, the APP string follows: adopt the new
-  wording there — reasoning about the sentence, not substituting a
-  substring, where the locale's grammar demands it — revisit that
-  label's other locales, and never edit `vendor/capabilities/` to make
-  it pass.
+  WORDING into labels of its own capabilities and flow cards, and both
+  tables of `tests/unit/borrowed-labels.test.ts` pin it — check both on
+  a bump, a re-wording usually moves only one. The membership rules
+  (what belongs in each table, borrowed vs coincidence, which homey-lib
+  label each site follows, and the remedies when a row breaks) live in
+  that test file's header.
 - `npm run homey:start` — `homey app run --remote` for on-device testing.
   The `homey:*` wrappers are plain CLI calls: the CLI's own
   `npm run build` (post-copy) emits everything the package needs into
