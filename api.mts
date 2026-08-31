@@ -11,6 +11,7 @@ import {
   type ProtectionUpdate,
   AuthenticationError,
   AuthenticationThrottledError,
+  RegistrySyncError,
 } from '@olivierzal/melcloud-api'
 
 import type {
@@ -134,13 +135,16 @@ const api = {
     } catch (error) {
       // A rejection is not proof the credentials were refused: the
       // library enforces a registry sync AFTER the server accepted the
-      // sign-in, and that sync throws on its own. The session is the
-      // arbiter — a live one means the account is in, and only the
-      // device list is stale.
-      if (error instanceof AuthenticationError || !client.isAuthenticated()) {
-        throw toLoginFailure(homey, service, error)
+      // sign-in, and that failure arrives wrapped as its own TYPE —
+      // `RegistrySyncError` means the account is in and only the device
+      // list is stale. The type is the arbiter; re-deriving the verdict
+      // from the session read "signed in" on a transport failure over a
+      // PRE-EXISTING live session while the new credentials were never
+      // accepted.
+      if (error instanceof RegistrySyncError) {
+        return { isDeviceListStale: true }
       }
-      return { isDeviceListStale: true }
+      throw toLoginFailure(homey, service, error)
     }
     return { isDeviceListStale: false }
   },

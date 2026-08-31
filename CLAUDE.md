@@ -352,26 +352,31 @@ coverage.
   to offer. Anything deriving a name or email from `getUser()` must
   handle the `null`.
 - A rejection from `authenticate()` is NOT necessarily a credential
-  rejection, and the SESSION is the arbiter. Since melcloud-api 54.0.0
-  the library ENFORCES a registry sync after the server accepted the
-  sign-in, and that sync throws on its own — over a session that is
-  already live, with the credentials already persisted. So both entry
-  points classify by consulting `isAuthenticated()` when the error is
-  not an `AuthenticationError`: reading `true` means only the device
-  refresh failed, and the app-API handler (`api.mts`) answers
-  `{ isDeviceListStale: true }` rather than rejecting, while the
-  pairing handler (`drivers/base-driver.mts`) continues to the device
-  list. Reading `false` is the real login failure. Degrading is not
-  the same as going silent: the settings page still ALERTS the failed
-  refresh from its post-login re-check (`#onLogin`), where that
-  warning outranks the device check's own "add a device" — an
-  unrefreshed list is WHY the list came back empty. Treating every
-  rejection as a credential failure (46.7.0 and earlier) stranded a
-  signed-in user on the login form, and their next click re-hammered
-  `/Login/ClientLogin3`, the endpoint MELCloud throttles hardest
-  (`ErrorId 6`) — the library's login backoff arms around the sign-in
-  itself, NOT around the enforced sync, so nothing local slowed the
-  retries.
+  rejection, and the TYPE is the arbiter. The library ENFORCES a
+  registry sync after the server accepted the sign-in, and since
+  melcloud-api 55.0.0 that failure arrives wrapped as
+  `RegistrySyncError` (the sync's own error on `cause`); a refused
+  credential is never wrapped — it stays `AuthenticationError`. So
+  both entry points classify by `instanceof RegistrySyncError`: the
+  app-API handler (`api.mts`) answers `{ isDeviceListStale: true }`
+  rather than rejecting, the pairing handler
+  (`drivers/base-driver.mts`) continues to the device list, and
+  ANYTHING else is a login failure. Neither consults
+  `isAuthenticated()` — the retired judge-by-the-session heuristic
+  (54.0.0's era) had a CONFIRMED false positive: a transport failure
+  during the sign-in round-trip over a PRE-EXISTING live session (a
+  user switching accounts; `ClientLogin3` answering 500 over a stale
+  key) read "signed in, stale list" while the new credentials were
+  never accepted. Degrading is not the same as going silent: the
+  settings page still ALERTS the failed refresh from its post-login
+  re-check (`#onLogin`), where that warning outranks the device
+  check's own "add a device" — an unrefreshed list is WHY the list
+  came back empty. Treating every rejection as a credential failure
+  (46.7.0 and earlier) stranded a signed-in user on the login form,
+  and their next click re-hammered `/Login/ClientLogin3`, the endpoint
+  MELCloud throttles hardest (`ErrorId 6`) — the library's login
+  backoff arms around the sign-in itself, NOT around the enforced
+  sync, so nothing local slowed the retries.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
   (`getRequiredCapabilities`). `isOwner` gates NOTHING, on any driver:

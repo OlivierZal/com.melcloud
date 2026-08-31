@@ -1,5 +1,8 @@
 import type PairSession from 'homey/lib/PairSession'
-import { AuthenticationError } from '@olivierzal/melcloud-api'
+import {
+  AuthenticationError,
+  RegistrySyncError,
+} from '@olivierzal/melcloud-api'
 import { describe, expect, it, vi } from 'vitest'
 
 import { mock } from './helpers.ts'
@@ -209,7 +212,6 @@ export const testPairing = (
     it('should rethrow non-authentication errors from the login handler', async () => {
       const error = new Error('network down')
       authenticateMock.mockRejectedValue(error)
-      isAuthenticatedMock.mockReturnValue(false)
       const { reference, session } = createLoginSession(showViewMock)
       await getDriver().onPair(session)
 
@@ -219,18 +221,40 @@ export const testPairing = (
     })
 
     // The library enforces a registry sync AFTER the server accepted
-    // the credentials, so `authenticate()` can reject over a session
-    // that is live. Pairing follows the session, not the rejection —
-    // an account that IS signed in reaches its device list.
-    it('should pair through a registry failure that left the session live', async () => {
-      authenticateMock.mockRejectedValue(new Error('registry sync down'))
-      isAuthenticatedMock.mockReturnValue(true)
+    // the credentials and wraps that failure as `RegistrySyncError`.
+    // Pairing follows the TYPE, not the session — an account that IS
+    // signed in reaches its device list.
+    it('should pair through a registry sync failure on an accepted sign-in', async () => {
+      authenticateMock.mockRejectedValue(
+        new RegistrySyncError(
+          'Signed in, but the registry could not be verified',
+          { cause: new Error('registry sync down') },
+        ),
+      )
       const { reference, session } = createLoginSession(showViewMock)
       await getDriver().onPair(session)
 
       await expect(
         reference.loginHandler({ password: 'pass', username: 'user' }),
       ).resolves.toBe(true)
+    })
+
+    // The retired heuristic's confirmed false positive: a transport
+    // failure during the sign-in round-trip over a PRE-EXISTING live
+    // session read "signed in, stale list" while the new credentials
+    // were never accepted. It is a LOGIN FAILURE, and the session is
+    // never consulted.
+    it('should fail the login on a transport failure over a pre-existing live session', async () => {
+      const error = new Error('transport down')
+      authenticateMock.mockRejectedValue(error)
+      isAuthenticatedMock.mockReturnValue(true)
+      const { reference, session } = createLoginSession(showViewMock)
+      await getDriver().onPair(session)
+
+      await expect(
+        reference.loginHandler({ password: 'pass', username: 'user' }),
+      ).rejects.toThrow(error)
+      expect(isAuthenticatedMock).not.toHaveBeenCalled()
     })
 
     it('should never pair through a credential rejection', async () => {
