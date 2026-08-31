@@ -11,6 +11,7 @@ import {
   type ProtectionState,
   AuthenticationError,
   AuthenticationThrottledError,
+  RegistrySyncError,
 } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -361,10 +362,9 @@ describe('api', () => {
       expect(mockClassicAuthenticate).not.toHaveBeenCalled()
     })
 
-    it('should propagate authenticate errors when no session survived', async () => {
+    it('should propagate authenticate errors that carry no registry-sync wrap', async () => {
       const error = new Error('invalid credentials')
       mockClassicAuthenticate.mockRejectedValue(error)
-      mockClassicIsAuthenticated.mockReturnValue(false)
 
       await expect(
         api.authenticate({
@@ -427,26 +427,23 @@ describe('api', () => {
   })
 
   // The library enforces a registry sync AFTER the server accepted the
-  // credentials, so `authenticate()` rejects over a session that is
-  // live. The session is the arbiter: such a rejection reports a stale
-  // device list, never a login failure.
+  // credentials and wraps that failure as `RegistrySyncError`: the TYPE
+  // is the arbiter, and such a rejection reports a stale device list,
+  // never a login failure. The session is never consulted — it reads
+  // "signed in" on a transport failure over a pre-existing live one.
   describe('accepted sign-in whose registry sync failed', () => {
     it.each([
-      {
-        authenticateMock: mockClassicAuthenticate,
-        isAuthenticatedMock: mockClassicIsAuthenticated,
-        service: 'classic',
-      },
-      {
-        authenticateMock: mockHomeAuthenticate,
-        isAuthenticatedMock: mockHomeIsAuthenticated,
-        service: 'home',
-      },
+      { authenticateMock: mockClassicAuthenticate, service: 'classic' },
+      { authenticateMock: mockHomeAuthenticate, service: 'home' },
     ])(
       'should answer a stale device list on $service rather than reject',
-      async ({ authenticateMock, isAuthenticatedMock, service }) => {
-        authenticateMock.mockRejectedValueOnce(new Error('registry sync down'))
-        isAuthenticatedMock.mockReturnValue(true)
+      async ({ authenticateMock, service }) => {
+        authenticateMock.mockRejectedValueOnce(
+          new RegistrySyncError(
+            'Signed in, but the registry could not be verified',
+            { cause: new Error('registry sync down') },
+          ),
+        )
 
         await expect(
           api.authenticate({
@@ -459,9 +456,9 @@ describe('api', () => {
       },
     )
 
-    it('should still report a login failure when no session survived', async () => {
+    it('should report a login failure on a transport failure over a pre-existing live session', async () => {
       mockClassicAuthenticate.mockRejectedValueOnce(new Error('transport down'))
-      mockClassicIsAuthenticated.mockReturnValue(false)
+      mockClassicIsAuthenticated.mockReturnValue(true)
 
       await expect(
         api.authenticate({
@@ -470,6 +467,7 @@ describe('api', () => {
           params: { api: 'classic' },
         }),
       ).rejects.toThrow('transport down')
+      expect(mockClassicIsAuthenticated).not.toHaveBeenCalled()
     })
 
     it('should never rescue a credential rejection over a live session', async () => {

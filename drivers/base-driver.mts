@@ -3,6 +3,7 @@ import {
   type DeviceType,
   type LoginCredentials,
   AuthenticationError,
+  RegistrySyncError,
 } from '@olivierzal/melcloud-api'
 
 import type { AuthenticationAPI } from '../types/api.mts'
@@ -135,14 +136,16 @@ export abstract class BaseMELCloudDriver extends Driver {
           return false
         }
         // The library enforces a registry sync AFTER the server
-        // accepted the sign-in, so a non-credential rejection can leave
-        // a perfectly live session behind. Pairing follows the session,
-        // not the rejection: an account that IS signed in continues to
-        // the device list instead of failing the wizard.
-        if (!this.api.isAuthenticated()) {
-          throw error
+        // accepted the sign-in and wraps that failure as its own TYPE:
+        // a `RegistrySyncError` means the account IS signed in, so
+        // pairing continues to the device list instead of failing the
+        // wizard. Anything else is a login failure — consulting the
+        // session here read "signed in" on a transport failure over a
+        // pre-existing live session.
+        if (error instanceof RegistrySyncError) {
+          return true
         }
-        return true
+        throw error
       }
     })
   }
