@@ -2,9 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   toDeviceOrZoneData,
-  toHour,
   toNonNegativeInt,
-  toZoneData,
   toZoneValueData,
 } from '../../lib/validation.mts'
 
@@ -47,41 +45,6 @@ describe(toNonNegativeInt, () => {
   it('includes the field name in error messages when provided', () => {
     expect(() => toNonNegativeInt('bad', { field: 'days' })).toThrow(/^days: /v)
   })
-})
-
-describe(toHour, () => {
-  it.each([0, 12, 23])('accepts %d', (input) => {
-    expect(toHour(input)).toBe(input)
-  })
-
-  it('accepts numeric strings', () => {
-    expect(toHour('5')).toBe(5)
-  })
-
-  it.each([24, -1, 1.5, 'abc'])('rejects %p', (input) => {
-    expect(() => toHour(input, 'hour')).toThrow(/^hour: /v)
-  })
-})
-
-describe(toZoneData, () => {
-  it.each(['areas', 'buildings', 'floors'] as const)(
-    'accepts %s',
-    (zoneType) => {
-      expect(toZoneData({ zoneId: '1', zoneType })).toStrictEqual({
-        zoneId: '1',
-        zoneType,
-      })
-    },
-  )
-
-  it.each(['devices', 'constructor', ''])(
-    'rejects %p coming from the URL',
-    (zoneType) => {
-      expect(() => toZoneData({ zoneId: '1', zoneType })).toThrow(
-        /Invalid zone type/v,
-      )
-    },
-  )
 })
 
 describe(toDeviceOrZoneData, () => {

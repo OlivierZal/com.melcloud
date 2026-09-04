@@ -22,7 +22,6 @@ import {
   type HolidayModeUpdate,
   type HomeBuildingZone,
   type HomeDeviceZone,
-  type Hour,
   type ProtectionUpdate,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
@@ -573,15 +572,11 @@ export default class MELCloudApp extends App {
     )
   }
 
-  public async getTargetHourlyTemperatures({
-    hour,
-    targetId,
-  }: {
-    targetId: string
-    hour?: Hour | undefined
-  }): Promise<ReportChartLineOptions> {
+  public async getTargetHourlyTemperatures(
+    targetId: string,
+  ): Promise<ReportChartLineOptions> {
     return unwrapResult(
-      await this.#getFullReportTarget(targetId).getHourlyTemperatures(hour),
+      await this.#getFullReportTarget(targetId).getHourlyTemperatures(),
     )
   }
 
@@ -610,15 +605,11 @@ export default class MELCloudApp extends App {
       : unwrapResult(await target.getOverheatProtection())
   }
 
-  public async getTargetSignal({
-    hour,
-    targetId,
-  }: {
-    targetId: string
-    hour?: Hour | undefined
-  }): Promise<ReportChartLineOptions> {
+  public async getTargetSignal(
+    targetId: string,
+  ): Promise<ReportChartLineOptions> {
     return unwrapResult(
-      await this.#getReportTarget(targetId).getSignalStrength(hour),
+      await this.#getReportTarget(targetId).getSignalStrength(),
     )
   }
 
