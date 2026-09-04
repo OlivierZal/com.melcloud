@@ -1,15 +1,8 @@
-import type { Hour } from '@olivierzal/melcloud-api'
-
-import type { DeviceOrZoneData, ZoneData } from '../types/zone.mts'
-
-const HOUR_MAX = 23
+import type { DeviceOrZoneData } from '../types/zone.mts'
 
 const zoneTypes = new Set<string>(['areas', 'buildings', 'floors'])
 
 const deviceOrZoneTypes = new Set<string>([...zoneTypes, 'devices'])
-
-const isZoneType = (zoneType: string): zoneType is ZoneData['zoneType'] =>
-  zoneTypes.has(zoneType)
 
 const isDeviceOrZoneType = (
   zoneType: string,
@@ -62,45 +55,11 @@ export const toNonNegativeInt = (
 }
 
 /**
- * Parses `value` as an `Hour` (0-23). Throws on out-of-range or non-integer
- * input.
- * @param value - The candidate to parse as an hour of the day.
- * @param field - Field name prepended to error messages so callers can locate the invalid input.
- * @returns The parsed hour narrowed to the `Hour` union (0-23).
- */
-export const toHour = (value: unknown, field?: string): Hour => {
-  const parsed = toNonNegativeInt(value, { field, max: HOUR_MAX })
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing a [0..23] integer to the Hour union
-  return parsed as Hour
-}
-
-/**
  * Validates a raw `zoneType`/`zoneId` pair (from a request path or a parsed
- * option value) as `ZoneData`. `zoneType` is later used to index the zone
- * registry, so reject anything outside the known zone collections.
- * @param root0 - The raw zone coordinates to validate.
- * @param root0.zoneId - Identifier of the target zone within its collection.
- * @param root0.zoneType - Zone collection name, rejected unless it names a known collection.
- * @returns The validated pair narrowed to `ZoneData`.
- * @throws {@link RangeError} when zoneType is not a known zone collection.
- */
-export const toZoneData = ({
-  zoneId,
-  zoneType,
-}: {
-  readonly zoneId: string
-  readonly zoneType: string
-}): ZoneData => {
-  if (!isZoneType(zoneType)) {
-    throw new RangeError(`Invalid zone type: ${zoneType}`)
-  }
-  return { zoneId, zoneType }
-}
-
-/**
- * Same guard for endpoints that also accept a single device (frost
- * protection and holiday mode — the settings page lists devices in its
- * zone selector).
+ * option value), also accepting a single device (frost protection and
+ * holiday mode — the settings page lists devices in its zone selector).
+ * `zoneType` is later used to index the zone registry, so reject anything
+ * outside the known collections.
  * @param root0 - The raw coordinates to validate.
  * @param root0.zoneId - Identifier of the target device or zone.
  * @param root0.zoneType - Collection name, also accepting `devices`, rejected when unknown.

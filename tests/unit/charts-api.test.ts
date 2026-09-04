@@ -62,39 +62,23 @@ describe('charts api', () => {
   })
 
   describe('hourly temperature retrieval', () => {
-    it('should call app.getTargetHourlyTemperatures with hour number', async () => {
-      const lineOptions = mock<ReportChartLineOptions>()
-      mockApp.getTargetHourlyTemperatures.mockResolvedValue(lineOptions)
+    it.each(['devices_1', 'homeDevices_guid-1'])(
+      'should delegate %s to app.getTargetHourlyTemperatures',
+      async (targetId) => {
+        const lineOptions = mock<ReportChartLineOptions>()
+        mockApp.getTargetHourlyTemperatures.mockResolvedValue(lineOptions)
 
-      const result = await api.getTargetHourlyTemperatures({
-        homey,
-        params: { targetId: 'devices_1' },
-        query: { hour: '10' },
-      })
+        const result = await api.getTargetHourlyTemperatures({
+          homey,
+          params: { targetId },
+        })
 
-      expect(result).toBe(lineOptions)
-      expect(mockApp.getTargetHourlyTemperatures).toHaveBeenCalledWith({
-        hour: 10,
-        targetId: 'devices_1',
-      })
-    })
-
-    it('should pass undefined when hour is undefined', async () => {
-      const lineOptions = mock<ReportChartLineOptions>()
-      mockApp.getTargetHourlyTemperatures.mockResolvedValue(lineOptions)
-
-      const result = await api.getTargetHourlyTemperatures({
-        homey,
-        params: { targetId: 'homeDevices_guid-1' },
-        query: {},
-      })
-
-      expect(result).toBe(lineOptions)
-      expect(mockApp.getTargetHourlyTemperatures).toHaveBeenCalledWith({
-        hour: undefined,
-        targetId: 'homeDevices_guid-1',
-      })
-    })
+        expect(result).toBe(lineOptions)
+        expect(mockApp.getTargetHourlyTemperatures).toHaveBeenCalledWith(
+          targetId,
+        )
+      },
+    )
   })
 
   describe('energy report retrieval', () => {
@@ -161,39 +145,21 @@ describe('charts api', () => {
   })
 
   describe('signal retrieval', () => {
-    it('should call app.getTargetSignal with hour number', async () => {
-      const lineOptions = mock<ReportChartLineOptions>()
-      mockApp.getTargetSignal.mockResolvedValue(lineOptions)
+    it.each(['devices_1', 'homeDevices_guid-1'])(
+      'should delegate %s to app.getTargetSignal',
+      async (targetId) => {
+        const lineOptions = mock<ReportChartLineOptions>()
+        mockApp.getTargetSignal.mockResolvedValue(lineOptions)
 
-      const result = await api.getTargetSignal({
-        homey,
-        params: { targetId: 'devices_1' },
-        query: { hour: '5' },
-      })
+        const result = await api.getTargetSignal({
+          homey,
+          params: { targetId },
+        })
 
-      expect(result).toBe(lineOptions)
-      expect(mockApp.getTargetSignal).toHaveBeenCalledWith({
-        hour: 5,
-        targetId: 'devices_1',
-      })
-    })
-
-    it('should pass undefined when hour is undefined', async () => {
-      const lineOptions = mock<ReportChartLineOptions>()
-      mockApp.getTargetSignal.mockResolvedValue(lineOptions)
-
-      const result = await api.getTargetSignal({
-        homey,
-        params: { targetId: 'homeDevices_guid-1' },
-        query: {},
-      })
-
-      expect(result).toBe(lineOptions)
-      expect(mockApp.getTargetSignal).toHaveBeenCalledWith({
-        hour: undefined,
-        targetId: 'homeDevices_guid-1',
-      })
-    })
+        expect(result).toBe(lineOptions)
+        expect(mockApp.getTargetSignal).toHaveBeenCalledWith(targetId)
+      },
+    )
   })
 
   describe('temperature retrieval', () => {

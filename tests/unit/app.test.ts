@@ -1798,10 +1798,7 @@ describe('melCloudApp', () => {
       const mockData = mock<ReportChartLineOptions>()
       await initWithDeviceFacade(app, 'getHourlyTemperatures', mockData)
 
-      const temperatures = await app.getTargetHourlyTemperatures({
-        hour: 10,
-        targetId: 'devices_1',
-      })
+      const temperatures = await app.getTargetHourlyTemperatures('devices_1')
 
       expect(temperatures).toBe(mockData)
     })
@@ -1826,10 +1823,7 @@ describe('melCloudApp', () => {
       const mockData = mock<ReportChartLineOptions>()
       await initWithDeviceFacade(app, 'getSignalStrength', mockData)
 
-      const signal = await app.getTargetSignal({
-        hour: 5,
-        targetId: 'devices_1',
-      })
+      const signal = await app.getTargetSignal('devices_1')
 
       expect(signal).toBe(mockData)
     })
@@ -1837,9 +1831,9 @@ describe('melCloudApp', () => {
     it('should reject a classic zone target above the device leaves', async () => {
       await app.onInit()
 
-      await expect(
-        app.getTargetSignal({ targetId: 'buildings_1' }),
-      ).rejects.toThrow('errors.deviceNotFound')
+      await expect(app.getTargetSignal('buildings_1')).rejects.toThrow(
+        'errors.deviceNotFound',
+      )
     })
   })
 
@@ -1964,10 +1958,7 @@ describe('melCloudApp', () => {
         mockData,
       })
 
-      const signal = await app.getTargetSignal({
-        hour: 5,
-        targetId: 'homeDevices_guid-1',
-      })
+      const signal = await app.getTargetSignal('homeDevices_guid-1')
 
       expect(signal).toBe(mockData)
     })
@@ -1993,9 +1984,9 @@ describe('melCloudApp', () => {
       mockHomeFacadeManagerGetById.mockReturnValue(null)
       await app.onInit()
 
-      await expect(
-        app.getTargetSignal({ targetId: 'homeDevices_missing' }),
-      ).rejects.toThrow('errors.deviceNotFound')
+      await expect(app.getTargetSignal('homeDevices_missing')).rejects.toThrow(
+        'errors.deviceNotFound',
+      )
     })
 
     it('should delegate hourly temperatures to the ATW facade', async () => {
@@ -2007,10 +1998,8 @@ describe('melCloudApp', () => {
         type: Home.DeviceType.Atw,
       })
 
-      const temperatures = await app.getTargetHourlyTemperatures({
-        hour: 10,
-        targetId: 'homeDevices_guid-1',
-      })
+      const temperatures =
+        await app.getTargetHourlyTemperatures('homeDevices_guid-1')
 
       expect(temperatures).toBe(mockData)
     })

@@ -1,8 +1,4 @@
-import type {
-  HomeBuildingZone,
-  HomeDeviceZone,
-  Hour,
-} from '@olivierzal/melcloud-api'
+import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type { BaseSettings } from './bases.mts'
@@ -35,8 +31,4 @@ export interface ChartsWidgetSettings extends BaseSettings {
 
 export interface DaysQuery {
   readonly days?: string
-}
-
-export interface HourQuery {
-  readonly hour?: `${Hour}`
 }
