@@ -659,9 +659,15 @@ Dependabot alerts scan continuously and carry the named, reasoned
 dismissals (an exception lives on the advisory, so it cannot outlive
 it), while `dependency-review` judges what a PR introduces;
 `validate.yml` and `publish.yml` stay local
-(no reusable exists), so the composite action stays too — and installs
-pass `npm-token` (the configs dependency lives on GitHub Packages,
-where even reads need auth).
+(no reusable exists), so the composite action stays too — a verbatim
+copy of the pinned configs version, re-synced with every pin bump.
+Its callers pin `node-version: '22'` (the action's own default,
+`lts/*`, is the libs' choice) and pass `npm-token` with
+`require-npm-token` (the configs dependency lives on GitHub Packages,
+where even reads need auth); the publish job also forwards
+`registry-url`/`scope`, since setup-node writes the registry user
+config its `cp` step carries into the publish container only when
+given a registry.
 
 ## Runtime boundary (@olivierzal/homey-kit)
 
