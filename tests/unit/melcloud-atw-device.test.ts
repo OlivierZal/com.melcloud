@@ -1,4 +1,5 @@
 import type HomeyModule from 'homey'
+import { Temporal } from 'temporal-polyfill'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
@@ -67,7 +68,11 @@ const mockDriver = mock<ClassicMELCloudDriver<AtwType>>({
 const mockAtwFacade = (
   target: any,
   overrides: {
-    hotWater?: { operationalState: Classic.OperationModeStateHotWater }
+    hotWater?: {
+      operationalState: Classic.OperationModeStateHotWater
+      lastLegionellaActivationEpochMs?: number | null
+    }
+    operationalState?: string | null
     zone1?: { operationalState: Classic.OperationModeStateZone }
     zone2?: { operationalState: Classic.OperationModeStateZone }
   },
@@ -75,9 +80,14 @@ const mockAtwFacade = (
   Object.defineProperty(target, 'facade', {
     configurable: true,
     value: {
-      hotWater: overrides.hotWater ?? {
+      hotWater: {
+        lastLegionellaActivationEpochMs: null,
         operationalState: Classic.OperationModeStateHotWater.idle,
+        ...overrides.hotWater,
       },
+      // The 55.2.0 contract: the library derives the top-level state,
+      // `null` on out-of-vocabulary wire numbers.
+      operationalState: overrides.operationalState ?? null,
       type: Classic.DeviceType.Atw,
       zone1: overrides.zone1 ?? {
         operationalState: Classic.OperationModeStateZone.idle,
@@ -148,11 +158,6 @@ describe(ClassicMELCloudDeviceAtw, () => {
       ],
       ['hot_water_mode', { ForcedHotWaterMode: true }, HotWaterMode.forced],
       ['hot_water_mode', { ForcedHotWaterMode: false }, HotWaterMode.auto],
-      [
-        'operational_state',
-        { OperationMode: Classic.OperationModeState.heating },
-        'heating',
-      ],
       ['target_temperature.flow_heat', { SetHeatFlowTemperatureZone1: 0 }, 10],
       ['target_temperature.flow_heat', { SetHeatFlowTemperatureZone1: 35 }, 35],
     ])('%s(%o) should return %s', (key, input, expected) => {
@@ -160,38 +165,6 @@ describe(ClassicMELCloudDeviceAtw, () => {
       const converter = deviceToCapability[key]
 
       expect(converter?.(mock<Classic.ListDeviceDataAtw>(input))).toBe(expected)
-    })
-
-    it('should convert legionella from ISO date to locale string', () => {
-      const {
-        deviceToCapability: { legionella: converter },
-      } = device
-
-      const result = converter?.(
-        mock<Classic.ListDeviceDataAtw>({
-          LastLegionellaActivationTime: '2026-03-18T10:00:00',
-        }),
-      )
-
-      expect(result).toBeDefined()
-      expect(result).toBeTypeOf('string')
-    })
-
-    it('should convert legionella from a UTC instant (Z suffix) too', () => {
-      const {
-        deviceToCapability: { legionella: converter },
-      } = device
-
-      // Regression: MELCloud also sends the instant dialect, which
-      // Temporal.PlainDate.from rejects outright (user report).
-      const result = converter?.(
-        mock<Classic.ListDeviceDataAtw>({
-          LastLegionellaActivationTime: '2026-07-07T13:01:00Z',
-        }),
-      )
-
-      expect(result).toBeDefined()
-      expect(result).toBeTypeOf('string')
     })
   })
 
@@ -209,7 +182,7 @@ describe(ClassicMELCloudDeviceAtw, () => {
     })
   })
 
-  describe('operation mode state mapping', () => {
+  describe('facade state mapping', () => {
     // One row per code path: the hot-water, zone1 and zone2 reads each
     // pass their facade state through unmapped.
     it.each([
@@ -229,6 +202,75 @@ describe(ClassicMELCloudDeviceAtw, () => {
       },
     )
 
+    // The library's derived top-level state passes through unmapped:
+    // the app-side wire-number table died with melcloud-api 55.2.0.
+    it('should set operational_state from the facade', async () => {
+      mockAtwFacade(device, { operationalState: 'heating' })
+      await callSetCapabilityValues(device)
+
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'operational_state',
+        'heating',
+      )
+    })
+
+    // Out-of-vocabulary wire numbers read `null` library-side; passing
+    // it through clears the Homey value — the sync must never crash on
+    // new FTC vocabulary.
+    it('should clear operational_state when the facade reads null', async () => {
+      mockAtwFacade(device, { operationalState: null })
+      await callSetCapabilityValues(device)
+
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'operational_state',
+        null,
+      )
+    })
+
+    it('should localize the legionella date from the facade instant', async () => {
+      mockAtwFacade(device, {
+        hotWater: {
+          lastLegionellaActivationEpochMs: Temporal.Instant.from(
+            '2026-03-18T10:00:00Z',
+          ).epochMilliseconds,
+          operationalState: Classic.OperationModeStateHotWater.idle,
+        },
+      })
+      await callSetCapabilityValues(device)
+
+      const legionellaCall = setCapabilityValueMock.mock.calls.find(
+        (call: unknown[]) => call[0] === 'legionella',
+      )
+
+      expect(legionellaCall?.[1]).toBeTypeOf('string')
+      expect(legionellaCall?.[1]).toContain('18')
+      expect(legionellaCall?.[1]).not.toBe('—')
+    })
+
+    // The library reads the "never ran" sentinel and unparseable wire
+    // stamps as `null`; the app shows the language-neutral marker
+    // instead of formatting a bogus year-1 date.
+    it('should show the em dash when no legionella cycle was recorded', async () => {
+      mockAtwFacade(device, {})
+      await callSetCapabilityValues(device)
+
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('legionella', '—')
+    })
+
+    it('should skip legionella when the capability is not present', async () => {
+      hasCapabilityMock.mockImplementation(
+        (cap: string) => cap !== 'legionella',
+      )
+      mockAtwFacade(device, {})
+      await callSetCapabilityValues(device)
+
+      const legionellaCalls = setCapabilityValueMock.mock.calls.filter(
+        (call: unknown[]) => call[0] === 'legionella',
+      )
+
+      expect(legionellaCalls).toHaveLength(0)
+    })
+
     it('should skip zone2 operation state when capability is not present', async () => {
       hasCapabilityMock.mockImplementation(
         (cap: string) => cap !== 'operational_state.zone2',
@@ -245,20 +287,20 @@ describe(ClassicMELCloudDeviceAtw, () => {
       expect(zone2Calls).toHaveLength(0)
     })
 
-    it('should skip operation mode states when facade is unavailable', async () => {
+    it('should skip the facade states when facade is unavailable', async () => {
       Object.defineProperty(device, 'facade', {
         configurable: true,
         value: undefined,
       })
       await callSetCapabilityValues(device)
 
-      const opStateCalls = setCapabilityValueMock.mock.calls.filter(
+      const facadeStateCalls = setCapabilityValueMock.mock.calls.filter(
         (call: unknown[]) =>
           typeof call[0] === 'string' &&
-          call[0].startsWith('operational_state.'),
+          (call[0].startsWith('operational_state') || call[0] === 'legionella'),
       )
 
-      expect(opStateCalls).toHaveLength(0)
+      expect(facadeStateCalls).toHaveLength(0)
     })
   })
 })

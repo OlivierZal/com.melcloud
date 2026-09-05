@@ -67,6 +67,7 @@ import {
 } from './files.mts'
 import { getCapabilityFlowStep } from './lib/capability-flow-step.mts'
 import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
+import { UNKNOWN_DATE_PLACEHOLDER } from './lib/constants.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
@@ -209,29 +210,26 @@ const filterZonesByName = <T extends { readonly name: string }>(
   return zones.filter(({ name }) => name.toLowerCase().includes(lowerCaseQuery))
 }
 
-// MELCloud reports error timestamps either as UTC instants (Z or offset
-// suffix) or as wall-clock times in the building's timezone.
-const parseErrorDate = (date: string, timeZone: string): Temporal.Instant => {
-  try {
-    return Temporal.Instant.from(date)
-  } catch {
-    return Temporal.PlainDateTime.from(date)
-      .toZonedDateTime(timeZone)
-      .toInstant()
-  }
-}
-
 // The webview always asks for 29-day pages; mirrored here for the synthetic
 // window served when Classic is signed out.
 const DEFAULT_ERROR_LOG_PERIOD_DAYS = 29
 interface RawErrorEntry {
   readonly device: string
   readonly error: string
-  readonly instant: Temporal.Instant
+  readonly instant: Temporal.Instant | null
 }
 
+// The library anchors each entry's moment at its own boundary
+// (`atEpochMs`, `null` where the wire cannot say); the app never
+// re-derives an instant from the wall-clock `at`.
+const toErrorInstant = (atEpochMs: number | null): Temporal.Instant | null =>
+  atEpochMs === null ? null : Temporal.Instant.fromEpochMilliseconds(atEpochMs)
+
+// An entry without an instant cannot be judged against a dated window;
+// it rides the open-ended newest page (`to` unset) only, so it shows
+// exactly once instead of on every page.
 const isWithinErrorLogWindow = (
-  instant: Temporal.Instant,
+  instant: Temporal.Instant | null,
   {
     from,
     timeZone,
@@ -242,6 +240,9 @@ const isWithinErrorLogWindow = (
     readonly to: Temporal.PlainDate | null
   },
 ): boolean => {
+  if (instant === null) {
+    return to === null
+  }
   const day = instant.toZonedDateTimeISO(timeZone).toPlainDate()
   return (
     Temporal.PlainDate.compare(day, from) >= 0 &&
@@ -249,15 +250,18 @@ const isWithinErrorLogWindow = (
   )
 }
 
-// MELCloud marks unrecorded error timestamps with a year-1 sentinel:
-// anything before this floor is noise, shown as an em dash (the tabular
-// missing-value convention — language-neutral, unlike an N/A) while the
-// row itself is kept: the error is real even without its moment. The
-// descending sort naturally sinks these entries to the end.
-const MIN_PLAUSIBLE_ERROR_INSTANT = Temporal.Instant.from(
-  '2000-01-01T00:00:00Z',
-)
-const UNKNOWN_DATE_PLACEHOLDER = '—'
+// Newest first; entries without an instant sink to the end — their
+// dates render as the em-dash marker while the rows themselves are
+// kept: the error is real even without its moment.
+const compareErrorEntries = (
+  first: RawErrorEntry,
+  other: RawErrorEntry,
+): number => {
+  if (first.instant === null || other.instant === null) {
+    return Number(first.instant === null) - Number(other.instant === null)
+  }
+  return Temporal.Instant.compare(other.instant, first.instant)
+}
 
 const formatErrorEntries = (
   entries: readonly RawErrorEntry[],
@@ -272,12 +276,10 @@ const formatErrorEntries = (
     year: 'numeric',
   })
   return entries
-    .toSorted((first, second) =>
-      Temporal.Instant.compare(second.instant, first.instant),
-    )
+    .toSorted(compareErrorEntries)
     .map(({ device, error, instant }) => ({
       date:
-        Temporal.Instant.compare(instant, MIN_PLAUSIBLE_ERROR_INSTANT) < 0
+        instant === null
           ? UNKNOWN_DATE_PLACEHOLDER
           : dateTimeMedFormat.format(instant),
       device,
@@ -477,15 +479,15 @@ export default class MELCloudApp extends App {
           ? Temporal.PlainDate.from(query.to)
           : null,
     }
-    const allHomeEntries = await this.#getHomeErrorEntries(timeZone)
+    const allHomeEntries = await this.#getHomeErrorEntries()
     const homeEntries = allHomeEntries.filter((entry) =>
       isWithinErrorLogWindow(entry.instant, window),
     )
     const classicEntries = entries.map(
-      ({ at, deviceId, message }): RawErrorEntry => ({
+      ({ atEpochMs, deviceId, message }): RawErrorEntry => ({
         device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
         error: message,
-        instant: parseErrorDate(at, timeZone),
+        instant: toErrorInstant(atEpochMs),
       }),
     )
     return {
@@ -996,7 +998,6 @@ export default class MELCloudApp extends App {
   // Best-effort per device: one unreachable unit must not empty the log.
   async #getHomeDeviceErrorEntries(
     device: Home.Device,
-    timeZone: string,
   ): Promise<RawErrorEntry[]> {
     const { id, name, type } = device
     const result = await this.getHomeFacade(id, type).getErrorLog()
@@ -1004,10 +1005,10 @@ export default class MELCloudApp extends App {
       this.error('Home error log fetch failed:', name, result.error)
       return []
     }
-    return result.value.map(({ at, code, message }) => ({
+    return result.value.map(({ atEpochMs, code, message }) => ({
       device: name,
       error: message ?? code ?? '',
-      instant: parseErrorDate(at, timeZone),
+      instant: toErrorInstant(atEpochMs),
     }))
   }
 
@@ -1025,13 +1026,11 @@ export default class MELCloudApp extends App {
     return facade
   }
 
-  async #getHomeErrorEntries(timeZone: string): Promise<RawErrorEntry[]> {
+  async #getHomeErrorEntries(): Promise<RawErrorEntry[]> {
     const logs = await Promise.all(
       this.#homeRegistry
         .getDevices()
-        .map(async (device) =>
-          this.#getHomeDeviceErrorEntries(device, timeZone),
-        ),
+        .map(async (device) => this.#getHomeDeviceErrorEntries(device)),
     )
     return logs.flat()
   }

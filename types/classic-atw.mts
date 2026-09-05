@@ -14,18 +14,6 @@ import type {
 } from './bases.mts'
 import { type HotWaterMode, buildAtwThermostatModeOptions } from './atw.mts'
 
-export const operationModeStateFromDevice: Record<
-  Classic.OperationModeState,
-  HomeAtwOperationalState
-> = {
-  [Classic.OperationModeState.cooling]: 'cooling',
-  [Classic.OperationModeState.defrost]: 'defrost',
-  [Classic.OperationModeState.dhw]: 'dhw',
-  [Classic.OperationModeState.heating]: 'heating',
-  [Classic.OperationModeState.idle]: 'idle',
-  [Classic.OperationModeState.legionellaPrevention]: 'legionella',
-}
-
 export const operationModeZoneFromDevice: Record<
   Classic.OperationModeZone,
   keyof typeof Classic.OperationModeZone
@@ -37,12 +25,19 @@ export const getCapabilitiesOptions = ({
 }: Readonly<Classic.ListDeviceDataAtw>): Partial<CapabilitiesOptions> =>
   buildAtwThermostatModeOptions(canCool, hasClassicZone2)
 
+// The untagged members are facade reads, not payload picks: the library
+// derives them (`operationalState` — `null` on out-of-vocabulary wire
+// numbers, clearing the Homey value like the Home twin's — the per-zone
+// and hot-water states, and the legionella instant), so they carry no
+// wire tag and sync off the facade in `#setFacadeStates`.
 export interface Capabilities
   extends
     EnergyCapabilities,
     GetCapabilities,
     ListCapabilities,
     SetCapabilities {
+  readonly legionella: string
+  readonly operational_state: HomeAtwOperationalState | null
   readonly 'operational_state.hot_water': Classic.OperationModeStateHotWater
   readonly 'operational_state.zone1': Classic.OperationModeStateZone
   readonly 'operational_state.zone2': Classic.OperationModeStateZone
@@ -79,7 +74,6 @@ export interface GetCapabilities extends BaseGetCapabilities {
   readonly 'measure_temperature.outdoor': number
   readonly 'measure_temperature.tank_water': number
   readonly 'measure_temperature.zone2': number
-  readonly operational_state: HomeAtwOperationalState
 }
 
 export interface ListCapabilities extends BaseListCapabilities {
@@ -89,7 +83,6 @@ export interface ListCapabilities extends BaseListCapabilities {
   readonly 'alarm_generic.defrost': boolean
   readonly 'alarm_generic.eco_hot_water': boolean
   readonly 'alarm_generic.immersion_heater': boolean
-  readonly legionella: string
   readonly measure_frequency: number
   readonly measure_power: number
   readonly 'measure_power.produced': number
@@ -200,7 +193,6 @@ export const tagMappings: {
     'measure_temperature.outdoor': 'OutdoorTemperature',
     'measure_temperature.tank_water': 'TankWaterTemperature',
     'measure_temperature.zone2': 'RoomTemperatureZone2',
-    operational_state: 'OperationMode',
   },
   list: {
     'alarm_generic.booster_heater1': 'BoosterHeater1Status',
@@ -209,7 +201,6 @@ export const tagMappings: {
     'alarm_generic.defrost': 'DefrostMode',
     'alarm_generic.eco_hot_water': 'EcoHotWater',
     'alarm_generic.immersion_heater': 'ImmersionHeaterStatus',
-    legionella: 'LastLegionellaActivationTime',
     measure_frequency: 'HeatPumpFrequency',
     measure_power: 'CurrentEnergyConsumed',
     'measure_power.produced': 'CurrentEnergyProduced',
