@@ -10,8 +10,8 @@ import {
   HomeEnergyReport,
   MINUTES_PER_HOUR,
   POWER_FRESHNESS,
-  parsePoints,
   TELEMETRY_INTERVAL,
+  toEnergyPoints,
 } from './home-report.mts'
 
 // Near-live reading: the latest minute bucket within the freshness horizon
@@ -44,9 +44,9 @@ export class HomeEnergyReportAtw extends HomeEnergyReport<
     super(device, config, {
       watts: latestBucketWatts,
       fetchPoints: async (facade, { from, measure, to }) =>
-        parsePoints(
+        toEnergyPoints(
           unwrapResult(
-            await facade.getEnergy({
+            await facade.getEnergySeries({
               from,
               interval: TELEMETRY_INTERVAL,
               measure,
@@ -54,8 +54,6 @@ export class HomeEnergyReportAtw extends HomeEnergyReport<
             }),
           ),
         ),
-      // ATW telemetry is already kWh per bucket.
-      kilowattHours: (wireSum) => wireSum,
     })
   }
 }

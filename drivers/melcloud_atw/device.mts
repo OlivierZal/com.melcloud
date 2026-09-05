@@ -1,4 +1,5 @@
 import { isClassicAtwFacade } from '@olivierzal/melcloud-api'
+import { Temporal } from 'temporal-polyfill'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import type {
@@ -8,12 +9,11 @@ import type {
   SetCapabilities,
 } from '../../types/classic-capabilities.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
-import { KILO } from '../../lib/constants.mts'
-import { getLocale, getTimeZone, toPlainDate } from '../../lib/temporal.mts'
+import { KILO, UNKNOWN_DATE_PLACEHOLDER } from '../../lib/constants.mts'
+import { getLocale, getTimeZone } from '../../lib/temporal.mts'
 import { HotWaterMode } from '../../types/atw.mts'
 import {
   type TargetTemperatureFlowCapabilities,
-  operationModeStateFromDevice,
   operationModeZoneFromDevice,
 } from '../../types/classic-atw.mts'
 import { ClassicMELCloudDevice } from '../classic-device.mts'
@@ -85,15 +85,6 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
     'alarm_generic.defrost': ({ DefrostMode: mode }) => Boolean(mode),
     hot_water_mode: ({ ForcedHotWaterMode: isForced }) =>
       isForced ? HotWaterMode.forced : HotWaterMode.auto,
-    // MELCloud reports the timestamp either as a UTC instant (Z suffix)
-    // or as a wall-clock time — the same dialect split as the error log.
-    legionella: ({ LastLegionellaActivationTime: time }) =>
-      toPlainDate(time, getTimeZone(this.homey)).toLocaleString(
-        getLocale(this.homey),
-        { day: 'numeric', month: 'short', weekday: 'short' },
-      ),
-    operational_state: ({ OperationMode: state }) =>
-      operationModeStateFromDevice[state],
   }
 
   protected override readonly energyReportRegular: EnergyReportConfig = {
@@ -114,7 +105,7 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
     data: Readonly<Classic.ListDeviceData<typeof Classic.DeviceType.Atw>>,
   ): Promise<void> {
     await super.setCapabilityValues(data)
-    await this.#setOperationModeStates()
+    await this.#setFacadeStates()
   }
 
   #convertFromDeviceTargetTemperatureFlow(
@@ -136,11 +127,32 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
     }
   }
 
-  async #setOperationModeStates(): Promise<void> {
+  #formatLegionellaDate(epochMs: number | null): string {
+    if (epochMs === null) {
+      return UNKNOWN_DATE_PLACEHOLDER
+    }
+    return Temporal.Instant.fromEpochMilliseconds(epochMs)
+      .toZonedDateTimeISO(getTimeZone(this.homey))
+      .toPlainDate()
+      .toLocaleString(getLocale(this.homey), {
+        day: 'numeric',
+        month: 'short',
+        weekday: 'short',
+      })
+  }
+
+  // The library-derived reads (see the `Capabilities` note): the
+  // top-level state — `null` on out-of-vocabulary wire numbers, which
+  // clears the Homey value instead of crashing the sync, like the Home
+  // twin — the hot-water and per-zone states, and the legionella
+  // instant, whose "never ran" and unparseable markers are the
+  // library's `null`.
+  async #setFacadeStates(): Promise<void> {
     const { facade } = this
     if (facade === undefined || !isClassicAtwFacade(facade)) {
       return
     }
+    await this.setCapabilityValue('operational_state', facade.operationalState)
     await this.setCapabilityValue(
       'operational_state.hot_water',
       facade.hotWater.operationalState,
@@ -156,5 +168,18 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
         zone2.operationalState,
       )
     }
+    await this.#setLegionellaDate(
+      facade.hotWater.lastLegionellaActivationEpochMs,
+    )
+  }
+
+  async #setLegionellaDate(epochMs: number | null): Promise<void> {
+    if (!this.hasCapability('legionella')) {
+      return
+    }
+    await this.setCapabilityValue(
+      'legionella',
+      this.#formatLegionellaDate(epochMs),
+    )
   }
 }

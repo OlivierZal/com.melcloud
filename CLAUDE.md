@@ -389,10 +389,22 @@ coverage.
   as were the guest ATA writes earlier. App-UI narrowing is NOT a
   permission: only server-verified behavior gates capabilities.
 - New FTC vocabulary must never crash a sync — and that tolerance lives
-  in melcloud-api, not here: the Home ATW facade getters normalize the
-  wire dialect (`HomeAtwZoneMode`, `operationalState`), degrading
-  unknown zone modes to the room modes, so the app-side converters are
-  plain field picks.
+  in melcloud-api, not here, on BOTH dialects since 55.2.0: the ATW
+  facade getters normalize the wire dialect (`HomeAtwZoneMode`,
+  `operationalState` — Classic's derives the same vocabulary from its
+  numeric `OperationMode`), degrading unknown zone modes to the room
+  modes and an out-of-vocabulary top-level state to `null`, which the
+  drivers pass through to CLEAR the Homey value (the tile shows no
+  state) rather than crash. The app-side converters are plain field
+  picks; the last wire-number table (`operationModeStateFromDevice`)
+  died with the 55.2.0 adoption. The same boundary rule covers the
+  other library-anchored instants the drivers read off the facades —
+  `hotWater.lastLegionellaActivationEpochMs` (the year-1 "never ran"
+  sentinel and garbage read `null`, shown as the shared em-dash
+  marker) and the error log's `atEpochMs`/`clearedAtEpochMs` — and the
+  Home telemetry decode (`getEnergySeries`: epoch-ms instants, kWh
+  whatever the type): the app never re-derives an instant or a unit
+  from a wall-clock wire string.
 - The ATA GROUP vocabulary is already cross-family, and its `Classic`
   prefix is history, not a branch: `ClassicGroupState` is the one shape
   both families' ATA facades implement (`getGroup` / `updateGroupState`),

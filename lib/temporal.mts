@@ -24,28 +24,3 @@ export const getNow = (homey: Homey.Homey): Temporal.ZonedDateTime =>
  */
 export const getLocale = (homey: Homey.Homey): string =>
   homey.i18n.getLanguage()
-
-/**
- * Calendar date of a MELCloud timestamp, which arrives either as a UTC
- * instant (`Z`/offset suffix) or as a bare wall-clock time — the same
- * dialect split as the error log. An instant is projected into `timeZone`
- * before its date is taken: handing it straight to `Temporal.PlainDate.from`
- * would throw on the `Z` form and silently drop the offset on the other,
- * either way losing the real local day. A bare wall-clock time has no
- * instant to project and falls through to `PlainDate.from`.
- * @param date - A MELCloud timestamp, instant (`Z`/offset) or wall-clock.
- * @param timeZone - IANA timezone the instant form is projected into.
- * @returns The local calendar date the timestamp falls on.
- */
-export const toPlainDate = (
-  date: string,
-  timeZone: string,
-): Temporal.PlainDate => {
-  try {
-    return Temporal.Instant.from(date)
-      .toZonedDateTimeISO(timeZone)
-      .toPlainDate()
-  } catch {
-    return Temporal.PlainDate.from(date)
-  }
-}

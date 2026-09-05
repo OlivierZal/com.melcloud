@@ -41,9 +41,8 @@ import {
 import {
   type ProtectionState,
   type ProtectionUpdate,
-  FROST_PROTECTION_RANGE,
-  OVERHEAT_PROTECTION_RANGE,
-  PROTECTION_GAP,
+  clampFrostProtection,
+  clampOverheatProtection,
 } from '@olivierzal/melcloud-api/protection'
 import { Temporal } from 'temporal-polyfill'
 
@@ -346,23 +345,41 @@ const parseNumericInput = (
   return numberValue
 }
 
+// The library's clamp is the one protection-bounds authority: the pair
+// every write goes through, and — via its fixed points at the extremes
+// (the lowest and highest pairs it would keep) — the source of the
+// input `min`/`max` attributes, so the form bounds can never drift
+// from what the write enforces.
+type ProtectionClamp = (
+  min: number,
+  max: number,
+) => { max: number; min: number }
+
 const initProtectionMin = (
   id: string,
-  range: { max: number; min: number },
+  clamp: ProtectionClamp,
 ): HTMLInputElement => {
   const element = getInput(id)
-  element.min = String(range.min)
-  element.max = String(range.max - PROTECTION_GAP)
+  element.min = String(
+    clamp(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY).min,
+  )
+  element.max = String(
+    clamp(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY).min,
+  )
   return element
 }
 
 const initProtectionMax = (
   id: string,
-  range: { max: number; min: number },
+  clamp: ProtectionClamp,
 ): HTMLInputElement => {
   const element = getInput(id)
-  element.min = String(range.min + PROTECTION_GAP)
-  element.max = String(range.max)
+  element.min = String(
+    clamp(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY).max,
+  )
+  element.max = String(
+    clamp(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY).max,
+  )
   return element
 }
 
@@ -1273,12 +1290,12 @@ class ZoneSettingsManager {
 
   readonly #frostProtectionMaxTemperature = initProtectionMax(
     'max',
-    FROST_PROTECTION_RANGE,
+    clampFrostProtection,
   )
 
   readonly #frostProtectionMinTemperature = initProtectionMin(
     'min',
-    FROST_PROTECTION_RANGE,
+    clampFrostProtection,
   )
 
   readonly #holidayModeDirtyGate: DirtyGate
@@ -1303,12 +1320,12 @@ class ZoneSettingsManager {
 
   readonly #overheatProtectionMaxTemperature = initProtectionMax(
     'overheat_max',
-    OVERHEAT_PROTECTION_RANGE,
+    clampOverheatProtection,
   )
 
   readonly #overheatProtectionMinTemperature = initProtectionMin(
     'overheat_min',
-    OVERHEAT_PROTECTION_RANGE,
+    clampOverheatProtection,
   )
 
   readonly #overheatScope = getSpan('overheat_protection_scope')
@@ -1608,6 +1625,7 @@ class ZoneSettingsManager {
         const { max, min } = this.#getMinAndMax(
           this.#frostProtectionMinTemperature,
           this.#frostProtectionMaxTemperature,
+          clampFrostProtection,
         )
         fireAndForget(
           this.setFrostProtectionData({
@@ -1662,6 +1680,7 @@ class ZoneSettingsManager {
         const { max, min } = this.#getMinAndMax(
           this.#overheatProtectionMinTemperature,
           this.#overheatProtectionMaxTemperature,
+          clampOverheatProtection,
         )
         fireAndForget(
           this.setOverheatProtectionData({
@@ -1702,9 +1721,13 @@ class ZoneSettingsManager {
       : this.#overheatProtectionDirtyGate
   }
 
+  // Field validation (each bound against its own input range, in the
+  // user's language) is the page's; the pair's clamping — the gap, an
+  // inverted pair — is the library clamp's verdict alone.
   #getMinAndMax(
     minElement: HTMLInputElement,
     maxElement: HTMLInputElement,
+    clamp: ProtectionClamp,
   ): { max: number; min: number } {
     const errors: string[] = []
     const parse = (element: HTMLInputElement): number | null => {
@@ -1715,15 +1738,12 @@ class ZoneSettingsManager {
         return null
       }
     }
-    let min = parse(minElement)
-    let max = parse(maxElement)
+    const min = parse(minElement)
+    const max = parse(maxElement)
     if (min === null || max === null) {
       throw new Error(errors.join('\n'))
     }
-    if (max < min) {
-      ;[min, max] = [max, min]
-    }
-    return { max: Math.max(max, min + PROTECTION_GAP), min }
+    return clamp(min, max)
   }
 
   // Read one panel's settings for the selected target. Every target kind

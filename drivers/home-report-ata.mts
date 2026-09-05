@@ -8,9 +8,9 @@ import {
   HomeEnergyReport,
   POWER_WINDOW,
   POWER_WINDOW_HOURS,
-  parsePoints,
   sumSince,
   TELEMETRY_INTERVAL,
+  toEnergyPoints,
 } from './home-report.mts'
 
 export class HomeEnergyReportAta extends HomeEnergyReport<
@@ -22,17 +22,21 @@ export class HomeEnergyReportAta extends HomeEnergyReport<
   ) {
     super(device, config, {
       fetchPoints: async (facade, { from, to }) =>
-        parsePoints(
+        toEnergyPoints(
           unwrapResult(
-            await facade.getEnergy({ from, interval: TELEMETRY_INTERVAL, to }),
+            await facade.getEnergySeries({
+              from,
+              interval: TELEMETRY_INTERVAL,
+              to,
+            }),
           ),
         ),
-      // ATA telemetry is Wh pulses: scale sums down to kWh.
-      kilowattHours: (wireSum) => wireSum / KILO,
-      // Coarse average: Wh pulses over the trailing window divided by its
-      // span — the 100 Wh quantum makes anything finer noise.
+      // Coarse average: kWh over the trailing window divided by its
+      // span reads kW, scaled to W — the wire's 100 Wh pulse quantum
+      // makes anything finer noise.
       watts: (points, now) =>
-        sumSince(points, now.subtract(POWER_WINDOW)) / POWER_WINDOW_HOURS,
+        (sumSince(points, now.subtract(POWER_WINDOW)) / POWER_WINDOW_HOURS) *
+        KILO,
     })
   }
 }

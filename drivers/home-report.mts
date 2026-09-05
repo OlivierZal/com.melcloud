@@ -12,10 +12,11 @@ import {
   ScheduledEnergyReport,
 } from './base-report.mts'
 
-// Live-probed telemetry semantics (melcloud-api CLAUDE.md, 2026-07-17):
-// Minute-grade buckets are near-live (~1-2 min lag) and sparse — only
-// active periods return points, so an empty window means an idle unit.
-export const TELEMETRY_INTERVAL = 'Minute'
+// The app's cadence choice over the library's typed interval
+// vocabulary: minute buckets are near-live and sparse — an empty
+// window means an idle unit — where the coarser grains would lag the
+// power readings.
+export const TELEMETRY_INTERVAL: Home.EnergyInterval = 'Minute'
 export const MINUTES_PER_HOUR = 60
 // The single ATA counter has no per-mode split and no live power: the
 // approximated reading is a coarse average over this trailing window.
@@ -26,8 +27,6 @@ export const POWER_FRESHNESS: Temporal.DurationLike = { minutes: 3 }
 // Buckets land up to ~2 min late: totals only accrue up to this safety
 // margin so a late bucket can never be skipped by an advanced cursor.
 const CURSOR_SAFETY: Temporal.DurationLike = { minutes: 15 }
-// 'YYYY-MM-DD HH:MM:SS' prefix of the wire's nanosecond-padded times.
-const WIRE_TIME_SECONDS_LENGTH = 19
 
 type EnergyEntry = readonly [string, readonly HomeEnergyMeasureName[]]
 
@@ -37,15 +36,15 @@ interface HomeEnergyQuery {
   readonly to: string
 }
 
-// Per-type telemetry dialect: how to fetch a measure's points, convert wire
-// sums to kWh, and derive an instantaneous power reading. Injected by the
-// concrete reports so the engine stays type-agnostic.
+// Per-type strategy over the library's normalized kWh series: how to
+// fetch a measure's points (ATW selects a direction, ATA has none) and
+// derive an instantaneous power reading. Injected by the concrete
+// reports so the engine stays type-agnostic.
 interface HomeEnergyStrategy<T extends Home.DeviceType> {
   readonly fetchPoints: (
     facade: HomeDeviceFacade<T>,
     query: HomeEnergyQuery,
   ) => Promise<EnergyPoint[]>
-  readonly kilowattHours: (wireSum: number) => number
   readonly watts: (
     points: readonly EnergyPoint[],
     now: Temporal.Instant,
@@ -61,6 +60,8 @@ interface RegularBoundaries {
   readonly now: Temporal.Instant
 }
 
+// One bucketable sample: the library's epoch-ms stamp as an instant,
+// its energy in kWh whatever the device type.
 export interface EnergyPoint {
   readonly instant: Temporal.Instant
   readonly value: number
@@ -71,19 +72,24 @@ const cursorKey = (measure: HomeEnergyMeasureName): string =>
 const totalKey = (measure: HomeEnergyMeasureName): string =>
   `energy_total_${measure}`
 
-// Wire times are UTC wall-clock strings with nanosecond padding
-// ('2026-07-15 07:00:00.000000000'); non-finite values count as 0 like the
-// Classic report's tags.
-export const parsePoints = (data: Home.EnergyData): EnergyPoint[] =>
-  (data.measureData[0]?.values ?? []).map(({ time, value }) => {
-    const numeric = Number(value)
-    return {
-      instant: Temporal.Instant.from(
-        `${time.slice(0, WIRE_TIME_SECONDS_LENGTH).replace(' ', 'T')}Z`,
-      ),
-      value: Number.isFinite(numeric) ? numeric : 0,
-    }
-  })
+// The library owns the whole telemetry decode (stamps, units, garbled
+// samples); what remains here is window policy over its degraded
+// fields: a `null` energy counts as 0 like the Classic report's tags,
+// and a sample without an instant cannot join any window, so it is
+// dropped.
+export const toEnergyPoints = (
+  points: readonly Home.EnergySeriesPoint[],
+): EnergyPoint[] =>
+  points.flatMap(({ atEpochMs, kilowattHours }) =>
+    atEpochMs === null
+      ? []
+      : [
+          {
+            instant: Temporal.Instant.fromEpochMilliseconds(atEpochMs),
+            value: kilowattHours ?? 0,
+          },
+        ],
+  )
 
 export const sumSince = (
   points: readonly EnergyPoint[],
@@ -268,7 +274,7 @@ export abstract class HomeEnergyReport<
         sum += value
       }
     }
-    return this.#strategy.kilowattHours(sum)
+    return sum
   }
 
   async #fetchMeasurePoints(
@@ -309,9 +315,7 @@ export abstract class HomeEnergyReport<
         (consumed === 0 ? 1 : consumed)
       )
     }
-    return this.#strategy.kilowattHours(
-      sumSince(points[measure] ?? [], dayStart),
-    )
+    return sumSince(points[measure] ?? [], dayStart)
   }
 
   #storedCursor(key: string): Temporal.Instant | null {

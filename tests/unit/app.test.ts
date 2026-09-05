@@ -1230,10 +1230,14 @@ describe('melCloudApp', () => {
       type: Home.DeviceType.Ata,
     }
 
+    // Entries arrive with the library's `atEpochMs` (derived from the
+    // instant-form `at` here; pass `null` explicitly for a stamp the
+    // wire could not say).
     const stubHomeAtaDevice = (
       entries: {
         at: string
         deviceId: string
+        atEpochMs?: number | null
         code?: string
         message?: string
       }[],
@@ -1242,7 +1246,14 @@ describe('melCloudApp', () => {
       mockHomeFacadeManagerGetById.mockReturnValue({
         getErrorLog: vi
           .fn<() => Promise<unknown>>()
-          .mockResolvedValue(ok(entries)),
+          .mockResolvedValue(
+            ok(
+              entries.map((entry) => ({
+                atEpochMs: Temporal.Instant.from(entry.at).epochMilliseconds,
+                ...entry,
+              })),
+            ),
+          ),
         type: Home.DeviceType.Ata,
       })
     }
@@ -1344,6 +1355,71 @@ describe('melCloudApp', () => {
       expect(errorLog.errors[0]?.date).not.toBe('—')
       expect(errorLog.errors[1]?.date).toBe('—')
       expect(errorLog.errors[1]?.error).toBe('Unknown Error')
+    })
+
+    // A Home entry the wire could not stamp cannot be judged against a
+    // dated window: it rides the open-ended newest page only — shown
+    // once, dated with the em dash, sunk to the end.
+    it('should sink an instantless Home entry to the end of the open-ended page', async () => {
+      mockApiInstance.getErrorLog.mockResolvedValue(
+        ok({
+          entries: [],
+          fromDate: '2026-03-01',
+          nextFromDate: '2026-03-15',
+          nextToDate: '2026-03-31',
+        }),
+      )
+      stubHomeAtaDevice([
+        {
+          at: '2026-03-05T10:00:00Z',
+          atEpochMs: null,
+          code: 'E404',
+          deviceId: 'guid-1',
+          message: 'Unstamped failure',
+        },
+        {
+          at: '2026-03-20T10:00:00Z',
+          code: 'E101',
+          deviceId: 'guid-1',
+          message: 'Sensor failure',
+        },
+      ])
+      await app.onInit()
+
+      const errorLog = await app.getErrorLog(mock<Classic.ErrorLogQuery>())
+
+      expect(errorLog.errors.map(({ error }) => error)).toStrictEqual([
+        'Sensor failure',
+        'Unstamped failure',
+      ])
+      expect(errorLog.errors[1]?.date).toBe('—')
+    })
+
+    it('should exclude an instantless Home entry from a dated page', async () => {
+      mockApiInstance.getErrorLog.mockResolvedValue(
+        ok({
+          entries: [],
+          fromDate: '2026-03-01',
+          nextFromDate: '2026-03-15',
+          nextToDate: '2026-03-31',
+        }),
+      )
+      stubHomeAtaDevice([
+        {
+          at: '2026-03-05T10:00:00Z',
+          atEpochMs: null,
+          code: 'E404',
+          deviceId: 'guid-1',
+          message: 'Unstamped failure',
+        },
+      ])
+      await app.onInit()
+
+      const errorLog = await app.getErrorLog(
+        mock<Classic.ErrorLogQuery>({ to: '2026-03-31' }),
+      )
+
+      expect(errorLog.errors).toStrictEqual([])
     })
 
     it('should keep the log when a Home device fails to answer', async () => {

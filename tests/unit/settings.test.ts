@@ -1412,20 +1412,47 @@ describe('settings page', () => {
       expect(getButton('apply_frost_protection').disabled).toBe(true)
     })
 
-    it('should swap and space an inverted frost range', async () => {
+    // The input bounds derive from the library clamp's fixed points at
+    // the extremes — the same source the write goes through, so the
+    // form can never admit a pair the clamp would rewrite past its own
+    // field.
+    it('should derive the protection input bounds from the library clamp', async () => {
+      await bootPage()
+
+      expect([getInput('min').min, getInput('min').max]).toStrictEqual([
+        '4',
+        '14',
+      ])
+      expect([getInput('max').min, getInput('max').max]).toStrictEqual([
+        '6',
+        '16',
+      ])
+      expect([
+        getInput('overheat_min').min,
+        getInput('overheat_min').max,
+      ]).toStrictEqual(['31', '38'])
+      expect([
+        getInput('overheat_max').min,
+        getInput('overheat_max').max,
+      ]).toStrictEqual(['33', '40'])
+    })
+
+    // The pair goes to the library's clampFrostProtection verbatim —
+    // no app-side swap: an inverted pair keeps the typed min and lifts
+    // the max to min + gap, the same verdict a direct SDK call gets.
+    it('should clamp an inverted frost range like the library', async () => {
       const harness = await bootPage()
       commit(getInput('min'), '11')
       commit(getInput('max'), '10')
       getButton('apply_frost_protection').click()
       await settleDetached()
 
-      // Swapped to 10/11, then the max bumped to min + gap.
       expect(
         lastCallBody(
           harness,
           'PUT /targets/buildings_1/settings/frost-protection',
         ),
-      ).toStrictEqual({ isEnabled: true, max: 12, min: 10 })
+      ).toStrictEqual({ isEnabled: true, max: 13, min: 11 })
     })
 
     it('should alert an out-of-range frost temperature', async () => {
@@ -1726,6 +1753,27 @@ describe('settings page', () => {
           'PUT /targets/homeBuildings_building_1/settings/overheat-protection',
         ),
       ).toStrictEqual({ isEnabled: true, max: 38, min: 33 })
+    })
+
+    // The overheat panel hands its pair to clampOverheatProtection —
+    // the overheat clamp, not frost's: an in-field pair (33/34 both
+    // pass their input bounds) still gets the gap spaced to min + 2.
+    it('should space an under-gapped overheat range like the library', async () => {
+      const harness = await bootHome()
+      commit(getSelect('zones'), 'homeBuildings_building_1')
+      await settleDetached()
+      commit(getSelect('enabled_overheat_protection'), 'true')
+      commit(getInput('overheat_min'), '33')
+      commit(getInput('overheat_max'), '34')
+      getButton('apply_overheat_protection').click()
+      await settleDetached()
+
+      expect(
+        lastCallBody(
+          harness,
+          'PUT /targets/homeBuildings_building_1/settings/overheat-protection',
+        ),
+      ).toStrictEqual({ isEnabled: true, max: 35, min: 33 })
     })
 
     it('should alert an invalid overheat range', async () => {
