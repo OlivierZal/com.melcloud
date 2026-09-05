@@ -30,13 +30,22 @@ describe.concurrent('webview floor closure', () => {
     readRepoFile('scripts/bundle.mts'),
     'entryPoints',
   )
+  const floorGlobs = getQuotedEntries(
+    readRepoFile('eslint.config.ts'),
+    'webviewFloorFiles',
+  )
   const findings = analyzeWebviewFloor({
     entryPoints,
-    floorGlobs: getQuotedEntries(
-      readRepoFile('eslint.config.ts'),
-      'webviewFloorFiles',
-    ),
+    floorGlobs,
     repoRoot: REPO_ROOT,
+  })
+
+  // Guards the guard: the kit only refuses an EMPTY sweep, while this
+  // app declares three entry points and four globs — a perimeter read
+  // that lost most of them would still pass the kit's check.
+  it('reads more than two entry points and more than two floor globs', () => {
+    expect(entryPoints.length).toBeGreaterThan(2)
+    expect(floorGlobs.length).toBeGreaterThan(2)
   })
 
   // Guards the walk: one that silently stopped at the seed would floor

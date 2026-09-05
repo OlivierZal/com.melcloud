@@ -694,9 +694,9 @@ stamp producer `stampPackagedPages` (+ `stampHtml`, `stampReferences`,
 `WebviewPage`) that emits `webview-hashes.json` (`/node`),
 `fireAndForget`/`getErrorMessage`/`NotFoundError`/`sequential` (root),
 and — under `/testing` — the two API test kernels, the webview-floor
-kernel (`analyzeWebviewFloor` + `getQuotedEntries`, which throws on an
-empty sweep: the "guards the guard" check the suite used to carry by
-hand) and the plain test helpers (`assertDefined`, `getMockCallArg`,
+kernel (`analyzeWebviewFloor` + `getQuotedEntries`, which refuses an
+EMPTY sweep; the suite keeps its own stronger guard — more than two
+entry points and more than two globs) and the plain test helpers (`assertDefined`, `getMockCallArg`,
 `mock`, `settleDetached`, `InteropModule`). A change to any of them is
 a kit release adopted here by a pin bump — never a local edit, never a
 re-derivation.
