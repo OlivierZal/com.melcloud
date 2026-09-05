@@ -1,4 +1,4 @@
-description: Set up Node.js for this @olivierzal-scoped GitHub Packages project and (optionally) install dependencies. Caller must run actions/checkout first — composite actions cannot reference local files before the repo is checked out.
+description: Set up Node.js (optionally against the @olivierzal GitHub Packages registry) and install dependencies with hardened flags. Caller must run actions/checkout first — composite actions cannot reference local files before the repo is checked out.
 inputs:
   cache:
     default: npm
@@ -6,19 +6,29 @@ inputs:
     required: false
   install:
     default: 'true'
-    description: Whether to run `npm ci --ignore-scripts`. Set to 'false' for jobs that only need a Node/.npmrc setup (audit, publish).
+    description: Whether to run `npm ci --ignore-scripts`. Set to 'false' only for jobs that need neither dependencies nor a helper script from the package — a job resolving `node_modules/@olivierzal/configs/scripts/…` must install, or it silently falls through to a path that exists only in this repo.
     required: false
   node-version:
-    default: '22'
-    description: Node.js version to install. Defaults to the Homey runtime version.
+    default: lts/*
+    description: Node.js version to install. Apps pin their runtime version, libs use 'lts/*' or 'latest'.
     required: false
   npm-token:
-    description: Token forwarded as NODE_AUTH_TOKEN. Required when `install` is true (GitHub Packages requires auth even for read).
+    description: Token forwarded as NODE_AUTH_TOKEN during install. Required by repos whose dependencies live on GitHub Packages (auth is needed even for read).
+    required: false
+  registry-url:
+    description: Optional registry URL forwarded to actions/setup-node (publish jobs, scoped-dependency installs).
+    required: false
+  require-npm-token:
+    default: 'false'
+    description: Fail fast when `install` is true and no npm-token was provided — for repos whose install cannot succeed anonymously.
+    required: false
+  scope:
+    description: Optional npm scope forwarded to actions/setup-node.
     required: false
 name: Setup Node and install
 runs:
   steps:
-    - if: inputs.install == 'true' && inputs.npm-token == ''
+    - if: inputs.require-npm-token == 'true' && inputs.install == 'true' && inputs.npm-token == ''
       run: |
         echo "::error::setup-node-and-install: 'npm-token' input is required when 'install' is 'true' (GitHub Packages auth)."
         exit 1
@@ -30,8 +40,8 @@ runs:
         # the falsy branch sits after `||`.
         cache: ${{ inputs.cache != 'none' && inputs.cache || '' }}
         node-version: ${{ inputs.node-version }}
-        registry-url: https://npm.pkg.github.com
-        scope: '@olivierzal'
+        registry-url: ${{ inputs.registry-url }}
+        scope: ${{ inputs.scope }}
     - env:
         NODE_AUTH_TOKEN: ${{ inputs.npm-token }}
       if: inputs.install == 'true'

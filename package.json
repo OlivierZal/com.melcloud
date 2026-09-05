@@ -38,7 +38,7 @@
     "temporal-polyfill": "^1.0.4"
   },
   "devDependencies": {
-    "@olivierzal/configs": "4.4.0",
+    "@olivierzal/configs": "4.5.0",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/node": "^26.4.0",
     "@typescript/native": "npm:typescript@^7.0.2",
