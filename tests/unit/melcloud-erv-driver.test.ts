@@ -1,15 +1,15 @@
 import type HomeyModule from 'homey'
+import { type InteropModule, mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
 import { tagMappings } from '../../types/classic-erv.mts'
 import { testDriverType, testTagMappings } from '../driver-descriptors.ts'
-import { type InteropModule, mock } from '../helpers.ts'
 import ClassicMELCloudDriverErv from '../../drivers/melcloud_erv/driver.mts'
 
 vi.mock(import('homey'), async () => {
-  const { createMockDriverClass, mock: mockModule } =
-    await import('../helpers.ts')
+  const { createMockDriverClass } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Driver: createMockDriverClass({

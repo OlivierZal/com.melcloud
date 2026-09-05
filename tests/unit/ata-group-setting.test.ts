@@ -3,6 +3,7 @@
 
 import type { HomeDeviceZone } from '@olivierzal/melcloud-api'
 import { getButton, getSelect } from '@olivierzal/homey-kit/dom'
+import { mock, settleDetached } from '@olivierzal/homey-kit/testing'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { start } from '../../widgets/ata-group-setting/public/index.mts'
@@ -17,7 +18,6 @@ import {
   stubRandomUint32,
   widgetRoutes,
 } from '../ata-group-harness.ts'
-import { mock, settleDetached } from '../helpers.ts'
 
 const bootWidget = async (
   options: WidgetHarnessOptions = {},

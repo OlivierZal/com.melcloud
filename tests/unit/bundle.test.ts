@@ -9,9 +9,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // directory (the Homey CLI runs it from the packaged app's root), so
 // each test materializes a miniature app in a temp directory, moves
 // there, and imports the script afresh. The stamping semantics it calls
-// into are pinned separately, in tests/unit/webview-stamp.test.ts: what
-// belongs here is the bundler's own wiring — a compat pair per entry,
-// and the manifest key each packaged page is served under.
+// into are the kit's (`stampPackagedPages` from `@olivierzal/homey-kit/node`,
+// pinned by the kit's own suite): what belongs here is the bundler's own
+// wiring — a compat pair per entry, and the manifest key each packaged
+// page is served under.
 const HASH_LENGTH = 8
 
 const initialDirectory = process.cwd()

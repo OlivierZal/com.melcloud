@@ -1,4 +1,5 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { getMockCallArg, mock } from '@olivierzal/homey-kit/testing'
 import { err, ok } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 import {
@@ -17,7 +18,6 @@ import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type { Homey } from '../../lib/homey.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
 import { EnergyReport } from '../../drivers/classic-report.mts'
-import { getMockCallArg, mock } from '../helpers.ts'
 import { createReportDeviceMocks, FAKE_NOW } from '../report-mocks.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata

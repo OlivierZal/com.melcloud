@@ -1,7 +1,7 @@
+import { mock } from '@olivierzal/homey-kit/testing'
 import { describe, expect, it } from 'vitest'
 
 import { type LocalizedStrings, localizeWithAffix } from '../../types/bases.mts'
-import { mock } from '../helpers.ts'
 
 describe(localizeWithAffix, () => {
   it('should join every affix language with its base string', () => {

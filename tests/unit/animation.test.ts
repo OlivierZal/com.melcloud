@@ -3,6 +3,7 @@
 
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { getDiv, getSelect } from '@olivierzal/homey-kit/dom'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AnimationController } from '../../widgets/ata-group-setting/public/animation.mts'
@@ -19,7 +20,6 @@ import {
   waitUntil,
   widgetRoutes,
 } from '../ata-group-harness.ts'
-import { mock } from '../helpers.ts'
 
 const HEAT = 1
 const DRY = 2

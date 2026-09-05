@@ -1,6 +1,7 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type HomeyModule from 'homey'
 import { NotFoundError } from '@olivierzal/homey-kit'
+import { type InteropModule, mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { HomeEnergyReportAtw } from '../../drivers/home-report-atw.mts'
@@ -9,7 +10,6 @@ import {
   testEnergyReportConfig,
   testThermostatMode,
 } from '../device-descriptors.ts'
-import { type InteropModule, mock } from '../helpers.ts'
 import HomeMELCloudDeviceAtw from '../../drivers/home-melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -46,8 +46,8 @@ const {
 }))
 
 vi.mock(import('homey'), async () => {
-  const { createMockDeviceClass, mock: mockModule } =
-    await import('../helpers.ts')
+  const { createMockDeviceClass } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   const { homeTagMappingsAtw: tagMappings } =
     await import('../../types/home-atw.mts')
   return mockModule<InteropModule<typeof HomeyModule>>({

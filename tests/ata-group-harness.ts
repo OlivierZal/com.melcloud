@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs'
 
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { vi } from 'vitest'
 
 import type { Homey } from '../public/widget.mts'
 import type { DriverCapabilitiesOptions } from '../types/driver-settings.mts'
 import type { AtaGroupSettingWidgetSettings } from '../types/widgets.mts'
-import { mock } from './helpers.ts'
 
 // A plain relative path: under the happy-dom environment
 // `import.meta.url` is an http URL the fs module refuses.

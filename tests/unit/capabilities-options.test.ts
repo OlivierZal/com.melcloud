@@ -1,4 +1,5 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { describe, expect, it } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
@@ -10,7 +11,6 @@ import {
 import { HotWaterMode } from '../../types/atw.mts'
 import { getCapabilitiesOptions as getCapabilitiesOptionsAtw } from '../../types/classic-atw.mts'
 import { homeGetCapabilitiesOptionsAtw } from '../../types/home-atw.mts'
-import { mock } from '../helpers.ts'
 
 describe(getCapabilitiesOptionsAtaErv, () => {
   it('should return fan_speed with min 0 when HasAutomaticFanSpeed is true', () => {

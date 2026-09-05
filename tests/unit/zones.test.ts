@@ -1,5 +1,6 @@
 import type { HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { describe, expect, it } from 'vitest'
 
 import {
@@ -11,7 +12,6 @@ import {
   isHomeBuildingValue,
   isHomeDeviceValue,
 } from '../../public/zones.mts'
-import { mock } from '../helpers.ts'
 
 describe('zones', () => {
   it('should flatten every classic subzone collection in order', () => {

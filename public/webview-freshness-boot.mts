@@ -7,8 +7,7 @@ import {
   fireAndForget,
   watchWebviewFreshness,
 } from '@olivierzal/homey-kit/webview'
-
-import { homeyApiGet, homeyApiPost } from './widget.mts'
+import { homeyApiGet, homeyApiPost } from '@olivierzal/homey-kit/widget'
 
 // Boot check plus the triggers that cover a page outliving it. When this
 // resolves `true` the caller must skip its init — the document is about

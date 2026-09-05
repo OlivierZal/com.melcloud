@@ -1,6 +1,7 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type HomeyModule from 'homey'
 import { NotFoundError } from '@olivierzal/homey-kit'
+import { type InteropModule, mock } from '@olivierzal/homey-kit/testing'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -12,7 +13,6 @@ import {
   testSetValuesErrorHandling,
   testThermostatModeOff,
 } from '../device-descriptors.ts'
-import { type InteropModule, mock } from '../helpers.ts'
 import {
   type TestHomeDevice,
   createTestHomeDevice,
@@ -76,8 +76,8 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
   })
 
 vi.mock(import('homey'), async () => {
-  const { createMockDeviceClass, mock: mockModule } =
-    await import('../helpers.ts')
+  const { createMockDeviceClass } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Device: createMockDeviceClass({

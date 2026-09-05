@@ -45,7 +45,8 @@ caught real failures that the others miss:
   (no `.homeybuild` page copies) still proves the bundles compile.
 - Cache-busting `?v=` — a PACKAGE-TIME transform: `bundle.mts` stamps
   every local asset reference of the `.homeybuild` page copies with a
-  content hash (`?v=<hash>`), so phone webviews (which cache assets
+  content hash (`?v=<hash>`) through the kit's `stampPackagedPages`
+  (`@olivierzal/homey-kit/node`), so phone webviews (which cache assets
   across app versions) refetch an asset exactly when its bytes change.
   The pattern anchors on `href="` / `src="` as one unit, so a reference
   survives prettier splitting a long tag across lines; a leading `/`
@@ -64,7 +65,7 @@ caught real failures that the others miss:
   force-close included): each bundle carries a freshness handshake —
   the page's identity is the document-order join of its UNIQUE `?v=`
   stamps — a CSS-only ship moves it too, and the dedup is by HASH VALUE
-  on BOTH sides (the kit's page-side join and `webview-stamp.mts`):
+  on BOTH sides (the kit's page-side join and its `stampPackagedPages`):
   two assets with identical bytes carry one stamp on the page, so a
   bundler counting them twice would mint an identity no page could ever
   match — an endless refetch handshake (fixed and pinned, 2026-08) —,
@@ -78,7 +79,9 @@ caught real failures that the others miss:
   (`?fresh=<identity>` — a bare reload can be re-served the same stale
   document from the HTTP cache; sessionStorage guard,
   `watchWebviewFreshness` from `@olivierzal/homey-kit/webview`, wrapped
-  for the widget transport by `public/webview-freshness-boot.mts`), whose
+  for the widget transport by `public/webview-freshness-boot.mts` and
+  for the settings page by the kit's own `watchSettingsFreshness` from
+  `@olivierzal/homey-kit/settings`), whose
   fresh stamps pull the fresh assets;
   a mismatch that survives its refetch is reported to
   `POST /boot-error`. The guarantee lives in the BOOT check, and which
@@ -96,9 +99,14 @@ caught real failures that the others miss:
   breadcrumb). Never fold the visibility trigger into it. Every failure
   path stays open: an unstamped page, an absent route or denied
   storage must never take a working webview down.
-  The stamping pass itself lives in `scripts/webview-stamp.mts` (and the
-  vendored-JSON key sort in `scripts/sort-keys-deep.mts`), unit-tested
-  against a temp packaging tree; `bundle.mts` and
+  The stamping pass itself is the kit's `stampPackagedPages`
+  (`@olivierzal/homey-kit/node`, pinned by the kit's suite against a
+  temp packaging tree; it is STRICT: a page copy that exists but cannot
+  be read rejects, a PARTIAL tree — some page copies present, some
+  not — throws naming the missing entries, and a copy with no local
+  reference throws too; only a tree with no copy at all, the standalone
+  suite run, answers false), while the vendored-JSON key sort stays in
+  `scripts/sort-keys-deep.mts`; `bundle.mts` and
   `sync-capability-definitions.mts` keep only their tables and the
   esbuild/fs calls consuming them, unit-tested directly
   (`tests/unit/bundle.test.ts`,
@@ -199,8 +207,8 @@ coverage.
   degrades to "no grouping" when it is absent).
   `@olivierzal/homey-kit/settings` is the settings pages' transport
   (the settings SDK is error-first-callback, unlike the widget SDK —
-  which is why `public/homey-api.mts` stays a separate, promise-native
-  widget layer). The surface is
+  which is why `@olivierzal/homey-kit/widget` is a separate,
+  promise-native widget layer). The surface is
   test-pinned in two halves, one file each — extend BOTH when touching
   a route: `tests/unit/api-contract.test.ts` (since #1261) pins
   manifest ids ↔ handlers both ways plus the handlers' function type,
@@ -467,7 +475,8 @@ coverage.
   timeout ends it if the bundle never loads (`#init_error` / post-ready
   alert), and `runWebview`/`withInitTimeout` end it if a DATA fetch hangs
   during init (`Homey.ready()` in a `finally`). `scripts/bundle.mts`
-  stamps the PACKAGED `.homeybuild` page copies — full references
+  stamps the PACKAGED `.homeybuild` page copies through the kit's
+  `stampPackagedPages` — full references
   (`href="`/`src="`) wherever they appear, comments included; only a
   bare filename in prose is safe — with a content hash
   (`?v=`): phone webviews cache assets across app versions; the source
@@ -674,22 +683,40 @@ given a registry.
 `@olivierzal/homey-kit` (exact pin, a PRODUCTION dependency — the
 manifest reader runs on the device) owns what used to be copied across
 the three apps: the dirty gate and the freshness handshake
-(`/webview`), the settings transport (`/settings`), the manifest reader
-(`/node`), `fireAndForget`/`getErrorMessage`/`NotFoundError`/`sequential`
-(root) and the
-two test kernels (`/testing`). A change to any of them is a kit release
-adopted here by a pin bump — never a local edit, never a re-derivation.
+(`/webview`), the settings transport and the settings page's whole
+freshness wiring, `watchSettingsFreshness` — entry `settings`,
+`GET /webview-hashes`, the `POST /boot-error` breadcrumb with a
+swallowed outcome, the `webview_hashes_changed` poke (`/settings`), the
+promise-native widget transport (`/widget` — its `WidgetApi.api` is a
+method signature, bivariant, so the real `HomeyWidget` is assignable
+and no local copy is needed), the manifest reader AND the package-time
+stamp producer `stampPackagedPages` (+ `stampHtml`, `stampReferences`,
+`WebviewPage`) that emits `webview-hashes.json` (`/node`),
+`fireAndForget`/`getErrorMessage`/`NotFoundError`/`sequential` (root),
+and — under `/testing` — the two API test kernels, the webview-floor
+kernel (`analyzeWebviewFloor` + `getQuotedEntries`, which refuses an
+EMPTY sweep; the suite keeps its own stronger guard — more than two
+entry points and more than two globs) and the plain test helpers (`assertDefined`, `getMockCallArg`,
+`mock`, `settleDetached`, `InteropModule`). A change to any of them is
+a kit release adopted here by a pin bump — never a local edit, never a
+re-derivation.
 
 What stays local, by measurement rather than omission:
 
-- `public/homey-api.mts`, the promise-native WIDGET layer (the widget
-  SDK differs from the settings one) with its own `fireAndForget`,
-  `runWebview` and `surfaceError`.
+- `public/widget.mts` keeps only the `Homey<TSettings>` interface, the
+  tie between the widget SDK type and this app's stored widget
+  settings — module augmentation cannot be packaged.
 - `public/webview-freshness-boot.mts` — `watchWidgetFreshness`, the
   widget-side wiring that feeds the kit's `watchWebviewFreshness` the
   promise-native widget transport and the breadcrumb channel. Both
   widgets call it once; it carries the boot check, the poke
-  subscription and the visibility re-check together.
+  subscription and the visibility re-check together. It is the widget
+  twin of the kit's `watchSettingsFreshness`: the widget SDK's
+  `homey.api` is promise-native where the settings one is
+  error-first-callback, so the two wirings differ in transport.
+- `tests/helpers.ts` keeps only this app's own doubles:
+  `createEnergyReportMock` and the `createMockDeviceClass` /
+  `createMockDriverClass` re-exports.
 - `public/dom.mts`, `public/zones.mts`, and the drivers themselves.
 - `homey-override.d.ts` keeps its `declare module` block: module
   augmentation cannot be packaged. It EXTENDS the SDK interfaces and

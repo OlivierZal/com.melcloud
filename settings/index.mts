@@ -30,13 +30,13 @@ import {
   homeyApiPut,
   homeyCallback,
   homeyConfirm,
+  watchSettingsFreshness,
 } from '@olivierzal/homey-kit/settings'
 import {
   type DirtyGate,
   createDirtyGate,
   fireAndForget,
   runWebview,
-  watchWebviewFreshness,
 } from '@olivierzal/homey-kit/webview'
 import {
   type ProtectionState,
@@ -1925,7 +1925,7 @@ class SettingsApp {
     // A stale cached page refetches itself once (never-cached address)
     // instead of booting: skip the init — the document is about to be
     // replaced.
-    if (await this.#watchFreshness()) {
+    if (await watchSettingsFreshness(this.#homey)) {
       return
     }
     const { error, hasFailed } = await runWebview(this.#homey, this.#run())
@@ -2157,30 +2157,6 @@ class SettingsApp {
     if (this.#hasHomeDevices()) {
       await this.#fetchHomeTargets()
     }
-  }
-
-  // Boot check plus the triggers that cover a page outliving it: this
-  // webview survives an app restart on mobile, so no new document — and
-  // no boot check — ever happens there. Breadcrumbs ride the declared
-  // boot-error route.
-  async #watchFreshness(): Promise<boolean> {
-    return watchWebviewFreshness({
-      entry: 'settings',
-      fetchHashes: async () => homeyApiGet(this.#homey, '/webview-hashes'),
-      report: (message) => {
-        this.#homey.api(
-          'POST',
-          '/boot-error',
-          { message, name: 'WebviewFreshness' },
-          () => {
-            // A missed freshness breadcrumb is acceptable.
-          },
-        )
-      },
-      subscribe: (onPoke) => {
-        this.#homey.on('webview_hashes_changed', onPoke)
-      },
-    })
   }
 }
 

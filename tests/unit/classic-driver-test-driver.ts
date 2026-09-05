@@ -1,4 +1,5 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { vi } from 'vitest'
 
 import type {
@@ -8,7 +9,6 @@ import type {
   SetCapabilityTagMapping,
 } from '../../types/classic-capabilities.mts'
 import { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
-import { mock } from '../helpers.ts'
 import { createInstance } from './create-test-instance.ts'
 
 type TestDriverType = typeof Classic.DeviceType.Ata

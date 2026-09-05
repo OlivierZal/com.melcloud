@@ -14,11 +14,11 @@ import {
   getSelect,
   getSpan,
 } from '@olivierzal/homey-kit/dom'
+import { mock, settleDetached } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { DeviceSettings } from '../../types/device-settings.mts'
 import { start } from '../../settings/index.mts'
-import { mock, settleDetached } from '../helpers.ts'
 
 // A plain relative path: under the happy-dom environment
 // `import.meta.url` is an http URL the fs module refuses.

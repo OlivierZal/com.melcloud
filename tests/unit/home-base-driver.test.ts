@@ -1,4 +1,5 @@
 import type HomeyModule from 'homey'
+import { type InteropModule, mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Home from '@olivierzal/melcloud-api/home'
 
@@ -8,7 +9,6 @@ import {
   testPairing,
   testRepairing,
 } from '../driver-descriptors.ts'
-import { type InteropModule, mock } from '../helpers.ts'
 import { createListDevicesSession } from '../pair-session.ts'
 import HomeMELCloudDriverAta from '../../drivers/home-melcloud/driver.mts'
 import { createInstance } from './create-test-instance.ts'
@@ -26,7 +26,7 @@ const {
 })
 
 vi.mock(import('homey'), async () => {
-  const { mock: mockModule } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   const { createFlowCardsStub } = await import('../flow-card-mocks.ts')
   class MockDriver {
     public homey = {

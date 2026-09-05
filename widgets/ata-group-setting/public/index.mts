@@ -12,7 +12,9 @@ import {
   surfaceError,
   trySetDocumentLanguage,
 } from '@olivierzal/homey-kit/webview'
+import { homeyApiGet } from '@olivierzal/homey-kit/widget'
 
+import type { Homey } from '../../../public/widget.mts'
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
 import {
   hideInitError,
@@ -20,7 +22,6 @@ import {
   translateAriaLabels,
 } from '../../../public/dom.mts'
 import { watchWidgetFreshness } from '../../../public/webview-freshness-boot.mts'
-import { type Homey, homeyApiGet } from '../../../public/widget.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 

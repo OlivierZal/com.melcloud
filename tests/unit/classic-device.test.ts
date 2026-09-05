@@ -1,6 +1,11 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type HomeyModule from 'homey'
 import { NotFoundError } from '@olivierzal/homey-kit'
+import {
+  type InteropModule,
+  mock,
+  settleDetached,
+} from '@olivierzal/homey-kit/testing'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -24,7 +29,6 @@ import {
   testUninitialisation,
   testWarningManagement,
 } from '../device-descriptors.ts'
-import { type InteropModule, mock, settleDetached } from '../helpers.ts'
 import {
   type TestDeviceType,
   TestDevice,
@@ -73,7 +77,7 @@ const { energyReportStartMock } = vi.hoisted(() => ({
 // `new`-able function expression (arrows are not constructible): its
 // returned object becomes the constructed report.
 vi.mock(import('../../drivers/classic-report.mts'), async () => {
-  const { mock: mockModule } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   const newEnergyReportMock = function newEnergyReportMock(): {
     start: () => Promise<void>
     unschedule: () => void
@@ -86,8 +90,8 @@ vi.mock(import('../../drivers/classic-report.mts'), async () => {
 })
 
 vi.mock(import('homey'), async () => {
-  const { createMockDeviceClass, mock: mockModule } =
-    await import('../helpers.ts')
+  const { createMockDeviceClass } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Device: createMockDeviceClass({

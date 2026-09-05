@@ -1,3 +1,4 @@
+import type { InteropModule } from '@olivierzal/homey-kit/testing'
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type HomeyModule from 'homey'
 import {
@@ -8,7 +9,6 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { InteropModule } from '../helpers.ts'
 import { HomeEnergyReportAta } from '../../drivers/home-report-ata.mts'
 import { ThermostatModeAta } from '../../types/ata.mts'
 import {
@@ -19,7 +19,7 @@ import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
 vi.mock(import('@olivierzal/melcloud-api/home'), async (importOriginal) => {
-  const { mock: mockModule } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<typeof Home>({
     ...(await importOriginal()),
     DeviceAtaFacade: vi.fn<new (...args: unknown[]) => unknown>(),
@@ -27,8 +27,8 @@ vi.mock(import('@olivierzal/melcloud-api/home'), async (importOriginal) => {
 })
 
 vi.mock(import('homey'), async () => {
-  const { createMockDeviceClass: create, mock: mockModule } =
-    await import('../helpers.ts')
+  const { createMockDeviceClass: create } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<InteropModule<typeof HomeyModule>>({
     default: { Device: create() },
   })
