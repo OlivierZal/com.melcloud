@@ -1,18 +1,13 @@
+import { coverageDefaults } from '@olivierzal/configs/vitest-coverage'
 import { swcPlugin } from '@olivierzal/configs/vitest-swc'
 import { type ViteUserConfig, defineConfig } from 'vitest/config'
 
 const config: ViteUserConfig = defineConfig({
   test: {
     coverage: {
+      ...coverageDefaults,
       exclude: ['.homeybuild/**'],
       include: ['**/*.mts'],
-      reporter: ['text', 'lcov'],
-      thresholds: {
-        branches: 100,
-        functions: 100,
-        lines: 100,
-        statements: 100,
-      },
     },
     projects: [
       {
