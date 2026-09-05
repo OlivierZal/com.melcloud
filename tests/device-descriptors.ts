@@ -1,7 +1,6 @@
+import { getMockCallArg } from '@olivierzal/homey-kit/testing'
 import { NoChangesError } from '@olivierzal/melcloud-api'
 import { describe, expect, it, vi } from 'vitest'
-
-import { getMockCallArg } from './helpers.ts'
 
 const getConverter = (
   device: object,

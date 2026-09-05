@@ -18,19 +18,16 @@ import {
   parseFormValue,
 } from '@olivierzal/homey-kit/dom'
 import { type DirtyGate, createDirtyGate } from '@olivierzal/homey-kit/webview'
+import { homeyApiGet, homeyApiPut } from '@olivierzal/homey-kit/widget'
 import {
   ClassicTemperature,
   classicCoolModes,
 } from '@olivierzal/melcloud-api/constants'
 
+import type { Homey } from '../../../public/widget.mts'
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import type { AtaGroupSettingWidgetSettings } from '../../../types/widgets.mts'
 import { appendFormControl, populateZoneOptions } from '../../../public/dom.mts'
-import {
-  type Homey,
-  homeyApiGet,
-  homeyApiPut,
-} from '../../../public/widget.mts'
 import { type PickerZone, getZoneId } from '../../../public/zones.mts'
 
 // The generated controls are styled by element selectors in

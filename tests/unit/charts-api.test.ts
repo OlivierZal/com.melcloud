@@ -2,9 +2,9 @@ import type {
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { mock } from '../helpers.ts'
 import {
   createWidgetApiHarness,
   describeWebviewBootLogging,

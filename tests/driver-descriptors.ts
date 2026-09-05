@@ -1,11 +1,10 @@
 import type PairSession from 'homey/lib/PairSession'
+import { mock } from '@olivierzal/homey-kit/testing'
 import {
   AuthenticationError,
   RegistrySyncError,
 } from '@olivierzal/melcloud-api'
 import { describe, expect, it, vi } from 'vitest'
-
-import { mock } from './helpers.ts'
 
 export const testDriverType = (
   getDriver: () => { type: unknown },

@@ -1,5 +1,6 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type Homey from 'homey/lib/Homey'
+import { getMockCallArg, mock } from '@olivierzal/homey-kit/testing'
 import { err, ok } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 import {
@@ -16,7 +17,6 @@ import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type { HomeMELCloudDevice } from '../../drivers/home-device.mts'
 import { HomeEnergyReportAta } from '../../drivers/home-report-ata.mts'
 import { HomeEnergyReportAtw } from '../../drivers/home-report-atw.mts'
-import { getMockCallArg, mock } from '../helpers.ts'
 import { createReportDeviceMocks, FAKE_NOW } from '../report-mocks.ts'
 
 const {

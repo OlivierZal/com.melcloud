@@ -8,9 +8,8 @@
 // offline with versions pinned by the lockfile.
 import path from 'node:path'
 
+import { stampPackagedPages } from '@olivierzal/homey-kit/node'
 import { type BuildOptions, build } from 'esbuild'
-
-import { stampPackagedPages } from './webview-stamp.mts'
 
 // The IIFE global each page's inline `onHomeyReady` reads `start` from.
 const GLOBAL_NAME = 'MELCloudWebview'

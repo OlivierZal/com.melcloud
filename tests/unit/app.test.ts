@@ -1,4 +1,9 @@
 import {
+  getMockCallArg,
+  mock,
+  settleDetached,
+} from '@olivierzal/homey-kit/testing'
+import {
   type HolidayModeState,
   type HolidayModeUpdate,
   type LoginCredentials,
@@ -21,12 +26,11 @@ import type * as HomeyLib from '../../lib/homey.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
 import type { Settings } from '../../types/device-settings.mts'
 import type { ManifestDriver } from '../../types/manifest.mts'
-import { getMockCallArg, mock, settleDetached } from '../helpers.ts'
 
 const mockSetFacadeManager = vi.fn<() => void>()
 
 vi.mock(import('../../lib/homey.mts'), async () => {
-  const { mock: mockModule } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<typeof HomeyLib>({ App: Function })
 })
 
@@ -39,7 +43,7 @@ vi.mock(
 )
 
 vi.mock(import('../../files.mts'), async (importOriginal) => {
-  const { mock: mockModule } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   const original = await importOriginal()
   return mockModule<typeof FilesModule>({
     ...original,
@@ -123,7 +127,7 @@ const {
 }))
 
 vi.mock(import('@olivierzal/melcloud-api/classic'), async (importOriginal) => {
-  const { mock: mockModule } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<typeof Classic>({
     ...(await importOriginal()),
     API: { create: mockCreate },
@@ -132,7 +136,7 @@ vi.mock(import('@olivierzal/melcloud-api/classic'), async (importOriginal) => {
 })
 
 vi.mock(import('@olivierzal/melcloud-api/home'), async (importOriginal) => {
-  const { mock: mockModule } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<typeof Home>({
     ...(await importOriginal()),
     API: { create: mockHomeCreate },

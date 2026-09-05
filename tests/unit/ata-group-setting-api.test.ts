@@ -1,10 +1,10 @@
 import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
-import { mock } from '../helpers.ts'
 import {
   createWidgetApiHarness,
   describeWebviewBootLogging,

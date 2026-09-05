@@ -1,3 +1,4 @@
+import { mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
@@ -5,7 +6,6 @@ import {
   getClassicBuildings,
   setClassicFacadeManager,
 } from '../../lib/classic-facade-manager.mts'
-import { mock } from '../helpers.ts'
 
 const mockBuildings = [
   {

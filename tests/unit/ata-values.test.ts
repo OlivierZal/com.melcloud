@@ -3,6 +3,7 @@
 
 import type { HomeDeviceZone } from '@olivierzal/melcloud-api'
 import { getFieldset, getInput, getSelect } from '@olivierzal/homey-kit/dom'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { AtaValueManager } from '../../widgets/ata-group-setting/public/ata-values.mts'
@@ -14,7 +15,6 @@ import {
   loadWidgetPage,
   widgetRoutes,
 } from '../ata-group-harness.ts'
-import { mock } from '../helpers.ts'
 
 interface ManagerHarness extends WidgetHarness {
   readonly manager: AtaValueManager

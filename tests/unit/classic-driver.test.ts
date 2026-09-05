@@ -2,6 +2,11 @@ import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type HomeyModule from 'homey'
 import type FlowCardAction from 'homey/lib/FlowCardAction'
 import type FlowCardCondition from 'homey/lib/FlowCardCondition'
+import {
+  type InteropModule,
+  assertDefined,
+  mock,
+} from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
@@ -11,7 +16,6 @@ import {
   testPairing,
   testRepairing,
 } from '../driver-descriptors.ts'
-import { type InteropModule, assertDefined, mock } from '../helpers.ts'
 import { createListDevicesSession } from '../pair-session.ts'
 import {
   type TestDriver,
@@ -36,7 +40,7 @@ const {
 }))
 
 vi.mock(import('homey'), async () => {
-  const { mock: mockModule } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   class MockDriver {
     public getDevices = vi.fn<() => readonly unknown[]>().mockReturnValue([])
 

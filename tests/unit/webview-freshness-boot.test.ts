@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 // @vitest-environment-options {"settings": {"disableCSSFileLoading": true, "disableJavaScriptFileLoading": true, "navigation": {"disableMainFrameNavigation": true}}}
 
+import { settleDetached } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import { watchWidgetFreshness } from '../../public/webview-freshness-boot.mts'
 import { createWidgetHomey } from '../ata-group-harness.ts'
-import { settleDetached } from '../helpers.ts'
 
 const ENTRY = 'ata-group-setting'
 

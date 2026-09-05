@@ -1,5 +1,6 @@
 import type HomeyModule from 'homey'
 import type PairSession from 'homey/lib/PairSession'
+import { type InteropModule, mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Home from '@olivierzal/melcloud-api/home'
 
@@ -12,7 +13,6 @@ import {
   testPairing,
   testTagMappings,
 } from '../driver-descriptors.ts'
-import { type InteropModule, mock } from '../helpers.ts'
 import { createListDevicesSession } from '../pair-session.ts'
 import HomeMELCloudDriverAtw from '../../drivers/home-melcloud_atw/driver.mts'
 import { createInstance } from './create-test-instance.ts'
@@ -30,8 +30,8 @@ const {
 })
 
 vi.mock(import('homey'), async () => {
-  const { createMockDriverClass, mock: mockModule } =
-    await import('../helpers.ts')
+  const { createMockDriverClass } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Driver: createMockDriverClass({

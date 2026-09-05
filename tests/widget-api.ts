@@ -1,7 +1,6 @@
 import type { Homey } from 'homey/lib/Homey'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { describe, expect, it, vi } from 'vitest'
-
-import { mock } from './helpers.ts'
 
 interface WidgetApiHarness {
   readonly homey: Homey

@@ -1,7 +1,6 @@
 import type PairSession from 'homey/lib/PairSession'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { vi } from 'vitest'
-
-import { mock } from './helpers.ts'
 
 interface ListDevicesSession {
   readonly listHandler: ReturnType<

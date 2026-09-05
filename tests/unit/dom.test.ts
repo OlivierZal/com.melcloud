@@ -2,6 +2,7 @@
 // @vitest-environment-options {"settings": {"disableCSSFileLoading": true, "disableJavaScriptFileLoading": true, "navigation": {"disableMainFrameNavigation": true}}}
 
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import {
@@ -11,7 +12,6 @@ import {
   showInitError,
   translateAriaLabels,
 } from '../../public/dom.mts'
-import { mock } from '../helpers.ts'
 
 describe('webview dom helpers', () => {
   beforeEach(() => {

@@ -1,4 +1,5 @@
 import type HomeyModule from 'homey'
+import { type InteropModule, mock } from '@olivierzal/homey-kit/testing'
 import { Temporal } from 'temporal-polyfill'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
@@ -15,7 +16,6 @@ import {
   testEnergyReportConfig,
   testThermostatMode,
 } from '../device-descriptors.ts'
-import { type InteropModule, mock } from '../helpers.ts'
 import ClassicMELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
 import { createInstance } from './create-test-instance.ts'
 
@@ -36,8 +36,8 @@ const { getCapabilityOptionsMock, hasCapabilityMock, setCapabilityValueMock } =
   }))
 
 vi.mock(import('homey'), async () => {
-  const { createMockDeviceClass, mock: mockModule } =
-    await import('../helpers.ts')
+  const { createMockDeviceClass } = await import('../helpers.ts')
+  const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<InteropModule<typeof HomeyModule>>({
     default: {
       Device: createMockDeviceClass({

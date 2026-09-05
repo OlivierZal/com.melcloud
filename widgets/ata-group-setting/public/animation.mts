@@ -1,14 +1,15 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { getSelect } from '@olivierzal/homey-kit/dom'
 import { fireAndForget, surfaceError } from '@olivierzal/homey-kit/webview'
+import { homeyApiGet } from '@olivierzal/homey-kit/widget'
 import {
   CLASSIC_OPERATION_MODE_MIXED,
   ClassicFanSpeed,
   ClassicOperationMode,
 } from '@olivierzal/melcloud-api/constants'
 
+import type { Homey } from '../../../public/widget.mts'
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
-import { type Homey, homeyApiGet } from '../../../public/widget.mts'
 import {
   generateStyleNumber,
   generateStyleString,

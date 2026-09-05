@@ -6,13 +6,13 @@ import { readFileSync } from 'node:fs'
 import type * as ChartJs from 'chart.js'
 import type { ChartConfiguration, Plugin as ChartPlugin } from 'chart.js'
 import { getDiv, getSelect } from '@olivierzal/homey-kit/dom'
+import { mock, settleDetached } from '@olivierzal/homey-kit/testing'
 import { Temporal } from 'temporal-polyfill'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Homey } from '../../public/widget.mts'
 import type { ChartsWidgetSettings } from '../../types/widgets.mts'
 import { ChartArcElement } from '../chart-arc.ts'
-import { mock, settleDetached } from '../helpers.ts'
 
 // ── Chart.js stand-in ──
 // The real library needs a painting canvas happy-dom does not provide.

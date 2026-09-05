@@ -10,6 +10,7 @@ import {
   surfaceError,
   trySetDocumentLanguage,
 } from '@olivierzal/homey-kit/webview'
+import { homeyApiGet } from '@olivierzal/homey-kit/widget'
 import {
   type ChartConfiguration,
   type ChartData,
@@ -33,6 +34,7 @@ import {
 } from 'chart.js'
 import { Temporal } from 'temporal-polyfill'
 
+import type { Homey } from '../../../public/widget.mts'
 import type { FlatDeviceZone } from '../../../types/zone.mts'
 import {
   hideInitError,
@@ -40,7 +42,6 @@ import {
   translateAriaLabels,
 } from '../../../public/dom.mts'
 import { watchWidgetFreshness } from '../../../public/webview-freshness-boot.mts'
-import { type Homey, homeyApiGet } from '../../../public/widget.mts'
 import { getZoneId } from '../../../public/zones.mts'
 import {
   type DaysQuery,
