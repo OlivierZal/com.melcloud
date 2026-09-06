@@ -71,9 +71,11 @@ caught real failures that the others miss:
   match — an endless refetch handshake (fixed and pinned, 2026-08) —,
   `GET /webview-hashes` serves the
   live hashes (a manifest `bundle.mts` emits into the packaged app,
-  read by `@olivierzal/homey-kit/node`; every `api.mts` — app and both
-  widgets — passes the manifest URL explicitly, the kit's default
-  resolving against its own module inside `node_modules`), and a
+  read by `@olivierzal/homey-kit/node` through the app's
+  `lib/webview-hashes.mts` wrapper, which binds the manifest URL ONCE —
+  the kit's default resolves against its own module inside
+  `node_modules`; every `api.mts` — app and both widgets — calls that
+  wrapper, never the kit reader directly), and a
   mismatch triggers ONE
   refetch of the document through a never-cached address
   (`?fresh=<identity>` — a bare reload can be re-served the same stale
@@ -721,16 +723,19 @@ What stays local, by measurement rather than omission:
 - `homey-override.d.ts` keeps its `declare module` block: module
   augmentation cannot be packaged. It EXTENDS the SDK interfaces and
   takes only the narrowed member signatures from the kit generics
-  (`TypedManagerDrivers['getDrivers']`, `TypedManagerSettings['get' |
-'set']`). Extending the SDK interface and the generic side by side
-  does not work — they both declare those members, and the conflict
-  silently resolves to the SDK's wider type.
+  (`TypedManagerDrivers['getDrivers']`,
+  `TypedManagerSettings['get' | 'set' | 'unset']`). Extending the SDK
+  interface and the generic side by side does not work — they both
+  declare those members, and the conflict silently resolves to the
+  SDK's wider type.
 
-Every `api.mts` (app, ata-group-setting, charts) passes the manifest URL
-to `getWebviewHashes` explicitly: the kit's default resolves
+The manifest URL is bound ONCE, in `lib/webview-hashes.mts` — the only
+piece the kit cannot supply: its `getWebviewHashes` default resolves
 `../webview-hashes.json` against its own module, which sits in
-`node_modules` — only the caller knows where the bundler stamped it.
-Dropping that argument silently disables the freshness handshake (the
+`node_modules`, and only the app knows where the bundler stamped it.
+Every `api.mts` (app, ata-group-setting, charts) calls that wrapper,
+never the kit's reader directly: a surface bypassing it, or a wrapper
+dropping the URL, would silently disable the freshness handshake (the
 reader fails open with an empty map).
 
 ## Lint doctrine
