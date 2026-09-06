@@ -1,7 +1,15 @@
-import type { CapabilitiesOptionsValues, LocalizedStrings } from './bases.mts'
+import type {
+  LoginSetting as KitLoginSetting,
+  ManifestDriver as KitManifestDriver,
+  LocalizedStrings,
+  PairSetting,
+} from '@olivierzal/homey-kit/manifest'
 
-interface LoginSetting extends PairSetting {
-  readonly id: 'login'
+import type { CapabilitiesOptionsValues } from './bases.mts'
+
+// The kit's login step, narrowed to the fields this app's login form
+// actually declares (the kit types the options as an open record).
+interface LoginSetting extends KitLoginSetting {
   readonly options: {
     readonly passwordLabel: LocalizedStrings
     readonly usernameLabel: LocalizedStrings
@@ -14,45 +22,21 @@ interface LoginSetting extends PairSetting {
   }
 }
 
-interface ManifestDriverSetting {
-  readonly label: LocalizedStrings
-  readonly children?: readonly ManifestDriverSettingData[]
-  readonly id?: string
-}
-
-interface ManifestDriverSettingData {
-  readonly id: string
-  readonly label: LocalizedStrings
-  readonly type: string
-  readonly max?: number
-  readonly min?: number
-  readonly units?: string
-  readonly values?: readonly {
-    readonly id: string
-    readonly label: LocalizedStrings
-  }[]
-}
-
-interface PairSetting {
-  readonly id: string
-}
-
 export interface Manifest {
   readonly drivers: readonly ManifestDriver[]
   readonly version: string
 }
 
-export interface ManifestDriver {
+// The kit's driver shape (id, name, pair, settings) plus what this
+// app reads on top of it; `pair` narrows to the login step above.
+export interface ManifestDriver extends KitManifestDriver {
   readonly capabilities: readonly string[]
   readonly class: string
-  readonly id: string
-  readonly name: LocalizedStrings
   readonly capabilitiesOptions?: Record<
     string,
     ManifestDriverCapabilitiesOptions
   >
   readonly pair?: readonly (LoginSetting | PairSetting)[]
-  readonly settings?: readonly ManifestDriverSetting[]
 }
 
 export interface ManifestDriverCapabilitiesOptions {
