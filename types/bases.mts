@@ -1,4 +1,8 @@
+import type { LocalizedStrings } from '@olivierzal/homey-kit/manifest'
+
 import { typedFromEntries } from '../lib/typed-object.mts'
+
+export type { LocalizedStrings } from '@olivierzal/homey-kit/manifest'
 
 const joinWithAffix = (
   base: string,
@@ -55,10 +59,6 @@ export type CapabilityConverter = {
   // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to their capability's type
   bivariant(value: unknown): unknown
 }['bivariant']
-
-export interface LocalizedStrings extends Partial<Record<string, string>> {
-  readonly en: string
-}
 
 export interface RangeOptions {
   readonly max: number

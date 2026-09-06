@@ -73,9 +73,10 @@ caught real failures that the others miss:
   live hashes (a manifest `bundle.mts` emits into the packaged app,
   read by `@olivierzal/homey-kit/node` through the app's
   `lib/webview-hashes.mts` wrapper, which binds the manifest URL ONCE —
-  the kit's default resolves against its own module inside
-  `node_modules`; every `api.mts` — app and both widgets — calls that
-  wrapper, never the kit reader directly), and a
+  the kit's reader takes it as a REQUIRED argument, having dropped its
+  `node_modules`-relative default in 2.0.0, and only the app knows where
+  the bundler stamped the file; every `api.mts` — app and both widgets —
+  calls that wrapper, never the kit reader directly), and a
   mismatch triggers ONE
   refetch of the document through a never-cached address
   (`?fresh=<identity>` — a bare reload can be re-served the same stale
@@ -730,9 +731,10 @@ What stays local, by measurement rather than omission:
   SDK's wider type.
 
 The manifest URL is bound ONCE, in `lib/webview-hashes.mts` — the only
-piece the kit cannot supply: its `getWebviewHashes` default resolves
-`../webview-hashes.json` against its own module, which sits in
-`node_modules`, and only the app knows where the bundler stamped it.
+piece the kit cannot supply: `getWebviewHashes` REQUIRES the URL (its
+`node_modules`-relative default was removed in kit 2.0.0 because it
+failed open and silently disabled the handshake), and only the app
+knows where the bundler stamped the file.
 Every `api.mts` (app, ata-group-setting, charts) calls that wrapper,
 never the kit's reader directly: a surface bypassing it, or a wrapper
 dropping the URL, would silently disable the freshness handshake (the
@@ -802,33 +804,11 @@ reader fails open with an empty map).
   2026-08 against the docs source). The workflows therefore declare no
   `merge_group` trigger: an event that cannot fire needs no handling.
 - The PR title IS the commit that lands: `squash_merge_commit_title` is
-  `PR_TITLE` on SEVEN of the family's eight repos, so the title is the
-  single source (under the former `COMMIT_OR_PR_TITLE`, a one-commit PR
-  silently took its commit subject instead). `api-core` is the
-  exception and still sits on `COMMIT_OR_PR_TITLE` — read from the API
-  2026-08-30, not assumed; the count read five here until `api-core`
-  joined the family, and rounding it up to eight would have asserted a
-  setting that is not there. It must follow Conventional Commits, which
-  the required `PR title` check enforces
-  (`.github/workflows/pr-title.yml`, byte-identical in the seven repos
-  that call the family reusables — every repo but `configs`, which
-  hosts them and whose own copy differs; md5-verified the same day). The
-  default type set is the convention's own — no custom list, no scope
-  allowlist (house scopes are free-form), and deliberately no
-  `subjectPattern`: subjects legitimately open on a proper noun
-  (`feat: MELCloud Home frost protection`). Dependabot's prefixes are
-  pinned to `build(deps)` / `build(deps-dev)` in `dependabot.yml`
-  rather than inferred — left to infer, it read each repo's history and
-  landed a different style per repo (`Build(deps): Bump …` here,
-  bare `Bump …` there). No commitlint: in squash-only repos the title
-  check already covers everything that reaches `main`.
-  The **subject** casing stays inferred and cannot be pinned:
-  `commit-message` accepts only `prefix`, `prefix-development` and
-  `include`, so Dependabot keeps matching each repo's own history
-  (`Bump undici` in one, `bump temporal-polyfill` in another). Left
-  alone by decision (2026-08): a Dependabot commit subject is not a
-  contract, the PR title is — and the `PR title` check already holds
-  that one.
+  `PR_TITLE` on all EIGHT family repos, so the title is the single
+  source (under `COMMIT_OR_PR_TITLE`, a one-commit PR silently took its
+  commit subject instead). `api-core` was the last holdout — created on
+  the default, read as such from the API on 2026-08-30 and aligned on
+  2026-09-07 — so the count is eight by measurement, not by rounding.
 - After every push, monitor the triggered pipelines to completion — the
   PR checks after a push, the publish run after a release tag — and act
   on the outcome: rerun transient infra failures (a SonarCloud 504 is
