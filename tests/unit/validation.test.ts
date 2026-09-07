@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import {
-  toDeviceOrZoneData,
-  toNonNegativeInt,
-  toZoneValueData,
-} from '../../lib/validation.mts'
+import { toNonNegativeInt, toZoneValueData } from '../../lib/validation.mts'
 
 describe(toNonNegativeInt, () => {
   it.each([
@@ -47,25 +43,9 @@ describe(toNonNegativeInt, () => {
   })
 })
 
-describe(toDeviceOrZoneData, () => {
-  it.each(['areas', 'buildings', 'devices', 'floors'] as const)(
-    'accepts %s (frost protection and holiday mode also target devices)',
-    (zoneType) => {
-      expect(toDeviceOrZoneData({ zoneId: '1', zoneType })).toStrictEqual({
-        zoneId: '1',
-        zoneType,
-      })
-    },
-  )
-
-  it.each(['constructor', ''])('rejects %p coming from the URL', (zoneType) => {
-    expect(() => toDeviceOrZoneData({ zoneId: '1', zoneType })).toThrow(
-      /Invalid zone type/v,
-    )
-  })
-})
-
 describe(toZoneValueData, () => {
+  // Every zone collection plus `devices`: frost protection and holiday
+  // mode also target a single device.
   it.each([
     ['areas_100', { zoneId: '100', zoneType: 'areas' }],
     ['buildings_1', { zoneId: '1', zoneType: 'buildings' }],
@@ -75,9 +55,13 @@ describe(toZoneValueData, () => {
     expect(toZoneValueData(value)).toStrictEqual(expected)
   })
 
-  it('rejects a value whose model is not a zone collection', () => {
-    expect(() => toZoneValueData('homeDevices_abc')).toThrow(
-      /Invalid zone type/v,
-    )
-  })
+  // The model indexes the zone registry later, so anything outside the
+  // known collections — a prototype key, an empty model, another
+  // dialect's model — is refused here.
+  it.each(['constructor_1', '_1', 'homeDevices_abc'])(
+    'rejects %p, whose model is not a zone collection',
+    (value) => {
+      expect(() => toZoneValueData(value)).toThrow(/Invalid zone type/v)
+    },
+  )
 })

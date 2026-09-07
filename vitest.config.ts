@@ -1,5 +1,4 @@
 import { coverageDefaults } from '@olivierzal/configs/vitest-coverage'
-import { swcPlugin } from '@olivierzal/configs/vitest-swc'
 import { type ViteUserConfig, defineConfig } from 'vitest/config'
 
 const config: ViteUserConfig = defineConfig({
@@ -11,8 +10,6 @@ const config: ViteUserConfig = defineConfig({
     },
     projects: [
       {
-        oxc: false,
-        plugins: [swcPlugin],
         test: {
           include: ['tests/unit/*device*.test.ts'],
           name: 'device',
@@ -20,8 +17,6 @@ const config: ViteUserConfig = defineConfig({
         },
       },
       {
-        oxc: false,
-        plugins: [swcPlugin],
         test: {
           exclude: ['tests/unit/*device*.test.ts'],
           include: ['tests/**/*.test.ts'],

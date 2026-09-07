@@ -7,7 +7,6 @@ import type {
   SetCapabilities,
 } from '../../types/classic-capabilities.mts'
 import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
-import { createInstance } from './create-test-instance.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
 
@@ -37,5 +36,3 @@ export class TestDevice extends ClassicMELCloudDevice<TestDeviceType> {
     await this.setCapabilityValues(data)
   }
 }
-
-export const createTestDevice = (): TestDevice => createInstance(TestDevice)

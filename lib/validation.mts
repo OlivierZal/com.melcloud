@@ -66,7 +66,7 @@ export const toNonNegativeInt = (
  * @returns The validated pair narrowed to `DeviceOrZoneData`.
  * @throws {@link RangeError} when zoneType is neither a known zone collection nor `devices`.
  */
-export const toDeviceOrZoneData = ({
+const toDeviceOrZoneData = ({
   zoneId,
   zoneType,
 }: {

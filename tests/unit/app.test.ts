@@ -27,20 +27,10 @@ import type { ClassicMELCloudDevice } from '../../types/classic.mts'
 import type { Settings } from '../../types/device-settings.mts'
 import type { ManifestDriver } from '../../types/manifest.mts'
 
-const mockSetFacadeManager = vi.fn<() => void>()
-
 vi.mock(import('../../lib/homey.mts'), async () => {
   const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
   return mockModule<typeof HomeyLib>({ App: Function })
 })
-
-vi.mock(
-  import('../../lib/classic-facade-manager.mts'),
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    setClassicFacadeManager: mockSetFacadeManager,
-  }),
-)
 
 vi.mock(import('../../files.mts'), async (importOriginal) => {
   const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
@@ -104,6 +94,8 @@ const mockHomeApiInstance = {
   registry: mockHomeRegistry,
 }
 
+const mockFacadeManagerGetBuildings =
+  vi.fn<(options?: { type?: Classic.DeviceType }) => unknown[]>()
 const mockFacadeManagerGetById =
   vi.fn<(zoneType: string, id: number) => unknown>()
 const mockFacadeManagerGetZones = vi
@@ -279,6 +271,7 @@ const mockManifestDrivers: ManifestDriver[] = [
 const newMockFacadeManager =
   function newMockFacadeManager(): Classic.FacadeManager {
     return mock<Classic.FacadeManager>({
+      getBuildings: mockFacadeManagerGetBuildings,
       getById: mockFacadeManagerGetById,
       getZones: mockFacadeManagerGetZones,
     })
@@ -618,7 +611,6 @@ describe('melCloudApp', () => {
         }),
       )
       expect(Classic.FacadeManager).toHaveBeenCalledTimes(1)
-      expect(mockSetFacadeManager).toHaveBeenCalledTimes(1)
     })
 
     it.each([
@@ -1579,6 +1571,30 @@ describe('melCloudApp', () => {
       const errorLog = await app.getErrorLog(query)
 
       expect(errorLog.errors[0]?.device).toBe('')
+    })
+  })
+
+  describe('classic building retrieval', () => {
+    it('should read the whole building tree from the facade manager', async () => {
+      const buildings = [mock<Classic.BuildingZone>({ id: 1, name: 'Home' })]
+      mockFacadeManagerGetBuildings.mockReturnValue(buildings)
+      await app.onInit()
+
+      expect(app.getClassicBuildings()).toBe(buildings)
+      expect(mockFacadeManagerGetBuildings).toHaveBeenCalledWith({
+        type: undefined,
+      })
+    })
+
+    it('should narrow the tree to one device type', async () => {
+      mockFacadeManagerGetBuildings.mockReturnValue([])
+      await app.onInit()
+
+      app.getClassicBuildings(Classic.DeviceType.Ata)
+
+      expect(mockFacadeManagerGetBuildings).toHaveBeenCalledWith({
+        type: Classic.DeviceType.Ata,
+      })
     })
   })
 

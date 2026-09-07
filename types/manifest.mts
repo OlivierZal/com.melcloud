@@ -24,6 +24,7 @@ interface LoginSetting extends KitLoginSetting {
 
 export interface Manifest {
   readonly drivers: readonly ManifestDriver[]
+  readonly flow: ManifestFlow
   readonly version: string
 }
 
@@ -48,4 +49,15 @@ export interface ManifestDriverCapabilitiesOptions {
   readonly min?: number | undefined
   readonly step?: number | undefined
   readonly values?: readonly CapabilitiesOptionsValues<string>[] | undefined
+}
+
+// The flow cards the app declares: run listeners are wired for exactly
+// these ids, so a driver reads them rather than probing the registry.
+export interface ManifestFlow {
+  readonly actions: readonly ManifestFlowCard[]
+  readonly conditions: readonly ManifestFlowCard[]
+}
+
+export interface ManifestFlowCard {
+  readonly id: string
 }

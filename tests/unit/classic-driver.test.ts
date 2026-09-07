@@ -23,6 +23,20 @@ import {
   createTestDriver,
 } from './classic-driver-test-driver.ts'
 
+// The app manifest declares fewer cards than the driver has
+// capabilities: registration must follow the declared set, never the
+// capability walk. `thermostat_mode` is set-mapped without an action
+// card; `measure_signal_strength` (the opt-in) has no card at all.
+const MANIFEST_FLOW = {
+  actions: [{ id: 'onoff_action' }],
+  conditions: [
+    { id: 'measure_temperature_condition' },
+    { id: 'onoff_condition' },
+    { id: 'thermostat_mode_condition' },
+    { id: 'thermostat_mode.zone2_condition' },
+  ],
+}
+
 const {
   authenticateMock,
   isAuthenticatedMock,
@@ -70,6 +84,7 @@ vi.mock(import('homey'), async () => {
           >()
           .mockReturnValue({ registerRunListener: registerRunListenerMock }),
       },
+      manifest: { flow: MANIFEST_FLOW },
     }
 
     public log = vi.fn<(...args: readonly unknown[]) => void>()
@@ -80,6 +95,7 @@ vi.mock(import('homey'), async () => {
         'thermostat_mode',
         'thermostat_mode.zone2',
         'measure_temperature',
+        'measure_signal_strength',
       ],
     }
   }
@@ -117,7 +133,12 @@ describe(ClassicMELCloudDriver, () => {
     })
   })
 
-  testFlowListenerRegistration(() => driver, 'onoff', 'measure_temperature')
+  testFlowListenerRegistration(() => driver, {
+    readOnly: 'measure_temperature',
+    settable: 'onoff',
+    settableWithoutAction: 'thermostat_mode',
+    undeclared: 'measure_signal_strength',
+  })
 
   testPairing(() => driver, {
     authenticateMock,
@@ -225,14 +246,6 @@ describe(ClassicMELCloudDriver, () => {
 
       expect(triggerMock).toHaveBeenCalledWith('onoff', true)
     })
-
-    it('should silently catch when action card does not exist', async () => {
-      vi.spyOn(driver.homey.flow, 'getActionCard').mockImplementation(() => {
-        throw new Error('Card not found')
-      })
-
-      await expect(driver.onInit()).resolves.toBeUndefined()
-    })
   })
 
   // Every clause here drives a registered condition listener, so the
@@ -318,14 +331,6 @@ describe(ClassicMELCloudDriver, () => {
           thermostat_mode: 'heat',
         }),
       ).toBe(true)
-    })
-
-    it('should silently catch when condition card does not exist', async () => {
-      vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(() => {
-        throw new Error('Card not found')
-      })
-
-      await expect(driver.onInit()).resolves.toBeUndefined()
     })
   })
 })

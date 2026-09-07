@@ -17,14 +17,6 @@ const getArg = (capability: string): string => {
   return dot === NOT_FOUND ? capability : capability.slice(0, dot)
 }
 
-const tryRegisterFlowCard = (register: () => void): void => {
-  try {
-    register()
-  } catch {
-    // Flow card may not exist for this capability
-  }
-}
-
 export abstract class BaseMELCloudDriver extends Driver {
   declare public readonly homey: Homey.Homey
 
@@ -82,46 +74,63 @@ export abstract class BaseMELCloudDriver extends Driver {
     return this.getDeviceModels().map((model) => this.toDeviceDetails(model))
   }
 
-  #registerFlowListeners(): void {
-    for (const capability of this.manifest.capabilities) {
-      tryRegisterFlowCard(() => {
-        this.homey.flow
-          .getConditionCard(`${capability}_condition`)
-          .registerRunListener(
-            (
-              args: Record<string, unknown> & {
-                device: { getCapabilityValue: (key: string) => unknown }
-              },
-            ) => {
-              const value = args.device.getCapabilityValue(capability)
-              return typeof value === 'string' || typeof value === 'number'
-                ? value === args[getArg(capability)]
-                : value
-            },
+  #registerActionListener(capability: string): void {
+    this.homey.flow
+      .getActionCard(`${capability}_action`)
+      .registerRunListener(
+        async (
+          args: Record<string, unknown> & {
+            device: {
+              triggerCapabilityListener: (
+                key: string,
+                value: unknown,
+              ) => Promise<void>
+            }
+          },
+        ) => {
+          await args.device.triggerCapabilityListener(
+            capability,
+            args[getArg(capability)],
           )
-      })
-      if (Object.hasOwn(this.tagMappings.set, capability)) {
-        tryRegisterFlowCard(() => {
-          this.homey.flow
-            .getActionCard(`${capability}_action`)
-            .registerRunListener(
-              async (
-                args: Record<string, unknown> & {
-                  device: {
-                    triggerCapabilityListener: (
-                      key: string,
-                      value: unknown,
-                    ) => Promise<void>
-                  }
-                },
-              ) => {
-                await args.device.triggerCapabilityListener(
-                  capability,
-                  args[getArg(capability)],
-                )
-              },
-            )
-        })
+        },
+      )
+  }
+
+  #registerConditionListener(capability: string): void {
+    this.homey.flow
+      .getConditionCard(`${capability}_condition`)
+      .registerRunListener(
+        (
+          args: Record<string, unknown> & {
+            device: { getCapabilityValue: (key: string) => unknown }
+          },
+        ) => {
+          const value = args.device.getCapabilityValue(capability)
+          return typeof value === 'string' || typeof value === 'number'
+            ? value === args[getArg(capability)]
+            : value
+        },
+      )
+  }
+
+  // Run listeners are wired for exactly the cards the app manifest
+  // declares, so a missing card is a contract break, never a swallowed
+  // throw. An action card also needs a write mapping: the listener
+  // forwards the argument to the capability listener, which only the
+  // set-mapped capabilities carry.
+  #registerFlowListeners(): void {
+    const { actions, conditions } = this.homey.manifest.flow
+    const conditionIds = new Set(conditions.map(({ id }) => id))
+    const actionIds = new Set(actions.map(({ id }) => id))
+    for (const capability of this.manifest.capabilities) {
+      if (conditionIds.has(`${capability}_condition`)) {
+        this.#registerConditionListener(capability)
+      }
+      if (
+        Object.hasOwn(this.tagMappings.set, capability) &&
+        actionIds.has(`${capability}_action`)
+      ) {
+        this.#registerActionListener(capability)
       }
     }
   }

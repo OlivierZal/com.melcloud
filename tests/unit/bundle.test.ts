@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -12,9 +11,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // into are the kit's (`stampPackagedPages` from `@olivierzal/homey-kit/node`,
 // pinned by the kit's own suite): what belongs here is the bundler's own
 // wiring — a compat pair per entry, and the manifest key each packaged
-// page is served under.
-const HASH_LENGTH = 8
-
+// page is served under. The identity is read off the packaged page's
+// own `?v=` stamps, the documented contract, never recomputed.
 const initialDirectory = process.cwd()
 
 // One source per entry, each with its own body: byte-distinct bundles
@@ -23,8 +21,12 @@ const initialDirectory = process.cwd()
 const entrySource = (name: string): string =>
   `export const start = (value?: string): string => value ?? '${name}'\n`
 
+// One local reference per page, so the page's identity is that one
+// stamp and the manifest entry must equal it verbatim.
 const pageHtml =
   '<html><head><script defer src="index.js"></script></head></html>'
+
+const STAMP = /\?v=(?<stamp>[^"]+)"/gv
 
 // The entries the bundler declares, with the manifest key each page is
 // served under (`GET /webview-hashes`).
@@ -33,9 +35,6 @@ const ENTRIES = [
   { directory: 'widgets/ata-group-setting/public', entry: 'ata-group-setting' },
   { directory: 'widgets/charts/public', entry: 'charts' },
 ]
-
-const hashOf = (content: string | Buffer): string =>
-  createHash('sha256').update(content).digest('hex').slice(0, HASH_LENGTH)
 
 // Cwd-relative on purpose: every test runs from inside its own temp
 // app, exactly where the Homey CLI runs the script from.
@@ -65,6 +64,16 @@ const runBundler = async (): Promise<void> => {
 
 const packagedFile = async (relativePath: string): Promise<string> =>
   readFile(path.join('.homeybuild', relativePath), 'utf8')
+
+// The stamps a packaged page carries, in document order.
+const stampsOf = async (directory: string): Promise<string[]> => {
+  const page = await packagedFile(path.join(directory, 'index.html'))
+  return page
+    .matchAll(STAMP)
+    .map(({ groups }) => groups?.stamp)
+    .filter((stamp) => stamp !== undefined)
+    .toArray()
+}
 
 describe('bundle script', () => {
   let workDirectory = ''
@@ -102,16 +111,25 @@ describe('bundle script', () => {
     await runBundler()
 
     const identities = await Promise.all(
-      ENTRIES.map(async ({ directory, entry }): Promise<[string, string]> => [
+      ENTRIES.map(async ({ directory, entry }): Promise<[string, string[]]> => [
         entry,
-        hashOf(await packagedFile(path.join(directory, 'index.js'))),
+        await stampsOf(directory),
       ]),
     )
     const manifest: unknown = JSON.parse(
       await packagedFile('webview-hashes.json'),
     )
 
-    expect(manifest).toStrictEqual(Object.fromEntries(identities))
+    // One stamp per page, served verbatim under the page's own key.
+    expect(manifest).toStrictEqual(
+      Object.fromEntries(identities.map(([entry, [stamp]]) => [entry, stamp])),
+    )
+
+    // Byte-distinct bundles, byte-distinct identities: the mapping is to
+    // the right page, not to a coincidence.
+    const distinctIdentities = new Set(identities.map(([, [stamp]]) => stamp))
+
+    expect(distinctIdentities.size).toBe(ENTRIES.length)
   })
 
   it('should stamp nothing in a standalone suite run', async () => {

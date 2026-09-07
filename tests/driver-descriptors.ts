@@ -35,11 +35,23 @@ export const testTagMappings = (
   })
 }
 
+// The card ids the app manifest declares decide what gets wired: the
+// caller names one capability per shape its manifest stub carries.
 export const testFlowListenerRegistration = (
   getDriver: () => object,
-  settableCapability: string,
-  nonSettableCapability: string,
+  capabilities: {
+    // Condition card declared; not set-mapped, so no action card either.
+    readonly readOnly: string
+    // Condition and action cards both declared, and set-mapped.
+    readonly settable: string
+    // Set-mapped with a declared condition card but no action card.
+    readonly settableWithoutAction: string
+    // In the driver manifest, with no card of either kind.
+    readonly undeclared: string
+  },
 ): void => {
+  const { readOnly, settable, settableWithoutAction, undeclared } = capabilities
+
   interface FlowDriver {
     homey: {
       flow: {
@@ -51,28 +63,68 @@ export const testFlowListenerRegistration = (
   }
 
   describe('flow listener registration', () => {
-    it('should register condition listeners for manifest capabilities', async () => {
-      const driver = getDriver() as FlowDriver
-      await driver.onInit()
+    it.each([settable, settableWithoutAction, readOnly])(
+      'should register the declared condition card for %s',
+      async (capability) => {
+        const driver = getDriver() as FlowDriver
+        await driver.onInit()
 
-      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
-        `${settableCapability}_condition`,
-      )
-      expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
-        `${nonSettableCapability}_condition`,
-      )
-    })
+        expect(driver.homey.flow.getConditionCard).toHaveBeenCalledWith(
+          `${capability}_condition`,
+        )
+      },
+    )
 
-    it('should register action listeners only for set capabilities', async () => {
+    it('should register the declared action card of a set capability', async () => {
       const driver = getDriver() as FlowDriver
       await driver.onInit()
 
       expect(driver.homey.flow.getActionCard).toHaveBeenCalledWith(
-        `${settableCapability}_action`,
+        `${settable}_action`,
       )
       expect(driver.homey.flow.getActionCard).not.toHaveBeenCalledWith(
-        `${nonSettableCapability}_action`,
+        `${readOnly}_action`,
       )
+    })
+
+    it('should never look up a card the manifest does not declare', async () => {
+      const driver = getDriver() as FlowDriver
+      await driver.onInit()
+
+      expect(driver.homey.flow.getConditionCard).not.toHaveBeenCalledWith(
+        `${undeclared}_condition`,
+      )
+      expect(driver.homey.flow.getActionCard).not.toHaveBeenCalledWith(
+        `${undeclared}_action`,
+      )
+      expect(driver.homey.flow.getActionCard).not.toHaveBeenCalledWith(
+        `${settableWithoutAction}_action`,
+      )
+    })
+
+    // A declared card the runtime cannot hand out is a contract break:
+    // the throw surfaces from onInit instead of being swallowed.
+    it('should surface a declared card the runtime cannot hand out', async () => {
+      const driver = getDriver() as FlowDriver
+      const failure = new Error('Card not found')
+      driver.homey.flow.getConditionCard.mockImplementationOnce(() => {
+        throw failure
+      })
+
+      await expect(driver.onInit()).rejects.toBe(failure)
+    })
+
+    // The action path has no catch of its own either: re-adding one
+    // around the action registration alone would keep coverage green
+    // without this pin.
+    it('should surface a declared action card the runtime cannot hand out', async () => {
+      const driver = getDriver() as FlowDriver
+      const failure = new Error('Action card not found')
+      driver.homey.flow.getActionCard.mockImplementationOnce(() => {
+        throw failure
+      })
+
+      await expect(driver.onInit()).rejects.toBe(failure)
     })
   })
 }
