@@ -1,4 +1,4 @@
-import type { LocalizedStrings } from '@olivierzal/homey-kit/manifest'
+import { type LocalizedStrings, localize } from '@olivierzal/homey-kit/manifest'
 
 import { typedFromEntries } from '../lib/typed-object.mts'
 
@@ -20,7 +20,7 @@ export const localizeWithAffix = (
     Object.entries(affix).map(([language, localizedAffix]) => [
       language,
       joinWithAffix(
-        base[language] ?? base.en,
+        localize(base, language),
         localizedAffix ?? affix.en,
         position,
       ),

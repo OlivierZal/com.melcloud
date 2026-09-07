@@ -21,6 +21,7 @@ import type {
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { withoutOptInCapabilities } from '../lib/opt-in-capabilities.mts'
+import { settleAll } from '../lib/settle-all.mts'
 import { getLocale, getNow } from '../lib/temporal.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 import type { EnergyReportConfig } from './base-report.mts'
@@ -516,7 +517,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   async #updateEnergyReportsOnSettings(changedKeys: string[]): Promise<void> {
-    const results = await Promise.allSettled(
+    await settleAll(
       modes.map(async (mode) => {
         if (
           changedKeys.some(
@@ -526,11 +527,8 @@ export abstract class BaseMELCloudDevice<
           await this.#reports[mode]?.start()
         }
       }),
+      this,
+      'Energy report update failed:',
     )
-    for (const result of results) {
-      if (result.status === 'rejected') {
-        this.error('Energy report update failed:', result.reason)
-      }
-    }
   }
 }

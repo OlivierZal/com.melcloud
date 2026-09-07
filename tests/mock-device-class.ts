@@ -5,7 +5,7 @@ import { vi } from 'vitest'
 //   Required when BaseMELCloudDevice calls super.X() (e.g. addCapability,
 //   removeCapability, setWarning) — instance vi.fn properties can't be invoked
 //   through super in a subclass.
-export interface MockDeviceClassOptions {
+interface MockDeviceClassOptions {
   readonly overrides?: Readonly<Record<string, unknown>>
   readonly superMocks?: Readonly<
     Record<string, (...args: readonly unknown[]) => unknown>

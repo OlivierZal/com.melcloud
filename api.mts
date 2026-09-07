@@ -27,7 +27,6 @@ import type {
   FormattedErrorLog,
 } from './types/error-log.mts'
 import type { DeviceGroup } from './types/zone.mts'
-import { getClassicBuildings } from './lib/classic-facade-manager.mts'
 import { toNonNegativeInt } from './lib/validation.mts'
 import { getWebviewHashes } from './lib/webview-hashes.mts'
 
@@ -148,7 +147,11 @@ const api = {
     }
     return { isDeviceListStale: false }
   },
-  getClassicBuildings: (): Classic.BuildingZone[] => getClassicBuildings(),
+  getClassicBuildings: ({
+    homey: { app },
+  }: {
+    homey: Homey
+  }): Classic.BuildingZone[] => app.getClassicBuildings(),
   /**
    * Lists the MELCloud buildings of both dialects with the device ids
    * they own, for the extension app's per-building settings grouping.
@@ -160,10 +163,12 @@ const api = {
    * @returns One entry per non-empty building, sorted by name.
    */
   getDeviceGroups: ({ homey: { app } }: { homey: Homey }): DeviceGroup[] => {
-    const classicGroups = getClassicBuildings().map((building) => ({
-      deviceIds: collectClassicDeviceIds(building),
-      name: building.name,
-    }))
+    const classicGroups = app
+      .getClassicBuildings()
+      .map((building) => ({
+        deviceIds: collectClassicDeviceIds(building),
+        name: building.name,
+      }))
     return [...classicGroups, ...collectHomeGroups(app.homeApi.registry)]
       .filter(({ deviceIds }) => deviceIds.length > 0)
       .toSorted((group1, group2) => group1.name.localeCompare(group2.name))

@@ -558,6 +558,24 @@ describe('settings page', () => {
       expect(getDiv('auto_adjust_section').hidden).toBe(false)
     })
 
+    // The page names no driver: the `home-` prefix alone tells the two
+    // APIs apart, so a Home driver it has never heard of still counts.
+    it('should count an unnamed home-* driver as home devices', async () => {
+      await bootPage({
+        routes: {
+          ...defaultRoutes(),
+          'GET /home/targets': homeTargetsFixture(),
+          'GET /sessions/classic': false,
+          'GET /sessions/home': true,
+          'GET /settings/devices': { 'home-melcloud_erv': { always_on: true } },
+        },
+      })
+
+      const values = [...getSelect('zones').options].map(({ value }) => value)
+
+      expect(values).toContain('homeDevices_ata_device')
+    })
+
     it('should alert when a signed-in home account has no device', async () => {
       const harness = await bootPage({
         routes: {

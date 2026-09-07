@@ -14,6 +14,7 @@ import {
   type DriverSetting,
   getDriverLoginSetting,
   getDriverSettings,
+  localize,
   mergeDeviceSettings,
 } from '@olivierzal/homey-kit/manifest'
 import {
@@ -66,9 +67,9 @@ import {
   vertical,
 } from './files.mts'
 import { getCapabilityFlowStep } from './lib/capability-flow-step.mts'
-import { setClassicFacadeManager } from './lib/classic-facade-manager.mts'
 import { UNKNOWN_DATE_PLACEHOLDER } from './lib/constants.mts'
 import { type Homey, App } from './lib/homey.mts'
+import { settleAll } from './lib/settle-all.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
 import { toNonNegativeInt, toZoneValueData } from './lib/validation.mts'
@@ -147,7 +148,7 @@ const getLocalizedCapabilitiesOptions = (
   language: string,
   enumType?: Record<string, number | string>,
 ): DriverCapabilitiesOptions => ({
-  title: options.title[language] ?? options.title.en,
+  title: localize(options.title, language),
   type: options.type,
   ...(options.max !== undefined && { max: options.max }),
   ...(options.min !== undefined && { min: options.min }),
@@ -157,7 +158,7 @@ const getLocalizedCapabilitiesOptions = (
       enumType !== undefined && Object.hasOwn(enumType, id)
         ? String(enumType[id])
         : id,
-    label: title[language] ?? title.en,
+    label: localize(title, language),
   })),
 })
 
@@ -372,6 +373,14 @@ export default class MELCloudApp extends App {
         ),
       ],
     )
+  }
+
+  // The Classic building tree, optionally narrowed to one device type:
+  // what the extension's grouping and the ATA group widget read.
+  public getClassicBuildings(
+    type?: Classic.DeviceType,
+  ): Classic.BuildingZone[] {
+    return this.#facadeManager.getBuildings({ type })
   }
 
   public getClassicFacade<T extends Classic.DeviceType>(
@@ -747,14 +756,11 @@ export default class MELCloudApp extends App {
       ids?: (number | string)[] | undefined
     } = {},
   ): Promise<void> {
-    const results = await Promise.allSettled(
+    await settleAll(
       this.#getDevices(filter).map(async (device) => device.syncFromDevice()),
+      this,
+      'Device sync failed:',
     )
-    for (const result of results) {
-      if (result.status === 'rejected') {
-        this.error('Device sync failed:', result.reason)
-      }
-    }
   }
 
   // One clock for every entry point: the Homey's. An absent bound means
@@ -1141,7 +1147,6 @@ export default class MELCloudApp extends App {
       timezone: getTimeZone(this.homey),
     })
     this.#facadeManager = new Classic.FacadeManager(this.#classicApi)
-    setClassicFacadeManager(this.#facadeManager)
   }
 
   // Mirrors #initClassicApi: create + facade wiring, no fetch. The

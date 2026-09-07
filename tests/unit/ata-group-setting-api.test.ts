@@ -9,23 +9,16 @@ import {
   createWidgetApiHarness,
   describeWebviewBootLogging,
 } from '../widget-api.ts'
+import api from '../../widgets/ata-group-setting/api.mts'
 
-const mockGetBuildings = vi.fn<() => Classic.BuildingZone[]>()
-
-vi.mock(
-  import('../../lib/classic-facade-manager.mts'),
-  async (importOriginal) => ({
-    ...(await importOriginal()),
-    getClassicBuildings: mockGetBuildings,
-  }),
-)
-
-const { default: api } = await import('../../widgets/ata-group-setting/api.mts')
+const mockGetBuildings =
+  vi.fn<(type?: Classic.DeviceType) => Classic.BuildingZone[]>()
 
 const mockApp = {
   error: vi.fn<(...args: readonly unknown[]) => void>(),
   getClassicAtaCapabilities:
     vi.fn<() => [keyof Classic.GroupState, DriverCapabilitiesOptions][]>(),
+  getClassicBuildings: mockGetBuildings,
   getHomeTargets: vi.fn<() => (HomeBuildingZone | HomeDeviceZone)[]>(),
   getTargetAtaModes: vi.fn<() => Classic.OperationMode[]>(),
   getTargetAtaState: vi.fn<() => Promise<Classic.GroupState>>(),
@@ -94,29 +87,29 @@ describe('ata-group-setting api', () => {
   })
 
   describe('building retrieval', () => {
-    it('should delegate to getClassicBuildings without type', () => {
+    it('should delegate to app.getClassicBuildings without type', () => {
       const buildings = mock<Classic.BuildingZone[]>()
       mockGetBuildings.mockReturnValue(buildings)
 
-      const result = api.getClassicBuildings({ query: {} })
+      const result = api.getClassicBuildings({ homey, query: {} })
 
       expect(result).toBe(buildings)
-      expect(mockGetBuildings).toHaveBeenCalledWith({ type: undefined })
+      expect(mockGetBuildings).toHaveBeenCalledWith(undefined)
     })
 
     it('should pass numeric type filter', () => {
       const buildings = mock<Classic.BuildingZone[]>()
       mockGetBuildings.mockReturnValue(buildings)
 
-      const result = api.getClassicBuildings({ query: { type: '0' } })
+      const result = api.getClassicBuildings({ homey, query: { type: '0' } })
 
       expect(result).toBe(buildings)
-      expect(mockGetBuildings).toHaveBeenCalledWith({ type: 0 })
+      expect(mockGetBuildings).toHaveBeenCalledWith(0)
     })
 
     it('should throw on invalid device type', () => {
       expect(() =>
-        api.getClassicBuildings({ query: { type: '99' as '0' } }),
+        api.getClassicBuildings({ homey, query: { type: '99' as '0' } }),
       ).toThrow(RangeError)
       expect(mockGetBuildings).not.toHaveBeenCalled()
     })

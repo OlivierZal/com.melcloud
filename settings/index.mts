@@ -37,6 +37,7 @@ import {
   createDirtyGate,
   fireAndForget,
   runWebview,
+  trySetDocumentLanguage,
 } from '@olivierzal/homey-kit/webview'
 import {
   type ProtectionState,
@@ -129,21 +130,13 @@ const slavicPaucal = { maxEnding: 4, minEnding: 2, teenMax: 14, teenMin: 12 }
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
-// Every Home driver: a Home account counts as "has devices" when any of
-// them has paired devices (an ATW-only account is as real as an
-// ATA-only one).
-const HOME_DRIVER_IDS: readonly string[] = [
-  'home-melcloud',
-  'home-melcloud_atw',
-]
-
-// Classic counterpart of HOME_DRIVER_IDS: a Classic account counts as
-// "has devices" when any of its three drivers paired one.
-const CLASSIC_DRIVER_IDS: readonly string[] = [
-  'melcloud',
-  'melcloud_atw',
-  'melcloud_erv',
-]
+// Driver ids are a store compat contract: Home drivers are namespaced
+// `home-*`, Classic ids are bare — the rule the app applies, spelled
+// once here rather than as a list to keep in step with the drivers. An
+// account counts as "has devices" when any driver of its API paired
+// one (an ATW-only account is as real as an ATA-only one).
+const toApi = (driverId: string): Api =>
+  driverId.startsWith('home-') ? 'home' : 'classic'
 
 // The two APIs, in the order the picker offers them; also the priority
 // order when auto-selecting an account whose credentials are missing.
@@ -1908,17 +1901,6 @@ class SettingsApp {
     }
   }
 
-  static async #setDocumentLanguage(homey: Homey): Promise<void> {
-    try {
-      document.documentElement.lang = await homeyApiGet<string>(
-        homey,
-        '/language',
-      )
-    } catch {
-      // Non-critical: page defaults to browser language
-    }
-  }
-
   // `ready()` always fires — an unbounded await here would hold Homey's
   // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
@@ -2008,9 +1990,8 @@ class SettingsApp {
   }
 
   #hasDevices(api: Api): boolean {
-    return (api === 'classic' ? CLASSIC_DRIVER_IDS : HOME_DRIVER_IDS).some(
-      (driverId) =>
-        Object.hasOwn(this.#deviceSettingsManager.deviceSettings, driverId),
+    return Object.keys(this.#deviceSettingsManager.deviceSettings).some(
+      (driverId) => toApi(driverId) === api,
     )
   }
 
@@ -2118,7 +2099,9 @@ class SettingsApp {
         SettingsApp.#fetchHomeySettings(this.#homey),
         homeyApiGet<boolean>(this.#homey, '/sessions/classic'),
         homeyApiGet<boolean>(this.#homey, '/sessions/home'),
-        SettingsApp.#setDocumentLanguage(this.#homey),
+        trySetDocumentLanguage(async () =>
+          homeyApiGet<string>(this.#homey, '/language'),
+        ),
         this.#deviceSettingsManager.fetchDeviceSettings(),
       ])
     this.#authState = {

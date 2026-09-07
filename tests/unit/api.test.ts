@@ -21,19 +21,10 @@ import type {
   ErrorLogQueryParams,
   FormattedErrorLog,
 } from '../../types/error-log.mts'
+import api from '../../api.mts'
 
 const mockGetBuildings =
-  vi.fn<
-    (options?: {
-      type?: Classic.DeviceType | undefined
-    }) => Classic.BuildingZone[]
-  >()
-
-vi.mock(import('../../lib/classic-facade-manager.mts'), () => ({
-  getClassicBuildings: mockGetBuildings,
-}))
-
-const { default: api } = await import('../../api.mts')
+  vi.fn<(type?: Classic.DeviceType) => Classic.BuildingZone[]>()
 
 const mockEnsureClassicAuthenticated = vi.fn<() => Promise<boolean>>()
 const mockEnsureHomeAuthenticated = vi.fn<() => Promise<boolean>>()
@@ -53,6 +44,7 @@ const mockApp = {
     logOut: mockClassicLogOut,
   },
   error: vi.fn<(...args: readonly unknown[]) => void>(),
+  getClassicBuildings: mockGetBuildings,
   getDeviceSettings: vi.fn<() => DeviceSettings>(),
   getDriverSettings: vi.fn<() => Partial<Record<string, DriverSetting[]>>>(),
   getErrorLog: vi.fn<() => Promise<FormattedErrorLog>>(),
@@ -88,13 +80,13 @@ describe('api', () => {
   })
 
   describe('building retrieval', () => {
-    it('should delegate to getClassicBuildings', () => {
+    it('should delegate to app.getClassicBuildings', () => {
       const buildings = [
         mock<Classic.BuildingZone>({ id: 1, name: 'ClassicBuilding 1' }),
       ]
       mockGetBuildings.mockReturnValue(buildings)
 
-      const result = api.getClassicBuildings()
+      const result = api.getClassicBuildings({ homey })
 
       expect(result).toBe(buildings)
       expect(mockGetBuildings).toHaveBeenCalledTimes(1)

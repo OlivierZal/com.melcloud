@@ -32,6 +32,8 @@ export const createMockDriverClass = (
           .mockReturnValue([]),
       },
       flow: createFlowCardsStub(),
+      // No card declared: a suite that wires listeners names its own.
+      manifest: { flow: { actions: [], conditions: [] } },
     }
 
     public log = vi.fn<(...args: readonly unknown[]) => void>()

@@ -4,7 +4,6 @@ import type { Homey } from 'homey/lib/Homey'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
-import { getClassicBuildings } from '../../lib/classic-facade-manager.mts'
 import { toDeviceType } from '../../lib/to-device-type.mts'
 import { getWebviewHashes } from '../../lib/webview-hashes.mts'
 
@@ -16,13 +15,15 @@ const api = {
   }): [keyof Classic.GroupState, DriverCapabilitiesOptions][] =>
     app.getClassicAtaCapabilities(),
   getClassicBuildings: ({
+    homey: { app },
     query: { type },
   }: {
+    homey: Homey
     query: { type?: `${Classic.DeviceType}` }
   }): Classic.BuildingZone[] =>
-    getClassicBuildings({
-      type: type === undefined ? undefined : toDeviceType(type),
-    }),
+    app.getClassicBuildings(
+      type === undefined ? undefined : toDeviceType(type),
+    ),
   getHomeAtaTargets: ({
     homey: { app },
   }: {

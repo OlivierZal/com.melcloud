@@ -30,14 +30,7 @@ export const loadWidgetPage = (): void => {
 // happy-dom ships no WAAPI: the fake records every `animate` call and
 // lets a test drive `onfinish` by hand.
 
-export interface AnimationRecord {
-  readonly animation: FakeAnimation
-  readonly element: HTMLElement
-  readonly keyframes: Keyframe[] | PropertyIndexedKeyframes | null
-  readonly options: number | KeyframeAnimationOptions | undefined
-}
-
-export class FakeAnimation {
+class FakeAnimation {
   public readonly cancel: ReturnType<typeof vi.fn<() => void>> =
     vi.fn<() => void>()
 
@@ -52,6 +45,13 @@ export class FakeAnimation {
   public reverse(): void {
     this.playbackRate = -this.playbackRate
   }
+}
+
+export interface AnimationRecord {
+  readonly animation: FakeAnimation
+  readonly element: HTMLElement
+  readonly keyframes: Keyframe[] | PropertyIndexedKeyframes | null
+  readonly options: number | KeyframeAnimationOptions | undefined
 }
 
 // happy-dom ships no Web Animations API. Each freshly created element
@@ -113,10 +113,7 @@ export const stubRandomUint32 = (value: number): void => {
 
 // ── Fixtures ──
 
-export const ataCapabilitiesFixture = (): [
-  string,
-  DriverCapabilitiesOptions,
-][] => [
+const ataCapabilitiesFixture = (): [string, DriverCapabilitiesOptions][] => [
   ['Power', { title: 'Power', type: 'boolean' }],
   [
     'OperationMode',
@@ -149,7 +146,7 @@ export const groupStateFixture = (): Partial<Classic.GroupState> => ({
   SetTemperature: 22,
 })
 
-export const classicAtaBuildingsFixture = (): unknown => [
+const classicAtaBuildingsFixture = (): unknown => [
   {
     areas: [],
     devices: [{ id: 11, level: 1, model: 'devices', name: 'Living room' }],
@@ -161,7 +158,7 @@ export const classicAtaBuildingsFixture = (): unknown => [
   },
 ]
 
-export const homeAtaTargetsFixture = (): unknown => [
+const homeAtaTargetsFixture = (): unknown => [
   {
     buildingName: 'Villa',
     id: 'b_1',

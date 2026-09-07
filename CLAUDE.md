@@ -1,9 +1,14 @@
 # CLAUDE.md
 
-Homey app for MELCloud (Mitsubishi Electric AC/heat-pump cloud). ESM only,
-Node >= 22.19. The API layer lives in `@olivierzal/melcloud-api` (GitHub
-Packages, sibling repo with its own CLAUDE.md) — API bugs are fixed there,
-not worked around here.
+Homey app for MELCloud (Mitsubishi Electric AC/heat-pump cloud). ESM
+only. Two Node floors, never confused: the TOOLCHAIN floor is `engines`,
+`^22.22.2 || >=24.15.0` (`.nvmrc` on its lower bound), derived from the
+installed tree the way configs derives its own; the DEVICE floor is the
+manifest's `compatibility` (`>=12.9.0`, Athom's Node 22 boundary — see
+the floor doctrine under Naming & authored-content conventions). The
+API layer lives in `@olivierzal/melcloud-api` (GitHub Packages, sibling
+repo with its own CLAUDE.md) — API bugs are fixed there, not worked
+around here.
 
 ## Commands
 
@@ -299,6 +304,14 @@ coverage.
 
 ## Driver conventions
 
+- Driver ids are a store compat contract: Home drivers are namespaced
+  `home-*`, Classic ids are bare — and that prefix IS the API
+  membership rule. `app.mts` (`#hasPairedDevices`) and the settings
+  page (`toApi`) both derive an id's API from it; no list of driver
+  ids per API exists anywhere, so a new driver joins its API by its id
+  alone. Only the extension link keeps an explicit pair
+  (`ATA_DRIVER_IDS`), because it targets the two air-to-air drivers
+  specifically.
 - Each API side has an intermediate driver/device base under `drivers/`
   (`classic-driver`/`classic-device`, `home-driver`/`home-device`):
   shared behavior lives there (or in the `base-*` classes when both
@@ -430,6 +443,15 @@ coverage.
   verbatim and the app's `#getAtaGroupTarget` resolves the facade, so
   even that step is app-side only. The prefix has twice been misread as
   a missing abstraction (2026-08) — it is the common surface.
+- Flow-card run listeners are wired for exactly the cards the app
+  manifest declares: `drivers/base-driver.mts` reads the condition and
+  action ids off `homey.manifest.flow` and registers one generic
+  listener per declared `<capability>_condition` / `<capability>_action`
+  (an action also needs the capability set-mapped — the listener
+  forwards the argument to the capability listener). A declared card
+  the runtime cannot hand out throws at driver init, never a swallowed
+  catch: a missing card is a contract break, and the mirror rule holds
+  in com.heatzy.
 - Flow-card device filters are `driver_id=<manifest owners>&capabilities=<cap>`,
   both parts mechanical: `capabilities=` is the card's real precondition
   (the run listeners are capability-generic and triggers fire through
@@ -633,6 +655,18 @@ coverage.
   across both — and on Homey Pro (2016-2019) the Node 22 firmware is
   still only a release candidate, so a raise would cut off that whole
   stable install base rather than a few laggards.
+- The package's own `engines` answers a DIFFERENT question — what the
+  toolchain needs in order to install and run this tree — and is
+  derived from the installed dependency tree exactly as configs derives
+  its own, never copied from a sibling or nudged by hand (measured
+  2026-09-07: `@olivierzal/configs` and, through it,
+  `eslint-plugin-package-json`, `eslint-plugin-jsdoc` and their parsers
+  require `^22.22.2 || >=24.15.0`, the value `engines` and `.nvmrc`
+  carry; re-derive it when the tree moves). It states nothing about
+  the device, and CI's `22.20` coverage leg legitimately runs BELOW it:
+  that leg is the on-device fleet floor (a Pro 2019, measured 2026-08),
+  and the reusable CI sets no `engine-strict`, so `npm ci` warns there
+  rather than fails. Neither floor ever moves the other.
 - Node-side runtime APIs above es2022 are therefore LEGITIMATE:
   `toSorted`/`toReversed` (Node 20), `Object.groupBy` (Node 21) and
   `Promise.withResolvers` (Node 22) all predate the declared engine,
@@ -653,7 +687,16 @@ eslint `homeyApp` preset (plugins are the package's dependencies — no
 plugin devDeps here; the webview floor and the css/html/lifecycle
 blocks come from the preset, parameterized by this repo's globs), the
 prettier config (`"prettier"` key in package.json, no local file), the
-`tsconfig/app` base and the vitest `swcPlugin`. The overlays keep ONLY
+`tsconfig/app` base and the vitest coverage bar (`coverageDefaults`
+from `@olivierzal/configs/vitest-coverage`: the `text` + `lcov`
+reporters and the four 100 % thresholds, spread into `test.coverage`;
+the `include`/`exclude` globs stay local — which files count is
+per-repo identity, how high the bar sits is not). The configs vitest
+`swcPlugin` is NOT taken: it exists for the 2022-03 decorator
+transform, this app declares no decorator (the library's `@setting`
+accessors reach it already compiled), and the suite runs on vitest's
+default transform, like the extension's — re-evaluate only if a
+decorator lands here. The overlays keep ONLY
 per-repo verdicts: the lint ignores (`.homeybuild/`, `coverage/`), the
 `unicorn/filename-case` off (driver ids `melcloud_atw`/`melcloud_erv`
 must match their folder names), the `settings/index.mts`
@@ -681,12 +724,35 @@ where even reads need auth); the publish job also forwards
 config its `cp` step carries into the publish container only when
 given a registry.
 
+The bare `homey-apps-sdk-v3-types` devDependency beside the
+`@types/homey` alias is NOT a duplicate, and the two lines move together
+on every SDK-types bump. The alias is what lets `homey` and
+`homey/lib/…` resolve for TypeScript; the bare name is what satisfies
+`import-x/no-extraneous-dependencies`, which checks the RESOLVED
+package's real `name` against the manifest and never maps `homey` back
+to `@types/homey`. The app preset runs the rule without `includeTypes`,
+so the type-only imports pass on their own; the value imports — the
+`vi.mock(import('homey'))` factories of the 13 device and driver suites
+and `tests/unit/homey.test.ts` — need the bare name declared (measured
+2026-09-07: removing it fails lint on exactly those 14 files and
+nothing else — typecheck, tests and build all still pass, which is why
+it reads as dead to a grep). Never "deduplicate" it.
+
 ## Runtime boundary (@olivierzal/homey-kit)
 
 `@olivierzal/homey-kit` (exact pin, a PRODUCTION dependency — the
 manifest reader runs on the device) owns what used to be copied across
-the three apps: the dirty gate and the freshness handshake
-(`/webview`), the settings transport and the settings page's whole
+the three apps: the dirty gate, the freshness handshake and the boot
+helpers — `runWebview`, and `trySetDocumentLanguage`, through which the
+settings page and both widgets set the page language — (`/webview`),
+the `homey-form-*` DOM layer — the element builders `createInput`/
+`createLabel`/`createOption`/`createSelect`, `booleanOptions`, the
+typed accessors `getButton`…`getSpan` and `parseFormValue` — (`/dom`),
+the manifest readers `getDriverSettings`/`getDriverLoginSetting`/
+`mergeDeviceSettings`, the `localize` fallback (a language's string or
+its English form — never spelled locally as `x[language] ?? x.en`) and
+the manifest leaf types this app's own manifest types extend
+(`/manifest`), the settings transport and the settings page's whole
 freshness wiring, `watchSettingsFreshness` — entry `settings`,
 `GET /webview-hashes`, the `POST /boot-error` breadcrumb with a
 swallowed outcome, the `webview_hashes_changed` poke (`/settings`), the
@@ -695,7 +761,8 @@ method signature, bivariant, so the real `HomeyWidget` is assignable
 and no local copy is needed), the manifest reader AND the package-time
 stamp producer `stampPackagedPages` (+ `stampHtml`, `stampReferences`,
 `WebviewPage`) that emits `webview-hashes.json` (`/node`),
-`fireAndForget`/`getErrorMessage`/`NotFoundError`/`sequential` (root),
+`fireAndForget`/`getErrorMessage`/`NotFoundError`/`sequential`/
+`selectChangelogEntries` (+ the `Logger` seam) (root),
 and — under `/testing` — the two API test kernels, the webview-floor
 kernel (`analyzeWebviewFloor` + `getQuotedEntries`, which refuses an
 EMPTY sweep; the suite keeps its own stronger guard — more than two
@@ -721,6 +788,13 @@ What stays local, by measurement rather than omission:
   `createEnergyReportMock` and the `createMockDeviceClass` /
   `createMockDriverClass` re-exports.
 - `public/dom.mts`, `public/zones.mts`, and the drivers themselves.
+- `lib/settle-all.mts` — `settleAll`, the settle-every-branch loop
+  behind the device sync and the energy-report restarts: every branch
+  runs to completion and each rejection is logged on its own, where
+  `Promise.all` would abandon the rest at the first failure and hide
+  every reason but one. It rides the kit's `Logger` seam and is the
+  extension's helper verbatim; the kit exports no such primitive yet,
+  so it stays app-side until it does — then it goes by pin bump.
 - `homey-override.d.ts` keeps its `declare module` block: module
   augmentation cannot be packaged. It EXTENDS the SDK interfaces and
   takes only the narrowed member signatures from the kit generics
