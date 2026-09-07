@@ -948,9 +948,9 @@ reader fails open with an empty map).
   merged by hand, on its FINAL head, once three things hold at once:
   every check is SUCCESS or SKIPPED, the Sonar PR window is at zero open
   issues with the gate OK, and every review thread is settled. The
-  Dependabot lane (`.github/workflows/dependabot.yml` arming `gh pr
-merge --auto` once CI passes) is the one deliberate exception and
-  stays as documented.
+  Dependabot lane (`.github/workflows/dependabot.yml` arming
+  `gh pr merge --auto` once CI passes) is the one deliberate exception
+  and stays as documented.
 - SonarCloud must be spotless for a PR to merge — and the quality gate
   passing is necessary, NOT sufficient: the free-tier gate tolerates
   3 % duplication on new code, lets code smells through, and cannot be
