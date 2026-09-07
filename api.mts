@@ -2,7 +2,7 @@ import type { DriverSetting } from '@olivierzal/homey-kit/manifest'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type { Homey } from 'homey/lib/Homey'
-import { getErrorMessage } from '@olivierzal/homey-kit'
+import { getErrorMessage, logSettingsRoute } from '@olivierzal/homey-kit'
 import {
   type BaseAPIAdapter,
   type HomeBuildingZone,
@@ -100,14 +100,6 @@ const collectHomeGroups = (registry: Home.Registry): DeviceGroup[] =>
       deviceIds: devices.map((device) => device.id),
       name,
     }))
-
-// Diagnostics breadcrumb: the settings webview is otherwise invisible in
-// diagnostic reports (its routes never touch MELCloud), which made
-// "settings fail to load" reports undecidable — no line = the page's JS
-// never ran; lines without a completed sequence = where it stopped.
-const logSettingsRoute = (app: Homey['app'], route: string): void => {
-  app.log({ dataType: 'Settings page', route })
-}
 
 // Optional query params: absent stays absent, present must satisfy the
 // error-log paging contract — a non-negative integer.

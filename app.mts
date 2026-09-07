@@ -5,10 +5,11 @@ import type {
   ReportSurface,
 } from '@olivierzal/melcloud-api/report'
 import {
+  announceChangelog,
+  createSettingManager,
   fireAndForget,
   NotFoundError,
-  selectChangelogEntries,
-  sequential,
+  settleAll,
 } from '@olivierzal/homey-kit'
 import {
   type DriverSetting,
@@ -69,7 +70,6 @@ import {
 import { getCapabilityFlowStep } from './lib/capability-flow-step.mts'
 import { UNKNOWN_DATE_PLACEHOLDER } from './lib/constants.mts'
 import { type Homey, App } from './lib/homey.mts'
-import { settleAll } from './lib/settle-all.mts'
 import { getTimeZone } from './lib/temporal.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
 import { toNonNegativeInt, toZoneValueData } from './lib/validation.mts'
@@ -90,8 +90,6 @@ const byName = (
 
 const HOLIDAY_MODE_MAX_DURATION_DAYS = 365
 const HOLIDAY_MODE_OFF_DURATION = 0
-
-const NOTIFICATION_DELAY_MS = 10_000
 
 // The one surface every settings target answers — Classic zone/device
 // facades, Home device facades and the Home building facade alike; the
@@ -783,36 +781,16 @@ export default class MELCloudApp extends App {
 
   #createNotification(language: string): void {
     const { homey } = this
-    const {
-      manifest: { version },
-      notifications,
-      settings,
-    } = homey
-    // Every release since the one already announced, not just the
-    // running one: a user who updates rarely would otherwise never hear
-    // about the versions in between. The SDK read is untyped, as
-    // everywhere else settings are read: a stored value that is not a
-    // string reads as no baseline at all.
-    const notified: unknown = settings.get('notifiedVersion')
-    const { entries } = selectChangelogEntries({
+    // The Homey instance is the scheduler: its `setTimeout` is
+    // `this`-bound and disposed at uninit, which a bare reference loses.
+    announceChangelog({
       changelog,
-      from: typeof notified === 'string' ? notified : null,
+      homey,
       language,
-      to: version,
+      notifications: homey.notifications,
+      settings: homey.settings,
+      version: homey.manifest.version,
     })
-    if (entries.length === 0) {
-      return
-    }
-    homey.setTimeout(async () => {
-      try {
-        await sequential(entries, async ({ excerpt }) => {
-          await notifications.createNotification({ excerpt })
-        })
-        settings.set('notifiedVersion', version)
-      } catch {
-        // Non-critical: notification display is best-effort
-      }
-    }, NOTIFICATION_DELAY_MS)
   }
 
   #createSettingManager(api: Api = 'classic'): SettingManager {
@@ -829,18 +807,7 @@ export default class MELCloudApp extends App {
       (api === 'classic'
         ? key
         : `${api}${key.charAt(0).toUpperCase()}${key.slice(1)}`) as keyof HomeySettings
-    return {
-      get: (key: string): string | null | undefined => {
-        const value: unknown = this.homey.settings.get(prefixKey(key))
-        return typeof value === 'string' || value === null ? value : undefined
-      },
-      set: (key: string, value: string): void => {
-        this.homey.settings.set(prefixKey(key), value)
-      },
-      unset: (key: string): void => {
-        this.homey.settings.unset(prefixKey(key))
-      },
-    }
+    return createSettingManager(this.homey.settings, prefixKey)
   }
 
   #getAtaCapabilityConfigs(): {
