@@ -113,6 +113,19 @@ export const testFlowListenerRegistration = (
 
       await expect(driver.onInit()).rejects.toBe(failure)
     })
+
+    // The action path has no catch of its own either: re-adding one
+    // around the action registration alone would keep coverage green
+    // without this pin.
+    it('should surface a declared action card the runtime cannot hand out', async () => {
+      const driver = getDriver() as FlowDriver
+      const failure = new Error('Action card not found')
+      driver.homey.flow.getActionCard.mockImplementationOnce(() => {
+        throw failure
+      })
+
+      await expect(driver.onInit()).rejects.toBe(failure)
+    })
   })
 }
 

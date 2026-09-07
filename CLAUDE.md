@@ -660,8 +660,9 @@ coverage.
   derived from the installed dependency tree exactly as configs derives
   its own, never copied from a sibling or nudged by hand (measured
   2026-09-07: `@olivierzal/configs` and, through it,
-  `eslint-plugin-package-json`, `eslint-plugin-jsdoc` and their parsers
-  require `^22.22.2 || >=24.15.0`, the value `engines` and `.nvmrc`
+  `eslint-plugin-package-json`, `eslint-plugin-jsdoc` and jsdoc's parsers
+  (`@es-joy/jsdoccomment`, `jsdoc-type-pratt-parser`) require
+  `^22.22.2 || >=24.15.0`, the value `engines` and `.nvmrc`
   carry; re-derive it when the tree moves). It states nothing about
   the device, and CI's `22.20` coverage leg legitimately runs BELOW it:
   that leg is the on-device fleet floor (a Pro 2019, measured 2026-08),
