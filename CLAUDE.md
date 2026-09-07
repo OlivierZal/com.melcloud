@@ -942,6 +942,14 @@ reader fails open with an empty map).
   reasoned reply when it does not — verify claims against sources
   before acting either way (Copilot has been wrong about library
   semantics). Resolve the thread once settled; none left dangling.
+- Auto-merge is never armed on an authored PR (verdict 2026-09-07:
+  api-core #12 had it armed and merged 13 s before Copilot's review
+  landed, leaving two threads on a merged PR, one of them real). A PR
+  merges by hand, on its FINAL head, once three things hold at once:
+  every check SUCCESS or SKIPPED, the Sonar PR window at zero open
+  issues with the gate OK, and every review thread settled. The
+  Dependabot lane (`dependabot.yml` arming `gh pr merge --auto` once CI
+  passes) is the one deliberate exception and stays as documented.
 - SonarCloud must be spotless for a PR to merge — and the quality gate
   passing is necessary, NOT sufficient: the free-tier gate tolerates
   3 % duplication on new code, lets code smells through, and cannot be
