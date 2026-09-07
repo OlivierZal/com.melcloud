@@ -209,7 +209,9 @@ coverage.
   the LIBRARY's business: every melcloud-api `updateGroupState` leg
   resolves an already-matching delta as success, so the app-side
   handlers are plain delegations (verdict 2026-08, recorded on
-  `updateTargetAtaState`). Overheat stays Home-only: a Classic target
+  `updateTargetAtaState`); the one write failure the Classic device leg
+  can newly raise there, `StateReadError` (below), propagates to the
+  widget like any other. Overheat stays Home-only: a Classic target
   reads `null` and refuses the write. The
   inter-app grouping route is `GET /devices/groups` (the extension
   degrades to "no grouping" when it is absent).
@@ -401,6 +403,29 @@ coverage.
   MELCloud throttles hardest (`ErrorId 6`) — the library's login
   backoff arms around the sign-in itself, NOT around the enforced
   sync, so nothing local slowed the retries.
+- A Classic DEVICE write merges its delta onto a LIVE read of the
+  unit, never onto the last sync's snapshot (melcloud-api ≥ 56.0.0:
+  `updateValues` GETs `/Device/Get` first — `EffectiveFlags` is
+  decorative and an omitted field zero-fills, so the merge base is the
+  only thing a write can get wrong; the "vane resets to Auto" and
+  "setpoint reverts" reports, #1408, were the stale base). Two
+  consequences the app takes AS-IS, by decision: a read that fails
+  REFUSES the write with `StateReadError` (extends `APIError`;
+  `failure.kind` classifies the read), which `#pushUpdate`
+  (`drivers/base-device.mts`) surfaces through its generic catch as the
+  device warning — no branch on `failure.kind`, no retry policy — and
+  `NoChangesError` is judged against the unit's live state, so a value
+  the unit already holds is refused even when the last-synced Homey
+  value disagreed; `#pushUpdate` still swallows it, and no
+  `onSyncComplete` fires for a refused write (the library announces a
+  resolved write only), so the capability catches up on the next sync
+  tick, as before. Budget one extra GET per Classic device write
+  against the rate-limit window: a zone `updateGroupState` /
+  `updatePower` spends none, the device-facade fan-out one per member.
+  Home is untouched (its PUT is a delta). The API-level sync callback
+  keeps its defaulted parameter (`#onSync = async ({ ids, type } = {})`,
+  `app.mts`): a bare `@syncDevices()` cycle now notifies `undefined`
+  where it used to pass `{ type: undefined }`.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
   (`getRequiredCapabilities`). `isOwner` gates NOTHING, on any driver:
