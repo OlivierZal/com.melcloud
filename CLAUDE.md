@@ -645,6 +645,24 @@ coverage.
   literal verbatim; the ban is the same either way. The **node-side**
   floor is the Homey's own Node, held by the manifest's
   `compatibility` declaration, NOT by a check.
+- The CSS half of the webview floor is `css/use-baseline`, bound in
+  the configs preset (5.0.0) to the same iOS 16.4 WebKit through the
+  one knob the rule has — Baseline year 2022, the last year every
+  entry of which sits inside that engine — plus an exact-name
+  allowlist of what WebKit shipped BEFORE the floor and Baseline dated
+  later, by its last core browser (`color-mix`, Safari 16.2;
+  `mask-image`, 15.4; `outline`, dated by 16.4 itself). Measured over
+  this app's ten stylesheets at adoption (2026-09-07): seven
+  rejections under the bare year — `color-mix` ×3, `outline` ×3,
+  `mask-image` ×1 — every one on the allowlist, zero under the bound
+  rule, and `eslint --print-config` identical across the bump on every
+  non-CSS file. A future rejection is settled against MDN's
+  browser-compat data, never locally: a feature Safari 16.4 or older
+  ships re-enters the allowlist in configs with its release (a configs
+  release, adopted by pin bump); anything newer is rewritten. No
+  `css/use-baseline` override lives in the overlay or inline, and the
+  year and the list move only with the App Store minimum configs'
+  `ios-floor-watch.yml` records.
 - A floor is declared from WHERE THE CODE RUNS, never from what a
   dependency happens to require. `compatibility: ">=12.9.0"` is
   Athom's own documented Node 22 boundary ("as of Homey v12.9.0, all
@@ -714,9 +732,12 @@ stubs calling the family reusables in OlivierZal/configs, pinned
 Dependabot alerts scan continuously and carry the named, reasoned
 dismissals (an exception lives on the advisory, so it cannot outlive
 it), while `dependency-review` judges what a PR introduces;
-`validate.yml` and `publish.yml` stay local
-(no reusable exists), so the composite action stays too — a verbatim
-copy of the pinned configs version, re-synced with every pin bump.
+`validate.yml` and `publish.yml` stay local: the app's release path is
+the Homey App Store through athombv's actions, which no configs
+reusable covers (`reusable-publish.yml` and `reusable-docs.yml`, since
+configs 5.0.0, are the LIBRARIES' GitHub Packages and Pages path), so
+the composite action stays too — a verbatim copy of the pinned configs
+version, re-synced with every pin bump.
 Its callers pin `node-version: '22'` (the action's own default,
 `lts/*`, is the libs' choice) and pass `npm-token` with
 `require-npm-token` (the configs dependency lives on GitHub Packages,
