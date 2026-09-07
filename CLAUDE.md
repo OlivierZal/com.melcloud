@@ -87,9 +87,9 @@ caught real failures that the others miss:
   (`?fresh=<identity>` — a bare reload can be re-served the same stale
   document from the HTTP cache; sessionStorage guard,
   `watchWebviewFreshness` from `@olivierzal/homey-kit/webview`, wrapped
-  for the widget transport by `public/webview-freshness-boot.mts` and
-  for the settings page by the kit's own `watchSettingsFreshness` from
-  `@olivierzal/homey-kit/settings`), whose
+  for the widget transport by the kit's own `watchWidgetFreshness` from
+  `@olivierzal/homey-kit/widget` and for the settings page by its
+  `watchSettingsFreshness` from `@olivierzal/homey-kit/settings`), whose
   fresh stamps pull the fresh assets;
   a mismatch that survives its refetch is reported to
   `POST /boot-error`. The guarantee lives in the BOOT check, and which
@@ -757,13 +757,30 @@ the manifest leaf types this app's own manifest types extend
 freshness wiring, `watchSettingsFreshness` — entry `settings`,
 `GET /webview-hashes`, the `POST /boot-error` breadcrumb with a
 swallowed outcome, the `webview_hashes_changed` poke (`/settings`), the
-promise-native widget transport (`/widget` — its `WidgetApi.api` is a
-method signature, bivariant, so the real `HomeyWidget` is assignable
-and no local copy is needed), the manifest reader AND the package-time
-stamp producer `stampPackagedPages` (+ `stampHtml`, `stampReferences`,
-`WebviewPage`) that emits `webview-hashes.json` (`/node`),
+promise-native widget transport AND the widgets' whole freshness
+wiring, `watchWidgetFreshness` — the widget twin of
+`watchSettingsFreshness`: one call per widget entry
+(`watchWidgetFreshness(homey, 'charts')`) carries the boot check, the
+poke subscription and the visibility re-check over the promise-native
+transport; the real `HomeyWidget` fits its `WidgetFreshnessHost` as-is
+— (`/widget` — its `WidgetApi.api` is a method signature, bivariant,
+so the real `HomeyWidget` is assignable and no local copy is needed),
+the manifest reader AND the package-time stamp producer
+`stampPackagedPages` (+ `stampHtml`, `stampReferences`, `WebviewPage`)
+that emits `webview-hashes.json` (`/node`),
 `fireAndForget`/`getErrorMessage`/`NotFoundError`/`sequential`/
-`selectChangelogEntries` (+ the `Logger` seam) (root),
+`selectChangelogEntries` (+ the `Logger` seam), `settleAll` (the
+settle-every-branch loop behind the device sync and the energy-report
+restarts, on that same `Logger` seam), `announceChangelog` (the whole
+boot-time changelog announcement — read `notifiedVersion`, select,
+defer by the kit's `NOTIFICATION_DELAY_MS`, post, persist; the Homey
+instance is passed as its scheduler, since `homey.setTimeout` is
+`this`-bound and disposed at uninit), `createSettingManager` (the
+`homey.settings` → library `SettingManager` adapter; its `mapKey` is
+REQUIRED, no identity default — `prefixKey` stays here, the one
+boundary where a library key becomes one of this app's) and
+`logSettingsRoute` (the settings-page breadcrumb, label
+`METHOD /path`) (root),
 and — under `/testing` — the two API test kernels, the webview-floor
 kernel (`analyzeWebviewFloor` + `getQuotedEntries`, which refuses an
 EMPTY sweep; the suite keeps its own stronger guard — more than two
@@ -777,25 +794,10 @@ What stays local, by measurement rather than omission:
 - `public/widget.mts` keeps only the `Homey<TSettings>` interface, the
   tie between the widget SDK type and this app's stored widget
   settings — module augmentation cannot be packaged.
-- `public/webview-freshness-boot.mts` — `watchWidgetFreshness`, the
-  widget-side wiring that feeds the kit's `watchWebviewFreshness` the
-  promise-native widget transport and the breadcrumb channel. Both
-  widgets call it once; it carries the boot check, the poke
-  subscription and the visibility re-check together. It is the widget
-  twin of the kit's `watchSettingsFreshness`: the widget SDK's
-  `homey.api` is promise-native where the settings one is
-  error-first-callback, so the two wirings differ in transport.
 - `tests/helpers.ts` keeps only this app's own doubles:
   `createEnergyReportMock` and the `createMockDeviceClass` /
   `createMockDriverClass` re-exports.
 - `public/dom.mts`, `public/zones.mts`, and the drivers themselves.
-- `lib/settle-all.mts` — `settleAll`, the settle-every-branch loop
-  behind the device sync and the energy-report restarts: every branch
-  runs to completion and each rejection is logged on its own, where
-  `Promise.all` would abandon the rest at the first failure and hide
-  every reason but one. It rides the kit's `Logger` seam and is the
-  extension's helper verbatim; the kit exports no such primitive yet,
-  so it stays app-side until it does — then it goes by pin bump.
 - `homey-override.d.ts` keeps its `declare module` block: module
   augmentation cannot be packaged. It EXTENDS the SDK interfaces and
   takes only the narrowed member signatures from the kit generics

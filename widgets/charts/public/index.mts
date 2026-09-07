@@ -10,7 +10,7 @@ import {
   surfaceError,
   trySetDocumentLanguage,
 } from '@olivierzal/homey-kit/webview'
-import { homeyApiGet } from '@olivierzal/homey-kit/widget'
+import { homeyApiGet, watchWidgetFreshness } from '@olivierzal/homey-kit/widget'
 import {
   type ChartConfiguration,
   type ChartData,
@@ -41,7 +41,6 @@ import {
   showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
-import { watchWidgetFreshness } from '../../../public/webview-freshness-boot.mts'
 import { getZoneId } from '../../../public/zones.mts'
 import {
   type DaysQuery,
