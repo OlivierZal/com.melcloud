@@ -1,5 +1,5 @@
 import { getMockCallArg } from '@olivierzal/homey-kit/testing'
-import { NoChangesError } from '@olivierzal/melcloud-api'
+import { NoChangesError, StateReadError } from '@olivierzal/melcloud-api'
 import { describe, expect, it, vi } from 'vitest'
 
 const getConverter = (
@@ -94,6 +94,19 @@ export const testSetValuesErrorHandling = (
       await callback({ onoff: true })
 
       expect(superSetWarningMock).not.toHaveBeenCalled()
+    })
+
+    it('should surface a refused live read as the device warning', async () => {
+      setValuesMock.mockRejectedValue(
+        new StateReadError(1, { failure: { kind: 'network' } }),
+      )
+      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+
+      expect(superSetWarningMock).toHaveBeenCalledWith(
+        'Could not read the live state of device with id 1 before writing',
+      )
     })
 
     it('should set warning for non-Error thrown values', async () => {
