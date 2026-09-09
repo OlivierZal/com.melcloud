@@ -1455,10 +1455,11 @@ describe('settings page', () => {
       ]).toStrictEqual(['33', '40'])
     })
 
-    // The pair goes to the library's clampFrostProtection verbatim —
-    // no app-side swap: an inverted pair keeps the typed min and lifts
-    // the max to min + gap, the same verdict a direct SDK call gets.
-    it('should clamp an inverted frost range like the library', async () => {
+    // An inverted pair is the range the user drew, so the page orders
+    // it before handing it to the library clamp. Without that, the
+    // clamp — which has no notion of order — would read 11 as the low
+    // bound and write 11..13, a range nobody typed.
+    it('should write an inverted frost range as the range typed', async () => {
       const harness = await bootPage()
       commit(getInput('min'), '11')
       commit(getInput('max'), '10')
@@ -1470,7 +1471,7 @@ describe('settings page', () => {
           harness,
           'PUT /targets/buildings_1/settings/frost-protection',
         ),
-      ).toStrictEqual({ isEnabled: true, max: 13, min: 11 })
+      ).toStrictEqual({ isEnabled: true, max: 12, min: 10 })
     })
 
     it('should alert an out-of-range frost temperature', async () => {

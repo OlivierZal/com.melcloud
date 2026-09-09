@@ -1715,8 +1715,9 @@ class ZoneSettingsManager {
   }
 
   // Field validation (each bound against its own input range, in the
-  // user's language) is the page's; the pair's clamping — the gap, an
-  // inverted pair — is the library clamp's verdict alone.
+  // user's language) is the page's, and so is the pair's ORDER; the
+  // clamping itself — the range and the gap — is the library clamp's
+  // verdict alone.
   #getMinAndMax(
     minElement: HTMLInputElement,
     maxElement: HTMLInputElement,
@@ -1736,7 +1737,12 @@ class ZoneSettingsManager {
     if (min === null || max === null) {
       throw new Error(errors.join('\n'))
     }
-    return clamp(min, max)
+    // An inverted pair is read as the range the user drew, not as a
+    // low bound of `max`: the library clamp has no notion of order, so
+    // it would answer `{ min, min + gap }` and silently write a range
+    // the user never typed. Ordering first reproduces what the page
+    // did before 46.7.2.
+    return min <= max ? clamp(min, max) : clamp(max, min)
   }
 
   // Read one panel's settings for the selected target. Every target kind
