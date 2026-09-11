@@ -1340,6 +1340,87 @@ describe('settings page', () => {
       ])
     })
 
+    // The zone picker is NOT inside the panel fieldset the dirty gate
+    // freezes, so it stays live across a panel request and the zone
+    // moves under it. Anything the landing writes must belong to the
+    // zone the request targeted: cached under the live one it would
+    // hold another zone's values, and rebaselining there would make a
+    // pristine form read as dirty.
+    it('should drop a panel write the user has navigated away from', async () => {
+      const harness = await bootPage()
+      const pending: ApiCallback[] = []
+      const passThrough = apiImplementation({}, defaultRoutes())
+      harness.api.mockImplementation((...callArgs: ApiCallArgs) => {
+        const [method] = callArgs
+        const callback = callArgs.findLast(
+          (argument): argument is ApiCallback => typeof argument === 'function',
+        )
+        if (method === 'PUT' && callback !== undefined) {
+          pending.push(callback)
+          return
+        }
+        passThrough(...callArgs)
+      })
+      commit(getInput('min'), '6')
+      commit(getInput('max'), '10')
+      getButton('apply_frost_protection').click()
+      await settleDetached()
+      commit(getSelect('zones'), 'devices_11')
+      await settleDetached()
+
+      expect(pending).toHaveLength(1)
+
+      for (const landing of pending) {
+        landing(null, undefined)
+      }
+      await settleDetached()
+
+      expect(harness.alert).not.toHaveBeenCalledWith('settings.success')
+    })
+
+    it('should drop a panel read the user has navigated away from', async () => {
+      const harness = await bootPage()
+      const pending: ApiCallback[] = []
+      const passThrough = apiImplementation(
+        {},
+        {
+          ...defaultRoutes(),
+          'GET /targets/devices_11/settings/frost-protection': {
+            isEnabled: true,
+            max: 30,
+            min: 29,
+          },
+        },
+      )
+      harness.api.mockImplementation((...callArgs: ApiCallArgs) => {
+        const [, path] = callArgs
+        const callback = callArgs.findLast(
+          (argument): argument is ApiCallback => typeof argument === 'function',
+        )
+        if (
+          path === '/targets/devices_11/settings/frost-protection' &&
+          callback !== undefined
+        ) {
+          pending.push(callback)
+          return
+        }
+        passThrough(...callArgs)
+      })
+      commit(getSelect('zones'), 'devices_11')
+      await settleDetached()
+      commit(getSelect('zones'), 'buildings_1')
+      await settleDetached()
+
+      expect(pending).toHaveLength(1)
+
+      for (const landing of pending) {
+        landing(null, { isEnabled: true, max: 30, min: 29 })
+      }
+      await settleDetached()
+
+      expect(getInput('min').value).toBe('8')
+    })
+
     it('should fall back to defaults when the panel fetch fails', async () => {
       await bootPage({
         failures: {
