@@ -288,6 +288,42 @@ describe(BaseMELCloudDevice, () => {
         42,
       )
     })
+
+    // The library types the Home enums as closed vocabularies but passes
+    // the wire through unenforced, so a member the BFF adds or renames
+    // reaches a converter that has no entry for it. `undefined` must
+    // leave the capability alone — Home has no raw tag to fall back on,
+    // unlike the Classic leg.
+    it('should skip the write and report a value it cannot map', async () => {
+      const customDevice = createTestHomeDevice()
+      Object.defineProperty(customDevice, 'deviceToCapability', {
+        value: { measure_temperature: (): undefined => undefined },
+      })
+      const error = vi.spyOn(customDevice, 'error')
+      await customDevice.syncFromDevice()
+
+      expect(customDevice.setCapabilityValue).not.toHaveBeenCalled()
+      expect(error).toHaveBeenCalledWith(
+        'Unmapped device value, capability left as is:',
+        'measure_temperature',
+      )
+    })
+
+    // `null` is Homey's own "unknown" and must keep landing: the ATW
+    // zone-2 reads rely on it to clear a capability on a single-zone
+    // unit, so the skip above tests `undefined` and never nullish.
+    it('should still write a null, which clears the capability', async () => {
+      const customDevice = createTestHomeDevice()
+      Object.defineProperty(customDevice, 'deviceToCapability', {
+        value: { measure_temperature: (): null => null },
+      })
+      await customDevice.syncFromDevice()
+
+      expect(customDevice.setCapabilityValue).toHaveBeenCalledWith(
+        'measure_temperature',
+        null,
+      )
+    })
   })
 
   describe('capability change handling', () => {
