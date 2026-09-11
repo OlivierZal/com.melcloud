@@ -313,7 +313,38 @@ describe('home energy reports', () => {
         'energy_cursor_consumed',
         '2026-03-18T10:45:00Z',
       )
+      // The watermark is committed BEFORE the total: an interruption
+      // between the two writes is permanent either way, and this order
+      // undercounts by one window where the reverse overcounts.
+      expect(setStoreValueMock.mock.calls.map(([key]) => key)).toStrictEqual([
+        'energy_cursor_consumed',
+        'energy_total_consumed',
+      ])
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 1.7)
+    })
+
+    // A Homey booting after a power cut can run with a clock still
+    // behind, which puts `upTo` in the past. Rewinding the watermark
+    // there would have the next run re-accrue a window already counted,
+    // and a lifetime meter cannot unlearn invented energy.
+    it('should keep the watermark when the clock has stepped back', async () => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
+      getStoreValueMock.mockImplementation((key: string) =>
+        key === 'energy_cursor_consumed' ? '2026-03-18T12:00:00Z' : 1.5,
+      )
+      const getEnergySeriesMock = mockAtaFetch([])
+      const report = new HomeEnergyReportAta(mockDevice(), totalConfig)
+      await report.start()
+
+      expect(getEnergySeriesMock).not.toHaveBeenCalled()
+      expect(setStoreValueMock).toHaveBeenCalledWith(
+        'energy_cursor_consumed',
+        '2026-03-18T12:00:00Z',
+      )
+      expect(setStoreValueMock).toHaveBeenCalledWith(
+        'energy_total_consumed',
+        1.5,
+      )
     })
 
     it('should re-anchor a garbage cursor without accruing', async () => {
