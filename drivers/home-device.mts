@@ -63,15 +63,33 @@ export abstract class HomeMELCloudDevice<
       : this.driver.getRequiredCapabilities(facade)
   }
 
+  // The library types the Home enums as closed vocabularies but
+  // deliberately passes the wire through unenforced, so a member the
+  // BFF adds or renames reaches a converter that has no entry for it
+  // and yields `undefined`. Writing that into an enum capability is
+  // what the Classic leg's `?? data[tag]` fallback prevents; Home has
+  // no raw tag to fall back on, so the write is skipped and the last
+  // known value stands. `null` is deliberately NOT skipped — it is
+  // Homey's own "unknown", and the ATW zone-2 reads rely on it to
+  // clear a capability on a single-zone unit.
   protected override async syncCapabilityValues(
     device: HomeDeviceFacade<T>,
   ): Promise<void> {
     await Promise.all(
       typedEntries(this.deviceToCapability).map(
         async ([capability, convert]) => {
-          if (this.hasCapability(capability)) {
-            await this.setCapabilityValue(capability, convert(device))
+          if (!this.hasCapability(capability)) {
+            return
           }
+          const value = convert(device)
+          if (value === undefined) {
+            this.error(
+              'Unmapped device value, capability left as is:',
+              capability,
+            )
+            return
+          }
+          await this.setCapabilityValue(capability, value)
         },
       ),
     )
