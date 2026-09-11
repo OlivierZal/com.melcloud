@@ -86,14 +86,41 @@ export const testSetValuesErrorHandling = (
       expect(superSetWarningMock).toHaveBeenCalledWith('API error')
     })
 
-    it('should ignore NoChangesError', async () => {
+    // A folded-away write must stay non-fatal AND leave a trace: a
+    // command that never reached the wire is otherwise invisible in a
+    // diagnostic report, which is what made the 2026-09 "it does not
+    // hold the setting" reports undiagnosable.
+    it('should log NoChangesError instead of warning', async () => {
       setValuesMock.mockRejectedValue(new NoChangesError(1))
-      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+      const device = getDevice() as {
+        log: (...args: unknown[]) => void
+        onInit: () => Promise<void>
+      }
+      await device.onInit()
       superSetWarningMock.mockClear()
+      const log = vi.spyOn(device, 'log')
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
       expect(superSetWarningMock).not.toHaveBeenCalled()
+      expect(log).toHaveBeenCalledWith(
+        'Not sent, identical to the last synced state:',
+        expect.any(Object),
+      )
+    })
+
+    it('should log a write that reached the wire', async () => {
+      setValuesMock.mockResolvedValue({})
+      const device = getDevice() as {
+        log: (...args: unknown[]) => void
+        onInit: () => Promise<void>
+      }
+      await device.onInit()
+      const log = vi.spyOn(device, 'log')
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+
+      expect(log).toHaveBeenCalledWith('Sent data:', expect.any(Object))
     })
 
     it('should set warning for non-Error thrown values', async () => {

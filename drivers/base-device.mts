@@ -392,16 +392,25 @@ export abstract class BaseMELCloudDevice<
     return this.thermostatMode !== null && 'off' in this.thermostatMode
   }
 
+  // A write the library folds away leaves no trace on the wire, so it
+  // must leave one in the log: without it a report of "the setting does
+  // not hold" is indistinguishable from a report of "the command never
+  // left Homey", which is exactly the question the 2026-09 reports
+  // could not answer. The refusal stays non-fatal — the user asked for
+  // a state the app already believes the unit holds.
   async #pushUpdate(
     device: TFacade,
     updateData: Record<string, unknown>,
   ): Promise<void> {
     try {
       await device.updateValues(updateData)
+      this.log('Sent data:', updateData)
     } catch (error) {
-      if (!(error instanceof NoChangesError)) {
-        await this.setWarning(error)
+      if (error instanceof NoChangesError) {
+        this.log('Not sent, identical to the last synced state:', updateData)
+        return
       }
+      await this.setWarning(error)
     }
   }
 
