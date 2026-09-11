@@ -392,15 +392,22 @@ export abstract class BaseMELCloudDevice<
     return this.thermostatMode !== null && 'off' in this.thermostatMode
   }
 
-  // A write that LANDS is already logged by the library's observability
-  // seam (`dataType: 'API request'`, with the full body and
-  // `EffectiveFlags`), so nothing is added here for that case. A write
-  // the library FOLDS AWAY makes no request at all, so that seam has
-  // nothing to log and the only trace left would be the absence of a
-  // request after `Requested data:` — and an absence proves nothing in
-  // a truncated diagnostic report, which is exactly how the 2026-09
-  // reports arrived. The refusal stays non-fatal: the user asked for a
-  // state the app already believes the unit holds.
+  // The library's observability seam logs a write that LANDS
+  // (`dataType: 'API request'`, full body and `EffectiveFlags`), and its
+  // error seam logs an `HttpError`. Neither covers the two failures
+  // that matter here. A FOLDED write makes no request at all, so the
+  // only trace would be an absence — worthless in a truncated
+  // diagnostic report; the refusal stays non-fatal, the user asked for
+  // a state the app already believes the unit holds. A failure OFF the
+  // HTTP path — a timeout, an abort, a DNS failure — reaches no seam
+  // either: only an `HttpError` is serialised, the transient-retry rung
+  // is installed for GET alone, and `setWarning` is a toast that clears
+  // its own message in the same call, so such a write is invisible
+  // everywhere at once — the flow reports success, the tile keeps the
+  // new value, and the unit never moved. Every failed write is logged
+  // rather than only the two uncovered ones: sorting them would mean
+  // re-deriving the seam's own predicate here, and a duplicated line
+  // for an HTTP failure costs nothing beside a silent one.
   async #pushUpdate(
     device: TFacade,
     updateData: Record<string, unknown>,
@@ -412,6 +419,7 @@ export abstract class BaseMELCloudDevice<
         this.log('Not sent, identical to the last synced state:', updateData)
         return
       }
+      this.error('Write failed:', updateData, error)
       await this.setWarning(error)
     }
   }
