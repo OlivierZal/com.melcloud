@@ -6,8 +6,8 @@
       "type": "device"
     },
     {
-      "max": 30,
-      "min": 10,
+      "max": 25,
+      "min": 5,
       "name": "target_temperature",
       "step": 1,
       "type": "range"
