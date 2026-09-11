@@ -182,9 +182,25 @@ export abstract class HomeEnergyReport<
       cursor !== null && Temporal.Instant.compare(cursor, upTo) < 0
         ? await this.#fetchAccrual(facade, { cursor, measure, upTo })
         : 0
+    // The watermark only ever moves FORWARD. A Homey booting with a
+    // clock still behind — a power cut, an NTP step — computes an
+    // `upTo` in the past, and rewinding to it would have the next run
+    // re-accrue a window already counted. A lifetime meter cannot
+    // unlearn that.
+    const nextCursor =
+      cursor !== null && Temporal.Instant.compare(cursor, upTo) > 0
+        ? cursor
+        : upTo
+    // The watermark is committed BEFORE the total. The two writes
+    // cannot be atomic, and an interruption between them is PERMANENT
+    // either way: this order undercounts by one window, the reverse
+    // overcounts by one. Neither self-heals, so the choice is which
+    // error to prefer — and a meter that invents energy misreports
+    // consumption upward forever, taking Insights and every cost figure
+    // built on it along. Losing a window is the failure worth choosing.
+    await this.#device.setStoreValue(cursorKey(measure), nextCursor.toString())
     const total = storedTotal + accrued
     await this.#device.setStoreValue(totalKey(measure), total)
-    await this.#device.setStoreValue(cursorKey(measure), upTo.toString())
     return total
   }
 
