@@ -1696,12 +1696,19 @@ class ZoneSettingsManager {
     path,
   }: ZoneSettingDescriptor): Promise<void> {
     await this.#gateFor(id).runBusy(async () => {
+      const target = this.#zone.value
+      let data: MixableZoneSettings
       try {
-        this.#updateZoneMapping(await this.#getZoneSettingData(id, path))
-        display()
+        data = await this.#getZoneSettingData(target, id, path)
       } catch {
         // Non-critical: UI falls back to default values
+        return
       }
+      if (this.#zone.value !== target) {
+        return
+      }
+      this.#updateZoneMapping(target, data)
+      display()
     })
   }
 
@@ -1752,21 +1759,16 @@ class ZoneSettingsManager {
   // Home device all land in the panel's own cache slot. A `null` payload
   // (nothing configured) reads as empty, i.e. default values.
   async #getZoneSettingData(
+    target: string,
     id: ZoneSettingDescriptor['id'],
     path: ZoneSettingDescriptor['path'],
   ): Promise<MixableZoneSettings> {
     return {
       [id]: await homeyApiGet<Mixable<ProtectionState> | null>(
         this.#homey,
-        `${this.#getZoneSettingsBase()}/settings/${path}`,
+        `/targets/${target}/settings/${path}`,
       ),
     }
-  }
-
-  // The picker value IS the targetId of the neutral settings routes:
-  // addressing needs no family branch.
-  #getZoneSettingsBase(): string {
-    return `/targets/${this.#zone.value}`
   }
 
   // PUT one zone-setting panel: refresh the cached zone mapping and
@@ -1777,18 +1779,30 @@ class ZoneSettingsManager {
     zoneSettings: MixableZoneSettings,
   ): Promise<void> {
     await this.#gateFor(id).runBusy(async () => {
+      // The picker stays live across the request, so the zone moves
+      // under it. The target is pinned once, addresses the route, and
+      // everything after the await is dropped when the user has moved
+      // on: the new zone's panel was already repainted by its own
+      // fetch, and rebaselining it against this zone's values would
+      // make a pristine form read as dirty and the wrong values as
+      // saved.
+      const target = this.#zone.value
       try {
         await homeyApiPut<unknown>(
           this.#homey,
-          `${this.#getZoneSettingsBase()}/settings/${path}`,
+          `/targets/${target}/settings/${path}`,
           query,
         )
-        this.#updateZoneMapping(zoneSettings)
-        display()
-        await this.#homey.alert(this.#homey.__('settings.success'))
       } catch (error) {
         await this.#homey.alert(getErrorMessage(error))
+        return
       }
+      if (this.#zone.value !== target) {
+        return
+      }
+      this.#updateZoneMapping(target, zoneSettings)
+      display()
+      await this.#homey.alert(this.#homey.__('settings.success'))
     })
   }
 
@@ -1856,9 +1870,12 @@ class ZoneSettingsManager {
     return false
   }
 
-  #updateZoneMapping(data: MixableZoneSettings): void {
-    const { value } = this.#zone
-    this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
+  // The target is passed in, never re-read: both callers write it after
+  // an await and the picker stays live throughout, so reading it here
+  // would file the answer under whichever zone the user has since
+  // selected.
+  #updateZoneMapping(target: string, data: MixableZoneSettings): void {
+    this.#zoneMapping[target] = { ...this.#zoneMapping[target], ...data }
   }
 }
 
