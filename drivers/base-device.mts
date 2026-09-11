@@ -392,6 +392,15 @@ export abstract class BaseMELCloudDevice<
     return this.thermostatMode !== null && 'off' in this.thermostatMode
   }
 
+  // A write that LANDS is already logged by the library's observability
+  // seam (`dataType: 'API request'`, with the full body and
+  // `EffectiveFlags`), so nothing is added here for that case. A write
+  // the library FOLDS AWAY makes no request at all, so that seam has
+  // nothing to log and the only trace left would be the absence of a
+  // request after `Requested data:` — and an absence proves nothing in
+  // a truncated diagnostic report, which is exactly how the 2026-09
+  // reports arrived. The refusal stays non-fatal: the user asked for a
+  // state the app already believes the unit holds.
   async #pushUpdate(
     device: TFacade,
     updateData: Record<string, unknown>,
@@ -399,9 +408,11 @@ export abstract class BaseMELCloudDevice<
     try {
       await device.updateValues(updateData)
     } catch (error) {
-      if (!(error instanceof NoChangesError)) {
-        await this.setWarning(error)
+      if (error instanceof NoChangesError) {
+        this.log('Not sent, identical to the last synced state:', updateData)
+        return
       }
+      await this.setWarning(error)
     }
   }
 

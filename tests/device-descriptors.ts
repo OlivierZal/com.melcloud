@@ -86,14 +86,28 @@ export const testSetValuesErrorHandling = (
       expect(superSetWarningMock).toHaveBeenCalledWith('API error')
     })
 
-    it('should ignore NoChangesError', async () => {
+    // A folded-away write must stay non-fatal AND leave a trace. A
+    // write that lands needs none: the library's observability seam
+    // logs the request. A folded-away one makes no request, so without
+    // this line the only evidence is an absence — worthless in a
+    // truncated report, which is how the 2026-09 reports arrived.
+    it('should log NoChangesError instead of warning', async () => {
       setValuesMock.mockRejectedValue(new NoChangesError(1))
-      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+      const device = getDevice() as {
+        log: (...args: unknown[]) => void
+        onInit: () => Promise<void>
+      }
+      await device.onInit()
       superSetWarningMock.mockClear()
+      const log = vi.spyOn(device, 'log')
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
       expect(superSetWarningMock).not.toHaveBeenCalled()
+      expect(log).toHaveBeenCalledWith(
+        'Not sent, identical to the last synced state:',
+        expect.any(Object),
+      )
     })
 
     it('should set warning for non-Error thrown values', async () => {
