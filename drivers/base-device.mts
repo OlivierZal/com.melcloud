@@ -392,19 +392,21 @@ export abstract class BaseMELCloudDevice<
     return this.thermostatMode !== null && 'off' in this.thermostatMode
   }
 
-  // A write the library folds away leaves no trace on the wire, so it
-  // must leave one in the log: without it a report of "the setting does
-  // not hold" is indistinguishable from a report of "the command never
-  // left Homey", which is exactly the question the 2026-09 reports
-  // could not answer. The refusal stays non-fatal — the user asked for
-  // a state the app already believes the unit holds.
+  // A write that LANDS is already logged by the library's observability
+  // seam (`dataType: 'API request'`, with the full body and
+  // `EffectiveFlags`), so nothing is added here for that case. A write
+  // the library FOLDS AWAY makes no request at all, so that seam has
+  // nothing to log and the only trace left would be the absence of a
+  // request after `Requested data:` — and an absence proves nothing in
+  // a truncated diagnostic report, which is exactly how the 2026-09
+  // reports arrived. The refusal stays non-fatal: the user asked for a
+  // state the app already believes the unit holds.
   async #pushUpdate(
     device: TFacade,
     updateData: Record<string, unknown>,
   ): Promise<void> {
     try {
       await device.updateValues(updateData)
-      this.log('Sent data:', updateData)
     } catch (error) {
       if (error instanceof NoChangesError) {
         this.log('Not sent, identical to the last synced state:', updateData)
