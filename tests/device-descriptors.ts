@@ -119,13 +119,28 @@ export const testSetValuesErrorHandling = (
       expect(superSetWarningMock).toHaveBeenCalledWith('string error')
     })
 
+    // A write that fails off the HTTP path reaches no observability
+    // seam: the library serialises only an `HttpError`, and `setWarning`
+    // clears its own toast in the same call. The error line is the only
+    // trace a diagnostic report can carry, so it is pinned beside the
+    // warning.
     it('should warn when the update rejects with a transport error', async () => {
       setValuesMock.mockRejectedValueOnce(new Error('update failed'))
-      await (getDevice() as { onInit: () => Promise<void> }).onInit()
+      const device = getDevice() as {
+        error: (...args: unknown[]) => void
+        onInit: () => Promise<void>
+      }
+      await device.onInit()
+      const error = vi.spyOn(device, 'error')
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
 
       expect(superSetWarningMock).toHaveBeenCalledWith('update failed')
+      expect(error).toHaveBeenCalledWith(
+        'Write failed:',
+        expect.any(Object),
+        expect.any(Error),
+      )
     })
   })
 }

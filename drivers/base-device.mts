@@ -392,15 +392,19 @@ export abstract class BaseMELCloudDevice<
     return this.thermostatMode !== null && 'off' in this.thermostatMode
   }
 
-  // A write that LANDS is already logged by the library's observability
-  // seam (`dataType: 'API request'`, with the full body and
-  // `EffectiveFlags`), so nothing is added here for that case. A write
-  // the library FOLDS AWAY makes no request at all, so that seam has
-  // nothing to log and the only trace left would be the absence of a
-  // request after `Requested data:` — and an absence proves nothing in
-  // a truncated diagnostic report, which is exactly how the 2026-09
-  // reports arrived. The refusal stays non-fatal: the user asked for a
-  // state the app already believes the unit holds.
+  // The library's observability seam logs a write that LANDS
+  // (`dataType: 'API request'`, full body and `EffectiveFlags`). The two
+  // cases it cannot reach are logged here. A FOLDED write makes no
+  // request, so that seam has nothing to log and the only trace would be
+  // an absence, which proves nothing in a truncated diagnostic report;
+  // the refusal stays non-fatal, the user asked for a state the app
+  // already believes the unit holds. A write that fails OFF the HTTP
+  // path — a timeout, an abort, a DNS failure — reaches no seam either:
+  // the library serialises only an `HttpError`, its transient-retry rung
+  // is installed for GET alone, and `setWarning` is a toast that clears
+  // itself in the same call. Without this line such a write is invisible
+  // everywhere at once — the flow reports success, the tile keeps the
+  // new value, and the unit never moved.
   async #pushUpdate(
     device: TFacade,
     updateData: Record<string, unknown>,
@@ -412,6 +416,7 @@ export abstract class BaseMELCloudDevice<
         this.log('Not sent, identical to the last synced state:', updateData)
         return
       }
+      this.error('Write failed:', updateData, error)
       await this.setWarning(error)
     }
   }
