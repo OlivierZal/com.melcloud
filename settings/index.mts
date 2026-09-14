@@ -45,7 +45,6 @@ import {
   clampFrostProtection,
   clampOverheatProtection,
 } from '@olivierzal/melcloud-api/protection'
-import { Temporal } from 'temporal-polyfill'
 
 import type {
   Api,
@@ -1170,7 +1169,9 @@ class ErrorLogManager {
       if (!(
         this.#to !== '' &&
         this.#sinceInput.value !== '' &&
-        Temporal.PlainDate.compare(this.#sinceInput.value, this.#to) > 0
+        // Both ISO YYYY-MM-DD — the date input's sanitised value and the
+        // API's PlainDate.toString() — so string order is date order.
+        this.#sinceInput.value > this.#to
       )) {
         return
       }

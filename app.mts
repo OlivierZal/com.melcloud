@@ -450,7 +450,7 @@ export default class MELCloudApp extends App {
           name: toFlatName(node),
         })),
       ...this.getHomeTargets()
-        .filter((node): node is HomeDeviceZone => node.model === 'homeDevices')
+        .filter((node) => node.model === 'homeDevices')
         .map((node) => ({ ...node, name: toFlatName(node) })),
     ].toSorted(byName)
   }
