@@ -1,62 +1,19 @@
-concurrency:
-  cancel-in-progress: false
-  group: publish
 jobs:
   publish:
-    environment: homey
-    name: Publish app on Homey
     permissions:
       contents: read
       packages: read
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup-node-and-install
-        with:
-          cache: none
-          node-version: '22'
-          npm-token: ${{ secrets.GITHUB_TOKEN }}
-          # setup-node writes the registry auth to its user config only
-          # when given a registry — the `cp` below carries that file into
-          # the workspace for the publish action's container.
-          registry-url: https://npm.pkg.github.com
-          require-npm-token: 'true'
-          scope: '@olivierzal'
-      - run: cp "$NPM_CONFIG_USERCONFIG" "$GITHUB_WORKSPACE/.npmrc"
-      - id: publish
-        name: Publish
-        uses: athombv/github-action-homey-app-publish@48be66b7f2f870c22b6117d7bb84dfa06c4fc309 # v1
-        with:
-          personal_access_token: ${{ secrets.HOMEY_PAT }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # The CLI's own `npm run build` (post-copy) must have emitted the
-      # webview bundles into .homeybuild and stamped the packaged pages —
-      # a silent regression here is the #1404 class. Post-hoc by
-      # necessity (packing happens inside the action), so a failure here
-      # fails the workflow loudly right after the upload.
-      - name: Assert the packaged bundles
-        run: |
-          for file in settings/index.js settings/index.mjs \
-            widgets/ata-group-setting/public/index.js \
-            widgets/ata-group-setting/public/index.mjs \
-            widgets/charts/public/index.js widgets/charts/public/index.mjs; do
-            if [ ! -s ".homeybuild/$file" ]; then
-              echo "::error::Missing packaged bundle: .homeybuild/$file"
-              exit 1
-            fi
-          done
-          if ! grep -q 'index\.js?v=' .homeybuild/settings/index.html; then
-            echo "::error::Packaged settings HTML is unstamped"
-            exit 1
-          fi
-      - name: URL
-        env:
-          URL: ${{ steps.publish.outputs.url }}
-        run: echo "Manage your app at $URL" >> "$GITHUB_STEP_SUMMARY"
-    timeout-minutes: 30
+    secrets:
+      HOMEY_PAT: ${{ secrets.HOMEY_PAT }}
+    uses: OlivierZal/homey-kit/.github/workflows/reusable-homey-publish.yml@2265be06081de64e375e51a6acd259d45a3e87cb # v6.1.0
+    with:
+      bundles: |
+        settings/index.js
+        settings/index.mjs
+        widgets/ata-group-setting/public/index.js
+        widgets/ata-group-setting/public/index.mjs
+        widgets/charts/public/index.js
+        widgets/charts/public/index.mjs
 name: Publish app on Homey
 on:
   release:

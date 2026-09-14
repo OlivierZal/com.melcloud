@@ -740,19 +740,27 @@ stubs calling the family reusables in OlivierZal/configs, pinned
 Dependabot alerts scan continuously and carry the named, reasoned
 dismissals (an exception lives on the advisory, so it cannot outlive
 it), while `dependency-review` judges what a PR introduces;
-`validate.yml` and `publish.yml` stay local: the app's release path is
-the Homey App Store through athombv's actions, which no configs
-reusable covers (`reusable-publish.yml` and `reusable-docs.yml`, since
-configs 5.0.0, are the LIBRARIES' GitHub Packages and Pages path), so
-the composite action stays too — a verbatim copy of the pinned configs
-version, re-synced with every pin bump.
-Its callers pin `node-version: '22'` (the action's own default,
-`lts/*`, is the libs' choice) and pass `npm-token` with
-`require-npm-token` (the configs dependency lives on GitHub Packages,
-where even reads need auth); the publish job also forwards
-`registry-url`/`scope`, since setup-node writes the registry user
-config its `cp` step carries into the publish container only when
-given a registry.
+`validate.yml` and `publish.yml` are stubs since configs 6.0.0 /
+homey-kit 6.1.0, over the kit's `reusable-homey-validate.yml` and
+`reusable-homey-publish.yml`: the Homey App Store path is Homey
+process, so it lives with the kit — a TWO-CHANNEL package from 6.1.0,
+pinned by SHA with the release tag as the version comment, the same tag
+as the npm pin (configs' `check-pins.sh` polices the pair for the kit
+as it does for configs, so a kit adoption moves the `uses:` refs in the
+same commit as the pin). The caller keeps its triggers, its grants,
+its `HOMEY_PAT` secret and its bundle list (the three pages' compat
+pairs); the required check reads `validate / Validate app`. The
+composite action stays — the reusables resolve
+`./.github/actions/setup-node-and-install` in the CALLER's checkout —
+as a verbatim copy of the pinned configs version, re-synced with every
+pin bump; what used to be this app's own settings on it
+(`node-version: '22'`, `npm-token` with `require-npm-token`, the
+`registry-url`/`scope` that makes setup-node write the registry user
+config the publish container needs) now lives in the reusables.
+`claude-dependabot-fix.yml` and `.github/zizmor.yml` went with configs
+6.0.0: the fix workflow was retired (zero successes in 4,296 runs, and
+a success path the Sonar gate refuses by design), and the zizmor
+ignore existed only for it.
 
 The bare `homey-apps-sdk-v3-types` devDependency beside the
 `@types/homey` alias is NOT a duplicate, and the two lines move together
