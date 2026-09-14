@@ -1055,8 +1055,10 @@ export default class MELCloudApp extends App {
   #holidayModeDays(duration: unknown): number {
     try {
       return toNonNegativeInt(duration, { max: HOLIDAY_MODE_MAX_DURATION_DAYS })
-    } catch {
-      throw new RangeError(this.homey.__('errors.invalidDuration'))
+    } catch (error) {
+      throw new RangeError(this.homey.__('errors.invalidDuration'), {
+        cause: error,
+      })
     }
   }
 
