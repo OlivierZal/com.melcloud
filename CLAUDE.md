@@ -809,13 +809,20 @@ REQUIRED, no identity default — `prefixKey` stays here, the one
 boundary where a library key becomes one of this app's) and
 `logSettingsRoute` (the settings-page breadcrumb, label
 `METHOD /path`) (root),
-and — under `/testing` — the two API test kernels, the webview-floor
-kernel (`analyzeWebviewFloor` + `getQuotedEntries`, which refuses an
-EMPTY sweep; the suite keeps its own stronger guard — more than two
-entry points and more than two globs) and the plain test helpers (`assertDefined`, `getMockCallArg`,
-`mock`, `settleDetached`, `InteropModule`). A change to any of them is
-a kit release adopted here by a pin bump — never a local edit, never a
-re-derivation.
+and — under `/testing` — the two API test kernels and the plain test
+helpers (`assertDefined`, `getMockCallArg`, `mock`, `settleDetached`,
+`InteropModule`). A change to any of them is a kit release adopted
+here by a pin bump — never a local edit, never a re-derivation. The
+webview-floor closure is NOT one of them any more: since 2026-09-14
+`tests/unit/webview-floor.test.ts` asks esbuild for the metafile of
+the three real entry points (node_modules excluded) and checks every
+input against `webviewFloorFiles`, both read from
+`scripts/webview-perimeter.mts` — the one declaration the bundler and
+the lint share. That is the bundler's own answer to what the bundles
+emit, neither a text scrape of two config files nor a re-derivation of
+the kit's `analyzeWebviewFloor` walk, which this app no longer
+imports; the kit-floored modules a bundle pulls in are the kit's
+lint's business.
 
 What stays local, by measurement rather than omission:
 

@@ -1,6 +1,8 @@
 import { homeyApp } from '@olivierzal/configs/eslint/homey-app'
 import { type Config, defineConfig } from 'eslint/config'
 
+import { webviewFloorFiles } from './scripts/webview-perimeter.mts'
+
 const config: Config[] = defineConfig([
   { ignores: ['.homeybuild/', 'coverage/'] },
   ...homeyApp({
@@ -25,15 +27,7 @@ const config: Config[] = defineConfig([
       'tests/unit/app.test.ts',
       'tests/unit/*-{device,driver}.test.ts',
     ],
-    webviewFloorFiles: [
-      'public/**/*.mts',
-      'settings/**/*.mts',
-      // Cross-surface by contract: `DAYS_MAX` ships into the charts
-      // bundle, so the file holds the floor even though node-side code
-      // reads it too. `webview-floor.test.ts` recomputes the closure.
-      'types/widgets.mts',
-      'widgets/*/public/**/*.mts',
-    ],
+    webviewFloorFiles,
     wireNamingEntries: [
       // MELCloud Classic state fields: the ATA group widget posts these
       // names verbatim, so they are the wire's, not ours. Enumerated so

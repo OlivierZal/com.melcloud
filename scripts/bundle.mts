@@ -11,18 +11,14 @@ import path from 'node:path'
 import { stampPackagedPages } from '@olivierzal/homey-kit/node'
 import { type BuildOptions, build } from 'esbuild'
 
+import { entryPoints } from './webview-perimeter.mts'
+
 // The IIFE global each page's inline `onHomeyReady` reads `start` from.
 const GLOBAL_NAME = 'MELCloudWebview'
 
 // The Homey CLI's packaging target: `tsc` already emits here (its
 // validated `outDir`), and the CLI packs exactly this directory.
 const OUT_ROOT = '.homeybuild'
-
-const entryPoints = [
-  'widgets/ata-group-setting/public/index.mts',
-  'widgets/charts/public/index.mts',
-  'settings/index.mts',
-]
 
 // The packaged pages, each with the manifest key under which the app
 // serves its bundle hash (`GET /webview-hashes`): a booted page compares
