@@ -3,7 +3,7 @@ jobs:
   dependency-review:
     permissions:
       contents: read
-    uses: OlivierZal/configs/.github/workflows/dependency-review.yml@f691686d44753b0dfb00a155c42ea66d89d78a1e # v6.1.0
+    uses: OlivierZal/configs/.github/workflows/dependency-review.yml@a2ee75bd9cd4b8062b993e2ea488883c2863a2c5 # v6.2.0
 name: Dependency review
 on:
   pull_request: {}
