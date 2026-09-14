@@ -1272,6 +1272,293 @@ class ErrorLogManager {
   }
 }
 
+// ── SettingsApp ──
+class SettingsApp {
+  readonly #authManager: AuthManager
+
+  #authState: Record<Api, boolean> = { classic: false, home: false }
+
+  readonly #contentSection: HTMLDivElement
+
+  readonly #deviceSettingsManager: DeviceSettingsManager
+
+  readonly #errorLogManager: ErrorLogManager
+
+  readonly #homey: Homey
+
+  readonly #zoneSettingsManager: ZoneSettingsManager
+
+  public constructor(homey: Homey) {
+    this.#homey = homey
+    this.#contentSection = getDiv('content')
+    this.#deviceSettingsManager = new DeviceSettingsManager(homey)
+    this.#zoneSettingsManager = new ZoneSettingsManager(homey)
+    this.#errorLogManager = new ErrorLogManager(homey)
+    this.#authManager = new AuthManager(
+      homey,
+      async (api, isDeviceListStale) => this.#onLogin(api, isDeviceListStale),
+      (api) => {
+        this.#onLogOut(api)
+      },
+    )
+  }
+
+  /**
+   * @alerts Falls back to an empty settings object on error.
+   */
+  static async #fetchHomeySettings(homey: Homey): Promise<HomeySettings> {
+    try {
+      return await homeyCallback((callback) => {
+        homey.get(callback)
+      })
+    } catch (error) {
+      await homey.alert(getErrorMessage(error))
+      return {}
+    }
+  }
+
+  // `ready()` always fires — an unbounded await here would hold Homey's
+  // loading overlay open forever on a single hung or failed call.
+  public async init(): Promise<void> {
+    // A stale cached page refetches itself once (never-cached address)
+    // instead of booting: skip the init — the document is about to be
+    // replaced.
+    if (await watchSettingsFreshness(this.#homey)) {
+      return
+    }
+    const { error, hasFailed } = await runWebview(this.#homey, this.#run())
+    if (hasFailed) {
+      // After `ready` (runWebview's finally): an alert raised under the
+      // overlay is never seen, and fire-and-forget keeps a rejected alert
+      // from bubbling out of `start()` as an unhandled rejection.
+      fireAndForget(this.#homey.alert(getErrorMessage(error)))
+    }
+  }
+
+  #addEventListeners(): void {
+    this.#authManager.addEventListeners()
+    this.#errorLogManager.addEventListeners()
+    this.#zoneSettingsManager.addEventListeners()
+    getButton('auto_adjust').addEventListener('click', () => {
+      fireAndForget(
+        this.#homey.openURL('https://homey.app/a/com.mecloud.extension'),
+      )
+    })
+  }
+
+  #attentionInputs(): AttentionInputs {
+    return {
+      unauthenticatedApis: API_VALUES.filter((api) => !this.#authState[api]),
+      hasDevices: (api) => this.#hasDevices(api),
+    }
+  }
+
+  async #ensureDevicesForApi(api: Api): Promise<void> {
+    if (api === 'classic') {
+      await this.#fetchClassicBuildings()
+    } else if (this.#hasHomeDevices()) {
+      await this.#fetchHomeTargets()
+    } else {
+      throw new NoDeviceError(this.#homey)
+    }
+  }
+
+  async #fetchClassicBuildings(): Promise<void> {
+    const buildings = await homeyApiGet<Classic.BuildingZone[]>(
+      this.#homey,
+      '/classic/buildings',
+    )
+    if (buildings.length === 0) {
+      throw new NoClassicDeviceError(this.#homey)
+    }
+    this.#zoneSettingsManager.populateZoneOptions(buildings)
+    // Not awaited, so it no longer blocks `ready()`: this only fills the
+    // zone panel's initial values (silent, default fallback) and the zone
+    // selector re-fetches on change anyway. The error log is left to its
+    // on-demand "See" button — prefetching it blocked first paint on a
+    // MELCloud cloud round-trip (~350 ms on a Homey Pro 2019) and its
+    // alert-on-failure would surface unprompted.
+    fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
+  }
+
+  // Home targets are appended after any Classic zones.
+  async #fetchHomeTargets(): Promise<void> {
+    // A tree: each Home building followed by its own devices (indented),
+    // both frost/holiday targets.
+    const targets = await homeyApiGet<(HomeBuildingZone | HomeDeviceZone)[]>(
+      this.#homey,
+      '/home/targets',
+    )
+    this.#zoneSettingsManager.populateZoneOptions(targets)
+    // See #fetchClassicBuildings: fills the initial panel values only (the
+    // first option, a Classic zone when both accounts are paired).
+    fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
+  }
+
+  // A failed probe reads as "not verified" rather than throwing: the
+  // caller must not turn an accepted login into a failure alert.
+  async #fetchSessionState(api: Api): Promise<boolean> {
+    try {
+      return await homeyApiGet<boolean>(this.#homey, `/sessions/${api}`)
+    } catch {
+      return false
+    }
+  }
+
+  #hasDevices(api: Api): boolean {
+    return Object.keys(this.#deviceSettingsManager.deviceSettings).some(
+      (driverId) => toApi(driverId) === api,
+    )
+  }
+
+  #hasHomeDevices(): boolean {
+    return this.#hasDevices('home')
+  }
+
+  async #initCredentialFields({
+    homePassword,
+    homeUsername,
+    password,
+    username,
+  }: HomeySettings): Promise<void> {
+    const driverSettings =
+      await this.#deviceSettingsManager.fetchDriverSettings()
+    // Homey Settings may return `null` for a cleared key; omit such keys
+    // to match `Partial<LoginCredentials>`.
+    this.#authManager.createCredentialFields(
+      driverSettings,
+      {
+        classic: {
+          ...(typeof password === 'string' && { password }),
+          ...(typeof username === 'string' && { username }),
+        },
+        home: {
+          ...(typeof homePassword === 'string' && { password: homePassword }),
+          ...(typeof homeUsername === 'string' && { username: homeUsername }),
+        },
+      },
+      this.#attentionInputs(),
+    )
+  }
+
+  // Fills the zone panel from the registry and ANSWERS its failure
+  // instead of throwing it, so the caller can rank that failure against
+  // the sign-in's own device warning rather than alert both.
+  async #loadDevicesForApi(api: Api): Promise<string | null> {
+    try {
+      await this.#ensureDevicesForApi(api)
+    } catch (error) {
+      return error instanceof NoDeviceError
+        ? error.message
+        : getErrorMessage(error)
+    }
+    return null
+  }
+
+  /**
+   * @alerts Displays post-login errors to the user.
+   */
+  async #onLogin(api: Api, isDeviceListStale: boolean): Promise<void> {
+    // Reflect the server truth instead of assuming success: the login
+    // POST resolves on a sign-in the server accepted even when the
+    // enforced post-login device sync failed, which the route reports
+    // as `isDeviceListStale` rather than as a login failure.
+    this.#authState[api] = await this.#fetchSessionState(api)
+    if (this.#authState[api]) {
+      // The panel is filled from whatever the registry holds — a list
+      // the sign-in could not refresh still describes real devices —
+      // but a failed refresh is what the user hears about: it EXPLAINS
+      // a list that came back empty or out of date, where the device
+      // check's own "add a device" would send them off after a device
+      // they already own.
+      const failure = await this.#loadDevicesForApi(api)
+      const message = isDeviceListStale
+        ? this.#homey.__('settings.authenticate.staleDevices')
+        : failure
+      if (message !== null) {
+        await this.#homey.alert(message)
+      }
+    } else {
+      await this.#homey.alert(
+        this.#homey.__('settings.authenticate.unverified'),
+      )
+    }
+    this.#refreshVisibility()
+  }
+
+  // The app-side logout already killed the session, so mark this API
+  // unauthenticated and re-render — the panel reopens on the now-empty
+  // account.
+  #onLogOut(api: Api): void {
+    this.#authState[api] = false
+    this.#refreshVisibility()
+  }
+
+  #refreshVisibility(): void {
+    const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
+      this.#authState
+    // Fold when no account in use needs attention. A reset account
+    // (signed out immediately, credentials deleted) keeps the panel
+    // open on its empty fields, but only while it still has devices:
+    // an account the user never paired anything to is not a chore.
+    this.#authManager.collapseAuthenticationSection(
+      this.#authManager.getApisNeedingAttention(this.#attentionInputs())
+        .length === 0,
+    )
+    hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
+    toggleZoneDeviceSettings(isClassicAuthenticated || isHomeAuthenticated)
+  }
+
+  async #run(): Promise<void> {
+    const [settings, isClassicAuthenticated, isHomeAuthenticated] =
+      await Promise.all([
+        SettingsApp.#fetchHomeySettings(this.#homey),
+        homeyApiGet<boolean>(this.#homey, '/sessions/classic'),
+        homeyApiGet<boolean>(this.#homey, '/sessions/home'),
+        trySetDocumentLanguage(async () =>
+          homeyApiGet<string>(this.#homey, '/language'),
+        ),
+        this.#deviceSettingsManager.fetchDeviceSettings(),
+      ])
+    this.#authState = {
+      classic: isClassicAuthenticated,
+      home: isHomeAuthenticated,
+    }
+    await this.#initCredentialFields(settings)
+    this.#addEventListeners()
+    await this.#validateInitialAuthStates()
+    this.#refreshVisibility()
+  }
+
+  async #validateInitialAuthStates(): Promise<void> {
+    if (this.#authState.classic) {
+      await this.#validateInitialClassicAuth()
+    }
+    if (this.#authState.home) {
+      await this.#validateInitialHomeAuth()
+    }
+  }
+
+  async #validateInitialClassicAuth(): Promise<void> {
+    try {
+      await this.#fetchClassicBuildings()
+    } catch (error) {
+      // No paired Classic device is not an auth failure: the session
+      // stays valid, only the device-scoped surfaces have nothing to
+      // show (their gates stay pristine on empty data).
+      if (!(error instanceof NoClassicDeviceError)) {
+        this.#authState.classic = false
+      }
+    }
+  }
+
+  async #validateInitialHomeAuth(): Promise<void> {
+    if (this.#hasHomeDevices()) {
+      await this.#fetchHomeTargets()
+    }
+  }
+}
+
 // ── ZoneSettingsManager ──
 class ZoneSettingsManager {
   // Home buildings owning at least one ATW device: a capable building in
@@ -1877,293 +2164,6 @@ class ZoneSettingsManager {
   // selected.
   #updateZoneMapping(target: string, data: MixableZoneSettings): void {
     this.#zoneMapping[target] = { ...this.#zoneMapping[target], ...data }
-  }
-}
-
-// ── SettingsApp ──
-class SettingsApp {
-  readonly #authManager: AuthManager
-
-  #authState: Record<Api, boolean> = { classic: false, home: false }
-
-  readonly #contentSection: HTMLDivElement
-
-  readonly #deviceSettingsManager: DeviceSettingsManager
-
-  readonly #errorLogManager: ErrorLogManager
-
-  readonly #homey: Homey
-
-  readonly #zoneSettingsManager: ZoneSettingsManager
-
-  public constructor(homey: Homey) {
-    this.#homey = homey
-    this.#contentSection = getDiv('content')
-    this.#deviceSettingsManager = new DeviceSettingsManager(homey)
-    this.#zoneSettingsManager = new ZoneSettingsManager(homey)
-    this.#errorLogManager = new ErrorLogManager(homey)
-    this.#authManager = new AuthManager(
-      homey,
-      async (api, isDeviceListStale) => this.#onLogin(api, isDeviceListStale),
-      (api) => {
-        this.#onLogOut(api)
-      },
-    )
-  }
-
-  /**
-   * @alerts Falls back to an empty settings object on error.
-   */
-  static async #fetchHomeySettings(homey: Homey): Promise<HomeySettings> {
-    try {
-      return await homeyCallback((callback) => {
-        homey.get(callback)
-      })
-    } catch (error) {
-      await homey.alert(getErrorMessage(error))
-      return {}
-    }
-  }
-
-  // `ready()` always fires — an unbounded await here would hold Homey's
-  // loading overlay open forever on a single hung or failed call.
-  public async init(): Promise<void> {
-    // A stale cached page refetches itself once (never-cached address)
-    // instead of booting: skip the init — the document is about to be
-    // replaced.
-    if (await watchSettingsFreshness(this.#homey)) {
-      return
-    }
-    const { error, hasFailed } = await runWebview(this.#homey, this.#run())
-    if (hasFailed) {
-      // After `ready` (runWebview's finally): an alert raised under the
-      // overlay is never seen, and fire-and-forget keeps a rejected alert
-      // from bubbling out of `start()` as an unhandled rejection.
-      fireAndForget(this.#homey.alert(getErrorMessage(error)))
-    }
-  }
-
-  #addEventListeners(): void {
-    this.#authManager.addEventListeners()
-    this.#errorLogManager.addEventListeners()
-    this.#zoneSettingsManager.addEventListeners()
-    getButton('auto_adjust').addEventListener('click', () => {
-      fireAndForget(
-        this.#homey.openURL('https://homey.app/a/com.mecloud.extension'),
-      )
-    })
-  }
-
-  #attentionInputs(): AttentionInputs {
-    return {
-      unauthenticatedApis: API_VALUES.filter((api) => !this.#authState[api]),
-      hasDevices: (api) => this.#hasDevices(api),
-    }
-  }
-
-  async #ensureDevicesForApi(api: Api): Promise<void> {
-    if (api === 'classic') {
-      await this.#fetchClassicBuildings()
-    } else if (this.#hasHomeDevices()) {
-      await this.#fetchHomeTargets()
-    } else {
-      throw new NoDeviceError(this.#homey)
-    }
-  }
-
-  async #fetchClassicBuildings(): Promise<void> {
-    const buildings = await homeyApiGet<Classic.BuildingZone[]>(
-      this.#homey,
-      '/classic/buildings',
-    )
-    if (buildings.length === 0) {
-      throw new NoClassicDeviceError(this.#homey)
-    }
-    this.#zoneSettingsManager.populateZoneOptions(buildings)
-    // Not awaited, so it no longer blocks `ready()`: this only fills the
-    // zone panel's initial values (silent, default fallback) and the zone
-    // selector re-fetches on change anyway. The error log is left to its
-    // on-demand "See" button — prefetching it blocked first paint on a
-    // MELCloud cloud round-trip (~350 ms on a Homey Pro 2019) and its
-    // alert-on-failure would surface unprompted.
-    fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
-  }
-
-  // Home targets are appended after any Classic zones.
-  async #fetchHomeTargets(): Promise<void> {
-    // A tree: each Home building followed by its own devices (indented),
-    // both frost/holiday targets.
-    const targets = await homeyApiGet<(HomeBuildingZone | HomeDeviceZone)[]>(
-      this.#homey,
-      '/home/targets',
-    )
-    this.#zoneSettingsManager.populateZoneOptions(targets)
-    // See #fetchClassicBuildings: fills the initial panel values only (the
-    // first option, a Classic zone when both accounts are paired).
-    fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
-  }
-
-  // A failed probe reads as "not verified" rather than throwing: the
-  // caller must not turn an accepted login into a failure alert.
-  async #fetchSessionState(api: Api): Promise<boolean> {
-    try {
-      return await homeyApiGet<boolean>(this.#homey, `/sessions/${api}`)
-    } catch {
-      return false
-    }
-  }
-
-  #hasDevices(api: Api): boolean {
-    return Object.keys(this.#deviceSettingsManager.deviceSettings).some(
-      (driverId) => toApi(driverId) === api,
-    )
-  }
-
-  #hasHomeDevices(): boolean {
-    return this.#hasDevices('home')
-  }
-
-  async #initCredentialFields({
-    homePassword,
-    homeUsername,
-    password,
-    username,
-  }: HomeySettings): Promise<void> {
-    const driverSettings =
-      await this.#deviceSettingsManager.fetchDriverSettings()
-    // Homey Settings may return `null` for a cleared key; omit such keys
-    // to match `Partial<LoginCredentials>`.
-    this.#authManager.createCredentialFields(
-      driverSettings,
-      {
-        classic: {
-          ...(typeof password === 'string' && { password }),
-          ...(typeof username === 'string' && { username }),
-        },
-        home: {
-          ...(typeof homePassword === 'string' && { password: homePassword }),
-          ...(typeof homeUsername === 'string' && { username: homeUsername }),
-        },
-      },
-      this.#attentionInputs(),
-    )
-  }
-
-  // Fills the zone panel from the registry and ANSWERS its failure
-  // instead of throwing it, so the caller can rank that failure against
-  // the sign-in's own device warning rather than alert both.
-  async #loadDevicesForApi(api: Api): Promise<string | null> {
-    try {
-      await this.#ensureDevicesForApi(api)
-    } catch (error) {
-      return error instanceof NoDeviceError
-        ? error.message
-        : getErrorMessage(error)
-    }
-    return null
-  }
-
-  /**
-   * @alerts Displays post-login errors to the user.
-   */
-  async #onLogin(api: Api, isDeviceListStale: boolean): Promise<void> {
-    // Reflect the server truth instead of assuming success: the login
-    // POST resolves on a sign-in the server accepted even when the
-    // enforced post-login device sync failed, which the route reports
-    // as `isDeviceListStale` rather than as a login failure.
-    this.#authState[api] = await this.#fetchSessionState(api)
-    if (this.#authState[api]) {
-      // The panel is filled from whatever the registry holds — a list
-      // the sign-in could not refresh still describes real devices —
-      // but a failed refresh is what the user hears about: it EXPLAINS
-      // a list that came back empty or out of date, where the device
-      // check's own "add a device" would send them off after a device
-      // they already own.
-      const failure = await this.#loadDevicesForApi(api)
-      const message = isDeviceListStale
-        ? this.#homey.__('settings.authenticate.staleDevices')
-        : failure
-      if (message !== null) {
-        await this.#homey.alert(message)
-      }
-    } else {
-      await this.#homey.alert(
-        this.#homey.__('settings.authenticate.unverified'),
-      )
-    }
-    this.#refreshVisibility()
-  }
-
-  // The app-side logout already killed the session, so mark this API
-  // unauthenticated and re-render — the panel reopens on the now-empty
-  // account.
-  #onLogOut(api: Api): void {
-    this.#authState[api] = false
-    this.#refreshVisibility()
-  }
-
-  #refreshVisibility(): void {
-    const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
-      this.#authState
-    // Fold when no account in use needs attention. A reset account
-    // (signed out immediately, credentials deleted) keeps the panel
-    // open on its empty fields, but only while it still has devices:
-    // an account the user never paired anything to is not a chore.
-    this.#authManager.collapseAuthenticationSection(
-      this.#authManager.getApisNeedingAttention(this.#attentionInputs())
-        .length === 0,
-    )
-    hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
-    toggleZoneDeviceSettings(isClassicAuthenticated || isHomeAuthenticated)
-  }
-
-  async #run(): Promise<void> {
-    const [settings, isClassicAuthenticated, isHomeAuthenticated] =
-      await Promise.all([
-        SettingsApp.#fetchHomeySettings(this.#homey),
-        homeyApiGet<boolean>(this.#homey, '/sessions/classic'),
-        homeyApiGet<boolean>(this.#homey, '/sessions/home'),
-        trySetDocumentLanguage(async () =>
-          homeyApiGet<string>(this.#homey, '/language'),
-        ),
-        this.#deviceSettingsManager.fetchDeviceSettings(),
-      ])
-    this.#authState = {
-      classic: isClassicAuthenticated,
-      home: isHomeAuthenticated,
-    }
-    await this.#initCredentialFields(settings)
-    this.#addEventListeners()
-    await this.#validateInitialAuthStates()
-    this.#refreshVisibility()
-  }
-
-  async #validateInitialAuthStates(): Promise<void> {
-    if (this.#authState.classic) {
-      await this.#validateInitialClassicAuth()
-    }
-    if (this.#authState.home) {
-      await this.#validateInitialHomeAuth()
-    }
-  }
-
-  async #validateInitialClassicAuth(): Promise<void> {
-    try {
-      await this.#fetchClassicBuildings()
-    } catch (error) {
-      // No paired Classic device is not an auth failure: the session
-      // stays valid, only the device-scoped surfaces have nothing to
-      // show (their gates stay pristine on empty data).
-      if (!(error instanceof NoClassicDeviceError)) {
-        this.#authState.classic = false
-      }
-    }
-  }
-
-  async #validateInitialHomeAuth(): Promise<void> {
-    if (this.#hasHomeDevices()) {
-      await this.#fetchHomeTargets()
-    }
   }
 }
 

@@ -3,25 +3,10 @@ concurrency:
   group: validate-${{ github.ref }}
 jobs:
   validate:
-    name: Validate app
     permissions:
       contents: read
       packages: read
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup-node-and-install
-        with:
-          node-version: '22'
-          npm-token: ${{ secrets.GITHUB_TOKEN }}
-          require-npm-token: 'true'
-      - name: Validate app
-        uses: athombv/github-action-homey-app-validate@0f3b42c15d26aab79d7c48cde4d2805524da910e # untagged: master carries the `don't npm ci` fix the @typescript/native toolchain needs; v1 predates it
-        with:
-          level: publish
-    timeout-minutes: 15
+    uses: OlivierZal/homey-kit/.github/workflows/reusable-homey-validate.yml@2265be06081de64e375e51a6acd259d45a3e87cb # v6.1.0
 name: Validate
 on:
   pull_request: {}
