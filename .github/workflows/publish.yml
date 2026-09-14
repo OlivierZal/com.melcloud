@@ -5,7 +5,7 @@ jobs:
       packages: read
     secrets:
       HOMEY_PAT: ${{ secrets.HOMEY_PAT }}
-    uses: OlivierZal/homey-kit/.github/workflows/reusable-homey-publish.yml@2265be06081de64e375e51a6acd259d45a3e87cb # v6.1.0
+    uses: OlivierZal/homey-kit/.github/workflows/reusable-homey-publish.yml@a6870e7e28cb90bdbfaedd3674039468ebf42f05 # v6.2.0
     with:
       bundles: |
         settings/index.js

@@ -750,10 +750,11 @@ as it does for configs, so a kit adoption moves the `uses:` refs in the
 same commit as the pin). The caller keeps its triggers, its grants,
 its `HOMEY_PAT` secret and its bundle list (the three pages' compat
 pairs); the required check reads `validate / Validate app`. The
-composite action stays — the reusables resolve
-`./.github/actions/setup-node-and-install` in the CALLER's checkout —
-as a verbatim copy of the pinned configs version, re-synced with every
-pin bump; what used to be this app's own settings on it
+composite action is gone since the configs 6.1.0 / homey-kit 6.2.0
+adoption — each reusable reaches its OWN repository's
+`.github/actions/setup-node-and-install` through `$/`, GitHub's self-repository syntax (the repository that defines the
+workflow, at the running commit; GitHub.com only, runner 2.336.0 or
+newer); what used to be this app's own settings on it
 (`node-version: '22'`, `npm-token` with `require-npm-token`, the
 `registry-url`/`scope` that makes setup-node write the registry user
 config the publish container needs) now lives in the reusables.
