@@ -98,13 +98,14 @@ caught real failures that the others miss:
   mobile widgets reload too — both are fresh for free. Only the mobile
   settings page survives an app restart, so it alone never boots again;
   that is why the watcher re-checks on RETURN TO THE FOREGROUND
-  (`visibilitychange`), the trigger that covers it. The app also emits a
-  `webview_hashes_changed` realtime event at its own boot and every page
-  subscribes to it, but it guarantees NOTHING on its own: it fires at
-  the end of the app's `onInit`, i.e. exactly when the restart has just
-  disconnected every open page, so its audience is absent by
-  construction (measured: an open mobile page produced no request and no
-  breadcrumb). Never fold the visibility trigger into it. Every failure
+  (`visibilitychange`), the trigger that covers it. The
+  `webview_hashes_changed` realtime event the app used to emit at its
+  own boot guaranteed NOTHING on its own: it fired at the end of
+  `onInit`, i.e. exactly when the restart had just disconnected every
+  open page, so its audience was absent by construction (measured: an
+  open mobile page produced no request and no breadcrumb). Kit 6.0.0
+  dropped the channel and this app stopped emitting it; never re-add a
+  poke as a substitute for the visibility trigger. Every failure
   path stays open: an unstamped page, an absent route or denied
   storage must never take a working webview down.
   The stamping pass itself is the kit's `stampPackagedPages`
@@ -784,15 +785,15 @@ the manifest leaf types this app's own manifest types extend
 (`/manifest`), the settings transport and the settings page's whole
 freshness wiring, `watchSettingsFreshness` — entry `settings`,
 `GET /webview-hashes`, the `POST /boot-error` breadcrumb with a
-swallowed outcome, the `webview_hashes_changed` poke (`/settings`), the
+swallowed outcome (`/settings`), the
 promise-native widget transport AND the widgets' whole freshness
 wiring, `watchWidgetFreshness` — the widget twin of
 `watchSettingsFreshness`: one call per widget entry
-(`watchWidgetFreshness(homey, 'charts')`) carries the boot check, the
-poke subscription and the visibility re-check over the promise-native
-transport; the real `HomeyWidget` fits its `WidgetFreshnessHost` as-is
-— (`/widget` — its `WidgetApi.api` is a method signature, bivariant,
-so the real `HomeyWidget` is assignable and no local copy is needed),
+(`watchWidgetFreshness(homey, 'charts')`) carries the boot check and
+the visibility re-check over the promise-native transport; the real
+`HomeyWidget` fits its `WidgetApi` as-is — (`/widget` — its
+`WidgetApi.api` is a method signature, bivariant, so the real
+`HomeyWidget` is assignable and no local copy is needed),
 the manifest reader AND the package-time stamp producer
 `stampPackagedPages` (+ `stampHtml`, `stampReferences`, `WebviewPage`)
 that emits `webview-hashes.json` (`/node`),
@@ -825,6 +826,31 @@ imports; the kit-floored modules a bundle pulls in are the kit's
 lint's business.
 
 What stays local, by measurement rather than omission:
+
+Refused on 2026-09-14, so the next audit reads a verdict instead of
+re-deriving one:
+
+- The bundler target stays `es2020` (`scripts/bundle.mts`). Raising it
+  to `ios16.4` would trim this app's three webview bundles by ~10 kB in
+  all and change nothing in the two sibling apps (their outputs are
+  byte-identical under either target, measured), at the cost of a third
+  file per app restating the App Store floor that `ios-floor-watch.yml`
+  neither reads nor names. Below the bar.
+- `settings/index.mts` stays one module with its scoped
+  `max-classes-per-file` off. Splitting its four managers out would
+  export ~40 module-private helpers as a cross-module surface for the
+  same line count: a lateral move, not a simplification.
+- The four device idioms `drivers/base-device.mts` shares with
+  com.heatzy's device (guarded add/remove capability, the warning
+  override, the facade-error translation, the debounced post-update
+  sync) stay local: the bodies differ in behaviour (`setWarning` takes
+  `unknown` here and null-clears; the debounce is per-app), so a kit
+  mixin would abstract over a difference.
+- The three webview routes each `api.mts` carries (`getLanguage`,
+  `getWebviewHashes`, `logWebviewBoot`) stay written out: a kit route
+  factory would need a `before` hook the moment the app-level `api.mts`
+  adds its `logSettingsRoute` breadcrumb, which is where the
+  abstraction stops being simpler than the ~14 lines it replaces.
 
 - `public/widget.mts` keeps only the `Homey<TSettings>` interface, the
   tie between the widget SDK type and this app's stored widget

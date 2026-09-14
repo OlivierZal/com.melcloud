@@ -30,8 +30,8 @@
   },
   "prettier": "@olivierzal/configs/prettier",
   "dependencies": {
-    "@olivierzal/homey-kit": "5.2.1",
-    "@olivierzal/melcloud-api": "57.2.1",
+    "@olivierzal/homey-kit": "6.0.0",
+    "@olivierzal/melcloud-api": "57.3.0",
     "source-map-support": "^0.5.21",
     "temporal-polyfill": "^1.0.4"
   },

@@ -578,10 +578,15 @@ describe('melCloudApp', () => {
   })
 
   describe('initialization', () => {
-    it('should poke open webviews with the freshness event at boot', async () => {
+    // A restart disconnects every open page before `onInit` ends, so
+    // no realtime poke can reach one: the freshness guarantee is the
+    // boot check and the foreground trigger, never an event from here.
+    it('should emit no freshness poke at boot', async () => {
       await app.onInit()
 
-      expect(mockRealtime).toHaveBeenCalledWith('webview_hashes_changed', null)
+      expect(mockRealtime.mock.calls.map(([event]) => event)).not.toContain(
+        'webview_hashes_changed',
+      )
     })
 
     it('should initialize the API and facade manager', async () => {
