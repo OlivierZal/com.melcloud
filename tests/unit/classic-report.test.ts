@@ -155,7 +155,6 @@ describe(EnergyReport, () => {
   })
 
   beforeEach(() => {
-    vi.clearAllMocks()
     cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
   })
 

@@ -80,7 +80,6 @@ describe(BaseMELCloudDriver, () => {
   let driver: HomeMELCloudDriverAta
 
   beforeEach(() => {
-    vi.clearAllMocks()
     driver = createInstance(HomeMELCloudDriverAta)
   })
 

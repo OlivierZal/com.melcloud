@@ -14,7 +14,7 @@ import {
   AuthenticationThrottledError,
   RegistrySyncError,
 } from '@olivierzal/melcloud-api'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import type { DeviceSettings, Settings } from '../../types/device-settings.mts'
 import type {
@@ -75,10 +75,6 @@ const mockTranslate = vi.fn<(key: string, tags?: object) => string>(
 const homey = mock<Homey>({ __: mockTranslate, app: mockApp, i18n: mockI18n })
 
 describe('api', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   describe('building retrieval', () => {
     it('should delegate to app.getClassicBuildings', () => {
       const buildings = [

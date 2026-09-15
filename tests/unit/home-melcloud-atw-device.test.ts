@@ -164,7 +164,6 @@ describe(HomeMELCloudDeviceAtw, () => {
   let device: any
 
   beforeEach(() => {
-    vi.clearAllMocks()
     hasCapabilityMock.mockReturnValue(true)
     getHomeFacadeMock.mockReturnValue(mockFacade())
     device = createInstance(HomeMELCloudDeviceAtw)

@@ -109,8 +109,6 @@ describe(ClassicMELCloudDriver, () => {
   let driver: TestDriver
 
   beforeEach(() => {
-    vi.clearAllMocks()
-
     driver = createTestDriver()
   })
 

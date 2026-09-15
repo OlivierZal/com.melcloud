@@ -171,7 +171,6 @@ describe(ClassicMELCloudDevice, () => {
   let device: TestDevice
 
   beforeEach(() => {
-    vi.clearAllMocks()
     mockFacade()
     device = new TestDevice()
     setDriver(device)
