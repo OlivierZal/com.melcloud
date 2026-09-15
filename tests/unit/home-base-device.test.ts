@@ -135,7 +135,6 @@ describe(BaseMELCloudDevice, () => {
   let device: TestHomeDevice
 
   beforeEach(() => {
-    vi.clearAllMocks()
     facadeState.isAvailable = true
     facadeState.isPoweredOn = true
     getHomeFacadeMock.mockReturnValue(createMockFacade())

@@ -114,7 +114,6 @@ describe('home energy reports', () => {
   })
 
   beforeEach(() => {
-    vi.clearAllMocks()
     getStoreValueMock.mockReturnValue(undefined)
     setStoreValueMock.mockResolvedValue(undefined)
   })

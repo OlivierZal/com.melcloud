@@ -564,7 +564,6 @@ describe('melCloudApp', () => {
   let app: InstanceType<typeof MelCloudApp>
 
   beforeEach(() => {
-    vi.clearAllMocks()
     setupMocks()
     mockSettingsGet.mockReturnValue(null)
     mockGetDrivers.mockReturnValue({})

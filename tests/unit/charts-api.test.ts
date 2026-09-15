@@ -3,7 +3,7 @@ import type {
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
 import { mock } from '@olivierzal/homey-kit/testing'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import {
   createWidgetApiHarness,
@@ -25,10 +25,6 @@ const mockApp = {
 const { homey, mockI18n } = createWidgetApiHarness(mockApp)
 
 describe('charts api', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   describeWebviewBootLogging(() => {
     api.logWebviewBoot({ body: { message: 'boom' }, homey })
   }, mockApp.error)

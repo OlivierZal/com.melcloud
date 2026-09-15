@@ -109,7 +109,6 @@ describe(ClassicMELCloudDeviceAtw, () => {
   let device: any
 
   beforeEach(() => {
-    vi.clearAllMocks()
     hasCapabilityMock.mockReturnValue(true)
     getCapabilityOptionsMock.mockReturnValue({ min: 10 })
 

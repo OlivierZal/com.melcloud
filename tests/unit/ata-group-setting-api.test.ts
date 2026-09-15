@@ -1,7 +1,7 @@
 import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { mock } from '@olivierzal/homey-kit/testing'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
@@ -28,10 +28,6 @@ const mockApp = {
 const { homey, mockI18n } = createWidgetApiHarness(mockApp)
 
 describe('ata-group-setting api', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   describeWebviewBootLogging(() => {
     api.logWebviewBoot({ body: { message: 'boom' }, homey })
   }, mockApp.error)
