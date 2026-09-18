@@ -67,10 +67,12 @@ export const translateAriaLabels = (
  */
 export const hideInitError = (): void => {
   const element = document.querySelector('#init_error')
-  if (element instanceof HTMLElement) {
-    element.hidden = true
-    element.textContent = ''
+  if (!(element instanceof HTMLElement)) {
+    return
   }
+
+  element.hidden = true
+  element.textContent = ''
 }
 
 /**
@@ -81,8 +83,10 @@ export const hideInitError = (): void => {
  */
 export const showInitError = (error: unknown): void => {
   const element = document.querySelector('#init_error')
-  if (element instanceof HTMLElement) {
-    element.textContent = getErrorMessage(error)
-    element.hidden = false
+  if (!(element instanceof HTMLElement)) {
+    return
   }
+
+  element.textContent = getErrorMessage(error)
+  element.hidden = false
 }

@@ -987,17 +987,18 @@ class DeviceSettingsManager {
     const {
       dataset: { driverId, settingId },
     } = element
-    if (settingId !== undefined) {
-      const value = parseFormValue(element)
-      if (
-        this.#shouldUpdate(
-          settingId,
-          value,
-          driverId === 'common' ? undefined : driverId,
-        )
-      ) {
-        settings[settingId] = value
-      }
+    if (settingId === undefined) {
+      return
+    }
+    const value = parseFormValue(element)
+    if (
+      this.#shouldUpdate(
+        settingId,
+        value,
+        driverId === 'common' ? undefined : driverId,
+      )
+    ) {
+      settings[settingId] = value
     }
   }
 
@@ -1072,15 +1073,16 @@ class DeviceSettingsManager {
     const {
       dataset: { settingId },
     } = element
-    if (settingId !== undefined) {
-      const value = this.flatDeviceSettings[settingId]
-      element.value =
-        typeof value === 'boolean' ||
-        typeof value === 'number' ||
-        typeof value === 'string'
-          ? String(value)
-          : ''
+    if (settingId === undefined) {
+      return
     }
+    const value = this.flatDeviceSettings[settingId]
+    element.value =
+      typeof value === 'boolean' ||
+      typeof value === 'number' ||
+      typeof value === 'string'
+        ? String(value)
+        : ''
   }
 
   #updateDeviceSettings(body: Settings, driverId?: string): void {

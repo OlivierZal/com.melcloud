@@ -217,10 +217,7 @@ const createHarness = (
       if (path.includes('/logs/operation-modes')) {
         return routes.pie
       }
-      if (path.includes('/logs/')) {
-        return routes.line
-      }
-      return routes[key]
+      return path.includes('/logs/') ? routes.line : routes[key]
     })
   const ready = vi.fn<() => void>()
   const setHeight = vi.fn<() => Promise<void>>().mockResolvedValue(undefined)
@@ -655,10 +652,9 @@ describe('charts widget', () => {
     lastChart().hiddenPoints.add(0)
     harness.api.mockImplementation(async (method, path) => {
       await Promise.resolve()
-      if (path.includes('/logs/operation-modes')) {
-        return pieOptions({ labels: ['Heating', 'Cooling'], series: [3, 2] })
-      }
-      return defaultRoutes()[`${method} ${path}`]
+      return path.includes('/logs/operation-modes')
+        ? pieOptions({ labels: ['Heating', 'Cooling'], series: [3, 2] })
+        : defaultRoutes()[`${method} ${path}`]
     })
     commit(getSelect('days'), '30')
     await settleDetached()
@@ -671,10 +667,9 @@ describe('charts widget', () => {
     const first = lastChart()
     harness.api.mockImplementation(async (method, path) => {
       await Promise.resolve()
-      if (path.includes('/logs/operation-modes')) {
-        return pieOptions({ labels: ['Heating'], series: [3] })
-      }
-      return defaultRoutes()[`${method} ${path}`]
+      return path.includes('/logs/operation-modes')
+        ? pieOptions({ labels: ['Heating'], series: [3] })
+        : defaultRoutes()[`${method} ${path}`]
     })
     commit(getSelect('days'), '30')
     await settleDetached()
@@ -698,10 +693,10 @@ describe('charts widget', () => {
     const harness = await boot()
     const drawn = FakeChart.instances.length
     harness.api.mockImplementation(async (method, path) => {
-      if (path.includes('/logs/')) {
-        return logs.promise
-      }
-      return defaultRoutes()[`${method} ${path}`]
+      await Promise.resolve()
+      return path.includes('/logs/')
+        ? logs.promise
+        : defaultRoutes()[`${method} ${path}`]
     })
     commit(getSelect('days'), '30')
     commit(getSelect('days'), '60')

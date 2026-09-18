@@ -313,12 +313,13 @@ export abstract class BaseMELCloudDevice<
     const result: Record<string, unknown> = {}
     for (const [capability, value] of Object.entries(values)) {
       const tag = tagMapping[capability]
-      if (tag !== undefined) {
-        // always_on devices never switch off from Homey: the outgoing
-        // value is coerced before any converter runs.
-        const coerced = capability === 'onoff' && this.isAlwaysOn ? true : value
-        result[tag] = this.capabilityToDevice[capability]?.(coerced) ?? coerced
+      if (tag === undefined) {
+        continue
       }
+      // always_on devices never switch off from Homey: the outgoing
+      // value is coerced before any converter runs.
+      const coerced = capability === 'onoff' && this.isAlwaysOn ? true : value
+      result[tag] = this.capabilityToDevice[capability]?.(coerced) ?? coerced
     }
     return result
   }
@@ -331,10 +332,12 @@ export abstract class BaseMELCloudDevice<
       this.#reports.regular = this.createEnergyReport(this.energyReportRegular)
       await this.#reports.regular.start()
     }
-    if (this.energyReportTotal !== null) {
-      this.#reports.total = this.createEnergyReport(this.energyReportTotal)
-      await this.#reports.total.start()
+    if (this.energyReportTotal === null) {
+      return
     }
+
+    this.#reports.total = this.createEnergyReport(this.energyReportTotal)
+    await this.#reports.total.start()
   }
 
   protected async sendUpdate(values: Record<string, unknown>): Promise<void> {

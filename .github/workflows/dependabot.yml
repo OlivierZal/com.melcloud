@@ -4,7 +4,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: OlivierZal/configs/.github/workflows/dependabot.yml@9b69e8520dfd11484df292ca75c10d51beba75ca # v6.3.1
+    uses: OlivierZal/configs/.github/workflows/dependabot.yml@cabbcc9146dbf0e4bec2ed8b7a261aef62cfbafa # v6.4.1
 name: dependabot
 on:
   pull_request: {}
