@@ -223,16 +223,14 @@ export const createWidgetHomey = (
   const api = vi
     .fn<(method: string, path: string, body?: object) => Promise<unknown>>()
     .mockImplementation(async (method, path) => {
+      await Promise.resolve()
       const key = `${method} ${path}`
       const failure = failures[key]
       if (failure !== undefined) {
         throw failure
       }
       const deferred = deferredRoutes[key]
-      if (deferred !== undefined) {
-        return deferred()
-      }
-      return routes[key]
+      return deferred === undefined ? routes[key] : deferred()
     })
   const hapticFeedback = vi.fn<() => void>()
   const ready = vi.fn<() => void>()

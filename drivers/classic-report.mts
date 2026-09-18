@@ -136,10 +136,9 @@ export class EnergyReport<
     if (capability.includes('cop')) {
       return this.#calculateCopValue(data, capability)
     }
-    if (capability.startsWith('measure_power')) {
-      return this.#calculatePowerValue(data, tags, hour)
-    }
-    return this.#calculateEnergyValue(data, tags)
+    return capability.startsWith('measure_power')
+      ? this.#calculatePowerValue(data, tags, hour)
+      : this.#calculateEnergyValue(data, tags)
   }
 
   async #set(

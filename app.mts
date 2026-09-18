@@ -255,12 +255,10 @@ const isWithinErrorLogWindow = (
 const compareErrorEntries = (
   first: RawErrorEntry,
   other: RawErrorEntry,
-): number => {
-  if (first.instant === null || other.instant === null) {
-    return Number(first.instant === null) - Number(other.instant === null)
-  }
-  return Temporal.Instant.compare(other.instant, first.instant)
-}
+): number =>
+  first.instant === null || other.instant === null
+    ? Number(first.instant === null) - Number(other.instant === null)
+    : Temporal.Instant.compare(other.instant, first.instant)
 
 const formatErrorEntries = (
   entries: readonly RawErrorEntry[],
@@ -865,10 +863,9 @@ export default class MELCloudApp extends App {
     if (isHomeBuildingValue(targetId)) {
       return this.#getHomeBuildingFacade(getHomeBuildingId(targetId))
     }
-    if (isHomeDeviceValue(targetId)) {
-      return this.getHomeFacade(getHomeDeviceId(targetId), Home.DeviceType.Ata)
-    }
-    return this.#getClassicAtaGroupFacade(toZoneValueData(targetId))
+    return isHomeDeviceValue(targetId)
+      ? this.getHomeFacade(getHomeDeviceId(targetId), Home.DeviceType.Ata)
+      : this.#getClassicAtaGroupFacade(toZoneValueData(targetId))
   }
 
   #getClassicAtaGroupFacade({

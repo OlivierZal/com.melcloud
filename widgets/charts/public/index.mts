@@ -827,12 +827,14 @@ const applyPieHiddenByLabel = (
   const hiddenIndices = config.data.labels.flatMap((label, index) =>
     hiddenByLabel.get(label) === true ? [index] : [],
   )
-  if (hiddenIndices.length > 0) {
-    for (const index of hiddenIndices) {
-      chart.toggleDataVisibility(index)
-    }
-    chart.update()
+  if (hiddenIndices.length === 0) {
+    return
   }
+
+  for (const index of hiddenIndices) {
+    chart.toggleDataVisibility(index)
+  }
+  chart.update()
 }
 
 // ── ChartWidget class ──
@@ -1056,20 +1058,10 @@ class ChartWidget {
       signal: devices,
       temperatures: devices,
     }
-    if (Object.values(devicesByChart).some((list) => list.length > 0)) {
-      const canUseLast24Hours = this.#buildLast24HoursGate(
-        devices.filter(
-          (zone) => zone.model === 'devices' && zone.deviceType === 'atw',
-        ),
-      )
-      this.#populateChartOptions(devicesByChart)
-      const devicesForChart = (): readonly FlatDeviceZone[] =>
-        devicesByChart[this.#getChart()]
-      this.#repopulateZoneOptions(devicesForChart())
-      this.#populateDayOptions(canUseLast24Hours())
-      this.#addEventListeners({ canUseLast24Hours, devicesForChart })
-      await this.#draw()
+    if (Object.values(devicesByChart).every((list) => list.length === 0)) {
+      return
     }
+    await this.#wireControls(devices, devicesByChart)
   }
 
   // A chart is only offered when at least one device supports it (e.g. no
@@ -1221,6 +1213,26 @@ class ChartWidget {
   // hides for the hourly ones.
   #syncDayVisibility(): void {
     this.#daySelect.hidden = !chartsWithDays.has(this.#getChart())
+  }
+
+  // The controls an account with at least one chartable device gets:
+  // the pickers, their listeners, and the first draw.
+  async #wireControls(
+    devices: readonly FlatDeviceZone[],
+    devicesByChart: Record<HomeySettings['chart'], readonly FlatDeviceZone[]>,
+  ): Promise<void> {
+    const canUseLast24Hours = this.#buildLast24HoursGate(
+      devices.filter(
+        (zone) => zone.model === 'devices' && zone.deviceType === 'atw',
+      ),
+    )
+    this.#populateChartOptions(devicesByChart)
+    const devicesForChart = (): readonly FlatDeviceZone[] =>
+      devicesByChart[this.#getChart()]
+    this.#repopulateZoneOptions(devicesForChart())
+    this.#populateDayOptions(canUseLast24Hours())
+    this.#addEventListeners({ canUseLast24Hours, devicesForChart })
+    await this.#draw()
   }
 }
 

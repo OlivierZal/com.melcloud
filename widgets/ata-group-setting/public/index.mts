@@ -119,15 +119,16 @@ class WidgetApp {
         '/home/targets/ata',
       ),
     ])
-    if (buildings.length > 0 || homeTargets.length > 0) {
-      const { default_zone: defaultZone } = this.#homey.getSettings()
-      this.#addEventListeners()
-      this.#ataValueManager.createAtaFormControls()
-      this.#ataValueManager.populateZoneOptions(buildings)
-      this.#ataValueManager.populateZoneOptions(homeTargets)
-      this.#ataValueManager.applyDefaultZone(defaultZone)
-      await this.#fetchAndAnimate()
+    if (buildings.length === 0 && homeTargets.length === 0) {
+      return
     }
+    const { default_zone: defaultZone } = this.#homey.getSettings()
+    this.#addEventListeners()
+    this.#ataValueManager.createAtaFormControls()
+    this.#ataValueManager.populateZoneOptions(buildings)
+    this.#ataValueManager.populateZoneOptions(homeTargets)
+    this.#ataValueManager.applyDefaultZone(defaultZone)
+    await this.#fetchAndAnimate()
   }
 
   async #refreshKeepingEdits(): Promise<void> {

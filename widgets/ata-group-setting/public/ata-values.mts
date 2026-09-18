@@ -299,10 +299,7 @@ export class AtaValueManager {
     if (id === 'SetTemperature') {
       return createSelect(id, temperatureOptions(this.#temperatureGrid(), null))
     }
-    if (type === 'number') {
-      return createInput({ id, type })
-    }
-    return null
+    return type === 'number' ? createInput({ id, type }) : null
   }
 
   #isGroupAtaState(value: string): value is keyof Classic.GroupState {
@@ -384,19 +381,19 @@ export class AtaValueManager {
   #updateAtaValue(id: keyof Classic.GroupState): void {
     const ataValue = this.#ataValues.querySelector(`#${CSS.escape(id)}`)
     if (
-      ataValue !== null &&
-      (ataValue instanceof HTMLInputElement ||
-        ataValue instanceof HTMLSelectElement)
+      !(ataValue instanceof HTMLInputElement) &&
+      !(ataValue instanceof HTMLSelectElement)
     ) {
-      const value = this.#zoneMapping[this.#zone.value]?.[id]?.toString() ?? ''
-      // The picker must offer the device's own value before taking it —
-      // a half degree set elsewhere would otherwise blank the control.
-      if (id === 'SetTemperature') {
-        this.#refreshTemperatureOptions(value)
-        return
-      }
-      ataValue.value = value
+      return
     }
+    const value = this.#zoneMapping[this.#zone.value]?.[id]?.toString() ?? ''
+    // The picker must offer the device's own value before taking it —
+    // a half degree set elsewhere would otherwise blank the control.
+    if (id === 'SetTemperature') {
+      this.#refreshTemperatureOptions(value)
+      return
+    }
+    ataValue.value = value
   }
 
   #updateZoneMapping(data: Partial<Classic.GroupState>): void {

@@ -100,12 +100,13 @@ export const createMockDeviceClass = (
       if (overrides !== undefined) {
         Object.assign(this, overrides)
       }
-      if (superMocks !== undefined) {
-        // Strip shadowing instance props so the prototype super-delegates win
-        const instance = this as Record<string, unknown>
-        for (const methodName of Object.keys(superMocks)) {
-          Reflect.deleteProperty(instance, methodName)
-        }
+      if (superMocks === undefined) {
+        return
+      }
+      // Strip shadowing instance props so the prototype super-delegates win
+      const instance = this as Record<string, unknown>
+      for (const methodName of Object.keys(superMocks)) {
+        Reflect.deleteProperty(instance, methodName)
       }
     }
   }
