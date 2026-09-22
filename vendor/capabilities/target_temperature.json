@@ -82,7 +82,7 @@
   "type": "number",
   "uiComponent": "thermostat",
   "units": {
-    "ar": "درجة مئوية",
+    "ar": "°C",
     "da": "°C",
     "de": "°C",
     "en": "°C",
