@@ -318,7 +318,7 @@ export abstract class BaseMELCloudDevice<
       }
       // always_on devices never switch off from Homey: the outgoing
       // value is coerced before any converter runs.
-      const coerced = capability === 'onoff' && this.isAlwaysOn ? true : value
+      const coerced = (capability === 'onoff' && this.isAlwaysOn) || value
       result[tag] = this.capabilityToDevice[capability]?.(coerced) ?? coerced
     }
     return result
