@@ -403,7 +403,7 @@ coverage.
   backoff arms around the sign-in itself, NOT around the enforced
   sync, so nothing local slowed the retries.
 - The API-level sync callback keeps its defaulted parameter
-  (`#onSync = async ({ ids, type } = {}) =>`, `app.mts:710`): since
+  (`#onSync = async ({ ids, type } = {}) =>`, `app.mts`): since
   api-core 1.3.0 a bare `@syncDevices()` cycle notifies `undefined`
   where it used to pass `{ type: undefined }`, and a bare notify would
   otherwise destructure `undefined` and throw. That default is
