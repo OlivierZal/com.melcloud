@@ -87,8 +87,8 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
   // failing closed would silently swallow a device-settings toggle.
   #supportsMeasure(measure: HomeEnergyMeasureName): boolean {
     const capabilities = this.cachedFacade?.capabilities
-    return capabilities === undefined
-      ? true
-      : hasAtwEnergyDirection(capabilities, measure)
+    return (
+      capabilities === undefined || hasAtwEnergyDirection(capabilities, measure)
+    )
   }
 }
