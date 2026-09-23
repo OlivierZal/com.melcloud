@@ -1247,14 +1247,11 @@ class ErrorLogManager {
     }
     const ending = count % Modulo.base10
     const teen = count % Modulo.base100
-    if (
-      ending >= slavicPaucal.minEnding &&
+    return ending >= slavicPaucal.minEnding &&
       ending <= slavicPaucal.maxEnding &&
       (teen < slavicPaucal.teenMin || teen > slavicPaucal.teenMax)
-    ) {
-      return this.#homey.__('settings.errorLog.errorCount.234')
-    }
-    return this.#homey.__('settings.errorLog.errorCount.plural')
+      ? this.#homey.__('settings.errorLog.errorCount.234')
+      : this.#homey.__('settings.errorLog.errorCount.plural')
   }
 
   #updateErrorLogElements({
