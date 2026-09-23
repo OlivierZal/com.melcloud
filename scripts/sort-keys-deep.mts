@@ -10,12 +10,11 @@ export const sortKeysDeep = (value: unknown): unknown => {
   if (Array.isArray(value)) {
     return value.map((entry: unknown) => sortKeysDeep(entry))
   }
-  if (value !== null && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value)
-        .toSorted(([left], [right]) => left.localeCompare(right, 'en'))
-        .map(([key, entry]) => [key, sortKeysDeep(entry)]),
-    )
-  }
-  return value
+  return value !== null && typeof value === 'object'
+    ? Object.fromEntries(
+        Object.entries(value)
+          .toSorted(([left], [right]) => left.localeCompare(right, 'en'))
+          .map(([key, entry]) => [key, sortKeysDeep(entry)]),
+      )
+    : value
 }
