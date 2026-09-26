@@ -38,7 +38,7 @@
   "devDependencies": {
     "@olivierzal/configs": "6.6.0",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.2",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^5.0.0",
     "chart.js": "^4.5.1",
@@ -48,7 +48,7 @@
     "homey-apps-sdk-v3-types": "^0.3.12",
     "homey-lib": "^2.52.2",
     "jiti": "^2.7.0",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.8",
     "typescript": "npm:@typescript/typescript6@^6.0.2",
     "vitest": "^5.0.0"
   },
