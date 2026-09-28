@@ -233,7 +233,7 @@ describe('ata group setting widget', () => {
     await settleDetached()
 
     expect(initError?.textContent).toBe('')
-    // happy-dom lays nothing out, so the measured height is zero.
+    // `happy-dom` lays nothing out, so the measured height is zero.
     expect(harness.setHeight).toHaveBeenCalledWith(expect.any(Number))
   })
 })

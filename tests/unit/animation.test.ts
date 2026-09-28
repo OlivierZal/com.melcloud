@@ -413,7 +413,7 @@ describe('animation controller', () => {
   it('should surface a platform failure out of the spawn loop', async () => {
     const { controller } = createController()
     const broken = new Error('animate broken')
-    vi.spyOn(document, 'createElement').mockImplementation(() =>
+    vi.spyOn(document, 'createElement').mockReturnValue(
       mock<HTMLDivElement>({
         classList: mock<DOMTokenList>({
           add: vi.fn<(token: string) => void>(),
@@ -451,5 +451,36 @@ describe('animation controller', () => {
     await waitUntil(() => countIn(container, '.smoke') > 0)
 
     expect(countIn(container, '.smoke')).toBeGreaterThan(0)
+  })
+
+  it('should let the timer alone release a spawn sleep', async () => {
+    // The largest fraction stretches the flame cadence to about 280 ms
+    // (2000 ms over the moderate-speed factor), well past a spawn-tick
+    // pause: the first flame lands only once the timeout half of `sleep`
+    // fires.
+    stubRandomUint32(0xff_ff_ff_ff)
+    const { container, controller } = createController()
+    await controller.applyAnimation(state())
+    await waitForSpawnTicks()
+
+    expect(countIn(container, '.flame')).toBe(0)
+
+    await waitUntil(() => countIn(container, '.flame') > 0)
+
+    expect(countIn(container, '.flame')).toBeGreaterThan(0)
+  })
+
+  it('should end a sleeping spawn loop on the abort alone', async () => {
+    const { container, controller } = createController()
+    await controller.applyAnimation(state())
+    await waitUntil(() => countIn(container, '.flame') > 0)
+    // Hiding aborts the scene controller while every spawn loop is mid-
+    // sleep: the abort half of `sleep` rejects, the loop exits, and no
+    // further flame lands however long the page stays hidden.
+    setDocumentVisibility('hidden')
+    const flames = countIn(container, '.flame')
+    await waitForSpawnTicks()
+
+    expect(countIn(container, '.flame')).toBe(flames)
   })
 })

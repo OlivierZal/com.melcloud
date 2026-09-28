@@ -54,7 +54,7 @@ export interface AnimationRecord {
   readonly options: number | KeyframeAnimationOptions | undefined
 }
 
-// happy-dom ships no Web Animations API. Each freshly created element
+// `happy-dom` ships no Web Animations API. Each freshly created element
 // gets its own pair, closing over the element instead of reading `this`
 // off a patched prototype — the animated elements all come from
 // `createElement`, and a closure keeps the helpers plain arrows.

@@ -5,10 +5,10 @@ export const createEnergyReportMock = (): {
 } => ({
   EnergyReport: vi
     .fn<() => { start: () => Promise<void>; unschedule: () => void }>()
-    .mockImplementation(() => ({
+    .mockReturnValue({
       start: vi.fn<() => Promise<void>>().mockResolvedValue(),
       unschedule: vi.fn<() => void>(),
-    })),
+    }),
 })
 
 export { createMockDeviceClass } from './mock-device-class.ts'

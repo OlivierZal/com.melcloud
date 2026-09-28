@@ -1291,7 +1291,7 @@ describe('settings page', () => {
     it('should clamp a since date beyond the window', async () => {
       const harness = await bootPage()
       await seeErrors(harness, 1)
-      // nextToDate landed as the upper bound: exceed it.
+      // `nextToDate` landed as the upper bound: exceed it.
       commit(getInput('since'), '2026-07-15')
 
       expect(getInput('since').value).toBe('2026-06-30')

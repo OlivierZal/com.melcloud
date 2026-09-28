@@ -100,7 +100,7 @@ describe('bundle script', () => {
       expect(iife).toContain('var MELCloudWebview')
       expect(iife).not.toContain('export')
       expect(esm).toContain('export')
-      // es2020 target: nullish coalescing ships as-is, unlowered
+      // `es2020` target: nullish coalescing ships as-is, unlowered
       expect(iife).toContain('??')
     },
   )

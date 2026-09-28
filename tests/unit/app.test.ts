@@ -729,7 +729,7 @@ describe('melCloudApp', () => {
       const { events } = getMockCallArg<{
         events: { onAuthenticationRestored?: () => void }
       }>(mockCreate, 0, 0)
-      // onInit already schedules the changelog notification: only the
+      // `onInit` already schedules the changelog notification: only the
       // count staying flat proves the recovery scheduled nothing.
       const scheduledCalls = mockSetTimeout.mock.calls.length
 
