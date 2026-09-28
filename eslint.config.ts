@@ -58,11 +58,20 @@ const config: Config[] = defineConfig([
     ],
   }),
   {
-    // filename-case also checks directory names, but melcloud_atw and
-    // melcloud_erv are Homey driver ids that must match their folder
-    // names.
+    // `unicorn/filename-case` also checks directory names: `melcloud_atw`,
+    // `melcloud_erv` and `home-melcloud_atw` are Homey driver ids, and a
+    // driver id IS its folder name — historical, and unrenamable without
+    // breaking every installed device. `ignore` patterns match path
+    // SEGMENTS, so only the files under those three folders are exempt and
+    // the rule stays live everywhere else, where the former blanket `off`
+    // silenced it (measured 2026-09-27: 0 reports on 142 files).
     files: ['**/*.{ts,mts}'],
-    rules: { 'unicorn/filename-case': 'off' },
+    rules: {
+      'unicorn/filename-case': [
+        'error',
+        { case: 'kebabCase', ignore: ['^(home-)?melcloud_(atw|erv)$'] },
+      ],
+    },
   },
   {
     files: ['settings/index.mts'],

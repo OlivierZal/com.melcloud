@@ -1993,5 +1993,20 @@
     "pl": "Zmiana temperatury nie odsyła już trybu, którego urządzenie już nie miało: odczyt strefy w widżecie pulpitu nadpisywał to, co zgłosiło każde urządzenie, więc kolejna zmiana mogła nieść tryb strefy – na przykład Auto zamiast Chłodzenia. A gdy dane MELCloud Home odbiegają od tego, czego oczekuje aplikacja, dziennik diagnostyczny mówi o tym raz, a nie przy każdym odczycie.",
     "ru": "Изменение температуры больше не возвращает режим, которого у устройства уже не было: чтение зоны в виджете панели перезаписывало то, что сообщило каждое устройство, поэтому следующее изменение могло нести режим зоны — например, Авто вместо Охлаждения. А когда данные MELCloud Home расходятся с тем, что ожидает приложение, журнал диагностики сообщает об этом один раз, а не при каждом чтении.",
     "sv": "En temperaturändring skickar inte längre tillbaka ett läge som enheten inte längre hade: när en zon lästes i instrumentpanelens widget skrevs det som varje enhet hade rapporterat över, så nästa ändring kunde bära zonens läge – Auto i stället för Kyla, till exempel. Och när MELCloud Homes data avviker från vad appen förväntar sig säger diagnosloggen det en gång i stället för vid varje läsning."
+  },
+  "46.7.6": {
+    "ar": "لم تعد حركة أداة لوحة التحكم تتعطل على أجهزة iPhone التي تعمل بنظام iOS من 16.4 إلى 17.3.",
+    "da": "Dashboard-widgettens animation fejler ikke længere på iPhones med iOS 16.4 til 17.3.",
+    "de": "Die Animation des Dashboard-Widgets schlägt auf iPhones mit iOS 16.4 bis 17.3 nicht mehr fehl.",
+    "en": "The dashboard widget's animation no longer fails on iPhones running iOS 16.4 to 17.3.",
+    "es": "La animación del widget del panel ya no falla en los iPhone con iOS 16.4 a 17.3.",
+    "fr": "L'animation du widget du tableau de bord n'échoue plus sur les iPhone sous iOS 16.4 à 17.3.",
+    "it": "L'animazione del widget della dashboard non fallisce più sugli iPhone con iOS da 16.4 a 17.3.",
+    "ko": "대시보드 위젯의 애니메이션이 iOS 16.4~17.3을 실행하는 iPhone에서 더 이상 실패하지 않습니다.",
+    "nl": "De animatie van de dashboardwidget faalt niet meer op iPhones met iOS 16.4 tot 17.3.",
+    "no": "Dashbord-widgetens animasjon feiler ikke lenger på iPhoner med iOS 16.4 til 17.3.",
+    "pl": "Animacja widżetu pulpitu nie zawodzi już na iPhone'ach z systemem iOS od 16.4 do 17.3.",
+    "ru": "Анимация виджета панели больше не даёт сбой на iPhone с iOS с 16.4 по 17.3.",
+    "sv": "Animationen i instrumentpanelens widget misslyckas inte längre på iPhone-enheter med iOS 16.4 till 17.3."
   }
 }

@@ -2,8 +2,9 @@
 
 Homey app for MELCloud (Mitsubishi Electric AC/heat-pump cloud). ESM
 only. Two Node floors, never confused: the TOOLCHAIN floor is `engines`,
-`^22.22.2 || >=24.15.0` (`.nvmrc` on its lower bound), derived from the
-installed tree the way configs derives its own; the DEVICE floor is the
+`^22.23.0 || ^24.18.0 || >=26.4.0` (`.nvmrc` on its lower bound), derived
+from the installed tree the way configs derives its own; the DEVICE floor
+is the
 manifest's `compatibility` (`>=12.9.0`, Athom's Node 22 boundary — see
 the floor doctrine under Naming & authored-content conventions). The
 API layer lives in `@olivierzal/melcloud-api` (GitHub Packages, sibling
@@ -685,10 +686,10 @@ coverage.
   toolchain needs in order to install and run this tree — and is
   derived from the installed dependency tree exactly as configs derives
   its own, never copied from a sibling or nudged by hand (measured
-  2026-09-07: `@olivierzal/configs` and, through it,
-  `eslint-plugin-package-json`, `eslint-plugin-jsdoc` and jsdoc's parsers
-  (`@es-joy/jsdoccomment`, `jsdoc-type-pratt-parser`) require
-  `^22.22.2 || >=24.15.0`, the value `engines` and `.nvmrc`
+  2026-09-28 over the lock's `engines` fields: `@olivierzal/configs`
+  7.0.0 and, through it, `eslint-plugin-es-x` 10.0.1 require
+  `^22.23.0 || ^24.18.0 || >=26.4.0` — the only two entries binding
+  above 22.22.2 / 24.15.0 / 26.0.0 —, the value `engines` and `.nvmrc`
   carry; re-derive it when the tree moves). It states nothing about
   the device, and CI's `22.20` coverage leg legitimately runs BELOW it:
   that leg is the on-device fleet floor (a Pro 2019, measured 2026-08),

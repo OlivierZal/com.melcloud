@@ -2,6 +2,7 @@
 // @vitest-environment-options {"settings": {"disableCSSFileLoading": true, "disableJavaScriptFileLoading": true, "navigation": {"disableMainFrameNavigation": true}}}
 
 import type { HomeDeviceZone } from '@olivierzal/melcloud-api'
+import { sequential } from '@olivierzal/homey-kit'
 import { getFieldset, getInput, getSelect } from '@olivierzal/homey-kit/dom'
 import { mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it } from 'vitest'
@@ -90,16 +91,17 @@ describe('ata value manager', () => {
       },
     })
     const zone = getSelect('zones')
-    for (const value of ['homeBuildings_b_1', 'homeDevices_ata_1']) {
+    const targets = ['homeBuildings_b_1', 'homeDevices_ata_1']
+    for (const value of targets) {
       const option = document.createElement('option')
       option.value = value
       zone.append(option)
     }
-    for (const value of ['homeBuildings_b_1', 'homeDevices_ata_1']) {
+    // One endpoint probe at a time: the select carries the target.
+    await sequential(targets, async (value) => {
       zone.value = value
-      // eslint-disable-next-line no-await-in-loop -- sequential by design: one endpoint probe at a time
       await manager.fetchValues()
-    }
+    })
     const paths = harnessPaths(api)
 
     expect(paths).toContain('GET /targets/homeBuildings_b_1/ata')

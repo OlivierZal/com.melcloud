@@ -149,25 +149,28 @@ const isAbortError = (error: unknown): boolean =>
   error instanceof DOMException && error.name === 'AbortError'
 
 // Abortable delay: resolves after `ms`, rejects with an abort error as
-// soon as `signal` aborts.
+// soon as `signal` aborts. The two signals are composed by hand — one
+// listener on each, both removed by whichever fires first — because
+// `AbortSignal.any` needs Safari 17.4, above the iOS 16.4 webview floor
+// (`AbortSignal.timeout` and the listener are Safari 16).
 const sleep = async (ms: number, signal: AbortSignal): Promise<void> =>
   new Promise((resolve, reject) => {
     // A signal that is already aborted would never fire `abort`: fail
     // fast (the executor turns the throw into a rejection) instead of
     // wiring a listener that cannot fire.
     signal.throwIfAborted()
-    const done = AbortSignal.any([signal, AbortSignal.timeout(ms)])
-    done.addEventListener(
-      'abort',
-      () => {
-        if (signal.aborted) {
-          reject(newAbortError())
-          return
-        }
-        resolve()
-      },
-      { once: true },
-    )
+    const timeout = AbortSignal.timeout(ms)
+    const settle = (): void => {
+      signal.removeEventListener('abort', settle)
+      timeout.removeEventListener('abort', settle)
+      if (signal.aborted) {
+        reject(newAbortError())
+        return
+      }
+      resolve()
+    }
+    signal.addEventListener('abort', settle)
+    timeout.addEventListener('abort', settle)
   })
 
 // The loop's only exit is the abort error: `sleep` rejects as soon as
