@@ -459,16 +459,15 @@ coverage.
   with the error on the hold, 'Unit readable again, warning released'
   on the release, never per sync: the SDK prunes in silence, and a unit
   gone from the account would otherwise leave no trace there. The toast
-  resets to the HELD message, never to a
-  bare `null`, so a write failing on an unreadable unit cannot wipe the
-  explanation off the tile. The pair is IPC-safe (a failed call is
-  logged and left unrecorded, so the next sync retries); the toast is
-  not, by design. Availability is a third, separate channel:
-  `setUnavailable` greys the tile and is fed by the facades'
-  `isAvailable` contract alone (the doctrine on `syncAvailability`).
-  The boot race in `ensureDevice` (`NotFoundError` from an empty
-  registry, expected for up to a minute after start) stays on the
-  toast: it is not a prune.
+  resets to the HELD message, never to a bare `null`, so a write failing
+  on an unreadable unit cannot wipe the explanation off the tile. The
+  pair is IPC-safe (a failed call is logged and left unrecorded, so the
+  next sync retries); the toast is not, by design. Availability is a
+  third, separate channel: `setUnavailable` greys the tile and is fed by
+  the facades' `isAvailable` contract alone (the doctrine on
+  `syncAvailability`). The boot race in `ensureDevice` (`NotFoundError`
+  from an empty registry, expected for up to a minute after start) stays
+  on the toast: it is not a prune.
 - Report 2026-10-02, an Ecodan on MELCloud Home shown "offline for
   hours" in Homey. The availability code is identical for ATA and ATW
   (one `syncFromDevice` skeleton over one `isAvailable` contract), so
@@ -487,15 +486,14 @@ coverage.
   `GET /context (strict)` drift streak naming the refused paths — a
   library fix, never an app-side workaround; on either dialect it can
   be a unit removed from the MELCloud account, which stays held until
-  it is listed again. A BLANK operational state
-  on an otherwise live tile is an FTC mode outside the vocabulary
-  (`operationalState` degraded to `null` by the facade): the other
-  values move and nothing is greyed. The questions that decide: is the
-  tile greyed or does it carry a bubble; do the other values still move;
-  what does the MELCloud Home app itself show for the unit; does the
-  diagnostic log carry the drift streak, or the library's lines
-  recording when MELCloud reported the unit disconnected and when it
-  reconnected.
+  it is listed again. A BLANK operational state on an otherwise live
+  tile is an FTC mode outside the vocabulary (`operationalState`
+  degraded to `null` by the facade): the other values move and nothing
+  is greyed. The questions that decide: is the tile greyed or does it
+  carry a bubble; do the other values still move; what does the MELCloud
+  Home app itself show for the unit; does the diagnostic log carry the
+  drift streak, or the library's lines recording when MELCloud reported
+  the unit disconnected and when it reconnected.
 - The ATA GROUP vocabulary is already cross-family, and its `Classic`
   prefix is history, not a branch: `ClassicGroupState` is the one shape
   both families' ATA facades implement (`getGroup` / `updateGroupState`),
