@@ -13,6 +13,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 
+import type { Api } from '../types/api.mts'
 import type { CapabilityConverter } from '../types/bases.mts'
 import type {
   ClassicDeviceFacade,
@@ -51,6 +52,10 @@ export abstract class BaseMELCloudDevice<
   declare public readonly getSettings: () => Record<string, unknown>
 
   declare public readonly homey: Homey.Homey
+
+  // The account the unit belongs to — names the registry a failed facade
+  // lookup is judged against (see `ensureDevice`).
+  protected abstract readonly api: Api
 
   protected abstract readonly capabilityToDevice: Partial<
     Record<string, CapabilityConverter>
@@ -192,10 +197,22 @@ export abstract class BaseMELCloudDevice<
     try {
       return await this.#ensureDeviceFacade()
     } catch (error) {
-      // Expected failures (MELCloud API, entity lookup) surface as a
-      // user-visible warning; anything else is a programming error and is
-      // only logged, so real bugs are not masked as device warnings.
-      if (isAPIError(error) || error instanceof NotFoundError) {
+      if (
+        error instanceof NotFoundError &&
+        this.homey.app.isRegistryPopulated(this.api)
+      ) {
+        // The registry lists units but not this one: a prune the facade
+        // cache did not survive (an app restart, a unit never cached),
+        // i.e. the lasting condition `syncFromDevice` holds for, reached
+        // before any facade exists. Held, never toasted — a toast every
+        // sync is the flash over frozen values the hold exists to end.
+        await this.#holdUnreadableWarning(error)
+      } else if (isAPIError(error) || error instanceof NotFoundError) {
+        // Expected one-shot failures surface as the toast: a MELCloud
+        // API error, or a lookup on a registry that has listed NOTHING
+        // yet — the boot race, expected for up to a minute after start,
+        // which is not a prune. Anything else is a programming error and
+        // is only logged, so real bugs are not masked as device warnings.
         await this.setWarning(error)
       } else {
         this.error('Unexpected error while ensuring device:', error)
@@ -446,12 +463,18 @@ export abstract class BaseMELCloudDevice<
 
   // The registry no longer holds the id — on Home an entry the strict
   // `/context` parse refused, on either dialect a unit removed from the
-  // account or a registry rebuilt on logout. The error names the id,
-  // never the cause, so the warning text is dialect- and cause-neutral
-  // and points at the diagnostic log, which this hold feeds ONCE: the
-  // SDK prunes in silence, and a unit gone from the account would
-  // otherwise leave no trace there.
-  async #holdUnreadableWarning(error: EntityNotFoundError): Promise<void> {
+  // account or a registry rebuilt on logout. Two entry points report it:
+  // a cached facade throwing `EntityNotFoundError` on a read, and a
+  // facade lookup failing (`NotFoundError`) on a populated registry when
+  // no facade was ever cached. Neither error names the cause, and only
+  // the first names the id (the device name prefixes the line either
+  // way), so the warning text is dialect- and cause-neutral and points
+  // at the diagnostic log, which this hold feeds ONCE: the SDK prunes in
+  // silence, and a unit gone from the account would otherwise leave no
+  // trace there.
+  async #holdUnreadableWarning(
+    error: EntityNotFoundError | NotFoundError,
+  ): Promise<void> {
     if (await this.holdWarning(this.homey.__('errors.unitUnreadable'))) {
       this.error('Unit unreadable, warning held:', error)
     }

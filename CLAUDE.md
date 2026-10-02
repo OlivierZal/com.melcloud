@@ -444,21 +444,27 @@ coverage.
   the same call, so the tile is never permanently flagged — the reset is
   intentional, do not "fix" it. `holdWarning`/`releaseWarning` serve a
   LASTING condition the sync detects on every pass and whose end it
-  detects too (today: a cached facade over an id the registry no longer
-  holds, throwing `EntityNotFoundError` on BOTH dialects — on Home an
-  entry the strict `/context` parse refused, on either a unit removed
-  from the MELCloud account or a registry rebuilt on logout —
-  `errors.unitUnreadable`): the hold stays until the first sync that
+  detects too (today: an id the registry no longer holds, on BOTH
+  dialects — on Home an entry the strict `/context` parse refused, on
+  either a unit removed from the MELCloud account or a registry rebuilt
+  on logout — `errors.unitUnreadable`, reached through TWO entry
+  points: a cached facade throwing `EntityNotFoundError` on a read in
+  `syncFromDevice`, and, when no facade was ever cached — a prune that
+  outlived an app restart, a unit never cached —, the facade lookup in
+  `ensureDevice` failing with the kit's `NotFoundError` while the
+  registry lists OTHER units): the hold stays until the first sync that
   reads the unit again, with no threshold either way (a one-minute
   bubble is honest, and an entry flapping in and out of the registry is
   a wire fact for the SDK's drift streak to log, not something to hide).
-  The error names the id, never the cause, so the text is dialect- and
-  cause-neutral ("MELCloud no longer lists this unit, or sends data for
-  it that the app cannot read…") and points at the diagnostic log, which
-  the sync feeds ONCE per transition — 'Unit unreadable, warning held:'
-  with the error on the hold, 'Unit readable again, warning released'
-  on the release, never per sync: the SDK prunes in silence, and a unit
-  gone from the account would otherwise leave no trace there. The toast
+  Neither error names the cause (and only the facade's names the id —
+  the device name prefixes the log line either way), so the text is
+  dialect- and cause-neutral ("MELCloud no longer lists this unit, or
+  sends data for it that the app cannot read…") and points at the
+  diagnostic log, which the sync feeds ONCE per transition — 'Unit
+  unreadable, warning held:' with the error on the hold, 'Unit readable
+  again, warning released' on the release, never per sync: the SDK
+  prunes in silence, and a unit gone from the account would otherwise
+  leave no trace there. The toast
   resets to the HELD message, never to a bare `null`, so a write failing
   on an unreadable unit cannot wipe the explanation off the tile. The
   pair is IPC-safe (a failed call is logged and left unrecorded, so the
@@ -466,8 +472,12 @@ coverage.
   third, separate channel: `setUnavailable` greys the tile and is fed by
   the facades' `isAvailable` contract alone (the doctrine on
   `syncAvailability`). The boot race in `ensureDevice` (`NotFoundError`
-  from an empty registry, expected for up to a minute after start) stays
-  on the toast: it is not a prune.
+  while the registry has listed NOTHING yet, expected for up to a minute
+  after start) stays on the toast: it is not a prune. Registry
+  population is the arbiter between the two (`isRegistryPopulated(api)`
+  on the app, the one signal both libraries share — neither registry
+  carries a synced-yet flag), so an account whose ONLY unit was pruned
+  reads as a boot race and keeps the toast, as it did before 46.8.0.
 - Report 2026-10-02, an Ecodan on MELCloud Home shown "offline for
   hours" in Homey. The availability code is identical for ATA and ATW
   (one `syncFromDevice` skeleton over one `isAvailable` contract), so
@@ -478,11 +488,12 @@ coverage.
   (`STALE_COMMUNICATION_HOURS`, 24 h) — the unit's own cloud link is
   down and the MELCloud Home app shows it offline too. A HELD WARNING
   over FROZEN values (`errors.unitUnreadable`, since 46.8.0) is a
-  registry miss: the cached facade throws `EntityNotFoundError`, the
-  tile keeps its last known availability, and the diagnostic log
-  carries the app's one 'Unit unreadable, warning held:' line naming
-  the id. On Home the usual cause is an entry the strict `/context`
-  parse refused, and the log then also carries the SDK's
+  registry miss: the cached facade throws `EntityNotFoundError` (or,
+  with no facade cached since a restart, the lookup fails on a populated
+  registry), the tile keeps its last known availability, and the
+  diagnostic log carries the app's one 'Unit unreadable, warning held:'
+  line naming the unit. On Home the usual cause is an entry the strict
+  `/context` parse refused, and the log then also carries the SDK's
   `GET /context (strict)` drift streak naming the refused paths — a
   library fix, never an app-side workaround; on either dialect it can
   be a unit removed from the MELCloud account, which stays held until

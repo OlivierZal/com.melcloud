@@ -30,6 +30,8 @@ export abstract class HomeMELCloudDevice<
     Record<string, HomeConvertFromDevice<T>>
   >
 
+  protected override readonly api = 'home'
+
   // Both Home report wires resolve total-mode reads the same way; only the
   // regular cadence is type-specific (the ATW interval measures are
   // near-live, the ATA cumulative one is not).

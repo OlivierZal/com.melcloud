@@ -26,6 +26,7 @@ import {
 const {
   getHomeFacadeMock,
   getSettingMock,
+  isRegistryPopulatedMock,
   realtimeMock,
   registerMultipleCapabilityListenerMock,
   setValuesMock,
@@ -35,6 +36,7 @@ const {
 } = vi.hoisted(() => ({
   getHomeFacadeMock: vi.fn<(id: string) => unknown>(),
   getSettingMock: vi.fn<(key: string) => unknown>(),
+  isRegistryPopulatedMock: vi.fn<(api: string) => boolean>(),
   realtimeMock: vi.fn<(event: string, data: unknown) => void>(),
   registerMultipleCapabilityListenerMock:
     vi.fn<
@@ -114,7 +116,10 @@ vi.mock(import('homey'), async () => {
               .fn<(key: string) => string>()
               .mockImplementation((key: string) => key),
             api: { realtime: realtimeMock },
-            app: { getHomeFacade: getHomeFacadeMock },
+            app: {
+              getHomeFacade: getHomeFacadeMock,
+              isRegistryPopulated: isRegistryPopulatedMock,
+            },
             clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
             setTimeout:
               vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),
@@ -196,14 +201,17 @@ const createTogglingDevice = (): {
 describe(BaseMELCloudDevice, () => {
   let device: TestHomeDevice
 
-  // The hold/release tests read the full call sequence of the warning
-  // IPC, so it starts empty for every test.
+  // The hold/release tests read the full call sequences of the warning
+  // IPC and the log, so both start empty for every test. The registry
+  // reads empty by default — the boot race — and the prune tests fill it.
   beforeEach(() => {
     facadeState.isAvailable = true
     facadeState.isPoweredOn = true
     getHomeFacadeMock.mockReturnValue(createMockFacade())
+    isRegistryPopulatedMock.mockReturnValue(false)
     setValuesMock.mockResolvedValue(true)
     superErrorMock.mockClear()
+    superLogMock.mockClear()
     superSetWarningMock.mockClear()
     device = createTestHomeDevice()
   })
@@ -446,13 +454,76 @@ describe(BaseMELCloudDevice, () => {
       expect(device.setCapabilityValue).not.toHaveBeenCalled()
     })
 
-    it('should set warning and return null when getHomeFacade throws', async () => {
+    // A lookup failing while the registry has listed NOTHING yet is the
+    // boot race — over within a minute of start, not a prune — so the
+    // one-shot toast stays: shown and cleared in the same call.
+    it('should toast a failed lookup while the registry lists no unit yet', async () => {
       getHomeFacadeMock.mockImplementation(() => {
         throw new NotFoundError('Device not found')
       })
       await device.syncFromDevice()
 
-      expect(superSetWarningMock).toHaveBeenCalledWith('Device not found')
+      expect(isRegistryPopulatedMock).toHaveBeenCalledWith('home')
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['Device not found'],
+        [null],
+      ])
+    })
+
+    // The same lookup failing on a registry that lists OTHER units is a
+    // prune the facade cache did not survive — an app restart a day after
+    // the prune, a unit never cached — and the same lasting condition as
+    // the cached-facade read above: held once, no trailing `null`, the
+    // cause logged once.
+    it('should hold the warning when the lookup fails on a populated registry', async () => {
+      isRegistryPopulatedMock.mockReturnValue(true)
+      getHomeFacadeMock.mockImplementation(() => {
+        throw new NotFoundError('Device not found')
+      })
+      await device.syncFromDevice()
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+      ])
+      expect(superErrorMock.mock.calls).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'Unit unreadable, warning held:',
+          expect.any(NotFoundError),
+        ],
+      ])
+      expect(device.setUnavailable).not.toHaveBeenCalled()
+    })
+
+    // The first lookup that resolves caches the facade and runs init,
+    // whose detached pass syncs too: the hold lifts once, whichever of
+    // the overlapping syncs reaches the release first, and the closing
+    // line is written once (init's own energy-report lines follow it).
+    it('should release the lookup hold once when the registry lists the unit again', async () => {
+      isRegistryPopulatedMock.mockReturnValue(true)
+      getHomeFacadeMock.mockImplementationOnce(() => {
+        throw new NotFoundError('Device not found')
+      })
+      await device.syncFromDevice()
+      await device.syncFromDevice()
+      await settleDetached()
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+        [null],
+      ])
+      expect(
+        superLogMock.mock.calls.filter((call) =>
+          call.includes('Unit readable again, warning released'),
+        ),
+      ).toHaveLength(1)
+      expect(device.setCapabilityValue).toHaveBeenCalledWith(
+        'measure_temperature',
+        21,
+      )
     })
 
     it('should skip capabilities the device does not have', async () => {
