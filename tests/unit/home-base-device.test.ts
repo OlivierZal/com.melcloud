@@ -153,6 +153,7 @@ const primeDevice = async (
   await primedDevice.syncFromDevice()
   await settleDetached()
   superErrorMock.mockClear()
+  superLogMock.mockClear()
   superSetWarningMock.mockClear()
   vi.mocked(primedDevice.setAvailable).mockClear()
   vi.mocked(primedDevice.setCapabilityValue).mockClear()
@@ -289,27 +290,38 @@ describe(BaseMELCloudDevice, () => {
       await expect(device.syncFromDevice()).rejects.toThrow('boom')
     })
 
-    // A unit MELCloud Home still lists but the app cannot read (its
-    // `/context` entry failed the strict parse, so the registry pruned
-    // it) is a LASTING condition: the warning stays on the tile, with no
-    // trailing `null` — the one-shot toast would flash it for an instant
-    // and leave the frozen values unexplained.
-    it('should hold a cause-naming warning when the registry drops the device', async () => {
+    // A unit the registry no longer resolves (on Home an entry the strict
+    // `/context` parse refused, on either dialect a unit gone from the
+    // account) is a LASTING condition: the warning stays on the tile,
+    // with no trailing `null` — the one-shot toast would flash it for an
+    // instant and leave the frozen values unexplained. The error names
+    // the id, not the cause, so the log gets it once, on the hold: the
+    // SDK prunes in silence.
+    it('should hold a warning and log the cause once when the registry drops the device', async () => {
       pruneFacade(await primeDevice(device))
       await device.syncFromDevice()
 
       expect(superSetWarningMock.mock.calls).toStrictEqual([
         ['errors.unitUnreadable'],
       ])
+      expect(superErrorMock.mock.calls).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'Unit unreadable, warning held:',
+          expect.any(EntityNotFoundError),
+        ],
+      ])
       expect(device.setUnavailable).not.toHaveBeenCalled()
     })
 
-    it('should not re-hold the warning the tile already shows', async () => {
+    it('should not re-hold or re-log the warning the tile already shows', async () => {
       pruneFacade(await primeDevice(device))
       await device.syncFromDevice()
       await device.syncFromDevice()
 
       expect(superSetWarningMock).toHaveBeenCalledTimes(1)
+      expect(superErrorMock).toHaveBeenCalledTimes(1)
     })
 
     // Syncs overlap in practice (init's detached pass, a post-write sync,
@@ -335,18 +347,23 @@ describe(BaseMELCloudDevice, () => {
         ['errors.unitUnreadable'],
         [null],
       ])
+      expect(superLogMock.mock.calls).toStrictEqual([
+        ['Test device', '-', 'Unit readable again, warning released'],
+      ])
       expect(device.setAvailable).toHaveBeenCalledTimes(2)
     })
 
-    it('should not touch the warning on a readable sync when nothing is held', async () => {
+    it('should not touch the warning or the log on a readable sync when nothing is held', async () => {
       await primeDevice(device)
       await device.syncFromDevice()
 
       expect(superSetWarningMock).not.toHaveBeenCalled()
+      expect(superLogMock).not.toHaveBeenCalled()
     })
 
     // The warning is IPC: a failure is logged, never thrown, and rolls
-    // the hold back so the next sync retries it.
+    // the hold back so the next sync retries it; the cause line waits
+    // for the hold that lands.
     it('should log a failed hold and retry it on the next sync', async () => {
       pruneFacade(await primeDevice(device))
       superSetWarningMock.mockImplementationOnce(() => {
@@ -355,12 +372,20 @@ describe(BaseMELCloudDevice, () => {
       await device.syncFromDevice()
       await device.syncFromDevice()
 
-      expect(superErrorMock).toHaveBeenCalledWith(
-        'Test device',
-        '-',
-        'Failed to update the device warning:',
-        expect.any(Error),
-      )
+      expect(superErrorMock.mock.calls).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'Failed to update the device warning:',
+          expect.any(Error),
+        ],
+        [
+          'Test device',
+          '-',
+          'Unit unreadable, warning held:',
+          expect.any(EntityNotFoundError),
+        ],
+      ])
       expect(superSetWarningMock.mock.calls).toStrictEqual([
         ['errors.unitUnreadable'],
         ['errors.unitUnreadable'],
@@ -380,6 +405,9 @@ describe(BaseMELCloudDevice, () => {
         ['errors.unitUnreadable'],
         [null],
         [null],
+      ])
+      expect(superLogMock.mock.calls).toStrictEqual([
+        ['Test device', '-', 'Unit readable again, warning released'],
       ])
     })
 

@@ -8,7 +8,7 @@
     "invalidHolidayModeEnd": "The holiday-mode end must be in the future.",
     "unitOffline": "MELCloud reports this unit as offline — check its Wi-Fi connection.",
     "unitStale": "This unit has not communicated with MELCloud for over 24 hours — check its Wi-Fi connection.",
-    "unitUnreadable": "MELCloud Home sent data for this unit that the app could not read — values are frozen until it recovers (details in the app's diagnostic log)."
+    "unitUnreadable": "MELCloud no longer lists this unit, or sends data for it that the app cannot read — values are frozen until it is readable again (details in the app's diagnostic log)."
   },
   "settings": {
     "authenticate": {

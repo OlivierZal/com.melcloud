@@ -8,7 +8,7 @@
     "invalidHolidayModeEnd": "Das Ende des Urlaubsmodus muss in der Zukunft liegen.",
     "unitOffline": "MELCloud meldet dieses Gerät als offline — prüfen Sie seine WLAN-Verbindung.",
     "unitStale": "Dieses Gerät hat seit über 24 Stunden nicht mit MELCloud kommuniziert — prüfen Sie seine WLAN-Verbindung.",
-    "unitUnreadable": "MELCloud Home hat für dieses Gerät Daten gesendet, die die App nicht lesen konnte — die Werte bleiben eingefroren, bis es sich erholt (Details im Diagnoseprotokoll der App)."
+    "unitUnreadable": "MELCloud führt dieses Gerät nicht mehr auf oder sendet dafür Daten, die die App nicht lesen kann — die Werte bleiben eingefroren, bis es wieder lesbar ist (Details im Diagnoseprotokoll der App)."
   },
   "settings": {
     "authenticate": {

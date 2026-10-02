@@ -7,7 +7,7 @@
     "invalidTime": "L'ora di fine non è valida.",
     "unitOffline": "MELCloud segnala questa unità come offline: controlla la sua connessione Wi-Fi.",
     "unitStale": "Questa unità non comunica con MELCloud da oltre 24 ore: controlla la sua connessione Wi-Fi.",
-    "unitUnreadable": "MELCloud Home ha inviato per questa unità dati che l'app non è riuscita a leggere: i valori restano bloccati finché non si ripristina (dettagli nel log di diagnostica dell'app).",
+    "unitUnreadable": "MELCloud non elenca più questa unità, oppure invia per essa dati che l'app non riesce a leggere: i valori restano bloccati finché non torna leggibile (dettagli nel log di diagnostica dell'app).",
     "zoneNotFound": "Zona non trovata."
   },
   "notifications": {
