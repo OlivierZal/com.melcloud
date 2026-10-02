@@ -43,6 +43,15 @@ export abstract class HomeMELCloudDevice<
   // stale window.
   protected override readonly unreachableWarning = 'errors.unitOffline'
 
+  // Capabilities whose converter currently yields `undefined`. The skip
+  // below is logged on the way INTO this set and on the way OUT, not on
+  // every sync: a stuck capability used to write 1,440 lines a day at
+  // Home's one-minute cadence — the storm melcloud-api 59.1.0 and 59.2.0
+  // ended for their own cycle and drift lines with the same streak
+  // shape. The per-sync behaviour is unchanged: the write is skipped and
+  // the last known value stands.
+  readonly #unmappedCapabilities = new Set<string>()
+
   protected override getCapabilitiesOptions(): Partial<
     Record<string, unknown>
   > {
@@ -83,15 +92,30 @@ export abstract class HomeMELCloudDevice<
           }
           const value = convert(device)
           if (value === undefined) {
-            this.error(
-              'Unmapped device value, capability left as is:',
-              capability,
-            )
+            this.#logUnmapped(capability)
             return
           }
+          this.#logMappedAgain(capability)
           await this.setCapabilityValue(capability, value)
         },
       ),
     )
+  }
+
+  // One `log` line when a capability maps again; the write then proceeds.
+  #logMappedAgain(capability: string): void {
+    if (this.#unmappedCapabilities.delete(capability)) {
+      this.log('Device value mapped again:', capability)
+    }
+  }
+
+  // One `error` line when a capability stops mapping; every later sync
+  // keeps skipping the write in silence until it maps again.
+  #logUnmapped(capability: string): void {
+    if (this.#unmappedCapabilities.has(capability)) {
+      return
+    }
+    this.#unmappedCapabilities.add(capability)
+    this.error('Unmapped device value, capability left as is:', capability)
   }
 }

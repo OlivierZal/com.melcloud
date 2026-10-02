@@ -852,7 +852,10 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('init error handling', () => {
-    it('should warn instead of crashing when the registry drops the device', async () => {
+    // The Classic leg shares the hold: a pruned id is a lasting
+    // condition on either dialect, so the warning stays up (no trailing
+    // `null`) until a sync reads the unit again.
+    it('should hold a warning instead of crashing when the registry drops the device', async () => {
       const errorDevice = new TestDevice()
       setDriver(errorDevice)
       getFacadeMock.mockReturnValue({
@@ -863,10 +866,12 @@ describe(ClassicMELCloudDevice, () => {
           throw new EntityNotFoundError('DeviceLocation', { entityId: 1 })
         },
       })
+      superSetWarningMock.mockClear()
       await errorDevice.syncFromDevice()
 
-      expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
-      expect(superSetWarningMock).toHaveBeenCalledWith(null)
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+      ])
     })
 
     it('should propagate unexpected sync errors untouched', async () => {

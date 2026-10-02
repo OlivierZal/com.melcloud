@@ -7,6 +7,7 @@
     "invalidTime": "Godzina zakończenia jest nieprawidłowa.",
     "unitOffline": "MELCloud zgłasza, że to urządzenie jest offline — sprawdź jego połączenie Wi-Fi.",
     "unitStale": "To urządzenie nie komunikowało się z MELCloud od ponad 24 godzin — sprawdź jego połączenie Wi-Fi.",
+    "unitUnreadable": "MELCloud Home przesłał dane tego urządzenia, których aplikacja nie mogła odczytać — wartości pozostają zamrożone do czasu przywrócenia (szczegóły w dzienniku diagnostycznym aplikacji).",
     "zoneNotFound": "Nie znaleziono strefy."
   },
   "notifications": {

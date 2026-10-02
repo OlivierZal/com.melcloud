@@ -438,6 +438,51 @@ coverage.
   Home telemetry decode (`getEnergySeries`: epoch-ms instants, kWh
   whatever the type): the app never re-derives an instant or a unit
   from a wall-clock wire string.
+- Two warning verbs on `BaseMELCloudDevice`, chosen by the condition's
+  LIFETIME. `setWarning` is the transient TOAST for one-shot errors (a
+  failed write, a refused setting): it shows the message and resets in
+  the same call, so the tile is never permanently flagged — the reset is
+  intentional, do not "fix" it. `holdWarning`/`releaseWarning` serve a
+  LASTING condition the sync detects on every pass and whose end it
+  detects too (today: a cached facade over an id the registry pruned —
+  the strict `/context` parse refused the entry — throwing
+  `EntityNotFoundError`, `errors.unitUnreadable`): the hold stays until
+  the first sync that reads the unit again, with no threshold either way
+  (a one-minute bubble is honest, and an entry flapping in and out of
+  the registry is a wire fact for the SDK's drift streak to log, not
+  something to hide). The toast resets to the HELD message, never to a
+  bare `null`, so a write failing on an unreadable unit cannot wipe the
+  explanation off the tile. The pair is IPC-safe (a failed call is
+  logged and left unrecorded, so the next sync retries); the toast is
+  not, by design. Availability is a third, separate channel:
+  `setUnavailable` greys the tile and is fed by the facades'
+  `isAvailable` contract alone (the doctrine on `syncAvailability`).
+  The boot race in `ensureDevice` (`NotFoundError` from an empty
+  registry, expected for up to a minute after start) stays on the
+  toast: it is not a prune.
+- Report 2026-10-02, an Ecodan on MELCloud Home shown "offline for
+  hours" in Homey. The availability code is identical for ATA and ATW
+  (one `syncFromDevice` skeleton over one `isAvailable` contract), so
+  the device type explains nothing; three mechanisms give three
+  different pictures. A GREYED tile (`setUnavailable`,
+  `errors.unitOffline`) is the facade's `isAvailable` false: MELCloud
+  Home has reported `isConnected: false` for a full day
+  (`STALE_COMMUNICATION_HOURS`, 24 h) — the unit's own cloud link is
+  down and the MELCloud Home app shows it offline too. A HELD WARNING
+  over FROZEN values (`errors.unitUnreadable`, since 46.8.0) is a
+  pruned registry entry: the strict `/context` parse refused the unit,
+  the cached facade throws `EntityNotFoundError`, the tile keeps its
+  last known availability, and the diagnostic log carries the SDK's
+  `GET /context (strict)` drift streak naming the refused paths — a
+  library fix, never an app-side workaround. A BLANK operational state
+  on an otherwise live tile is an FTC mode outside the vocabulary
+  (`operationalState` degraded to `null` by the facade): the other
+  values move and nothing is greyed. The questions that decide: is the
+  tile greyed or does it carry a bubble; do the other values still move;
+  what does the MELCloud Home app itself show for the unit; does the
+  diagnostic log carry the drift streak, or the library's lines
+  recording when MELCloud reported the unit disconnected and when it
+  reconnected.
 - The ATA GROUP vocabulary is already cross-family, and its `Classic`
   prefix is history, not a branch: `ClassicGroupState` is the one shape
   both families' ATA facades implement (`getGroup` / `updateGroupState`),
@@ -852,10 +897,12 @@ re-deriving one:
   same line count: a lateral move, not a simplification.
 - The four device idioms `drivers/base-device.mts` shares with
   com.heatzy's device (guarded add/remove capability, the warning
-  override, the facade-error translation, the debounced post-update
+  verbs, the facade-error translation, the debounced post-update
   sync) stay local: the bodies differ in behaviour (`setWarning` takes
-  `unknown` here and null-clears; the debounce is per-app), so a kit
-  mixin would abstract over a difference.
+  `unknown` here and resets to the held message, beside a
+  `holdWarning`/`releaseWarning` pair heatzy has no condition for; the
+  debounce is per-app), so a kit mixin would abstract over a
+  difference.
 - The three webview routes each `api.mts` carries (`getLanguage`,
   `getWebviewHashes`, `logWebviewBoot`) stay written out: a kit route
   factory would need a `before` hook the moment the app-level `api.mts`

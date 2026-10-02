@@ -1,7 +1,12 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import type HomeyModule from 'homey'
 import { NotFoundError } from '@olivierzal/homey-kit'
-import { type InteropModule, mock } from '@olivierzal/homey-kit/testing'
+import {
+  type InteropModule,
+  assertDefined,
+  mock,
+  settleDetached,
+} from '@olivierzal/homey-kit/testing'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -131,14 +136,74 @@ const getCapabilityListenerCallback = createCapabilityListenerCallbackGetter(
   registerMultipleCapabilityListenerMock,
 )
 
+type CachedFacade = NonNullable<TestHomeDevice['exposedFacade']>
+
+// What a cached facade over a pruned registry entry does on every read.
+const throwPruned = (): never => {
+  throw new EntityNotFoundError('Device', { entityId: 'device-1' })
+}
+
+// One healthy sync caches the facade and lets init's detached pass (its
+// own sync, the energy-report scheduling) settle, so the warning and log
+// sequences a test reads afterwards are its own. Answers the cached
+// facade for the test to break.
+const primeDevice = async (
+  primedDevice: TestHomeDevice,
+): Promise<CachedFacade> => {
+  await primedDevice.syncFromDevice()
+  await settleDetached()
+  superErrorMock.mockClear()
+  superSetWarningMock.mockClear()
+  vi.mocked(primedDevice.setAvailable).mockClear()
+  vi.mocked(primedDevice.setCapabilityValue).mockClear()
+  const facade = primedDevice.exposedFacade
+  assertDefined(facade)
+  return facade
+}
+
+// Makes the cached facade fail as a pruned registry entry does —
+// permanently, or once when the unit must recover on the next sync.
+const pruneFacade = (
+  facade: CachedFacade,
+  { shouldRecover = false } = {},
+): void => {
+  const availability = vi.spyOn(facade, 'isAvailable', 'get')
+  if (shouldRecover) {
+    availability.mockImplementationOnce(throwPruned)
+  } else {
+    availability.mockImplementation(throwPruned)
+  }
+}
+
+// A device whose temperature converter can be switched between a mapped
+// reading and `undefined` mid-test.
+const createTogglingDevice = (): {
+  mapping: { isMappable: boolean }
+  togglingDevice: TestHomeDevice
+} => {
+  const mapping = { isMappable: true }
+  const togglingDevice = createTestHomeDevice()
+  Object.defineProperty(togglingDevice, 'deviceToCapability', {
+    value: {
+      measure_temperature: (): number | undefined =>
+        mapping.isMappable ? 21 : undefined,
+    },
+  })
+  return { mapping, togglingDevice }
+}
+
 describe(BaseMELCloudDevice, () => {
   let device: TestHomeDevice
 
+  // The hold/release tests read the full call sequence of the warning
+  // IPC, so it starts empty for every test.
   beforeEach(() => {
     facadeState.isAvailable = true
     facadeState.isPoweredOn = true
     getHomeFacadeMock.mockReturnValue(createMockFacade())
     setValuesMock.mockResolvedValue(true)
+    superErrorMock.mockClear()
+    superSetWarningMock.mockClear()
     device = createTestHomeDevice()
   })
 
@@ -224,16 +289,113 @@ describe(BaseMELCloudDevice, () => {
       await expect(device.syncFromDevice()).rejects.toThrow('boom')
     })
 
-    it('should warn instead of crashing when the registry drops the device', async () => {
-      const facade = createMockFacade()
-      vi.spyOn(facade, 'isAvailable', 'get').mockImplementation(() => {
-        throw new EntityNotFoundError('Device', { entityId: 'device-1' })
-      })
-      getHomeFacadeMock.mockReturnValue(facade)
+    // A unit MELCloud Home still lists but the app cannot read (its
+    // `/context` entry failed the strict parse, so the registry pruned
+    // it) is a LASTING condition: the warning stays on the tile, with no
+    // trailing `null` — the one-shot toast would flash it for an instant
+    // and leave the frozen values unexplained.
+    it('should hold a cause-naming warning when the registry drops the device', async () => {
+      pruneFacade(await primeDevice(device))
       await device.syncFromDevice()
 
-      expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+      ])
       expect(device.setUnavailable).not.toHaveBeenCalled()
+    })
+
+    it('should not re-hold the warning the tile already shows', async () => {
+      pruneFacade(await primeDevice(device))
+      await device.syncFromDevice()
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock).toHaveBeenCalledTimes(1)
+    })
+
+    // Syncs overlap in practice (init's detached pass, a post-write sync,
+    // the app-level cycle): the hold is recorded before its IPC call so
+    // the second sync skips it.
+    it('should hold once when two syncs overlap on a pruned unit', async () => {
+      pruneFacade(await primeDevice(device))
+      await Promise.all([device.syncFromDevice(), device.syncFromDevice()])
+
+      expect(superSetWarningMock).toHaveBeenCalledTimes(1)
+    })
+
+    // Hold on the first prune, release on the first success: no threshold
+    // either way — a one-minute bubble is honest, and a flapping entry is
+    // a wire fact for the SDK's drift streak to log.
+    it('should release the held warning once on the first readable sync', async () => {
+      pruneFacade(await primeDevice(device), { shouldRecover: true })
+      await device.syncFromDevice()
+      await device.syncFromDevice()
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+        [null],
+      ])
+      expect(device.setAvailable).toHaveBeenCalledTimes(2)
+    })
+
+    it('should not touch the warning on a readable sync when nothing is held', async () => {
+      await primeDevice(device)
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock).not.toHaveBeenCalled()
+    })
+
+    // The warning is IPC: a failure is logged, never thrown, and rolls
+    // the hold back so the next sync retries it.
+    it('should log a failed hold and retry it on the next sync', async () => {
+      pruneFacade(await primeDevice(device))
+      superSetWarningMock.mockImplementationOnce(() => {
+        throw new Error('IPC failed')
+      })
+      await device.syncFromDevice()
+      await device.syncFromDevice()
+
+      expect(superErrorMock).toHaveBeenCalledWith(
+        'Test device',
+        '-',
+        'Failed to update the device warning:',
+        expect.any(Error),
+      )
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+        ['errors.unitUnreadable'],
+      ])
+    })
+
+    it('should keep the hold recorded and retry a failed release', async () => {
+      pruneFacade(await primeDevice(device), { shouldRecover: true })
+      await device.syncFromDevice()
+      superSetWarningMock.mockImplementationOnce(() => {
+        throw new Error('IPC failed')
+      })
+      await device.syncFromDevice()
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+        [null],
+        [null],
+      ])
+    })
+
+    // A write on an unreadable unit fails the same way and raises the
+    // one-shot toast: its reset lands on the held message, never on
+    // `null`, or the explanation would vanish until the unit recovers.
+    it('should return to the held warning after a toast', async () => {
+      pruneFacade(await primeDevice(device))
+      await device.syncFromDevice()
+      await device.setWarning(new Error('Write failed'))
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+        ['Write failed'],
+        ['errors.unitUnreadable'],
+      ])
     })
 
     it('should set thermostat_mode to off when power is off', async () => {
@@ -292,19 +454,43 @@ describe(BaseMELCloudDevice, () => {
     // the wire through unenforced, so a member the BFF adds or renames
     // reaches a converter that has no entry for it. `undefined` must
     // leave the capability alone — Home has no raw tag to fall back on,
-    // unlike the Classic leg.
-    it('should skip the write and report a value it cannot map', async () => {
-      const customDevice = createTestHomeDevice()
-      Object.defineProperty(customDevice, 'deviceToCapability', {
-        value: { measure_temperature: (): undefined => undefined },
-      })
-      const error = vi.spyOn(customDevice, 'error')
-      await customDevice.syncFromDevice()
+    // unlike the Classic leg. The line is written once per transition,
+    // not per sync: a stuck capability used to log 1,440 times a day at
+    // Home's one-minute cadence, while the skip itself still happens on
+    // every sync.
+    it('should skip the write and report a value it cannot map once', async () => {
+      const { mapping, togglingDevice } = createTogglingDevice()
+      await primeDevice(togglingDevice)
+      const error = vi.spyOn(togglingDevice, 'error')
+      mapping.isMappable = false
+      await togglingDevice.syncFromDevice()
+      await togglingDevice.syncFromDevice()
 
-      expect(customDevice.setCapabilityValue).not.toHaveBeenCalled()
-      expect(error).toHaveBeenCalledWith(
-        'Unmapped device value, capability left as is:',
+      expect(togglingDevice.setCapabilityValue).not.toHaveBeenCalled()
+      expect(error.mock.calls).toStrictEqual([
+        [
+          'Unmapped device value, capability left as is:',
+          'measure_temperature',
+        ],
+      ])
+    })
+
+    it('should log once when the value maps again, then write it', async () => {
+      const { mapping, togglingDevice } = createTogglingDevice()
+      await primeDevice(togglingDevice)
+      const log = vi.spyOn(togglingDevice, 'log')
+      mapping.isMappable = false
+      await togglingDevice.syncFromDevice()
+      mapping.isMappable = true
+      await togglingDevice.syncFromDevice()
+      await togglingDevice.syncFromDevice()
+
+      expect(log.mock.calls).toStrictEqual([
+        ['Device value mapped again:', 'measure_temperature'],
+      ])
+      expect(togglingDevice.setCapabilityValue).toHaveBeenCalledWith(
         'measure_temperature',
+        21,
       )
     })
 

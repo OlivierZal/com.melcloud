@@ -7,7 +7,8 @@
     "invalidTime": "Sluttiden är ogiltig.",
     "invalidHolidayModeEnd": "Semesterlägets slut måste vara i framtiden.",
     "unitOffline": "MELCloud rapporterar att enheten är offline — kontrollera dess wifi-anslutning.",
-    "unitStale": "Enheten har inte kommunicerat med MELCloud på över 24 timmar — kontrollera dess wifi-anslutning."
+    "unitStale": "Enheten har inte kommunicerat med MELCloud på över 24 timmar — kontrollera dess wifi-anslutning.",
+    "unitUnreadable": "MELCloud Home skickade data för den här enheten som appen inte kunde läsa — värdena är frysta tills den återhämtar sig (detaljer i appens diagnostiklogg)."
   },
   "settings": {
     "authenticate": {
