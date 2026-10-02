@@ -464,20 +464,20 @@ coverage.
   unreadable, warning held:' with the error on the hold, 'Unit readable
   again, warning released' on the release, never per sync: the SDK
   prunes in silence, and a unit gone from the account would otherwise
-  leave no trace there. The toast
-  resets to the HELD message, never to a bare `null`, so a write failing
-  on an unreadable unit cannot wipe the explanation off the tile. The
-  pair is IPC-safe (a failed call is logged and left unrecorded, so the
-  next sync retries); the toast is not, by design. Availability is a
-  third, separate channel: `setUnavailable` greys the tile and is fed by
-  the facades' `isAvailable` contract alone (the doctrine on
-  `syncAvailability`). The boot race in `ensureDevice` (`NotFoundError`
-  while the registry has listed NOTHING yet, expected for up to a minute
-  after start) stays on the toast: it is not a prune. Registry
-  population is the arbiter between the two (`isRegistryPopulated(api)`
-  on the app, the one signal both libraries share — neither registry
-  carries a synced-yet flag), so an account whose ONLY unit was pruned
-  reads as a boot race and keeps the toast, as it did before 46.8.0.
+  leave no trace there. The toast resets to the HELD message, never to a
+  bare `null`, so a write failing on an unreadable unit cannot wipe the
+  explanation off the tile. The pair is IPC-safe (a failed call is
+  logged and left unrecorded, so the next sync retries); the toast is
+  not, by design. Availability is a third, separate channel:
+  `setUnavailable` greys the tile and is fed by the facades'
+  `isAvailable` contract alone (the doctrine on `syncAvailability`). The
+  boot race in `ensureDevice` (`NotFoundError` while the registry has
+  listed NOTHING yet, expected for up to a minute after start) stays on
+  the toast: it is not a prune. Registry population is the arbiter
+  between the two (`isRegistryPopulated(api)` on the app, the one signal
+  both libraries share — neither registry carries a synced-yet flag), so
+  an account whose ONLY unit was pruned reads as a boot race and keeps
+  the toast, as it did before 46.8.0.
 - Report 2026-10-02, an Ecodan on MELCloud Home shown "offline for
   hours" in Homey. The availability code is identical for ATA and ATW
   (one `syncFromDevice` skeleton over one `isAvailable` contract), so
