@@ -13,6 +13,7 @@ import {
 } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 
+import type { Api } from '../types/api.mts'
 import type { CapabilityConverter } from '../types/bases.mts'
 import type {
   ClassicDeviceFacade,
@@ -51,6 +52,10 @@ export abstract class BaseMELCloudDevice<
   declare public readonly getSettings: () => Record<string, unknown>
 
   declare public readonly homey: Homey.Homey
+
+  // The account the unit belongs to — names the registry a failed facade
+  // lookup is judged against (see `ensureDevice`).
+  protected abstract readonly api: Api
 
   protected abstract readonly capabilityToDevice: Partial<
     Record<string, CapabilityConverter>
@@ -94,6 +99,11 @@ export abstract class BaseMELCloudDevice<
   }
 
   #deviceFacade?: TFacade
+
+  // The lasting warning the device tile currently shows, `null` when none:
+  // `holdWarning` skips a message already on the tile, and the toast
+  // override returns to it instead of to a bare `null`.
+  #heldWarning: string | null = null
 
   readonly #reports: {
     regular?: EnergyReportOperation
@@ -187,10 +197,22 @@ export abstract class BaseMELCloudDevice<
     try {
       return await this.#ensureDeviceFacade()
     } catch (error) {
-      // Expected failures (MELCloud API, entity lookup) surface as a
-      // user-visible warning; anything else is a programming error and is
-      // only logged, so real bugs are not masked as device warnings.
-      if (isAPIError(error) || error instanceof NotFoundError) {
+      if (
+        error instanceof NotFoundError &&
+        this.homey.app.isRegistryPopulated(this.api)
+      ) {
+        // The registry lists units but not this one: a prune the facade
+        // cache did not survive (an app restart, a unit never cached),
+        // i.e. the lasting condition `syncFromDevice` holds for, reached
+        // before any facade exists. Held, never toasted — a toast every
+        // sync is the flash over frozen values the hold exists to end.
+        await this.#holdUnreadableWarning(error)
+      } else if (isAPIError(error) || error instanceof NotFoundError) {
+        // Expected one-shot failures surface as the toast: a MELCloud
+        // API error, or a lookup on a registry that has listed NOTHING
+        // yet — the boot race, expected for up to a minute after start,
+        // which is not a prune. Anything else is a programming error and
+        // is only logged, so real bugs are not masked as device warnings.
         await this.setWarning(error)
       } else {
         this.error('Unexpected error while ensuring device:', error)
@@ -203,8 +225,51 @@ export abstract class BaseMELCloudDevice<
     super.error(this.getName(), '-', ...args)
   }
 
+  // A LASTING condition (a unit the registry no longer resolves, sync
+  // after sync) keeps its bubble on the tile until `releaseWarning`: the
+  // toast below would flash it for an instant and leave frozen values
+  // unexplained. Re-holding the message already shown is skipped — Homey
+  // renders it idempotently, so the call would only cost IPC. The hold is
+  // recorded BEFORE the IPC call, so the syncs that overlap in practice
+  // (init's detached pass, a post-write sync, the app-level cycle) do not
+  // hold the same message twice, and rolled back when the call fails, so
+  // the next sync retries it. Never throws: the warning is IPC, and its
+  // failure must not break the sync that reported the condition. Answers
+  // whether THIS call put the message on the tile, so the caller writes
+  // the condition to the diagnostic log once, never per sync.
+  public async holdWarning(message: string): Promise<boolean> {
+    if (this.#heldWarning === message) {
+      return false
+    }
+    const previous = this.#heldWarning
+    this.#heldWarning = message
+    if (await this.#trySetWarning(message)) {
+      return true
+    }
+    this.#heldWarning = previous
+    return false
+  }
+
   public override log(...args: unknown[]): void {
     super.log(this.getName(), '-', ...args)
+  }
+
+  // Clears a held warning on the first sync that read the unit again; a
+  // no-op when nothing is held, so the per-minute sync costs no IPC. The
+  // same bookkeeping as the hold: released before the call, restored when
+  // the call fails so the next sync retries the clear. Answers whether a
+  // held warning was cleared, for the caller's one closing log line.
+  public async releaseWarning(): Promise<boolean> {
+    const held = this.#heldWarning
+    if (held === null) {
+      return false
+    }
+    this.#heldWarning = null
+    if (await this.#trySetWarning(null)) {
+      return true
+    }
+    this.#heldWarning = held
+    return false
   }
 
   public override async removeCapability(capability: string): Promise<void> {
@@ -235,15 +300,20 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  // Homey keeps a warning bubble on the device tile until it is cleared:
-  // setting the message and clearing it right away shows the transient toast
-  // without permanently flagging the device. The immediate reset to `null`
-  // is intentional — do not "fix" it.
+  // The transient toast for ONE-SHOT errors (a failed write, a refused
+  // setting). Homey keeps a warning bubble on the device tile until it is
+  // cleared: setting the message and resetting it right away shows the
+  // toast without permanently flagging the device. The immediate reset is
+  // intentional — do not "fix" it. A LASTING condition takes
+  // `holdWarning`/`releaseWarning` instead, and the reset lands on the
+  // held message rather than on `null`: a write on an unreadable unit
+  // fails the same way and raises this toast, which must not wipe the
+  // explanation off the tile until the unit recovers.
   public override async setWarning(error: unknown): Promise<void> {
     if (error !== null) {
       await super.setWarning(getErrorMessage(error))
     }
-    await super.setWarning(null)
+    await super.setWarning(this.#heldWarning)
   }
 
   // One skeleton for both dialects, which the facades' neutral
@@ -259,15 +329,20 @@ export abstract class BaseMELCloudDevice<
         device.isAvailable,
         this.homey.__(this.unreachableWarning),
       )
+      // The unit was read again: the first success lifts the hold, with
+      // no threshold on either side — a one-minute bubble is honest, and
+      // an entry that flaps in and out of the registry is a wire fact the
+      // SDK's own drift streak logs, not something to hide.
+      await this.#releaseUnreadableWarning()
       await this.syncCapabilityValues(device)
     } catch (error) {
       if (!(error instanceof EntityNotFoundError)) {
         throw error
       }
-      // A cached facade over a pruned id (the registry rebuilds on logout)
-      // warns and keeps the last known availability; the next sync after
-      // re-login resolves the fresh model transparently.
-      await this.setWarning(this.homey.__('errors.deviceNotFound'))
+      // A cached facade over an id the registry no longer holds keeps the
+      // last known availability under a held warning; the next sync that
+      // resolves the fresh model releases it transparently.
+      await this.#holdUnreadableWarning(error)
     }
   }
 
@@ -386,6 +461,25 @@ export abstract class BaseMELCloudDevice<
     await this.scheduleEnergyReports()
   }
 
+  // The registry no longer holds the id — on Home an entry the strict
+  // `/context` parse refused, on either dialect a unit removed from the
+  // account or a registry rebuilt on logout. Two entry points report it:
+  // a cached facade throwing `EntityNotFoundError` on a read, and a
+  // facade lookup failing (`NotFoundError`) on a populated registry when
+  // no facade was ever cached. Neither error names the cause, and only
+  // the first names the id (the device name prefixes the line either
+  // way), so the warning text is dialect- and cause-neutral and points
+  // at the diagnostic log, which this hold feeds ONCE: the SDK prunes in
+  // silence, and a unit gone from the account would otherwise leave no
+  // trace there.
+  async #holdUnreadableWarning(
+    error: EntityNotFoundError | NotFoundError,
+  ): Promise<void> {
+    if (await this.holdWarning(this.homey.__('errors.unitUnreadable'))) {
+      this.error('Unit unreadable, warning held:', error)
+    }
+  }
+
   async #init(): Promise<void> {
     await this.#setCapabilities()
     fireAndForget(this.#finishInit(), this, 'Deferred device init failed:')
@@ -447,6 +541,14 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
+  // One closing line pairs with the hold's opening one; nothing is
+  // written on the syncs in between.
+  async #releaseUnreadableWarning(): Promise<void> {
+    if (await this.releaseWarning()) {
+      this.log('Unit readable again, warning released')
+    }
+  }
+
   // Delay sync to let Homey's optimistic UI update and debounce settle.
   // The handle is kept so deletion cancels a pending sync, and failures are
   // logged instead of becoming unhandled rejections.
@@ -501,6 +603,18 @@ export abstract class BaseMELCloudDevice<
         : this.removeCapability(capability))
     })
     this.#tagMappings.list = this.cleanMapping(this.driver.tagMappings.list)
+  }
+
+  // The warning update is IPC: its own failure is logged, never thrown,
+  // and the answer says whether the tile now shows `warning`.
+  async #trySetWarning(warning: string | null): Promise<boolean> {
+    try {
+      await super.setWarning(warning)
+      return true
+    } catch (error) {
+      this.error('Failed to update the device warning:', error)
+      return false
+    }
   }
 
   async #updateDeviceOnSettings(

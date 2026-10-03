@@ -631,6 +631,21 @@ export default class MELCloudApp extends App {
     )
   }
 
+  // Whether this account's registry lists at least one unit: the arbiter
+  // the devices consult when their facade lookup fails. Both registries
+  // start empty and stay empty until the first sync of the restored
+  // session lands (the boot race, expected for up to a minute after
+  // start), and a listed account whose lookup still misses one id is a
+  // prune — the SDK dropped the entry (the strict `/context` parse
+  // refused it, the unit left the account). Population is the one
+  // signal both libraries share: neither registry carries a synced-yet
+  // flag, so an account whose ONLY unit was pruned reads as a boot race
+  // here, which is the pre-46.8.0 behaviour for it, not a regression.
+  public isRegistryPopulated(api: Api): boolean {
+    const registry = api === 'home' ? this.#homeRegistry : this.#classicRegistry
+    return registry.getDevices().length > 0
+  }
+
   public async updateDeviceSettings({
     driverId,
     settings,

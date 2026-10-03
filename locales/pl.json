@@ -7,7 +7,8 @@
     "invalidTime": "Godzina zakończenia jest nieprawidłowa.",
     "invalidHolidayModeEnd": "Koniec trybu wakacyjnego musi być w przyszłości.",
     "unitOffline": "MELCloud zgłasza, że to urządzenie jest offline — sprawdź jego połączenie Wi-Fi.",
-    "unitStale": "To urządzenie nie komunikowało się z MELCloud od ponad 24 godzin — sprawdź jego połączenie Wi-Fi."
+    "unitStale": "To urządzenie nie komunikowało się z MELCloud od ponad 24 godzin — sprawdź jego połączenie Wi-Fi.",
+    "unitUnreadable": "MELCloud nie wykazuje już tego urządzenia albo przesyła jego dane, których aplikacja nie może odczytać — wartości pozostają zamrożone, dopóki nie da się go ponownie odczytać (szczegóły w dzienniku diagnostycznym aplikacji)."
   },
   "settings": {
     "authenticate": {

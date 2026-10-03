@@ -7,6 +7,7 @@
     "invalidTime": "Die Endzeit ist ungültig.",
     "unitOffline": "MELCloud meldet dieses Gerät als offline — prüfen Sie seine WLAN-Verbindung.",
     "unitStale": "Dieses Gerät hat seit über 24 Stunden nicht mit MELCloud kommuniziert — prüfen Sie seine WLAN-Verbindung.",
+    "unitUnreadable": "MELCloud führt dieses Gerät nicht mehr auf oder sendet dafür Daten, die die App nicht lesen kann — die Werte bleiben eingefroren, bis es wieder lesbar ist (Details im Diagnoseprotokoll der App).",
     "zoneNotFound": "Zone nicht gefunden."
   },
   "notifications": {

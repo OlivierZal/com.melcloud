@@ -62,6 +62,8 @@ export abstract class ClassicMELCloudDevice<
     Record<keyof OperationalCapabilities<T>, ConvertFromDevice<T>>
   >
 
+  protected override readonly api = 'classic'
+
   // A stale unit is one whose last-communication timestamp has aged out.
   protected override readonly unreachableWarning = 'errors.unitStale'
 

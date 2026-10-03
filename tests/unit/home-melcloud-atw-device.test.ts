@@ -70,7 +70,10 @@ vi.mock(import('homey'), async () => {
               .fn<(key: string) => string>()
               .mockImplementation((key: string) => key),
             api: { realtime: vi.fn<(event: string, data: unknown) => void>() },
-            app: { getHomeFacade: getHomeFacadeMock },
+            app: {
+              getHomeFacade: getHomeFacadeMock,
+              isRegistryPopulated: vi.fn<(api: string) => boolean>(() => false),
+            },
             clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
             setTimeout:
               vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),

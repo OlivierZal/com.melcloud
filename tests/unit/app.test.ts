@@ -74,6 +74,7 @@ const mockApiInstance = {
   isAuthenticated: vi.fn<() => boolean>().mockReturnValue(true),
   registry: {
     devices: { getById: vi.fn<(id: number) => unknown>() },
+    getDevices: vi.fn<() => unknown[]>().mockReturnValue([]),
     getDevicesByType: vi
       .fn<(type: Classic.DeviceType) => unknown[]>()
       .mockReturnValue([]),
@@ -569,6 +570,7 @@ describe('melCloudApp', () => {
     mockFacadeManagerGetById.mockReturnValue(null)
     mockFacadeManagerGetZones.mockReturnValue([])
     mockApiInstance.isAuthenticated.mockReturnValue(true)
+    mockApiInstance.registry.getDevices.mockReturnValue([])
     mockHomeFacadeManagerGetById.mockReturnValue(null)
     mockHomeRegistry.getDevices.mockReturnValue([])
     mockHomeRegistry.getDevicesByType.mockReturnValue([])
@@ -1629,6 +1631,33 @@ describe('melCloudApp', () => {
         'errors.deviceNotFound',
       )
       expect(mockTranslate).toHaveBeenCalledWith('errors.deviceNotFound')
+    })
+  })
+
+  // The devices' arbiter for a failed facade lookup: an empty registry is
+  // the boot race, a listed one that still misses the id a prune.
+  describe('registry population', () => {
+    it('should read empty registries as unpopulated', async () => {
+      await app.onInit()
+
+      expect(app.isRegistryPopulated('classic')).toBe(false)
+      expect(app.isRegistryPopulated('home')).toBe(false)
+    })
+
+    it('should read the Classic registry for the Classic account', async () => {
+      mockApiInstance.registry.getDevices.mockReturnValue([{ id: 1 }])
+      await app.onInit()
+
+      expect(app.isRegistryPopulated('classic')).toBe(true)
+      expect(app.isRegistryPopulated('home')).toBe(false)
+    })
+
+    it('should read the Home registry for the Home account', async () => {
+      mockHomeRegistry.getDevices.mockReturnValue([{ id: 'device-1' }])
+      await app.onInit()
+
+      expect(app.isRegistryPopulated('home')).toBe(true)
+      expect(app.isRegistryPopulated('classic')).toBe(false)
     })
   })
 

@@ -37,6 +37,7 @@ import {
 const {
   getFacadeMock,
   getSettingMock,
+  isRegistryPopulatedMock,
   realtimeMock,
   registerMultipleCapabilityListenerMock,
   setValuesMock,
@@ -47,6 +48,7 @@ const {
 } = vi.hoisted(() => ({
   getFacadeMock: vi.fn<(kind: string, id: number) => unknown>(),
   getSettingMock: vi.fn<(key: string) => unknown>(),
+  isRegistryPopulatedMock: vi.fn<(api: string) => boolean>(),
   realtimeMock: vi.fn<(event: string, data: unknown) => void>(),
   registerMultipleCapabilityListenerMock:
     vi.fn<
@@ -102,7 +104,10 @@ vi.mock(import('homey'), async () => {
               .fn<(key: string) => string>()
               .mockImplementation((key: string) => key),
             api: { realtime: realtimeMock },
-            app: { getClassicFacade: getFacadeMock },
+            app: {
+              getClassicFacade: getFacadeMock,
+              isRegistryPopulated: isRegistryPopulatedMock,
+            },
             clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
             clock: { getTimezone: vi.fn<() => string>(() => 'Europe/Paris') },
             i18n: { getLanguage: vi.fn<() => string>(() => 'en') },
@@ -170,8 +175,11 @@ const setDriver = (
 describe(ClassicMELCloudDevice, () => {
   let device: TestDevice
 
+  // The registry reads empty by default — the boot race, which keeps the
+  // toast — and the prune test fills it.
   beforeEach(() => {
     mockFacade()
+    isRegistryPopulatedMock.mockReturnValue(false)
     device = new TestDevice()
     setDriver(device)
   })
@@ -278,14 +286,37 @@ describe(ClassicMELCloudDevice, () => {
       expect(getFacadeMock).toHaveBeenCalledTimes(1)
     })
 
-    it('should set warning and return null on expected lookup error', async () => {
+    it('should toast a failed lookup while the registry lists no unit yet', async () => {
       getFacadeMock.mockImplementation(() => {
         throw new NotFoundError('Not found')
       })
+      superSetWarningMock.mockClear()
       const result = await device.ensureDevice()
 
       expect(result).toBeNull()
-      expect(superSetWarningMock).toHaveBeenCalledWith('Not found')
+      expect(isRegistryPopulatedMock).toHaveBeenCalledWith('classic')
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['Not found'],
+        [null],
+      ])
+    })
+
+    // The shared `ensureDevice` path on the Classic leg: a lookup failing
+    // on a registry that lists other units is a prune the facade cache
+    // did not survive, held like the cached-facade read — no trailing
+    // `null`.
+    it('should hold the warning when the lookup fails on a populated registry', async () => {
+      isRegistryPopulatedMock.mockReturnValue(true)
+      getFacadeMock.mockImplementation(() => {
+        throw new NotFoundError('Not found')
+      })
+      superSetWarningMock.mockClear()
+      const result = await device.ensureDevice()
+
+      expect(result).toBeNull()
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+      ])
     })
 
     it('should log and return null without warning on unexpected error', async () => {
@@ -852,7 +883,10 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('init error handling', () => {
-    it('should warn instead of crashing when the registry drops the device', async () => {
+    // The Classic leg shares the hold: a pruned id is a lasting
+    // condition on either dialect, so the warning stays up (no trailing
+    // `null`) until a sync reads the unit again.
+    it('should hold a warning instead of crashing when the registry drops the device', async () => {
       const errorDevice = new TestDevice()
       setDriver(errorDevice)
       getFacadeMock.mockReturnValue({
@@ -863,10 +897,12 @@ describe(ClassicMELCloudDevice, () => {
           throw new EntityNotFoundError('DeviceLocation', { entityId: 1 })
         },
       })
+      superSetWarningMock.mockClear()
       await errorDevice.syncFromDevice()
 
-      expect(superSetWarningMock).toHaveBeenCalledWith('errors.deviceNotFound')
-      expect(superSetWarningMock).toHaveBeenCalledWith(null)
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+      ])
     })
 
     it('should propagate unexpected sync errors untouched', async () => {

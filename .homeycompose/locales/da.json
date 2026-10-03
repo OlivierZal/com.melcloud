@@ -7,6 +7,7 @@
     "invalidTime": "Sluttidspunktet er ugyldigt.",
     "unitOffline": "MELCloud melder denne enhed offline — tjek dens wi-fi-forbindelse.",
     "unitStale": "Denne enhed har ikke kommunikeret med MELCloud i over 24 timer — tjek dens wi-fi-forbindelse.",
+    "unitUnreadable": "MELCloud viser ikke længere denne enhed, eller sender data for den, som appen ikke kan læse — værdierne er fastfrosne, indtil den kan læses igen (detaljer i appens diagnoselog).",
     "zoneNotFound": "Zone ikke fundet."
   },
   "notifications": {
