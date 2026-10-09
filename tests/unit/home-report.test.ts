@@ -13,6 +13,7 @@ import {
   vi,
 } from 'vitest'
 
+import type { HeldWarningReason } from '../../drivers/base-device.mts'
 import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type { HomeMELCloudDevice } from '../../drivers/home-device.mts'
 import { HomeEnergyReportAta } from '../../drivers/home-report-ata.mts'
@@ -31,6 +32,9 @@ const setStoreValueMock =
   vi.fn<(key: string, value: unknown) => Promise<void>>()
 const logMock = vi.fn<(...args: unknown[]) => void>()
 const errorMock = vi.fn<(...args: unknown[]) => void>()
+const holdWarningMock = vi.fn<(reason: HeldWarningReason) => Promise<boolean>>()
+const releaseWarningMock =
+  vi.fn<(reason: HeldWarningReason) => Promise<boolean>>()
 
 const regularConfig = {
   duration: { hours: 1 },
@@ -51,6 +55,7 @@ const mockDevice = <T extends Home.DeviceType>(): HomeMELCloudDevice<T> =>
     ensureDevice: ensureDeviceMock,
     error: errorMock,
     getStoreValue: getStoreValueMock,
+    holdWarning: holdWarningMock,
     homey: mock<Homey.Homey>({
       clearTimeout: clearTimeoutMock,
       clock: mock<Homey.Homey['clock']>({
@@ -58,6 +63,7 @@ const mockDevice = <T extends Home.DeviceType>(): HomeMELCloudDevice<T> =>
       }),
     }),
     log: logMock,
+    releaseWarning: releaseWarningMock,
     setCapabilityValue: setCapabilityValueMock,
     setStoreValue: setStoreValueMock,
     setTimeout: setTimeoutMock,
@@ -73,6 +79,14 @@ const point = (
   atEpochMs: at === null ? null : Temporal.Instant.from(at).epochMilliseconds,
   kilowattHours,
 })
+
+const mockFailingFetch = (): void => {
+  ensureDeviceMock.mockResolvedValue({
+    getEnergySeries: vi
+      .fn<(query: unknown) => Promise<unknown>>()
+      .mockResolvedValue(err({ kind: 'network' as const })),
+  })
+}
 
 const mockAtaFetch = (
   points: Home.EnergySeriesPoint[],
@@ -145,12 +159,7 @@ describe('home energy reports', () => {
 
     it('should log a wrapped error when the telemetry fetch fails', async () => {
       cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
-      const getEnergySeriesMock = vi
-        .fn<(query: unknown) => Promise<unknown>>()
-        .mockResolvedValue(err({ kind: 'network' as const }))
-      ensureDeviceMock.mockResolvedValue({
-        getEnergySeries: getEnergySeriesMock,
-      })
+      mockFailingFetch()
       const report = new HomeEnergyReportAta(mockDevice(), regularConfig)
       await report.start()
 
@@ -159,6 +168,46 @@ describe('home energy reports', () => {
         expect.objectContaining({
           message: 'MELCloud request failed: network',
         }),
+      )
+      expect(holdWarningMock).not.toHaveBeenCalled()
+    })
+
+    // The Home leg shares the base report's lasting warning: held under
+    // the report's own reason from the third consecutive failure, never
+    // toasted, and released on the first success.
+    it('should hold the warning from the third consecutive failure', async () => {
+      cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
+      holdWarningMock.mockResolvedValueOnce(true)
+      mockFailingFetch()
+      const report = new HomeEnergyReportAta(mockDevice(), regularConfig)
+      await report.start()
+      await report.start()
+      await report.start()
+
+      expect(holdWarningMock.mock.calls).toStrictEqual([
+        ['regularEnergyReports'],
+      ])
+      expect(errorMock).toHaveBeenCalledWith(
+        'regular energy report failing, warning held',
+      )
+    })
+
+    it('should release the warning on the next success', async () => {
+      cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
+      releaseWarningMock.mockResolvedValueOnce(true)
+      mockFailingFetch()
+      const report = new HomeEnergyReportAta(mockDevice(), regularConfig)
+      await report.start()
+      await report.start()
+      await report.start()
+      mockAtaFetch([])
+      await report.start()
+
+      expect(releaseWarningMock.mock.calls).toStrictEqual([
+        ['regularEnergyReports'],
+      ])
+      expect(logMock).toHaveBeenCalledWith(
+        'regular energy report recovered, warning released',
       )
     })
 
@@ -513,6 +562,22 @@ describe('home energy reports', () => {
       await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power.cop', 5)
+    })
+
+    // The total report is a separate holder: its reason is its own, so
+    // the regular report recovering never clears its warning.
+    it('should hold the total report under its own reason', async () => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
+      getStoreValueMock.mockImplementation((key: string) =>
+        key === 'energy_cursor_consumed' ? '2026-03-18T09:00:00Z' : 1.5,
+      )
+      mockFailingFetch()
+      const report = new HomeEnergyReportAtw(mockDevice(), totalConfig)
+      await report.start()
+      await report.start()
+      await report.start()
+
+      expect(holdWarningMock).toHaveBeenCalledWith('totalEnergyReports')
     })
 
     it('should schedule the next fire after a successful run', async () => {

@@ -2023,5 +2023,20 @@
     "pl": "Gdy MELCloud Home przesyła dane urządzenia, których aplikacja nie może odczytać, urządzenie wyświetla teraz ostrzeżenie z wyjaśnieniem zamiast krótkiego komunikatu „Nie znaleziono urządzenia”. Dziennik diagnostyczny odnotowuje też, kiedy MELCloud zgłasza odłączenie urządzenia i kiedy łączy się ono ponownie.",
     "ru": "Когда MELCloud Home отправляет данные устройства, которые приложение не может прочитать, устройство теперь показывает поясняющее предупреждение вместо короткого сообщения «Устройство не найдено». Журнал диагностики также фиксирует, когда MELCloud сообщает об отключении устройства и когда оно подключается снова.",
     "sv": "När MELCloud Home skickar data för en enhet som appen inte kan läsa visar enheten nu en varning som förklarar det, i stället för ett kort meddelande ”Enhet ej hittad”. Diagnostikloggen registrerar också när MELCloud rapporterar en enhet som frånkopplad och när den ansluter igen."
+  },
+  "46.9.0": {
+    "ar": "عندما تستمر تقارير الطاقة في الفشل، يعرض الجهاز الآن تحذيرًا دائمًا بدلاً من رسالة عابرة.",
+    "da": "Når energirapporterne bliver ved med at fejle, viser enheden nu en vedvarende advarsel i stedet for en kortvarig besked.",
+    "de": "Wenn die Energieberichte wiederholt fehlschlagen, zeigt das Gerät jetzt eine dauerhafte Warnung statt einer kurzen Meldung.",
+    "en": "When energy reports keep failing, the device now shows a persistent warning instead of a brief message.",
+    "es": "Cuando los informes de energía siguen fallando, el dispositivo ahora muestra una advertencia persistente en lugar de un mensaje breve.",
+    "fr": "Lorsque les rapports d'énergie échouent de façon répétée, l'appareil affiche désormais un avertissement persistant au lieu d'un bref message.",
+    "it": "Quando i report energetici continuano a fallire, il dispositivo ora mostra un avviso persistente invece di un breve messaggio.",
+    "ko": "에너지 보고서가 계속 실패하면, 이제 기기에 잠깐 표시되는 메시지 대신 지속적인 경고가 표시됩니다.",
+    "nl": "Wanneer de energierapporten blijven mislukken, toont het apparaat nu een blijvende waarschuwing in plaats van een korte melding.",
+    "no": "Når energirapportene fortsetter å feile, viser enheten nå en vedvarende advarsel i stedet for en kortvarig melding.",
+    "pl": "Gdy raporty energii wciąż się nie powodzą, urządzenie wyświetla teraz trwałe ostrzeżenie zamiast krótkiego komunikatu.",
+    "ru": "Когда отчёты об энергии продолжают завершаться ошибкой, устройство теперь показывает постоянное предупреждение вместо короткого сообщения.",
+    "sv": "När energirapporterna fortsätter att misslyckas visar enheten nu en bestående varning i stället för ett kort meddelande."
   }
 }

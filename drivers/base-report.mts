@@ -3,21 +3,25 @@ import type { Temporal } from 'temporal-polyfill'
 
 import type { EnergyReportMode } from '../types/device.mts'
 import { getNow } from '../lib/temporal.mts'
+import type { HeldWarningReason } from './base-device.mts'
 
 interface ReportDevice {
   readonly homey: Homey.Homey
   readonly error: (...args: unknown[]) => void
+  readonly holdWarning: (reason: HeldWarningReason) => Promise<boolean>
   readonly log: (...args: unknown[]) => void
+  readonly releaseWarning: (reason: HeldWarningReason) => Promise<boolean>
   readonly setTimeout: (
     callback: () => Promise<void>,
     interval: Temporal.DurationLike,
     actionType: string,
   ) => NodeJS.Timeout
-  readonly setWarning: (warning: string | null) => Promise<void>
 }
 
-// Repeated failures earn a device warning; hourly reports make this
-// roughly three hours of silence before the user is told.
+// Three consecutive failures hold the device warning, the first success
+// releases it: one failed fetch is noise, three in a row are not. The
+// silence before the user is told is three runs of the report's own
+// cadence — a quarter of an hour to three days across the drivers.
 const FAILURE_WARNING_THRESHOLD = 3
 
 const APPLIED_VALUE_DECIMALS = 3
@@ -54,12 +58,17 @@ export abstract class ScheduledEnergyReport {
 
   readonly #device: ReportDevice
 
-  #hasWarned = false
-
   #reportTimeout: NodeJS.Timeout | null = null
 
   get #actionType(): string {
     return `${this.#config.mode} energy report`
+  }
+
+  // Each report mode is a held reason of its own: the two reports of a
+  // device fetch and fail independently, so one recovering must not clear
+  // the warning the other still earns.
+  get #reason(): HeldWarningReason {
+    return `${this.#config.mode}EnergyReports`
   }
 
   protected constructor(device: ReportDevice, config: EnergyReportConfig) {
@@ -140,40 +149,30 @@ export abstract class ScheduledEnergyReport {
     await this.#registerSuccess()
   }
 
-  // Mirror of `ensureDevice`'s warning pattern: repeated report
-  // failures surface on the device tile once, the next success clears
-  // them. Skipped runs (`null`) count as neither — the device warning
-  // for an unreachable unit is `ensureDevice`'s to manage.
+  // Mirror of the unreadable-unit hold in `ensureDevice`: a failing
+  // report is a LASTING condition, so it takes the held warning — the
+  // device's toast would flash it and leave stale values unexplained.
+  // From the third consecutive failure the report holds its reason on
+  // every failed run (the device de-duplicates, so only the first costs
+  // IPC and a failed IPC is retried by the next run), and the first
+  // success releases it. Skipped runs (`null`) count as neither — the
+  // device warning for an unreachable unit is `ensureDevice`'s to manage.
+  // The verbs never throw, so the report chain survives a failed IPC, and
+  // each transition is logged once, on the call that changed the record.
   async #registerFailure(): Promise<void> {
     this.#consecutiveFailures += 1
-    if (
-      this.#consecutiveFailures < FAILURE_WARNING_THRESHOLD ||
-      this.#hasWarned
-    ) {
+    if (this.#consecutiveFailures < FAILURE_WARNING_THRESHOLD) {
       return
     }
-    this.#hasWarned = true
-    await this.#setWarningSafely(
-      this.#device.homey.__('errors.energyReportsFailing'),
-    )
+    if (await this.#device.holdWarning(this.#reason)) {
+      this.#device.error(`${this.#actionType} failing, warning held`)
+    }
   }
 
   async #registerSuccess(): Promise<void> {
     this.#consecutiveFailures = 0
-    if (!this.#hasWarned) {
-      return
-    }
-    this.#hasWarned = false
-    await this.#setWarningSafely(null)
-  }
-
-  // The warning update is IPC: its own failure must not break the
-  // report chain.
-  async #setWarningSafely(warning: string | null): Promise<void> {
-    try {
-      await this.#device.setWarning(warning)
-    } catch (error) {
-      this.#device.error('Failed to update the device warning:', error)
+    if (await this.#device.releaseWarning(this.#reason)) {
+      this.#device.log(`${this.#actionType} recovered, warning released`)
     }
   }
 }

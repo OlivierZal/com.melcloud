@@ -442,17 +442,32 @@ coverage.
   LIFETIME. `setWarning` is the transient TOAST for one-shot errors (a
   failed write, a refused setting): it shows the message and resets in
   the same call, so the tile is never permanently flagged — the reset is
-  intentional, do not "fix" it. `holdWarning`/`releaseWarning` serve a
-  LASTING condition the sync detects on every pass and whose end it
-  detects too (today: an id the registry no longer holds, on BOTH
+  intentional, do not "fix" it. `holdWarning(reason)`/
+  `releaseWarning(reason)` serve a LASTING condition a periodic pass
+  detects every time and whose end it detects too. The reasons are a
+  closed set keyed by REASON, not by message (`HeldWarningReason`, the
+  `HELD_WARNINGS` table in `base-device.mts`, each with its locale key,
+  in PRIORITY order): a device has ONE bubble, so it shows the
+  highest-priority held reason, and releasing one reason never clears
+  another — it uncovers the next. `unreadable` outranks the energy
+  reports (an unreadable unit explains everything else), and each of a
+  device's two report instances holds its OWN reason
+  (`regularEnergyReports`/`totalEnergyReports`, one wording,
+  `errors.energyReportsFailing`), because they fetch and fail
+  independently — one recovering must not clear the bubble the other
+  still earns (the single-slot 46.8.0 design would have). Re-holding a
+  reason already held is a no-op (the verb answers false); a reason
+  hidden behind a higher one, or sharing its wording, is recorded
+  without IPC. Today's conditions: (1)
+  `unreadable` — an id the registry no longer holds, on BOTH
   dialects — on Home an entry the strict `/context` parse refused, on
   either a unit removed from the MELCloud account or a registry rebuilt
-  on logout — `errors.unitUnreadable`, reached through TWO entry
+  on logout — reached through TWO entry
   points: a cached facade throwing `EntityNotFoundError` on a read in
   `syncFromDevice`, and, when no facade was ever cached — a prune that
   outlived an app restart, a unit never cached —, the facade lookup in
   `ensureDevice` failing with the kit's `NotFoundError` while the
-  registry lists OTHER units): the hold stays until the first sync that
+  registry lists OTHER units: the hold stays until the first sync that
   reads the unit again, with no threshold either way (a one-minute
   bubble is honest, and an entry flapping in and out of the registry is
   a wire fact for the SDK's drift streak to log, not something to hide).
@@ -464,10 +479,21 @@ coverage.
   unreadable, warning held:' with the error on the hold, 'Unit readable
   again, warning released' on the release, never per sync: the SDK
   prunes in silence, and a unit gone from the account would otherwise
-  leave no trace there. The toast resets to the HELD message, never to a
+  leave no trace there. (2) The energy reports — `ScheduledEnergyReport`
+  holds its reason from the THIRD consecutive failed run (one failed
+  fetch is noise; three runs of the report's own cadence, a quarter-hour
+  to three days across the drivers) and releases it on the first
+  success, calling the verbs on every run past the threshold (the device
+  de-duplicates, and a failed IPC is retried by the next run) and
+  logging each transition once, per mode ('regular energy report
+  failing, warning held' / '… recovered, warning released'). Until
+  46.9.0 the report reached `setWarning` through its structural
+  `ReportDevice` interface, so its lasting warning was a flash
+  (#1696) — a report never toasts.
+  The toast resets to the HELD message (the shown reason's), never to a
   bare `null`, so a write failing on an unreadable unit cannot wipe the
   explanation off the tile. The pair is IPC-safe (a failed call is
-  logged and left unrecorded, so the next sync retries); the toast is
+  logged and left unrecorded, so the next pass retries); the toast is
   not, by design. Availability is a third, separate channel:
   `setUnavailable` greys the tile and is fed by the facades'
   `isAvailable` contract alone (the doctrine on `syncAvailability`). The
@@ -500,11 +526,15 @@ coverage.
   it is listed again. A BLANK operational state on an otherwise live
   tile is an FTC mode outside the vocabulary (`operationalState`
   degraded to `null` by the facade): the other values move and nothing
-  is greyed. The questions that decide: is the tile greyed or does it
-  carry a bubble; do the other values still move; what does the MELCloud
-  Home app itself show for the unit; does the diagnostic log carry the
-  drift streak, or the library's lines recording when MELCloud reported
-  the unit disconnected and when it reconnected.
+  is greyed. A HELD WARNING `errors.energyReportsFailing` over LIVE
+  values (since 46.9.0) is the energy fetch alone failing, three runs
+  in a row, on a unit that otherwise reads fine — the log carries the
+  'Energy report fetch failed:' lines. The questions that decide: is
+  the tile greyed or does it carry a bubble; do the other values still
+  move; what does the MELCloud Home app itself show for the unit; does
+  the diagnostic log carry the drift streak, or the library's lines
+  recording when MELCloud reported the unit disconnected and when it
+  reconnected.
 - The ATA GROUP vocabulary is already cross-family, and its `Classic`
   prefix is history, not a branch: `ClassicGroupState` is the one shape
   both families' ATA facades implement (`getGroup` / `updateGroupState`),
