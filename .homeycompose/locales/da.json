@@ -25,7 +25,10 @@
       "button": "Log ind",
       "failure": "Godkendelse mislykkedes.",
       "legend": "Brugernavn og adgangskode",
-      "rejected": "__name__ afviste disse legitimationsoplysninger — kontrollér e-mailadressen og adgangskoden.",
+      "rejected": {
+        "classic": "__name__ afviste disse legitimationsoplysninger — kontrollér e-mailadressen og adgangskoden. Hvis din konto blev oprettet i MELCloud Home-appen, skal du vælge Home ovenfor og logge ind med de samme legitimationsoplysninger.",
+        "home": "__name__ afviste disse legitimationsoplysninger — kontrollér e-mailadressen og adgangskoden. Hvis din konto er en MELCloud-konto (Classic), skal du vælge Classic ovenfor. En konto oprettet med Log ind med Apple eller Google har ingen adgangskode, som denne app kan bruge."
+      },
       "reset": "Nulstil",
       "resetConfirm": "Dette logger straks den valgte konto ud og rydder dens gemte legitimationsoplysninger.",
       "staleDevices": "Logget ind, men enhedslisten kunne ikke opdateres — prøv igen senere.",

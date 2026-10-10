@@ -25,7 +25,10 @@
       "button": "Anmelden",
       "failure": "Authentifizierung fehlgeschlagen.",
       "legend": "Anmeldedaten",
-      "rejected": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen.",
+      "rejected": {
+        "classic": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen. Wurde dein Konto in der MELCloud Home-App erstellt, wähle oben Home aus und melde dich mit denselben Zugangsdaten an.",
+        "home": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen. Ist dein Konto ein MELCloud-Konto (Classic), wähle oben Classic aus. Ein über Anmelden mit Apple oder Google erstelltes Konto hat kein Passwort, das diese App verwenden kann."
+      },
       "reset": "Zurücksetzen",
       "resetConfirm": "Dies meldet das ausgewählte Konto sofort ab und löscht seine gespeicherten Zugangsdaten.",
       "staleDevices": "Angemeldet, aber die Geräteliste konnte nicht aktualisiert werden — bitte später erneut versuchen.",

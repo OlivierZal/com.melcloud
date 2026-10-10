@@ -61,7 +61,11 @@ const getApiClient = ({ app }: Homey, service: Api): BaseAPIAdapter =>
 // The webview only receives an error MESSAGE across the app bridge, so
 // login failures are classified here, where `instanceof` still works:
 // a rejection reads differently from MELCloud's login throttle (where
-// retrying keeps the lockout alive) and from a transport failure.
+// retrying keeps the lockout alive) and from a transport failure. The
+// rejection is keyed PER API because the remedy differs: the selector
+// defaults to Classic until an account is saved, so a MELCloud Home
+// account left on it is told to select Home (#1699), while the Home leg
+// adds that a Sign in with Apple/Google account has no usable password.
 const toLoginFailure = (
   homey: Homey,
   service: keyof typeof API_DISPLAY_NAMES,
@@ -73,7 +77,7 @@ const toLoginFailure = (
   const reason =
     error instanceof AuthenticationThrottledError
       ? 'settings.authenticate.throttled'
-      : 'settings.authenticate.rejected'
+      : `settings.authenticate.rejected.${service}`
   return new Error(homey.__(reason, { name: API_DISPLAY_NAMES[service] }))
 }
 

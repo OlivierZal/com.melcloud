@@ -18,7 +18,10 @@
       "unverified": "Sesión iniciada, pero no se pudo verificar la sesión; inténtelo de nuevo.",
       "reset": "Restablecer",
       "resetConfirm": "Esto cierra la sesión de la cuenta seleccionada de inmediato y borra sus credenciales guardadas.",
-      "rejected": "__name__ rechazó estas credenciales — comprueba la dirección de correo y la contraseña.",
+      "rejected": {
+        "classic": "__name__ rechazó estas credenciales — comprueba la dirección de correo y la contraseña. Si tu cuenta se creó en la aplicación MELCloud Home, selecciona Home arriba e inicia sesión con las mismas credenciales.",
+        "home": "__name__ rechazó estas credenciales — comprueba la dirección de correo y la contraseña. Si tu cuenta es una cuenta de MELCloud (Classic), selecciona Classic arriba. Una cuenta creada con Iniciar sesión con Apple o Google no tiene ninguna contraseña que esta aplicación pueda usar."
+      },
       "throttled": "__name__ está bloqueando temporalmente los inicios de sesión tras demasiados intentos — inténtalo de nuevo más tarde.",
       "staleDevices": "Sesión iniciada, pero no se pudo actualizar la lista de dispositivos — inténtalo de nuevo más tarde."
     },

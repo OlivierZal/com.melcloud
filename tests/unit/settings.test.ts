@@ -1055,7 +1055,7 @@ describe('settings page', () => {
         'settings.authenticate.staleDevices',
       )
       expect(harness.alert).not.toHaveBeenCalledWith(
-        'settings.authenticate.rejected',
+        'settings.authenticate.rejected.classic',
       )
     })
 

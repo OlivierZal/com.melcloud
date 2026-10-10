@@ -25,7 +25,10 @@
       "button": "Log in",
       "failure": "Authentication failed.",
       "legend": "Credentials",
-      "rejected": "__name__ rejected these credentials — please check the email address and password.",
+      "rejected": {
+        "classic": "__name__ rejected these credentials — please check the email address and password. If your account was created in the MELCloud Home app, select Home above and sign in with the same credentials.",
+        "home": "__name__ rejected these credentials — please check the email address and password. If your account is a MELCloud (Classic) account, select Classic above. An account created with Sign in with Apple or Google has no password this app can use."
+      },
       "reset": "Reset",
       "resetConfirm": "This immediately signs out the selected account and clears its saved credentials.",
       "staleDevices": "Signed in, but the device list could not be refreshed — please try again later.",
