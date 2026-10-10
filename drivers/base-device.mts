@@ -40,6 +40,21 @@ const modes: EnergyReportMode[] = ['regular', 'total']
 // airtreatment device, which already gets the picker.
 const STATUS_INDICATOR_SETTING = 'custom_status_indicator'
 
+// The lasting conditions a tile can carry, highest priority first: a
+// device has ONE bubble, so it shows the first held reason, and releasing
+// a reason uncovers the next instead of clearing the tile. An unreadable
+// unit explains everything else (its energy reports fail too), so it
+// outranks them; the two energy reports of a device share a wording but
+// are separate conditions (own fetch, own schedule), so one recovering
+// never clears the bubble the other still earns.
+const HELD_WARNINGS = [
+  { message: 'errors.unitUnreadable', reason: 'unreadable' },
+  { message: 'errors.energyReportsFailing', reason: 'regularEnergyReports' },
+  { message: 'errors.energyReportsFailing', reason: 'totalEnergyReports' },
+] as const
+
+export type HeldWarningReason = (typeof HELD_WARNINGS)[number]['reason']
+
 export abstract class BaseMELCloudDevice<
   TFacade extends AvailabilityAware & ClassicDeviceFacade = AvailabilityAware &
     ClassicDeviceFacade,
@@ -100,10 +115,10 @@ export abstract class BaseMELCloudDevice<
 
   #deviceFacade?: TFacade
 
-  // The lasting warning the device tile currently shows, `null` when none:
-  // `holdWarning` skips a message already on the tile, and the toast
-  // override returns to it instead of to a bare `null`.
-  #heldWarning: string | null = null
+  // The lasting conditions currently held; the tile shows the first of
+  // `HELD_WARNINGS` among them (`#heldWarning`), and the toast override
+  // returns to that message instead of to a bare `null`.
+  readonly #heldReasons = new Set<HeldWarningReason>()
 
   readonly #reports: {
     regular?: EnergyReportOperation
@@ -117,6 +132,15 @@ export abstract class BaseMELCloudDevice<
     list: Partial<Readonly<Record<string, string>>>
     set: Partial<Readonly<Record<string, string>>>
   } = { get: {}, list: {}, set: {} }
+
+  // What the tile should carry: the highest-priority held reason's
+  // message, `null` when nothing is held.
+  get #heldWarning(): string | null {
+    const held = HELD_WARNINGS.find(({ reason }) =>
+      this.#heldReasons.has(reason),
+    )
+    return held === undefined ? null : this.homey.__(held.message)
+  }
 
   public override async onInit(): Promise<void> {
     await this.setWarning(null)
@@ -226,27 +250,29 @@ export abstract class BaseMELCloudDevice<
   }
 
   // A LASTING condition (a unit the registry no longer resolves, sync
-  // after sync) keeps its bubble on the tile until `releaseWarning`: the
-  // toast below would flash it for an instant and leave frozen values
-  // unexplained. Re-holding the message already shown is skipped — Homey
-  // renders it idempotently, so the call would only cost IPC. The hold is
-  // recorded BEFORE the IPC call, so the syncs that overlap in practice
-  // (init's detached pass, a post-write sync, the app-level cycle) do not
-  // hold the same message twice, and rolled back when the call fails, so
-  // the next sync retries it. Never throws: the warning is IPC, and its
-  // failure must not break the sync that reported the condition. Answers
-  // whether THIS call put the message on the tile, so the caller writes
-  // the condition to the diagnostic log once, never per sync.
-  public async holdWarning(message: string): Promise<boolean> {
-    if (this.#heldWarning === message) {
+  // after sync; an energy report failing run after run) keeps its bubble
+  // on the tile until `releaseWarning`: the toast below would flash it for
+  // an instant and leave frozen values unexplained. Re-holding a reason
+  // already held is skipped — Homey renders a message idempotently, so the
+  // call would only cost IPC. The hold is recorded BEFORE the IPC call, so
+  // the syncs that overlap in practice (init's detached pass, a post-write
+  // sync, the app-level cycle) do not hold the same reason twice, and
+  // rolled back when the call fails, so the next sync retries it. Never
+  // throws: the warning is IPC, and its failure must not break the sync
+  // that reported the condition. Answers whether THIS call recorded the
+  // reason — on the tile, or behind a higher-priority one until that one
+  // lifts — so the caller writes the condition to the diagnostic log once,
+  // never per sync.
+  public async holdWarning(reason: HeldWarningReason): Promise<boolean> {
+    if (this.#heldReasons.has(reason)) {
       return false
     }
-    const previous = this.#heldWarning
-    this.#heldWarning = message
-    if (await this.#trySetWarning(message)) {
+    const shown = this.#heldWarning
+    this.#heldReasons.add(reason)
+    if (await this.#showHeldWarning(shown)) {
       return true
     }
-    this.#heldWarning = previous
+    this.#heldReasons.delete(reason)
     return false
   }
 
@@ -254,21 +280,23 @@ export abstract class BaseMELCloudDevice<
     super.log(this.getName(), '-', ...args)
   }
 
-  // Clears a held warning on the first sync that read the unit again; a
-  // no-op when nothing is held, so the per-minute sync costs no IPC. The
+  // Clears a held reason on the first pass that found its condition over;
+  // a no-op when it is not held, so the per-minute sync costs no IPC. The
   // same bookkeeping as the hold: released before the call, restored when
-  // the call fails so the next sync retries the clear. Answers whether a
-  // held warning was cleared, for the caller's one closing log line.
-  public async releaseWarning(): Promise<boolean> {
-    const held = this.#heldWarning
-    if (held === null) {
+  // the call fails so the next pass retries the clear. Any other reason
+  // still held keeps the bubble, under its own message when the wording
+  // differs. Answers whether the reason was released, for the caller's one
+  // closing log line.
+  public async releaseWarning(reason: HeldWarningReason): Promise<boolean> {
+    if (!this.#heldReasons.has(reason)) {
       return false
     }
-    this.#heldWarning = null
-    if (await this.#trySetWarning(null)) {
+    const shown = this.#heldWarning
+    this.#heldReasons.delete(reason)
+    if (await this.#showHeldWarning(shown)) {
       return true
     }
-    this.#heldWarning = held
+    this.#heldReasons.add(reason)
     return false
   }
 
@@ -306,9 +334,10 @@ export abstract class BaseMELCloudDevice<
   // toast without permanently flagging the device. The immediate reset is
   // intentional — do not "fix" it. A LASTING condition takes
   // `holdWarning`/`releaseWarning` instead, and the reset lands on the
-  // held message rather than on `null`: a write on an unreadable unit
-  // fails the same way and raises this toast, which must not wipe the
-  // explanation off the tile until the unit recovers.
+  // held message (the highest-priority held reason's) rather than on
+  // `null`: a write on an unreadable unit fails the same way and raises
+  // this toast, which must not wipe the explanation off the tile until
+  // the unit recovers.
   public override async setWarning(error: unknown): Promise<void> {
     if (error !== null) {
       await super.setWarning(getErrorMessage(error))
@@ -475,7 +504,7 @@ export abstract class BaseMELCloudDevice<
   async #holdUnreadableWarning(
     error: EntityNotFoundError | NotFoundError,
   ): Promise<void> {
-    if (await this.holdWarning(this.homey.__('errors.unitUnreadable'))) {
+    if (await this.holdWarning('unreadable')) {
       this.error('Unit unreadable, warning held:', error)
     }
   }
@@ -544,7 +573,7 @@ export abstract class BaseMELCloudDevice<
   // One closing line pairs with the hold's opening one; nothing is
   // written on the syncs in between.
   async #releaseUnreadableWarning(): Promise<void> {
-    if (await this.releaseWarning()) {
+    if (await this.releaseWarning('unreadable')) {
       this.log('Unit readable again, warning released')
     }
   }
@@ -593,6 +622,25 @@ export abstract class BaseMELCloudDevice<
     this.#tagMappings.list = this.cleanMapping(this.driver.tagMappings.list)
   }
 
+  // Brings the tile to the held message when the reason just recorded or
+  // released changed it; a reason hidden behind a higher-priority one, or
+  // sharing its wording, costs no IPC. The update is IPC: its own failure
+  // is logged, never thrown, and the answer says whether the tile now
+  // agrees with the record.
+  async #showHeldWarning(shown: string | null): Promise<boolean> {
+    const held = this.#heldWarning
+    if (held === shown) {
+      return true
+    }
+    try {
+      await super.setWarning(held)
+      return true
+    } catch (error) {
+      this.error('Failed to update the device warning:', error)
+      return false
+    }
+  }
+
   async #syncOptionalCapabilities(
     newSettings: Record<string, unknown>,
     changedCapabilities: string[],
@@ -603,18 +651,6 @@ export abstract class BaseMELCloudDevice<
         : this.removeCapability(capability))
     })
     this.#tagMappings.list = this.cleanMapping(this.driver.tagMappings.list)
-  }
-
-  // The warning update is IPC: its own failure is logged, never thrown,
-  // and the answer says whether the tile now shows `warning`.
-  async #trySetWarning(warning: string | null): Promise<boolean> {
-    try {
-      await super.setWarning(warning)
-      return true
-    } catch (error) {
-      this.error('Failed to update the device warning:', error)
-      return false
-    }
   }
 
   async #updateDeviceOnSettings(

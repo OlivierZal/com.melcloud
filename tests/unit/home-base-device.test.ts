@@ -610,6 +610,80 @@ describe(BaseMELCloudDevice, () => {
     })
   })
 
+  // Two lasting conditions can hold at once — an unreadable unit and a
+  // failing energy report, or the two reports of one device — and a
+  // device has ONE bubble: it shows the highest-priority held reason, and
+  // releasing one reason uncovers the next instead of clearing the tile.
+  describe('held warning reasons', () => {
+    it('should keep the bubble while another reason with the same wording is held', async () => {
+      await device.holdWarning('regularEnergyReports')
+      await device.holdWarning('totalEnergyReports')
+      await device.releaseWarning('regularEnergyReports')
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.energyReportsFailing'],
+      ])
+
+      await device.releaseWarning('totalEnergyReports')
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.energyReportsFailing'],
+        [null],
+      ])
+    })
+
+    it('should show the unreadable warning over a failing report and uncover it on release', async () => {
+      await device.holdWarning('regularEnergyReports')
+      await device.holdWarning('unreadable')
+      await device.releaseWarning('unreadable')
+      await device.releaseWarning('regularEnergyReports')
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.energyReportsFailing'],
+        ['errors.unitUnreadable'],
+        ['errors.energyReportsFailing'],
+        [null],
+      ])
+    })
+
+    // A reason behind a higher-priority one is recorded without IPC, and
+    // the hold still answers true: the condition is new to the record,
+    // which is what the caller's one log line reports.
+    it('should record a report reason behind the unreadable warning without IPC', async () => {
+      await device.holdWarning('unreadable')
+
+      await expect(device.holdWarning('regularEnergyReports')).resolves.toBe(
+        true,
+      )
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+      ])
+    })
+
+    it('should answer false for a reason already held or never held', async () => {
+      await device.holdWarning('unreadable')
+
+      await expect(device.holdWarning('unreadable')).resolves.toBe(false)
+      await expect(device.releaseWarning('regularEnergyReports')).resolves.toBe(
+        false,
+      )
+      expect(superSetWarningMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('should return a toast to the highest-priority held reason', async () => {
+      await device.holdWarning('totalEnergyReports')
+      await device.holdWarning('unreadable')
+      await device.setWarning(new Error('Write failed'))
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.energyReportsFailing'],
+        ['errors.unitUnreadable'],
+        ['Write failed'],
+        ['errors.unitUnreadable'],
+      ])
+    })
+  })
+
   describe('capability change handling', () => {
     it('should call updateValues when capability values are set', async () => {
       await device.onInit()

@@ -12,6 +12,7 @@ import {
   vi,
 } from 'vitest'
 
+import type { HeldWarningReason } from '../../drivers/base-device.mts'
 import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
@@ -31,8 +32,9 @@ const {
 } = createReportDeviceMocks()
 const logMock = vi.fn<(...args: unknown[]) => void>()
 const errorMock = vi.fn<(...args: unknown[]) => void>()
-const setWarningMock = vi.fn<(warning: string | null) => Promise<void>>()
-const translateMock = vi.fn<(key: string) => string>((key) => key)
+const holdWarningMock = vi.fn<(reason: HeldWarningReason) => Promise<boolean>>()
+const releaseWarningMock =
+  vi.fn<(reason: HeldWarningReason) => Promise<boolean>>()
 
 const regularConfig = {
   duration: { hours: 1 },
@@ -64,17 +66,17 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   driver: mockDriver,
   ensureDevice: ensureDeviceMock,
   error: errorMock,
+  holdWarning: holdWarningMock,
   homey: mock<Homey.Homey>({
-    __: translateMock,
     clearTimeout: clearTimeoutMock,
     clock: mock<Homey.Homey['clock']>({
       getTimezone: vi.fn<() => string>(() => 'Europe/Paris'),
     }),
   }),
   log: logMock,
+  releaseWarning: releaseWarningMock,
   setCapabilityValue: setCapabilityValueMock,
   setTimeout: setTimeoutMock,
-  setWarning: setWarningMock,
 })
 
 const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
@@ -124,6 +126,7 @@ const createCopMocks = (
       .mockReturnValue({ 'measure_power.cop': ['ProducedTag', 'ConsumedTag'] }),
     driver: copDriver,
     ensureDevice: ensureDeviceMock,
+    holdWarning: holdWarningMock,
     homey: mock<Homey.Homey>({
       clearTimeout: clearTimeoutMock,
       clock: mock<Homey.Homey['clock']>({
@@ -131,6 +134,7 @@ const createCopMocks = (
       }),
     }),
     log: logMock,
+    releaseWarning: releaseWarningMock,
     setCapabilityValue: setCapabilityValueMock,
     setTimeout: setTimeoutMock,
   })
@@ -245,28 +249,44 @@ describe(EnergyReport, () => {
     })
   })
 
+  // A failing report is a LASTING condition: it reaches the device's HELD
+  // warning under its own reason, never the one-shot toast, which shows
+  // and clears in the same call (#1696). The device verbs own the
+  // de-duplication, so the report calls them on every run past the
+  // threshold and logs a transition only when the call changed the record.
   describe('failure warning and success logging', () => {
     const validEnergyData = {
       Auto: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       Cooling: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
     }
 
-    it('should warn the device once after three consecutive failures', async () => {
+    it('should hold the warning from the third consecutive failure and log it once', async () => {
+      holdWarningMock.mockResolvedValueOnce(true).mockResolvedValue(false)
       mockFailingFetch()
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
       await report.start()
 
-      expect(setWarningMock).not.toHaveBeenCalled()
+      expect(holdWarningMock).not.toHaveBeenCalled()
 
       await report.start()
       await report.start()
 
-      expect(setWarningMock).toHaveBeenCalledTimes(1)
-      expect(setWarningMock).toHaveBeenCalledWith('errors.energyReportsFailing')
+      expect(holdWarningMock.mock.calls).toStrictEqual([
+        ['regularEnergyReports'],
+        ['regularEnergyReports'],
+      ])
+      expect(
+        errorMock.mock.calls.filter(
+          ([message]) =>
+            message === 'regular energy report failing, warning held',
+        ),
+      ).toHaveLength(1)
     })
 
-    it('should clear the warning and reset the streak on the next success', async () => {
+    it('should release the warning and reset the streak on the next success', async () => {
+      holdWarningMock.mockResolvedValue(true)
+      releaseWarningMock.mockResolvedValueOnce(true)
       mockFailingFetch()
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
@@ -275,37 +295,91 @@ describe(EnergyReport, () => {
       mockEnergyFetch(validEnergyData)
       await report.start()
 
-      expect(setWarningMock).toHaveBeenCalledTimes(2)
-      expect(setWarningMock).toHaveBeenLastCalledWith(null)
-    })
-
-    it('should not warn when successes interleave the failures', async () => {
-      mockFailingFetch()
-      const report = new EnergyReport(mockDevice, regularConfig)
-      await report.start()
-      await report.start()
-      mockEnergyFetch(validEnergyData)
-      await report.start()
-      mockFailingFetch()
-      await report.start()
-      await report.start()
-
-      expect(setWarningMock).not.toHaveBeenCalled()
-    })
-
-    it('should keep the chain alive when the warning update itself fails', async () => {
-      setWarningMock.mockRejectedValueOnce(new Error('ipc down'))
-      mockFailingFetch()
-      const report = new EnergyReport(mockDevice, regularConfig)
-      await report.start()
-      await report.start()
-      await report.start()
-
-      expect(errorMock).toHaveBeenCalledWith(
-        'Failed to update the device warning:',
-        expect.any(Error),
+      expect(releaseWarningMock).toHaveBeenCalledWith('regularEnergyReports')
+      expect(logMock).toHaveBeenCalledWith(
+        'regular energy report recovered, warning released',
       )
-      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('should not hold when successes interleave the failures', async () => {
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+      await report.start()
+      mockEnergyFetch(validEnergyData)
+      await report.start()
+      mockFailingFetch()
+      await report.start()
+      await report.start()
+
+      expect(holdWarningMock).not.toHaveBeenCalled()
+    })
+
+    // A skipped run — the facade unavailable, a condition `ensureDevice`
+    // already warned — proves nothing about the report's health: it
+    // neither ends the streak nor extends it, and a held warning stands.
+    it('should count a skipped run as neither a success nor a failure', async () => {
+      holdWarningMock.mockResolvedValueOnce(true)
+      releaseWarningMock.mockResolvedValueOnce(true)
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+      await report.start()
+      await report.start()
+      ensureDeviceMock.mockResolvedValue(null)
+      await report.start()
+
+      expect(holdWarningMock).toHaveBeenCalledTimes(1)
+      expect(releaseWarningMock).not.toHaveBeenCalled()
+      expect(logMock).not.toHaveBeenCalledWith(
+        expect.stringContaining('warning released'),
+      )
+
+      // The streak survived the skip: this failure is the fourth, not the
+      // first, so the report still holds.
+      mockFailingFetch()
+      await report.start()
+
+      expect(holdWarningMock).toHaveBeenCalledTimes(2)
+      expect(releaseWarningMock).not.toHaveBeenCalled()
+
+      mockEnergyFetch(validEnergyData)
+      await report.start()
+
+      expect(releaseWarningMock.mock.calls).toStrictEqual([
+        ['regularEnergyReports'],
+      ])
+      expect(logMock).toHaveBeenCalledWith(
+        'regular energy report recovered, warning released',
+      )
+    })
+
+    // A release that changed nothing (nothing was held) is the device's
+    // silent no-op: the report writes no closing line for it.
+    it('should not log a release the device did not perform', async () => {
+      releaseWarningMock.mockResolvedValue(false)
+      mockEnergyFetch(validEnergyData)
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      expect(releaseWarningMock).toHaveBeenCalledWith('regularEnergyReports')
+      expect(logMock).not.toHaveBeenCalledWith(
+        expect.stringContaining('warning released'),
+      )
+    })
+
+    // The two reports of a device fail independently: the total report
+    // holds a reason of its own, so its warning outlives the regular
+    // report's recovery.
+    it('should hold the total report under its own reason', async () => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['TotalAutoConsumed'] })
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, totalConfig)
+      await report.start()
+      await report.start()
+      await report.start()
+
+      expect(holdWarningMock).toHaveBeenCalledWith('totalEnergyReports')
     })
 
     it('should log a compact summary of the applied values', async () => {
