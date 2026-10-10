@@ -18,7 +18,10 @@
       "unverified": "Logget inn, men økten kunne ikke bekreftes — prøv igjen.",
       "reset": "Tilbakestill",
       "resetConfirm": "Dette logger den valgte kontoen ut umiddelbart og sletter de lagrede påloggingsopplysningene.",
-      "rejected": "__name__ avviste disse påloggingsopplysningene — kontroller e-postadressen og passordet.",
+      "rejected": {
+        "classic": "__name__ avviste disse påloggingsopplysningene — kontroller e-postadressen og passordet. Hvis kontoen din ble opprettet i MELCloud Home-appen, velg Home ovenfor og logg på med de samme påloggingsopplysningene.",
+        "home": "__name__ avviste disse påloggingsopplysningene — kontroller e-postadressen og passordet. Hvis kontoen din er en MELCloud-konto (Classic), velg Classic ovenfor. En konto opprettet med Logg på med Apple eller Google har ikke noe passord som denne appen kan bruke."
+      },
       "throttled": "__name__ blokkerer pålogginger midlertidig etter for mange forsøk — prøv igjen senere.",
       "staleDevices": "Logget inn, men enhetslisten kunne ikke oppdateres — prøv igjen senere."
     },

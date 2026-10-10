@@ -387,7 +387,15 @@ coverage.
   app-API handler (`api.mts`) answers `{ isDeviceListStale: true }`
   rather than rejecting, the pairing handler
   (`drivers/base-driver.mts`) continues to the device list, and
-  ANYTHING else is a login failure. Neither consults
+  ANYTHING else is a login failure. The credential rejection is keyed
+  PER API (`settings.authenticate.rejected.{classic,home}`, the
+  `notifications.sessionRestored.*` shape, `__name__` still the display
+  name) so the alert can say how to switch: the API selector defaults
+  to Classic until an account is saved, so a MELCloud Home account left
+  on it is told to select Home (#1699), and the Home leg adds that a
+  Sign in with Apple/Google account has no password this app can use —
+  "Home"/"Classic" stay verbatim in all 13 locales because the option
+  labels are language-neutral. Neither consults
   `isAuthenticated()` — the retired judge-by-the-session heuristic
   (54.0.0's era) had a CONFIRMED false positive: a transport failure
   during the sign-in round-trip over a PRE-EXISTING live session (a

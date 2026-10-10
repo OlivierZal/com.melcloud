@@ -18,7 +18,10 @@
       "unverified": "Connexion réussie, mais la session n'a pas pu être vérifiée — veuillez réessayer.",
       "reset": "Réinitialiser",
       "resetConfirm": "Ceci déconnecte immédiatement le compte sélectionné et efface ses identifiants enregistrés.",
-      "rejected": "__name__ a refusé ces identifiants — vérifiez l'adresse e-mail et le mot de passe.",
+      "rejected": {
+        "classic": "__name__ a refusé ces identifiants — vérifiez l'adresse e-mail et le mot de passe. Si votre compte a été créé dans l'application MELCloud Home, sélectionnez Home ci-dessus et connectez-vous avec les mêmes identifiants.",
+        "home": "__name__ a refusé ces identifiants — vérifiez l'adresse e-mail et le mot de passe. Si votre compte est un compte MELCloud (Classic), sélectionnez Classic ci-dessus. Un compte créé via Se connecter avec Apple ou Google n'a pas de mot de passe utilisable par cette application."
+      },
       "throttled": "__name__ bloque temporairement les connexions après trop de tentatives — réessayez plus tard.",
       "staleDevices": "Connexion réussie, mais la liste des appareils n'a pas pu être actualisée — réessayez plus tard."
     },

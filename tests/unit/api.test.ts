@@ -21,6 +21,19 @@ import type {
   ErrorLogQueryParams,
   FormattedErrorLog,
 } from '../../types/error-log.mts'
+import arLocale from '../../.homeycompose/locales/ar.json' with { type: 'json' }
+import daLocale from '../../.homeycompose/locales/da.json' with { type: 'json' }
+import deLocale from '../../.homeycompose/locales/de.json' with { type: 'json' }
+import enLocale from '../../.homeycompose/locales/en.json' with { type: 'json' }
+import esLocale from '../../.homeycompose/locales/es.json' with { type: 'json' }
+import frLocale from '../../.homeycompose/locales/fr.json' with { type: 'json' }
+import itLocale from '../../.homeycompose/locales/it.json' with { type: 'json' }
+import koLocale from '../../.homeycompose/locales/ko.json' with { type: 'json' }
+import nlLocale from '../../.homeycompose/locales/nl.json' with { type: 'json' }
+import noLocale from '../../.homeycompose/locales/no.json' with { type: 'json' }
+import plLocale from '../../.homeycompose/locales/pl.json' with { type: 'json' }
+import ruLocale from '../../.homeycompose/locales/ru.json' with { type: 'json' }
+import svLocale from '../../.homeycompose/locales/sv.json' with { type: 'json' }
 import api from '../../api.mts'
 
 const mockGetBuildings =
@@ -377,23 +390,75 @@ describe('api', () => {
   })
 
   describe('login failure classification', () => {
-    it('translates a credential rejection into its localized reason', async () => {
-      mockClassicAuthenticate.mockRejectedValueOnce(
-        new AuthenticationError('MELCloud Classic rejected the credentials'),
-      )
+    // The rejection is keyed per API so the message can say how to
+    // switch: the selector defaults to Classic until an account is
+    // saved, and a MELCloud Home account left on it must be sent to
+    // Home (#1699), the Home leg to Classic.
+    it.each([
+      {
+        authenticateMock: mockClassicAuthenticate,
+        name: 'MELCloud Classic',
+        service: 'classic',
+      },
+      {
+        authenticateMock: mockHomeAuthenticate,
+        name: 'MELCloud Home',
+        service: 'home',
+      },
+    ])(
+      'translates a $service credential rejection into its own localized reason',
+      async ({ authenticateMock, name, service }) => {
+        authenticateMock.mockRejectedValueOnce(
+          new AuthenticationError(`${name} rejected the credentials`),
+        )
 
-      await expect(
-        api.authenticate({
-          body: mock<LoginCredentials>(),
-          homey,
-          params: { api: 'classic' },
-        }),
-      ).rejects.toThrow('settings.authenticate.rejected')
-      expect(mockTranslate).toHaveBeenCalledWith(
-        'settings.authenticate.rejected',
-        { name: 'MELCloud Classic' },
-      )
-    })
+        await expect(
+          api.authenticate({
+            body: mock<LoginCredentials>(),
+            homey,
+            params: { api: service },
+          }),
+        ).rejects.toThrow(`settings.authenticate.rejected.${service}`)
+        expect(mockTranslate).toHaveBeenCalledWith(
+          `settings.authenticate.rejected.${service}`,
+          { name },
+        )
+      },
+    )
+
+    // The hints name the API selector's option labels, which are
+    // language-neutral by design (settings/index.html), so every locale
+    // must spell them verbatim — and the Home leg must name the two
+    // sign-in providers whose accounts carry no usable password.
+    it.each(
+      Object.entries({
+        ar: arLocale,
+        da: daLocale,
+        de: deLocale,
+        en: enLocale,
+        es: esLocale,
+        fr: frLocale,
+        it: itLocale,
+        ko: koLocale,
+        nl: nlLocale,
+        no: noLocale,
+        pl: plLocale,
+        ru: ruLocale,
+        sv: svLocale,
+      }),
+    )(
+      'keeps the %s rejection hints on the verbatim switch targets',
+      (_locale, { settings }) => {
+        const { classic, home } = settings.authenticate.rejected
+
+        expect(classic).toContain('__name__')
+        expect(classic).toContain('Home')
+        expect(home).toContain('__name__')
+        expect(home).toContain('Classic')
+        expect(home).toContain('Apple')
+        expect(home).toContain('Google')
+      },
+    )
 
     it('translates the login throttle into its localized reason', async () => {
       mockHomeAuthenticate.mockRejectedValueOnce(
@@ -470,7 +535,7 @@ describe('api', () => {
           homey,
           params: { api: 'home' },
         }),
-      ).rejects.toThrow('settings.authenticate.rejected')
+      ).rejects.toThrow('settings.authenticate.rejected.home')
       expect(mockHomeIsAuthenticated).not.toHaveBeenCalled()
     })
   })

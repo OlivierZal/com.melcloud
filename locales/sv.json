@@ -18,7 +18,10 @@
       "unverified": "Inloggad, men sessionen kunde inte verifieras — försök igen.",
       "reset": "Återställ",
       "resetConfirm": "Detta loggar omedelbart ut det valda kontot och rensar dess sparade autentiseringsuppgifter.",
-      "rejected": "__name__ avvisade dessa autentiseringsuppgifter — kontrollera e-postadressen och lösenordet.",
+      "rejected": {
+        "classic": "__name__ avvisade dessa autentiseringsuppgifter — kontrollera e-postadressen och lösenordet. Om ditt konto skapades i appen MELCloud Home, välj Home ovan och logga in med samma autentiseringsuppgifter.",
+        "home": "__name__ avvisade dessa autentiseringsuppgifter — kontrollera e-postadressen och lösenordet. Om ditt konto är ett MELCloud-konto (Classic), välj Classic ovan. Ett konto som skapats med Logga in med Apple eller Google har inget lösenord som den här appen kan använda."
+      },
       "throttled": "__name__ blockerar tillfälligt inloggningar efter för många försök — försök igen senare.",
       "staleDevices": "Inloggad, men enhetslistan kunde inte uppdateras — försök igen senare."
     },

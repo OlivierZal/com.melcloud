@@ -18,7 +18,10 @@
       "unverified": "Accesso effettuato, ma non è stato possibile verificare la sessione: riprova.",
       "reset": "Reimposta",
       "resetConfirm": "Questo disconnette immediatamente l'account selezionato e cancella le sue credenziali salvate.",
-      "rejected": "__name__ ha rifiutato queste credenziali — controlla l'indirizzo e-mail e la password.",
+      "rejected": {
+        "classic": "__name__ ha rifiutato queste credenziali — controlla l'indirizzo e-mail e la password. Se il tuo account è stato creato nell'app MELCloud Home, seleziona Home qui sopra e accedi con le stesse credenziali.",
+        "home": "__name__ ha rifiutato queste credenziali — controlla l'indirizzo e-mail e la password. Se il tuo account è un account MELCloud (Classic), seleziona Classic qui sopra. Un account creato con Accedi con Apple o Google non ha una password che questa app possa usare."
+      },
       "throttled": "__name__ sta bloccando temporaneamente gli accessi dopo troppi tentativi — riprova più tardi.",
       "staleDevices": "Accesso effettuato, ma non è stato possibile aggiornare l'elenco dei dispositivi — riprova più tardi."
     },

@@ -18,7 +18,10 @@
       "unverified": "Aangemeld, maar de sessie kon niet worden geverifieerd — probeer het opnieuw.",
       "reset": "Opnieuw instellen",
       "resetConfirm": "Dit meldt het geselecteerde account onmiddellijk af en wist de opgeslagen inloggegevens.",
-      "rejected": "__name__ heeft deze inloggegevens geweigerd — controleer het e-mailadres en het wachtwoord.",
+      "rejected": {
+        "classic": "__name__ heeft deze inloggegevens geweigerd — controleer het e-mailadres en het wachtwoord. Is je account aangemaakt in de MELCloud Home-app, selecteer dan hierboven Home en log in met dezelfde inloggegevens.",
+        "home": "__name__ heeft deze inloggegevens geweigerd — controleer het e-mailadres en het wachtwoord. Is je account een MELCloud-account (Classic), selecteer dan hierboven Classic. Een account dat is aangemaakt met Inloggen met Apple of Google heeft geen wachtwoord dat deze app kan gebruiken."
+      },
       "throttled": "__name__ blokkeert aanmeldingen tijdelijk na te veel pogingen — probeer het later opnieuw.",
       "staleDevices": "Aangemeld, maar de apparatenlijst kon niet worden vernieuwd — probeer het later opnieuw."
     },

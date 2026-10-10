@@ -2038,5 +2038,20 @@
     "pl": "Gdy raporty energii wciąż się nie powodzą, urządzenie wyświetla teraz trwałe ostrzeżenie zamiast krótkiego komunikatu.",
     "ru": "Когда отчёты об энергии продолжают завершаться ошибкой, устройство теперь показывает постоянное предупреждение вместо короткого сообщения.",
     "sv": "När energirapporterna fortsätter att misslyckas visar enheten nu en bestående varning i stället för ett kort meddelande."
+  },
+  "46.9.1": {
+    "ar": "عند رفض تسجيل الدخول، تذكر الرسالة الآن أي منصة MELCloud رفضته وكيفية التبديل (يجب على حسابات MELCloud Home تسجيل الدخول مع اختيار Home).",
+    "da": "Når et login afvises, fortæller beskeden nu, hvilken MELCloud-platform der afviste det, og hvordan man skifter (MELCloud Home-konti skal logge ind med Home valgt).",
+    "de": "Wird eine Anmeldung abgelehnt, nennt die Meldung jetzt die MELCloud-Plattform, die sie abgelehnt hat, und erklärt den Wechsel (MELCloud Home-Konten müssen sich mit ausgewähltem Home anmelden).",
+    "en": "When a sign-in is refused, the message now says which MELCloud platform refused it and how to switch (MELCloud Home accounts must sign in with Home selected).",
+    "es": "Cuando se rechaza un inicio de sesión, el mensaje ahora indica qué plataforma MELCloud lo rechazó y cómo cambiar (las cuentas de MELCloud Home deben iniciar sesión con Home seleccionado).",
+    "fr": "Lorsqu'une connexion est refusée, le message indique désormais quelle plateforme MELCloud l'a refusée et comment changer (les comptes MELCloud Home doivent se connecter avec Home sélectionné).",
+    "it": "Quando un accesso viene rifiutato, il messaggio ora indica quale piattaforma MELCloud lo ha rifiutato e come cambiare (gli account MELCloud Home devono accedere con Home selezionato).",
+    "ko": "로그인이 거부되면 이제 메시지에 어느 MELCloud 플랫폼이 거부했는지와 전환 방법이 표시됩니다(MELCloud Home 계정은 Home을 선택한 상태로 로그인해야 합니다).",
+    "nl": "Wanneer een aanmelding wordt geweigerd, zegt de melding nu welk MELCloud-platform haar heeft geweigerd en hoe je wisselt (MELCloud Home-accounts moeten inloggen met Home geselecteerd).",
+    "no": "Når en pålogging avvises, sier meldingen nå hvilken MELCloud-plattform som avviste den og hvordan du bytter (MELCloud Home-kontoer må logge på med Home valgt).",
+    "pl": "Gdy logowanie zostanie odrzucone, komunikat podaje teraz, która platforma MELCloud je odrzuciła i jak się przełączyć (konta MELCloud Home muszą logować się z wybraną opcją Home).",
+    "ru": "Когда вход отклонён, сообщение теперь указывает, какая платформа MELCloud его отклонила и как переключиться (учётные записи MELCloud Home должны входить с выбранным Home).",
+    "sv": "När en inloggning avvisas anger meddelandet nu vilken MELCloud-plattform som avvisade den och hur man byter (MELCloud Home-konton måste logga in med Home valt)."
   }
 }
