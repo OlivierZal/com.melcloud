@@ -140,12 +140,16 @@ export abstract class ScheduledEnergyReport {
       await this.#registerFailure()
       return
     }
-    if (applied !== null) {
-      this.#device.log(
-        `${this.#config.mode} energy report applied:`,
-        formatApplied(applied),
-      )
+    // A skipped run proves nothing about the report's health: the streak
+    // and any held warning stay as they are — the unreachable-unit
+    // warning is `ensureDevice`'s to manage.
+    if (applied === null) {
+      return
     }
+    this.#device.log(
+      `${this.#config.mode} energy report applied:`,
+      formatApplied(applied),
+    )
     await this.#registerSuccess()
   }
 
@@ -155,10 +159,9 @@ export abstract class ScheduledEnergyReport {
   // From the third consecutive failure the report holds its reason on
   // every failed run (the device de-duplicates, so only the first costs
   // IPC and a failed IPC is retried by the next run), and the first
-  // success releases it. Skipped runs (`null`) count as neither — the
-  // device warning for an unreachable unit is `ensureDevice`'s to manage.
-  // The verbs never throw, so the report chain survives a failed IPC, and
-  // each transition is logged once, on the call that changed the record.
+  // success releases it; a skipped run (`null`) counts as neither. The
+  // verbs never throw, so the report chain survives a failed IPC, and each
+  // transition is logged once, on the call that changed the record.
   async #registerFailure(): Promise<void> {
     this.#consecutiveFailures += 1
     if (this.#consecutiveFailures < FAILURE_WARNING_THRESHOLD) {

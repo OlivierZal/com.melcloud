@@ -315,6 +315,45 @@ describe(EnergyReport, () => {
       expect(holdWarningMock).not.toHaveBeenCalled()
     })
 
+    // A skipped run — the facade unavailable, a condition `ensureDevice`
+    // already warned — proves nothing about the report's health: it
+    // neither ends the streak nor extends it, and a held warning stands.
+    it('should count a skipped run as neither a success nor a failure', async () => {
+      holdWarningMock.mockResolvedValueOnce(true)
+      releaseWarningMock.mockResolvedValueOnce(true)
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+      await report.start()
+      await report.start()
+      ensureDeviceMock.mockResolvedValue(null)
+      await report.start()
+
+      expect(holdWarningMock).toHaveBeenCalledTimes(1)
+      expect(releaseWarningMock).not.toHaveBeenCalled()
+      expect(logMock).not.toHaveBeenCalledWith(
+        expect.stringContaining('warning released'),
+      )
+
+      // The streak survived the skip: this failure is the fourth, not the
+      // first, so the report still holds.
+      mockFailingFetch()
+      await report.start()
+
+      expect(holdWarningMock).toHaveBeenCalledTimes(2)
+      expect(releaseWarningMock).not.toHaveBeenCalled()
+
+      mockEnergyFetch(validEnergyData)
+      await report.start()
+
+      expect(releaseWarningMock.mock.calls).toStrictEqual([
+        ['regularEnergyReports'],
+      ])
+      expect(logMock).toHaveBeenCalledWith(
+        'regular energy report recovered, warning released',
+      )
+    })
+
     // A release that changed nothing (nothing was held) is the device's
     // silent no-op: the report writes no closing line for it.
     it('should not log a release the device did not perform', async () => {

@@ -211,6 +211,24 @@ describe('home energy reports', () => {
       )
     })
 
+    // Same base contract as the Classic leg: a skipped run (no facade)
+    // neither ends the failure streak nor releases a held warning.
+    it('should keep the streak and the held warning across a skipped run', async () => {
+      cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
+      mockFailingFetch()
+      const report = new HomeEnergyReportAta(mockDevice(), regularConfig)
+      await report.start()
+      await report.start()
+      await report.start()
+      ensureDeviceMock.mockResolvedValue(null)
+      await report.start()
+      mockFailingFetch()
+      await report.start()
+
+      expect(holdWarningMock).toHaveBeenCalledTimes(2)
+      expect(releaseWarningMock).not.toHaveBeenCalled()
+    })
+
     it('should average pulses over the trailing window and sum the local day', async () => {
       cleanMappingMock.mockReturnValue({
         measure_power: ['consumed'],
