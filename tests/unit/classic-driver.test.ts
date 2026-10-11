@@ -271,9 +271,8 @@ describe(ClassicMELCloudDriver, () => {
 
   describe('condition run listener registration', () => {
     it('should return boolean capability value for boolean capabilities', async () => {
-      const conditionListeners = await captureConditionListeners()
-
-      const { onoff_condition: onoffListener } = conditionListeners
+      const { onoff_condition: onoffListener } =
+        await captureConditionListeners()
       assertDefined(onoffListener)
       const result = onoffListener({
         device: {

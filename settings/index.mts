@@ -680,8 +680,8 @@ class AuthManager {
   }
 
   #hasCompleteCredentials(api: Api): boolean {
-    const { password, username } = this.#credentialsByApi[api]
-    return (username ?? '') !== '' && (password ?? '') !== ''
+    const { password = '', username = '' } = this.#credentialsByApi[api]
+    return username !== '' && password !== ''
   }
 
   #selectApiNeedingAttention(apisNeedingAttention: readonly Api[]): void {
@@ -692,12 +692,13 @@ class AuthManager {
   }
 
   #syncInputsFromCredentials(): void {
-    const { password, username } = this.#credentialsByApi[this.#currentApi]
+    const { password = '', username = '' } =
+      this.#credentialsByApi[this.#currentApi]
     if (this.#usernameInput !== null) {
-      this.#usernameInput.value = username ?? ''
+      this.#usernameInput.value = username
     }
     if (this.#passwordInput !== null) {
-      this.#passwordInput.value = password ?? ''
+      this.#passwordInput.value = password
     }
   }
 }
@@ -1661,6 +1662,7 @@ class ZoneSettingsManager {
   public displayFrostProtectionData(): void {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
+      // eslint-disable-next-line unicorn/prefer-default-parameters -- `max`/`min` read `null` when a Home building's devices disagree (Mixable), which no destructuring default blanks
       const { isEnabled = false, max, min } = data.frost_protection ?? {}
       // `null` (a Home building's devices disagree) reads as blank; a plain
       // `undefined` (a device with no frost config) reads as "No".
@@ -1677,6 +1679,7 @@ class ZoneSettingsManager {
   public displayHolidayModeData(): void {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
+      // eslint-disable-next-line unicorn/prefer-default-parameters -- `endDate`/`startDate` read `null` for an unset bound or a mixed building (Mixable), which no destructuring default blanks
       const { endDate, isEnabled = false, startDate } = data.holiday_mode ?? {}
       // `null` enabled (mixed across a building) reads as blank; dates show
       // only when the window is definitely on and itself not mixed.
@@ -1694,6 +1697,7 @@ class ZoneSettingsManager {
   public displayOverheatProtectionData(): void {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
+      // eslint-disable-next-line unicorn/prefer-default-parameters -- `max`/`min` read `null` when a Home building's ATA devices disagree (Mixable), which no destructuring default blanks
       const { isEnabled = false, max, min } = data.overheat_protection ?? {}
       // `null` (a Home building's ATA devices disagree) reads as blank; a
       // plain `undefined` (no overheat config) reads as "No".
@@ -1791,7 +1795,7 @@ class ZoneSettingsManager {
    * @alerts Displays save errors to the user.
    */
   public async setHolidayModeData(update: HolidayModeSettings): Promise<void> {
-    const { endDate, isEnabled, startDate } = update
+    const { endDate = null, isEnabled, startDate = null } = update
     await this.#putZoneSetting(
       {
         id: 'holiday_mode',
@@ -1806,11 +1810,7 @@ class ZoneSettingsManager {
         // clock app-side: unknown here, so the optimistic cache holds
         // null until the display refresh reads the real window back —
         // which also makes any stale bound on a disable harmless.
-        holiday_mode: {
-          endDate: endDate ?? null,
-          isEnabled,
-          startDate: startDate ?? null,
-        },
+        holiday_mode: { endDate, isEnabled, startDate },
       },
     )
   }

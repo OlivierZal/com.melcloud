@@ -132,7 +132,13 @@ caught real failures that the others miss:
   vendored node-homey-lib capability JSONs under `vendor/capabilities/`
   (homey-lib is a devDependency and must not ship to the device); the
   drift test in `tests/unit/capability-definitions.test.ts` fails when
-  the copies fall behind. A homey-lib bump re-checks a SECOND thing the
+  the copies fall behind. The script writes what the JSON lint accepts —
+  keys sorted, irregular whitespace escaped (homey-lib's French `%` unit
+  carries a no-break space, vendored as `\u00A0`, the
+  `prefer-escaped-irregular-whitespace` fixer's own form) — and Prettier
+  then owns the layout, as for any JSON here; the drift test compares
+  parsed values, so the escape is invisible to it. A homey-lib bump
+  re-checks a SECOND thing the
   same way: beyond the definitions, the app takes homey-lib's canonical
   WORDING into labels of its own capabilities and flow cards, and both
   tables of `tests/unit/borrowed-labels.test.ts` pin it — check both on
@@ -1100,7 +1106,9 @@ reader fails open with an empty map).
   repo's PRs document several review claims refuted that way.
 - Homey App Store releases: write the user-facing changelog entry into
   `.homeychangelog.json` under the NEW version key (all 13 locales,
-  non-exhaustive store-facing wording), bump `version` in
+  non-exhaustive store-facing wording; a narrow no-break space before
+  French punctuation is written escaped, `\u202F` — `lint:fix` does
+  it), bump `version` in
   `.homeycompose/app.json`, align `package.json` via
   `npm version X.Y.Z --no-git-tag-version`, run `homey:validate` to
   regenerate `app.json`, and land it all through a PR. Then tag

@@ -220,17 +220,14 @@ const holidayFixture = (): unknown => ({
   startDate: '2026-08-10T10:00',
 })
 
-const errorLogFixture = (
-  count: number,
-  nextFromDate = '2026-07-01',
-): unknown => ({
+const errorLogFixture = (count: number): unknown => ({
   errors: Array.from({ length: count }, (_unusedValue, index) => ({
     date: `2026-07-${String(index + 1).padStart(2, '0')}`,
     device: 'Living room',
     error: `Failure ${String(index)}`,
   })),
   fromDateHuman: '1 July 2026',
-  nextFromDate,
+  nextFromDate: '2026-07-01',
   nextToDate: '2026-06-30',
 })
 
@@ -422,11 +419,7 @@ const calledPaths = (harness: Harness): string[] =>
 
 // Route the paged error-log fetches (their query strings vary by page)
 // while every other route keeps its default answer.
-const seeErrors = async (
-  harness: Harness,
-  count: number,
-  nextFromDate?: string,
-): Promise<void> => {
+const seeErrors = async (harness: Harness, count: number): Promise<void> => {
   const routes = defaultRoutes()
   harness.api.mockImplementation((...callArgs: ApiCallArgs) => {
     const [method, path] = callArgs
@@ -434,7 +427,7 @@ const seeErrors = async (
       (argument): argument is ApiCallback => typeof argument === 'function',
     )
     if (path.startsWith('/logs/errors')) {
-      callback?.(null, errorLogFixture(count, nextFromDate))
+      callback?.(null, errorLogFixture(count))
       return
     }
     callback?.(null, routes[`${method} ${path}`])

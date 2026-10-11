@@ -345,9 +345,7 @@ describe('ata value manager', () => {
     // nets an empty body, so the gate cannot arm.
     getSelect('SetTemperature').value = '25'
 
-    expect(
-      getButtonDisabled('apply_values_melcloud') || lastPutBody(harness),
-    ).toBe(true)
+    expect(isApplyDisabled() || lastPutBody(harness)).toBe(true)
   })
 
   it('should restore the known state on refresh', async () => {
@@ -386,7 +384,7 @@ describe('ata value manager', () => {
     expect(getSelect('Power').value).toBe('false')
     expect(getSelect('SetTemperature').value).toBe('25')
     expect(getInput('FanSpeed').value).toBe('5')
-    expect(getButtonDisabled('apply_values_melcloud')).toBe(false)
+    expect(isApplyDisabled()).toBe(false)
   })
 
   it('should grey Update when the zone catches up with the edit', async () => {
@@ -402,7 +400,7 @@ describe('ata value manager', () => {
 
     // The edit became a no-op: nothing to send, so the gate cannot arm.
     expect(getSelect('SetTemperature').value).toBe('25')
-    expect(getButtonDisabled('apply_values_melcloud')).toBe(true)
+    expect(isApplyDisabled()).toBe(true)
 
     // Caught up means released: the control follows the stream again.
     routes['GET /targets/buildings_1/ata'] = {
@@ -431,7 +429,7 @@ describe('ata value manager', () => {
     expect(getSelect('OperationMode').value).toBe('3')
     expect(getSelect('SetTemperature').value).toBe('')
     expect(optionValues(getSelect('SetTemperature'))).not.toContain('12')
-    expect(getButtonDisabled('apply_values_melcloud')).toBe(true)
+    expect(isApplyDisabled()).toBe(true)
   })
 
   it('should skip a value slot without a control', async () => {
@@ -452,7 +450,7 @@ describe('ata value manager', () => {
 const harnessPaths = (api: WidgetHarness['api']): string[] =>
   api.mock.calls.map(([method, path]) => `${method} ${path}`)
 
-const getButtonDisabled = (id: string): boolean => {
-  const element = document.querySelector(`#${CSS.escape(id)}`)
+const isApplyDisabled = (): boolean => {
+  const element = document.querySelector('#apply_values_melcloud')
   return element instanceof HTMLButtonElement && element.disabled
 }
