@@ -82,9 +82,7 @@ describe('flow card ranges', () => {
         return bounds === undefined ||
           (bounds.min === range.min && bounds.max === range.max)
           ? []
-          : [
-              `${driverId}/${capability}: card ${String(range.min)}-${String(range.max)}, capability ${String(bounds.min)}-${String(bounds.max)}`,
-            ]
+          : `${driverId}/${capability}: card ${String(range.min)}-${String(range.max)}, capability ${String(bounds.min)}-${String(bounds.max)}`
       })
     })
 

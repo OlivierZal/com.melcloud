@@ -56,7 +56,6 @@ const createProfile = ({
   hasEstimatedEnergyProduction = false,
   hasHotWater = true,
   hasMeasuredEnergyConsumption = false,
-  hasMeasuredEnergyProduction = false,
   hasZone2 = false,
 } = {}): HomeAtwDeviceProfile => ({
   capabilities: mock<Home.AtwDeviceCapabilities>({
@@ -64,7 +63,7 @@ const createProfile = ({
     hasEstimatedEnergyProduction,
     hasHotWater,
     hasMeasuredEnergyConsumption,
-    hasMeasuredEnergyProduction,
+    hasMeasuredEnergyProduction: false,
     hasZone2,
   }),
   hasCoolingMode,

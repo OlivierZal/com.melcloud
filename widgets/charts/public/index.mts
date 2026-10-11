@@ -356,7 +356,7 @@ const chartModeBands = new WeakMap<object, readonly RenderBand[]>()
 const getHiddenModes = (chart: Chart<WidgetChartType>): Set<string> =>
   new Set(
     chart.data.datasets.flatMap(({ label }, index) =>
-      label !== undefined && !chart.isDatasetVisible(index) ? [label] : [],
+      label !== undefined && !chart.isDatasetVisible(index) ? label : [],
     ),
   )
 
@@ -825,7 +825,7 @@ const applyPieHiddenByLabel = (
   hiddenByLabel: ReadonlyMap<string, boolean>,
 ): void => {
   const hiddenIndices = config.data.labels.flatMap((label, index) =>
-    hiddenByLabel.get(label) === true ? [index] : [],
+    hiddenByLabel.get(label) === true ? index : [],
   )
   if (hiddenIndices.length === 0) {
     return

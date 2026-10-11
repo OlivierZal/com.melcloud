@@ -99,4 +99,32 @@ describe('capability definition sync', () => {
       )}\n`,
     )
   })
+
+  it('should escape irregular whitespace the way the JSON lint does', async () => {
+    // The French `%` unit homey-lib ships carries a no-break space: the
+    // vendored copy writes it as the lint fixer's `\u00A0`, so a fresh sync
+    // passes the JSON lint while the parsed value stays homey-lib's.
+    await seedApp(VENDORED)
+    await writeFile(
+      path.join(LIB_ROOT, 'fan_speed.json'),
+      '{"id":"fan_speed","units":{"fr":"\u{A0}%"}}',
+    )
+
+    await runSync()
+
+    const written = await readFile(
+      path.join(VENDOR_ROOT, 'fan_speed.json'),
+      'utf8',
+    )
+    const parsed: unknown = JSON.parse(written)
+
+    expect(written).toBe(String.raw`{
+  "id": "fan_speed",
+  "units": {
+    "fr": "\u00A0%"
+  }
+}
+`)
+    expect(parsed).toStrictEqual({ id: 'fan_speed', units: { fr: '\u{A0}%' } })
+  })
 })

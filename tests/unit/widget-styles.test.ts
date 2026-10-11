@@ -23,8 +23,8 @@ const getBootScript = (page = ''): string => {
     : page.slice(start + opener.length, end)
 }
 
-const getInitErrorRules = (sheet: string | undefined): string[] =>
-  (sheet ?? '').match(/#init_error[^\{]*\{[^\}]*\}/gv) ?? []
+const getInitErrorRules = (sheet = ''): string[] =>
+  sheet.match(/#init_error[^\{]*\{[^\}]*\}/gv) ?? []
 
 describe('widget styles', () => {
   it('should keep the zone-select stylesheets byte-identical', async () => {

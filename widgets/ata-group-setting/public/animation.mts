@@ -122,11 +122,11 @@ const generateDelay = (delay: number, speed: number): number => {
 const parseStateParams = (
   state: Classic.GroupState,
 ): { isSomethingOn: boolean; newMode: number; newSpeed: number } => {
-  const { FanSpeed: speed, OperationMode: mode, Power: isOn } = state
+  const { FanSpeed: speed, OperationMode: mode = null, Power: isOn } = state
   const numberSpeed = Number(speed)
   return {
     isSomethingOn: isOn !== false,
-    newMode: Number(mode ?? null),
+    newMode: Number(mode),
     newSpeed:
       numberSpeed === 0 || Number.isNaN(numberSpeed)
         ? ClassicFanSpeed.moderate
