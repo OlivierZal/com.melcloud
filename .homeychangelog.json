@@ -2053,5 +2053,20 @@
     "pl": "Gdy logowanie zostanie odrzucone, komunikat podaje teraz, która platforma MELCloud je odrzuciła i jak się przełączyć (konta MELCloud Home muszą logować się z wybraną opcją Home).",
     "ru": "Когда вход отклонён, сообщение теперь указывает, какая платформа MELCloud его отклонила и как переключиться (учётные записи MELCloud Home должны входить с выбранным Home).",
     "sv": "När en inloggning avvisas anger meddelandet nu vilken MELCloud-plattform som avvisade den och hur man byter (MELCloud Home-konton måste logga in med Home valt)."
+  },
+  "46.10.0": {
+    "ar": "تحتفظ تقارير التشخيص الآن بمزيد من نشاط التطبيق الأخير ولم تعد تتضمن عناوين MAC وIP لوحداتك.",
+    "da": "Diagnosticeringsrapporter bevarer nu mere af appens seneste aktivitet og indeholder ikke længere dine enheders MAC- og IP-adresser.",
+    "de": "Diagnoseberichte enthalten jetzt mehr von der jüngsten Aktivität der App und nicht mehr die MAC- und IP-Adressen Ihrer Geräte.",
+    "en": "Diagnostic reports now keep more of the app's recent activity and no longer include your units' MAC and IP addresses.",
+    "es": "Los informes de diagnóstico ahora conservan más actividad reciente de la app y ya no incluyen las direcciones MAC e IP de sus unidades.",
+    "fr": "Les rapports de diagnostic conservent désormais davantage de l'activité récente de l'app et n'incluent plus les adresses MAC et IP de vos unités.",
+    "it": "I report di diagnostica ora conservano più attività recente dell'app e non includono più gli indirizzi MAC e IP delle unità.",
+    "ko": "진단 보고서에 이제 앱의 최근 활동이 더 많이 남고, 기기의 MAC 및 IP 주소는 더 이상 포함되지 않습니다.",
+    "nl": "Diagnoserapporten bewaren nu meer van de recente activiteit van de app en bevatten niet langer de MAC- en IP-adressen van je units.",
+    "no": "Diagnoserapporter beholder nå mer av appens nylige aktivitet og inneholder ikke lenger enhetenes MAC- og IP-adresser.",
+    "pl": "Raporty diagnostyczne zachowują teraz więcej ostatniej aktywności aplikacji i nie zawierają już adresów MAC i IP Twoich urządzeń.",
+    "ru": "Отчёты диагностики теперь сохраняют больше недавней активности приложения и больше не содержат MAC- и IP-адреса ваших устройств.",
+    "sv": "Diagnostikrapporter behåller nu mer av appens senaste aktivitet och innehåller inte längre dina enheters MAC- och IP-adresser."
   }
 }
