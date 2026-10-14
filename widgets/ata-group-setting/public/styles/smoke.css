@@ -3,9 +3,9 @@
      per-frame filter pass. */
   background: radial-gradient(
     circle,
-    rgb(200 200 200) 0%,
+    rgb(200 200 200),
     rgb(200 200 200) 65%,
-    transparent 100%
+    transparent
   );
   block-size: var(--size);
   border-radius: 50%;

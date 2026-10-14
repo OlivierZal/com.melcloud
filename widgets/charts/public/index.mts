@@ -356,7 +356,7 @@ const chartModeBands = new WeakMap<object, readonly RenderBand[]>()
 const getHiddenModes = (chart: Chart<WidgetChartType>): Set<string> =>
   new Set(
     chart.data.datasets.flatMap(({ label }, index) =>
-      label !== undefined && !chart.isDatasetVisible(index) ? label : [],
+      label === undefined || chart.isDatasetVisible(index) ? [] : label,
     ),
   )
 

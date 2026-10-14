@@ -82,7 +82,6 @@ const totalKey = (measure: HomeEnergyMeasureName): string =>
 const toEnergyPoints = (
   points: readonly Home.EnergySeriesPoint[],
 ): EnergyPoint[] =>
-  // eslint-disable-next-line unicorn/prefer-default-parameters -- `kilowattHours` is `null` on a degraded sample (melcloud-api's `EnergySeriesPoint`), which no destructuring default covers
   points.flatMap(({ atEpochMs, kilowattHours }) =>
     atEpochMs === null
       ? []

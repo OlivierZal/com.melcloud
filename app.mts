@@ -453,7 +453,7 @@ export default class MELCloudApp extends App {
         ...getDriverSettings(driver, language),
         ...getDriverLoginSetting(driver, language),
       ]),
-      ({ driverId, groupId }) => groupId ?? driverId,
+      ({ driverId, groupId = driverId }) => groupId,
     )
   }
 
@@ -473,9 +473,9 @@ export default class MELCloudApp extends App {
       from: Temporal.PlainDate.from(fromDate),
       timeZone,
       to:
-        query.to !== undefined && query.to !== ''
-          ? Temporal.PlainDate.from(query.to)
-          : null,
+        query.to === undefined || query.to === ''
+          ? null
+          : Temporal.PlainDate.from(query.to),
     }
     const allHomeEntries = await this.#getHomeErrorEntries()
     const homeEntries = allHomeEntries.filter((entry) =>
@@ -974,9 +974,9 @@ export default class MELCloudApp extends App {
       this.error('Home error log fetch failed:', name, result.error)
       return []
     }
-    return result.value.map(({ atEpochMs, code, message }) => ({
+    return result.value.map(({ atEpochMs, code = '', message = code }) => ({
       device: name,
-      error: message ?? code ?? '',
+      error: message,
       instant: toErrorInstant(atEpochMs),
     }))
   }
