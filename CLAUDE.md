@@ -409,9 +409,12 @@ coverage.
   ANYTHING else is a login failure. The credential rejection is keyed
   PER API (`settings.authenticate.rejected.{classic,home}`, the
   `notifications.sessionRestored.*` shape, `__name__` still the display
-  name) so the alert can say how to switch: the API selector defaults
-  to Classic until an account is saved, so a MELCloud Home account left
-  on it is told to select Home (#1699), and the Home leg adds that a
+  name) so the alert can say how to switch: until 46.11.0 the API
+  selector defaulted to Classic, so a MELCloud Home account left on it
+  was told to select Home (#1699); since 46.11.0 a fresh install opens
+  on Home, an install with an account opens on the account in use
+  (devices, else saved credentials) or on the one needing attention,
+  and the Home leg adds that a
   Sign in with Apple/Google account has no password this app can use —
   "Home"/"Classic" stay verbatim in all 13 locales because the option
   labels are language-neutral. Neither consults

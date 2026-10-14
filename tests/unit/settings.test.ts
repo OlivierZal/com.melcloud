@@ -1150,6 +1150,35 @@ describe('settings page', () => {
       expect(getDetails('authentication').open).toBe(false)
     })
 
+    it('should open on Home for a fresh install', async () => {
+      // Nothing signed in, nothing saved, nothing paired: the picker's
+      // own default — Home, the platform a new account is on.
+      await bootPage({
+        routes: {
+          ...defaultRoutes(),
+          'GET /sessions/classic': false,
+          'GET /settings/devices': {},
+        },
+        storedSettings: {},
+      })
+
+      expect(getSelect('api').value).toBe('home')
+    })
+
+    it('should open on a signed-in account that has no device yet', async () => {
+      // Classic signed in with saved credentials but nothing paired:
+      // the account in use wins over the fresh-install default.
+      await bootPage({
+        routes: { ...defaultRoutes(), 'GET /settings/devices': {} },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(getSelect('api').value).toBe('classic')
+    })
+
     it('should open on a signed-out account that has devices', async () => {
       await bootPage({
         routes: {

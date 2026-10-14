@@ -137,9 +137,12 @@ const commonElementTypes = new Set(['checkbox', 'dropdown'])
 const toApi = (driverId: string): Api =>
   driverId.startsWith('home-') ? 'home' : 'classic'
 
-// The two APIs, in the order the picker offers them; also the priority
-// order when auto-selecting an account whose credentials are missing.
-const API_VALUES: readonly Api[] = ['classic', 'home']
+// The two APIs, in the order the picker offers them — Home first, the
+// platform a fresh install is most likely to need, Classic being the one
+// MELCloud is retiring (46.11.0; Classic led until then, which is what
+// sent #1699's Home account to the Classic server). Also the priority
+// order when auto-selecting the account to open on.
+const API_VALUES: readonly Api[] = ['home', 'classic']
 
 // What deciding "which account needs attention" takes: who is signed
 // out, and where the devices are — the second known only to the page,
@@ -537,10 +540,7 @@ class AuthManager {
       'password',
       driverSettings,
     )
-    // Open on the account that needs attention so what the user sees
-    // first is the account to fix; the caller owns which accounts
-    // qualify, because only it knows where the devices are.
-    this.#selectApiNeedingAttention(this.getApisNeedingAttention(attention))
+    this.#selectApiToOpenOn(attention)
     this.#syncInputsFromCredentials()
     this.#gate.markSaved()
   }
@@ -660,10 +660,22 @@ class AuthManager {
     return username !== '' && password !== ''
   }
 
-  #selectApiNeedingAttention(apisNeedingAttention: readonly Api[]): void {
-    const [needsAttention] = apisNeedingAttention
-    if (needsAttention !== undefined) {
-      this.#apiSelect.value = needsAttention
+  // Open on the account that needs attention so what the user sees first
+  // is the account to fix; the caller owns which accounts qualify, because
+  // only it knows where the devices are. With no chore, open on the
+  // account in use — devices paired, else credentials saved — so a
+  // Classic-only install never lands on an empty Home form; the picker's
+  // own default, Home, is what a fresh install sees.
+  #selectApiToOpenOn(attention: AttentionInputs): void {
+    const [api] = [
+      ...this.getApisNeedingAttention(attention),
+      ...API_VALUES.filter((candidate) => attention.hasDevices(candidate)),
+      ...API_VALUES.filter((candidate) =>
+        this.#hasCompleteCredentials(candidate),
+      ),
+    ]
+    if (api !== undefined) {
+      this.#apiSelect.value = api
     }
   }
 
