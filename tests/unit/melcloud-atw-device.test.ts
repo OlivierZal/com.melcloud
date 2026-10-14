@@ -11,9 +11,10 @@ import type {
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
 } from '../../types/classic-capabilities.mts'
+import { EnergyReport } from '../../drivers/classic-report.mts'
 import { HotWaterMode } from '../../types/atw.mts'
 import {
-  testEnergyReportConfig,
+  testEnergyReportConfigs,
   testThermostatMode,
 } from '../device-descriptors.ts'
 import ClassicMELCloudDeviceAtw from '../../drivers/melcloud_atw/device.mts'
@@ -121,18 +122,35 @@ describe(ClassicMELCloudDeviceAtw, () => {
 
   testThermostatMode(() => device as object, null)
 
-  testEnergyReportConfig(() => device as object, 'energyReportRegular', {
-    duration: { days: 1 },
-    minus: { days: 1 },
-    mode: 'regular',
-    values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
+  testEnergyReportConfigs(() => device as object, {
+    regular: {
+      duration: { days: 1 },
+      minus: { days: 1 },
+      mode: 'regular',
+      values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
+    },
+    total: {
+      duration: { days: 1 },
+      minus: { days: 1 },
+      mode: 'total',
+      values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+    },
   })
 
-  testEnergyReportConfig(() => device as object, 'energyReportTotal', {
-    duration: { days: 1 },
-    minus: { days: 1 },
-    mode: 'total',
-    values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+  // `EnergyReport` is the setup-level mock: the factory is judged by the
+  // constructor call it makes, with this device as the report's owner.
+  describe('energyReports.create', () => {
+    it('should build a Classic energy report for this device', () => {
+      const config = {
+        duration: { days: 1 },
+        minus: { days: 1 },
+        mode: 'regular' as const,
+        values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
+      }
+      device.energyReports.create(config)
+
+      expect(EnergyReport).toHaveBeenCalledWith(device as object, config)
+    })
   })
 
   describe('device-to-capability conversions', () => {

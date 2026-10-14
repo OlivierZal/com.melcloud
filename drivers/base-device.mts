@@ -11,7 +11,6 @@ import {
   isAPIError,
   NoChangesError,
 } from '@olivierzal/melcloud-api'
-import { Temporal } from 'temporal-polyfill'
 
 import type { Api } from '../types/api.mts'
 import type { CapabilityConverter } from '../types/bases.mts'
@@ -23,12 +22,8 @@ import type {
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { withoutOptInCapabilities } from '../lib/opt-in-capabilities.mts'
-import { getNow } from '../lib/temporal.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 import type { EnergyReportConfig } from './base-report.mts'
-
-const capitalize = ([first = '', ...rest] = ''): string =>
-  first.toUpperCase() + rest.join('')
 
 const DEBOUNCE_DELAY = 1000
 const modes: EnergyReportMode[] = ['regular', 'total']
@@ -52,6 +47,14 @@ const HELD_WARNINGS = [
   { message: 'errors.energyReportsFailing', reason: 'regularEnergyReports' },
   { message: 'errors.energyReportsFailing', reason: 'totalEnergyReports' },
 ] as const
+
+// A device reports energy with both cadences or not at all: the factory
+// and the two configs travel together.
+export interface EnergyReports {
+  readonly regular: EnergyReportConfig
+  readonly total: EnergyReportConfig
+  readonly create: (config: EnergyReportConfig) => EnergyReportOperation
+}
 
 export type HeldWarningReason = (typeof HELD_WARNINGS)[number]['reason']
 
@@ -85,15 +88,9 @@ export abstract class BaseMELCloudDevice<
     return this.getData().id
   }
 
-  // No energy reports unless a subclass provides both the configs and the
-  // factory; thermostat vocabularies without an off value keep the null
-  // default.
-  protected readonly createEnergyReport:
-    ((config: EnergyReportConfig) => EnergyReportOperation) | null = null
-
-  protected readonly energyReportRegular: EnergyReportConfig | null = null
-
-  protected readonly energyReportTotal: EnergyReportConfig | null = null
+  // No energy reports unless a subclass wires the bundle; the ERV, whose
+  // wire carries no energy, keeps the null default.
+  protected readonly energyReports: EnergyReports | null = null
 
   protected readonly thermostatMode: Record<string, string> | null = null
 
@@ -311,28 +308,6 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  public setTimeout(
-    callback: () => Promise<void>,
-    interval: Temporal.DurationLike,
-    actionType: string,
-  ): NodeJS.Timeout {
-    const duration = Temporal.Duration.from(interval)
-    const locale = this.homey.i18n.getLanguage()
-    this.log(
-      capitalize(actionType),
-      'will run in',
-      duration.round({ largestUnit: 'days' }).toLocaleString(locale),
-      'on',
-      getNow(this.homey)
-        .add(duration)
-        .toLocaleString(locale, { dateStyle: 'full', timeStyle: 'full' }),
-    )
-    return this.homey.setTimeout(
-      callback,
-      duration.total({ unit: 'milliseconds' }),
-    )
-  }
-
   // The transient toast for ONE-SHOT errors (a failed write, a refused
   // setting). Homey keeps a warning bubble on the device tile until it is
   // cleared: setting the message and resetting it right away shows the
@@ -421,18 +396,13 @@ export abstract class BaseMELCloudDevice<
   }
 
   protected async scheduleEnergyReports(): Promise<void> {
-    if (this.createEnergyReport === null) {
+    if (this.energyReports === null) {
       return
     }
-    if (this.energyReportRegular !== null) {
-      this.#reports.regular = this.createEnergyReport(this.energyReportRegular)
-      await this.#reports.regular.start()
-    }
-    if (this.energyReportTotal === null) {
-      return
-    }
-
-    this.#reports.total = this.createEnergyReport(this.energyReportTotal)
+    const { create, regular, total } = this.energyReports
+    this.#reports.regular = create(regular)
+    await this.#reports.regular.start()
+    this.#reports.total = create(total)
     await this.#reports.total.start()
   }
 

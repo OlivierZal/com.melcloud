@@ -10,7 +10,6 @@ import type {
 import type { ClassicMELCloudDevice } from '../types/classic.mts'
 import type { DeviceDetails } from '../types/device.mts'
 import { withoutOptInCapabilities } from '../lib/opt-in-capabilities.mts'
-import { typedEntries } from '../lib/typed-object.mts'
 import { BaseMELCloudDriver } from './base-driver.mts'
 
 export abstract class ClassicMELCloudDriver<
@@ -31,19 +30,8 @@ export abstract class ClassicMELCloudDriver<
 
   public abstract override readonly type: T
 
-  public readonly consumedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
-    {}
-
-  public readonly producedTagMapping: Partial<EnergyCapabilityTagMapping<T>> =
-    {}
-
   protected override get api(): Classic.API {
     return this.homey.app.classicApi
-  }
-
-  public override async onInit(): Promise<void> {
-    await super.onInit()
-    this.#setProducedAndConsumedTagMappings()
   }
 
   public abstract getRequiredCapabilities(
@@ -74,19 +62,6 @@ export abstract class ClassicMELCloudDriver<
       capabilitiesOptions: this.getCapabilitiesOptions(data),
       data: { id },
       name,
-    }
-  }
-
-  #setProducedAndConsumedTagMappings(): void {
-    for (const [capability, tags] of typedEntries<
-      string & keyof EnergyCapabilityTagMapping<T>,
-      EnergyCapabilityTagMapping<T>[keyof EnergyCapabilityTagMapping<T>]
-    >(this.tagMappings.energy)) {
-      const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
-        tag.endsWith('Consumed') ? 'consumed' : 'produced',
-      )
-      this.consumedTagMapping[capability] = consumed
-      this.producedTagMapping[capability] = produced
     }
   }
 }

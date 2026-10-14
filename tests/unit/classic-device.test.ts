@@ -9,6 +9,7 @@ import {
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type { EnergyReports } from '../../drivers/base-device.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type * as BaseReportModule from '../../drivers/classic-report.mts'
 import type {
@@ -18,6 +19,7 @@ import type {
   SetCapabilityTagMapping,
 } from '../../types/classic-capabilities.mts'
 import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
+import { EnergyReport } from '../../drivers/classic-report.mts'
 import {
   createCapabilityListenerCallbackGetter,
   testDeletion,
@@ -170,6 +172,27 @@ const setDriver = (
   driver: ClassicMELCloudDriver<TestDeviceType> = mockDriver,
 ): void => {
   Object.defineProperty(target, 'driver', { configurable: true, value: driver })
+}
+
+// The ATA bundle, wired onto a test device the way the concrete devices
+// declare theirs; `EnergyReport` is the mocked constructor above.
+const wireEnergyReports = (target: TestDevice): void => {
+  const energyReports: EnergyReports = {
+    regular: {
+      duration: { hours: 1 },
+      minus: { hours: 1 },
+      mode: 'regular',
+      values: { millisecond: 0, minute: 5, second: 0 },
+    },
+    total: {
+      duration: { days: 1 },
+      minus: { hours: 1 },
+      mode: 'total',
+      values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+    },
+    create: (config) => new EnergyReport(target, config),
+  }
+  Object.defineProperty(target, 'energyReports', { value: energyReports })
 }
 
 describe(ClassicMELCloudDevice, () => {
@@ -688,81 +711,39 @@ describe(ClassicMELCloudDevice, () => {
   })
 
   describe('energy report handling', () => {
-    it('should skip energy reports without a factory', async () => {
-      const { EnergyReport } = await import('../../drivers/classic-report.mts')
+    it('should skip energy reports when none are wired', async () => {
       const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
-      const deviceWithoutFactory = new TestDevice()
-      Object.defineProperties(deviceWithoutFactory, {
-        createEnergyReport: { value: null },
-        energyReportRegular: {
-          value: {
-            duration: { hours: 1 },
-            mode: 'regular' as const,
-            values: { millisecond: 0, minute: 5, second: 0 },
-          },
-        },
-      })
-      setDriver(deviceWithoutFactory)
-      await deviceWithoutFactory.onInit()
+      const deviceWithoutReports = new TestDevice()
+      setDriver(deviceWithoutReports)
+      await deviceWithoutReports.onInit()
+      await settleDetached()
 
       expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
         0,
       )
     })
 
-    it('should create energy report for regular config', async () => {
-      const { EnergyReport } = await import('../../drivers/classic-report.mts')
+    it('should create the regular and the total reports from the bundle', async () => {
       const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
-      const deviceWithRegular = new TestDevice()
-      Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
-        value: {
-          duration: { hours: 1 },
-          minus: { hours: 1 },
-          mode: 'regular' as const,
-          values: { millisecond: 0, minute: 5, second: 0 },
-        },
-      })
-      setDriver(deviceWithRegular)
-      await deviceWithRegular.onInit()
+      const deviceWithReports = new TestDevice()
+      wireEnergyReports(deviceWithReports)
+      setDriver(deviceWithReports)
+      await deviceWithReports.onInit()
       await settleDetached()
 
       expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
-        1,
+        2,
       )
-    })
-
-    it('should create energy report for total config', async () => {
-      const { EnergyReport } = await import('../../drivers/classic-report.mts')
-      const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
-      const deviceWithTotal = new TestDevice()
-      Object.defineProperty(deviceWithTotal, 'energyReportTotal', {
-        value: {
-          duration: { days: 1 },
-          minus: { days: 1 },
-          mode: 'total' as const,
-          values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-        },
-      })
-      setDriver(deviceWithTotal)
-      await deviceWithTotal.onInit()
-      await settleDetached()
-
-      expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
-        1,
+      expect(vi.mocked(EnergyReport)).toHaveBeenLastCalledWith(
+        deviceWithReports,
+        expect.objectContaining({ mode: 'total' }),
       )
     })
 
     it('should log when an energy report restart fails', async () => {
       const failure = new Error('report start failed')
       const deviceWithRegular = new TestDevice()
-      Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
-        value: {
-          duration: { hours: 1 },
-          minus: { hours: 1 },
-          mode: 'regular' as const,
-          values: { millisecond: 0, minute: 5, second: 0 },
-        },
-      })
+      wireEnergyReports(deviceWithRegular)
       const driverWithEnergy = Object.create(mockDriver) as typeof mockDriver
       Object.assign(driverWithEnergy, {
         manifest: mock({
@@ -796,14 +777,7 @@ describe(ClassicMELCloudDevice, () => {
         Promise.withResolvers()
       energyReportStartMock.mockReturnValueOnce(promise)
       const deviceWithRegular = new TestDevice()
-      Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
-        value: {
-          duration: { hours: 1 },
-          minus: { hours: 1 },
-          mode: 'regular' as const,
-          values: { millisecond: 0, minute: 5, second: 0 },
-        },
-      })
+      wireEnergyReports(deviceWithRegular)
       setDriver(deviceWithRegular)
       // Resolves although the initial fetch hangs: device readiness
       // must not depend on MELCloud latency (Early 2018 Homeys hit the
@@ -819,14 +793,7 @@ describe(ClassicMELCloudDevice, () => {
     it('should log a detached scheduling failure without breaking init', async () => {
       energyReportStartMock.mockRejectedValueOnce(new Error('fetch down'))
       const deviceWithRegular = new TestDevice()
-      Object.defineProperty(deviceWithRegular, 'energyReportRegular', {
-        value: {
-          duration: { hours: 1 },
-          minus: { hours: 1 },
-          mode: 'regular' as const,
-          values: { millisecond: 0, minute: 5, second: 0 },
-        },
-      })
+      wireEnergyReports(deviceWithRegular)
       setDriver(deviceWithRegular)
       await deviceWithRegular.onInit()
       await settleDetached()
@@ -870,15 +837,6 @@ describe(ClassicMELCloudDevice, () => {
       await freshDevice.syncFromDevice()
 
       expect(realtimeMock).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('timer methods', () => {
-    it('should delegate setTimeout to homey.setTimeout with duration in ms', () => {
-      const callback = vi.fn<() => Promise<void>>()
-      device.setTimeout(callback, { minutes: 5 }, 'sync')
-
-      expect(device.homey.setTimeout).toHaveBeenCalledWith(callback, 300_000)
     })
   })
 

@@ -6,7 +6,7 @@ import * as Classic from '@olivierzal/melcloud-api/classic'
 import { ThermostatModeErv } from '../../types/erv.mts'
 import {
   testCapabilityToDeviceConverters,
-  testEnergyReportConfig,
+  testNoEnergyReports,
   testThermostatMode,
 } from '../device-descriptors.ts'
 import ClassicMELCloudDeviceErv from '../../drivers/melcloud_erv/device.mts'
@@ -29,9 +29,7 @@ describe(ClassicMELCloudDeviceErv, () => {
 
   testThermostatMode(() => device as object, ThermostatModeErv)
 
-  testEnergyReportConfig(() => device as object, 'energyReportRegular', null)
-
-  testEnergyReportConfig(() => device as object, 'energyReportTotal', null)
+  testNoEnergyReports(() => device as object)
 
   describe('device-to-capability conversions', () => {
     it.each([

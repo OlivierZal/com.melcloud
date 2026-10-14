@@ -5,6 +5,7 @@ import type {
   HomeConvertFromDevice,
   HomeConvertToDevice,
 } from '../../types/home.mts'
+import type { EnergyReports } from '../base-device.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
 import { HotWaterMode } from '../../types/atw.mts'
 import {
@@ -12,8 +13,11 @@ import {
   type HomeSetCapabilitiesAtw,
   hasAtwEnergyDirection,
 } from '../../types/home-atw.mts'
-import { HomeMELCloudDevice } from '../home-device.mts'
-import { HomeEnergyReportAtw } from '../home-report-atw.mts'
+import {
+  HOME_ENERGY_REPORT_TOTAL,
+  HomeMELCloudDevice,
+} from '../home-device.mts'
+import { ATW_ENERGY_STRATEGY, HomeEnergyReport } from '../home-report.mts'
 
 type AtwType = typeof Home.DeviceType.Atw
 
@@ -60,15 +64,18 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
   // Near-live power derives from minute buckets: a 5-minute cadence keeps
   // it fresh without hammering the telemetry endpoint; meters accrue hourly
   // at hh:05 like the Classic reports.
-  protected override readonly energyReportRegular: EnergyReportConfig = {
-    duration: { minutes: 5 },
-    mode: 'regular',
-    values: { millisecond: 0, second: 0 },
+  protected override readonly energyReports: EnergyReports = {
+    regular: {
+      duration: { minutes: 5 },
+      mode: 'regular',
+      values: { millisecond: 0, second: 0 },
+    },
+    total: HOME_ENERGY_REPORT_TOTAL,
+    create: (
+      config: EnergyReportConfig,
+    ): HomeEnergyReport<typeof Home.DeviceType.Atw> =>
+      new HomeEnergyReport(this, config, ATW_ENERGY_STRATEGY),
   }
-
-  protected override readonly createEnergyReport = (
-    config: EnergyReportConfig,
-  ): HomeEnergyReportAtw => new HomeEnergyReportAtw(this, config)
 
   // Consumed-side capabilities need a consumption estimate or meter,
   // produced-side ones a production estimate or meter; COP needs both.

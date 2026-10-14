@@ -3,9 +3,11 @@ import { Temporal } from 'temporal-polyfill'
 
 import type { HomeEnergyMeasureName } from '../types/device.mts'
 import type { HomeDeviceFacade } from '../types/home.mts'
+import { KILO } from '../lib/constants.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { getNow } from '../lib/temporal.mts'
 import { typedEntries, typedFromEntries } from '../lib/typed-object.mts'
+import { unwrapResult } from '../lib/unwrap-result.mts'
 import type { HomeMELCloudDevice } from './home-device.mts'
 import {
   type EnergyReportConfig,
@@ -16,39 +18,31 @@ import {
 // vocabulary: minute buckets are near-live and sparse — an empty
 // window means an idle unit — where the coarser grains would lag the
 // power readings.
-export const TELEMETRY_INTERVAL: Home.EnergyInterval = 'Minute'
-export const MINUTES_PER_HOUR = 60
+const TELEMETRY_INTERVAL: Home.EnergyInterval = 'Minute'
+const MINUTES_PER_HOUR = 60
 // The single ATA counter has no per-mode split and no live power: the
 // approximated reading is a coarse average over this trailing window.
-export const POWER_WINDOW_HOURS = 2
-export const POWER_WINDOW: Temporal.DurationLike = { hours: POWER_WINDOW_HOURS }
+const POWER_WINDOW_HOURS = 2
+const POWER_WINDOW: Temporal.DurationLike = { hours: POWER_WINDOW_HOURS }
 // A bucket older than this horizon means the unit stopped: report 0 W.
-export const POWER_FRESHNESS: Temporal.DurationLike = { minutes: 3 }
+const POWER_FRESHNESS: Temporal.DurationLike = { minutes: 3 }
 // Buckets land up to ~2 min late: totals only accrue up to this safety
 // margin so a late bucket can never be skipped by an advanced cursor.
 const CURSOR_SAFETY: Temporal.DurationLike = { minutes: 15 }
 
 type EnergyEntry = readonly [string, readonly HomeEnergyMeasureName[]]
 
+// One bucketable sample: the library's epoch-ms stamp as an instant,
+// its energy in kWh whatever the device type.
+interface EnergyPoint {
+  readonly instant: Temporal.Instant
+  readonly value: number
+}
+
 interface HomeEnergyQuery {
   readonly from: string
   readonly measure: HomeEnergyMeasureName
   readonly to: string
-}
-
-// Per-type strategy over the library's normalized kWh series: how to
-// fetch a measure's points (ATW selects a direction, ATA has none) and
-// derive an instantaneous power reading. Injected by the concrete
-// reports so the engine stays type-agnostic.
-interface HomeEnergyStrategy<T extends Home.DeviceType> {
-  readonly fetchPoints: (
-    facade: HomeDeviceFacade<T>,
-    query: HomeEnergyQuery,
-  ) => Promise<EnergyPoint[]>
-  readonly watts: (
-    points: readonly EnergyPoint[],
-    now: Temporal.Instant,
-  ) => number
 }
 
 type MeasurePoints = Partial<
@@ -60,11 +54,19 @@ interface RegularBoundaries {
   readonly now: Temporal.Instant
 }
 
-// One bucketable sample: the library's epoch-ms stamp as an instant,
-// its energy in kWh whatever the device type.
-export interface EnergyPoint {
-  readonly instant: Temporal.Instant
-  readonly value: number
+// Per-type policy over the library's normalized kWh series: how to
+// fetch a measure's points (ATW selects a direction, ATA has none) and
+// derive an instantaneous power reading. The engine below takes one of
+// the two objects at the end of this file and stays type-agnostic.
+export interface HomeEnergyStrategy<T extends Home.DeviceType> {
+  readonly fetchPoints: (
+    facade: HomeDeviceFacade<T>,
+    query: HomeEnergyQuery,
+  ) => Promise<EnergyPoint[]>
+  readonly watts: (
+    points: readonly EnergyPoint[],
+    now: Temporal.Instant,
+  ) => number
 }
 
 const cursorKey = (measure: HomeEnergyMeasureName): string =>
@@ -77,7 +79,7 @@ const totalKey = (measure: HomeEnergyMeasureName): string =>
 // fields: a `null` energy counts as 0 like the Classic report's tags,
 // and a sample without an instant cannot join any window, so it is
 // dropped.
-export const toEnergyPoints = (
+const toEnergyPoints = (
   points: readonly Home.EnergySeriesPoint[],
 ): EnergyPoint[] =>
   // eslint-disable-next-line unicorn/prefer-default-parameters -- `kilowattHours` is `null` on a degraded sample (melcloud-api's `EnergySeriesPoint`), which no destructuring default covers
@@ -90,7 +92,7 @@ export const toEnergyPoints = (
         },
   )
 
-export const sumSince = (
+const sumSince = (
   points: readonly EnergyPoint[],
   boundary: Temporal.Instant,
 ): number => {
@@ -121,7 +123,7 @@ const totalValue = (
   return totals[measure] ?? 0
 }
 
-export abstract class HomeEnergyReport<
+export class HomeEnergyReport<
   T extends Home.DeviceType,
 > extends ScheduledEnergyReport {
   readonly #device: HomeMELCloudDevice<T>
@@ -140,7 +142,7 @@ export abstract class HomeEnergyReport<
     )
   }
 
-  protected constructor(
+  public constructor(
     device: HomeMELCloudDevice<T>,
     config: EnergyReportConfig,
     strategy: HomeEnergyStrategy<T>,
@@ -349,4 +351,58 @@ export abstract class HomeEnergyReport<
     const value = Number(this.#device.getStoreValue(key))
     return Number.isFinite(value) ? value : 0
   }
+}
+
+// The single ATA counter has no per-mode split and no live power: the
+// reading is a coarse average over the trailing window — kWh over the
+// window divided by its span reads kW, scaled to W — since the wire's
+// 100 Wh pulse quantum makes anything finer noise.
+export const ATA_ENERGY_STRATEGY: HomeEnergyStrategy<
+  typeof Home.DeviceType.Ata
+> = {
+  fetchPoints: async (facade, { from, to }) =>
+    toEnergyPoints(
+      unwrapResult(
+        await facade.getEnergySeries({
+          from,
+          interval: TELEMETRY_INTERVAL,
+          to,
+        }),
+      ),
+    ),
+  watts: (points, now) =>
+    (sumSince(points, now.subtract(POWER_WINDOW)) / POWER_WINDOW_HOURS) * KILO,
+}
+
+// The ATW wire serves a direction per measure and near-live minute
+// buckets: the latest bucket within the freshness horizon reads as power
+// (kWh per minute → W); a sparse window means an idle unit.
+export const ATW_ENERGY_STRATEGY: HomeEnergyStrategy<
+  typeof Home.DeviceType.Atw
+> = {
+  fetchPoints: async (facade, { from, measure, to }) =>
+    toEnergyPoints(
+      unwrapResult(
+        await facade.getEnergySeries({
+          from,
+          interval: TELEMETRY_INTERVAL,
+          measure,
+          to,
+        }),
+      ),
+    ),
+  watts: (points, now) => {
+    const boundary = now.subtract(POWER_FRESHNESS)
+    let latest: EnergyPoint | null = null
+    for (const point of points) {
+      if (
+        Temporal.Instant.compare(point.instant, boundary) >= 0 &&
+        (latest === null ||
+          Temporal.Instant.compare(point.instant, latest.instant) > 0)
+      ) {
+        latest = point
+      }
+    }
+    return latest === null ? 0 : latest.value * MINUTES_PER_HOUR * KILO
+  },
 }
