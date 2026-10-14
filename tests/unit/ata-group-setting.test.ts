@@ -91,7 +91,7 @@ describe('ata group setting widget', () => {
 
   it('should keep one selector source alive when the other fails', async () => {
     const harness = await bootWidget({
-      failures: { 'GET /classic/buildings?type=0': new Error('classic down') },
+      failures: { 'GET /classic/buildings': new Error('classic down') },
       routes: {
         ...widgetRoutes(),
         'GET /targets/homeBuildings_b_1/ata': groupStateFixture(),
@@ -108,7 +108,7 @@ describe('ata group setting widget', () => {
     const harness = await bootWidget({
       routes: {
         ...widgetRoutes(),
-        'GET /classic/buildings?type=0': [],
+        'GET /classic/buildings': [],
         'GET /home/targets/ata': [],
       },
     })

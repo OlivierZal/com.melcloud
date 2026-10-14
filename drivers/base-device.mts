@@ -23,7 +23,7 @@ import type {
 import { type Homey, Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { withoutOptInCapabilities } from '../lib/opt-in-capabilities.mts'
-import { getLocale, getNow } from '../lib/temporal.mts'
+import { getNow } from '../lib/temporal.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 
@@ -181,7 +181,12 @@ export abstract class BaseMELCloudDevice<
   }
 
   public override onDeleted(): void {
-    this.cleanupDevice()
+    if (this.#syncTimeout !== null) {
+      this.homey.clearTimeout(this.#syncTimeout)
+      this.#syncTimeout = null
+    }
+    this.#reports.regular?.unschedule()
+    this.#reports.total?.unschedule()
   }
 
   public override async onUninit(): Promise<void> {
@@ -312,7 +317,7 @@ export abstract class BaseMELCloudDevice<
     actionType: string,
   ): NodeJS.Timeout {
     const duration = Temporal.Duration.from(interval)
-    const locale = getLocale(this.homey)
+    const locale = this.homey.i18n.getLanguage()
     this.log(
       capitalize(actionType),
       'will run in',
@@ -386,27 +391,14 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  protected cleanupDevice(): void {
-    if (this.#syncTimeout !== null) {
-      this.homey.clearTimeout(this.#syncTimeout)
-      this.#syncTimeout = null
-    }
-    this.#reports.regular?.unschedule()
-    this.#reports.total?.unschedule()
-  }
-
   // Manifest membership plus device-level support: subclasses veto
   // capabilities the hardware cannot serve (e.g. energy without a meter).
   protected isCapabilitySupported(capability: string): boolean {
-    return this.isManifestCapability(capability)
+    return this.driver.manifest.capabilities.includes(capability)
   }
 
   protected isEnergyCapability(setting: string): boolean {
     return Object.hasOwn(this.driver.tagMappings.energy, setting)
-  }
-
-  protected isManifestCapability(capability: string): boolean {
-    return this.driver.manifest.capabilities.includes(capability)
   }
 
   protected mapCapabilitiesToDeviceTags(

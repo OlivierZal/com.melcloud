@@ -177,7 +177,7 @@ const homeAtaTargetsFixture = (): unknown => [
 ]
 
 export const widgetRoutes = (): Record<string, unknown> => ({
-  'GET /classic/buildings?type=0': classicAtaBuildingsFixture(),
+  'GET /classic/buildings': classicAtaBuildingsFixture(),
   'GET /classic/capabilities/ata': ataCapabilitiesFixture(),
   'GET /home/targets/ata': homeAtaTargetsFixture(),
   'GET /language': 'fr',

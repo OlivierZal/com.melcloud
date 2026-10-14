@@ -162,30 +162,6 @@ class NoClassicDeviceError extends NoDeviceError {
   public override name = 'NoClassicDeviceError'
 }
 
-// Native `disabled` (not a CSS class): it also blocks keyboard activation
-// during in-flight actions and is announced by screen readers. getButton
-// throws on a missing/mistyped id so a renamed button fails fast instead
-// of silently reintroducing double submission.
-const disableButton = (id: string, isDisabled = true): void => {
-  getButton(id).disabled = isDisabled
-}
-
-const withDisablingButton = async (
-  id: string,
-  action: () => Promise<void>,
-): Promise<void> => {
-  disableButton(id)
-  try {
-    await action()
-  } finally {
-    disableButton(id, false)
-  }
-}
-
-const hide = (element: HTMLElement, isHidden = true): void => {
-  element.hidden = isHidden
-}
-
 // The zone/device settings fieldset (frost protection + holiday mode) is
 // shown whenever either account is signed in: Classic contributes its zone
 // tree, Home its individual devices.
@@ -923,7 +899,7 @@ class DeviceSettingsManager {
         Object.hasOwn(this.#deviceSettings, driverId),
       )
     ) {
-      hide(getDiv('auto_adjust_section'), false)
+      getDiv('auto_adjust_section').hidden = false
     }
   }
 
@@ -1195,23 +1171,27 @@ class ErrorLogManager {
    * @alerts Displays fetch errors to the user.
    */
   public async fetchErrorLog(): Promise<void> {
-    await withDisablingButton(this.#seeButton.id, async () => {
-      try {
-        const data = await homeyApiGet<FormattedErrorLog>(
-          this.#homey,
-          `/logs/errors?${new URLSearchParams({
-            from: this.#sinceInput.value,
-            offset: '0',
-            period: '29',
-            to: this.#to,
-          } satisfies ErrorLogQueryParams)}`,
-        )
-        this.#updateErrorLogElements(data)
-        this.#appendErrorLogRows(data.errors)
-      } catch (error) {
-        await this.#homey.alert(getErrorMessage(error))
-      }
-    })
+    // Native `disabled` (not a CSS class): it also blocks keyboard
+    // activation during the in-flight fetch and is announced by screen
+    // readers.
+    this.#seeButton.disabled = true
+    try {
+      const data = await homeyApiGet<FormattedErrorLog>(
+        this.#homey,
+        `/logs/errors?${new URLSearchParams({
+          from: this.#sinceInput.value,
+          offset: '0',
+          period: '29',
+          to: this.#to,
+        } satisfies ErrorLogQueryParams)}`,
+      )
+      this.#updateErrorLogElements(data)
+      this.#appendErrorLogRows(data.errors)
+    } catch (error) {
+      await this.#homey.alert(getErrorMessage(error))
+    } finally {
+      this.#seeButton.disabled = false
+    }
   }
 
   #appendErrorLogRows(errors: readonly FormattedErrorDetails[]): void {
@@ -1505,7 +1485,8 @@ class SettingsApp {
       this.#authManager.getApisNeedingAttention(this.#attentionInputs())
         .length === 0,
     )
-    hide(this.#contentSection, !isClassicAuthenticated && !isHomeAuthenticated)
+    this.#contentSection.hidden =
+      !isClassicAuthenticated && !isHomeAuthenticated
     toggleZoneDeviceSettings(isClassicAuthenticated || isHomeAuthenticated)
   }
 
@@ -2127,7 +2108,7 @@ class ZoneSettingsManager {
   #refreshOverheatVisibility(): void {
     const { value } = this.#zone
     const isCapable = this.#overheatCapableValues.has(value)
-    hide(this.#overheatPanel, !isCapable)
+    this.#overheatPanel.hidden = !isCapable
     // The bulk write of a mixed building silently skips its ATW devices —
     // the qualifier says so; a pure-ATA building (or a device) needs none.
     this.#overheatScope.hidden =

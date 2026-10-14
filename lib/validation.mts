@@ -55,42 +55,19 @@ export const toNonNegativeInt = (
 }
 
 /**
- * Validates a raw `zoneType`/`zoneId` pair (from a request path or a parsed
- * option value), also accepting a single device (frost protection and
- * holiday mode — the settings page lists devices in its zone selector).
- * `zoneType` is later used to index the zone registry, so reject anything
- * outside the known collections.
- * @param root0 - The raw coordinates to validate.
- * @param root0.zoneId - Identifier of the target device or zone.
- * @param root0.zoneType - Collection name, also accepting `devices`, rejected when unknown.
- * @returns The validated pair narrowed to `DeviceOrZoneData`.
- * @throws {@link RangeError} when zoneType is neither a known zone collection nor `devices`.
- */
-const toDeviceOrZoneData = ({
-  zoneId,
-  zoneType,
-}: {
-  readonly zoneId: string
-  readonly zoneType: string
-}): DeviceOrZoneData => {
-  if (!isDeviceOrZoneType(zoneType)) {
-    throw new RangeError(`Invalid zone type: ${zoneType}`)
-  }
-  return { zoneId, zoneType }
-}
-
-/**
  * Splits a `${model}_${id}` zone option value — as carried by every flat
  * picker item — into validated coordinates. The model is a single word and
  * the id numeric, so the first underscore separates them; the type is then
  * guarded exactly like a request path param.
  * @param value - The `${model}_${id}` option value emitted by a flat picker item.
  * @returns The decoded coordinates narrowed to `DeviceOrZoneData`.
+ * @throws {@link RangeError} when the type is neither a known zone collection nor `devices`.
  */
 export const toZoneValueData = (value: string): DeviceOrZoneData => {
   const separator = value.indexOf('_')
-  return toDeviceOrZoneData({
-    zoneId: value.slice(separator + 1),
-    zoneType: value.slice(0, separator),
-  })
+  const zoneType = value.slice(0, separator)
+  if (!isDeviceOrZoneType(zoneType)) {
+    throw new RangeError(`Invalid zone type: ${zoneType}`)
+  }
+  return { zoneId: value.slice(separator + 1), zoneType }
 }

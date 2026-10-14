@@ -108,12 +108,7 @@ class WidgetApp {
 
   async #initTargets(): Promise<void> {
     const [buildings, homeTargets] = await Promise.all([
-      fetchList<Classic.BuildingZone>(
-        this.#homey,
-        `/classic/buildings?${new URLSearchParams({ type: '0' } satisfies {
-          type: `${Classic.DeviceType}`
-        })}`,
-      ),
+      fetchList<Classic.BuildingZone>(this.#homey, '/classic/buildings'),
       fetchList<HomeBuildingZone | HomeDeviceZone>(
         this.#homey,
         '/home/targets/ata',
