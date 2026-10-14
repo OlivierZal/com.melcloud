@@ -2068,5 +2068,20 @@
     "pl": "Raporty diagnostyczne zachowują teraz więcej ostatniej aktywności aplikacji i nie zawierają już adresów MAC i IP Twoich urządzeń.",
     "ru": "Отчёты диагностики теперь сохраняют больше недавней активности приложения и больше не содержат MAC- и IP-адреса ваших устройств.",
     "sv": "Diagnostikrapporter behåller nu mer av appens senaste aktivitet och innehåller inte längre dina enheters MAC- och IP-adresser."
+  },
+  "46.11.0": {
+    "ar": "تفتح صفحة تسجيل الدخول الآن على MELCloud Home عند التثبيت الجديد، وعلى الحساب المستخدم بالفعل في الحالات الأخرى.",
+    "da": "Logonsiden åbner nu på MELCloud Home ved en ny installation og ellers på den konto, der allerede er i brug.",
+    "de": "Die Anmeldeseite öffnet sich bei einer Neuinstallation jetzt auf MELCloud Home, ansonsten auf dem bereits verwendeten Konto.",
+    "en": "The sign-in page now opens on MELCloud Home for a new installation, and on the account already in use otherwise.",
+    "es": "La página de inicio de sesión ahora se abre en MELCloud Home en una instalación nueva y, en caso contrario, en la cuenta ya en uso.",
+    "fr": "La page de connexion s'ouvre désormais sur MELCloud Home pour une nouvelle installation, et sinon sur le compte déjà utilisé.",
+    "it": "La pagina di accesso ora si apre su MELCloud Home per una nuova installazione e, altrimenti, sull'account già in uso.",
+    "ko": "로그인 페이지가 이제 새 설치에서는 MELCloud Home으로, 그 외에는 이미 사용 중인 계정으로 열립니다.",
+    "nl": "De aanmeldpagina opent nu op MELCloud Home bij een nieuwe installatie, en anders op het account dat al in gebruik is.",
+    "no": "Innloggingssiden åpnes nå på MELCloud Home ved en ny installasjon, og ellers på kontoen som allerede er i bruk.",
+    "pl": "Strona logowania otwiera się teraz na MELCloud Home przy nowej instalacji, a w przeciwnym razie na już używanym koncie.",
+    "ru": "Страница входа теперь открывается на MELCloud Home при новой установке, а в остальных случаях — на уже используемой учётной записи.",
+    "sv": "Inloggningssidan öppnas nu på MELCloud Home vid en ny installation och annars på det konto som redan används."
   }
 }
