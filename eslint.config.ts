@@ -1,4 +1,4 @@
-import { homeyApp } from '@olivierzal/configs/eslint/homey-app'
+import { homeyApp } from '@olivierzal/configs/eslint'
 import { type Config, defineConfig } from 'eslint/config'
 
 import { webviewFloorFiles } from './scripts/webview-perimeter.mts'
