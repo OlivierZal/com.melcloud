@@ -10,12 +10,9 @@ import type { AuthenticationAPI } from '../types/api.mts'
 import type { ManifestDriver } from '../types/manifest.mts'
 import { type Homey, Driver } from '../lib/homey.mts'
 
-const NOT_FOUND = -1
-
-const getArg = (capability: string): string => {
-  const dot = capability.indexOf('.')
-  return dot === NOT_FOUND ? capability : capability.slice(0, dot)
-}
+// A flow card's argument is named after the capability's root: the id
+// before the first dot (`onoff.timer` → `onoff`).
+const getArg = (capability: string): string => capability.replace(/\..*/v, '')
 
 export abstract class BaseMELCloudDriver extends Driver {
   declare public readonly homey: Homey.Homey
