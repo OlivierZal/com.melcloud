@@ -9,10 +9,10 @@ import {
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
-import { HomeEnergyReportAta } from '../../drivers/home-report-ata.mts'
+import { HomeEnergyReport } from '../../drivers/home-report.mts'
 import { ThermostatModeAta } from '../../types/ata.mts'
 import {
-  testEnergyReportConfig,
+  testEnergyReportConfigs,
   testThermostatMode,
 } from '../device-descriptors.ts'
 import HomeMELCloudDeviceAta from '../../drivers/home-melcloud/device.mts'
@@ -224,16 +224,17 @@ describe(HomeMELCloudDeviceAta, () => {
     })
   })
 
-  testEnergyReportConfig(() => device as object, 'energyReportRegular', {
-    duration: { hours: 1 },
-    mode: 'regular',
-    values: { millisecond: 0, minute: 5, second: 0 },
-  })
-
-  testEnergyReportConfig(() => device as object, 'energyReportTotal', {
-    duration: { hours: 1 },
-    mode: 'total',
-    values: { millisecond: 0, minute: 5, second: 0 },
+  testEnergyReportConfigs(() => device as object, {
+    regular: {
+      duration: { hours: 1 },
+      mode: 'regular',
+      values: { millisecond: 0, minute: 5, second: 0 },
+    },
+    total: {
+      duration: { hours: 1 },
+      mode: 'total',
+      values: { millisecond: 0, minute: 5, second: 0 },
+    },
   })
 
   describe('energy support gating', () => {
@@ -263,15 +264,15 @@ describe(HomeMELCloudDeviceAta, () => {
     })
   })
 
-  describe('createEnergyReport', () => {
-    it('should build a Home ATA energy report', () => {
+  describe('energyReports.create', () => {
+    it('should build a Home energy report', () => {
       expect(
-        device.createEnergyReport({
+        device.energyReports.create({
           duration: { hours: 1 },
           mode: 'regular',
           values: { millisecond: 0, minute: 5, second: 0 },
         }),
-      ).toBeInstanceOf(HomeEnergyReportAta)
+      ).toBeInstanceOf(HomeEnergyReport)
     })
   })
 })

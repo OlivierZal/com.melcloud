@@ -32,6 +32,21 @@ const sumTags = <T extends Classic.DeviceType>(
   return sum
 }
 
+// COP (Coefficient of Performance) = produced energy / consumed energy.
+// The `Consumed` suffix tells the two sides of a capability's tags apart;
+// every other tag counts as produced (a lone `CoP` tag reads as is, over
+// a unit divisor).
+const copValue = <T extends Classic.DeviceType>(
+  data: Classic.EnergyData<T>,
+  tags: readonly (keyof Classic.EnergyData<T>)[],
+): number => {
+  const { consumed = [], produced = [] } = Object.groupBy(tags, (tag) =>
+    String(tag).endsWith('Consumed') ? 'consumed' : 'produced',
+  )
+  const consumedSum = sumTags(data, consumed)
+  return sumTags(data, produced) / (consumedSum === 0 ? 1 : consumedSum)
+}
+
 export class EnergyReport<
   T extends Classic.DeviceType,
 > extends ScheduledEnergyReport {
@@ -84,18 +99,6 @@ export class EnergyReport<
     return this.#energyCapabilityTagEntries.length > 0
   }
 
-  // COP (Coefficient of Performance) = produced energy / consumed energy.
-  #calculateCopValue(
-    data: Classic.EnergyData<T>,
-    capability: string & keyof EnergyCapabilities<T>,
-  ): number {
-    const { consumedTagMapping, producedTagMapping } = this.#driver
-    const consumedTags = consumedTagMapping[capability] ?? []
-    const producedTags = producedTagMapping[capability] ?? []
-    const consumed = sumTags(data, consumedTags)
-    return sumTags(data, producedTags) / (consumed === 0 ? 1 : consumed)
-  }
-
   #calculateEnergyValue(
     data: Classic.EnergyData<T>,
     tags: readonly (keyof Classic.EnergyData<T>)[],
@@ -134,7 +137,7 @@ export class EnergyReport<
     tags: readonly (keyof Classic.EnergyData<T>)[]
   }): number {
     if (capability.includes('cop')) {
-      return this.#calculateCopValue(data, capability)
+      return copValue(data, tags)
     }
     return capability.startsWith('measure_power')
       ? this.#calculatePowerValue(data, tags, hour)

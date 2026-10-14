@@ -4,10 +4,10 @@ import { NotFoundError } from '@olivierzal/homey-kit'
 import { type InteropModule, mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { HomeEnergyReportAtw } from '../../drivers/home-report-atw.mts'
+import { HomeEnergyReport } from '../../drivers/home-report.mts'
 import { homeTagMappingsAtw } from '../../types/home-atw.mts'
 import {
-  testEnergyReportConfig,
+  testEnergyReportConfigs,
   testThermostatMode,
 } from '../device-descriptors.ts'
 import HomeMELCloudDeviceAtw from '../../drivers/home-melcloud_atw/device.mts'
@@ -180,16 +180,17 @@ describe(HomeMELCloudDeviceAtw, () => {
 
   testThermostatMode(() => device as object, null)
 
-  testEnergyReportConfig(() => device as object, 'energyReportRegular', {
-    duration: { minutes: 5 },
-    mode: 'regular',
-    values: { millisecond: 0, second: 0 },
-  })
-
-  testEnergyReportConfig(() => device as object, 'energyReportTotal', {
-    duration: { hours: 1 },
-    mode: 'total',
-    values: { millisecond: 0, minute: 5, second: 0 },
+  testEnergyReportConfigs(() => device as object, {
+    regular: {
+      duration: { minutes: 5 },
+      mode: 'regular',
+      values: { millisecond: 0, second: 0 },
+    },
+    total: {
+      duration: { hours: 1 },
+      mode: 'total',
+      values: { millisecond: 0, minute: 5, second: 0 },
+    },
   })
 
   describe('device synchronization', () => {
@@ -400,15 +401,15 @@ describe(HomeMELCloudDeviceAtw, () => {
     })
   })
 
-  describe('createEnergyReport', () => {
-    it('should build a Home ATW energy report', () => {
+  describe('energyReports.create', () => {
+    it('should build a Home energy report', () => {
       expect(
-        device.createEnergyReport({
+        device.energyReports.create({
           duration: { minutes: 5 },
           mode: 'regular',
           values: { millisecond: 0, second: 0 },
         }),
-      ).toBeInstanceOf(HomeEnergyReportAtw)
+      ).toBeInstanceOf(HomeEnergyReport)
     })
   })
 })

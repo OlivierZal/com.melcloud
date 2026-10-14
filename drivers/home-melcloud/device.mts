@@ -19,6 +19,7 @@ import type {
   HomeConvertFromDevice,
   HomeConvertToDevice,
 } from '../../types/home.mts'
+import type { EnergyReports } from '../base-device.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
 import {
   horizontalFromDevice,
@@ -26,8 +27,11 @@ import {
   ThermostatModeAta,
   verticalFromDevice,
 } from '../../types/ata.mts'
-import { HomeMELCloudDevice } from '../home-device.mts'
-import { HomeEnergyReportAta } from '../home-report-ata.mts'
+import {
+  HOME_ENERGY_REPORT_TOTAL,
+  HomeMELCloudDevice,
+} from '../home-device.mts'
+import { ATA_ENERGY_STRATEGY, HomeEnergyReport } from '../home-report.mts'
 
 type AtaType = typeof Home.DeviceType.Ata
 
@@ -63,18 +67,19 @@ export default class HomeMELCloudDeviceAta extends HomeMELCloudDevice<AtaType> {
       verticalFromDevice[verticalToClassic[vaneVerticalDirection]],
   }
 
-  protected override readonly energyReportRegular: EnergyReportConfig = {
-    duration: { hours: 1 },
-    mode: 'regular',
-    values: { millisecond: 0, minute: 5, second: 0 },
+  protected override readonly energyReports: EnergyReports = {
+    regular: {
+      duration: { hours: 1 },
+      mode: 'regular',
+      values: { millisecond: 0, minute: 5, second: 0 },
+    },
+    total: HOME_ENERGY_REPORT_TOTAL,
+    create: (config: EnergyReportConfig): HomeEnergyReport<AtaType> =>
+      new HomeEnergyReport(this, config, ATA_ENERGY_STRATEGY),
   }
 
   protected override readonly thermostatMode: typeof ThermostatModeAta =
     ThermostatModeAta
-
-  protected override readonly createEnergyReport = (
-    config: EnergyReportConfig,
-  ): HomeEnergyReportAta => new HomeEnergyReportAta(this, config)
 
   // The energy capabilities are only served when the unit reports a
   // consumption meter. Before the facade is cached (first minute after a

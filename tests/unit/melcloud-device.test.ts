@@ -3,10 +3,11 @@ import { type InteropModule, mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 
+import { EnergyReport } from '../../drivers/classic-report.mts'
 import { ThermostatModeAta } from '../../types/ata.mts'
 import {
   testCapabilityToDeviceConverters,
-  testEnergyReportConfig,
+  testEnergyReportConfigs,
   testThermostatMode,
 } from '../device-descriptors.ts'
 import ClassicMELCloudDeviceAta from '../../drivers/melcloud/device.mts'
@@ -29,18 +30,35 @@ describe(ClassicMELCloudDeviceAta, () => {
 
   testThermostatMode(() => device as object, ThermostatModeAta)
 
-  testEnergyReportConfig(() => device as object, 'energyReportRegular', {
-    duration: { hours: 1 },
-    minus: { hours: 1 },
-    mode: 'regular',
-    values: { millisecond: 0, minute: 5, second: 0 },
+  testEnergyReportConfigs(() => device as object, {
+    regular: {
+      duration: { hours: 1 },
+      minus: { hours: 1 },
+      mode: 'regular',
+      values: { millisecond: 0, minute: 5, second: 0 },
+    },
+    total: {
+      duration: { days: 1 },
+      minus: { hours: 1 },
+      mode: 'total',
+      values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+    },
   })
 
-  testEnergyReportConfig(() => device as object, 'energyReportTotal', {
-    duration: { days: 1 },
-    minus: { hours: 1 },
-    mode: 'total',
-    values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+  // `EnergyReport` is the setup-level mock: the factory is judged by the
+  // constructor call it makes, with this device as the report's owner.
+  describe('energyReports.create', () => {
+    it('should build a Classic energy report for this device', () => {
+      const config = {
+        duration: { hours: 1 },
+        minus: { hours: 1 },
+        mode: 'regular' as const,
+        values: { millisecond: 0, minute: 5, second: 0 },
+      }
+      device.energyReports.create(config)
+
+      expect(EnergyReport).toHaveBeenCalledWith(device as object, config)
+    })
   })
 
   describe('device-to-capability conversions', () => {

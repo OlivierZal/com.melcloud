@@ -16,17 +16,19 @@ import type { HeldWarningReason } from '../../drivers/base-device.mts'
 import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
-import type { Homey } from '../../lib/homey.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
 import { EnergyReport } from '../../drivers/classic-report.mts'
 import { createReportDeviceMocks, FAKE_NOW } from '../report-mocks.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
 
+const MS_PER_MINUTE = 60_000
+
 const {
   cleanMappingMock,
   clearTimeoutMock,
   ensureDeviceMock,
+  homey,
   setCapabilityValueMock,
   setTimeoutMock,
 } = createReportDeviceMocks()
@@ -56,8 +58,6 @@ const energyTagMapping = mock<EnergyCapabilityTagMapping<TestDeviceType>>({
 })
 
 const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
-  consumedTagMapping: { measure_power: ['Auto', 'Cooling'] },
-  producedTagMapping: {},
   tagMappings: { energy: energyTagMapping },
 })
 
@@ -67,16 +67,10 @@ const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
   ensureDevice: ensureDeviceMock,
   error: errorMock,
   holdWarning: holdWarningMock,
-  homey: mock<Homey.Homey>({
-    clearTimeout: clearTimeoutMock,
-    clock: mock<Homey.Homey['clock']>({
-      getTimezone: vi.fn<() => string>(() => 'Europe/Paris'),
-    }),
-  }),
+  homey,
   log: logMock,
   releaseWarning: releaseWarningMock,
   setCapabilityValue: setCapabilityValueMock,
-  setTimeout: setTimeoutMock,
 })
 
 const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
@@ -99,44 +93,27 @@ const mockFailingFetch = (): void => {
 type SyntheticTagMapping = Readonly<Record<string, readonly string[]>>
 
 const createCopMocks = (
-  hasTagMappings = true,
+  tags: readonly string[] = ['TagProduced', 'TagConsumed'],
 ): ClassicMELCloudDevice<TestDeviceType> => {
   // The COP arithmetic is capability-name agnostic — `cleanMapping` is
-  // mocked to hand it this key — so these mappings are synthetic on
-  // purpose and typed as such. Claiming they are
-  // `EnergyCapabilityTagMapping` would need an assertion to hide a key
-  // no device declares.
-  const copConsumed: SyntheticTagMapping = {
-    'measure_power.cop': ['ConsumedTag'],
-  }
-  const copProduced: SyntheticTagMapping = {
-    'measure_power.cop': ['ProducedTag'],
-  }
-  const copEnergyMapping: SyntheticTagMapping = {
-    'measure_power.cop': ['ProducedTag', 'ConsumedTag'],
-  }
+  // mocked to hand it this key — so the mapping is synthetic on purpose
+  // and typed as such. Claiming it is `EnergyCapabilityTagMapping` would
+  // need an assertion to hide a key no device declares.
+  const copEnergyMapping: SyntheticTagMapping = { 'measure_power.cop': tags }
   const copDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
-    consumedTagMapping: hasTagMappings ? copConsumed : {},
-    producedTagMapping: hasTagMappings ? copProduced : {},
     tagMappings: { energy: copEnergyMapping },
   })
   return mock<ClassicMELCloudDevice<TestDeviceType>>({
     cleanMapping: vi
       .fn<(mapping: unknown) => Record<string, unknown>>()
-      .mockReturnValue({ 'measure_power.cop': ['ProducedTag', 'ConsumedTag'] }),
+      .mockReturnValue(copEnergyMapping),
     driver: copDriver,
     ensureDevice: ensureDeviceMock,
     holdWarning: holdWarningMock,
-    homey: mock<Homey.Homey>({
-      clearTimeout: clearTimeoutMock,
-      clock: mock<Homey.Homey['clock']>({
-        getTimezone: vi.fn<() => string>(() => 'Europe/Paris'),
-      }),
-    }),
+    homey,
     log: logMock,
     releaseWarning: releaseWarningMock,
     setCapabilityValue: setCapabilityValueMock,
-    setTimeout: setTimeoutMock,
   })
 }
 
@@ -571,8 +548,14 @@ describe(EnergyReport, () => {
       expect(setTimeoutMock).toHaveBeenCalledTimes(2)
       expect(setTimeoutMock).toHaveBeenLastCalledWith(
         expect.any(Function),
-        expect.anything(),
-        'regular energy report',
+        expect.any(Number),
+      )
+      expect(logMock).toHaveBeenCalledWith(
+        'Regular energy report',
+        'will run in',
+        expect.any(String),
+        'on',
+        expect.any(String),
       )
 
       const secondCallback = getMockCallArg<() => Promise<void>>(
@@ -595,9 +578,9 @@ describe(EnergyReport, () => {
       await report.start()
 
       // 01:30 CET + 1 h = 03:30 CEST, aligned to hh:05 → 03:05 CEST = 35 min.
-      const firstDelay = getMockCallArg<Temporal.Duration>(setTimeoutMock, 0, 1)
+      const firstDelay = getMockCallArg<number>(setTimeoutMock, 0, 1)
 
-      expect(firstDelay.total({ unit: 'minutes' })).toBe(35)
+      expect(firstDelay).toBe(35 * MS_PER_MINUTE)
 
       pinNow(
         Temporal.Instant.from('2026-03-29T03:05:00+02:00').epochMilliseconds,
@@ -610,13 +593,9 @@ describe(EnergyReport, () => {
       await timeoutCallback()
 
       // Re-anchored on the new wall clock: next fire at 04:05 CEST, a full hour.
-      const secondDelay = getMockCallArg<Temporal.Duration>(
-        setTimeoutMock,
-        1,
-        1,
-      )
+      const secondDelay = getMockCallArg<number>(setTimeoutMock, 1, 1)
 
-      expect(secondDelay.total({ unit: 'minutes' })).toBe(60)
+      expect(secondDelay).toBe(60 * MS_PER_MINUTE)
 
       pinNow(FAKE_NOW)
     })
@@ -660,7 +639,7 @@ describe(EnergyReport, () => {
   describe('coefficient of performance calculation', () => {
     it('should calculate COP as produced / consumed', async () => {
       const mockDeviceWithCop = createCopMocks()
-      mockEnergyFetch({ ConsumedTag: 2, ProducedTag: 6 })
+      mockEnergyFetch({ TagConsumed: 2, TagProduced: 6 })
       const report = new EnergyReport(mockDeviceWithCop, regularConfig)
       await report.start()
 
@@ -672,7 +651,7 @@ describe(EnergyReport, () => {
 
     it('should use 1 as divisor when consumed is 0', async () => {
       const mockDeviceWithCop = createCopMocks()
-      mockEnergyFetch({ ConsumedTag: 0, ProducedTag: 5 })
+      mockEnergyFetch({ TagConsumed: 0, TagProduced: 5 })
       const report = new EnergyReport(mockDeviceWithCop, regularConfig)
       await report.start()
 
@@ -682,15 +661,30 @@ describe(EnergyReport, () => {
       )
     })
 
-    it('should default to empty tag lists when mappings lack the capability', async () => {
-      const mockDeviceWithCop = createCopMocks(false)
-      mockEnergyFetch({ ConsumedTag: 2, ProducedTag: 6 })
+    it('should tell the consumed tags by their suffix, the rest counting as produced', async () => {
+      const mockDeviceWithCop = createCopMocks([
+        'TotalHeatingProduced',
+        'TotalCoolingConsumed',
+      ])
+      mockEnergyFetch({ TotalCoolingConsumed: 2, TotalHeatingProduced: 6 })
       const report = new EnergyReport(mockDeviceWithCop, regularConfig)
       await report.start()
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'measure_power.cop',
-        0,
+        3,
+      )
+    })
+
+    it('should read a lone unsuffixed tag as produced over a unit divisor', async () => {
+      const mockDeviceWithCop = createCopMocks(['CoP'])
+      mockEnergyFetch({ CoP: 4.2 })
+      const report = new EnergyReport(mockDeviceWithCop, regularConfig)
+      await report.start()
+
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'measure_power.cop',
+        4.2,
       )
     })
   })
