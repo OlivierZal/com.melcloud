@@ -57,17 +57,19 @@ export default class ClassicMELCloudDriverAtw extends ClassicMELCloudDriver<AtwT
     typeof Classic.DeviceType.Atw
   >)[] = ['target_temperature.flow_cool_zone2']
 
-  public override getRequiredCapabilities(
-    data?: Readonly<Classic.ListDeviceData<typeof Classic.DeviceType.Atw>>,
-  ): string[] {
-    const { CanCool: canCool, HasZone2: hasClassicZone2 } = data ?? {}
+  public override getRequiredCapabilities({
+    CanCool: canCool,
+    HasZone2: hasClassicZone2,
+  }: Readonly<
+    Classic.ListDeviceData<typeof Classic.DeviceType.Atw>
+  >): string[] {
     return [
       ...this.#zone1Capabilities,
-      ...(canCool === true ? this.#zone1CoolCapabilities : []),
-      ...(hasClassicZone2 === true
+      ...(canCool ? this.#zone1CoolCapabilities : []),
+      ...(hasClassicZone2
         ? [
             ...this.#zone2Capabilities,
-            ...(canCool === true ? this.#zone2CoolCapabilities : []),
+            ...(canCool ? this.#zone2CoolCapabilities : []),
           ]
         : []),
     ]

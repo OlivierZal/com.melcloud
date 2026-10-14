@@ -3,7 +3,7 @@
 
 import type { HomeDeviceZone } from '@olivierzal/melcloud-api'
 import { sequential } from '@olivierzal/homey-kit'
-import { getFieldset, getInput, getSelect } from '@olivierzal/homey-kit/dom'
+import { getFieldset, getSelect } from '@olivierzal/homey-kit/dom'
 import { mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it } from 'vitest'
 
@@ -66,7 +66,7 @@ describe('ata value manager', () => {
     expect(optionValues(getSelect('OperationMode'))).toHaveLength(6)
     // The manifest grid (10→31 by 0.5) plus that blank entry.
     expect(optionValues(getSelect('SetTemperature'))).toHaveLength(44)
-    expect(getInput('FanSpeed').min).toBe('')
+    expect(optionValues(getSelect('FanSpeed'))).toHaveLength(7)
     // The unmappable capability yields no control and no label.
     expect(fieldset.querySelector('#SilentMode')).toBeNull()
     expect([...fieldset.querySelectorAll('label')]).toHaveLength(4)
@@ -79,7 +79,7 @@ describe('ata value manager', () => {
     expect(getSelect('Power').value).toBe('true')
     expect(getSelect('OperationMode').value).toBe('1')
     expect(getSelect('SetTemperature').value).toBe('22')
-    expect(getInput('FanSpeed').value).toBe('3')
+    expect(getSelect('FanSpeed').value).toBe('3')
   })
 
   it('should route each zone kind to its state endpoint', async () => {
@@ -139,7 +139,7 @@ describe('ata value manager', () => {
     await manager.fetchValues()
     // Same as the zone state → filtered; emptied → no instruction.
     getSelect('OperationMode').value = '1'
-    getInput('FanSpeed').value = ''
+    getSelect('FanSpeed').value = ''
     getSelect('SetTemperature').value = '25'
     getSelect('Power').value = 'true'
     await manager.setValues()
@@ -150,8 +150,11 @@ describe('ata value manager', () => {
   it('should skip a foreign control in the body', async () => {
     const { manager, ...harness } = await createManager()
     await manager.fetchValues()
-    const rogue = document.createElement('input')
+    const rogue = document.createElement('select')
     rogue.id = 'NotACapability'
+    const option = document.createElement('option')
+    option.value = '7'
+    rogue.append(option)
     rogue.value = '7'
     getFieldset('values_melcloud').append(rogue)
     getSelect('SetTemperature').value = '25'
@@ -369,21 +372,18 @@ describe('ata value manager', () => {
     }
     await manager.fetchValues()
     commit(getSelect('SetTemperature'), '25')
-    const fanSpeed = getInput('FanSpeed')
-    fanSpeed.value = '5'
-    fanSpeed.dispatchEvent(new Event('change', { bubbles: true }))
+    commit(getSelect('FanSpeed'), '5')
     routes['GET /targets/buildings_1/ata'] = {
       ...groupStateFixture(),
       Power: false,
     }
     await manager.fetchValuesKeepingEdits()
 
-    // The untouched control follows the stream; the edits — the picker
-    // and the free input alike — stay the user's, so pressing Update
-    // would still carry them.
+    // The untouched control follows the stream; the edits — both pickers
+    // — stay the user's, so pressing Update would still carry them.
     expect(getSelect('Power').value).toBe('false')
     expect(getSelect('SetTemperature').value).toBe('25')
-    expect(getInput('FanSpeed').value).toBe('5')
+    expect(getSelect('FanSpeed').value).toBe('5')
     expect(isApplyDisabled()).toBe(false)
   })
 
@@ -438,7 +438,7 @@ describe('ata value manager', () => {
     // sync write.
     const rogue = document.createElement('div')
     rogue.id = 'FanSpeed'
-    getInput('FanSpeed').remove()
+    getSelect('FanSpeed').remove()
     getFieldset('values_melcloud').append(rogue)
 
     await expect(manager.fetchValues()).resolves.toStrictEqual(

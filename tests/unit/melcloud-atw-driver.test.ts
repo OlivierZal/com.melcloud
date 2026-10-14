@@ -27,14 +27,6 @@ describe(ClassicMELCloudDriverAtw, () => {
   testTagMappings(() => driver, tagMappings)
 
   describe('required capabilities', () => {
-    it('should default to the zone-1 capabilities when no data is given', () => {
-      const capabilities = driver.getRequiredCapabilities()
-
-      expect(capabilities).toContain('onoff')
-      expect(capabilities).not.toContain('target_temperature.flow_cool')
-      expect(capabilities).not.toContain('target_temperature.zone2')
-    })
-
     it('should return zone1 capabilities for basic device', () => {
       const data = mock<Classic.ListDeviceDataAtw>({
         CanCool: false,
@@ -85,10 +77,9 @@ describe(ClassicMELCloudDriverAtw, () => {
     })
 
     it('should never include measure_signal_strength, on any profile', () => {
-      expect.assertions(3)
+      expect.assertions(2)
 
       const profiles = [
-        undefined,
         mock<Classic.ListDeviceDataAtw>({ CanCool: false, HasZone2: false }),
         mock<Classic.ListDeviceDataAtw>({ CanCool: true, HasZone2: true }),
       ]

@@ -139,17 +139,6 @@ describe(HomeMELCloudDriverAtw, () => {
       ])
     })
 
-    it('should default to the measures and zone1 controls when no profile is given', () => {
-      expect(driver.getRequiredCapabilities()).toStrictEqual([
-        'measure_temperature',
-        'operational_state',
-        'operational_state.zone1',
-        'onoff',
-        'thermostat_mode',
-        'target_temperature',
-      ])
-    })
-
     it('should never include measure_signal_strength', () => {
       expect(
         driver.getRequiredCapabilities(createProfile({ hasZone2: true })),
