@@ -107,11 +107,11 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
       new EnergyReport(this, config),
   }
 
-  protected override async setCapabilityValues(
-    data: Readonly<Classic.ListDeviceData<typeof Classic.DeviceType.Atw>>,
+  protected override async syncCapabilityValues(
+    facade: Classic.DeviceFacade<typeof Classic.DeviceType.Atw>,
   ): Promise<void> {
-    await super.setCapabilityValues(data)
-    await this.#setFacadeStates()
+    await super.syncCapabilityValues(facade)
+    await this.#setFacadeStates(facade)
   }
 
   #convertFromDeviceTargetTemperatureFlow(
@@ -153,9 +153,10 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
   // twin — the hot-water and per-zone states, and the legionella
   // instant, whose "never ran" and unparseable markers are the
   // library's `null`.
-  async #setFacadeStates(): Promise<void> {
-    const { facade } = this
-    if (facade === undefined || !isClassicAtwFacade(facade)) {
+  async #setFacadeStates(
+    facade: Classic.DeviceFacade<typeof Classic.DeviceType.Atw>,
+  ): Promise<void> {
+    if (!isClassicAtwFacade(facade)) {
       return
     }
     await this.setCapabilityValue('operational_state', facade.operationalState)

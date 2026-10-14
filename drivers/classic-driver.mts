@@ -35,7 +35,7 @@ export abstract class ClassicMELCloudDriver<
   }
 
   public abstract getRequiredCapabilities(
-    data?: Readonly<Classic.ListDeviceData<T>>,
+    data: Readonly<Classic.ListDeviceData<T>>,
   ): string[]
 
   protected override getDeviceModels(): {

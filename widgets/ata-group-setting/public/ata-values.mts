@@ -9,9 +9,7 @@
 // `/targets/:targetId/ata` targetId, resolved app-side.
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import {
-  type HTMLValueElement,
   booleanOptions,
-  createInput,
   createOption,
   createSelect,
   getButton,
@@ -32,7 +30,10 @@ import { type PickerZone, getZoneId } from '../../../public/zones.mts'
 
 // The generated controls are styled by element selectors in
 // `styles/layout.css` (Homey design tokens) — no utility classes needed,
-// so the shared builders run without their class hooks.
+// so the shared builders run without their class hooks. Every control is
+// a SELECT: a boolean or enum lists its values, `SetTemperature` its
+// grid (see #createAtaControl); a capability of any other type gets no
+// control, never a free-text input.
 const elementTypes = new Set(['boolean', 'enum'])
 
 // ── Value processing ──
@@ -177,7 +178,7 @@ export class AtaValueManager {
   }
 
   public createAtaFormControls(): void {
-    const formControls: HTMLValueElement[] = []
+    const formControls: HTMLSelectElement[] = []
     for (const [id, { title, type, values }] of this.#ataCapabilities) {
       const formControl = this.#createAtaControl({ id, type, values })
       if (formControl !== null) {
@@ -268,7 +269,7 @@ export class AtaValueManager {
 
   #buildAtaValuesBody(): Classic.GroupState {
     return Object.fromEntries(
-      [...this.#ataValues.querySelectorAll<HTMLValueElement>('input, select')]
+      [...this.#ataValues.querySelectorAll('select')]
         .filter(
           ({ id, value }) =>
             this.#isGroupAtaState(id) &&
@@ -289,17 +290,16 @@ export class AtaValueManager {
     id: string
     type: string
     values?: readonly { id: string; label: string }[] | undefined
-  }): HTMLValueElement | null {
+  }): HTMLSelectElement | null {
     if (elementTypes.has(type)) {
       return createSelect(
         id,
         values ?? booleanOptions((key) => this.#homey.__(key)),
       )
     }
-    if (id === 'SetTemperature') {
-      return createSelect(id, temperatureOptions(this.#temperatureGrid(), null))
-    }
-    return type === 'number' ? createInput({ id, type }) : null
+    return id === 'SetTemperature'
+      ? createSelect(id, temperatureOptions(this.#temperatureGrid(), null))
+      : null
   }
 
   #isGroupAtaState(value: string): value is keyof Classic.GroupState {
@@ -348,10 +348,7 @@ export class AtaValueManager {
       )
     for (const ataKey of ataKeys) {
       const control = this.#ataValues.querySelector(`#${CSS.escape(ataKey)}`)
-      if (
-        !(control instanceof HTMLInputElement) &&
-        !(control instanceof HTMLSelectElement)
-      ) {
+      if (!(control instanceof HTMLSelectElement)) {
         continue
       }
       if (control.value === (previous[ataKey]?.toString() ?? '')) {
@@ -380,10 +377,7 @@ export class AtaValueManager {
 
   #updateAtaValue(id: keyof Classic.GroupState): void {
     const ataValue = this.#ataValues.querySelector(`#${CSS.escape(id)}`)
-    if (
-      !(ataValue instanceof HTMLInputElement) &&
-      !(ataValue instanceof HTMLSelectElement)
-    ) {
+    if (!(ataValue instanceof HTMLSelectElement)) {
       return
     }
     const value = this.#zoneMapping[this.#zone.value]?.[id]?.toString() ?? ''

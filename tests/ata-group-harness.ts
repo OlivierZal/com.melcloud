@@ -133,7 +133,23 @@ const ataCapabilitiesFixture = (): [string, DriverCapabilitiesOptions][] => [
     'SetTemperature',
     { max: 31, min: 10, step: 0.5, title: 'Temperature', type: 'number' },
   ],
-  ['FanSpeed', { title: 'Fan speed', type: 'number' }],
+  // The app serves it as an ENUM over the vendored number type, its ids
+  // the Classic wire numbers (`app.mts`, `#getAtaCapabilityConfigs`).
+  [
+    'FanSpeed',
+    {
+      title: 'Fan speed',
+      type: 'enum',
+      values: [
+        { id: '0', label: 'Auto' },
+        { id: '5', label: 'Very fast' },
+        { id: '4', label: 'Fast' },
+        { id: '3', label: 'Moderate' },
+        { id: '2', label: 'Slow' },
+        { id: '1', label: 'Very slow' },
+      ],
+    },
+  ],
   // A capability no control type maps to: the builder yields null and
   // the form skips it.
   ['SilentMode', { title: 'Silent', type: 'string' }],

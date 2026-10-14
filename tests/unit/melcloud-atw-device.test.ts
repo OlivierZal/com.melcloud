@@ -66,7 +66,9 @@ const mockDriver = mock<ClassicMELCloudDriver<AtwType>>({
   },
 })
 
-const mockAtwFacade = (
+// Drives the facade-level hook with an ATW facade shaped like the
+// library's: the data-level sync reads `data`, the facade states the rest.
+const syncAtwFacade = async (
   target: any,
   overrides: {
     hotWater?: {
@@ -74,37 +76,32 @@ const mockAtwFacade = (
       lastLegionellaActivationEpochMs?: number | null
     }
     operationalState?: string | null
+    type?: Classic.DeviceType
     zone1?: { operationalState: Classic.OperationModeStateZone }
     zone2?: { operationalState: Classic.OperationModeStateZone }
   },
-): void => {
-  Object.defineProperty(target, 'facade', {
-    configurable: true,
-    value: {
-      hotWater: {
-        lastLegionellaActivationEpochMs: null,
-        operationalState: Classic.OperationModeStateHotWater.idle,
-        ...overrides.hotWater,
-      },
-      // The 55.2.0 contract: the library derives the top-level state,
-      // `null` on out-of-vocabulary wire numbers.
-      operationalState: overrides.operationalState ?? null,
-      type: Classic.DeviceType.Atw,
-      zone1: overrides.zone1 ?? {
-        operationalState: Classic.OperationModeStateZone.idle,
-      },
-      // The 51.0.0 contract: zone2 is a nullable read, never absent.
-      zone2: overrides.zone2 ?? null,
-    },
-  })
-}
-
-const callSetCapabilityValues = async (target: any): Promise<void> =>
+): Promise<void> =>
   (
     target as unknown as {
-      setCapabilityValues: (data: Classic.ListDeviceDataAtw) => Promise<void>
+      syncCapabilityValues: (facade: unknown) => Promise<void>
     }
-  ).setCapabilityValues(mock<Classic.ListDeviceDataAtw>({}))
+  ).syncCapabilityValues({
+    data: mock<Classic.ListDeviceDataAtw>({}),
+    hotWater: {
+      lastLegionellaActivationEpochMs: null,
+      operationalState: Classic.OperationModeStateHotWater.idle,
+      ...overrides.hotWater,
+    },
+    // The 55.2.0 contract: the library derives the top-level state,
+    // `null` on out-of-vocabulary wire numbers.
+    operationalState: overrides.operationalState ?? null,
+    type: overrides.type ?? Classic.DeviceType.Atw,
+    zone1: overrides.zone1 ?? {
+      operationalState: Classic.OperationModeStateZone.idle,
+    },
+    // The 51.0.0 contract: zone2 is a nullable read, never absent.
+    zone2: overrides.zone2 ?? null,
+  })
 
 describe(ClassicMELCloudDeviceAtw, () => {
   let device: any
@@ -209,8 +206,7 @@ describe(ClassicMELCloudDeviceAtw, () => {
     ] as const)(
       'should set operational_state.%s from facade %s state %s',
       async (capability, zone, state) => {
-        mockAtwFacade(device, { [zone]: { operationalState: state } })
-        await callSetCapabilityValues(device)
+        await syncAtwFacade(device, { [zone]: { operationalState: state } })
 
         expect(setCapabilityValueMock).toHaveBeenCalledWith(
           `operational_state.${capability}`,
@@ -222,8 +218,7 @@ describe(ClassicMELCloudDeviceAtw, () => {
     // The library's derived top-level state passes through unmapped:
     // the app-side wire-number table died with melcloud-api 55.2.0.
     it('should set operational_state from the facade', async () => {
-      mockAtwFacade(device, { operationalState: 'heating' })
-      await callSetCapabilityValues(device)
+      await syncAtwFacade(device, { operationalState: 'heating' })
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'operational_state',
@@ -235,8 +230,7 @@ describe(ClassicMELCloudDeviceAtw, () => {
     // it through clears the Homey value — the sync must never crash on
     // new FTC vocabulary.
     it('should clear operational_state when the facade reads null', async () => {
-      mockAtwFacade(device, { operationalState: null })
-      await callSetCapabilityValues(device)
+      await syncAtwFacade(device, { operationalState: null })
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'operational_state',
@@ -245,7 +239,7 @@ describe(ClassicMELCloudDeviceAtw, () => {
     })
 
     it('should localize the legionella date from the facade instant', async () => {
-      mockAtwFacade(device, {
+      await syncAtwFacade(device, {
         hotWater: {
           lastLegionellaActivationEpochMs: Temporal.Instant.from(
             '2026-03-18T10:00:00Z',
@@ -253,7 +247,6 @@ describe(ClassicMELCloudDeviceAtw, () => {
           operationalState: Classic.OperationModeStateHotWater.idle,
         },
       })
-      await callSetCapabilityValues(device)
 
       const legionellaCall = setCapabilityValueMock.mock.calls.find(
         (call: unknown[]) => call[0] === 'legionella',
@@ -268,8 +261,7 @@ describe(ClassicMELCloudDeviceAtw, () => {
     // stamps as `null`; the app shows the language-neutral marker
     // instead of formatting a bogus year-1 date.
     it('should show the em dash when no legionella cycle was recorded', async () => {
-      mockAtwFacade(device, {})
-      await callSetCapabilityValues(device)
+      await syncAtwFacade(device, {})
 
       expect(setCapabilityValueMock).toHaveBeenCalledWith('legionella', '—')
     })
@@ -278,8 +270,7 @@ describe(ClassicMELCloudDeviceAtw, () => {
       hasCapabilityMock.mockImplementation(
         (cap: string) => cap !== 'legionella',
       )
-      mockAtwFacade(device, {})
-      await callSetCapabilityValues(device)
+      await syncAtwFacade(device, {})
 
       const legionellaCalls = setCapabilityValueMock.mock.calls.filter(
         (call: unknown[]) => call[0] === 'legionella',
@@ -292,10 +283,9 @@ describe(ClassicMELCloudDeviceAtw, () => {
       hasCapabilityMock.mockImplementation(
         (cap: string) => cap !== 'operational_state.zone2',
       )
-      mockAtwFacade(device, {
+      await syncAtwFacade(device, {
         zone2: { operationalState: Classic.OperationModeStateZone.idle },
       })
-      await callSetCapabilityValues(device)
 
       const zone2Calls = setCapabilityValueMock.mock.calls.filter(
         (call: unknown[]) => call[0] === 'operational_state.zone2',
@@ -304,12 +294,11 @@ describe(ClassicMELCloudDeviceAtw, () => {
       expect(zone2Calls).toHaveLength(0)
     })
 
-    it('should skip the facade states when facade is unavailable', async () => {
-      Object.defineProperty(device, 'facade', {
-        configurable: true,
-        value: undefined,
-      })
-      await callSetCapabilityValues(device)
+    // `isClassicAtwFacade` is the narrowing that types the four reads
+    // (the ATW facade EXTENDS the generic one): another type's facade
+    // gets the data-level sync and none of the facade states.
+    it('should skip the facade states when the facade is not an ATW one', async () => {
+      await syncAtwFacade(device, { type: Classic.DeviceType.Ata })
 
       const facadeStateCalls = setCapabilityValueMock.mock.calls.filter(
         (call: unknown[]) =>

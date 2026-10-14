@@ -14,14 +14,10 @@ import { HomeMELCloudDriver } from '../home-driver.mts'
 // direction. Consumed power/meters need a consumption estimate or
 // meter; produced ones a production one; COP needs both.
 const energyCapabilities = (
-  capabilities: HomeAtwDeviceProfile['capabilities'] | undefined,
+  capabilities: HomeAtwDeviceProfile['capabilities'],
 ): string[] => {
-  const hasConsumed =
-    capabilities !== undefined &&
-    hasAtwEnergyDirection(capabilities, 'consumed')
-  const hasProduced =
-    capabilities !== undefined &&
-    hasAtwEnergyDirection(capabilities, 'produced')
+  const hasConsumed = hasAtwEnergyDirection(capabilities, 'consumed')
+  const hasProduced = hasAtwEnergyDirection(capabilities, 'produced')
   return [
     ...(hasConsumed
       ? ['measure_power', 'meter_power', 'meter_power.daily']
@@ -85,21 +81,20 @@ export default class HomeMELCloudDriverAtw extends HomeMELCloudDriver {
   // the precise modes, but the BFF enforces no owner/guest distinction —
   // guest `curve` write and a full power round-trip both readback-verified
   // (2026-07-14) — so guests get the exact owner surface.
-  public override getRequiredCapabilities(
-    profile?: HomeAtwDeviceProfile,
-  ): string[] {
-    const { capabilities } = profile ?? {}
+  public override getRequiredCapabilities({
+    capabilities,
+  }: HomeAtwDeviceProfile): string[] {
     return [
       ...this.#measureCapabilities,
       ...energyCapabilities(capabilities),
       ...this.#zone1ControlCapabilities,
-      ...(capabilities?.hasHotWater === true
+      ...(capabilities.hasHotWater
         ? [
             ...this.#hotWaterMeasureCapabilities,
             ...this.#hotWaterControlCapabilities,
           ]
         : []),
-      ...(capabilities?.hasZone2 === true
+      ...(capabilities.hasZone2
         ? [...this.#zone2MeasureCapabilities, ...this.#zone2ControlCapabilities]
         : []),
     ]

@@ -26,8 +26,8 @@ export class TestDevice extends ClassicMELCloudDevice<TestDeviceType> {
     >
   > = {}
 
-  public get exposedFacade(): typeof this.facade {
-    return this.facade
+  public get exposedFacade(): typeof this.cachedFacade {
+    return this.cachedFacade
   }
 
   public async exposedSetCapabilityValues(

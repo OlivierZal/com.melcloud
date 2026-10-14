@@ -65,12 +65,8 @@ export abstract class ClassicMELCloudDevice<
   // A stale unit is one whose last-communication timestamp has aged out.
   protected override readonly unreachableWarning = 'errors.unitStale'
 
-  protected get facade(): Classic.DeviceFacade<T> | undefined {
-    return this.cachedFacade
-  }
-
   get #data(): Readonly<Classic.ListDeviceData<T>> | undefined {
-    return this.facade?.data
+    return this.cachedFacade?.data
   }
 
   protected override getCapabilitiesOptions(): Partial<
