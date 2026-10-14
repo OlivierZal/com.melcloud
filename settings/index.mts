@@ -1655,7 +1655,6 @@ class ZoneSettingsManager {
   public displayFrostProtectionData(): void {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
-      // eslint-disable-next-line unicorn/prefer-default-parameters -- `max`/`min` read `null` when a Home building's devices disagree (Mixable), which no destructuring default blanks
       const { isEnabled = false, max, min } = data.frost_protection ?? {}
       // `null` (a Home building's devices disagree) reads as blank; a plain
       // `undefined` (a device with no frost config) reads as "No".
@@ -1672,7 +1671,6 @@ class ZoneSettingsManager {
   public displayHolidayModeData(): void {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
-      // eslint-disable-next-line unicorn/prefer-default-parameters -- `endDate`/`startDate` read `null` for an unset bound or a mixed building (Mixable), which no destructuring default blanks
       const { endDate, isEnabled = false, startDate } = data.holiday_mode ?? {}
       // `null` enabled (mixed across a building) reads as blank; dates show
       // only when the window is definitely on and itself not mixed.
@@ -1690,7 +1688,6 @@ class ZoneSettingsManager {
   public displayOverheatProtectionData(): void {
     const data = this.#zoneMapping[this.#zone.value]
     if (data !== undefined) {
-      // eslint-disable-next-line unicorn/prefer-default-parameters -- `max`/`min` read `null` when a Home building's ATA devices disagree (Mixable), which no destructuring default blanks
       const { isEnabled = false, max, min } = data.overheat_protection ?? {}
       // `null` (a Home building's ATA devices disagree) reads as blank; a
       // plain `undefined` (no overheat config) reads as "No".

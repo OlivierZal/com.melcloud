@@ -47,8 +47,14 @@ input[type='datetime-local'] {
   font-size: var(--homey-font-size-default);
   padding: var(--homey-su-1);
   text-align: start;
-  transition: var(--homey-duration-fast) var(--homey-curve-fast-in);
-  transition-property: border-color, color;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  input[type='date'],
+  input[type='datetime-local'] {
+    transition: var(--homey-duration-fast) var(--homey-curve-fast-in);
+    transition-property: border-color, color;
+  }
 }
 
 input[type='date']:hover,
@@ -134,7 +140,7 @@ input.homey-form-checkbox-input:indeterminate
   mask-image: none;
   opacity: 1;
   position: absolute;
-  transform: translate(-50%, -50%);
+  translate: -50% -50%;
 }
 
 /* The SDK's button classes carry no disabled state of their own — surface
@@ -214,12 +220,17 @@ summary.homey-form-legend::before {
   border-inline-end: 0.14em solid currentcolor;
   content: '';
   inline-size: 0.45em;
-  transform: rotate(45deg);
-  transition: transform 0.15s ease;
+  rotate: 45deg;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  summary.homey-form-legend::before {
+    transition: rotate 0.15s ease;
+  }
 }
 
 details[open] > summary.homey-form-legend::before {
-  transform: rotate(135deg);
+  rotate: 135deg;
 }
 
 /* Destructive twin of the filled sign-in button: the injected sheet

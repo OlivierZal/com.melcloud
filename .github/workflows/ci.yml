@@ -6,7 +6,7 @@ jobs:
       packages: read
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    uses: OlivierZal/configs/.github/workflows/reusable-ci.yml@1b0e5b4f303b76a102d1187448cda1e0d4d05b8b # v8.0.0
+    uses: OlivierZal/configs/.github/workflows/reusable-ci.yml@375d0328ec02b2a1cd96ae580b9ecd86bd47ad12 # v8.1.0
     with:
       check-node-version: '22'
       # The coverage/Sonar leg carries its own flag, and it runs on the
