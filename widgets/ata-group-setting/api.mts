@@ -1,10 +1,9 @@
 import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
-import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type { Homey } from 'homey/lib/Homey'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
-import { toDeviceType } from '../../lib/to-device-type.mts'
 import { getWebviewHashes } from '../../lib/webview-hashes.mts'
 
 const api = {
@@ -14,16 +13,13 @@ const api = {
     homey: Homey
   }): [keyof Classic.GroupState, DriverCapabilitiesOptions][] =>
     app.getClassicAtaCapabilities(),
+  // The widget drives ATA groups, so the only buildings it can ask for
+  // are the ATA ones; the route takes no query.
   getClassicBuildings: ({
     homey: { app },
-    query: { type },
   }: {
     homey: Homey
-    query: { type?: `${Classic.DeviceType}` }
-  }): Classic.BuildingZone[] =>
-    app.getClassicBuildings(
-      type === undefined ? undefined : toDeviceType(type),
-    ),
+  }): Classic.BuildingZone[] => app.getClassicBuildings(Classic.DeviceType.Ata),
   getHomeAtaTargets: ({
     homey: { app },
   }: {

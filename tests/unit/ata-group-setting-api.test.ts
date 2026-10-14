@@ -1,7 +1,7 @@
 import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
-import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { mock } from '@olivierzal/homey-kit/testing'
 import { describe, expect, it, vi } from 'vitest'
+import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
 import type { DriverCapabilitiesOptions } from '../../types/driver-settings.mts'
@@ -83,31 +83,14 @@ describe('ata-group-setting api', () => {
   })
 
   describe('building retrieval', () => {
-    it('should delegate to app.getClassicBuildings without type', () => {
+    it('should ask app.getClassicBuildings for the ATA buildings', () => {
       const buildings = mock<Classic.BuildingZone[]>()
       mockGetBuildings.mockReturnValue(buildings)
 
-      const result = api.getClassicBuildings({ homey, query: {} })
+      const result = api.getClassicBuildings({ homey })
 
       expect(result).toBe(buildings)
-      expect(mockGetBuildings).toHaveBeenCalledWith(undefined)
-    })
-
-    it('should pass numeric type filter', () => {
-      const buildings = mock<Classic.BuildingZone[]>()
-      mockGetBuildings.mockReturnValue(buildings)
-
-      const result = api.getClassicBuildings({ homey, query: { type: '0' } })
-
-      expect(result).toBe(buildings)
-      expect(mockGetBuildings).toHaveBeenCalledWith(0)
-    })
-
-    it('should throw on invalid device type', () => {
-      expect(() =>
-        api.getClassicBuildings({ homey, query: { type: '99' as '0' } }),
-      ).toThrow(RangeError)
-      expect(mockGetBuildings).not.toHaveBeenCalled()
+      expect(mockGetBuildings).toHaveBeenCalledWith(Classic.DeviceType.Ata)
     })
   })
 

@@ -10,7 +10,6 @@ import type {
 } from '../../types/classic-capabilities.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
 import { KILO, UNKNOWN_DATE_PLACEHOLDER } from '../../lib/constants.mts'
-import { getLocale, getTimeZone } from '../../lib/temporal.mts'
 import { HotWaterMode } from '../../types/atw.mts'
 import {
   type TargetTemperatureFlowCapabilities,
@@ -132,9 +131,9 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
       return UNKNOWN_DATE_PLACEHOLDER
     }
     return Temporal.Instant.fromEpochMilliseconds(epochMs)
-      .toZonedDateTimeISO(getTimeZone(this.homey))
+      .toZonedDateTimeISO(this.homey.clock.getTimezone())
       .toPlainDate()
-      .toLocaleString(getLocale(this.homey), {
+      .toLocaleString(this.homey.i18n.getLanguage(), {
         day: 'numeric',
         month: 'short',
         weekday: 'short',

@@ -70,7 +70,6 @@ import {
 import { getCapabilityFlowStep } from './lib/capability-flow-step.mts'
 import { UNKNOWN_DATE_PLACEHOLDER } from './lib/constants.mts'
 import { type Homey, App } from './lib/homey.mts'
-import { getTimeZone } from './lib/temporal.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
 import { toNonNegativeInt, toZoneValueData } from './lib/validation.mts'
 import {
@@ -109,23 +108,20 @@ const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
   [Home.DeviceType.Atw]: 'home-melcloud_atw',
 }
 
-// The report `to` bound defaults to now in the API timezone lib-side.
-const daysAgo = (days: number, timezone: string): string =>
-  Temporal.Now.plainDateTimeISO(timezone).subtract({ days }).toString()
-
 // Day-chart windows anchor on local midnight so "N days" reads as N
 // calendar days ending today, consistently across the report, the
 // temperatures and the operation-modes charts; `days` 0 is the rolling
 // last-24-hours choice the report picker offers when hourly buckets
 // exist.
+// The report `to` bound defaults to now in the API timezone lib-side.
 const chartDaysStart = (days: number, timezone: string): string =>
-  days === 0
-    ? daysAgo(1, timezone)
+  (days === 0
+    ? Temporal.Now.plainDateTimeISO(timezone).subtract({ days: 1 })
     : Temporal.Now.zonedDateTimeISO(timezone)
         .startOfDay()
         .subtract({ days: days - 1 })
         .toPlainDateTime()
-        .toString()
+  ).toString()
 
 // The manifest min/max/step only constrain manual input: a flow token
 // dropped into the field can carry anything at runtime. Only numbers
@@ -468,7 +464,7 @@ export default class MELCloudApp extends App {
     query: Classic.ErrorLogQuery,
   ): Promise<FormattedErrorLog> {
     const locale = this.homey.i18n.getLanguage()
-    const timeZone = getTimeZone(this.homey)
+    const timeZone = this.homey.clock.getTimezone()
     const { entries, fromDate, ...rest } = await this.#getClassicErrorLogPage(
       query,
       timeZone,
@@ -718,10 +714,14 @@ export default class MELCloudApp extends App {
   }
 
   readonly #onSync: SyncCallback = async ({ ids, type } = {}) => {
-    await this.#classicSyncDevices({
-      driverId: type === undefined ? undefined : DRIVER_IDS_BY_TYPE[type],
-      ids,
-    })
+    await settleAll(
+      this.#getDevices({
+        driverId: type === undefined ? undefined : DRIVER_IDS_BY_TYPE[type],
+        ids,
+      }).map(async (device) => device.syncFromDevice()),
+      this,
+      'Device sync failed:',
+    )
   }
 
   // Deferred half of the loss notification: the readiness await
@@ -755,20 +755,7 @@ export default class MELCloudApp extends App {
   // call sites, which the facades' shared `(query?: ReportQuery)` contract
   // lets us state in a single place.
   #chartDaysQuery(days: number): { from: string } {
-    return { from: chartDaysStart(days, getTimeZone(this.homey)) }
-  }
-
-  async #classicSyncDevices(
-    filter: {
-      driverId?: string | undefined
-      ids?: (number | string)[] | undefined
-    } = {},
-  ): Promise<void> {
-    await settleAll(
-      this.#getDevices(filter).map(async (device) => device.syncFromDevice()),
-      this,
-      'Device sync failed:',
-    )
+    return { from: chartDaysStart(days, this.homey.clock.getTimezone()) }
   }
 
   // One clock for every entry point: the Homey's. An absent bound means
@@ -780,7 +767,7 @@ export default class MELCloudApp extends App {
     startDate,
   }: HolidayModeSettings): HolidayModeUpdate {
     const nowAtHomey = Temporal.Now.plainDateTimeISO(
-      getTimeZone(this.homey),
+      this.homey.clock.getTimezone(),
     ).toString()
     return {
       endDate: endDate ?? nowAtHomey,
@@ -1092,7 +1079,7 @@ export default class MELCloudApp extends App {
     days: number,
     endTime?: Temporal.PlainTime,
   ): HolidayModeUpdate {
-    const now = Temporal.Now.plainDateTimeISO(getTimeZone(this.homey))
+    const now = Temporal.Now.plainDateTimeISO(this.homey.clock.getTimezone())
     const end = now.toPlainDate().add({ days }).toPlainDateTime(endTime)
     if (Temporal.PlainDateTime.compare(end, now) <= 0) {
       throw new RangeError(this.homey.__('errors.invalidHolidayModeEnd'))
@@ -1122,7 +1109,7 @@ export default class MELCloudApp extends App {
       logger: this,
       settingManager: this.#createSettingManager(),
       shouldResumeSessionInBackground: true,
-      timezone: getTimeZone(this.homey),
+      timezone: this.homey.clock.getTimezone(),
     })
     this.#facadeManager = new Classic.FacadeManager(this.#classicApi)
   }
@@ -1156,7 +1143,7 @@ export default class MELCloudApp extends App {
       logger: this,
       settingManager: this.#createSettingManager('home'),
       shouldResumeSessionInBackground: true,
-      timezone: getTimeZone(this.homey),
+      timezone: this.homey.clock.getTimezone(),
     })
     this.#homeFacadeManager = new Home.FacadeManager(this.#homeApi)
   }
