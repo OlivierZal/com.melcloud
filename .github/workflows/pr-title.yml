@@ -3,7 +3,7 @@ jobs:
   pr_title:
     permissions:
       pull-requests: read
-    uses: OlivierZal/configs/.github/workflows/pr-title.yml@375d0328ec02b2a1cd96ae580b9ecd86bd47ad12 # v8.1.0
+    uses: OlivierZal/configs/.github/workflows/pr-title.yml@1c1c1108e004e63b1acebc89b34fc69551f9483a # v8.1.1
 name: pr-title
 on:
   pull_request:
