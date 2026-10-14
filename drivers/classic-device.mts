@@ -10,10 +10,8 @@ import type {
   SetCapabilities,
 } from '../types/classic-capabilities.mts'
 import type { Settings } from '../types/device-settings.mts'
-import type { EnergyReportConfig } from './base-report.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
-import { EnergyReport } from './classic-report.mts'
 
 export abstract class ClassicMELCloudDevice<
   T extends Classic.DeviceType,
@@ -74,10 +72,6 @@ export abstract class ClassicMELCloudDevice<
   get #data(): Readonly<Classic.ListDeviceData<T>> | undefined {
     return this.facade?.data
   }
-
-  protected override readonly createEnergyReport = (
-    config: EnergyReportConfig,
-  ): EnergyReport<T> => new EnergyReport(this, config)
 
   protected override getCapabilitiesOptions(): Partial<
     Record<string, unknown>

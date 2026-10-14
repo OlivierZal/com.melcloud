@@ -50,16 +50,24 @@ export const testDeletion = (getDevice: () => object): void => {
   })
 }
 
-export const testEnergyReportConfig = (
+export const testEnergyReportConfigs = (
   getDevice: () => object,
-  property: string,
-  expected: object | null,
+  expected: { readonly regular: object; readonly total: object },
 ): void => {
-  describe(property, () => {
-    it('should match expected config', () => {
-      expect((getDevice() as Record<string, unknown>)[property]).toStrictEqual(
-        expected,
-      )
+  describe('energyReports', () => {
+    it('should carry the expected configs and a factory', () => {
+      const bundle = (getDevice() as Record<string, unknown>).energyReports
+
+      expect(bundle).toMatchObject(expected)
+      expect(bundle).toHaveProperty('create', expect.any(Function))
+    })
+  })
+}
+
+export const testNoEnergyReports = (getDevice: () => object): void => {
+  describe('no energyReports', () => {
+    it('should keep the null default', () => {
+      expect((getDevice() as Record<string, unknown>).energyReports).toBeNull()
     })
   })
 }

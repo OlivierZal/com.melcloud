@@ -325,6 +325,19 @@ coverage.
   shared behavior lives there (or in the `base-*` classes when both
   sides share it); type-specific classes hold only converters,
   capability policies, and manifests.
+- Energy reports are wired as ONE nullable bundle per device
+  (`energyReports: { create, regular, total } | null` on
+  `BaseMELCloudDevice`): a device reports with both cadences or not at
+  all (the ERV keeps `null`), so a factory without its configs cannot
+  exist. The Home side has ONE report class, `HomeEnergyReport`, taking a
+  per-type `HomeEnergyStrategy` object (`ATA_ENERGY_STRATEGY` /
+  `ATW_ENERGY_STRATEGY`, both in `home-report.mts`) — not a subclass per
+  type on top of it. A report owns BOTH ends of its timer through
+  `homey.setTimeout`/`clearTimeout` and logs its next run itself; the
+  device exposes no timer facility. The Classic COP split (`…Consumed`
+  tags vs the rest) happens where COP is computed, in `classic-report`,
+  from the tags the report already holds — the driver precomputes
+  nothing.
 - `capabilitiesOptions` blocks that are rigorously identical across the
   drivers defining them live in the `defaults` compose template;
   `melcloud_atw`'s labels are the reference (node-homey-lib wording).

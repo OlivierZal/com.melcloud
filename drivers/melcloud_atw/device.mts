@@ -8,6 +8,7 @@ import type {
   OperationalCapabilities,
   SetCapabilities,
 } from '../../types/classic-capabilities.mts'
+import type { EnergyReports } from '../base-device.mts'
 import type { EnergyReportConfig } from '../base-report.mts'
 import { KILO, UNKNOWN_DATE_PLACEHOLDER } from '../../lib/constants.mts'
 import { HotWaterMode } from '../../types/atw.mts'
@@ -16,6 +17,7 @@ import {
   operationModeZoneFromDevice,
 } from '../../types/classic-atw.mts'
 import { ClassicMELCloudDevice } from '../classic-device.mts'
+import { EnergyReport } from '../classic-report.mts'
 
 const convertFromDeviceMeasurePower =
   (
@@ -86,18 +88,23 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
       isForced ? HotWaterMode.forced : HotWaterMode.auto,
   }
 
-  protected override readonly energyReportRegular: EnergyReportConfig = {
-    duration: { days: 1 },
-    minus: { days: 1 },
-    mode: 'regular',
-    values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
-  }
-
-  protected override readonly energyReportTotal: EnergyReportConfig = {
-    duration: { days: 1 },
-    minus: { days: 1 },
-    mode: 'total',
-    values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+  protected override readonly energyReports: EnergyReports = {
+    regular: {
+      duration: { days: 1 },
+      minus: { days: 1 },
+      mode: 'regular',
+      values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
+    },
+    total: {
+      duration: { days: 1 },
+      minus: { days: 1 },
+      mode: 'total',
+      values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+    },
+    create: (
+      config: EnergyReportConfig,
+    ): EnergyReport<typeof Classic.DeviceType.Atw> =>
+      new EnergyReport(this, config),
   }
 
   protected override async setCapabilityValues(

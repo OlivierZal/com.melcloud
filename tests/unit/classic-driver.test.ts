@@ -9,7 +9,6 @@ import {
 } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
 import { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import {
   testFlowListenerRegistration,
@@ -122,15 +121,6 @@ describe(ClassicMELCloudDriver, () => {
     ])
   }
 
-  describe('initialization', () => {
-    it('should set produced and consumed tag mappings', async () => {
-      await driver.onInit()
-
-      expect(driver.consumedTagMapping).toBeDefined()
-      expect(driver.producedTagMapping).toBeDefined()
-    })
-  })
-
   testFlowListenerRegistration(() => driver, {
     readOnly: 'measure_temperature',
     settable: 'onoff',
@@ -186,35 +176,6 @@ describe(ClassicMELCloudDriver, () => {
   })
 
   testRepairing(() => driver, { authenticateMock, setHandlerMock })
-
-  describe('produced and consumed tag mappings', () => {
-    it('should separate energy tags into produced and consumed', async () => {
-      await driver.onInit()
-
-      expect(driver.consumedTagMapping).toHaveProperty('measure_power')
-      expect(driver.producedTagMapping).toHaveProperty('measure_power')
-    })
-
-    it('should group tags ending with Produced into produced mapping', async () => {
-      const driverWithProduced = createTestDriver()
-      Object.defineProperty(driverWithProduced, 'tagMappings', {
-        value: {
-          ...driverWithProduced.tagMappings,
-          energy: mock<EnergyCapabilityTagMapping<TestDriverType>>({
-            measure_power: ['TotalHeatingProduced', 'TotalCoolingConsumed'],
-          }),
-        },
-      })
-      await driverWithProduced.onInit()
-
-      expect(driverWithProduced.producedTagMapping.measure_power).toStrictEqual(
-        ['TotalHeatingProduced'],
-      )
-      expect(driverWithProduced.consumedTagMapping.measure_power).toStrictEqual(
-        ['TotalCoolingConsumed'],
-      )
-    })
-  })
 
   describe('action run listener registration', () => {
     it('should invoke triggerCapabilityListener on the device with the correct args', async () => {

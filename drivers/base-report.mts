@@ -11,12 +11,10 @@ interface ReportDevice {
   readonly holdWarning: (reason: HeldWarningReason) => Promise<boolean>
   readonly log: (...args: unknown[]) => void
   readonly releaseWarning: (reason: HeldWarningReason) => Promise<boolean>
-  readonly setTimeout: (
-    callback: () => Promise<void>,
-    interval: Temporal.DurationLike,
-    actionType: string,
-  ) => NodeJS.Timeout
 }
+
+const capitalize = ([first = '', ...rest] = ''): string =>
+  first.toUpperCase() + rest.join('')
 
 // Three consecutive failures hold the device warning, the first success
 // releases it: one failed fetch is noise, three in a row are not. The
@@ -109,7 +107,9 @@ export abstract class ScheduledEnergyReport {
   }
 
   #armNext(): void {
-    this.#reportTimeout = this.#device.setTimeout(
+    const delay = this.#computeNextFireDelay()
+    this.#logNextRun(delay)
+    this.#reportTimeout = this.#device.homey.setTimeout(
       async () => {
         if (!this.hasEnabledCapabilities()) {
           this.unschedule()
@@ -121,8 +121,7 @@ export abstract class ScheduledEnergyReport {
           this.#armNext()
         }
       },
-      this.#computeNextFireDelay(),
-      this.#actionType,
+      delay.total({ unit: 'milliseconds' }),
     )
   }
 
@@ -151,6 +150,19 @@ export abstract class ScheduledEnergyReport {
       formatApplied(applied),
     )
     await this.#registerSuccess()
+  }
+
+  #logNextRun(delay: Temporal.Duration): void {
+    const locale = this.#device.homey.i18n.getLanguage()
+    this.#device.log(
+      capitalize(this.#actionType),
+      'will run in',
+      delay.round({ largestUnit: 'days' }).toLocaleString(locale),
+      'on',
+      getNow(this.#device.homey)
+        .add(delay)
+        .toLocaleString(locale, { dateStyle: 'full', timeStyle: 'full' }),
+    )
   }
 
   // Mirror of the unreadable-unit hold in `ensureDevice`: a failing
