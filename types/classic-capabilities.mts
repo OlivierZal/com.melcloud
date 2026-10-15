@@ -1,6 +1,6 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
-import type { CapabilitiesOptionsAtaErv } from './bases.mts'
+import type { Bivariant, CapabilitiesOptionsAtaErv } from './bases.mts'
 import type * as classicAta from './classic-ata.mts'
 import type * as classicAtw from './classic-atw.mts'
 import type * as classicErv from './classic-erv.mts'
@@ -53,12 +53,10 @@ export type ConvertFromDevice<T extends Classic.DeviceType> = (
  * data value, parameterized by device type.
  * @template T - Classic device type selecting the set-capability input and update-data output shapes.
  */
-export type ConvertToDevice<T extends Classic.DeviceType> = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to a specific member of the Classic.UpdateDeviceData value union
-  bivariant(
-    value: SetCapabilities<T>[keyof SetCapabilities<T>],
-  ): Classic.UpdateDeviceData<T>[keyof Classic.UpdateDeviceData<T>]
-}['bivariant']
+export type ConvertToDevice<T extends Classic.DeviceType> = Bivariant<
+  SetCapabilities<T>[keyof SetCapabilities<T>],
+  Classic.UpdateDeviceData<T>[keyof Classic.UpdateDeviceData<T>]
+>
 
 export type EnergyCapabilities<T extends Classic.DeviceType> =
   T extends typeof Classic.DeviceType.Ata

@@ -6,6 +6,7 @@ import type {
   HomeMELCloudDriverAta,
   HomeMELCloudDriverAtw,
 } from '../drivers/index.mts'
+import type { Bivariant } from './bases.mts'
 import type {
   HomeCapabilitiesAta,
   HomeSetCapabilitiesAta,
@@ -52,12 +53,10 @@ export type HomeConvertFromDevice<T extends Home.DeviceType> = (
  * value, parameterized by device type.
  * @template T - The Home device type (ATA or ATW) selecting the set-capability input and device value output the converter is specialized for.
  */
-export type HomeConvertToDevice<T extends Home.DeviceType> = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant, letting concrete converters narrow `value` to a specific member of the set-capability value union
-  bivariant(
-    value: HomeSetCapabilities<T>[keyof HomeSetCapabilities<T>],
-  ): HomeValues<T>[keyof HomeValues<T>]
-}['bivariant']
+export type HomeConvertToDevice<T extends Home.DeviceType> = Bivariant<
+  HomeSetCapabilities<T>[keyof HomeSetCapabilities<T>],
+  HomeValues<T>[keyof HomeValues<T>]
+>
 
 export interface HomeDeviceDetails {
   readonly capabilities: readonly string[]
