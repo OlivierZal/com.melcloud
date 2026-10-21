@@ -2098,5 +2098,20 @@
     "pl": "Raporty energii nie kończą się już niepowodzeniem, gdy MELCloud na chwilę odrzuci odczyt: aplikacja sama ponawia próbę.",
     "ru": "Отчёты об энергии больше не завершаются ошибкой, когда MELCloud ненадолго отклоняет чтение: приложение повторяет его само.",
     "sv": "Energirapporter misslyckas inte längre när MELCloud kortvarigt nekar en avläsning: appen försöker själv igen."
+  },
+  "46.11.2": {
+    "ar": "يُعاد الآن أيضًا تشغيل تقارير الطاقة عندما يفشل الاتصال بـ MELCloud أو ينتهي وقته، ويذكر السجل سبب الفشل.",
+    "da": "Energirapporter prøves nu også igen, når forbindelsen til MELCloud fejler eller får timeout, og loggen angiver årsagen.",
+    "de": "Energieberichte werden jetzt auch wiederholt, wenn die Verbindung zu MELCloud fehlschlägt oder abläuft, und das Protokoll nennt die Ursache.",
+    "en": "Energy reports are now also retried when the connection to MELCloud fails or times out, and the log names the cause.",
+    "es": "Los informes de energía ahora también se reintentan cuando la conexión con MELCloud falla o expira, y el registro indica la causa.",
+    "fr": "Les rapports d'énergie sont désormais aussi retentés lorsque la connexion à MELCloud échoue ou expire, et le journal en nomme la cause.",
+    "it": "I report energetici vengono ora ritentati anche quando la connessione a MELCloud fallisce o scade, e il registro ne indica la causa.",
+    "ko": "MELCloud 연결이 실패하거나 시간이 초과되어도 에너지 보고서를 다시 시도하며, 로그에 원인이 기록됩니다.",
+    "nl": "Energierapporten worden nu ook opnieuw geprobeerd wanneer de verbinding met MELCloud mislukt of verloopt, en het logboek noemt de oorzaak.",
+    "no": "Energirapporter prøves nå også på nytt når tilkoblingen til MELCloud feiler eller går ut på tid, og loggen oppgir årsaken.",
+    "pl": "Raporty energii są teraz ponawiane także wtedy, gdy połączenie z MELCloud zawiedzie lub przekroczy limit czasu, a dziennik podaje przyczynę.",
+    "ru": "Отчёты об энергии теперь повторяются и тогда, когда соединение с MELCloud не удаётся или истекает по времени, а журнал указывает причину.",
+    "sv": "Energirapporter försöks nu också igen när anslutningen till MELCloud misslyckas eller går ut, och loggen anger orsaken."
   }
 }
