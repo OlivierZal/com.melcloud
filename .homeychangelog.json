@@ -1025,7 +1025,7 @@
     "de": "✨ MELCloud-Dashboards sind jetzt als Widgets verfügbar, und du kannst für jedes Widget eine Standardzone festlegen.",
     "en": "✨ **New features** ✨\n• MELCloud dashboards are now available as widgets!\n• You can now set a default zone for each widget.",
     "es": "✨ **Nuevas funciones** ✨\n• ¡Los paneles de MELCloud ya están disponibles como widgets!\n• Ahora puedes configurar una zona predeterminada para cada widget.",
-    "fr": "✨ **Nouvelles fonctionnalités** ✨\n• Les tableaux de bord MELCloud sont désormais disponibles en tant que widgets\u202F!\n• Vous pouvez désormais définir une zone par défaut pour chaque widget.",
+    "fr": "✨ **Nouvelles fonctionnalités** ✨\n• Les tableaux de bord MELCloud sont désormais disponibles en tant que widgets !\n• Vous pouvez désormais définir une zone par défaut pour chaque widget.",
     "it": "✨ Le dashboard MELCloud sono ora disponibili come widget e puoi impostare una zona predefinita per ciascuno.",
     "ko": "✨ MELCloud 대시보드를 위젯으로 사용할 수 있으며, 위젯마다 기본 구역을 지정할 수 있습니다.",
     "nl": "✨ **Nieuwe functies** ✨\n• MELCloud-dashboards zijn nu beschikbaar als widgets!\n• Je kunt nu een standaardzone instellen voor elke widget.",
@@ -2083,5 +2083,20 @@
     "pl": "Strona logowania otwiera się teraz na MELCloud Home przy nowej instalacji, a w przeciwnym razie na już używanym koncie.",
     "ru": "Страница входа теперь открывается на MELCloud Home при новой установке, а в остальных случаях — на уже используемой учётной записи.",
     "sv": "Inloggningssidan öppnas nu på MELCloud Home vid en ny installation och annars på det konto som redan används."
+  },
+  "46.11.1": {
+    "ar": "لم تعد تقارير الطاقة تفشل عندما يرفض MELCloud قراءة للحظة: يعيد التطبيق المحاولة من تلقاء نفسه.",
+    "da": "Energirapporter fejler ikke længere, når MELCloud kortvarigt afviser en aflæsning: appen prøver selv igen.",
+    "de": "Energieberichte schlagen nicht mehr fehl, wenn MELCloud eine Abfrage kurzzeitig ablehnt: die App wiederholt sie von selbst.",
+    "en": "Energy reports no longer fail when MELCloud briefly refuses a read: the app retries it on its own.",
+    "es": "Los informes de energía ya no fallan cuando MELCloud rechaza brevemente una lectura: la app vuelve a intentarla por sí sola.",
+    "fr": "Les rapports d'énergie n'échouent plus lorsque MELCloud refuse brièvement une lecture : l'app la retente d'elle-même.",
+    "it": "I report energetici non falliscono più quando MELCloud rifiuta brevemente una lettura: l'app la ritenta da sola.",
+    "ko": "MELCloud가 잠시 읽기를 거부해도 에너지 보고서가 더 이상 실패하지 않습니다. 앱이 스스로 다시 시도합니다.",
+    "nl": "Energierapporten mislukken niet meer wanneer MELCloud een uitlezing kortstondig weigert: de app probeert het zelf opnieuw.",
+    "no": "Energirapporter feiler ikke lenger når MELCloud kortvarig avviser en avlesning: appen prøver selv på nytt.",
+    "pl": "Raporty energii nie kończą się już niepowodzeniem, gdy MELCloud na chwilę odrzuci odczyt: aplikacja sama ponawia próbę.",
+    "ru": "Отчёты об энергии больше не завершаются ошибкой, когда MELCloud ненадолго отклоняет чтение: приложение повторяет его само.",
+    "sv": "Energirapporter misslyckas inte längre när MELCloud kortvarigt nekar en avläsning: appen försöker själv igen."
   }
 }
