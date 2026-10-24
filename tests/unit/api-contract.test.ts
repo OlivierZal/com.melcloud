@@ -27,17 +27,17 @@ const SURFACES = [
   { api: chartsApi, config: chartsConfig, name: 'charts widget API' },
 ]
 
-// Every surface's handler union, so the compile-time half is asserted
-// once rather than per surface.
-type Handler =
-  | (typeof api)[keyof typeof api]
-  | (typeof ataGroupSettingApi)[keyof typeof ataGroupSettingApi]
-  | (typeof chartsApi)[keyof typeof chartsApi]
-
 describe('api contract', () => {
   // Asserted on the whole union at once: no per-name method reference
   // ever leaves its object (unbound-method).
   it('should expose only function handlers', () => {
+    // Every surface's handler union, so the compile-time half is asserted
+    // once rather than per surface.
+    type Handler =
+      | (typeof api)[keyof typeof api]
+      | (typeof ataGroupSettingApi)[keyof typeof ataGroupSettingApi]
+      | (typeof chartsApi)[keyof typeof chartsApi]
+
     expectTypeOf<Handler>().toBeFunction()
   })
 

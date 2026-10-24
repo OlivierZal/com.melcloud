@@ -90,8 +90,6 @@ const mockFailingFetch = (): void => {
   })
 }
 
-type SyntheticTagMapping = Readonly<Record<string, readonly string[]>>
-
 const createCopMocks = (
   tags: readonly string[] = ['TagProduced', 'TagConsumed'],
 ): ClassicMELCloudDevice<TestDeviceType> => {
@@ -99,6 +97,8 @@ const createCopMocks = (
   // mocked to hand it this key — so the mapping is synthetic on purpose
   // and typed as such. Claiming it is `EnergyCapabilityTagMapping` would
   // need an assertion to hide a key no device declares.
+  type SyntheticTagMapping = Readonly<Record<string, readonly string[]>>
+
   const copEnergyMapping: SyntheticTagMapping = { 'measure_power.cop': tags }
   const copDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
     tagMappings: { energy: copEnergyMapping },

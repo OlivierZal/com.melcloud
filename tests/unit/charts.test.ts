@@ -270,21 +270,21 @@ const commit = (select: HTMLSelectElement, value: string): void => {
   select.dispatchEvent(new Event('change', { bubbles: true }))
 }
 
-// `beforeDatasetsDraw` carries the cancelable flag in its ARGS (its
-// second parameter); `afterDatasetsDraw` takes a bare object there and a
-// trailing `false`. Calling through a union of both demands the
-// intersection, so the args argument comes from the cancelable hook.
-type CancelableArguments = Parameters<
-  NonNullable<ChartPlugin['beforeDatasetsDraw']>
->
-
-type HookArguments = Parameters<NonNullable<ChartPlugin['afterDatasetsDraw']>>
-
 // The hooks read the live chart and its context; everything past that
 // is renderer bookkeeping the widget's plugins never touch.
 type PluginHook = 'afterDatasetsDraw' | 'beforeDatasetsDraw'
 
 const runPlugin = (id: string, hook: PluginHook, chart: FakeChart): void => {
+  // `beforeDatasetsDraw` carries the cancelable flag in its ARGS (its
+  // second parameter); `afterDatasetsDraw` takes a bare object there and a
+  // trailing `false`. Calling through a union of both demands the
+  // intersection, so the args argument comes from the cancelable hook.
+  type CancelableArguments = Parameters<
+    NonNullable<ChartPlugin['beforeDatasetsDraw']>
+  >
+
+  type HookArguments = Parameters<NonNullable<ChartPlugin['afterDatasetsDraw']>>
+
   // Called through the plugin rather than extracted: the hook keeps its
   // own `this`, as the renderer would give it.
   pluginOf(id)[hook]?.(
