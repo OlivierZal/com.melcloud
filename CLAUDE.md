@@ -889,10 +889,10 @@ config the publish container needs) now lives in the reusables.
 `claude-dependabot-fix.yml` went with configs 6.0.0: the fix workflow
 was retired (zero successes in 4,296 runs, and a success path the Sonar
 gate refuses by design), and the `.github/zizmor.yml` ignore that
-existed only for it went too. `.github/zizmor.yml` is back since zizmor 1.31 (2026-10) for one
-line-scoped entry: the `claude.yml` stub's `issue_comment`, owner-gated
-by the family workflow it calls (the verdict is in configs'
-`.github/zizmor.yml` and `CLAUDE.md`).
+existed only for it went too. `.github/zizmor.yml` is back since
+zizmor 1.31 (2026-10) for one line-scoped entry: the `claude.yml` stub's
+`issue_comment`, owner-gated by the family workflow it calls (the
+verdict is in configs' `.github/zizmor.yml` and `CLAUDE.md`).
 
 The bare `homey-apps-sdk-v3-types` devDependency beside the
 `@types/homey` alias is NOT a duplicate, and the two lines move together
