@@ -287,13 +287,6 @@ const newMockHomeFacadeManager =
     })
   }
 
-// Models the group surface the ATA device facade gains with the melcloud-api
-// device-as-group-of-one contract this feature tracks.
-type ClassicAtaDeviceGroupFacade = Classic.DeviceFacade<
-  typeof Classic.DeviceType.Ata
-> &
-  Pick<Classic.ZoneFacade, 'getGroup' | 'updateGroupState'>
-
 const setupMocks = (): void => {
   mockCreate.mockResolvedValue(mockApiInstance)
   mockHomeCreate.mockResolvedValue(mockHomeApiInstance)
@@ -1061,6 +1054,13 @@ describe('melCloudApp', () => {
     })
 
     it('should treat a single ata device as a group of one', async () => {
+      // Models the group surface the ATA device facade gains with the
+      // melcloud-api device-as-group-of-one contract this feature tracks.
+      type ClassicAtaDeviceGroupFacade = Classic.DeviceFacade<
+        typeof Classic.DeviceType.Ata
+      > &
+        Pick<Classic.ZoneFacade, 'getGroup' | 'updateGroupState'>
+
       const mockGroupState = mock<Classic.GroupState>()
       const mockFacade = mock<ClassicAtaDeviceGroupFacade>({
         getGroup: vi

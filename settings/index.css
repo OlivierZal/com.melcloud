@@ -216,8 +216,8 @@ summary.homey-form-legend::-webkit-details-marker {
 
 summary.homey-form-legend::before {
   block-size: 0.45em;
-  border-block-start: 0.14em solid currentcolor;
-  border-inline-end: 0.14em solid currentcolor;
+  border-block-start: 0.14em solid;
+  border-inline-end: 0.14em solid;
   content: '';
   inline-size: 0.45em;
   rotate: 45deg;
@@ -225,7 +225,7 @@ summary.homey-form-legend::before {
 
 @media (prefers-reduced-motion: no-preference) {
   summary.homey-form-legend::before {
-    transition: rotate 0.15s ease;
+    transition: rotate 0.15s;
   }
 }
 

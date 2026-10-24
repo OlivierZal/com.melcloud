@@ -105,7 +105,7 @@ select:not(.zone-select) {
 }
 
 .ghost-button:hover {
-  background: color-mix(in srgb, currentcolor 8%, transparent);
+  background-color: color-mix(in srgb, currentcolor 8%, transparent);
 }
 
 .ghost-button:disabled {
