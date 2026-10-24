@@ -1,0 +1,10 @@
+rules:
+  # The @claude mention stub's `issue_comment`, owner-gated by the family
+  # workflow it calls (the job `if` on comment author association, then
+  # claude-code-action's write-permission check); the verdict is recorded
+  # in OlivierZal/configs' `.github/zizmor.yml`. Line-scoped, so any other
+  # dangerous trigger is still reported and the entry lapses when the line
+  # moves.
+  dangerous-triggers:
+    ignore:
+      - claude.yml:19
