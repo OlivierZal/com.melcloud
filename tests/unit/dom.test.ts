@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-// @vitest-environment-options {"settings": {"disableCSSFileLoading": true, "disableJavaScriptFileLoading": true, "navigation": {"disableMainFrameNavigation": true}}}
+// @vitest-environment-options {"settings": {"disableJavaScriptFileLoading": true, "navigation": {"disableMainFrameNavigation": true}}}
 
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { mock } from '@olivierzal/homey-kit/testing'
