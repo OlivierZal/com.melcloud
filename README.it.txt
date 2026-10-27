@@ -6,6 +6,7 @@ MELCloud (classico):
 - ventilatori con recupero energetico (ERV).
 
 MELCloud Home:
-- pompe di calore aria-aria.
+- pompe di calore aria-aria;
+- pompe di calore aria-acqua.
 
 Questa app non è approvata, verificata o autorizzata da Mitsubishi Electric Corporation. Mitsubishi non può essere ritenuta responsabile per eventuali danni derivanti dall'utilizzo di questa app per controllare dispositivi MELCloud.

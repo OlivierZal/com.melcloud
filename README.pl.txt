@@ -6,6 +6,7 @@ MELCloud (klasyczny):
 - wentylatorami z odzyskiem ciepła (ERV).
 
 MELCloud Home:
-- pompami ciepła powietrze-powietrze.
+- pompami ciepła powietrze-powietrze;
+- pompami ciepła powietrze-woda.
 
 Ta aplikacja nie jest wspierana, weryfikowana ani zatwierdzona przez Mitsubishi Electric Corporation. Mitsubishi nie ponosi odpowiedzialności za jakiekolwiek roszczenia lub szkody mogące powstać w wyniku korzystania z tej aplikacji do sterowania urządzeniami MELCloud.
