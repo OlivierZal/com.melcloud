@@ -1,5 +1,6 @@
 {
   "errors": {
+    "classicAccountEmpty": "لم يعد حساب MELCloud Classic هذا يُدرج أي وحدة يستطيع التطبيق قراءتها. إذا انتقلت وحداتك إلى MELCloud Home، فأضفها مجددًا كأجهزة [Home].",
     "deviceNotFound": "لم يتم العثور على الجهاز.",
     "energyReportsFailing": "فشلت تقارير الطاقة عدة مرات متتالية — قد تكون قيم الطاقة قديمة.",
     "invalidDuration": "يجب أن تكون المدة عددًا صحيحًا من الأيام بين 0 و365.",
@@ -20,9 +21,19 @@
       "home": "تم تسجيل الدخول إلى حساب MELCloud Home من جديد — يتم تحديث الأجهزة الآن."
     }
   },
+  "pair": {
+    "accountEmpty": {
+      "classic": "لا يُدرج حساب MELCloud Classic هذا أي وحدة يستطيع التطبيق قراءتها. إذا انتقلت وحداتك إلى MELCloud Home، فأضفها بدلًا من ذلك كأجهزة [Home].",
+      "home": "لا يُدرج حساب MELCloud Home هذا أي وحدة يستطيع التطبيق قراءتها. إذا كانت وحداتك لا تزال على MELCloud Classic، فأضفها بدلًا من ذلك كأجهزة [Classic]."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "تسجيل الدخول",
+      "emptyAccount": {
+        "classic": "لا يُدرج حساب MELCloud Classic هذا أي وحدة يستطيع التطبيق قراءتها. إذا انتقلت وحداتك إلى MELCloud Home، فاختر Home أعلاه، وسجّل الدخول بحساب MELCloud Home، ثم أضف وحداتك كأجهزة [Home].",
+        "home": "لا يُدرج حساب MELCloud Home هذا أي وحدة يستطيع التطبيق قراءتها. إذا كانت وحداتك لا تزال على MELCloud Classic، فاختر Classic أعلاه وسجّل الدخول بحساب MELCloud Classic."
+      },
       "failure": "فشل المصادقة.",
       "legend": "بيانات الاعتماد",
       "rejected": {

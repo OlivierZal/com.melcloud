@@ -38,12 +38,14 @@ const MANIFEST_FLOW = {
 
 const {
   authenticateMock,
+  isAccountEmptyMock,
   isAuthenticatedMock,
   registerRunListenerMock,
   setHandlerMock,
   showViewMock,
 } = vi.hoisted(() => ({
   authenticateMock: vi.fn<(data: unknown) => Promise<boolean>>(),
+  isAccountEmptyMock: vi.fn<(api: string) => boolean>(() => false),
   isAuthenticatedMock: vi.fn<() => boolean>().mockReturnValue(false),
   registerRunListenerMock:
     vi.fn<(listener: (args: Record<string, unknown>) => unknown) => void>(),
@@ -58,6 +60,7 @@ vi.mock(import('homey'), async () => {
     public getDevices = vi.fn<() => readonly unknown[]>().mockReturnValue([])
 
     public homey = {
+      __: vi.fn<(key: string) => string>((key) => key),
       app: {
         classicApi: {
           authenticate: authenticateMock,
@@ -66,6 +69,7 @@ vi.mock(import('homey'), async () => {
         getDevicesByType: vi
           .fn<(type: number) => readonly unknown[]>()
           .mockReturnValue([]),
+        isAccountEmpty: isAccountEmptyMock,
       },
       flow: {
         getActionCard: vi
@@ -173,6 +177,17 @@ describe(ClassicMELCloudDriver, () => {
   })
 
   describe('device discovery', () => {
+    // An account listing no unit at all answers with where its units may
+    // be, which Homey shows in place of the empty list.
+    it('should explain an emptied Classic account instead of listing nothing', async () => {
+      isAccountEmptyMock.mockReturnValueOnce(true)
+      const { listHandler, session } = createListDevicesSession(showViewMock)
+      await driver.onPair(session)
+
+      await expect(listHandler()).rejects.toThrow('pair.accountEmpty.classic')
+      expect(isAccountEmptyMock).toHaveBeenCalledWith('classic')
+    })
+
     it('should discover devices on list_devices handler', async () => {
       const { listHandler, session } = createListDevicesSession(showViewMock)
       stubDiscoverableDevice()

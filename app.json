@@ -49,6 +49,10 @@
       "method": "GET",
       "path": "/webview-hashes"
     },
+    "isAccountEmpty": {
+      "method": "GET",
+      "path": "/sessions/:api/empty"
+    },
     "isAuthenticated": {
       "method": "GET",
       "path": "/sessions/:api"

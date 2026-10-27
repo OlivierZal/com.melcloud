@@ -41,8 +41,11 @@ const STATUS_INDICATOR_SETTING = 'custom_status_indicator'
 // unit explains everything else (its energy reports fail too), so it
 // outranks them; the two energy reports of a device share a wording but
 // are separate conditions (own fetch, own schedule), so one recovering
-// never clears the bubble the other still earns.
+// never clears the bubble the other still earns. `classicAccountEmpty`
+// is the unreadable unit's other wording, never held beside it (see
+// `emptyAccountReason`).
 const HELD_WARNINGS = [
+  { message: 'errors.classicAccountEmpty', reason: 'classicAccountEmpty' },
   { message: 'errors.unitUnreadable', reason: 'unreadable' },
   { message: 'errors.energyReportsFailing', reason: 'regularEnergyReports' },
   { message: 'errors.energyReportsFailing', reason: 'totalEnergyReports' },
@@ -87,6 +90,15 @@ export abstract class BaseMELCloudDevice<
   public get id(): TId {
     return this.getData().id
   }
+
+  // How an unreadable unit is worded when its whole account lists no
+  // unit at all. A Classic account emptied that way is the signature of
+  // the move to MELCloud Home, which the Classic tiles then name; a Home
+  // account has no such move to name, so it keeps the cause-neutral
+  // wording (the strict `/context` parse refusing every entry empties it
+  // too).
+  protected readonly emptyAccountReason: 'classicAccountEmpty' | 'unreadable' =
+    'unreadable'
 
   // No energy reports unless a subclass wires the bundle; the ERV, whose
   // wire carries no energy, keeps the null default.
@@ -225,20 +237,21 @@ export abstract class BaseMELCloudDevice<
     } catch (error) {
       if (
         error instanceof NotFoundError &&
-        this.homey.app.isRegistryPopulated(this.api)
+        this.homey.app.isRegistryListed(this.api)
       ) {
-        // The registry lists units but not this one: a prune the facade
-        // cache did not survive (an app restart, a unit never cached),
-        // i.e. the lasting condition `syncFromDevice` holds for, reached
-        // before any facade exists. Held, never toasted — a toast every
-        // sync is the flash over frozen values the hold exists to end.
+        // The account's own registry, empty included, does not list this
+        // unit: a prune the facade cache did not survive (an app restart,
+        // a unit never cached), i.e. the lasting condition
+        // `syncFromDevice` holds for, reached before any facade exists.
+        // Held, never toasted — a toast every sync is the flash over
+        // frozen values the hold exists to end.
         await this.#holdUnreadableWarning(error)
       } else if (isAPIError(error) || error instanceof NotFoundError) {
         // Expected one-shot failures surface as the toast: a MELCloud
-        // API error, or a lookup on a registry that has listed NOTHING
-        // yet — the boot race, expected for up to a minute after start,
-        // which is not a prune. Anything else is a programming error and
-        // is only logged, so real bugs are not masked as device warnings.
+        // API error, or a lookup on a registry no sync has filled yet —
+        // the boot race, expected for up to a minute after start, which
+        // is not a prune. Anything else is a programming error and is
+        // only logged, so real bugs are not masked as device warnings.
         await this.setWarning(error)
       } else {
         this.error('Unexpected error while ensuring device:', error)
@@ -462,13 +475,22 @@ export abstract class BaseMELCloudDevice<
   // way), so the warning text is dialect- and cause-neutral and points
   // at the diagnostic log, which this hold feeds ONCE: the SDK prunes in
   // silence, and a unit gone from the account would otherwise leave no
-  // trace there.
+  // trace there. The wording follows the account (`emptyAccountReason`),
+  // and a change of wording holds the new reason before releasing the old
+  // one, so it costs one IPC call: the new reason outranks the old, or is
+  // recorded behind it until the release uncovers it.
   async #holdUnreadableWarning(
     error: EntityNotFoundError | NotFoundError,
   ): Promise<void> {
-    if (await this.holdWarning('unreadable')) {
+    const reason = this.homey.app.isAccountEmpty(this.api)
+      ? this.emptyAccountReason
+      : 'unreadable'
+    if (await this.holdWarning(reason)) {
       this.error('Unit unreadable, warning held:', error)
     }
+    await this.releaseWarning(
+      reason === 'unreadable' ? 'classicAccountEmpty' : 'unreadable',
+    )
   }
 
   async #init(): Promise<void> {
@@ -532,10 +554,14 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  // One closing line pairs with the hold's opening one; nothing is
-  // written on the syncs in between.
+  // One closing line pairs with the hold's opening one, whichever
+  // wording was held; nothing is written on the syncs in between.
   async #releaseUnreadableWarning(): Promise<void> {
-    if (await this.releaseWarning('unreadable')) {
+    const released = [
+      await this.releaseWarning('classicAccountEmpty'),
+      await this.releaseWarning('unreadable'),
+    ]
+    if (released.includes(true)) {
       this.log('Unit readable again, warning released')
     }
   }

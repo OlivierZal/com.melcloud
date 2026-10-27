@@ -8,7 +8,8 @@
     "invalidHolidayModeEnd": "Koniec trybu wakacyjnego musi być w przyszłości.",
     "unitOffline": "MELCloud zgłasza, że to urządzenie jest offline — sprawdź jego połączenie Wi-Fi.",
     "unitStale": "To urządzenie nie komunikowało się z MELCloud od ponad 24 godzin — sprawdź jego połączenie Wi-Fi.",
-    "unitUnreadable": "MELCloud nie wykazuje już tego urządzenia albo przesyła jego dane, których aplikacja nie może odczytać — wartości pozostają zamrożone, dopóki nie da się go ponownie odczytać (szczegóły w dzienniku diagnostycznym aplikacji)."
+    "unitUnreadable": "MELCloud nie wykazuje już tego urządzenia albo przesyła jego dane, których aplikacja nie może odczytać — wartości pozostają zamrożone, dopóki nie da się go ponownie odczytać (szczegóły w dzienniku diagnostycznym aplikacji).",
+    "classicAccountEmpty": "To konto MELCloud Classic nie wykazuje już żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia zostały przeniesione do MELCloud Home, dodaj je ponownie jako urządzenia [Home]."
   },
   "settings": {
     "authenticate": {
@@ -23,7 +24,11 @@
         "home": "__name__ odrzucił te dane logowania — sprawdź adres e-mail i hasło. Jeśli to konto MELCloud (Classic), wybierz powyżej Classic. Konto utworzone za pomocą logowania przez Apple lub Google nie ma hasła, z którego ta aplikacja mogłaby skorzystać."
       },
       "throttled": "__name__ tymczasowo blokuje logowanie po zbyt wielu próbach — spróbuj ponownie później.",
-      "staleDevices": "Zalogowano, ale nie udało się odświeżyć listy urządzeń — spróbuj ponownie później."
+      "staleDevices": "Zalogowano, ale nie udało się odświeżyć listy urządzeń — spróbuj ponownie później.",
+      "emptyAccount": {
+        "classic": "To konto MELCloud Classic nie wykazuje żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia zostały przeniesione do MELCloud Home, wybierz powyżej Home, zaloguj się na swoje konto MELCloud Home, a następnie dodaj je jako urządzenia [Home].",
+        "home": "To konto MELCloud Home nie wykazuje żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia nadal są w MELCloud Classic, wybierz powyżej Classic i zaloguj się na swoje konto MELCloud Classic."
+      }
     },
     "boolean": {
       "false": "Nie",
@@ -153,6 +158,12 @@
     "sessionRestored": {
       "classic": "Twoje konto MELCloud Classic jest ponownie zalogowane — urządzenia znów się aktualizują.",
       "home": "Twoje konto MELCloud Home jest ponownie zalogowane — urządzenia znów się aktualizują."
+    }
+  },
+  "pair": {
+    "accountEmpty": {
+      "classic": "To konto MELCloud Classic nie wykazuje żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia zostały przeniesione do MELCloud Home, dodaj je zamiast tego jako urządzenia [Home].",
+      "home": "To konto MELCloud Home nie wykazuje żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia nadal są w MELCloud Classic, dodaj je zamiast tego jako urządzenia [Classic]."
     }
   }
 }

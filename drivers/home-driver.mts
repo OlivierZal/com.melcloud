@@ -19,7 +19,9 @@ export abstract class HomeMELCloudDriver extends BaseMELCloudDriver {
 
   public abstract override readonly type: Home.DeviceType
 
-  protected override get api(): Home.API {
+  protected override readonly api = 'home'
+
+  protected override get client(): Home.API {
     return this.homey.app.homeApi
   }
 

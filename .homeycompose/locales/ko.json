@@ -1,5 +1,6 @@
 {
   "errors": {
+    "classicAccountEmpty": "이 MELCloud Classic 계정에는 앱이 읽을 수 있는 기기가 더 이상 없습니다. 기기가 MELCloud Home으로 이전되었다면 [Home] 기기로 다시 추가하세요.",
     "deviceNotFound": "기기를 찾을 수 없습니다.",
     "energyReportsFailing": "에너지 보고서가 연속으로 여러 번 실패했습니다 — 에너지 값이 최신이 아닐 수 있습니다.",
     "invalidDuration": "기간은 0에서 365 사이의 정수(일)여야 합니다.",
@@ -20,9 +21,19 @@
       "home": "MELCloud Home 계정에 다시 로그인되었습니다 — 기기가 다시 업데이트됩니다."
     }
   },
+  "pair": {
+    "accountEmpty": {
+      "classic": "이 MELCloud Classic 계정에는 앱이 읽을 수 있는 기기가 없습니다. 기기가 MELCloud Home으로 이전되었다면 대신 [Home] 기기로 추가하세요.",
+      "home": "이 MELCloud Home 계정에는 앱이 읽을 수 있는 기기가 없습니다. 기기가 아직 MELCloud Classic에 있다면 대신 [Classic] 기기로 추가하세요."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "로그인",
+      "emptyAccount": {
+        "classic": "이 MELCloud Classic 계정에는 앱이 읽을 수 있는 기기가 없습니다. 기기가 MELCloud Home으로 이전되었다면 위에서 Home을 선택하고 MELCloud Home 계정으로 로그인한 다음 [Home] 기기로 추가하세요.",
+        "home": "이 MELCloud Home 계정에는 앱이 읽을 수 있는 기기가 없습니다. 기기가 아직 MELCloud Classic에 있다면 위에서 Classic을 선택하고 MELCloud Classic 계정으로 로그인하세요."
+      },
       "failure": "인증에 실패했습니다.",
       "legend": "로그인 정보",
       "rejected": {

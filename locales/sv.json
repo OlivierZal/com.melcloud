@@ -8,7 +8,8 @@
     "invalidHolidayModeEnd": "Semesterlägets slut måste vara i framtiden.",
     "unitOffline": "MELCloud rapporterar att enheten är offline — kontrollera dess wifi-anslutning.",
     "unitStale": "Enheten har inte kommunicerat med MELCloud på över 24 timmar — kontrollera dess wifi-anslutning.",
-    "unitUnreadable": "MELCloud listar inte längre den här enheten, eller skickar data för den som appen inte kan läsa — värdena är frysta tills den kan läsas igen (detaljer i appens diagnostiklogg)."
+    "unitUnreadable": "MELCloud listar inte längre den här enheten, eller skickar data för den som appen inte kan läsa — värdena är frysta tills den kan läsas igen (detaljer i appens diagnostiklogg).",
+    "classicAccountEmpty": "Det här MELCloud Classic-kontot listar inte längre någon enhet som appen kan läsa. Om dina enheter har flyttats till MELCloud Home, lägg till dem igen som [Home]-enheter."
   },
   "settings": {
     "authenticate": {
@@ -23,7 +24,11 @@
         "home": "__name__ avvisade dessa autentiseringsuppgifter — kontrollera e-postadressen och lösenordet. Om ditt konto är ett MELCloud-konto (Classic), välj Classic ovan. Ett konto som skapats med Logga in med Apple eller Google har inget lösenord som den här appen kan använda."
       },
       "throttled": "__name__ blockerar tillfälligt inloggningar efter för många försök — försök igen senare.",
-      "staleDevices": "Inloggad, men enhetslistan kunde inte uppdateras — försök igen senare."
+      "staleDevices": "Inloggad, men enhetslistan kunde inte uppdateras — försök igen senare.",
+      "emptyAccount": {
+        "classic": "Det här MELCloud Classic-kontot listar ingen enhet som appen kan läsa. Om dina enheter har flyttats till MELCloud Home, välj Home ovan, logga in med ditt MELCloud Home-konto och lägg sedan till dina enheter som [Home]-enheter.",
+        "home": "Det här MELCloud Home-kontot listar ingen enhet som appen kan läsa. Om dina enheter fortfarande finns i MELCloud Classic, välj Classic ovan och logga in med ditt MELCloud Classic-konto."
+      }
     },
     "boolean": {
       "false": "Nej",
@@ -153,6 +158,12 @@
     "sessionRestored": {
       "classic": "Ditt MELCloud Classic-konto är inloggat igen — enheterna uppdateras igen.",
       "home": "Ditt MELCloud Home-konto är inloggat igen — enheterna uppdateras igen."
+    }
+  },
+  "pair": {
+    "accountEmpty": {
+      "classic": "Det här MELCloud Classic-kontot listar ingen enhet som appen kan läsa. Om dina enheter har flyttats till MELCloud Home, lägg i stället till dem som [Home]-enheter.",
+      "home": "Det här MELCloud Home-kontot listar ingen enhet som appen kan läsa. Om dina enheter fortfarande finns i MELCloud Classic, lägg i stället till dem som [Classic]-enheter."
     }
   }
 }

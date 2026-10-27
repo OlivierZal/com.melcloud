@@ -62,10 +62,10 @@ const getApiClient = ({ app }: Homey, service: Api): BaseAPIAdapter =>
 // login failures are classified here, where `instanceof` still works:
 // a rejection reads differently from MELCloud's login throttle (where
 // retrying keeps the lockout alive) and from a transport failure. The
-// rejection is keyed PER API because the remedy differs: the selector
-// defaults to Classic until an account is saved, so a MELCloud Home
-// account left on it is told to select Home (#1699), while the Home leg
-// adds that a Sign in with Apple/Google account has no usable password.
+// rejection is keyed PER API because the remedy differs: an account of
+// the other platform typed under this one is told which to select
+// (#1699), and the Home leg adds that a Sign in with Apple/Google
+// account has no usable password.
 const toLoginFailure = (
   homey: Homey,
   service: keyof typeof API_DISPLAY_NAMES,
@@ -137,11 +137,14 @@ const api = {
       // PRE-EXISTING live session while the new credentials were never
       // accepted.
       if (error instanceof RegistrySyncError) {
-        return { isDeviceListStale: true }
+        return { isAccountEmpty: false, isDeviceListStale: true }
       }
       throw toLoginFailure(homey, service, error)
     }
-    return { isDeviceListStale: false }
+    return {
+      isAccountEmpty: homey.app.isAccountEmpty(service),
+      isDeviceListStale: false,
+    }
   },
   getClassicBuildings: ({
     homey: { app },
@@ -233,6 +236,17 @@ const api = {
   }): Promise<Partial<Record<string, string>>> => {
     logSettingsRoute(app, 'GET /webview-hashes')
     return getWebviewHashes()
+  },
+  isAccountEmpty: ({
+    homey,
+    params,
+  }: {
+    homey: Homey
+    params: { api: string }
+  }): boolean => {
+    const service = toApi(params.api)
+    logSettingsRoute(homey.app, `GET /sessions/${service}/empty`)
+    return homey.app.isAccountEmpty(service)
   },
   isAuthenticated: async ({
     homey,

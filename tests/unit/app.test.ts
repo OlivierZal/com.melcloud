@@ -91,6 +91,7 @@ const mockHomeRegistry = {
 const mockHomeApiInstance = {
   authenticate: vi.fn<() => Promise<void>>(),
   clearSync: vi.fn<() => void>(),
+  isAuthenticated: vi.fn<() => boolean>().mockReturnValue(true),
   list: vi.fn<() => Promise<unknown[]>>(),
   registry: mockHomeRegistry,
 }
@@ -564,6 +565,7 @@ describe('melCloudApp', () => {
     mockFacadeManagerGetZones.mockReturnValue([])
     mockApiInstance.isAuthenticated.mockReturnValue(true)
     mockApiInstance.registry.getDevices.mockReturnValue([])
+    mockHomeApiInstance.isAuthenticated.mockReturnValue(true)
     mockHomeFacadeManagerGetById.mockReturnValue(null)
     mockHomeRegistry.getDevices.mockReturnValue([])
     mockHomeRegistry.getDevicesByType.mockReturnValue([])
@@ -1634,30 +1636,58 @@ describe('melCloudApp', () => {
     })
   })
 
-  // The devices' arbiter for a failed facade lookup: an empty registry is
-  // the boot race, a listed one that still misses the id a prune.
-  describe('registry population', () => {
-    it('should read empty registries as unpopulated', async () => {
-      await app.onInit()
-
-      expect(app.isRegistryPopulated('classic')).toBe(false)
-      expect(app.isRegistryPopulated('home')).toBe(false)
-    })
-
-    it('should read the Classic registry for the Classic account', async () => {
+  // The devices' arbiter for a failed facade lookup: a registry no sync
+  // has filled is the boot race, a listed one — empty included — the
+  // account's own answer.
+  describe('registry listing', () => {
+    it('should read a registry no sync has filled as unlisted', async () => {
       mockApiInstance.registry.getDevices.mockReturnValue([{ id: 1 }])
       await app.onInit()
 
-      expect(app.isRegistryPopulated('classic')).toBe(true)
-      expect(app.isRegistryPopulated('home')).toBe(false)
+      expect(app.isRegistryListed('classic')).toBe(false)
+      expect(app.isRegistryListed('home')).toBe(false)
     })
 
-    it('should read the Home registry for the Home account', async () => {
+    it('should list each account on its own sync only', async () => {
+      await app.onInit()
+      await getSyncCallback()()
+
+      expect(app.isRegistryListed('classic')).toBe(true)
+      expect(app.isRegistryListed('home')).toBe(false)
+
+      await getHomeSyncCallback()()
+
+      expect(app.isRegistryListed('home')).toBe(true)
+    })
+
+    // A logout wipes the registry, and a cycle it raced still notifies
+    // over the wiped one: the session decides, at call time.
+    it('should read a signed-out account as unlisted', async () => {
+      await app.onInit()
+      await getSyncCallback()()
+      mockApiInstance.isAuthenticated.mockReturnValue(false)
+
+      expect(app.isRegistryListed('classic')).toBe(false)
+    })
+  })
+
+  describe('empty account', () => {
+    it('should read a listed registry holding no unit as empty', async () => {
       mockHomeRegistry.getDevices.mockReturnValue([{ id: 'device-1' }])
       await app.onInit()
+      await getSyncCallback()()
+      await getHomeSyncCallback()()
 
-      expect(app.isRegistryPopulated('home')).toBe(true)
-      expect(app.isRegistryPopulated('classic')).toBe(false)
+      expect(app.isAccountEmpty('classic')).toBe(true)
+      expect(app.isAccountEmpty('home')).toBe(false)
+    })
+
+    // Before the first sync, an empty registry is the boot race.
+    it('should never read an unlisted registry as empty', async () => {
+      await app.onInit()
+
+      expect(app.isAccountEmpty('classic')).toBe(false)
+      expect(app.isAccountEmpty('home')).toBe(false)
     })
   })
 
@@ -3537,12 +3567,6 @@ describe('melCloudApp', () => {
       await getHomeSyncCallback()()
 
       expect(syncMock).not.toHaveBeenCalled()
-    })
-
-    it('should wire the same onSync callback on both Classic and Home APIs', async () => {
-      await app.onInit()
-
-      expect(getSyncCallback()).toBe(getHomeSyncCallback())
     })
   })
 

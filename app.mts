@@ -304,6 +304,9 @@ export default class MELCloudApp extends App {
 
   #homeFacadeManager!: Home.FacadeManager
 
+  // The accounts a registry sync has landed for (see `isRegistryListed`).
+  readonly #listedApis = new Set<Api>()
+
   // Loss-episode ledger, written SYNCHRONOUSLY by both lib event
   // callbacks and read by the deferred halves: 'pending' = loss
   // announced, deferred handler undecided; 'shown' = loss notification
@@ -627,19 +630,30 @@ export default class MELCloudApp extends App {
     )
   }
 
-  // Whether this account's registry lists at least one unit: the arbiter
-  // the devices consult when their facade lookup fails. Both registries
-  // start empty and stay empty until the first sync of the restored
-  // session lands (the boot race, expected for up to a minute after
-  // start), and a listed account whose lookup still misses one id is a
-  // prune — the SDK dropped the entry (the strict `/context` parse
-  // refused it, the unit left the account). Population is the one
-  // signal both libraries share: neither registry carries a synced-yet
-  // flag, so an account whose ONLY unit was pruned reads as a boot race
-  // here, which is the pre-46.8.0 behaviour for it, not a regression.
-  public isRegistryPopulated(api: Api): boolean {
-    const registry = api === 'home' ? this.#homeRegistry : this.#classicRegistry
-    return registry.getDevices().length > 0
+  // Whether this account is signed in and its listed registry holds no
+  // unit at all: the account itself answered that it has nothing to
+  // offer, which is what pairing, the settings page and a Classic tile
+  // explain, each for its own account only.
+  public isAccountEmpty(api: Api): boolean {
+    return (
+      this.isRegistryListed(api) &&
+      this.#getClient(api).registry.getDevices().length === 0
+    )
+  }
+
+  // Whether the registry holds this account's own answer: the arbiter the
+  // devices consult when their facade lookup fails. Both registries start
+  // empty and stay so until the first sync of the restored session lands
+  // (the boot race, expected for up to a minute after start); once a sync
+  // landed, the registry is authoritative, EMPTY INCLUDED, so a lookup
+  // that misses is a unit gone (the SDK dropped the entry, the unit left
+  // the account, the account moved to MELCloud Home) rather than one not
+  // listed yet. Neither registry carries a synced-yet flag, so the app
+  // records each account's first notification. The session is read at
+  // call time: a logout wipes the registry, and a cycle it raced still
+  // notifies over the wiped one.
+  public isRegistryListed(api: Api): boolean {
+    return this.#listedApis.has(api) && this.#getClient(api).isAuthenticated()
   }
 
   public async updateDeviceSettings({
@@ -910,6 +924,10 @@ export default class MELCloudApp extends App {
     return this.getClassicFacade('devices', zoneId)
   }
 
+  #getClient(api: Api): Classic.API | Home.API {
+    return api === 'home' ? this.#homeApi : this.#classicApi
+  }
+
   #getDevices({
     driverId,
     ids,
@@ -1096,7 +1114,7 @@ export default class MELCloudApp extends App {
     this.#classicApi = await Classic.API.create({
       abortSignal: this.#abortController.signal,
       events: {
-        onSyncComplete: this.#onSync,
+        onSyncComplete: this.#onRegistrySync('classic'),
         onAuthenticationLost: () => {
           this.#notifySessionLost('classic')
         },
@@ -1131,7 +1149,7 @@ export default class MELCloudApp extends App {
     this.#homeApi = await Home.API.create({
       abortSignal: this.#abortController.signal,
       events: {
-        onSyncComplete: this.#onSync,
+        onSyncComplete: this.#onRegistrySync('home'),
         onAuthenticationLost: () => {
           this.#notifySessionLost('home')
         },
@@ -1194,6 +1212,15 @@ export default class MELCloudApp extends App {
         // Non-critical: notification display is best-effort
       }
     }, 0)
+  }
+
+  // Records the account as listed before its devices sync, so the units
+  // they look up are judged against a registry the account itself filled.
+  #onRegistrySync(api: Api): SyncCallback {
+    return async (params) => {
+      this.#listedApis.add(api)
+      await this.#onSync(params)
+    }
   }
 
   #registerFlowListeners(): void {

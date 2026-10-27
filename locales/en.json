@@ -8,7 +8,8 @@
     "invalidHolidayModeEnd": "The holiday-mode end must be in the future.",
     "unitOffline": "MELCloud reports this unit as offline — check its Wi-Fi connection.",
     "unitStale": "This unit has not communicated with MELCloud for over 24 hours — check its Wi-Fi connection.",
-    "unitUnreadable": "MELCloud no longer lists this unit, or sends data for it that the app cannot read — values are frozen until it is readable again (details in the app's diagnostic log)."
+    "unitUnreadable": "MELCloud no longer lists this unit, or sends data for it that the app cannot read — values are frozen until it is readable again (details in the app's diagnostic log).",
+    "classicAccountEmpty": "This MELCloud Classic account no longer lists any unit the app can read. If your units moved to MELCloud Home, add them again as [Home] devices."
   },
   "settings": {
     "authenticate": {
@@ -23,7 +24,11 @@
         "home": "__name__ rejected these credentials — please check the email address and password. If your account is a MELCloud (Classic) account, select Classic above. An account created with Sign in with Apple or Google has no password this app can use."
       },
       "throttled": "__name__ is temporarily blocking sign-ins after too many attempts — please try again later.",
-      "staleDevices": "Signed in, but the device list could not be refreshed — please try again later."
+      "staleDevices": "Signed in, but the device list could not be refreshed — please try again later.",
+      "emptyAccount": {
+        "classic": "This MELCloud Classic account lists no unit the app can read. If your units moved to MELCloud Home, select Home above, sign in with your MELCloud Home account, then add your units as [Home] devices.",
+        "home": "This MELCloud Home account lists no unit the app can read. If your units are still on MELCloud Classic, select Classic above and sign in with your MELCloud Classic account."
+      }
     },
     "boolean": {
       "false": "No",
@@ -153,6 +158,12 @@
     "sessionRestored": {
       "classic": "Your MELCloud Classic account is signed in again — devices are updating again.",
       "home": "Your MELCloud Home account is signed in again — devices are updating again."
+    }
+  },
+  "pair": {
+    "accountEmpty": {
+      "classic": "This MELCloud Classic account lists no unit the app can read. If your units moved to MELCloud Home, add them as [Home] devices instead.",
+      "home": "This MELCloud Home account lists no unit the app can read. If your units are still on MELCloud Classic, add them as [Classic] devices instead."
     }
   }
 }

@@ -30,7 +30,9 @@ export abstract class ClassicMELCloudDriver<
 
   public abstract override readonly type: T
 
-  protected override get api(): Classic.API {
+  protected override readonly api = 'classic'
+
+  protected override get client(): Classic.API {
     return this.homey.app.classicApi
   }
 

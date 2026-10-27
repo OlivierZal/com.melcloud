@@ -17,6 +17,7 @@ const {
   authenticateMock,
   getHomeDevicesByTypeMock,
   getHomeFacadeMock,
+  isAccountEmptyMock,
   isAuthenticatedMock,
   setHandlerMock,
   showViewMock,
@@ -43,6 +44,7 @@ vi.mock(import('homey'), async () => {
   const { createFlowCardsStub } = await import('../flow-card-mocks.ts')
   class MockDriver {
     public homey = {
+      __: vi.fn<(key: string) => string>((key) => key),
       app: {
         getHomeDevicesByType: getHomeDevicesByTypeMock,
         getHomeFacade: getHomeFacadeMock,
@@ -50,6 +52,7 @@ vi.mock(import('homey'), async () => {
           authenticate: authenticateMock,
           isAuthenticated: isAuthenticatedMock,
         },
+        isAccountEmpty: isAccountEmptyMock,
       },
       flow: createFlowCardsStub(),
       manifest: { flow: MANIFEST_FLOW },
@@ -111,6 +114,18 @@ describe(BaseMELCloudDriver, () => {
   })
 
   describe('device discovery', () => {
+    // An account listing no unit at all answers with where its units may
+    // be, which Homey shows in place of the empty list.
+    it('should explain an emptied Home account instead of listing nothing', async () => {
+      isAccountEmptyMock.mockReturnValueOnce(true)
+      const { listHandler, session } = createListDevicesSession(showViewMock)
+      await driver.onPair(session)
+
+      await expect(listHandler()).rejects.toThrow('pair.accountEmpty.home')
+      expect(isAccountEmptyMock).toHaveBeenCalledWith('home')
+      expect(getHomeDevicesByTypeMock).not.toHaveBeenCalled()
+    })
+
     it('should discover devices on list_devices handler', async () => {
       const devices = [
         mock<Home.Device>({ id: 'device-1', name: 'Living Room' }),

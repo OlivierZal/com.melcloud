@@ -11,6 +11,9 @@ interface HomeDriverMocks {
   readonly getHomeFacadeMock: ReturnType<
     typeof vi.fn<(id: string, type: Home.DeviceType) => unknown>
   >
+  readonly isAccountEmptyMock: ReturnType<
+    typeof vi.fn<(api: string) => boolean>
+  >
   readonly isAuthenticatedMock: ReturnType<typeof vi.fn<() => boolean>>
   readonly setHandlerMock: ReturnType<
     typeof vi.fn<
@@ -22,8 +25,9 @@ interface HomeDriverMocks {
   >
 }
 
-// The seam every Home driver suite mocks: the app's device registry and
-// facade lookup, the session's handler/view pair, and the two auth reads.
+// The seam every Home driver suite mocks: the app's device registry, its
+// facade lookup and its empty-account read, the session's handler/view
+// pair, and the two auth reads.
 // Reached through an async `vi.hoisted`, because the `homey` mock factory
 // runs before the importing suite's own body does.
 export const createHomeDriverMocks = (): HomeDriverMocks => ({
@@ -31,6 +35,7 @@ export const createHomeDriverMocks = (): HomeDriverMocks => ({
   getHomeDevicesByTypeMock:
     vi.fn<(type: Home.DeviceType) => readonly unknown[]>(),
   getHomeFacadeMock: vi.fn<(id: string, type: Home.DeviceType) => unknown>(),
+  isAccountEmptyMock: vi.fn<(api: string) => boolean>(() => false),
   isAuthenticatedMock: vi.fn<() => boolean>(),
   setHandlerMock:
     vi.fn<(event: string, handler: (...args: unknown[]) => unknown) => void>(),

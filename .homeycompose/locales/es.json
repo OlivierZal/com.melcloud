@@ -1,5 +1,6 @@
 {
   "errors": {
+    "classicAccountEmpty": "Esta cuenta de MELCloud Classic ya no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades se trasladaron a MELCloud Home, vuelve a añadirlas como dispositivos [Home].",
     "deviceNotFound": "Dispositivo no encontrado.",
     "energyReportsFailing": "Los informes de energía han fallado varias veces seguidas — los valores de energía pueden estar desactualizados.",
     "invalidDuration": "La duración debe ser un número entero de días entre 0 y 365.",
@@ -20,9 +21,19 @@
       "home": "Tu cuenta de MELCloud Home ha vuelto a iniciar sesión — los dispositivos se actualizan de nuevo."
     }
   },
+  "pair": {
+    "accountEmpty": {
+      "classic": "Esta cuenta de MELCloud Classic no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades se trasladaron a MELCloud Home, añádelas como dispositivos [Home] en su lugar.",
+      "home": "Esta cuenta de MELCloud Home no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades siguen en MELCloud Classic, añádelas como dispositivos [Classic] en su lugar."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Iniciar sesión",
+      "emptyAccount": {
+        "classic": "Esta cuenta de MELCloud Classic no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades se trasladaron a MELCloud Home, selecciona Home arriba, inicia sesión con tu cuenta de MELCloud Home y luego añade tus unidades como dispositivos [Home].",
+        "home": "Esta cuenta de MELCloud Home no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades siguen en MELCloud Classic, selecciona Classic arriba e inicia sesión con tu cuenta de MELCloud Classic."
+      },
       "failure": "La autenticación falló.",
       "legend": "Credenciales",
       "rejected": {

@@ -145,10 +145,12 @@ const toApi = (driverId: string): Api =>
 const API_VALUES: readonly Api[] = ['home', 'classic']
 
 // What deciding "which account needs attention" takes: who is signed
-// out, and where the devices are — the second known only to the page,
-// the first only meaningful together with the credential state the
-// authentication manager owns.
+// out, who is signed in to an account that lists no unit at all (the
+// app's own answer), and where the devices are — the last known only to
+// the page, the first only meaningful together with the credential
+// state the authentication manager owns.
 interface AttentionInputs {
+  readonly emptyApis: readonly Api[]
   readonly unauthenticatedApis: readonly Api[]
   readonly hasDevices: (api: Api) => boolean
 }
@@ -439,13 +441,17 @@ class AuthManager {
     home: {},
   }
 
+  readonly #emptyAccountHint: HTMLDivElement
+
+  #emptyApis: readonly Api[] = []
+
   readonly #gate: DirtyGate
 
   readonly #homey: Homey
 
   readonly #loadPostLoginCallback: (
     api: Api,
-    isDeviceListStale: boolean,
+    result: AuthenticationResult,
   ) => Promise<void>
 
   readonly #loginSection: HTMLDivElement
@@ -475,7 +481,7 @@ class AuthManager {
     homey: Homey,
     loadPostLoginCallback: (
       api: Api,
-      isDeviceListStale: boolean,
+      result: AuthenticationResult,
     ) => Promise<void>,
     onLogOutCallback: (api: Api) => void,
   ) {
@@ -485,6 +491,7 @@ class AuthManager {
     this.#apiSelect = getSelect('api')
     this.#authenticateButton = getButton('authenticate')
     this.#authenticationSection = getDetails('authentication')
+    this.#emptyAccountHint = getDiv('empty_account')
     this.#loginSection = getDiv('login')
     this.#resetButton = getButton('reset_credentials')
     this.#gate = createDirtyGate({
@@ -504,6 +511,7 @@ class AuthManager {
   public addEventListeners(): void {
     this.#apiSelect.addEventListener('change', () => {
       this.#syncInputsFromCredentials()
+      this.#syncEmptyAccountHint()
     })
     this.#authenticateButton.addEventListener('click', () => {
       fireAndForget(this.login())
@@ -546,24 +554,28 @@ class AuthManager {
   }
 
   // The accounts the user actually relies on and that cannot serve them
-  // right now: signed out, or holding half a credential pair, while
-  // they have paired devices. Residual credentials on an account with
-  // no device are nothing to fix — the same rule the app applies before
-  // nagging the timeline about a lost session — so such an account
-  // never steals the form from the one in use. A signed-out account
-  // outranks one that merely lost half its pair: the first stopped
-  // serving devices, the second still does.
+  // right now: signed out, holding half a credential pair, or signed in
+  // to an account that lists no unit at all, while they have paired
+  // devices. Residual credentials on an account with no device are
+  // nothing to fix — the same rule the app applies before nagging the
+  // timeline about a lost session — so such an account never steals the
+  // form from the one in use. Ranked in that order, each account once: a
+  // signed-out account stopped serving devices, one that lost half its
+  // pair still does, and an emptied one is explained by the hint under
+  // the picker.
   public getApisNeedingAttention({
+    emptyApis,
     hasDevices,
     unauthenticatedApis,
   }: AttentionInputs): Api[] {
     const apisInUse = API_VALUES.filter((api) => hasDevices(api))
     const incompleteApis = new Set(this.getIncompleteApis())
     return [
-      ...apisInUse.filter((api) => unauthenticatedApis.includes(api)),
-      ...apisInUse.filter(
-        (api) => !unauthenticatedApis.includes(api) && incompleteApis.has(api),
-      ),
+      ...new Set([
+        ...apisInUse.filter((api) => unauthenticatedApis.includes(api)),
+        ...apisInUse.filter((api) => incompleteApis.has(api)),
+        ...apisInUse.filter((api) => emptyApis.includes(api)),
+      ]),
     ]
   }
 
@@ -589,13 +601,13 @@ class AuthManager {
     }
     await this.#gate.runBusy(async () => {
       try {
-        const { isDeviceListStale } = await homeyApiPost<AuthenticationResult>(
+        const result = await homeyApiPost<AuthenticationResult>(
           this.#homey,
           `/sessions/${api}`,
           { password, username } satisfies LoginCredentials,
         )
         this.#credentialsByApi[api] = { password, username }
-        await this.#loadPostLoginCallback(api, isDeviceListStale)
+        await this.#loadPostLoginCallback(api, result)
       } catch (error) {
         // The app-side handler already classified the failure into a
         // user-facing reason (rejected / throttled / transport).
@@ -631,6 +643,11 @@ class AuthManager {
         await this.#homey.alert(getErrorMessage(error))
       }
     })
+  }
+
+  public showEmptyAccountHint(emptyApis: readonly Api[]): void {
+    this.#emptyApis = emptyApis
+    this.#syncEmptyAccountHint()
   }
 
   #createCredentialInput(
@@ -677,6 +694,17 @@ class AuthManager {
     if (api !== undefined) {
       this.#apiSelect.value = api
     }
+  }
+
+  // Under the picker, for the selected account only: a signed-in
+  // account that lists no unit is told where its units may be, so a
+  // user on one platform never reads about the other's account.
+  #syncEmptyAccountHint(): void {
+    const api = this.#currentApi
+    this.#emptyAccountHint.hidden = !this.#emptyApis.includes(api)
+    this.#emptyAccountHint.textContent = this.#homey.__(
+      `settings.authenticate.emptyAccount.${api}`,
+    )
   }
 
   #syncInputsFromCredentials(): void {
@@ -1274,6 +1302,9 @@ class SettingsApp {
 
   readonly #deviceSettingsManager: DeviceSettingsManager
 
+  // Which signed-in accounts list no unit at all, as the app answers it.
+  #emptyState: Record<Api, boolean> = { classic: false, home: false }
+
   readonly #errorLogManager: ErrorLogManager
 
   readonly #homey: Homey
@@ -1288,7 +1319,7 @@ class SettingsApp {
     this.#errorLogManager = new ErrorLogManager(homey)
     this.#authManager = new AuthManager(
       homey,
-      async (api, isDeviceListStale) => this.#onLogin(api, isDeviceListStale),
+      async (api, result) => this.#onLogin(api, result),
       (api) => {
         this.#onLogOut(api)
       },
@@ -1340,6 +1371,9 @@ class SettingsApp {
 
   #attentionInputs(): AttentionInputs {
     return {
+      emptyApis: API_VALUES.filter(
+        (api) => this.#authState[api] && this.#emptyState[api],
+      ),
       unauthenticatedApis: API_VALUES.filter((api) => !this.#authState[api]),
       hasDevices: (api) => this.#hasDevices(api),
     }
@@ -1385,6 +1419,16 @@ class SettingsApp {
     // See #fetchClassicBuildings: fills the initial panel values only (the
     // first option, a Classic zone when both accounts are paired).
     fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
+  }
+
+  // A failed probe reads as "not empty": the hint is an explanation,
+  // never a reason for the page to fail.
+  async #fetchIsAccountEmpty(api: Api): Promise<boolean> {
+    try {
+      return await homeyApiGet<boolean>(this.#homey, `/sessions/${api}/empty`)
+    } catch {
+      return false
+    }
   }
 
   // A failed probe reads as "not verified" rather than throwing: the
@@ -1450,23 +1494,21 @@ class SettingsApp {
   /**
    * @alerts Displays post-login errors to the user.
    */
-  async #onLogin(api: Api, isDeviceListStale: boolean): Promise<void> {
+  async #onLogin(api: Api, result: AuthenticationResult): Promise<void> {
     // Reflect the server truth instead of assuming success: the login
     // POST resolves on a sign-in the server accepted even when the
     // enforced post-login device sync failed, which the route reports
     // as `isDeviceListStale` rather than as a login failure.
     this.#authState[api] = await this.#fetchSessionState(api)
+    this.#emptyState[api] = result.isAccountEmpty
     if (this.#authState[api]) {
       // The panel is filled from whatever the registry holds — a list
-      // the sign-in could not refresh still describes real devices —
-      // but a failed refresh is what the user hears about: it EXPLAINS
-      // a list that came back empty or out of date, where the device
-      // check's own "add a device" would send them off after a device
-      // they already own.
-      const failure = await this.#loadDevicesForApi(api)
-      const message = isDeviceListStale
-        ? this.#homey.__('settings.authenticate.staleDevices')
-        : failure
+      // the sign-in could not refresh still describes real devices.
+      const message = this.#postLoginMessage(
+        api,
+        result,
+        await this.#loadDevicesForApi(api),
+      )
       if (message !== null) {
         await this.#homey.alert(message)
       }
@@ -1483,7 +1525,27 @@ class SettingsApp {
   // account.
   #onLogOut(api: Api): void {
     this.#authState[api] = false
+    this.#emptyState[api] = false
     this.#refreshVisibility()
+  }
+
+  // What the user hears after an accepted sign-in, the most explanatory
+  // first: an unrefreshed list explains a list that came back empty or
+  // out of date, and an account listing no unit at all explains why
+  // there is nothing to set up — both where the device check's own "add
+  // a device" would send the user after a device pairing cannot offer.
+  #postLoginMessage(
+    api: Api,
+    { isAccountEmpty, isDeviceListStale }: AuthenticationResult,
+    failure: string | null,
+  ): string | null {
+    if (isDeviceListStale) {
+      return this.#homey.__('settings.authenticate.staleDevices')
+    }
+    if (isAccountEmpty) {
+      return this.#homey.__(`settings.authenticate.emptyAccount.${api}`)
+    }
+    return failure
   }
 
   #refreshVisibility(): void {
@@ -1493,30 +1555,39 @@ class SettingsApp {
     // (signed out immediately, credentials deleted) keeps the panel
     // open on its empty fields, but only while it still has devices:
     // an account the user never paired anything to is not a chore.
+    const attention = this.#attentionInputs()
     this.#authManager.collapseAuthenticationSection(
-      this.#authManager.getApisNeedingAttention(this.#attentionInputs())
-        .length === 0,
+      this.#authManager.getApisNeedingAttention(attention).length === 0,
     )
+    this.#authManager.showEmptyAccountHint(attention.emptyApis)
     this.#contentSection.hidden =
       !isClassicAuthenticated && !isHomeAuthenticated
     toggleZoneDeviceSettings(isClassicAuthenticated || isHomeAuthenticated)
   }
 
   async #run(): Promise<void> {
-    const [settings, isClassicAuthenticated, isHomeAuthenticated] =
-      await Promise.all([
-        SettingsApp.#fetchHomeySettings(this.#homey),
-        homeyApiGet<boolean>(this.#homey, '/sessions/classic'),
-        homeyApiGet<boolean>(this.#homey, '/sessions/home'),
-        trySetDocumentLanguage(async () =>
-          homeyApiGet<string>(this.#homey, '/language'),
-        ),
-        this.#deviceSettingsManager.fetchDeviceSettings(),
-      ])
+    const [
+      settings,
+      isClassicAuthenticated,
+      isHomeAuthenticated,
+      isClassicEmpty,
+      isHomeEmpty,
+    ] = await Promise.all([
+      SettingsApp.#fetchHomeySettings(this.#homey),
+      homeyApiGet<boolean>(this.#homey, '/sessions/classic'),
+      homeyApiGet<boolean>(this.#homey, '/sessions/home'),
+      this.#fetchIsAccountEmpty('classic'),
+      this.#fetchIsAccountEmpty('home'),
+      trySetDocumentLanguage(async () =>
+        homeyApiGet<string>(this.#homey, '/language'),
+      ),
+      this.#deviceSettingsManager.fetchDeviceSettings(),
+    ])
     this.#authState = {
       classic: isClassicAuthenticated,
       home: isHomeAuthenticated,
     }
+    this.#emptyState = { classic: isClassicEmpty, home: isHomeEmpty }
     await this.#initCredentialFields(settings)
     this.#addEventListeners()
     await this.#validateInitialAuthStates()

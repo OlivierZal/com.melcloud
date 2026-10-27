@@ -8,7 +8,8 @@
     "invalidHolidayModeEnd": "Het einde van de vakantiemodus moet in de toekomst liggen.",
     "unitOffline": "MELCloud meldt dat deze unit offline is — controleer de wifiverbinding.",
     "unitStale": "Deze unit heeft al meer dan 24 uur niet met MELCloud gecommuniceerd — controleer de wifiverbinding.",
-    "unitUnreadable": "MELCloud vermeldt deze unit niet meer, of stuurt er gegevens voor die de app niet kan lezen — de waarden blijven bevroren tot deze weer leesbaar is (details in het diagnoselogboek van de app)."
+    "unitUnreadable": "MELCloud vermeldt deze unit niet meer, of stuurt er gegevens voor die de app niet kan lezen — de waarden blijven bevroren tot deze weer leesbaar is (details in het diagnoselogboek van de app).",
+    "classicAccountEmpty": "Dit MELCloud Classic-account vermeldt geen enkele unit meer die de app kan lezen. Zijn je units naar MELCloud Home verhuisd, voeg ze dan opnieuw toe als [Home]-apparaten."
   },
   "settings": {
     "authenticate": {
@@ -23,7 +24,11 @@
         "home": "__name__ heeft deze inloggegevens geweigerd — controleer het e-mailadres en het wachtwoord. Is je account een MELCloud-account (Classic), selecteer dan hierboven Classic. Een account dat is aangemaakt met Inloggen met Apple of Google heeft geen wachtwoord dat deze app kan gebruiken."
       },
       "throttled": "__name__ blokkeert aanmeldingen tijdelijk na te veel pogingen — probeer het later opnieuw.",
-      "staleDevices": "Aangemeld, maar de apparatenlijst kon niet worden vernieuwd — probeer het later opnieuw."
+      "staleDevices": "Aangemeld, maar de apparatenlijst kon niet worden vernieuwd — probeer het later opnieuw.",
+      "emptyAccount": {
+        "classic": "Dit MELCloud Classic-account vermeldt geen enkele unit die de app kan lezen. Zijn je units naar MELCloud Home verhuisd, selecteer dan hierboven Home, log in met je MELCloud Home-account en voeg je units daarna toe als [Home]-apparaten.",
+        "home": "Dit MELCloud Home-account vermeldt geen enkele unit die de app kan lezen. Staan je units nog in MELCloud Classic, selecteer dan hierboven Classic en log in met je MELCloud Classic-account."
+      }
     },
     "boolean": {
       "false": "Nee",
@@ -153,6 +158,12 @@
     "sessionRestored": {
       "classic": "Je MELCloud Classic-account is weer aangemeld — apparaten worden weer bijgewerkt.",
       "home": "Je MELCloud Home-account is weer aangemeld — apparaten worden weer bijgewerkt."
+    }
+  },
+  "pair": {
+    "accountEmpty": {
+      "classic": "Dit MELCloud Classic-account vermeldt geen enkele unit die de app kan lezen. Zijn je units naar MELCloud Home verhuisd, voeg ze dan in plaats daarvan toe als [Home]-apparaten.",
+      "home": "Dit MELCloud Home-account vermeldt geen enkele unit die de app kan lezen. Staan je units nog in MELCloud Classic, voeg ze dan in plaats daarvan toe als [Classic]-apparaten."
     }
   }
 }

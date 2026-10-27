@@ -1,5 +1,6 @@
 {
   "errors": {
+    "classicAccountEmpty": "This MELCloud Classic account no longer lists any unit the app can read. If your units moved to MELCloud Home, add them again as [Home] devices.",
     "deviceNotFound": "Device not found.",
     "energyReportsFailing": "Energy reports have failed several times in a row — the energy values may be stale.",
     "invalidDuration": "The duration must be a whole number of days between 0 and 365.",
@@ -20,9 +21,19 @@
       "home": "Your MELCloud Home account is signed in again — devices are updating again."
     }
   },
+  "pair": {
+    "accountEmpty": {
+      "classic": "This MELCloud Classic account lists no unit the app can read. If your units moved to MELCloud Home, add them as [Home] devices instead.",
+      "home": "This MELCloud Home account lists no unit the app can read. If your units are still on MELCloud Classic, add them as [Classic] devices instead."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Log in",
+      "emptyAccount": {
+        "classic": "This MELCloud Classic account lists no unit the app can read. If your units moved to MELCloud Home, select Home above, sign in with your MELCloud Home account, then add your units as [Home] devices.",
+        "home": "This MELCloud Home account lists no unit the app can read. If your units are still on MELCloud Classic, select Classic above and sign in with your MELCloud Classic account."
+      },
       "failure": "Authentication failed.",
       "legend": "Credentials",
       "rejected": {

@@ -62,6 +62,10 @@ export abstract class ClassicMELCloudDevice<
 
   protected override readonly api = 'classic'
 
+  // An emptied Classic account is the move to MELCloud Home (see
+  // `emptyAccountReason`).
+  protected override readonly emptyAccountReason = 'classicAccountEmpty'
+
   // A stale unit is one whose last-communication timestamp has aged out.
   protected override readonly unreachableWarning = 'errors.unitStale'
 

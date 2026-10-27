@@ -56,7 +56,8 @@ export const createMockDeviceClass = (
       api: { realtime: vi.fn<(event: string, data: unknown) => void>() },
       app: {
         getClassicFacade: vi.fn<(kind: string, id: number) => unknown>(),
-        isRegistryPopulated: vi.fn<(api: string) => boolean>(() => false),
+        isAccountEmpty: vi.fn<(api: string) => boolean>(() => false),
+        isRegistryListed: vi.fn<(api: string) => boolean>(() => false),
       },
       clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
       clock: { getTimezone: vi.fn<() => string>(() => 'Europe/Paris') },

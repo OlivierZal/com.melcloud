@@ -1,5 +1,6 @@
 {
   "errors": {
+    "classicAccountEmpty": "Dit MELCloud Classic-account vermeldt geen enkele unit meer die de app kan lezen. Zijn je units naar MELCloud Home verhuisd, voeg ze dan opnieuw toe als [Home]-apparaten.",
     "deviceNotFound": "Apparaat niet gevonden.",
     "energyReportsFailing": "De energierapporten zijn meerdere keren na elkaar mislukt — de energiewaarden kunnen verouderd zijn.",
     "invalidDuration": "De duur moet een geheel aantal dagen tussen 0 en 365 zijn.",
@@ -20,9 +21,19 @@
       "home": "Je MELCloud Home-account is weer aangemeld — apparaten worden weer bijgewerkt."
     }
   },
+  "pair": {
+    "accountEmpty": {
+      "classic": "Dit MELCloud Classic-account vermeldt geen enkele unit die de app kan lezen. Zijn je units naar MELCloud Home verhuisd, voeg ze dan in plaats daarvan toe als [Home]-apparaten.",
+      "home": "Dit MELCloud Home-account vermeldt geen enkele unit die de app kan lezen. Staan je units nog in MELCloud Classic, voeg ze dan in plaats daarvan toe als [Classic]-apparaten."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Inloggen",
+      "emptyAccount": {
+        "classic": "Dit MELCloud Classic-account vermeldt geen enkele unit die de app kan lezen. Zijn je units naar MELCloud Home verhuisd, selecteer dan hierboven Home, log in met je MELCloud Home-account en voeg je units daarna toe als [Home]-apparaten.",
+        "home": "Dit MELCloud Home-account vermeldt geen enkele unit die de app kan lezen. Staan je units nog in MELCloud Classic, selecteer dan hierboven Classic en log in met je MELCloud Classic-account."
+      },
       "failure": "Authenticatie mislukt.",
       "legend": "Referenties",
       "rejected": {

@@ -237,15 +237,17 @@ const defaultRoutes = (): Record<string, unknown> => ({
   'GET /classic/buildings': classicBuildingsFixture(),
   'GET /language': 'fr',
   'GET /sessions/classic': true,
+  'GET /sessions/classic/empty': false,
   'GET /sessions/home': false,
+  'GET /sessions/home/empty': false,
   'GET /settings/devices': deviceSettingsFixture(),
   'GET /settings/drivers': driverSettingsFixture(),
   'GET /targets/buildings_1/settings/frost-protection': protectionFixture(),
   'GET /targets/buildings_1/settings/holiday-mode': holidayFixture(),
   'GET /webview-hashes': {},
   'POST /boot-error': undefined,
-  'POST /sessions/classic': { isDeviceListStale: false },
-  'POST /sessions/home': { isDeviceListStale: false },
+  'POST /sessions/classic': { isAccountEmpty: false, isDeviceListStale: false },
+  'POST /sessions/home': { isAccountEmpty: false, isDeviceListStale: false },
   'PUT /settings/devices': undefined,
 })
 
@@ -1072,6 +1074,104 @@ describe('settings page', () => {
         'settings.authenticate.staleDevices',
       )
       expect(harness.alert).not.toHaveBeenCalledWith('settings.devices.none')
+    })
+
+    // An account in use whose session lists no unit at all is a chore:
+    // the panel opens on it and the hint says where the units may be.
+    it('should open on an emptied account in use and say where its units went', async () => {
+      await bootPage({
+        routes: { ...defaultRoutes(), 'GET /sessions/classic/empty': true },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(getSelect('api').value).toBe('classic')
+      expect(getDetails('authentication').open).toBe(true)
+      expect(getDiv('empty_account').hidden).toBe(false)
+      expect(getDiv('empty_account').textContent).toBe(
+        'settings.authenticate.emptyAccount.classic',
+      )
+    })
+
+    // The hint belongs to its own account: a user looking at the other
+    // one never reads about it, and an emptied account nothing is paired
+    // to keeps the panel folded.
+    it('should show the hint for the selected account only', async () => {
+      await bootPage({
+        routes: {
+          ...defaultRoutes(),
+          'GET /classic/buildings': [],
+          'GET /sessions/classic/empty': true,
+          'GET /settings/devices': {},
+        },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(getDetails('authentication').open).toBe(false)
+      expect(getDiv('empty_account').hidden).toBe(false)
+
+      commit(getSelect('api'), 'home')
+
+      expect(getDiv('empty_account').hidden).toBe(true)
+    })
+
+    it('should boot without the hint when the empty-account probe fails', async () => {
+      const harness = await bootPage({
+        failures: { 'GET /sessions/classic/empty': new Error('probe down') },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(getDiv('empty_account').hidden).toBe(true)
+      expect(getDetails('authentication').open).toBe(false)
+      expect(harness.alert).not.toHaveBeenCalled()
+    })
+
+    // Signing in to an account that lists no unit explains why there is
+    // nothing to set up, where the device check would ask for a device
+    // pairing cannot offer.
+    it('should say where the units may be after signing in to an emptied account', async () => {
+      const harness = await bootPage()
+      commit(getSelect('api'), 'home')
+      commit(getInput('username'), 'home@example.com')
+      commit(getInput('password'), 'secret')
+      swapRoutes(harness, {
+        ...defaultRoutes(),
+        'GET /sessions/home': true,
+        'POST /sessions/home': {
+          isAccountEmpty: true,
+          isDeviceListStale: false,
+        },
+      })
+      getButton('authenticate').click()
+      await settleDetached()
+
+      expect(harness.alert).toHaveBeenCalledWith(
+        'settings.authenticate.emptyAccount.home',
+      )
+      expect(harness.alert).not.toHaveBeenCalledWith('settings.devices.none')
+      expect(getDiv('empty_account').hidden).toBe(false)
+    })
+
+    it('should drop the hint once the emptied account is reset', async () => {
+      await bootPage({
+        routes: { ...defaultRoutes(), 'GET /sessions/classic/empty': true },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+      getButton('reset_credentials').click()
+      await settleDetached()
+
+      expect(getDiv('empty_account').hidden).toBe(true)
     })
 
     it('should swap the fields when switching accounts', async () => {

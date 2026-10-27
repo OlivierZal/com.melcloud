@@ -1,5 +1,6 @@
 {
   "errors": {
+    "classicAccountEmpty": "Dieses MELCloud Classic-Konto führt kein Gerät mehr auf, das die App lesen kann. Wenn Ihre Geräte zu MELCloud Home umgezogen sind, fügen Sie sie erneut als [Home]-Geräte hinzu.",
     "deviceNotFound": "Gerät nicht gefunden.",
     "energyReportsFailing": "Die Energieberichte sind mehrmals in Folge fehlgeschlagen — die Energiewerte können veraltet sein.",
     "invalidDuration": "Die Dauer muss eine ganze Zahl von Tagen zwischen 0 und 365 sein.",
@@ -20,14 +21,24 @@
       "home": "Dein MELCloud Home-Konto ist wieder angemeldet — die Geräte werden wieder aktualisiert."
     }
   },
+  "pair": {
+    "accountEmpty": {
+      "classic": "Dieses MELCloud Classic-Konto führt kein Gerät auf, das die App lesen kann. Wenn Ihre Geräte zu MELCloud Home umgezogen sind, fügen Sie sie stattdessen als [Home]-Geräte hinzu.",
+      "home": "Dieses MELCloud Home-Konto führt kein Gerät auf, das die App lesen kann. Wenn Ihre Geräte noch in MELCloud Classic sind, fügen Sie sie stattdessen als [Classic]-Geräte hinzu."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Anmelden",
+      "emptyAccount": {
+        "classic": "Dieses MELCloud Classic-Konto führt kein Gerät auf, das die App lesen kann. Wenn Ihre Geräte zu MELCloud Home umgezogen sind, wählen Sie oben Home aus, melden Sie sich mit Ihrem MELCloud Home-Konto an und fügen Sie Ihre Geräte dann als [Home]-Geräte hinzu.",
+        "home": "Dieses MELCloud Home-Konto führt kein Gerät auf, das die App lesen kann. Wenn Ihre Geräte noch in MELCloud Classic sind, wählen Sie oben Classic aus und melden Sie sich mit Ihrem MELCloud Classic-Konto an."
+      },
       "failure": "Authentifizierung fehlgeschlagen.",
       "legend": "Anmeldedaten",
       "rejected": {
-        "classic": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen. Wurde dein Konto in der MELCloud Home-App erstellt, wähle oben Home aus und melde dich mit denselben Zugangsdaten an.",
-        "home": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen. Ist dein Konto ein MELCloud-Konto (Classic), wähle oben Classic aus. Ein über Anmelden mit Apple oder Google erstelltes Konto hat kein Passwort, das diese App verwenden kann."
+        "classic": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen. Wurde Ihr Konto in der MELCloud Home-App erstellt, wählen Sie oben Home aus und melden Sie sich mit denselben Zugangsdaten an.",
+        "home": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen. Ist Ihr Konto ein MELCloud-Konto (Classic), wählen Sie oben Classic aus. Ein über Anmelden mit Apple oder Google erstelltes Konto hat kein Passwort, das diese App verwenden kann."
       },
       "reset": "Zurücksetzen",
       "resetConfirm": "Dies meldet das ausgewählte Konto sofort ab und löscht seine gespeicherten Zugangsdaten.",
