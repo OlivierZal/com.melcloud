@@ -111,6 +111,13 @@ describe(ClassicMELCloudDriver, () => {
     driver = createTestDriver()
   })
 
+  // A twin driver of the same app: it shares the app's flow manager.
+  const createSibling = (): TestDriver => {
+    const sibling = createTestDriver()
+    Object.defineProperty(sibling, 'homey', { value: driver.homey })
+    return sibling
+  }
+
   const stubDiscoverableDevice = (): void => {
     vi.spyOn(driver.homey.app, 'getDevicesByType').mockReturnValue([
       mock<Classic.Device<TestDriverType>>({
@@ -126,6 +133,36 @@ describe(ClassicMELCloudDriver, () => {
     settable: 'onoff',
     settableWithoutAction: 'thermostat_mode',
     undeclared: 'measure_signal_strength',
+  })
+
+  // The twins' capability cards are app-level: a sibling driver sharing
+  // the app's flow manager finds them wired and must leave them alone.
+  describe('app-level card wiring', () => {
+    it('should not register again on the cards a sibling wired', async () => {
+      await driver.onInit()
+      registerRunListenerMock.mockClear()
+      await createSibling().onInit()
+
+      expect(registerRunListenerMock).not.toHaveBeenCalled()
+    })
+
+    it('should leave a card whose registration threw to the next driver', async () => {
+      vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementationOnce(
+        () => {
+          throw new Error('Card not found')
+        },
+      )
+
+      await expect(driver.onInit()).rejects.toThrow('Card not found')
+
+      await createSibling().onInit()
+
+      // The first lookup threw; the sibling's first one retries that card.
+      expect(driver.homey.flow.getConditionCard).toHaveBeenNthCalledWith(
+        2,
+        'onoff_condition',
+      )
+    })
   })
 
   testPairing(() => driver, {

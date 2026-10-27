@@ -587,7 +587,12 @@ coverage.
   forwards the argument to the capability listener). A declared card
   the runtime cannot hand out throws at driver init, never a swallowed
   catch: a missing card is a contract break, and the mirror rule holds
-  in com.heatzy.
+  in com.heatzy. The capability cards are APP-level, one card per
+  capability whatever drivers its filter names, so the first driver to
+  wire a card serves its twins (`wiredCardIds`, keyed by the flow
+  manager the drivers share, and claimed only once the registration
+  returned): a second registration on the same card is what Homey
+  answers with "Run listener was already registered" at every boot.
 - Flow-card device filters are `driver_id=<manifest owners>&capabilities=<cap>`,
   both parts mechanical: `capabilities=` is the card's real precondition
   (the run listeners are capability-generic and triggers fire through
