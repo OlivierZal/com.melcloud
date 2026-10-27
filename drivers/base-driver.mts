@@ -14,6 +14,15 @@ import { type Homey, Driver } from '../lib/homey.mts'
 // before the first dot (`onoff.timer` → `onoff`).
 const getArg = (capability: string): string => capability.replace(/\..*/v, '')
 
+// The capability cards are app-level: one card serves every driver its
+// device filter names (the Classic and Home twins of a capability), so
+// each driver wiring it would register a second listener on the same
+// card, which Homey answers with "Run listener was already registered"
+// at every boot. The listeners are generic over `args.device`, so the
+// first driver to wire a card serves them all. Keyed by the flow manager
+// the drivers share, so the record lives exactly as long as the app.
+const wiredCardIds = new WeakMap<object, Set<string>>()
+
 export abstract class BaseMELCloudDriver extends Driver {
   declare public readonly homey: Homey.Homey
 
@@ -121,13 +130,17 @@ export abstract class BaseMELCloudDriver extends Driver {
     const actionIds = new Set(actions.map(({ id }) => id))
     for (const capability of this.manifest.capabilities) {
       if (conditionIds.has(`${capability}_condition`)) {
-        this.#registerConditionListener(capability)
+        this.#wireOnce(`${capability}_condition`, () => {
+          this.#registerConditionListener(capability)
+        })
       }
       if (
         Object.hasOwn(this.tagMappings.set, capability) &&
         actionIds.has(`${capability}_action`)
       ) {
-        this.#registerActionListener(capability)
+        this.#wireOnce(`${capability}_action`, () => {
+          this.#registerActionListener(capability)
+        })
       }
     }
   }
@@ -154,5 +167,16 @@ export abstract class BaseMELCloudDriver extends Driver {
         throw error
       }
     })
+  }
+
+  // A card counts as wired once its registration returned: a throwing
+  // one stays unclaimed, and the throw surfaces from `onInit`.
+  #wireOnce(cardId: string, wire: () => void): void {
+    const wired = wiredCardIds.get(this.homey.flow) ?? new Set<string>()
+    if (wired.has(cardId)) {
+      return
+    }
+    wire()
+    wiredCardIds.set(this.homey.flow, wired.add(cardId))
   }
 }
