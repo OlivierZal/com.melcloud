@@ -6,7 +6,7 @@ import {
   RegistrySyncError,
 } from '@olivierzal/melcloud-api'
 
-import type { AuthenticationAPI } from '../types/api.mts'
+import type { Api, AuthenticationAPI } from '../types/api.mts'
 import type { ManifestDriver } from '../types/manifest.mts'
 import { type Homey, Driver } from '../lib/homey.mts'
 
@@ -28,7 +28,11 @@ export abstract class BaseMELCloudDriver extends Driver {
 
   declare public readonly manifest: ManifestDriver
 
-  protected abstract readonly api: AuthenticationAPI
+  // The account this driver pairs from: names the registry its pairing
+  // consults (see `onPair`).
+  protected abstract readonly api: Api
+
+  protected abstract readonly client: AuthenticationAPI
 
   public abstract readonly type: DeviceType
 
@@ -50,14 +54,23 @@ export abstract class BaseMELCloudDriver extends Driver {
         return
       }
 
-      if (this.api.isAuthenticated()) {
+      if (this.client.isAuthenticated()) {
         await session.showView('list_devices')
         return
       }
       await session.showView('login')
     })
     this.#registerLoginHandler(session)
-    session.setHandler('list_devices', async () => this.discoverDevices())
+    session.setHandler('list_devices', async () => {
+      // An account that lists no unit at all is answered with where its
+      // units may be, which Homey shows in place of the empty list. Only a
+      // listed registry answers so: a session whose first sync has not
+      // landed yet still gets the plain list.
+      if (this.homey.app.isAccountEmpty(this.api)) {
+        throw new Error(this.homey.__(`pair.accountEmpty.${this.api}`))
+      }
+      return this.discoverDevices()
+    })
     await Promise.resolve()
   }
 
@@ -148,7 +161,7 @@ export abstract class BaseMELCloudDriver extends Driver {
   #registerLoginHandler(session: PairSession): void {
     session.setHandler('login', async (data: LoginCredentials) => {
       try {
-        await this.api.authenticate(data)
+        await this.client.authenticate(data)
         return true
       } catch (error) {
         if (error instanceof AuthenticationError) {

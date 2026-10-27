@@ -39,7 +39,8 @@ import {
 const {
   getFacadeMock,
   getSettingMock,
-  isRegistryPopulatedMock,
+  isAccountEmptyMock,
+  isRegistryListedMock,
   realtimeMock,
   registerMultipleCapabilityListenerMock,
   setValuesMock,
@@ -50,7 +51,8 @@ const {
 } = vi.hoisted(() => ({
   getFacadeMock: vi.fn<(kind: string, id: number) => unknown>(),
   getSettingMock: vi.fn<(key: string) => unknown>(),
-  isRegistryPopulatedMock: vi.fn<(api: string) => boolean>(),
+  isAccountEmptyMock: vi.fn<(api: string) => boolean>(),
+  isRegistryListedMock: vi.fn<(api: string) => boolean>(),
   realtimeMock: vi.fn<(event: string, data: unknown) => void>(),
   registerMultipleCapabilityListenerMock:
     vi.fn<
@@ -108,7 +110,8 @@ vi.mock(import('homey'), async () => {
             api: { realtime: realtimeMock },
             app: {
               getClassicFacade: getFacadeMock,
-              isRegistryPopulated: isRegistryPopulatedMock,
+              isAccountEmpty: isAccountEmptyMock,
+              isRegistryListed: isRegistryListedMock,
             },
             clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
             clock: { getTimezone: vi.fn<() => string>(() => 'Europe/Paris') },
@@ -202,7 +205,8 @@ describe(ClassicMELCloudDevice, () => {
   // toast — and the prune test fills it.
   beforeEach(() => {
     mockFacade()
-    isRegistryPopulatedMock.mockReturnValue(false)
+    isAccountEmptyMock.mockReturnValue(false)
+    isRegistryListedMock.mockReturnValue(false)
     device = new TestDevice()
     setDriver(device)
   })
@@ -317,7 +321,7 @@ describe(ClassicMELCloudDevice, () => {
       const result = await device.ensureDevice()
 
       expect(result).toBeNull()
-      expect(isRegistryPopulatedMock).toHaveBeenCalledWith('classic')
+      expect(isRegistryListedMock).toHaveBeenCalledWith('classic')
       expect(superSetWarningMock.mock.calls).toStrictEqual([
         ['Not found'],
         [null],
@@ -325,11 +329,11 @@ describe(ClassicMELCloudDevice, () => {
     })
 
     // The shared `ensureDevice` path on the Classic leg: a lookup failing
-    // on a registry that lists other units is a prune the facade cache
+    // on a registry the account has listed is a prune the facade cache
     // did not survive, held like the cached-facade read — no trailing
     // `null`.
-    it('should hold the warning when the lookup fails on a populated registry', async () => {
-      isRegistryPopulatedMock.mockReturnValue(true)
+    it('should hold the warning when the lookup fails on a listed registry', async () => {
+      isRegistryListedMock.mockReturnValue(true)
       getFacadeMock.mockImplementation(() => {
         throw new NotFoundError('Not found')
       })
@@ -340,6 +344,59 @@ describe(ClassicMELCloudDevice, () => {
       expect(superSetWarningMock.mock.calls).toStrictEqual([
         ['errors.unitUnreadable'],
       ])
+    })
+
+    // A Classic account listing no unit at all is the move to MELCloud
+    // Home: the tile names it instead of the cause-neutral wording.
+    describe('emptied account', () => {
+      beforeEach(() => {
+        isRegistryListedMock.mockReturnValue(true)
+        isAccountEmptyMock.mockReturnValue(true)
+      })
+
+      it('should name MELCloud Home when the lookup fails', async () => {
+        getFacadeMock.mockImplementation(() => {
+          throw new NotFoundError('Not found')
+        })
+        superSetWarningMock.mockClear()
+        await device.ensureDevice()
+
+        expect(isAccountEmptyMock).toHaveBeenCalledWith('classic')
+        expect(superSetWarningMock.mock.calls).toStrictEqual([
+          ['errors.classicAccountEmpty'],
+        ])
+      })
+
+      // The account lists units again, still not this one: the wording
+      // follows in one IPC call, never through a bare `null`.
+      it('should switch to the cause-neutral wording once the account lists units', async () => {
+        getFacadeMock.mockImplementation(() => {
+          throw new NotFoundError('Not found')
+        })
+        await device.ensureDevice()
+        isAccountEmptyMock.mockReturnValue(false)
+        superSetWarningMock.mockClear()
+        await device.ensureDevice()
+
+        expect(superSetWarningMock.mock.calls).toStrictEqual([
+          ['errors.unitUnreadable'],
+        ])
+      })
+
+      it('should release the wording once the unit is read again', async () => {
+        getFacadeMock.mockImplementationOnce(() => {
+          throw new NotFoundError('Not found')
+        })
+        const logSpy = vi.spyOn(device, 'log')
+        await device.syncFromDevice()
+        superSetWarningMock.mockClear()
+        await device.syncFromDevice()
+
+        expect(superSetWarningMock.mock.calls).toStrictEqual([[null]])
+        expect(logSpy).toHaveBeenCalledWith(
+          'Unit readable again, warning released',
+        )
+      })
     })
 
     it('should log and return null without warning on unexpected error', async () => {

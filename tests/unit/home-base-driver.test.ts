@@ -5,6 +5,7 @@ import * as Home from '@olivierzal/melcloud-api/home'
 
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import {
+  testEmptyAccountPairing,
   testFlowListenerRegistration,
   testPairing,
   testRepairing,
@@ -17,6 +18,7 @@ const {
   authenticateMock,
   getHomeDevicesByTypeMock,
   getHomeFacadeMock,
+  isAccountEmptyMock,
   isAuthenticatedMock,
   setHandlerMock,
   showViewMock,
@@ -43,6 +45,7 @@ vi.mock(import('homey'), async () => {
   const { createFlowCardsStub } = await import('../flow-card-mocks.ts')
   class MockDriver {
     public homey = {
+      __: vi.fn<(key: string) => string>((key) => key),
       app: {
         getHomeDevicesByType: getHomeDevicesByTypeMock,
         getHomeFacade: getHomeFacadeMock,
@@ -50,6 +53,7 @@ vi.mock(import('homey'), async () => {
           authenticate: authenticateMock,
           isAuthenticated: isAuthenticatedMock,
         },
+        isAccountEmpty: isAccountEmptyMock,
       },
       flow: createFlowCardsStub(),
       manifest: { flow: MANIFEST_FLOW },
@@ -101,6 +105,12 @@ describe(BaseMELCloudDriver, () => {
     settable: 'onoff',
     settableWithoutAction: 'fan_speed',
     undeclared: 'measure_signal_strength',
+  })
+
+  testEmptyAccountPairing(() => driver, {
+    api: 'home',
+    isAccountEmptyMock,
+    showViewMock,
   })
 
   testPairing(() => driver, {

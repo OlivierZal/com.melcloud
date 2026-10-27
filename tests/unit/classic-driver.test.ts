@@ -11,6 +11,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import {
+  testEmptyAccountPairing,
   testFlowListenerRegistration,
   testPairing,
   testRepairing,
@@ -38,12 +39,14 @@ const MANIFEST_FLOW = {
 
 const {
   authenticateMock,
+  isAccountEmptyMock,
   isAuthenticatedMock,
   registerRunListenerMock,
   setHandlerMock,
   showViewMock,
 } = vi.hoisted(() => ({
   authenticateMock: vi.fn<(data: unknown) => Promise<boolean>>(),
+  isAccountEmptyMock: vi.fn<(api: string) => boolean>(() => false),
   isAuthenticatedMock: vi.fn<() => boolean>().mockReturnValue(false),
   registerRunListenerMock:
     vi.fn<(listener: (args: Record<string, unknown>) => unknown) => void>(),
@@ -58,6 +61,7 @@ vi.mock(import('homey'), async () => {
     public getDevices = vi.fn<() => readonly unknown[]>().mockReturnValue([])
 
     public homey = {
+      __: vi.fn<(key: string) => string>((key) => key),
       app: {
         classicApi: {
           authenticate: authenticateMock,
@@ -66,6 +70,7 @@ vi.mock(import('homey'), async () => {
         getDevicesByType: vi
           .fn<(type: number) => readonly unknown[]>()
           .mockReturnValue([]),
+        isAccountEmpty: isAccountEmptyMock,
       },
       flow: {
         getActionCard: vi
@@ -163,6 +168,12 @@ describe(ClassicMELCloudDriver, () => {
         'onoff_condition',
       )
     })
+  })
+
+  testEmptyAccountPairing(() => driver, {
+    api: 'classic',
+    isAccountEmptyMock,
+    showViewMock,
   })
 
   testPairing(() => driver, {

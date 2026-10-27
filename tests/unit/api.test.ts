@@ -48,6 +48,7 @@ const mockClassicIsAuthenticated = vi.fn<() => boolean>()
 const mockHomeIsAuthenticated = vi.fn<() => boolean>()
 const mockClassicLogOut = vi.fn<() => void>()
 const mockHomeLogOut = vi.fn<() => void>()
+const mockIsAccountEmpty = vi.fn<(api: string) => boolean>(() => false)
 
 const mockApp = {
   classicApi: {
@@ -72,6 +73,7 @@ const mockApp = {
     logOut: mockHomeLogOut,
     registry: { getBuildings: mockGetHomeBuildings },
   },
+  isAccountEmpty: mockIsAccountEmpty,
   log: vi.fn<(...args: readonly unknown[]) => void>(),
   updateDeviceSettings: vi.fn<() => Promise<void>>(),
   updateTargetFrostProtection: vi.fn<() => Promise<void>>(),
@@ -348,9 +350,31 @@ describe('api', () => {
         params: { api: 'classic' },
       })
 
-      expect(result).toStrictEqual({ isDeviceListStale: false })
+      expect(result).toStrictEqual({
+        isAccountEmpty: false,
+        isDeviceListStale: false,
+      })
       expect(mockClassicAuthenticate).toHaveBeenCalledWith(credentials)
       expect(mockHomeAuthenticate).not.toHaveBeenCalled()
+    })
+
+    // The sign-in awaited its enforced sync, so the registry answers for
+    // the account: one that lists no unit at all says so to the page.
+    it('should report an account that lists no unit once signed in', async () => {
+      mockHomeAuthenticate.mockResolvedValue()
+      mockIsAccountEmpty.mockReturnValueOnce(true)
+
+      await expect(
+        api.authenticate({
+          body: mock<LoginCredentials>(),
+          homey,
+          params: { api: 'home' },
+        }),
+      ).resolves.toStrictEqual({
+        isAccountEmpty: true,
+        isDeviceListStale: false,
+      })
+      expect(mockIsAccountEmpty).toHaveBeenCalledWith('home')
     })
 
     it('should delegate the home login to app.homeApi.authenticate', async () => {
@@ -504,7 +528,10 @@ describe('api', () => {
             homey,
             params: { api: service },
           }),
-        ).resolves.toStrictEqual({ isDeviceListStale: true })
+        ).resolves.toStrictEqual({
+          isAccountEmpty: false,
+          isDeviceListStale: true,
+        })
         expect(mockTranslate).not.toHaveBeenCalled()
       },
     )
@@ -537,6 +564,26 @@ describe('api', () => {
         }),
       ).rejects.toThrow('settings.authenticate.rejected.home')
       expect(mockHomeIsAuthenticated).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('empty-account retrieval', () => {
+    it.each(['classic', 'home'] as const)(
+      'should answer whether the %s account lists no unit',
+      (service) => {
+        mockIsAccountEmpty.mockReturnValueOnce(true)
+
+        expect(api.isAccountEmpty({ homey, params: { api: service } })).toBe(
+          true,
+        )
+        expect(mockIsAccountEmpty).toHaveBeenCalledWith(service)
+      },
+    )
+
+    it('should refuse a path naming no API', () => {
+      expect(() =>
+        api.isAccountEmpty({ homey, params: { api: 'other' } }),
+      ).toThrow('Invalid API: other')
     })
   })
 

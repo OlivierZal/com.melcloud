@@ -4,6 +4,12 @@
   text-align-last: center;
 }
 
+/* The empty-account hint under the API picker */
+#empty_account {
+  font-size: var(--homey-font-size-small);
+  margin-block-start: var(--homey-su-1);
+}
+
 /* Error log table */
 .bordered {
   border-collapse: separate;

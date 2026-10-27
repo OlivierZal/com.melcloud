@@ -1,5 +1,6 @@
 {
   "errors": {
+    "classicAccountEmpty": "Denne MELCloud Classic-kontoen lister ikke lenger noen enhet som appen kan lese. Hvis enhetene dine er flyttet til MELCloud Home, legg dem til på nytt som [Home]-enheter.",
     "deviceNotFound": "Enhet ikke funnet.",
     "energyReportsFailing": "Energirapportene har feilet flere ganger på rad — energiverdiene kan være utdaterte.",
     "invalidDuration": "Varigheten må være et helt antall dager mellom 0 og 365.",
@@ -20,9 +21,19 @@
       "home": "MELCloud Home-kontoen din er pålogget igjen — enhetene oppdateres igjen."
     }
   },
+  "pair": {
+    "accountEmpty": {
+      "classic": "Denne MELCloud Classic-kontoen lister ingen enhet som appen kan lese. Hvis enhetene dine er flyttet til MELCloud Home, legg dem heller til som [Home]-enheter.",
+      "home": "Denne MELCloud Home-kontoen lister ingen enhet som appen kan lese. Hvis enhetene dine fortsatt er på MELCloud Classic, legg dem heller til som [Classic]-enheter."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Logg inn",
+      "emptyAccount": {
+        "classic": "Denne MELCloud Classic-kontoen lister ingen enhet som appen kan lese. Hvis enhetene dine er flyttet til MELCloud Home, velg Home ovenfor, logg på med MELCloud Home-kontoen din og legg deretter til enhetene dine som [Home]-enheter.",
+        "home": "Denne MELCloud Home-kontoen lister ingen enhet som appen kan lese. Hvis enhetene dine fortsatt er på MELCloud Classic, velg Classic ovenfor og logg på med MELCloud Classic-kontoen din."
+      },
       "failure": "Autentisering mislyktes.",
       "legend": "Innloggingsinformasjon",
       "rejected": {

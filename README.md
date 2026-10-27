@@ -32,6 +32,8 @@ This app integrates [MELCloud](https://app.melcloud.com/) and [MELCloud Home](ht
 2. Open the app settings and log in with your MELCloud credentials.
 3. Add your devices via the pairing wizard.
 
+Moved from MELCloud to MELCloud Home? Select Home in the app settings, sign in with your MELCloud Home account, then add your units again as \[Home\] devices. A MELCloud Classic account that no longer lists any unit says so on its devices, in pairing and in the settings.
+
 ## Supported languages
 
 Arabic, Danish, Dutch, English, French, German, Italian, Korean, Norwegian, Polish, Russian, Spanish, Swedish.

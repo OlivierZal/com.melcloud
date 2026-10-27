@@ -8,7 +8,8 @@
     "invalidHolidayModeEnd": "La fin du mode vacances doit être dans le futur.",
     "unitOffline": "MELCloud signale cette unité hors ligne — vérifiez sa connexion Wi-Fi.",
     "unitStale": "Cette unité n'a pas communiqué avec MELCloud depuis plus de 24 h — vérifiez sa connexion Wi-Fi.",
-    "unitUnreadable": "MELCloud ne recense plus cette unité, ou envoie pour elle des données que l'application ne peut pas lire — les valeurs sont figées jusqu'à ce qu'elle soit de nouveau lisible (détails dans le journal de diagnostic de l'application)."
+    "unitUnreadable": "MELCloud ne recense plus cette unité, ou envoie pour elle des données que l'application ne peut pas lire — les valeurs sont figées jusqu'à ce qu'elle soit de nouveau lisible (détails dans le journal de diagnostic de l'application).",
+    "classicAccountEmpty": "Ce compte MELCloud Classic ne recense plus aucune unité que l'application puisse lire. Si vos unités sont passées sur MELCloud Home, ajoutez-les de nouveau comme appareils [Home]."
   },
   "settings": {
     "authenticate": {
@@ -23,7 +24,11 @@
         "home": "__name__ a refusé ces identifiants — vérifiez l'adresse e-mail et le mot de passe. Si votre compte est un compte MELCloud (Classic), sélectionnez Classic ci-dessus. Un compte créé via Se connecter avec Apple ou Google n'a pas de mot de passe utilisable par cette application."
       },
       "throttled": "__name__ bloque temporairement les connexions après trop de tentatives — réessayez plus tard.",
-      "staleDevices": "Connexion réussie, mais la liste des appareils n'a pas pu être actualisée — réessayez plus tard."
+      "staleDevices": "Connexion réussie, mais la liste des appareils n'a pas pu être actualisée — réessayez plus tard.",
+      "emptyAccount": {
+        "classic": "Ce compte MELCloud Classic ne recense aucune unité que l'application puisse lire. Si vos unités sont passées sur MELCloud Home, sélectionnez Home ci-dessus, connectez-vous avec votre compte MELCloud Home, puis ajoutez vos unités comme appareils [Home].",
+        "home": "Ce compte MELCloud Home ne recense aucune unité que l'application puisse lire. Si vos unités sont toujours sur MELCloud Classic, sélectionnez Classic ci-dessus et connectez-vous avec votre compte MELCloud Classic."
+      }
     },
     "boolean": {
       "false": "Non",
@@ -153,6 +158,12 @@
     "sessionRestored": {
       "classic": "Votre compte MELCloud Classic est de nouveau connecté — les appareils se mettent à jour à nouveau.",
       "home": "Votre compte MELCloud Home est de nouveau connecté — les appareils se mettent à jour à nouveau."
+    }
+  },
+  "pair": {
+    "accountEmpty": {
+      "classic": "Ce compte MELCloud Classic ne recense aucune unité que l'application puisse lire. Si vos unités sont passées sur MELCloud Home, ajoutez-les plutôt comme appareils [Home].",
+      "home": "Ce compte MELCloud Home ne recense aucune unité que l'application puisse lire. Si vos unités sont toujours sur MELCloud Classic, ajoutez-les plutôt comme appareils [Classic]."
     }
   }
 }

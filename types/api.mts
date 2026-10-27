@@ -27,9 +27,12 @@ export type AuthenticationAPI = Pick<
  * itself, so an accepted account can still end up with a device list
  * the app could not refresh: `isDeviceListStale` carries that
  * half-failure to the page, which reports it WITHOUT sending the user
- * back to the login form.
+ * back to the login form. A refreshed list can still hold no unit at
+ * all: `isAccountEmpty` says so, and the page explains where the
+ * units may be instead of asking for a device.
  */
 export interface AuthenticationResult {
+  readonly isAccountEmpty: boolean
   readonly isDeviceListStale: boolean
 }
 

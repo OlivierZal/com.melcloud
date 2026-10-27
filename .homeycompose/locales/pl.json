@@ -1,5 +1,6 @@
 {
   "errors": {
+    "classicAccountEmpty": "To konto MELCloud Classic nie wykazuje już żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia zostały przeniesione do MELCloud Home, dodaj je ponownie jako urządzenia [Home].",
     "deviceNotFound": "Nie znaleziono urządzenia.",
     "energyReportsFailing": "Raporty energii nie powiodły się kilka razy z rzędu — wartości energii mogą być nieaktualne.",
     "invalidDuration": "Czas trwania musi być całkowitą liczbą dni od 0 do 365.",
@@ -20,9 +21,19 @@
       "home": "Twoje konto MELCloud Home jest ponownie zalogowane — urządzenia znów się aktualizują."
     }
   },
+  "pair": {
+    "accountEmpty": {
+      "classic": "To konto MELCloud Classic nie wykazuje żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia zostały przeniesione do MELCloud Home, dodaj je zamiast tego jako urządzenia [Home].",
+      "home": "To konto MELCloud Home nie wykazuje żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia nadal są w MELCloud Classic, dodaj je zamiast tego jako urządzenia [Classic]."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Zaloguj się",
+      "emptyAccount": {
+        "classic": "To konto MELCloud Classic nie wykazuje żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia zostały przeniesione do MELCloud Home, wybierz powyżej Home, zaloguj się na swoje konto MELCloud Home, a następnie dodaj je jako urządzenia [Home].",
+        "home": "To konto MELCloud Home nie wykazuje żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia nadal są w MELCloud Classic, wybierz powyżej Classic i zaloguj się na swoje konto MELCloud Classic."
+      },
       "failure": "Uwierzytelnianie nie powiodło się.",
       "legend": "Dane logowania",
       "rejected": {

@@ -72,7 +72,8 @@ vi.mock(import('homey'), async () => {
             api: { realtime: vi.fn<(event: string, data: unknown) => void>() },
             app: {
               getHomeFacade: getHomeFacadeMock,
-              isRegistryPopulated: vi.fn<(api: string) => boolean>(() => false),
+              isAccountEmpty: vi.fn<(api: string) => boolean>(() => false),
+              isRegistryListed: vi.fn<(api: string) => boolean>(() => false),
             },
             clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
             setTimeout:

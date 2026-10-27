@@ -26,7 +26,8 @@ import {
 const {
   getHomeFacadeMock,
   getSettingMock,
-  isRegistryPopulatedMock,
+  isAccountEmptyMock,
+  isRegistryListedMock,
   realtimeMock,
   registerMultipleCapabilityListenerMock,
   setValuesMock,
@@ -36,7 +37,8 @@ const {
 } = vi.hoisted(() => ({
   getHomeFacadeMock: vi.fn<(id: string) => unknown>(),
   getSettingMock: vi.fn<(key: string) => unknown>(),
-  isRegistryPopulatedMock: vi.fn<(api: string) => boolean>(),
+  isAccountEmptyMock: vi.fn<(api: string) => boolean>(),
+  isRegistryListedMock: vi.fn<(api: string) => boolean>(),
   realtimeMock: vi.fn<(event: string, data: unknown) => void>(),
   registerMultipleCapabilityListenerMock:
     vi.fn<
@@ -118,7 +120,8 @@ vi.mock(import('homey'), async () => {
             api: { realtime: realtimeMock },
             app: {
               getHomeFacade: getHomeFacadeMock,
-              isRegistryPopulated: isRegistryPopulatedMock,
+              isAccountEmpty: isAccountEmptyMock,
+              isRegistryListed: isRegistryListedMock,
             },
             clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
             setTimeout:
@@ -208,7 +211,8 @@ describe(BaseMELCloudDevice, () => {
     facadeState.isAvailable = true
     facadeState.isPoweredOn = true
     getHomeFacadeMock.mockReturnValue(createMockFacade())
-    isRegistryPopulatedMock.mockReturnValue(false)
+    isAccountEmptyMock.mockReturnValue(false)
+    isRegistryListedMock.mockReturnValue(false)
     setValuesMock.mockResolvedValue(true)
     superErrorMock.mockClear()
     superLogMock.mockClear()
@@ -463,20 +467,20 @@ describe(BaseMELCloudDevice, () => {
       })
       await device.syncFromDevice()
 
-      expect(isRegistryPopulatedMock).toHaveBeenCalledWith('home')
+      expect(isRegistryListedMock).toHaveBeenCalledWith('home')
       expect(superSetWarningMock.mock.calls).toStrictEqual([
         ['Device not found'],
         [null],
       ])
     })
 
-    // The same lookup failing on a registry that lists OTHER units is a
+    // The same lookup failing on a registry the account has listed is a
     // prune the facade cache did not survive — an app restart a day after
     // the prune, a unit never cached — and the same lasting condition as
     // the cached-facade read above: held once, no trailing `null`, the
     // cause logged once.
-    it('should hold the warning when the lookup fails on a populated registry', async () => {
-      isRegistryPopulatedMock.mockReturnValue(true)
+    it('should hold the warning when the lookup fails on a listed registry', async () => {
+      isRegistryListedMock.mockReturnValue(true)
       getHomeFacadeMock.mockImplementation(() => {
         throw new NotFoundError('Device not found')
       })
@@ -497,12 +501,29 @@ describe(BaseMELCloudDevice, () => {
       expect(device.setUnavailable).not.toHaveBeenCalled()
     })
 
+    // A Home account listing no unit at all has no move to name: the
+    // strict `/context` parse refusing every entry empties it too, so its
+    // tiles keep the cause-neutral wording.
+    it('should keep the cause-neutral wording on an emptied Home account', async () => {
+      isRegistryListedMock.mockReturnValue(true)
+      isAccountEmptyMock.mockReturnValue(true)
+      getHomeFacadeMock.mockImplementation(() => {
+        throw new NotFoundError('Device not found')
+      })
+      await device.syncFromDevice()
+
+      expect(isAccountEmptyMock).toHaveBeenCalledWith('home')
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+      ])
+    })
+
     // The first lookup that resolves caches the facade and runs init,
     // whose detached pass syncs too: the hold lifts once, whichever of
     // the overlapping syncs reaches the release first, and the closing
     // line is written once (init's own energy-report lines follow it).
     it('should release the lookup hold once when the registry lists the unit again', async () => {
-      isRegistryPopulatedMock.mockReturnValue(true)
+      isRegistryListedMock.mockReturnValue(true)
       getHomeFacadeMock.mockImplementationOnce(() => {
         throw new NotFoundError('Device not found')
       })

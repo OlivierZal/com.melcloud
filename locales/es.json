@@ -8,7 +8,8 @@
     "invalidHolidayModeEnd": "El fin del modo vacaciones debe ser en el futuro.",
     "unitOffline": "MELCloud indica que esta unidad está desconectada: compruebe su conexión Wi-Fi.",
     "unitStale": "Esta unidad no se ha comunicado con MELCloud en más de 24 horas: compruebe su conexión Wi-Fi.",
-    "unitUnreadable": "MELCloud ya no incluye esta unidad, o envía datos de ella que la aplicación no puede leer: los valores quedan congelados hasta que vuelva a ser legible (detalles en el registro de diagnóstico de la aplicación)."
+    "unitUnreadable": "MELCloud ya no incluye esta unidad, o envía datos de ella que la aplicación no puede leer: los valores quedan congelados hasta que vuelva a ser legible (detalles en el registro de diagnóstico de la aplicación).",
+    "classicAccountEmpty": "Esta cuenta de MELCloud Classic ya no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades se trasladaron a MELCloud Home, vuelve a añadirlas como dispositivos [Home]."
   },
   "settings": {
     "authenticate": {
@@ -23,7 +24,11 @@
         "home": "__name__ rechazó estas credenciales — comprueba la dirección de correo y la contraseña. Si tu cuenta es una cuenta de MELCloud (Classic), selecciona Classic arriba. Una cuenta creada con Iniciar sesión con Apple o Google no tiene ninguna contraseña que esta aplicación pueda usar."
       },
       "throttled": "__name__ está bloqueando temporalmente los inicios de sesión tras demasiados intentos — inténtalo de nuevo más tarde.",
-      "staleDevices": "Sesión iniciada, pero no se pudo actualizar la lista de dispositivos — inténtalo de nuevo más tarde."
+      "staleDevices": "Sesión iniciada, pero no se pudo actualizar la lista de dispositivos — inténtalo de nuevo más tarde.",
+      "emptyAccount": {
+        "classic": "Esta cuenta de MELCloud Classic no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades se trasladaron a MELCloud Home, selecciona Home arriba, inicia sesión con tu cuenta de MELCloud Home y luego añade tus unidades como dispositivos [Home].",
+        "home": "Esta cuenta de MELCloud Home no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades siguen en MELCloud Classic, selecciona Classic arriba e inicia sesión con tu cuenta de MELCloud Classic."
+      }
     },
     "boolean": {
       "false": "No",
@@ -153,6 +158,12 @@
     "sessionRestored": {
       "classic": "Tu cuenta de MELCloud Classic ha vuelto a iniciar sesión — los dispositivos se actualizan de nuevo.",
       "home": "Tu cuenta de MELCloud Home ha vuelto a iniciar sesión — los dispositivos se actualizan de nuevo."
+    }
+  },
+  "pair": {
+    "accountEmpty": {
+      "classic": "Esta cuenta de MELCloud Classic no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades se trasladaron a MELCloud Home, añádelas como dispositivos [Home] en su lugar.",
+      "home": "Esta cuenta de MELCloud Home no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades siguen en MELCloud Classic, añádelas como dispositivos [Classic] en su lugar."
     }
   }
 }

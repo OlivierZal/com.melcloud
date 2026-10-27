@@ -8,7 +8,8 @@
     "invalidHolidayModeEnd": "Das Ende des Urlaubsmodus muss in der Zukunft liegen.",
     "unitOffline": "MELCloud meldet dieses Gerät als offline — prüfen Sie seine WLAN-Verbindung.",
     "unitStale": "Dieses Gerät hat seit über 24 Stunden nicht mit MELCloud kommuniziert — prüfen Sie seine WLAN-Verbindung.",
-    "unitUnreadable": "MELCloud führt dieses Gerät nicht mehr auf oder sendet dafür Daten, die die App nicht lesen kann — die Werte bleiben eingefroren, bis es wieder lesbar ist (Details im Diagnoseprotokoll der App)."
+    "unitUnreadable": "MELCloud führt dieses Gerät nicht mehr auf oder sendet dafür Daten, die die App nicht lesen kann — die Werte bleiben eingefroren, bis es wieder lesbar ist (Details im Diagnoseprotokoll der App).",
+    "classicAccountEmpty": "Dieses MELCloud Classic-Konto führt kein Gerät mehr auf, das die App lesen kann. Wenn Ihre Geräte zu MELCloud Home umgezogen sind, fügen Sie sie erneut als [Home]-Geräte hinzu."
   },
   "settings": {
     "authenticate": {
@@ -19,11 +20,15 @@
       "reset": "Zurücksetzen",
       "resetConfirm": "Dies meldet das ausgewählte Konto sofort ab und löscht seine gespeicherten Zugangsdaten.",
       "rejected": {
-        "classic": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen. Wurde dein Konto in der MELCloud Home-App erstellt, wähle oben Home aus und melde dich mit denselben Zugangsdaten an.",
-        "home": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen. Ist dein Konto ein MELCloud-Konto (Classic), wähle oben Classic aus. Ein über Anmelden mit Apple oder Google erstelltes Konto hat kein Passwort, das diese App verwenden kann."
+        "classic": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen. Wurde Ihr Konto in der MELCloud Home-App erstellt, wählen Sie oben Home aus und melden Sie sich mit denselben Zugangsdaten an.",
+        "home": "__name__ hat diese Zugangsdaten abgelehnt — bitte E-Mail-Adresse und Passwort prüfen. Ist Ihr Konto ein MELCloud-Konto (Classic), wählen Sie oben Classic aus. Ein über Anmelden mit Apple oder Google erstelltes Konto hat kein Passwort, das diese App verwenden kann."
       },
       "throttled": "__name__ blockiert Anmeldungen nach zu vielen Versuchen vorübergehend — bitte später erneut versuchen.",
-      "staleDevices": "Angemeldet, aber die Geräteliste konnte nicht aktualisiert werden — bitte später erneut versuchen."
+      "staleDevices": "Angemeldet, aber die Geräteliste konnte nicht aktualisiert werden — bitte später erneut versuchen.",
+      "emptyAccount": {
+        "classic": "Dieses MELCloud Classic-Konto führt kein Gerät auf, das die App lesen kann. Wenn Ihre Geräte zu MELCloud Home umgezogen sind, wählen Sie oben Home aus, melden Sie sich mit Ihrem MELCloud Home-Konto an und fügen Sie Ihre Geräte dann als [Home]-Geräte hinzu.",
+        "home": "Dieses MELCloud Home-Konto führt kein Gerät auf, das die App lesen kann. Wenn Ihre Geräte noch in MELCloud Classic sind, wählen Sie oben Classic aus und melden Sie sich mit Ihrem MELCloud Classic-Konto an."
+      }
     },
     "boolean": {
       "false": "Nein",
@@ -153,6 +158,12 @@
     "sessionRestored": {
       "classic": "Dein MELCloud Classic-Konto ist wieder angemeldet — die Geräte werden wieder aktualisiert.",
       "home": "Dein MELCloud Home-Konto ist wieder angemeldet — die Geräte werden wieder aktualisiert."
+    }
+  },
+  "pair": {
+    "accountEmpty": {
+      "classic": "Dieses MELCloud Classic-Konto führt kein Gerät auf, das die App lesen kann. Wenn Ihre Geräte zu MELCloud Home umgezogen sind, fügen Sie sie stattdessen als [Home]-Geräte hinzu.",
+      "home": "Dieses MELCloud Home-Konto führt kein Gerät auf, das die App lesen kann. Wenn Ihre Geräte noch in MELCloud Classic sind, fügen Sie sie stattdessen als [Classic]-Geräte hinzu."
     }
   }
 }

@@ -198,7 +198,9 @@ coverage.
   the same policy, 2026-08).
   The session resource is ONE route for both accounts —
   `GET/POST/DELETE /sessions/:api` (`classic` | `home`, resolved over a
-  client map on the `Api` union) — and every zone-addressed surface is
+  client map on the `Api` union), plus `GET /sessions/:api/empty`, the
+  app's `isAccountEmpty` answer for the settings hint — and every
+  zone-addressed surface is
   target-neutral under `/targets/:targetId/…`, where `targetId` is the
   picker value verbatim (`buildings_1`, `homeDevices_<guid>` — split at
   the FIRST underscore): the SETTINGS routes
@@ -271,8 +273,23 @@ coverage.
   nothing to fix, the same rule that gates the session-lost timeline
   notification (a form offered for an unused account is where a user
   types the wrong password). Among the accounts in use, signed-out
-  outranks incomplete (missing half the credential pair): the first
-  stopped serving devices, the second still does.
+  outranks incomplete (missing half the credential pair), which
+  outranks EMPTY (signed in, its listed registry holding no unit at
+  all): the first stopped serving devices, the second still does, and
+  the third is explained by the hint under the picker.
+- The empty-account hints (46.12.0) appear only in the account's OWN
+  contexts, never globally, so a user of one platform never reads about
+  the other's account: that dialect's pairing (`list_devices` throws
+  `pair.accountEmpty.<api>`, which Homey shows in place of the empty
+  list), that dialect's selection on the settings page (the
+  `empty_account` hint, and the post-login alert that outranks the
+  device check's "add a device"), and the Classic tiles
+  (`classicAccountEmpty`, below). All three read
+  `isAccountEmpty(api)` on the app: listed (`isRegistryListed`) and
+  empty. A Classic account emptied that way is the signature of the
+  move to MELCloud Home, which every hint names; the wording stays "no
+  unit the app can read", because a listing whose every entry the
+  library dropped empties the registry too.
 - Settings-CSS sharing — VERDICT (2026-08, after the `./dom` adoption):
   the cascade fixes STAY LOCAL, in all three apps. Two independent
   reasons, either sufficient. (1) The kit ships no stylesheet and
@@ -392,10 +409,11 @@ coverage.
   requests", never "is there an identity" (melcloud-api ≥ 52.0.0): an
   account with no MELCloud Home home settles authenticated with
   `user`/`context` null and an empty registry. Pairing routes on that
-  answer — such an account gets the empty device list, not the login
-  form, which is correct: its session is valid and simply has nothing
-  to offer. Anything deriving a name or email from `getUser()` must
-  handle the `null`.
+  answer — such an account gets the device list, not the login form,
+  which is correct: its session is valid and simply has nothing to
+  offer, which the list then explains (`pair.accountEmpty.home`).
+  Anything deriving a name or email from `getUser()` must handle the
+  `null`.
 - A rejection from `authenticate()` is NOT necessarily a credential
   rejection, and the TYPE is the arbiter. The library ENFORCES a
   registry sync after the server accepted the sign-in, and since
@@ -403,7 +421,7 @@ coverage.
   `RegistrySyncError` (the sync's own error on `cause`); a refused
   credential is never wrapped — it stays `AuthenticationError`. So
   both entry points classify by `instanceof RegistrySyncError`: the
-  app-API handler (`api.mts`) answers `{ isDeviceListStale: true }`
+  app-API handler (`api.mts`) answers `isDeviceListStale: true`
   rather than rejecting, the pairing handler
   (`drivers/base-driver.mts`) continues to the device list, and
   ANYTHING else is a login failure. The credential rejection is keyed
@@ -480,7 +498,10 @@ coverage.
   in PRIORITY order): a device has ONE bubble, so it shows the
   highest-priority held reason, and releasing one reason never clears
   another — it uncovers the next. `unreadable` outranks the energy
-  reports (an unreadable unit explains everything else), and each of a
+  reports (an unreadable unit explains everything else), its Classic
+  twin `classicAccountEmpty` outranks it (the same condition, worded
+  for an account that lists no unit at all, never held beside it), and
+  each of a
   device's two report instances holds its OWN reason
   (`regularEnergyReports`/`totalEnergyReports`, one wording,
   `errors.energyReportsFailing`), because they fetch and fail
@@ -496,8 +517,8 @@ coverage.
   points: a cached facade throwing `EntityNotFoundError` on a read in
   `syncFromDevice`, and, when no facade was ever cached — a prune that
   outlived an app restart, a unit never cached —, the facade lookup in
-  `ensureDevice` failing with the kit's `NotFoundError` while the
-  registry lists OTHER units: the hold stays until the first sync that
+  `ensureDevice` failing with the kit's `NotFoundError` on a LISTED
+  registry, empty included: the hold stays until the first sync that
   reads the unit again, with no threshold either way (a one-minute
   bubble is honest, and an entry flapping in and out of the registry is
   a wire fact for the SDK's drift streak to log, not something to hide).
@@ -509,7 +530,15 @@ coverage.
   unreadable, warning held:' with the error on the hold, 'Unit readable
   again, warning released' on the release, never per sync: the SDK
   prunes in silence, and a unit gone from the account would otherwise
-  leave no trace there. (2) The energy reports — `ScheduledEnergyReport`
+  leave no trace there. When the whole account lists no unit at all,
+  a Classic tile holds `classicAccountEmpty` instead (the device's
+  `emptyAccountReason`), which names the move to MELCloud Home; a Home
+  tile keeps `unreadable`, since a strict `/context` parse refusing
+  every entry empties a Home registry too. The hold follows the
+  account: the new wording is held before the old one is released, so
+  a change costs one IPC call, and the release lifts whichever is held,
+  with the same one closing line. (2) The energy reports —
+  `ScheduledEnergyReport`
   holds its reason from the THIRD consecutive failed run (one failed
   fetch is noise; three runs of the report's own cadence, a quarter-hour
   to three days across the drivers) and releases it on the first
@@ -527,13 +556,19 @@ coverage.
   not, by design. Availability is a third, separate channel:
   `setUnavailable` greys the tile and is fed by the facades'
   `isAvailable` contract alone (the doctrine on `syncAvailability`). The
-  boot race in `ensureDevice` (`NotFoundError` while the registry has
-  listed NOTHING yet, expected for up to a minute after start) stays on
-  the toast: it is not a prune. Registry population is the arbiter
-  between the two (`isRegistryPopulated(api)` on the app, the one signal
-  both libraries share — neither registry carries a synced-yet flag), so
-  an account whose ONLY unit was pruned reads as a boot race and keeps
-  the toast, as it did before 46.8.0.
+  boot race in `ensureDevice` (`NotFoundError` on a registry no sync
+  has filled yet, expected for up to a minute after start) stays on the
+  toast: it is not a prune. The arbiter between the two is
+  `isRegistryListed(api)` on the app: neither registry carries a
+  synced-yet flag, so the app records each account's first
+  `onSyncComplete` (the library notifies only after a registry sync
+  RESOLVED, never on a failed one) and reads the session at call time
+  (a logout wipes the registry, and a cycle it raced still notifies
+  over the wiped one). A listed registry is authoritative EMPTY
+  INCLUDED, so an account whose only unit was pruned, or that moved to
+  MELCloud Home, holds instead of toasting at every sync — the
+  population arbiter it replaced (46.8.0–46.11.x) read both as the
+  boot race.
 - Report 2026-10-02, an Ecodan on MELCloud Home shown "offline for
   hours" in Homey. The availability code is identical for ATA and ATW
   (one `syncFromDevice` skeleton over one `isAvailable` contract), so

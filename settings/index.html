@@ -63,8 +63,8 @@
     <header class="homey-header">
       <h1 class="homey-title" data-i18n="settings.title">MELCloud settings</h1>
     </header>
-    <!-- Collapsible: folded when both APIs are signed in (the
-            credentials are settled), expanded while at least one is not. -->
+    <!-- Collapsible: folded while no account in use needs attention,
+            expanded on the one that does (see getApisNeedingAttention). -->
     <details id="authentication" class="homey-form-fieldset">
       <summary
         class="homey-form-legend"
@@ -83,11 +83,14 @@
           <!-- Home first: the default a fresh install opens on, Classic
                         being the platform MELCloud is retiring. An account that
                         needs attention overrides the default (see
-                        #selectApiNeedingAttention). -->
+                        #selectApiToOpenOn). -->
           <select id="api" class="homey-form-select" aria-label="API">
             <option value="home">Home</option>
             <option value="classic">Classic</option>
           </select>
+          <!-- Says where the units may be when the selected account is
+                        signed in and lists none at all. -->
+          <div id="empty_account" aria-live="polite" hidden></div>
         </div>
         <div id="login"></div>
         <div class="homey-form-group container">

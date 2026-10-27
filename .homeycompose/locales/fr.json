@@ -1,5 +1,6 @@
 {
   "errors": {
+    "classicAccountEmpty": "Ce compte MELCloud Classic ne recense plus aucune unité que l'application puisse lire. Si vos unités sont passées sur MELCloud Home, ajoutez-les de nouveau comme appareils [Home].",
     "deviceNotFound": "Appareil introuvable.",
     "energyReportsFailing": "Les rapports d'énergie ont échoué plusieurs fois de suite — les valeurs d'énergie peuvent être obsolètes.",
     "invalidDuration": "La durée doit être un nombre entier de jours entre 0 et 365.",
@@ -20,9 +21,19 @@
       "home": "Votre compte MELCloud Home est de nouveau connecté — les appareils se mettent à jour à nouveau."
     }
   },
+  "pair": {
+    "accountEmpty": {
+      "classic": "Ce compte MELCloud Classic ne recense aucune unité que l'application puisse lire. Si vos unités sont passées sur MELCloud Home, ajoutez-les plutôt comme appareils [Home].",
+      "home": "Ce compte MELCloud Home ne recense aucune unité que l'application puisse lire. Si vos unités sont toujours sur MELCloud Classic, ajoutez-les plutôt comme appareils [Classic]."
+    }
+  },
   "settings": {
     "authenticate": {
       "button": "Se connecter",
+      "emptyAccount": {
+        "classic": "Ce compte MELCloud Classic ne recense aucune unité que l'application puisse lire. Si vos unités sont passées sur MELCloud Home, sélectionnez Home ci-dessus, connectez-vous avec votre compte MELCloud Home, puis ajoutez vos unités comme appareils [Home].",
+        "home": "Ce compte MELCloud Home ne recense aucune unité que l'application puisse lire. Si vos unités sont toujours sur MELCloud Classic, sélectionnez Classic ci-dessus et connectez-vous avec votre compte MELCloud Classic."
+      },
       "failure": "L'authentification a échoué.",
       "legend": "Identifiants",
       "rejected": {
