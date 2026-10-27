@@ -2113,5 +2113,20 @@
     "pl": "Raporty energii są teraz ponawiane także wtedy, gdy połączenie z MELCloud zawiedzie lub przekroczy limit czasu, a dziennik podaje przyczynę.",
     "ru": "Отчёты об энергии теперь повторяются и тогда, когда соединение с MELCloud не удаётся или истекает по времени, а журнал указывает причину.",
     "sv": "Energirapporter försöks nu också igen när anslutningen till MELCloud misslyckas eller går ut, och loggen anger orsaken."
+  },
+  "46.12.0": {
+    "ar": "أصبح الحساب الذي لم يعد يُدرج أي وحدة، مثلًا بعد الانتقال إلى MELCloud Home، يُشرح الآن على أجهزته وعند إضافة الأجهزة وفي الإعدادات.",
+    "da": "En konto, der ikke længere viser nogen enhed, for eksempel efter skiftet til MELCloud Home, forklares nu på dens enheder, når der tilføjes enheder, og i indstillingerne.",
+    "de": "Ein Konto, das kein Gerät mehr aufführt, etwa nach dem Wechsel zu MELCloud Home, wird jetzt an seinen Geräten, beim Hinzufügen von Geräten und in den Einstellungen erklärt.",
+    "en": "An account that no longer lists any unit, for example after moving to MELCloud Home, is now explained on its devices, when adding devices and in the settings.",
+    "es": "Una cuenta que ya no incluye ninguna unidad, por ejemplo tras el paso a MELCloud Home, ahora se explica en sus dispositivos, al añadir dispositivos y en los ajustes.",
+    "fr": "Un compte qui ne recense plus aucune unité, par exemple après le passage à MELCloud Home, est désormais expliqué sur ses appareils, lors de l'ajout d'appareils et dans les paramètres.",
+    "it": "Un account che non elenca più alcuna unità, ad esempio dopo il passaggio a MELCloud Home, viene ora spiegato sui suoi dispositivi, durante l'aggiunta di dispositivi e nelle impostazioni.",
+    "ko": "MELCloud Home으로 이전한 후처럼 더 이상 기기가 없는 계정은 이제 해당 기기, 기기 추가 과정 및 설정에서 안내됩니다.",
+    "nl": "Een account dat geen enkele unit meer vermeldt, bijvoorbeeld na de overstap naar MELCloud Home, wordt nu uitgelegd op de apparaten, bij het toevoegen van apparaten en in de instellingen.",
+    "no": "En konto som ikke lenger lister noen enhet, for eksempel etter overgangen til MELCloud Home, forklares nå på enhetene, når du legger til enheter og i innstillingene.",
+    "pl": "Konto, które nie wykazuje już żadnego urządzenia, na przykład po przejściu na MELCloud Home, jest teraz wyjaśniane na jego urządzeniach, podczas dodawania urządzeń i w ustawieniach.",
+    "ru": "Учётная запись, которая больше не показывает ни одного устройства, например после перехода на MELCloud Home, теперь объясняется на её устройствах, при добавлении устройств и в настройках.",
+    "sv": "Ett konto som inte längre listar någon enhet, till exempel efter bytet till MELCloud Home, förklaras nu på dess enheter, när du lägger till enheter och i inställningarna."
   }
 }
