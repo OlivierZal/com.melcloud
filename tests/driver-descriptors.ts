@@ -6,6 +6,9 @@ import {
 } from '@olivierzal/melcloud-api'
 import { describe, expect, it, vi } from 'vitest'
 
+import type { Api } from '../types/api.mts'
+import { createListDevicesSession } from './pair-session.ts'
+
 export const testDriverType = (
   getDriver: () => { type: unknown },
   expectedType: unknown,
@@ -170,6 +173,35 @@ const createLoginSession = (
     showView: showViewMock,
   })
   return { reference, session }
+}
+
+// An account listing no unit at all answers with where its units may
+// be, which Homey shows in place of the empty list: both dialects, each
+// naming its own account.
+export const testEmptyAccountPairing = (
+  getDriver: () => { onPair: (session: PairSession) => Promise<void> },
+  {
+    api,
+    isAccountEmptyMock,
+    showViewMock,
+  }: {
+    readonly api: Api
+    readonly isAccountEmptyMock: ReturnType<typeof vi.fn>
+    readonly showViewMock: ReturnType<
+      typeof vi.fn<(view: string) => Promise<void>>
+    >
+  },
+): void => {
+  describe('emptied account pairing', () => {
+    it('should explain the emptied account instead of listing nothing', async () => {
+      isAccountEmptyMock.mockReturnValueOnce(true)
+      const { listHandler, session } = createListDevicesSession(showViewMock)
+      await getDriver().onPair(session)
+
+      await expect(listHandler()).rejects.toThrow(`pair.accountEmpty.${api}`)
+      expect(isAccountEmptyMock).toHaveBeenCalledWith(api)
+    })
+  })
 }
 
 export const testPairing = (

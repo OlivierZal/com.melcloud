@@ -11,6 +11,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import {
+  testEmptyAccountPairing,
   testFlowListenerRegistration,
   testPairing,
   testRepairing,
@@ -169,6 +170,12 @@ describe(ClassicMELCloudDriver, () => {
     })
   })
 
+  testEmptyAccountPairing(() => driver, {
+    api: 'classic',
+    isAccountEmptyMock,
+    showViewMock,
+  })
+
   testPairing(() => driver, {
     authenticateMock,
     isAuthenticatedMock,
@@ -177,17 +184,6 @@ describe(ClassicMELCloudDriver, () => {
   })
 
   describe('device discovery', () => {
-    // An account listing no unit at all answers with where its units may
-    // be, which Homey shows in place of the empty list.
-    it('should explain an emptied Classic account instead of listing nothing', async () => {
-      isAccountEmptyMock.mockReturnValueOnce(true)
-      const { listHandler, session } = createListDevicesSession(showViewMock)
-      await driver.onPair(session)
-
-      await expect(listHandler()).rejects.toThrow('pair.accountEmpty.classic')
-      expect(isAccountEmptyMock).toHaveBeenCalledWith('classic')
-    })
-
     it('should discover devices on list_devices handler', async () => {
       const { listHandler, session } = createListDevicesSession(showViewMock)
       stubDiscoverableDevice()

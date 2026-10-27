@@ -5,6 +5,7 @@ import * as Home from '@olivierzal/melcloud-api/home'
 
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import {
+  testEmptyAccountPairing,
   testFlowListenerRegistration,
   testPairing,
   testRepairing,
@@ -106,6 +107,12 @@ describe(BaseMELCloudDriver, () => {
     undeclared: 'measure_signal_strength',
   })
 
+  testEmptyAccountPairing(() => driver, {
+    api: 'home',
+    isAccountEmptyMock,
+    showViewMock,
+  })
+
   testPairing(() => driver, {
     authenticateMock,
     isAuthenticatedMock,
@@ -114,18 +121,6 @@ describe(BaseMELCloudDriver, () => {
   })
 
   describe('device discovery', () => {
-    // An account listing no unit at all answers with where its units may
-    // be, which Homey shows in place of the empty list.
-    it('should explain an emptied Home account instead of listing nothing', async () => {
-      isAccountEmptyMock.mockReturnValueOnce(true)
-      const { listHandler, session } = createListDevicesSession(showViewMock)
-      await driver.onPair(session)
-
-      await expect(listHandler()).rejects.toThrow('pair.accountEmpty.home')
-      expect(isAccountEmptyMock).toHaveBeenCalledWith('home')
-      expect(getHomeDevicesByTypeMock).not.toHaveBeenCalled()
-    })
-
     it('should discover devices on list_devices handler', async () => {
       const devices = [
         mock<Home.Device>({ id: 'device-1', name: 'Living Room' }),
