@@ -6,7 +6,6 @@ import * as Home from '@olivierzal/melcloud-api/home'
 import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import {
   testEmptyAccountPairing,
-  testFlowListenerRegistration,
   testPairing,
   testRepairing,
 } from '../driver-descriptors.ts'
@@ -27,22 +26,8 @@ const {
   return createHomeDriverMocks()
 })
 
-// The app manifest declares fewer cards than the driver has
-// capabilities: registration must follow the declared set, never the
-// capability walk. `fan_speed` is set-mapped without an action card;
-// `measure_signal_strength` (the opt-in) has no card at all.
-const MANIFEST_FLOW = {
-  actions: [{ id: 'onoff_action' }],
-  conditions: [
-    { id: 'fan_speed_condition' },
-    { id: 'measure_temperature_condition' },
-    { id: 'onoff_condition' },
-  ],
-}
-
 vi.mock(import('homey'), async () => {
   const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
-  const { createFlowCardsStub } = await import('../flow-card-mocks.ts')
   class MockDriver {
     public homey = {
       __: vi.fn<(key: string) => string>((key) => key),
@@ -55,8 +40,6 @@ vi.mock(import('homey'), async () => {
         },
         isAccountEmpty: isAccountEmptyMock,
       },
-      flow: createFlowCardsStub(),
-      manifest: { flow: MANIFEST_FLOW },
     }
 
     public log = vi.fn<(...args: readonly unknown[]) => void>()
@@ -98,13 +81,6 @@ describe(BaseMELCloudDriver, () => {
       expect(driver.getRequiredCapabilities()).toContain('onoff')
       expect(driver.getRequiredCapabilities()).toContain('fan_speed')
     })
-  })
-
-  testFlowListenerRegistration(() => driver, {
-    readOnly: 'measure_temperature',
-    settable: 'onoff',
-    settableWithoutAction: 'fan_speed',
-    undeclared: 'measure_signal_strength',
   })
 
   testEmptyAccountPairing(() => driver, {

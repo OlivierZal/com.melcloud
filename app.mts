@@ -137,6 +137,11 @@ interface HolidayModeActionArgs {
   time?: unknown
 }
 
+// A capability card's value argument is named after the capability's
+// root: the id before the first dot (`thermostat_mode.zone2` →
+// `thermostat_mode`).
+const getArg = (capability: string): string => capability.replace(/\..*/v, '')
+
 const getLocalizedCapabilitiesOptions = (
   options: ManifestDriverCapabilitiesOptions,
   language: string,
@@ -1223,6 +1228,75 @@ export default class MELCloudApp extends App {
     }
   }
 
+  // Forwards the argument to the device's own capability listener, so an
+  // action card names only drivers that write its capability (pinned in
+  // `tests/unit/flow-cards.test.ts`).
+  #registerCapabilityAction(id: string, capability: string): void {
+    this.homey.flow
+      .getActionCard(id)
+      .registerRunListener(
+        async (
+          args: Record<string, unknown> & {
+            device: {
+              triggerCapabilityListener: (
+                key: string,
+                value: unknown,
+              ) => Promise<void>
+            }
+          },
+        ) => {
+          await args.device.triggerCapabilityListener(
+            capability,
+            args[getArg(capability)],
+          )
+        },
+      )
+  }
+
+  // A boolean capability is its own answer; any other compares with the
+  // card's value argument.
+  #registerCapabilityCondition(id: string, capability: string): void {
+    this.homey.flow
+      .getConditionCard(id)
+      .registerRunListener(
+        (
+          args: Record<string, unknown> & {
+            device: { getCapabilityValue: (key: string) => unknown }
+          },
+        ) => {
+          const value = args.device.getCapabilityValue(capability)
+          return typeof value === 'string' || typeof value === 'number'
+            ? value === args[getArg(capability)]
+            : value
+        },
+      )
+  }
+
+  // The capability cards are app-level: one card per capability, shared
+  // by every driver its device filter names, so each gets ONE listener,
+  // generic over `args.device`. The manifest is the list: a card whose id
+  // names no driver capability is an app card of its own (holiday mode,
+  // below), and a declared card the runtime cannot hand out throws from
+  // `onInit` — a contract break, never swallowed.
+  #registerCapabilityFlowListeners(): void {
+    const { actions, conditions } = this.homey.manifest.flow
+    const capabilities = new Set(
+      this.homey.manifest.drivers.flatMap((driver) => driver.capabilities),
+    )
+    for (const { id } of conditions) {
+      const capability = id.replace(/_condition$/v, '')
+      if (capabilities.has(capability)) {
+        this.#registerCapabilityCondition(id, capability)
+      }
+    }
+    for (const { id } of actions) {
+      const capability = id.replace(/_action$/v, '')
+      if (capabilities.has(capability)) {
+        this.#registerCapabilityAction(id, capability)
+      }
+    }
+  }
+
   #registerFlowListeners(): void {
     // Both duration cards start now and only differ by the end-of-window
     // time — midnight for the bare card, the chosen time for the with-time
@@ -1245,6 +1319,7 @@ export default class MELCloudApp extends App {
       isEnabled: false,
     }))
     this.#registerHolidayModeCondition()
+    this.#registerCapabilityFlowListeners()
   }
 
   #registerHolidayModeCard(

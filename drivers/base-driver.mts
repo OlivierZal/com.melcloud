@@ -10,19 +10,6 @@ import type { Api, AuthenticationAPI } from '../types/api.mts'
 import type { ManifestDriver } from '../types/manifest.mts'
 import { type Homey, Driver } from '../lib/homey.mts'
 
-// A flow card's argument is named after the capability's root: the id
-// before the first dot (`onoff.timer` → `onoff`).
-const getArg = (capability: string): string => capability.replace(/\..*/v, '')
-
-// The capability cards are app-level: one card serves every driver its
-// device filter names (the Classic and Home twins of a capability), so
-// each driver wiring it would register a second listener on the same
-// card, which Homey answers with "Run listener was already registered"
-// at every boot. The listeners are generic over `args.device`, so the
-// first driver to wire a card serves them all. Keyed by the flow manager
-// the drivers share, so the record lives exactly as long as the app.
-const wiredCardIds = new WeakMap<object, Set<string>>()
-
 export abstract class BaseMELCloudDriver extends Driver {
   declare public readonly homey: Homey.Homey
 
@@ -42,11 +29,6 @@ export abstract class BaseMELCloudDriver extends Driver {
     readonly list: Readonly<Record<string, string>>
     readonly set: Readonly<Record<string, string>>
   } = { energy: {}, get: {}, list: {}, set: {} }
-
-  public override async onInit(): Promise<void> {
-    this.#registerFlowListeners()
-    await Promise.resolve()
-  }
 
   public override async onPair(session: PairSession): Promise<void> {
     session.setHandler('showView', async (view) => {
@@ -93,71 +75,6 @@ export abstract class BaseMELCloudDriver extends Driver {
     return this.getDeviceModels().map((model) => this.toDeviceDetails(model))
   }
 
-  #registerActionListener(capability: string): void {
-    this.homey.flow
-      .getActionCard(`${capability}_action`)
-      .registerRunListener(
-        async (
-          args: Record<string, unknown> & {
-            device: {
-              triggerCapabilityListener: (
-                key: string,
-                value: unknown,
-              ) => Promise<void>
-            }
-          },
-        ) => {
-          await args.device.triggerCapabilityListener(
-            capability,
-            args[getArg(capability)],
-          )
-        },
-      )
-  }
-
-  #registerConditionListener(capability: string): void {
-    this.homey.flow
-      .getConditionCard(`${capability}_condition`)
-      .registerRunListener(
-        (
-          args: Record<string, unknown> & {
-            device: { getCapabilityValue: (key: string) => unknown }
-          },
-        ) => {
-          const value = args.device.getCapabilityValue(capability)
-          return typeof value === 'string' || typeof value === 'number'
-            ? value === args[getArg(capability)]
-            : value
-        },
-      )
-  }
-
-  // Run listeners are wired for exactly the cards the app manifest
-  // declares, so a missing card is a contract break, never a swallowed
-  // throw. An action card also needs a write mapping: the listener
-  // forwards the argument to the capability listener, which only the
-  // set-mapped capabilities carry.
-  #registerFlowListeners(): void {
-    const { actions, conditions } = this.homey.manifest.flow
-    const conditionIds = new Set(conditions.map(({ id }) => id))
-    const actionIds = new Set(actions.map(({ id }) => id))
-    for (const capability of this.manifest.capabilities) {
-      if (conditionIds.has(`${capability}_condition`)) {
-        this.#wireOnce(`${capability}_condition`, () => {
-          this.#registerConditionListener(capability)
-        })
-      }
-      if (
-        Object.hasOwn(this.tagMappings.set, capability) &&
-        actionIds.has(`${capability}_action`)
-      ) {
-        this.#wireOnce(`${capability}_action`, () => {
-          this.#registerActionListener(capability)
-        })
-      }
-    }
-  }
-
   #registerLoginHandler(session: PairSession): void {
     session.setHandler('login', async (data: LoginCredentials) => {
       try {
@@ -180,16 +97,5 @@ export abstract class BaseMELCloudDriver extends Driver {
         throw error
       }
     })
-  }
-
-  // A card counts as wired once its registration returned: a throwing
-  // one stays unclaimed, and the throw surfaces from `onInit`.
-  #wireOnce(cardId: string, wire: () => void): void {
-    const wired = wiredCardIds.get(this.homey.flow) ?? new Set<string>()
-    if (wired.has(cardId)) {
-      return
-    }
-    wire()
-    wiredCardIds.set(this.homey.flow, wired.add(cardId))
   }
 }

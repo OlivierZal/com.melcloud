@@ -614,20 +614,22 @@ coverage.
   verbatim and the app's `#getAtaGroupTarget` resolves the facade, so
   even that step is app-side only. The prefix has twice been misread as
   a missing abstraction (2026-08) — it is the common surface.
-- Flow-card run listeners are wired for exactly the cards the app
-  manifest declares: `drivers/base-driver.mts` reads the condition and
-  action ids off `homey.manifest.flow` and registers one generic
-  listener per declared `<capability>_condition` / `<capability>_action`
-  (an action also needs the capability set-mapped — the listener
-  forwards the argument to the capability listener). A declared card
-  the runtime cannot hand out throws at driver init, never a swallowed
+- Flow-card run listeners are wired by the APP, once per card, for
+  exactly the capability cards the app manifest declares: `app.mts`
+  reads the condition and action cards off `homey.manifest.flow`, keeps
+  those whose id names a capability some driver declares (the
+  holiday-mode cards are app cards of their own), and registers one
+  listener per card, generic over `args.device`. The capability cards
+  are app-level, one card per capability whatever drivers its device
+  filter names, so a registration per driver would put a second
+  listener on the same card, which Homey answers with "Run listener was
+  already registered" at every boot. An action forwards its argument to
+  the device's capability listener, so its filter must name only
+  drivers that write the capability: `tests/unit/flow-cards.test.ts`
+  pins that against every driver's write mapping. A declared card the
+  runtime cannot hand out throws from `onInit`, never a swallowed
   catch: a missing card is a contract break, and the mirror rule holds
-  in com.heatzy. The capability cards are APP-level, one card per
-  capability whatever drivers its filter names, so the first driver to
-  wire a card serves its twins (`wiredCardIds`, keyed by the flow
-  manager the drivers share, and claimed only once the registration
-  returned): a second registration on the same card is what Homey
-  answers with "Run listener was already registered" at every boot.
+  in com.heatzy.
 - Flow-card device filters are `driver_id=<manifest owners>&capabilities=<cap>`,
   both parts mechanical: `capabilities=` is the card's real precondition
   (the run listeners are capability-generic and triggers fire through
