@@ -191,6 +191,13 @@ const mockTranslate = vi
   .fn<(key: string) => string>()
   .mockImplementation((key: string) => key)
 
+// No capability card by default: the suites that wire them declare
+// their own cards and drivers.
+const mockManifestFlow: {
+  actions: { id: string }[]
+  conditions: { id: string }[]
+} = { actions: [], conditions: [] }
+
 const mockManifestDrivers: ManifestDriver[] = [
   {
     capabilities: [],
@@ -329,7 +336,11 @@ const createApp = (): InstanceType<typeof MelCloudApp> => {
           getConditionCard: mockGetConditionCard,
         },
         i18n: { getLanguage: mockGetLanguage },
-        manifest: { drivers: mockManifestDrivers, version: '1.0.0' },
+        manifest: {
+          drivers: mockManifestDrivers,
+          flow: mockManifestFlow,
+          version: '1.0.0',
+        },
         notifications: { createNotification: mockCreateNotification },
         ready: mockHomeyReady,
         setTimeout: mockSetTimeout,
@@ -553,6 +564,20 @@ const createSyncDevice = (
   }),
   syncFromDevice,
 })
+
+// Every card lookup is followed by exactly one run-listener
+// registration, so the lookup's index finds the card's listener.
+const getRunListener = (
+  getCardMock: typeof mockGetActionCard | typeof mockGetConditionCard,
+  registerRunMock:
+    typeof mockActionRegisterRun | typeof mockConditionRegisterRun,
+  id: string,
+): ((args: Record<string, unknown>) => unknown) =>
+  getMockCallArg<(args: Record<string, unknown>) => unknown>(
+    registerRunMock,
+    getCardMock.mock.calls.findIndex(([cardId]) => cardId === id),
+    0,
+  )
 
 describe('melCloudApp', () => {
   let app: InstanceType<typeof MelCloudApp>
@@ -2603,6 +2628,141 @@ describe('melCloudApp', () => {
     })
   })
 
+  // The capability cards are app-level and shared by every driver their
+  // device filter names: one listener per declared card, generic over the
+  // device, and none for an id naming no capability.
+  describe('capability flow cards', () => {
+    beforeEach(() => {
+      mockGetActionCard.mockClear()
+      mockActionRegisterRun.mockClear()
+      mockGetConditionCard.mockClear()
+      mockConditionRegisterRun.mockClear()
+      Object.defineProperty(app.homey, 'manifest', {
+        configurable: true,
+        value: {
+          drivers: [
+            {
+              capabilities: [
+                'alarm_generic.defrost',
+                'onoff',
+                'thermostat_mode.zone2',
+              ],
+              id: 'melcloud_atw',
+            },
+            { capabilities: ['onoff'], id: 'home-melcloud_atw' },
+          ],
+          flow: {
+            actions: [
+              { id: 'holiday_mode_action' },
+              { id: 'onoff_action' },
+              { id: 'thermostat_mode.zone2_action' },
+            ],
+            conditions: [
+              { id: 'alarm_generic.defrost_condition' },
+              { id: 'holiday_mode_condition' },
+              { id: 'thermostat_mode.zone2_condition' },
+            ],
+          },
+          version: '1.0.0',
+        },
+      })
+    })
+
+    it('should register each declared capability card once, whatever drivers share it', async () => {
+      await app.onInit()
+
+      expect(mockGetActionCard.mock.calls.map(([id]) => id)).toStrictEqual([
+        'holiday_mode_action',
+        'holiday_mode_with_time_action',
+        'holiday_mode_false_action',
+        'onoff_action',
+        'thermostat_mode.zone2_action',
+      ])
+      expect(mockGetConditionCard.mock.calls.map(([id]) => id)).toStrictEqual([
+        'holiday_mode_condition',
+        'alarm_generic.defrost_condition',
+        'thermostat_mode.zone2_condition',
+      ])
+    })
+
+    it('should compare a condition with the argument named after the capability root', async () => {
+      await app.onInit()
+      const listener = getRunListener(
+        mockGetConditionCard,
+        mockConditionRegisterRun,
+        'thermostat_mode.zone2_condition',
+      )
+      const getCapabilityValue = vi
+        .fn<(capability: string) => unknown>()
+        .mockReturnValue('heat')
+
+      expect(
+        listener({ device: { getCapabilityValue }, thermostat_mode: 'heat' }),
+      ).toBe(true)
+      expect(
+        listener({ device: { getCapabilityValue }, thermostat_mode: 'cool' }),
+      ).toBe(false)
+      expect(getCapabilityValue).toHaveBeenCalledWith('thermostat_mode.zone2')
+    })
+
+    it('should answer a boolean capability condition with its value', async () => {
+      await app.onInit()
+      const listener = getRunListener(
+        mockGetConditionCard,
+        mockConditionRegisterRun,
+        'alarm_generic.defrost_condition',
+      )
+
+      expect(
+        listener({
+          device: {
+            getCapabilityValue: vi
+              .fn<(capability: string) => unknown>()
+              .mockReturnValue(true),
+          },
+        }),
+      ).toBe(true)
+    })
+
+    it('should forward an action argument to the device capability listener', async () => {
+      await app.onInit()
+      const listener = getRunListener(
+        mockGetActionCard,
+        mockActionRegisterRun,
+        'thermostat_mode.zone2_action',
+      )
+      const triggerCapabilityListener = vi
+        .fn<(capability: string, value: unknown) => Promise<void>>()
+        .mockResolvedValue()
+      await listener({
+        device: { triggerCapabilityListener },
+        thermostat_mode: 'cool',
+      })
+
+      expect(triggerCapabilityListener).toHaveBeenCalledWith(
+        'thermostat_mode.zone2',
+        'cool',
+      )
+    })
+
+    // A declared card the runtime cannot hand out is a contract break: the
+    // throw surfaces from \`onInit\` instead of being swallowed.
+    it('should surface a declared card the runtime cannot hand out', async () => {
+      const failure = new Error('Card not found')
+      mockGetActionCard.mockImplementation((id) => {
+        if (id === 'onoff_action') {
+          throw failure
+        }
+        return {
+          registerArgumentAutocompleteListener: mockActionRegisterAutocomplete,
+          registerRunListener: mockActionRegisterRun,
+        }
+      })
+
+      await expect(app.onInit()).rejects.toBe(failure)
+    })
+  })
+
   describe('holiday mode flow cards', () => {
     const zoneArg = { id: 'buildings_1' } as const
 
@@ -3236,7 +3396,11 @@ describe('melCloudApp', () => {
       ]
       Object.defineProperty(app.homey, 'manifest', {
         configurable: true,
-        value: { drivers: driversWithLogin, version: '1.0.0' },
+        value: {
+          drivers: driversWithLogin,
+          flow: mockManifestFlow,
+          version: '1.0.0',
+        },
       })
       await app.onInit()
 
@@ -3269,7 +3433,7 @@ describe('melCloudApp', () => {
       app = createApp()
       Object.defineProperty(app.homey, 'manifest', {
         configurable: true,
-        value: { drivers: [], version: '9.9.9' },
+        value: { drivers: [], flow: mockManifestFlow, version: '9.9.9' },
       })
       await app.onInit()
 
@@ -3598,7 +3762,11 @@ describe('melCloudApp', () => {
       ]
       Object.defineProperty(app.homey, 'manifest', {
         configurable: true,
-        value: { drivers: driversWithValues, version: '1.0.0' },
+        value: {
+          drivers: driversWithValues,
+          flow: mockManifestFlow,
+          version: '1.0.0',
+        },
       })
       await app.onInit()
 

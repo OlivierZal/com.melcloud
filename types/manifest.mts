@@ -52,7 +52,7 @@ export interface ManifestDriverCapabilitiesOptions {
 }
 
 // The flow cards the app declares: run listeners are wired for exactly
-// these ids, so a driver reads them rather than probing the registry.
+// these ids, so the app reads them rather than probing the registry.
 export interface ManifestFlow {
   readonly actions: readonly ManifestFlowCard[]
   readonly conditions: readonly ManifestFlowCard[]

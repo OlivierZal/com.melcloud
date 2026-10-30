@@ -1,18 +1,11 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type HomeyModule from 'homey'
-import type FlowCardAction from 'homey/lib/FlowCardAction'
-import type FlowCardCondition from 'homey/lib/FlowCardCondition'
-import {
-  type InteropModule,
-  assertDefined,
-  mock,
-} from '@olivierzal/homey-kit/testing'
+import { type InteropModule, mock } from '@olivierzal/homey-kit/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import {
   testEmptyAccountPairing,
-  testFlowListenerRegistration,
   testPairing,
   testRepairing,
 } from '../driver-descriptors.ts'
@@ -23,33 +16,16 @@ import {
   createTestDriver,
 } from './classic-driver-test-driver.ts'
 
-// The app manifest declares fewer cards than the driver has
-// capabilities: registration must follow the declared set, never the
-// capability walk. `thermostat_mode` is set-mapped without an action
-// card; `measure_signal_strength` (the opt-in) has no card at all.
-const MANIFEST_FLOW = {
-  actions: [{ id: 'onoff_action' }],
-  conditions: [
-    { id: 'measure_temperature_condition' },
-    { id: 'onoff_condition' },
-    { id: 'thermostat_mode_condition' },
-    { id: 'thermostat_mode.zone2_condition' },
-  ],
-}
-
 const {
   authenticateMock,
   isAccountEmptyMock,
   isAuthenticatedMock,
-  registerRunListenerMock,
   setHandlerMock,
   showViewMock,
 } = vi.hoisted(() => ({
   authenticateMock: vi.fn<(data: unknown) => Promise<boolean>>(),
   isAccountEmptyMock: vi.fn<(api: string) => boolean>(() => false),
   isAuthenticatedMock: vi.fn<() => boolean>().mockReturnValue(false),
-  registerRunListenerMock:
-    vi.fn<(listener: (args: Record<string, unknown>) => unknown) => void>(),
   setHandlerMock:
     vi.fn<(event: string, handler: (...args: unknown[]) => unknown) => void>(),
   showViewMock: vi.fn<(view: string) => Promise<void>>(),
@@ -72,36 +48,9 @@ vi.mock(import('homey'), async () => {
           .mockReturnValue([]),
         isAccountEmpty: isAccountEmptyMock,
       },
-      flow: {
-        getActionCard: vi
-          .fn<
-            (id: string) => {
-              registerRunListener: typeof registerRunListenerMock
-            }
-          >()
-          .mockReturnValue({ registerRunListener: registerRunListenerMock }),
-        getConditionCard: vi
-          .fn<
-            (id: string) => {
-              registerRunListener: typeof registerRunListenerMock
-            }
-          >()
-          .mockReturnValue({ registerRunListener: registerRunListenerMock }),
-      },
-      manifest: { flow: MANIFEST_FLOW },
     }
 
     public log = vi.fn<(...args: readonly unknown[]) => void>()
-
-    public manifest = {
-      capabilities: [
-        'onoff',
-        'thermostat_mode',
-        'thermostat_mode.zone2',
-        'measure_temperature',
-        'measure_signal_strength',
-      ],
-    }
   }
 
   return mockModule<InteropModule<typeof HomeyModule>>({
@@ -116,13 +65,6 @@ describe(ClassicMELCloudDriver, () => {
     driver = createTestDriver()
   })
 
-  // A twin driver of the same app: it shares the app's flow manager.
-  const createSibling = (): TestDriver => {
-    const sibling = createTestDriver()
-    Object.defineProperty(sibling, 'homey', { value: driver.homey })
-    return sibling
-  }
-
   const stubDiscoverableDevice = (): void => {
     vi.spyOn(driver.homey.app, 'getDevicesByType').mockReturnValue([
       mock<Classic.Device<TestDriverType>>({
@@ -132,43 +74,6 @@ describe(ClassicMELCloudDriver, () => {
       }),
     ])
   }
-
-  testFlowListenerRegistration(() => driver, {
-    readOnly: 'measure_temperature',
-    settable: 'onoff',
-    settableWithoutAction: 'thermostat_mode',
-    undeclared: 'measure_signal_strength',
-  })
-
-  // The twins' capability cards are app-level: a sibling driver sharing
-  // the app's flow manager finds them wired and must leave them alone.
-  describe('app-level card wiring', () => {
-    it('should not register again on the cards a sibling wired', async () => {
-      await driver.onInit()
-      registerRunListenerMock.mockClear()
-      await createSibling().onInit()
-
-      expect(registerRunListenerMock).not.toHaveBeenCalled()
-    })
-
-    it('should leave a card whose registration threw to the next driver', async () => {
-      vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementationOnce(
-        () => {
-          throw new Error('Card not found')
-        },
-      )
-
-      await expect(driver.onInit()).rejects.toThrow('Card not found')
-
-      await createSibling().onInit()
-
-      // The first lookup threw; the sibling's first one retries that card.
-      expect(driver.homey.flow.getConditionCard).toHaveBeenNthCalledWith(
-        2,
-        'onoff_condition',
-      )
-    })
-  })
 
   testEmptyAccountPairing(() => driver, {
     api: 'classic',
@@ -224,119 +129,4 @@ describe(ClassicMELCloudDriver, () => {
   })
 
   testRepairing(() => driver, { authenticateMock, setHandlerMock })
-
-  describe('action run listener registration', () => {
-    it('should invoke triggerCapabilityListener on the device with the correct args', async () => {
-      const triggerMock = vi.fn<() => Promise<void>>().mockResolvedValue()
-      const actionListeners: Record<
-        string,
-        (args: Record<string, unknown>) => Promise<void>
-      > = {}
-      vi.spyOn(driver.homey.flow, 'getActionCard').mockImplementation(
-        (cardName: string) =>
-          mock<FlowCardAction>({
-            registerRunListener: (
-              listener: (args: Record<string, unknown>) => Promise<void>,
-            ): void => {
-              actionListeners[cardName] = listener
-            },
-          }),
-      )
-      await driver.onInit()
-
-      const { onoff_action: registeredListener } = actionListeners
-      assertDefined(registeredListener)
-      await registeredListener({
-        device: { triggerCapabilityListener: triggerMock },
-        onoff: true,
-      })
-
-      expect(triggerMock).toHaveBeenCalledWith('onoff', true)
-    })
-  })
-
-  // Every clause here drives a registered condition listener, so the
-  // suite captures them by standing in for the card registry.
-  const captureConditionListeners = async (): Promise<
-    Record<string, (args: Record<string, unknown>) => unknown>
-  > => {
-    const conditionListeners: Record<
-      string,
-      (args: Record<string, unknown>) => unknown
-    > = {}
-    vi.spyOn(driver.homey.flow, 'getConditionCard').mockImplementation(
-      (cardName: string) =>
-        mock<FlowCardCondition>({
-          registerRunListener: (
-            listener: (args: Record<string, unknown>) => unknown,
-          ): void => {
-            conditionListeners[cardName] = listener
-          },
-        }),
-    )
-    await driver.onInit()
-    return conditionListeners
-  }
-
-  describe('condition run listener registration', () => {
-    it('should return boolean capability value for boolean capabilities', async () => {
-      const { onoff_condition: onoffListener } =
-        await captureConditionListeners()
-      assertDefined(onoffListener)
-      const result = onoffListener({
-        device: {
-          getCapabilityValue: vi
-            .fn<(capability: string) => unknown>()
-            .mockReturnValue(true),
-        },
-        onoff: true,
-      })
-
-      expect(result).toBe(true)
-    })
-
-    it('should compare string/number capability values with arg', async () => {
-      const conditionListeners = await captureConditionListeners()
-
-      const { thermostat_mode_condition: thermostatListener } =
-        conditionListeners
-      assertDefined(thermostatListener)
-
-      const resultTrue = thermostatListener({
-        device: {
-          getCapabilityValue: vi
-            .fn<(capability: string) => unknown>()
-            .mockReturnValue('heat'),
-        },
-        thermostat_mode: 'heat',
-      })
-
-      const resultFalse = thermostatListener({
-        device: {
-          getCapabilityValue: vi
-            .fn<(capability: string) => unknown>()
-            .mockReturnValue('cool'),
-        },
-        thermostat_mode: 'heat',
-      })
-
-      expect(resultTrue).toBe(true)
-      expect(resultFalse).toBe(false)
-
-      const zoneListener = conditionListeners['thermostat_mode.zone2_condition']
-      assertDefined(zoneListener)
-
-      // The dotted variant's card compares against the base arg name.
-      expect(
-        zoneListener({
-          device: {
-            getCapabilityValue: vi
-              .fn<(capability: string) => unknown>()
-              .mockReturnValue('heat'),
-          },
-          thermostat_mode: 'heat',
-        }),
-      ).toBe(true)
-    })
-  })
 })

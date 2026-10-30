@@ -1,7 +1,5 @@
 import { vi } from 'vitest'
 
-import { createFlowCardsStub } from './flow-card-mocks.ts'
-
 const applyOverrides = (
   target: object,
   overrides?: Record<string, unknown>,
@@ -31,9 +29,6 @@ export const createMockDriverClass = (
           .fn<(type: number) => readonly unknown[]>()
           .mockReturnValue([]),
       },
-      flow: createFlowCardsStub(),
-      // No card declared: a suite that wires listeners names its own.
-      manifest: { flow: { actions: [], conditions: [] } },
     }
 
     public log = vi.fn<(...args: readonly unknown[]) => void>()
