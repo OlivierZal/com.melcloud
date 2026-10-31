@@ -1,3 +1,12 @@
+import type { Api } from '../types/api.mts'
+
+// The user-facing service names: the sign-in failure alerts and the
+// per-account log lines both say WHICH account they speak of.
+export const API_DISPLAY_NAMES: Readonly<Record<Api, string>> = {
+  classic: 'MELCloud Classic',
+  home: 'MELCloud Home',
+}
+
 // SI kilo prefix ratio, shared by the W <-> kW and Wh <-> kWh
 // conversions alike.
 export const KILO = 1000

@@ -27,15 +27,9 @@ import type {
   FormattedErrorLog,
 } from './types/error-log.mts'
 import type { DeviceGroup } from './types/zone.mts'
+import { API_DISPLAY_NAMES } from './lib/constants.mts'
 import { toNonNegativeInt } from './lib/validation.mts'
 import { getWebviewHashes } from './lib/webview-hashes.mts'
-
-// The user-facing service names, interpolated into the failure
-// messages so the alert says WHICH account failed.
-const API_DISPLAY_NAMES = {
-  classic: 'MELCloud Classic',
-  home: 'MELCloud Home',
-} as const
 
 // The client behind each API id — the addressing map of the one
 // `/sessions/:api` resource, where the family is the only visible step.
@@ -66,11 +60,7 @@ const getApiClient = ({ app }: Homey, service: Api): BaseAPIAdapter =>
 // the other platform typed under this one is told which to select
 // (#1699), and the Home leg adds that a Sign in with Apple/Google
 // account has no usable password.
-const toLoginFailure = (
-  homey: Homey,
-  service: keyof typeof API_DISPLAY_NAMES,
-  error: unknown,
-): Error => {
+const toLoginFailure = (homey: Homey, service: Api, error: unknown): Error => {
   if (!(error instanceof AuthenticationError)) {
     return new Error(getErrorMessage(error))
   }

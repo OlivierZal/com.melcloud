@@ -36,7 +36,10 @@
     },
     "devices": {
       "legend": "Inställningar för alla enheter",
-      "none": "Lägg till en enhet för att låsa upp alla appens inställningar!",
+      "none": {
+        "classic": "Inloggad, men ingen enhet har lagts till i Homey ännu. Lägg till dina enheter via Lägg till enhet → MELCloud → [Classic]-enheterna.",
+        "home": "Inloggad, men ingen enhet har lagts till i Homey ännu. Lägg till dina enheter via Lägg till enhet → MELCloud → [Home]-enheterna."
+      },
       "nothing": "Ingen ändring att tillämpa."
     },
     "devicesAta": {
@@ -164,6 +167,10 @@
     "accountEmpty": {
       "classic": "Det här MELCloud Classic-kontot listar ingen enhet som appen kan läsa. Om dina enheter har flyttats till MELCloud Home, lägg i stället till dem som [Home]-enheter.",
       "home": "Det här MELCloud Home-kontot listar ingen enhet som appen kan läsa. Om dina enheter fortfarande finns i MELCloud Classic, lägg i stället till dem som [Classic]-enheter."
+    },
+    "rejected": {
+      "classic": "MELCloud Classic avvisade dessa autentiseringsuppgifter. Ditt MELCloud Home-konto är inloggat och listar enheter: lägg i stället till dem som [Home]-enheter.",
+      "home": "MELCloud Home avvisade dessa autentiseringsuppgifter. Ditt MELCloud Classic-konto är inloggat och listar enheter: lägg i stället till dem som [Classic]-enheter."
     }
   }
 }

@@ -432,6 +432,24 @@ const createClassicDevice = (
     ...overrides,
   })
 
+// The app's `log` is a bare `vi.fn` per instance: swap it for one the
+// test holds, so the lines it asserts on are the ones this run wrote.
+const spyOnLog = (
+  app: InstanceType<typeof MelCloudApp>,
+): ReturnType<typeof vi.fn<(...args: unknown[]) => void>> => {
+  const logMock = vi.fn<(...args: unknown[]) => void>()
+  Object.defineProperty(app, 'log', { configurable: true, value: logMock })
+  return logMock
+}
+
+// The unit-count lines alone, the boot marks left aside.
+const unitCountLines = (
+  logMock: ReturnType<typeof vi.fn<(...args: unknown[]) => void>>,
+): unknown[] =>
+  logMock.mock.calls
+    .map(([line]) => line)
+    .filter((line) => typeof line === 'string' && line.startsWith('MELCloud '))
+
 const setupWidgetListeners = (): {
   mockRegisterAta: ReturnType<typeof vi.fn>
   mockRegisterCharts: ReturnType<typeof vi.fn>
@@ -673,11 +691,7 @@ describe('melCloudApp', () => {
     ])(
       'should only log a lost %s session when the API has no paired device',
       async (api, getCreateMock, emptyDriverId) => {
-        const logMock = vi.fn<(...args: unknown[]) => void>()
-        Object.defineProperty(app, 'log', {
-          configurable: true,
-          value: logMock,
-        })
+        const logMock = spyOnLog(app)
         // A device paired on the OTHER API must not qualify, nor must a
         // device-less driver of the lost API.
         const otherDriverId =
@@ -762,10 +776,7 @@ describe('melCloudApp', () => {
     })
 
     it('should keep the recovery silent when the loss notification was gated off', async () => {
-      Object.defineProperty(app, 'log', {
-        configurable: true,
-        value: vi.fn<(...args: unknown[]) => void>(),
-      })
+      spyOnLog(app)
       // A device-less driver: the loss is logged, never notified.
       setupDriver([], 'melcloud')
       await app.onInit()
@@ -1713,6 +1724,89 @@ describe('melCloudApp', () => {
 
       expect(app.isAccountEmpty('classic')).toBe(false)
       expect(app.isAccountEmpty('home')).toBe(false)
+    })
+  })
+
+  // The other dialect's pairing consults this: an account that is signed
+  // in and lists units is where refused credentials most likely belong.
+  describe('listed units', () => {
+    it('should read a listed registry holding a unit as listing units', async () => {
+      mockApiInstance.registry.getDevices.mockReturnValue([{ id: 1 }])
+      await app.onInit()
+      await getSyncCallback()()
+      await getHomeSyncCallback()()
+
+      expect(app.hasListedUnits('classic')).toBe(true)
+      expect(app.hasListedUnits('home')).toBe(false)
+    })
+
+    // Before the first sync, a filled registry is not the account's answer.
+    it('should never read an unlisted registry as listing units', async () => {
+      mockApiInstance.registry.getDevices.mockReturnValue([{ id: 1 }])
+      await app.onInit()
+
+      expect(app.hasListedUnits('classic')).toBe(false)
+    })
+  })
+
+  // Diagnostic reports omit list bodies over 4 KiB, so this line is the
+  // only trace of how many units an account lists: one per account on
+  // its first sync and on every change of the pair, never on a repeat.
+  describe('unit counts', () => {
+    it("should log the listed and added counts on each account's first sync", async () => {
+      const logMock = spyOnLog(app)
+      mockApiInstance.registry.getDevices.mockReturnValue([
+        { id: 1 },
+        { id: 2 },
+      ])
+      mockHomeRegistry.getDevices.mockReturnValue([{ id: 'device-1' }])
+      setupDriver([createSyncDevice(1).device], 'melcloud')
+      await app.onInit()
+      await getSyncCallback()()
+      await getHomeSyncCallback()()
+
+      expect(unitCountLines(logMock)).toStrictEqual([
+        'MELCloud Classic: 2 units listed, 1 added in Homey',
+        'MELCloud Home: 1 unit listed, 0 added in Homey',
+      ])
+    })
+
+    it('should not repeat unchanged counts', async () => {
+      const logMock = spyOnLog(app)
+      mockApiInstance.registry.getDevices.mockReturnValue([{ id: 1 }])
+      await app.onInit()
+      await getSyncCallback()()
+      await getSyncCallback()()
+
+      expect(unitCountLines(logMock)).toStrictEqual([
+        'MELCloud Classic: 1 unit listed, 0 added in Homey',
+      ])
+    })
+
+    // Either side of the pair moving earns a line: a unit leaving the
+    // account, a device added in Homey — the Home drivers never count
+    // for the Classic account.
+    it('should log the counts again when either side changes', async () => {
+      const logMock = spyOnLog(app)
+      mockApiInstance.registry.getDevices.mockReturnValue([{ id: 1 }])
+      await app.onInit()
+      await getSyncCallback()()
+      mockApiInstance.registry.getDevices.mockReturnValue([])
+      await getSyncCallback()()
+      mockGetDrivers.mockReturnValue({
+        'home-melcloud': createMockDriver(
+          [createSyncDevice(2).device],
+          'home-melcloud',
+        ),
+        melcloud: createMockDriver([createSyncDevice(1).device]),
+      })
+      await getSyncCallback()()
+
+      expect(unitCountLines(logMock)).toStrictEqual([
+        'MELCloud Classic: 1 unit listed, 0 added in Homey',
+        'MELCloud Classic: 0 units listed, 0 added in Homey',
+        'MELCloud Classic: 0 units listed, 1 added in Homey',
+      ])
     })
   })
 

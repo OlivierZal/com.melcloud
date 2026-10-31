@@ -68,7 +68,10 @@ import {
   vertical,
 } from './files.mts'
 import { getCapabilityFlowStep } from './lib/capability-flow-step.mts'
-import { UNKNOWN_DATE_PLACEHOLDER } from './lib/constants.mts'
+import {
+  API_DISPLAY_NAMES,
+  UNKNOWN_DATE_PLACEHOLDER,
+} from './lib/constants.mts'
 import { type Homey, App } from './lib/homey.mts'
 import { unwrapResult } from './lib/unwrap-result.mts'
 import { toNonNegativeInt, toZoneValueData } from './lib/validation.mts'
@@ -107,6 +110,21 @@ const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
   [Home.DeviceType.Ata]: 'home-melcloud',
   [Home.DeviceType.Atw]: 'home-melcloud_atw',
 }
+
+// Driver ids are a store compat contract: Home drivers are namespaced
+// `home-*` (see DRIVER_IDS_BY_TYPE), Classic ids are bare — and that
+// prefix IS the account membership rule, so a driver joins its account
+// by its id alone (the settings page applies the same rule).
+const toApi = (driverId: string): Api =>
+  driverId.startsWith('home-') ? 'home' : 'classic'
+
+// The one line a change of an account's unit counts leaves in the log:
+// what the account lists, what Homey holds of it.
+const formatUnitCounts = (
+  api: Api,
+  { added, listed }: { added: number; listed: number },
+): string =>
+  `${API_DISPLAY_NAMES[api]}: ${String(listed)} unit${listed === 1 ? '' : 's'} listed, ${String(added)} added in Homey`
 
 // Day-chart windows anchor on local midnight so "N days" reads as N
 // calendar days ending today, consistently across the report, the
@@ -311,6 +329,9 @@ export default class MELCloudApp extends App {
 
   // The accounts a registry sync has landed for (see `isRegistryListed`).
   readonly #listedApis = new Set<Api>()
+
+  // The last unit-count line logged per account (see `#logUnitCounts`).
+  readonly #loggedUnitCounts = new Map<Api, string>()
 
   // Loss-episode ledger, written SYNCHRONOUSLY by both lib event
   // callbacks and read by the deferred halves: 'pending' = loss
@@ -635,15 +656,19 @@ export default class MELCloudApp extends App {
     )
   }
 
+  // Whether this account is signed in and its listed registry holds at
+  // least one unit: it has something to pair, which is what the other
+  // dialect's pairing names when its own credentials are refused.
+  public hasListedUnits(api: Api): boolean {
+    return this.isRegistryListed(api) && this.#getListedUnitCount(api) > 0
+  }
+
   // Whether this account is signed in and its listed registry holds no
   // unit at all: the account itself answered that it has nothing to
   // offer, which is what pairing, the settings page and a Classic tile
   // explain, each for its own account only.
   public isAccountEmpty(api: Api): boolean {
-    return (
-      this.isRegistryListed(api) &&
-      this.#getClient(api).registry.getDevices().length === 0
-    )
+    return this.isRegistryListed(api) && this.#getListedUnitCount(api) === 0
   }
 
   // Whether the registry holds this account's own answer: the arbiter the
@@ -1041,6 +1066,18 @@ export default class MELCloudApp extends App {
       : null
   }
 
+  #getListedUnitCount(api: Api): number {
+    return this.#getClient(api).registry.getDevices().length
+  }
+
+  // This account's devices paired in Homey, across every driver of its
+  // dialect.
+  #getPairedDevices(api: Api): MELCloudDevice[] {
+    return this.#getDrivers()
+      .filter((driver) => toApi(driver.id) === api)
+      .flatMap((driver): MELCloudDevice[] => driver.getDevices())
+  }
+
   // Chart-target resolver for the reads every device-level target
   // answers, on either dialect.
   #getReportTarget(targetId: string): ReportSurface {
@@ -1061,14 +1098,8 @@ export default class MELCloudApp extends App {
     return this.getClassicFacade(zoneType, zoneId)
   }
 
-  // Driver ids are a store compat contract: Home drivers are namespaced
-  // `home-*` (see DRIVER_IDS_BY_TYPE), Classic ids are bare.
   #hasPairedDevices(api: Api): boolean {
-    return this.#getDrivers().some(
-      (driver) =>
-        (driver.id.startsWith('home-') ? 'home' : 'classic') === api &&
-        driver.getDevices().length > 0,
-    )
+    return this.#getPairedDevices(api).length > 0
   }
 
   // The zero lower bound (`HOLIDAY_MODE_OFF_DURATION`) is what
@@ -1184,6 +1215,22 @@ export default class MELCloudApp extends App {
     this.log('Boot: ready after', process.uptime().toFixed(1), 's')
   }
 
+  // One line per account when the pair (listed by the account, added in
+  // Homey) changes, the first sync included: diagnostic reports omit
+  // list bodies over 4 KiB, so this is the only trace of how many units
+  // an account lists — and a repeat would only pad the log.
+  #logUnitCounts(api: Api): void {
+    const line = formatUnitCounts(api, {
+      added: this.#getPairedDevices(api).length,
+      listed: this.#getListedUnitCount(api),
+    })
+    if (this.#loggedUnitCounts.get(api) === line) {
+      return
+    }
+    this.#loggedUnitCounts.set(api, line)
+    this.log(line)
+  }
+
   // User-facing half of melcloud-api's onAuthenticationLost contract:
   // nothing else can surface a background session loss (widgets have no
   // alert API and no webview is open when a sync loses the session).
@@ -1220,10 +1267,12 @@ export default class MELCloudApp extends App {
   }
 
   // Records the account as listed before its devices sync, so the units
-  // they look up are judged against a registry the account itself filled.
+  // they look up are judged against a registry the account itself
+  // filled, and logs what that listing holds against what Homey added.
   #onRegistrySync(api: Api): SyncCallback {
     return async (params) => {
       this.#listedApis.add(api)
+      this.#logUnitCounts(api)
       await this.#onSync(params)
     }
   }

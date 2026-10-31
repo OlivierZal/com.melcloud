@@ -25,6 +25,10 @@
     "accountEmpty": {
       "classic": "Dieses MELCloud Classic-Konto führt kein Gerät auf, das die App lesen kann. Wenn Ihre Geräte zu MELCloud Home umgezogen sind, fügen Sie sie stattdessen als [Home]-Geräte hinzu.",
       "home": "Dieses MELCloud Home-Konto führt kein Gerät auf, das die App lesen kann. Wenn Ihre Geräte noch in MELCloud Classic sind, fügen Sie sie stattdessen als [Classic]-Geräte hinzu."
+    },
+    "rejected": {
+      "classic": "MELCloud Classic hat diese Zugangsdaten abgelehnt. Ihr MELCloud Home-Konto ist angemeldet und führt Geräte auf: Fügen Sie sie stattdessen als [Home]-Geräte hinzu.",
+      "home": "MELCloud Home hat diese Zugangsdaten abgelehnt. Ihr MELCloud Classic-Konto ist angemeldet und führt Geräte auf: Fügen Sie sie stattdessen als [Classic]-Geräte hinzu."
     }
   },
   "settings": {
@@ -49,7 +53,10 @@
     "boolean": { "false": "Nein", "true": "Ja" },
     "devices": {
       "legend": "Einstellungen aller Geräte",
-      "none": "Fügen Sie ein Gerät hinzu, um alle App-Einstellungen freizuschalten!",
+      "none": {
+        "classic": "Angemeldet, aber es wurde noch kein Gerät zu Homey hinzugefügt. Fügen Sie Ihre Geräte über Gerät hinzufügen → MELCloud → die [Classic]-Geräte hinzu.",
+        "home": "Angemeldet, aber es wurde noch kein Gerät zu Homey hinzugefügt. Fügen Sie Ihre Geräte über Gerät hinzufügen → MELCloud → die [Home]-Geräte hinzu."
+      },
       "nothing": "Keine Änderung zum Anwenden."
     },
     "devicesAta": {

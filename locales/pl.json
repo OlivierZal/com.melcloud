@@ -36,7 +36,10 @@
     },
     "devices": {
       "legend": "Ustawienia wszystkich urządzeń",
-      "none": "Dodaj urządzenie, aby odblokować wszystkie ustawienia aplikacji!",
+      "none": {
+        "classic": "Zalogowano, ale do Homey nie dodano jeszcze żadnego urządzenia. Dodaj swoje urządzenia przez Dodaj urządzenie → MELCloud → urządzenia [Classic].",
+        "home": "Zalogowano, ale do Homey nie dodano jeszcze żadnego urządzenia. Dodaj swoje urządzenia przez Dodaj urządzenie → MELCloud → urządzenia [Home]."
+      },
       "nothing": "Brak zmian do zastosowania."
     },
     "devicesAta": {
@@ -164,6 +167,10 @@
     "accountEmpty": {
       "classic": "To konto MELCloud Classic nie wykazuje żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia zostały przeniesione do MELCloud Home, dodaj je zamiast tego jako urządzenia [Home].",
       "home": "To konto MELCloud Home nie wykazuje żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia nadal są w MELCloud Classic, dodaj je zamiast tego jako urządzenia [Classic]."
+    },
+    "rejected": {
+      "classic": "MELCloud Classic odrzucił te dane logowania. Twoje konto MELCloud Home jest zalogowane i wykazuje urządzenia: dodaj je zamiast tego jako urządzenia [Home].",
+      "home": "MELCloud Home odrzucił te dane logowania. Twoje konto MELCloud Classic jest zalogowane i wykazuje urządzenia: dodaj je zamiast tego jako urządzenia [Classic]."
     }
   }
 }

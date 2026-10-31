@@ -10,6 +10,13 @@ import type { Api, AuthenticationAPI } from '../types/api.mts'
 import type { ManifestDriver } from '../types/manifest.mts'
 import { type Homey, Driver } from '../lib/homey.mts'
 
+// The account a driver does NOT pair from: when its own credentials are
+// refused, that account's listing says where the units are.
+const OTHER_API: Readonly<Record<Api, Api>> = {
+  classic: 'home',
+  home: 'classic',
+}
+
 export abstract class BaseMELCloudDriver extends Driver {
   declare public readonly homey: Homey.Homey
 
@@ -82,7 +89,7 @@ export abstract class BaseMELCloudDriver extends Driver {
         return true
       } catch (error) {
         if (error instanceof AuthenticationError) {
-          return false
+          return this.#rejectCredentials()
         }
         // The library enforces a registry sync AFTER the server
         // accepted the sign-in and wraps that failure as its own TYPE:
@@ -97,5 +104,17 @@ export abstract class BaseMELCloudDriver extends Driver {
         throw error
       }
     })
+  }
+
+  // A refused credential fails the login — unless the OTHER account is
+  // signed in and lists units, in which case the wizard was most likely
+  // opened on the wrong dialect's driver: the thrown message names that
+  // account's devices, and Homey shows it in place of its generic
+  // failure.
+  #rejectCredentials(): boolean {
+    if (this.homey.app.hasListedUnits(OTHER_API[this.api])) {
+      throw new Error(this.homey.__(`pair.rejected.${this.api}`))
+    }
+    return false
   }
 }

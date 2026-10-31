@@ -155,16 +155,15 @@ interface AttentionInputs {
   readonly hasDevices: (api: Api) => boolean
 }
 
+// An account with nothing the device-scoped surfaces can show, never an
+// auth failure: the message names the account, so a user of one
+// platform never reads about the other's devices.
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
 
-  public constructor(homey: Homey, options?: ErrorOptions) {
-    super(homey.__('settings.devices.none'), options)
+  public constructor(homey: Homey, api: Api, options?: ErrorOptions) {
+    super(homey.__(`settings.devices.none.${api}`), options)
   }
-}
-
-class NoClassicDeviceError extends NoDeviceError {
-  public override name = 'NoClassicDeviceError'
 }
 
 // The zone/device settings fieldset (frost protection + holiday mode) is
@@ -1309,11 +1308,14 @@ class SettingsApp {
 
   readonly #homey: Homey
 
+  readonly #unpairedAccountsHint: HTMLDivElement
+
   readonly #zoneSettingsManager: ZoneSettingsManager
 
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#contentSection = getDiv('content')
+    this.#unpairedAccountsHint = getDiv('unpaired_accounts')
     this.#deviceSettingsManager = new DeviceSettingsManager(homey)
     this.#zoneSettingsManager = new ZoneSettingsManager(homey)
     this.#errorLogManager = new ErrorLogManager(homey)
@@ -1379,13 +1381,19 @@ class SettingsApp {
     }
   }
 
+  // Fills the zone panel from what the account lists, then checks what
+  // Homey holds of it: a signed-in account none of whose units is added
+  // yet is told where pairing starts — on either dialect, in its own
+  // words. The stale-list and empty-account alerts outrank that message
+  // (`#postLoginMessage`), each explaining why there is nothing to add.
   async #ensureDevicesForApi(api: Api): Promise<void> {
     if (api === 'classic') {
       await this.#fetchClassicBuildings()
     } else if (this.#hasHomeDevices()) {
       await this.#fetchHomeTargets()
-    } else {
-      throw new NoDeviceError(this.#homey)
+    }
+    if (!this.#hasDevices(api)) {
+      throw new NoDeviceError(this.#homey, api)
     }
   }
 
@@ -1395,7 +1403,7 @@ class SettingsApp {
       '/classic/buildings',
     )
     if (buildings.length === 0) {
-      throw new NoClassicDeviceError(this.#homey)
+      throw new NoDeviceError(this.#homey, 'classic')
     }
     this.#zoneSettingsManager.populateZoneOptions(buildings)
     // Not awaited, so it no longer blocks `ready()`: this only fills the
@@ -1560,6 +1568,7 @@ class SettingsApp {
       this.#authManager.getApisNeedingAttention(attention).length === 0,
     )
     this.#authManager.showEmptyAccountHint(attention.emptyApis)
+    this.#showUnpairedAccountsHint()
     this.#contentSection.hidden =
       !isClassicAuthenticated && !isHomeAuthenticated
     toggleZoneDeviceSettings(isClassicAuthenticated || isHomeAuthenticated)
@@ -1594,6 +1603,29 @@ class SettingsApp {
     this.#refreshVisibility()
   }
 
+  // In the device-settings area, one line per signed-in account that
+  // lists units none of which is added to Homey yet — refreshed at boot,
+  // after a sign-in and after a sign-out, never alerted at page open.
+  // Such an account is in order, so it takes neither the credentials
+  // form (#1608) nor an alert; a signed-out account has nothing to add
+  // from, and an emptied one is explained under the picker instead.
+  #showUnpairedAccountsHint(): void {
+    const apis = API_VALUES.filter(
+      (api) =>
+        this.#authState[api] &&
+        !this.#emptyState[api] &&
+        !this.#hasDevices(api),
+    )
+    this.#unpairedAccountsHint.replaceChildren(
+      ...apis.map((api) => {
+        const line = document.createElement('p')
+        line.textContent = this.#homey.__(`settings.devices.none.${api}`)
+        return line
+      }),
+    )
+    this.#unpairedAccountsHint.hidden = apis.length === 0
+  }
+
   async #validateInitialAuthStates(): Promise<void> {
     if (this.#authState.classic) {
       await this.#validateInitialClassicAuth()
@@ -1607,10 +1639,10 @@ class SettingsApp {
     try {
       await this.#fetchClassicBuildings()
     } catch (error) {
-      // No paired Classic device is not an auth failure: the session
-      // stays valid, only the device-scoped surfaces have nothing to
-      // show (their gates stay pristine on empty data).
-      if (!(error instanceof NoClassicDeviceError)) {
+      // A Classic account with nothing to show is not an auth failure:
+      // the session stays valid, only the device-scoped surfaces have
+      // nothing to show (their gates stay pristine on empty data).
+      if (!(error instanceof NoDeviceError)) {
         this.#authState.classic = false
       }
     }

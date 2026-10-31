@@ -36,7 +36,10 @@
     },
     "devices": {
       "legend": "Impostazioni di tutti i dispositivi",
-      "none": "Aggiungi un dispositivo per sbloccare tutte le impostazioni dell'app!",
+      "none": {
+        "classic": "Accesso effettuato, ma nessuna unità è ancora stata aggiunta a Homey. Aggiungi le tue unità con Aggiungi dispositivo → MELCloud → i dispositivi [Classic].",
+        "home": "Accesso effettuato, ma nessuna unità è ancora stata aggiunta a Homey. Aggiungi le tue unità con Aggiungi dispositivo → MELCloud → i dispositivi [Home]."
+      },
       "nothing": "Nessuna modifica da applicare."
     },
     "devicesAta": {
@@ -164,6 +167,10 @@
     "accountEmpty": {
       "classic": "Questo account MELCloud Classic non elenca alcuna unità che l'app riesca a leggere. Se le tue unità sono passate a MELCloud Home, aggiungile invece come dispositivi [Home].",
       "home": "Questo account MELCloud Home non elenca alcuna unità che l'app riesca a leggere. Se le tue unità sono ancora su MELCloud Classic, aggiungile invece come dispositivi [Classic]."
+    },
+    "rejected": {
+      "classic": "MELCloud Classic ha rifiutato queste credenziali. Il tuo account MELCloud Home è connesso ed elenca delle unità: aggiungile invece come dispositivi [Home].",
+      "home": "MELCloud Home ha rifiutato queste credenziali. Il tuo account MELCloud Classic è connesso ed elenca delle unità: aggiungile invece come dispositivi [Classic]."
     }
   }
 }
