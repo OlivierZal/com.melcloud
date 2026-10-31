@@ -309,12 +309,17 @@ coverage.
   no paired device of its own prefix), refreshed at boot, after a
   sign-in and after a sign-out, and never for a signed-out or an
   emptied account. Pairing carries the mirror hint: a credential
-  refusal (`AuthenticationError`) on a driver whose OTHER account is
-  signed in and lists units (`hasListedUnits(api)` on the app: listed
-  and non-empty) throws `pair.rejected.<api>` from the login handler —
+  refusal (`AuthenticationError`) on a driver the app judges
+  misdirected (`isPairingMisdirected(api)`, the ONE place the rule
+  lives: this account holds no paired device of its own prefix while
+  the OTHER account is signed in and lists units — listed and
+  non-empty) throws `pair.rejected.<api>` from the login handler —
   Athom documents that a thrown Error's message is shown in the
   wizard — because the wizard was most likely opened on the wrong
-  dialect's driver; any other refusal keeps answering false, and the
+  dialect's driver. An account with a paired device is in use whatever
+  the other lists, so a lost session or a mistyped password on it, and
+  every repair (the device under repair is its own), keep the plain
+  refusal; any other refusal keeps answering false, and the
   `RegistrySyncError` leg is untouched. Every one of these texts names
   its own dialect's driver prefix verbatim (`[Classic]`/`[Home]`) and
   never the other's, which the suites pin per locale
@@ -499,9 +504,12 @@ coverage.
   diagnostic report: it omits list bodies over 4 KiB, so this line is
   the only trace of how many units an account lists against how many
   Homey holds of it. `added` counts the devices of the drivers of that
-  account's prefix (`toApi`), the rule `#hasPairedDevices` shares; a
-  sync landing before the drivers are ready reads them as 0, and the
-  next sync logs the corrected pair.
+  account's prefix (`toApi`), the rule `#hasPairedDevices` shares, and
+  only once `homey.ready()` resolved: the restored session's first sync
+  lands during `App#onInit`, when `getDrivers()` exposes nothing, and a
+  report filed right after a restart must open on the real count. The
+  wait runs detached from the sync callback (the library awaits it),
+  and the dedupe folds the syncs queued meanwhile into one line.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
   (`getRequiredCapabilities`). `isOwner` gates NOTHING, on any driver:

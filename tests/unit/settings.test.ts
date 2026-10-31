@@ -1014,9 +1014,9 @@ describe('settings page', () => {
       expect(harness.alert).toHaveBeenCalledWith('settings.devices.none.home')
     })
 
-    // The Classic path used to fill the zone panel and say nothing: both
-    // dialects now tell a signed-in account none of whose units is added
-    // where pairing starts, each in its own words.
+    // A Classic sign-in whose account lists units none of which is added
+    // alerts where pairing starts, in Classic's own words, and still
+    // fills the zone panel from the buildings.
     it('should alert after a classic sign-in with no classic device', async () => {
       const harness = await bootPage({
         routes: {

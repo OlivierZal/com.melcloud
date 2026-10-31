@@ -70,6 +70,7 @@ import {
 import { getCapabilityFlowStep } from './lib/capability-flow-step.mts'
 import {
   API_DISPLAY_NAMES,
+  OTHER_API,
   UNKNOWN_DATE_PLACEHOLDER,
 } from './lib/constants.mts'
 import { type Homey, App } from './lib/homey.mts'
@@ -656,19 +657,22 @@ export default class MELCloudApp extends App {
     )
   }
 
-  // Whether this account is signed in and its listed registry holds at
-  // least one unit: it has something to pair, which is what the other
-  // dialect's pairing names when its own credentials are refused.
-  public hasListedUnits(api: Api): boolean {
-    return this.isRegistryListed(api) && this.#getListedUnitCount(api) > 0
-  }
-
   // Whether this account is signed in and its listed registry holds no
   // unit at all: the account itself answered that it has nothing to
   // offer, which is what pairing, the settings page and a Classic tile
   // explain, each for its own account only.
   public isAccountEmpty(api: Api): boolean {
     return this.isRegistryListed(api) && this.#getListedUnitCount(api) === 0
+  }
+
+  // Whether a credential refusal on this dialect's pairing most likely
+  // means the wizard was opened on the wrong driver: this account holds
+  // no device in Homey while the OTHER one is signed in and lists units.
+  // An account with a paired device is in use whatever the other lists —
+  // a lost session or a mistyped password on it is its own failure, and
+  // a repair always concerns such a device.
+  public isPairingMisdirected(api: Api): boolean {
+    return !this.#hasPairedDevices(api) && this.#hasListedUnits(OTHER_API[api])
   }
 
   // Whether the registry holds this account's own answer: the arbiter the
@@ -1098,6 +1102,12 @@ export default class MELCloudApp extends App {
     return this.getClassicFacade(zoneType, zoneId)
   }
 
+  // Whether this account is signed in and its listed registry holds at
+  // least one unit: it has something to pair.
+  #hasListedUnits(api: Api): boolean {
+    return this.isRegistryListed(api) && this.#getListedUnitCount(api) > 0
+  }
+
   #hasPairedDevices(api: Api): boolean {
     return this.#getPairedDevices(api).length > 0
   }
@@ -1218,8 +1228,12 @@ export default class MELCloudApp extends App {
   // One line per account when the pair (listed by the account, added in
   // Homey) changes, the first sync included: diagnostic reports omit
   // list bodies over 4 KiB, so this is the only trace of how many units
-  // an account lists — and a repeat would only pad the log.
-  #logUnitCounts(api: Api): void {
+  // an account lists — and a repeat would only pad the log. The count
+  // waits for readiness, as the session-lost gate does: the restored
+  // session's first sync lands during `App#onInit`, when `getDrivers()`
+  // still exposes nothing, and the report's first line must not read 0.
+  async #logUnitCounts(api: Api): Promise<void> {
+    await this.homey.ready()
     const line = formatUnitCounts(api, {
       added: this.#getPairedDevices(api).length,
       listed: this.#getListedUnitCount(api),
@@ -1268,11 +1282,17 @@ export default class MELCloudApp extends App {
 
   // Records the account as listed before its devices sync, so the units
   // they look up are judged against a registry the account itself
-  // filled, and logs what that listing holds against what Homey added.
+  // filled, and logs what that listing holds against what Homey added —
+  // detached, because the library awaits this callback and the count
+  // waits for readiness.
   #onRegistrySync(api: Api): SyncCallback {
     return async (params) => {
       this.#listedApis.add(api)
-      this.#logUnitCounts(api)
+      fireAndForget(
+        this.#logUnitCounts(api),
+        this,
+        'Unit count logging failed:',
+      )
       await this.#onSync(params)
     }
   }

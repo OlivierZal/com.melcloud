@@ -21,9 +21,9 @@ const {
   authenticateMock,
   getHomeDevicesByTypeMock,
   getHomeFacadeMock,
-  hasListedUnitsMock,
   isAccountEmptyMock,
   isAuthenticatedMock,
+  isPairingMisdirectedMock,
   setHandlerMock,
   showViewMock,
 } = await vi.hoisted(async () => {
@@ -41,12 +41,12 @@ vi.mock(import('homey'), async () => {
           app: {
             getHomeDevicesByType: getHomeDevicesByTypeMock,
             getHomeFacade: getHomeFacadeMock,
-            hasListedUnits: hasListedUnitsMock,
             homeApi: {
               authenticate: authenticateMock,
               isAuthenticated: isAuthenticatedMock,
             },
             isAccountEmpty: isAccountEmptyMock,
+            isPairingMisdirected: isPairingMisdirectedMock,
           },
         },
       }),

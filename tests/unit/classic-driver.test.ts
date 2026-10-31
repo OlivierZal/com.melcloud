@@ -19,16 +19,16 @@ import {
 
 const {
   authenticateMock,
-  hasListedUnitsMock,
   isAccountEmptyMock,
   isAuthenticatedMock,
+  isPairingMisdirectedMock,
   setHandlerMock,
   showViewMock,
 } = vi.hoisted(() => ({
   authenticateMock: vi.fn<(data: unknown) => Promise<boolean>>(),
-  hasListedUnitsMock: vi.fn<(api: string) => boolean>(() => false),
   isAccountEmptyMock: vi.fn<(api: string) => boolean>(() => false),
   isAuthenticatedMock: vi.fn<() => boolean>().mockReturnValue(false),
+  isPairingMisdirectedMock: vi.fn<(api: string) => boolean>(() => false),
   setHandlerMock:
     vi.fn<(event: string, handler: (...args: unknown[]) => unknown) => void>(),
   showViewMock: vi.fn<(view: string) => Promise<void>>(),
@@ -49,8 +49,8 @@ vi.mock(import('homey'), async () => {
         getDevicesByType: vi
           .fn<(type: number) => readonly unknown[]>()
           .mockReturnValue([]),
-        hasListedUnits: hasListedUnitsMock,
         isAccountEmpty: isAccountEmptyMock,
+        isPairingMisdirected: isPairingMisdirectedMock,
       },
     }
 
@@ -95,7 +95,7 @@ describe(ClassicMELCloudDriver, () => {
   testRejectedPairingHint(() => driver, {
     api: 'classic',
     authenticateMock,
-    hasListedUnitsMock,
+    isPairingMisdirectedMock,
     showViewMock,
   })
 

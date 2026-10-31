@@ -110,42 +110,40 @@ export const testEmptyAccountPairing = (
   })
 }
 
-// Refused credentials while the OTHER account is signed in and lists
-// units: the wizard was most likely opened on the wrong dialect's
-// driver, so the login handler throws the hint Homey shows in place of
-// its generic failure, naming that account's devices. Both dialects,
-// each consulting the other's listing.
+// Refused credentials on a pairing the app judges misdirected (this
+// account holds no device in Homey while the OTHER one is signed in and
+// lists units): the login handler throws the hint Homey shows in place
+// of its generic failure, naming that account's devices. Both dialects,
+// each asking about its own account.
 export const testRejectedPairingHint = (
   getDriver: () => { onPair: (session: PairSession) => Promise<void> },
   {
     api,
     authenticateMock,
-    hasListedUnitsMock,
+    isPairingMisdirectedMock,
     showViewMock,
   }: {
     readonly api: Api
     readonly authenticateMock: ReturnType<typeof vi.fn>
-    readonly hasListedUnitsMock: ReturnType<typeof vi.fn>
+    readonly isPairingMisdirectedMock: ReturnType<typeof vi.fn>
     readonly showViewMock: ReturnType<
       typeof vi.fn<(view: string) => Promise<void>>
     >
   },
 ): void => {
   describe('rejected pairing hint', () => {
-    it("should name the other account's devices when it lists units", async () => {
+    it("should name the other account's devices when the pairing is misdirected", async () => {
       authenticateMock.mockRejectedValue(
         new AuthenticationError('invalid credentials'),
       )
-      hasListedUnitsMock.mockReturnValueOnce(true)
+      isPairingMisdirectedMock.mockReturnValueOnce(true)
       const { reference, session } = createLoginSession(showViewMock)
       await getDriver().onPair(session)
 
       await expect(
         reference.loginHandler({ password: 'wrong', username: 'user' }),
       ).rejects.toThrow(`pair.rejected.${api}`)
-      expect(hasListedUnitsMock).toHaveBeenCalledWith(
-        api === 'home' ? 'classic' : 'home',
-      )
+      expect(isPairingMisdirectedMock).toHaveBeenCalledWith(api)
     })
   })
 }
@@ -332,6 +330,21 @@ export const testRepairing = (
         password: 'pass',
         username: 'user',
       })
+    })
+
+    // The device under repair is this account's, which the app's
+    // predicate reads as an account in use: a refused credential fails
+    // plainly, never with the wrong-driver hint.
+    it('should fail a refused repair credential plainly', async () => {
+      authenticateMock.mockRejectedValue(
+        new AuthenticationError('invalid credentials'),
+      )
+      const { reference, session } = createLoginSession(vi.fn())
+      await getDriver().onRepair(session)
+
+      await expect(
+        reference.loginHandler({ password: 'wrong', username: 'user' }),
+      ).resolves.toBe(false)
     })
   })
 }
