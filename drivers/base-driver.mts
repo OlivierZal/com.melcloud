@@ -82,7 +82,7 @@ export abstract class BaseMELCloudDriver extends Driver {
         return true
       } catch (error) {
         if (error instanceof AuthenticationError) {
-          return false
+          return this.#rejectCredentials()
         }
         // The library enforces a registry sync AFTER the server
         // accepted the sign-in and wraps that failure as its own TYPE:
@@ -97,5 +97,18 @@ export abstract class BaseMELCloudDriver extends Driver {
         throw error
       }
     })
+  }
+
+  // A refused credential fails the login — unless the app judges the
+  // wizard opened on the wrong dialect's driver (this account holds no
+  // device in Homey while the OTHER one is signed in and lists units):
+  // the thrown message names that account's devices, and Homey shows it
+  // in place of its generic failure. A repair never qualifies, since the
+  // device under repair is this account's.
+  #rejectCredentials(): boolean {
+    if (this.homey.app.isPairingMisdirected(this.api)) {
+      throw new Error(this.homey.__(`pair.rejected.${this.api}`))
+    }
+    return false
   }
 }

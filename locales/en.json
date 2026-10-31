@@ -36,7 +36,10 @@
     },
     "devices": {
       "legend": "All device settings",
-      "none": "Add a device to unlock all the app's settings!",
+      "none": {
+        "classic": "Signed in, but no unit has been added to Homey yet. Add your units with Add device → MELCloud → the [Classic] devices.",
+        "home": "Signed in, but no unit has been added to Homey yet. Add your units with Add device → MELCloud → the [Home] devices."
+      },
       "nothing": "No change to apply."
     },
     "devicesAta": {
@@ -164,6 +167,10 @@
     "accountEmpty": {
       "classic": "This MELCloud Classic account lists no unit the app can read. If your units moved to MELCloud Home, add them as [Home] devices instead.",
       "home": "This MELCloud Home account lists no unit the app can read. If your units are still on MELCloud Classic, add them as [Classic] devices instead."
+    },
+    "rejected": {
+      "classic": "MELCloud Classic rejected these credentials. Your MELCloud Home account is signed in and lists units: add them as [Home] devices instead.",
+      "home": "MELCloud Home rejected these credentials. Your MELCloud Classic account is signed in and lists units: add them as [Classic] devices instead."
     }
   }
 }

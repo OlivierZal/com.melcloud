@@ -25,6 +25,10 @@
     "accountEmpty": {
       "classic": "Esta cuenta de MELCloud Classic no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades se trasladaron a MELCloud Home, añádelas como dispositivos [Home] en su lugar.",
       "home": "Esta cuenta de MELCloud Home no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades siguen en MELCloud Classic, añádelas como dispositivos [Classic] en su lugar."
+    },
+    "rejected": {
+      "classic": "MELCloud Classic rechazó estas credenciales. Tu cuenta de MELCloud Home tiene la sesión iniciada e incluye unidades: añádelas como dispositivos [Home] en su lugar.",
+      "home": "MELCloud Home rechazó estas credenciales. Tu cuenta de MELCloud Classic tiene la sesión iniciada e incluye unidades: añádelas como dispositivos [Classic] en su lugar."
     }
   },
   "settings": {
@@ -49,7 +53,10 @@
     "boolean": { "false": "No", "true": "Sí" },
     "devices": {
       "legend": "Ajustes de todos los dispositivos",
-      "none": "¡Añade un dispositivo para desbloquear todas las configuraciones de la aplicación!",
+      "none": {
+        "classic": "Sesión iniciada, pero todavía no se ha añadido ninguna unidad a Homey. Añade tus unidades con Añadir dispositivo → MELCloud → los dispositivos [Classic].",
+        "home": "Sesión iniciada, pero todavía no se ha añadido ninguna unidad a Homey. Añade tus unidades con Añadir dispositivo → MELCloud → los dispositivos [Home]."
+      },
       "nothing": "No hay cambios que aplicar."
     },
     "devicesAta": {

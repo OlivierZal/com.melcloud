@@ -276,7 +276,10 @@ coverage.
   outranks incomplete (missing half the credential pair), which
   outranks EMPTY (signed in, its listed registry holding no unit at
   all): the first stopped serving devices, the second still does, and
-  the third is explained by the hint under the picker.
+  the third is explained by the hint under the picker. An account that
+  is signed in, LISTS units and has none of them added takes no
+  attention either: it is in order, and the no-device hint in the
+  device-settings area (below) says where pairing starts.
 - The empty-account hints (46.12.0) appear only in the account's OWN
   contexts, never globally, so a user of one platform never reads about
   the other's account: that dialect's pairing (`list_devices` throws
@@ -290,6 +293,51 @@ coverage.
   move to MELCloud Home, which every hint names; the wording stays "no
   unit the app can read", because a listing whose every entry the
   library dropped empties the registry too.
+- The no-device hints follow the same scoping for the opposite
+  condition: an account signed in and LISTING units, none of which is
+  added to Homey. On the settings page a sign-in to such an account
+  alerts `settings.devices.none.<api>` on BOTH dialects (until then the
+  Classic path filled the zone panel and said nothing, the Home path
+  alerted a dialect-blind "add a device"); the stale-list and
+  empty-account alerts outrank it in `#postLoginMessage`, each
+  explaining why there is nothing to add, and the one `NoDeviceError`
+  class carries the message, keyed by account — the boot validation
+  catches it to keep the Classic session valid, since an account with
+  nothing to show is not an auth failure. Page open never alerts:
+  the `unpaired_accounts` hint inside the "All device settings"
+  fieldset renders one line per such account (signed in, not empty,
+  no paired device of its own prefix), refreshed at boot, after a
+  sign-in and after a sign-out, and never for a signed-out or an
+  emptied account. BOTH settings-page hints are re-judged once more on
+  the app's `accountupdate` realtime, pushed by the unit-count change
+  gate (`#logUnitCounts`, the registry-sync bullet below) — on a count
+  change only, never per sync: the page re-probes
+  `/sessions/:api/empty` for both accounts and `/settings/devices`
+  (where the devices are), then re-renders the two hints and the
+  attention/collapse state exactly as at boot, alerting nothing (a
+  failed probe reads as not empty / no change) and never touching the
+  credentials fields. Without the push, a page opened before the
+  restored session's first sync landed probed an UNLISTED registry
+  (not empty by definition) and, with no paired device, no
+  `deviceupdate` would ever have refreshed it: the empty-account hint
+  could never appear, and the no-device hint that stood in could
+  never swap out. The same push, same scope, lives in com.heatzy —
+  twins. Pairing carries the mirror hint: a credential
+  refusal (`AuthenticationError`) on a driver the app judges
+  misdirected (`isPairingMisdirected(api)`, the ONE place the rule
+  lives: this account holds no paired device of its own prefix while
+  the OTHER account is signed in and lists units — listed and
+  non-empty) throws `pair.rejected.<api>` from the login handler —
+  Athom documents that a thrown Error's message is shown in the
+  wizard — because the wizard was most likely opened on the wrong
+  dialect's driver. An account with a paired device is in use whatever
+  the other lists, so a lost session or a mistyped password on it, and
+  every repair (the device under repair is its own), keep the plain
+  refusal; any other refusal keeps answering false, and the
+  `RegistrySyncError` leg is untouched. Every one of these texts names
+  its own dialect's driver prefix verbatim (`[Classic]`/`[Home]`) and
+  never the other's, which the suites pin per locale
+  (`tests/locales.ts`).
 - Settings-CSS sharing — VERDICT (2026-08, after the `./dom` adoption):
   the cascade fixes STAY LOCAL, in all three apps. Two independent
   reasons, either sufficient. (1) The kit ships no stylesheet and
@@ -331,10 +379,11 @@ coverage.
 
 - Driver ids are a store compat contract: Home drivers are namespaced
   `home-*`, Classic ids are bare — and that prefix IS the API
-  membership rule. `app.mts` (`#hasPairedDevices`) and the settings
-  page (`toApi`) both derive an id's API from it; no list of driver
-  ids per API exists anywhere, so a new driver joins its API by its id
-  alone. Only the extension link keeps an explicit pair
+  membership rule. `app.mts` (`toApi`, behind `#getPairedDevices` —
+  the session-lost gate and the unit-count log line) and the settings
+  page (its own `toApi`) both derive an id's API from it; no list of
+  driver ids per API exists anywhere, so a new driver joins its API by
+  its id alone. Only the extension link keeps an explicit pair
   (`ATA_DRIVER_IDS`), because it targets the two air-to-air drivers
   specifically.
 - Each API side has an intermediate driver/device base under `drivers/`
@@ -424,7 +473,9 @@ coverage.
   app-API handler (`api.mts`) answers `isDeviceListStale: true`
   rather than rejecting, the pairing handler
   (`drivers/base-driver.mts`) continues to the device list, and
-  ANYTHING else is a login failure. The credential rejection is keyed
+  ANYTHING else is a login failure (a refused credential answers
+  false, or throws `pair.rejected.<api>` when the OTHER account lists
+  units — the no-device hints, above). The credential rejection is keyed
   PER API (`settings.authenticate.rejected.{classic,home}`, the
   `notifications.sessionRestored.*` shape, `__name__` still the display
   name) so the alert can say how to switch: until 46.11.0 the API
@@ -458,6 +509,26 @@ coverage.
   otherwise destructure `undefined` and throw. That default is
   load-bearing; api-core 1.3.0 survived melcloud-api's 57.0.0 revert,
   so the fact stands.
+- The per-account wrapper around it (`#onRegistrySync`) logs ONE line
+  per change of the pair it can see, the first sync included and
+  identical counts never again:
+  `MELCloud Classic: 1 unit listed, 0 added in Homey` (the
+  `API_DISPLAY_NAMES` of `lib/constants.mts`, singular and plural
+  handled, never JSON). The reason is the
+  diagnostic report: it omits list bodies over 4 KiB, so this line is
+  the only trace of how many units an account lists against how many
+  Homey holds of it. `added` counts the devices of the drivers of that
+  account's prefix (`toApi`), the rule `#hasPairedDevices` shares, and
+  only once `homey.ready()` resolved: the restored session's first sync
+  lands during `App#onInit`, when `getDrivers()` exposes nothing, and a
+  report filed right after a restart must open on the real count. The
+  wait runs detached from the sync callback (the library awaits it),
+  and the dedupe folds the syncs queued meanwhile into one line. The
+  same change gate pushes the `accountupdate` realtime the settings
+  page's account hints listen to (the no-device hints bullet above):
+  one event per line written — never a poke per sync —, so an open
+  page hears the restored session's first sync land, and a device
+  paired while it is open.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
   (`getRequiredCapabilities`). `isOwner` gates NOTHING, on any driver:

@@ -36,7 +36,10 @@
     },
     "devices": {
       "legend": "모든 기기 설정",
-      "none": "기기를 추가하여 모든 앱 설정을 잠금 해제하세요!",
+      "none": {
+        "classic": "로그인되었지만 Homey에 추가된 기기가 아직 없습니다. 기기 추가 → MELCloud → [Classic] 기기에서 기기를 추가하세요.",
+        "home": "로그인되었지만 Homey에 추가된 기기가 아직 없습니다. 기기 추가 → MELCloud → [Home] 기기에서 기기를 추가하세요."
+      },
       "nothing": "적용할 변경 사항이 없습니다."
     },
     "devicesAta": {
@@ -164,6 +167,10 @@
     "accountEmpty": {
       "classic": "이 MELCloud Classic 계정에는 앱이 읽을 수 있는 기기가 없습니다. 기기가 MELCloud Home으로 이전되었다면 대신 [Home] 기기로 추가하세요.",
       "home": "이 MELCloud Home 계정에는 앱이 읽을 수 있는 기기가 없습니다. 기기가 아직 MELCloud Classic에 있다면 대신 [Classic] 기기로 추가하세요."
+    },
+    "rejected": {
+      "classic": "MELCloud Classic이(가) 이 자격 증명을 거부했습니다. MELCloud Home 계정은 로그인되어 있고 기기가 있습니다. 대신 [Home] 기기로 추가하세요.",
+      "home": "MELCloud Home이(가) 이 자격 증명을 거부했습니다. MELCloud Classic 계정은 로그인되어 있고 기기가 있습니다. 대신 [Classic] 기기로 추가하세요."
     }
   }
 }

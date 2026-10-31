@@ -7,8 +7,10 @@ import { BaseMELCloudDriver } from '../../drivers/base-driver.mts'
 import {
   testEmptyAccountPairing,
   testPairing,
+  testRejectedPairingHint,
   testRepairing,
 } from '../driver-descriptors.ts'
+import { locales } from '../locales.ts'
 import { createListDevicesSession } from '../pair-session.ts'
 import HomeMELCloudDriverAta from '../../drivers/home-melcloud/driver.mts'
 import { createInstance } from './create-test-instance.ts'
@@ -19,6 +21,7 @@ const {
   getHomeFacadeMock,
   isAccountEmptyMock,
   isAuthenticatedMock,
+  isPairingMisdirectedMock,
   setHandlerMock,
   showViewMock,
 } = await vi.hoisted(async () => {
@@ -39,6 +42,7 @@ vi.mock(import('homey'), async () => {
           isAuthenticated: isAuthenticatedMock,
         },
         isAccountEmpty: isAccountEmptyMock,
+        isPairingMisdirected: isPairingMisdirectedMock,
       },
     }
 
@@ -95,6 +99,32 @@ describe(BaseMELCloudDriver, () => {
     setHandlerMock,
     showViewMock,
   })
+
+  testRejectedPairingHint(() => driver, {
+    api: 'home',
+    authenticateMock,
+    isPairingMisdirectedMock,
+    showViewMock,
+  })
+
+  // The hint sends the user to the OTHER dialect's drivers, whose names
+  // carry a language-neutral prefix: every locale must spell that prefix
+  // verbatim, and never the refused dialect's own.
+  it.each(Object.entries(locales))(
+    'keeps the %s rejected-pairing hints on the other dialect',
+    (_locale, { pair }) => {
+      const { classic, home } = pair.rejected
+
+      expect(classic).toContain('MELCloud Classic')
+      expect(classic).toContain('MELCloud Home')
+      expect(classic).toContain('[Home]')
+      expect(classic).not.toContain('[Classic]')
+      expect(home).toContain('MELCloud Home')
+      expect(home).toContain('MELCloud Classic')
+      expect(home).toContain('[Classic]')
+      expect(home).not.toContain('[Home]')
+    },
+  )
 
   describe('device discovery', () => {
     it('should discover devices on list_devices handler', async () => {

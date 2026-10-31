@@ -7,6 +7,7 @@ import { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import {
   testEmptyAccountPairing,
   testPairing,
+  testRejectedPairingHint,
   testRepairing,
 } from '../driver-descriptors.ts'
 import { createListDevicesSession } from '../pair-session.ts'
@@ -20,12 +21,14 @@ const {
   authenticateMock,
   isAccountEmptyMock,
   isAuthenticatedMock,
+  isPairingMisdirectedMock,
   setHandlerMock,
   showViewMock,
 } = vi.hoisted(() => ({
   authenticateMock: vi.fn<(data: unknown) => Promise<boolean>>(),
   isAccountEmptyMock: vi.fn<(api: string) => boolean>(() => false),
   isAuthenticatedMock: vi.fn<() => boolean>().mockReturnValue(false),
+  isPairingMisdirectedMock: vi.fn<(api: string) => boolean>(() => false),
   setHandlerMock:
     vi.fn<(event: string, handler: (...args: unknown[]) => unknown) => void>(),
   showViewMock: vi.fn<(view: string) => Promise<void>>(),
@@ -47,6 +50,7 @@ vi.mock(import('homey'), async () => {
           .fn<(type: number) => readonly unknown[]>()
           .mockReturnValue([]),
         isAccountEmpty: isAccountEmptyMock,
+        isPairingMisdirected: isPairingMisdirectedMock,
       },
     }
 
@@ -85,6 +89,13 @@ describe(ClassicMELCloudDriver, () => {
     authenticateMock,
     isAuthenticatedMock,
     setHandlerMock,
+    showViewMock,
+  })
+
+  testRejectedPairingHint(() => driver, {
+    api: 'classic',
+    authenticateMock,
+    isPairingMisdirectedMock,
     showViewMock,
   })
 

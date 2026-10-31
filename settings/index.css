@@ -4,9 +4,24 @@
   text-align-last: center;
 }
 
-/* The empty-account hint under the API picker */
-#empty_account {
+/* The account hints: an emptied account under the API picker, the
+   accounts with no unit added yet in the device-settings area — one
+   quiet register, one line per account. */
+#empty_account,
+#unpaired_accounts {
   font-size: var(--homey-font-size-small);
+  margin-block-start: var(--homey-su-1);
+}
+
+#unpaired_accounts {
+  margin-block-end: var(--homey-su-2);
+}
+
+#unpaired_accounts > p {
+  margin: 0;
+}
+
+#unpaired_accounts > p + p {
   margin-block-start: var(--homey-su-1);
 }
 

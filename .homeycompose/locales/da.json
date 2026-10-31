@@ -25,6 +25,10 @@
     "accountEmpty": {
       "classic": "Denne MELCloud Classic-konto viser ingen enhed, som appen kan læse. Hvis dine enheder er flyttet til MELCloud Home, skal du i stedet tilføje dem som [Home]-enheder.",
       "home": "Denne MELCloud Home-konto viser ingen enhed, som appen kan læse. Hvis dine enheder stadig er på MELCloud Classic, skal du i stedet tilføje dem som [Classic]-enheder."
+    },
+    "rejected": {
+      "classic": "MELCloud Classic afviste disse legitimationsoplysninger. Din MELCloud Home-konto er logget ind og viser enheder: tilføj dem i stedet som [Home]-enheder.",
+      "home": "MELCloud Home afviste disse legitimationsoplysninger. Din MELCloud Classic-konto er logget ind og viser enheder: tilføj dem i stedet som [Classic]-enheder."
     }
   },
   "settings": {
@@ -49,7 +53,10 @@
     "boolean": { "false": "Nej", "true": "Ja" },
     "devices": {
       "legend": "Indstillinger for alle enheder",
-      "none": "Tilføj en enhed for at låse alle appens indstillinger op!",
+      "none": {
+        "classic": "Logget ind, men der er endnu ikke tilføjet nogen enhed til Homey. Tilføj dine enheder via Tilføj enhed → MELCloud → [Classic]-enhederne.",
+        "home": "Logget ind, men der er endnu ikke tilføjet nogen enhed til Homey. Tilføj dine enheder via Tilføj enhed → MELCloud → [Home]-enhederne."
+      },
       "nothing": "Ingen ændringer at anvende."
     },
     "devicesAta": {

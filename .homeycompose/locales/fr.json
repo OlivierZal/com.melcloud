@@ -25,6 +25,10 @@
     "accountEmpty": {
       "classic": "Ce compte MELCloud Classic ne recense aucune unité que l'application puisse lire. Si vos unités sont passées sur MELCloud Home, ajoutez-les plutôt comme appareils [Home].",
       "home": "Ce compte MELCloud Home ne recense aucune unité que l'application puisse lire. Si vos unités sont toujours sur MELCloud Classic, ajoutez-les plutôt comme appareils [Classic]."
+    },
+    "rejected": {
+      "classic": "MELCloud Classic a refusé ces identifiants. Votre compte MELCloud Home est connecté et recense des unités : ajoutez-les plutôt comme appareils [Home].",
+      "home": "MELCloud Home a refusé ces identifiants. Votre compte MELCloud Classic est connecté et recense des unités : ajoutez-les plutôt comme appareils [Classic]."
     }
   },
   "settings": {
@@ -49,7 +53,10 @@
     "boolean": { "false": "Non", "true": "Oui" },
     "devices": {
       "legend": "Paramètres de tous les appareils",
-      "none": "Ajoutez un appareil pour déverrouiller tous les paramètres de l'appli !",
+      "none": {
+        "classic": "Connecté, mais aucune unité n'a encore été ajoutée à Homey. Ajoutez vos unités via Ajouter un appareil → MELCloud → les appareils [Classic].",
+        "home": "Connecté, mais aucune unité n'a encore été ajoutée à Homey. Ajoutez vos unités via Ajouter un appareil → MELCloud → les appareils [Home]."
+      },
       "nothing": "Aucun changement à appliquer."
     },
     "devicesAta": {

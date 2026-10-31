@@ -155,16 +155,15 @@ interface AttentionInputs {
   readonly hasDevices: (api: Api) => boolean
 }
 
+// An account with nothing the device-scoped surfaces can show, never an
+// auth failure: the message names the account, so a user of one
+// platform never reads about the other's devices.
 class NoDeviceError extends Error {
   public override name = 'NoDeviceError'
 
-  public constructor(homey: Homey, options?: ErrorOptions) {
-    super(homey.__('settings.devices.none'), options)
+  public constructor(homey: Homey, api: Api, options?: ErrorOptions) {
+    super(homey.__(`settings.devices.none.${api}`), options)
   }
-}
-
-class NoClassicDeviceError extends NoDeviceError {
-  public override name = 'NoClassicDeviceError'
 }
 
 // The zone/device settings fieldset (frost protection + holiday mode) is
@@ -769,10 +768,7 @@ class DeviceSettingsManager {
    */
   public async fetchDeviceSettings(): Promise<void> {
     try {
-      this.#deviceSettings = await homeyApiGet<DeviceSettings>(
-        this.#homey,
-        '/settings/devices',
-      )
+      await this.refreshDeviceSettings()
     } catch (error) {
       await this.#homey.alert(getErrorMessage(error))
     }
@@ -794,6 +790,17 @@ class DeviceSettingsManager {
       await this.#homey.alert(getErrorMessage(error))
       return {}
     }
+  }
+
+  // Where the devices are, as the app answers now — the read behind the
+  // page's `hasDevices`. Throws on failure, so the caller decides between
+  // alerting it (boot) and keeping what the page holds (the account
+  // hints).
+  public async refreshDeviceSettings(): Promise<void> {
+    this.#deviceSettings = await homeyApiGet<DeviceSettings>(
+      this.#homey,
+      '/settings/devices',
+    )
   }
 
   #alertNoChanges(elements: HTMLValueElement[], driverId?: string): void {
@@ -1309,11 +1316,14 @@ class SettingsApp {
 
   readonly #homey: Homey
 
+  readonly #unpairedAccountsHint: HTMLDivElement
+
   readonly #zoneSettingsManager: ZoneSettingsManager
 
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#contentSection = getDiv('content')
+    this.#unpairedAccountsHint = getDiv('unpaired_accounts')
     this.#deviceSettingsManager = new DeviceSettingsManager(homey)
     this.#zoneSettingsManager = new ZoneSettingsManager(homey)
     this.#errorLogManager = new ErrorLogManager(homey)
@@ -1367,6 +1377,13 @@ class SettingsApp {
         this.#homey.openURL('https://homey.app/a/com.mecloud.extension'),
       )
     })
+    // The app pushes this whenever an account's unit counts move — the
+    // only moments the account hints can change: the restored session's
+    // first sync landing after the page opened, a device added, a unit
+    // leaving the account.
+    this.#homey.on('accountupdate', () => {
+      fireAndForget(this.#refreshAccountHints())
+    })
   }
 
   #attentionInputs(): AttentionInputs {
@@ -1379,13 +1396,19 @@ class SettingsApp {
     }
   }
 
+  // Fills the zone panel from what the account lists, then checks what
+  // Homey holds of it: a signed-in account none of whose units is added
+  // yet is told where pairing starts — on either dialect, in its own
+  // words. The stale-list and empty-account alerts outrank that message
+  // (`#postLoginMessage`), each explaining why there is nothing to add.
   async #ensureDevicesForApi(api: Api): Promise<void> {
     if (api === 'classic') {
       await this.#fetchClassicBuildings()
     } else if (this.#hasHomeDevices()) {
       await this.#fetchHomeTargets()
-    } else {
-      throw new NoDeviceError(this.#homey)
+    }
+    if (!this.#hasDevices(api)) {
+      throw new NoDeviceError(this.#homey, api)
     }
   }
 
@@ -1395,7 +1418,7 @@ class SettingsApp {
       '/classic/buildings',
     )
     if (buildings.length === 0) {
-      throw new NoClassicDeviceError(this.#homey)
+      throw new NoDeviceError(this.#homey, 'classic')
     }
     this.#zoneSettingsManager.populateZoneOptions(buildings)
     // Not awaited, so it no longer blocks `ready()`: this only fills the
@@ -1405,6 +1428,15 @@ class SettingsApp {
     // MELCloud cloud round-trip (~350 ms on a Homey Pro 2019) and its
     // alert-on-failure would surface unprompted.
     fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
+  }
+
+  // Which accounts list no unit at all, as the app answers now.
+  async #fetchEmptyState(): Promise<Record<Api, boolean>> {
+    const [isClassicEmpty, isHomeEmpty] = await Promise.all([
+      this.#fetchIsAccountEmpty('classic'),
+      this.#fetchIsAccountEmpty('home'),
+    ])
+    return { classic: isClassicEmpty, home: isHomeEmpty }
   }
 
   // Home targets are appended after any Classic zones.
@@ -1548,6 +1580,29 @@ class SettingsApp {
     return failure
   }
 
+  // Re-judges both account hints and the attention state from the app's
+  // current answers, as the boot path does: which signed-in account lists
+  // nothing, and where the devices are. Nothing is alerted — a hint is an
+  // explanation — and the credentials fields are left alone.
+  async #refreshAccountHints(): Promise<void> {
+    const [emptyState] = await Promise.all([
+      this.#fetchEmptyState(),
+      this.#refreshDeviceSettings(),
+    ])
+    this.#emptyState = emptyState
+    this.#refreshVisibility()
+  }
+
+  // A failed re-read keeps the devices the page already knows of: the
+  // hints are explanations, never a reason for the page to alert.
+  async #refreshDeviceSettings(): Promise<void> {
+    try {
+      await this.#deviceSettingsManager.refreshDeviceSettings()
+    } catch {
+      // What the page holds still says where the devices are.
+    }
+  }
+
   #refreshVisibility(): void {
     const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
       this.#authState
@@ -1560,38 +1615,58 @@ class SettingsApp {
       this.#authManager.getApisNeedingAttention(attention).length === 0,
     )
     this.#authManager.showEmptyAccountHint(attention.emptyApis)
+    this.#showUnpairedAccountsHint()
     this.#contentSection.hidden =
       !isClassicAuthenticated && !isHomeAuthenticated
     toggleZoneDeviceSettings(isClassicAuthenticated || isHomeAuthenticated)
   }
 
   async #run(): Promise<void> {
-    const [
-      settings,
-      isClassicAuthenticated,
-      isHomeAuthenticated,
-      isClassicEmpty,
-      isHomeEmpty,
-    ] = await Promise.all([
-      SettingsApp.#fetchHomeySettings(this.#homey),
-      homeyApiGet<boolean>(this.#homey, '/sessions/classic'),
-      homeyApiGet<boolean>(this.#homey, '/sessions/home'),
-      this.#fetchIsAccountEmpty('classic'),
-      this.#fetchIsAccountEmpty('home'),
-      trySetDocumentLanguage(async () =>
-        homeyApiGet<string>(this.#homey, '/language'),
-      ),
-      this.#deviceSettingsManager.fetchDeviceSettings(),
-    ])
+    const [settings, isClassicAuthenticated, isHomeAuthenticated, emptyState] =
+      await Promise.all([
+        SettingsApp.#fetchHomeySettings(this.#homey),
+        homeyApiGet<boolean>(this.#homey, '/sessions/classic'),
+        homeyApiGet<boolean>(this.#homey, '/sessions/home'),
+        this.#fetchEmptyState(),
+        trySetDocumentLanguage(async () =>
+          homeyApiGet<string>(this.#homey, '/language'),
+        ),
+        this.#deviceSettingsManager.fetchDeviceSettings(),
+      ])
     this.#authState = {
       classic: isClassicAuthenticated,
       home: isHomeAuthenticated,
     }
-    this.#emptyState = { classic: isClassicEmpty, home: isHomeEmpty }
+    this.#emptyState = emptyState
     await this.#initCredentialFields(settings)
     this.#addEventListeners()
     await this.#validateInitialAuthStates()
     this.#refreshVisibility()
+  }
+
+  // In the device-settings area, one line per signed-in account that
+  // lists units none of which is added to Homey yet — refreshed at boot,
+  // after a sign-in, after a sign-out and on the app's `accountupdate`
+  // (a device added while the page is open takes the line away), never
+  // alerted at page open.
+  // Such an account is in order, so it takes neither the credentials
+  // form (#1608) nor an alert; a signed-out account has nothing to add
+  // from, and an emptied one is explained under the picker instead.
+  #showUnpairedAccountsHint(): void {
+    const apis = API_VALUES.filter(
+      (api) =>
+        this.#authState[api] &&
+        !this.#emptyState[api] &&
+        !this.#hasDevices(api),
+    )
+    this.#unpairedAccountsHint.replaceChildren(
+      ...apis.map((api) => {
+        const line = document.createElement('p')
+        line.textContent = this.#homey.__(`settings.devices.none.${api}`)
+        return line
+      }),
+    )
+    this.#unpairedAccountsHint.hidden = apis.length === 0
   }
 
   async #validateInitialAuthStates(): Promise<void> {
@@ -1607,10 +1682,10 @@ class SettingsApp {
     try {
       await this.#fetchClassicBuildings()
     } catch (error) {
-      // No paired Classic device is not an auth failure: the session
-      // stays valid, only the device-scoped surfaces have nothing to
-      // show (their gates stay pristine on empty data).
-      if (!(error instanceof NoClassicDeviceError)) {
+      // A Classic account with nothing to show is not an auth failure:
+      // the session stays valid, only the device-scoped surfaces have
+      // nothing to show (their gates stay pristine on empty data).
+      if (!(error instanceof NoDeviceError)) {
         this.#authState.classic = false
       }
     }

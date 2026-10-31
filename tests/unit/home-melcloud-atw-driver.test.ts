@@ -23,6 +23,7 @@ const {
   getHomeFacadeMock,
   isAccountEmptyMock,
   isAuthenticatedMock,
+  isPairingMisdirectedMock,
   setHandlerMock,
   showViewMock,
 } = await vi.hoisted(async () => {
@@ -45,6 +46,7 @@ vi.mock(import('homey'), async () => {
               isAuthenticated: isAuthenticatedMock,
             },
             isAccountEmpty: isAccountEmptyMock,
+            isPairingMisdirected: isPairingMisdirectedMock,
           },
         },
       }),

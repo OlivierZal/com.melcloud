@@ -34,6 +34,8 @@ This app integrates [MELCloud](https://app.melcloud.com/) and [MELCloud Home](ht
 
 Moved from MELCloud to MELCloud Home? Select Home in the app settings, sign in with your MELCloud Home account, then add your units again as \[Home\] devices. A MELCloud Classic account that no longer lists any unit says so on its devices, in pairing and in the settings.
 
+Signed in, but your units are not in Homey yet? The app settings say so and point to Add device → MELCloud → the \[Classic\] or \[Home\] devices of your account. A pairing wizard that refuses your credentials, when this account has no device in Homey yet and your other MELCloud account is signed in and lists units, tells you to add them as that account's devices instead.
+
 ## Supported languages
 
 Arabic, Danish, Dutch, English, French, German, Italian, Korean, Norwegian, Polish, Russian, Spanish, Swedish.

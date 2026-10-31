@@ -25,6 +25,10 @@
     "accountEmpty": {
       "classic": "Dit MELCloud Classic-account vermeldt geen enkele unit die de app kan lezen. Zijn je units naar MELCloud Home verhuisd, voeg ze dan in plaats daarvan toe als [Home]-apparaten.",
       "home": "Dit MELCloud Home-account vermeldt geen enkele unit die de app kan lezen. Staan je units nog in MELCloud Classic, voeg ze dan in plaats daarvan toe als [Classic]-apparaten."
+    },
+    "rejected": {
+      "classic": "MELCloud Classic heeft deze inloggegevens geweigerd. Je MELCloud Home-account is ingelogd en vermeldt units: voeg ze in plaats daarvan toe als [Home]-apparaten.",
+      "home": "MELCloud Home heeft deze inloggegevens geweigerd. Je MELCloud Classic-account is ingelogd en vermeldt units: voeg ze in plaats daarvan toe als [Classic]-apparaten."
     }
   },
   "settings": {
@@ -49,7 +53,10 @@
     "boolean": { "false": "Nee", "true": "Ja" },
     "devices": {
       "legend": "Instellingen van alle apparaten",
-      "none": "Voeg een apparaat toe om alle app-instellingen te ontgrendelen!",
+      "none": {
+        "classic": "Ingelogd, maar er is nog geen unit aan Homey toegevoegd. Voeg je units toe via Apparaat toevoegen → MELCloud → de [Classic]-apparaten.",
+        "home": "Ingelogd, maar er is nog geen unit aan Homey toegevoegd. Voeg je units toe via Apparaat toevoegen → MELCloud → de [Home]-apparaten."
+      },
       "nothing": "Geen wijziging om toe te passen."
     },
     "devicesAta": {

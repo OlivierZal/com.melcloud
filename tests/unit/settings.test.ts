@@ -19,6 +19,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { DeviceSettings } from '../../types/device-settings.mts'
 import { start } from '../../settings/index.mts'
+import { locales } from '../locales.ts'
 
 // A plain relative path: under the happy-dom environment
 // `import.meta.url` is an http URL the fs module refuses.
@@ -418,6 +419,12 @@ const lastCallBody = (harness: Harness, key: string): unknown => {
 
 const calledPaths = (harness: Harness): string[] =>
   harness.api.mock.calls.map(([method, path]) => `${method} ${path}`)
+
+// The no-device hint's lines, one per account it names.
+const hintLines = (): (string | null)[] =>
+  [...getDiv('unpaired_accounts').querySelectorAll('p')].map(
+    ({ textContent }) => textContent,
+  )
 
 // Route the paged error-log fetches (their query strings vary by page)
 // while every other route keeps its default answer.
@@ -1004,7 +1011,40 @@ describe('settings page', () => {
       getButton('authenticate').click()
       await settleDetached()
 
-      expect(harness.alert).toHaveBeenCalledWith('settings.devices.none')
+      expect(harness.alert).toHaveBeenCalledWith('settings.devices.none.home')
+    })
+
+    // A Classic sign-in whose account lists units none of which is added
+    // alerts where pairing starts, in Classic's own words, and still
+    // fills the zone panel from the buildings.
+    it('should alert after a classic sign-in with no classic device', async () => {
+      const harness = await bootPage({
+        routes: {
+          ...defaultRoutes(),
+          'GET /sessions/classic': false,
+          'GET /settings/devices': {},
+        },
+      })
+      commit(getSelect('api'), 'classic')
+      commit(getInput('username'), 'user@example.com')
+      commit(getInput('password'), 'secret')
+      swapRoutes(harness, defaultRoutes())
+      getButton('authenticate').click()
+      await settleDetached()
+      await settleDetached()
+
+      expect(harness.alert).toHaveBeenCalledWith(
+        'settings.devices.none.classic',
+      )
+      expect(harness.alert).not.toHaveBeenCalledWith(
+        'settings.devices.none.home',
+      )
+      // The zone panel is filled from the account's buildings regardless.
+      expect(getSelect('zones').value).toBe('buildings_1')
+      expect(getDiv('unpaired_accounts').hidden).toBe(false)
+      expect(getDiv('unpaired_accounts').textContent).toBe(
+        'settings.devices.none.classic',
+      )
     })
 
     it('should alert verbatim when the target load fails', async () => {
@@ -1073,7 +1113,9 @@ describe('settings page', () => {
       expect(harness.alert).toHaveBeenCalledWith(
         'settings.authenticate.staleDevices',
       )
-      expect(harness.alert).not.toHaveBeenCalledWith('settings.devices.none')
+      expect(harness.alert).not.toHaveBeenCalledWith(
+        'settings.devices.none.home',
+      )
     })
 
     // An account in use whose session lists no unit at all is a chore:
@@ -1114,6 +1156,8 @@ describe('settings page', () => {
 
       expect(getDetails('authentication').open).toBe(false)
       expect(getDiv('empty_account').hidden).toBe(false)
+      // An emptied account has nothing to add: no no-device hint either.
+      expect(getDiv('unpaired_accounts').hidden).toBe(true)
 
       commit(getSelect('api'), 'home')
 
@@ -1156,8 +1200,12 @@ describe('settings page', () => {
       expect(harness.alert).toHaveBeenCalledWith(
         'settings.authenticate.emptyAccount.home',
       )
-      expect(harness.alert).not.toHaveBeenCalledWith('settings.devices.none')
+      expect(harness.alert).not.toHaveBeenCalledWith(
+        'settings.devices.none.home',
+      )
       expect(getDiv('empty_account').hidden).toBe(false)
+      // Nothing to add from an account that lists nothing.
+      expect(getDiv('unpaired_accounts').hidden).toBe(true)
     })
 
     it('should drop the hint once the emptied account is reset', async () => {
@@ -2104,6 +2152,188 @@ describe('settings page', () => {
 
       expect(getInput('overheat_min').value).toBe('')
       expect(getButton('apply_overheat_protection').disabled).toBe(true)
+    })
+  })
+
+  // A signed-in account that lists units none of which is added to Homey
+  // is in order: it takes no alert at page open and never the credentials
+  // form (#1608) — a hint in the device-settings area says where pairing
+  // starts, per account, and follows every sign-in and sign-out.
+  describe('unpaired account hints', () => {
+    it('should hint at boot without alerting or opening the form', async () => {
+      const harness = await bootPage({
+        routes: { ...defaultRoutes(), 'GET /settings/devices': {} },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(harness.alert).not.toHaveBeenCalled()
+      expect(getDetails('authentication').open).toBe(false)
+      expect(getDiv('content').hidden).toBe(false)
+      expect(getDiv('unpaired_accounts').hidden).toBe(false)
+      expect(hintLines()).toStrictEqual(['settings.devices.none.classic'])
+    })
+
+    it('should hint for the accounts with nothing added only', async () => {
+      await bootPage({
+        routes: {
+          ...defaultRoutes(),
+          'GET /home/targets': homeTargetsFixture(),
+          'GET /sessions/home': true,
+          'GET /settings/devices': { 'home-melcloud': { always_on: true } },
+        },
+      })
+
+      // Home has its devices, Classic is signed in with none of its own.
+      expect(hintLines()).toStrictEqual(['settings.devices.none.classic'])
+    })
+
+    it('should hint once per account when neither has a unit added', async () => {
+      await bootPage({
+        routes: {
+          ...defaultRoutes(),
+          'GET /sessions/home': true,
+          'GET /settings/devices': {},
+        },
+      })
+
+      expect(hintLines()).toStrictEqual([
+        'settings.devices.none.home',
+        'settings.devices.none.classic',
+      ])
+    })
+
+    it('should never hint for a signed-out account', async () => {
+      await bootPage({
+        routes: {
+          ...defaultRoutes(),
+          'GET /sessions/classic': false,
+          'GET /settings/devices': {},
+        },
+      })
+
+      expect(getDiv('unpaired_accounts').hidden).toBe(true)
+      expect(hintLines()).toStrictEqual([])
+    })
+
+    it('should drop the hint once the account signs out', async () => {
+      await bootPage({
+        routes: { ...defaultRoutes(), 'GET /settings/devices': {} },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(getDiv('unpaired_accounts').hidden).toBe(false)
+
+      getButton('reset_credentials').click()
+      await settleDetached()
+
+      expect(getDiv('unpaired_accounts').hidden).toBe(true)
+    })
+
+    // The hints send the user to their own dialect's drivers, whose names
+    // carry a language-neutral prefix: every locale must spell that prefix
+    // verbatim, and never the other dialect's — a Home-only user never
+    // reads about Classic, and vice versa.
+    it.each(Object.entries(locales))(
+      'keeps the %s no-device hints on their own driver prefix',
+      (_locale, { settings }) => {
+        const { classic, home } = settings.devices.none
+
+        expect(classic).toContain('[Classic]')
+        expect(classic).not.toContain('[Home]')
+        expect(home).toContain('[Home]')
+        expect(home).not.toContain('[Classic]')
+      },
+    )
+  })
+
+  // The app pushes `accountupdate` whenever an account's unit counts
+  // move, the only moments the hints can change: the page re-probes both
+  // and re-judges the attention state as the boot path does, never
+  // alerting — a hint is an explanation.
+  describe('account updates', () => {
+    // The page opened across the restored session's first sync: the boot
+    // probe read an unlisted registry as not empty, so the no-device hint
+    // stood in; the sync lands, the account turns out to list nothing,
+    // and the hints swap — with no alert and the form left alone.
+    it('should explain an account the first sync finds empty while the page is open', async () => {
+      const harness = await bootPage({
+        routes: { ...defaultRoutes(), 'GET /settings/devices': {} },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(getDiv('empty_account').hidden).toBe(true)
+      expect(getDiv('unpaired_accounts').hidden).toBe(false)
+
+      swapRoutes(harness, {
+        ...defaultRoutes(),
+        'GET /sessions/classic/empty': true,
+        'GET /settings/devices': {},
+      })
+      harness.emit('accountupdate')
+      await settleDetached()
+
+      expect(getDiv('empty_account').hidden).toBe(false)
+      expect(getDiv('empty_account').textContent).toBe(
+        'settings.authenticate.emptyAccount.classic',
+      )
+      expect(getDiv('unpaired_accounts').hidden).toBe(true)
+      expect(getInput('username').value).toBe('classic@example.com')
+      expect(harness.alert).not.toHaveBeenCalled()
+    })
+
+    it('should drop the no-device hint once a device is added while the page is open', async () => {
+      const harness = await bootPage({
+        routes: { ...defaultRoutes(), 'GET /settings/devices': {} },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(getDiv('unpaired_accounts').hidden).toBe(false)
+
+      swapRoutes(harness, defaultRoutes())
+      harness.emit('accountupdate')
+      await settleDetached()
+
+      expect(getDiv('unpaired_accounts').hidden).toBe(true)
+      expect(harness.alert).not.toHaveBeenCalled()
+    })
+
+    // A failed probe reads as "not empty" and a failed device read as "no
+    // change": the hints stand as they were, and nothing is alerted.
+    it('should keep the hints as they were when the re-probe fails', async () => {
+      const harness = await bootPage({
+        routes: { ...defaultRoutes(), 'GET /settings/devices': {} },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+      swapRoutes(
+        harness,
+        { ...defaultRoutes(), 'GET /settings/devices': {} },
+        {
+          'GET /sessions/classic/empty': new Error('probe down'),
+          'GET /sessions/home/empty': new Error('probe down'),
+          'GET /settings/devices': new Error('probe down'),
+        },
+      )
+      harness.emit('accountupdate')
+      await settleDetached()
+
+      expect(getDiv('empty_account').hidden).toBe(true)
+      expect(getDiv('unpaired_accounts').hidden).toBe(false)
+      expect(harness.alert).not.toHaveBeenCalled()
     })
   })
 })
