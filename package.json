@@ -42,7 +42,7 @@
     "@types/node": "^26.6.5",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^5.0.5",
-    "chart.js": "^4.5.1",
+    "chart.js": "^4.6.1",
     "esbuild": "^0.28.2",
     "eslint": "^10.13.0",
     "happy-dom": "21.0.4",
