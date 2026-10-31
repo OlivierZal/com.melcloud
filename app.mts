@@ -1232,6 +1232,11 @@ export default class MELCloudApp extends App {
   // waits for readiness, as the session-lost gate does: the restored
   // session's first sync lands during `App#onInit`, when `getDrivers()`
   // still exposes nothing, and the report's first line must not read 0.
+  // The same change gate pushes `accountupdate` to the settings page,
+  // whose account hints can only move when these counts do: a page
+  // opened across the restored session's first sync hears it land, and
+  // a device added while the page is open takes the no-device hint away
+  // — one event per line written, never one per sync.
   async #logUnitCounts(api: Api): Promise<void> {
     await this.homey.ready()
     const line = formatUnitCounts(api, {
@@ -1243,6 +1248,7 @@ export default class MELCloudApp extends App {
     }
     this.#loggedUnitCounts.set(api, line)
     this.log(line)
+    this.homey.api.realtime('accountupdate', null)
   }
 
   // User-facing half of melcloud-api's onAuthenticationLost contract:

@@ -768,10 +768,7 @@ class DeviceSettingsManager {
    */
   public async fetchDeviceSettings(): Promise<void> {
     try {
-      this.#deviceSettings = await homeyApiGet<DeviceSettings>(
-        this.#homey,
-        '/settings/devices',
-      )
+      await this.refreshDeviceSettings()
     } catch (error) {
       await this.#homey.alert(getErrorMessage(error))
     }
@@ -793,6 +790,17 @@ class DeviceSettingsManager {
       await this.#homey.alert(getErrorMessage(error))
       return {}
     }
+  }
+
+  // Where the devices are, as the app answers now — the read behind the
+  // page's `hasDevices`. Throws on failure, so the caller decides between
+  // alerting it (boot) and keeping what the page holds (the account
+  // hints).
+  public async refreshDeviceSettings(): Promise<void> {
+    this.#deviceSettings = await homeyApiGet<DeviceSettings>(
+      this.#homey,
+      '/settings/devices',
+    )
   }
 
   #alertNoChanges(elements: HTMLValueElement[], driverId?: string): void {
@@ -1369,6 +1377,13 @@ class SettingsApp {
         this.#homey.openURL('https://homey.app/a/com.mecloud.extension'),
       )
     })
+    // The app pushes this whenever an account's unit counts move — the
+    // only moments the account hints can change: the restored session's
+    // first sync landing after the page opened, a device added, a unit
+    // leaving the account.
+    this.#homey.on('accountupdate', () => {
+      fireAndForget(this.#refreshAccountHints())
+    })
   }
 
   #attentionInputs(): AttentionInputs {
@@ -1413,6 +1428,15 @@ class SettingsApp {
     // MELCloud cloud round-trip (~350 ms on a Homey Pro 2019) and its
     // alert-on-failure would surface unprompted.
     fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
+  }
+
+  // Which accounts list no unit at all, as the app answers now.
+  async #fetchEmptyState(): Promise<Record<Api, boolean>> {
+    const [isClassicEmpty, isHomeEmpty] = await Promise.all([
+      this.#fetchIsAccountEmpty('classic'),
+      this.#fetchIsAccountEmpty('home'),
+    ])
+    return { classic: isClassicEmpty, home: isHomeEmpty }
   }
 
   // Home targets are appended after any Classic zones.
@@ -1556,6 +1580,29 @@ class SettingsApp {
     return failure
   }
 
+  // Re-judges both account hints and the attention state from the app's
+  // current answers, as the boot path does: which signed-in account lists
+  // nothing, and where the devices are. Nothing is alerted — a hint is an
+  // explanation — and the credentials fields are left alone.
+  async #refreshAccountHints(): Promise<void> {
+    const [emptyState] = await Promise.all([
+      this.#fetchEmptyState(),
+      this.#refreshDeviceSettings(),
+    ])
+    this.#emptyState = emptyState
+    this.#refreshVisibility()
+  }
+
+  // A failed re-read keeps the devices the page already knows of: the
+  // hints are explanations, never a reason for the page to alert.
+  async #refreshDeviceSettings(): Promise<void> {
+    try {
+      await this.#deviceSettingsManager.refreshDeviceSettings()
+    } catch {
+      // What the page holds still says where the devices are.
+    }
+  }
+
   #refreshVisibility(): void {
     const { classic: isClassicAuthenticated, home: isHomeAuthenticated } =
       this.#authState
@@ -1575,28 +1622,22 @@ class SettingsApp {
   }
 
   async #run(): Promise<void> {
-    const [
-      settings,
-      isClassicAuthenticated,
-      isHomeAuthenticated,
-      isClassicEmpty,
-      isHomeEmpty,
-    ] = await Promise.all([
-      SettingsApp.#fetchHomeySettings(this.#homey),
-      homeyApiGet<boolean>(this.#homey, '/sessions/classic'),
-      homeyApiGet<boolean>(this.#homey, '/sessions/home'),
-      this.#fetchIsAccountEmpty('classic'),
-      this.#fetchIsAccountEmpty('home'),
-      trySetDocumentLanguage(async () =>
-        homeyApiGet<string>(this.#homey, '/language'),
-      ),
-      this.#deviceSettingsManager.fetchDeviceSettings(),
-    ])
+    const [settings, isClassicAuthenticated, isHomeAuthenticated, emptyState] =
+      await Promise.all([
+        SettingsApp.#fetchHomeySettings(this.#homey),
+        homeyApiGet<boolean>(this.#homey, '/sessions/classic'),
+        homeyApiGet<boolean>(this.#homey, '/sessions/home'),
+        this.#fetchEmptyState(),
+        trySetDocumentLanguage(async () =>
+          homeyApiGet<string>(this.#homey, '/language'),
+        ),
+        this.#deviceSettingsManager.fetchDeviceSettings(),
+      ])
     this.#authState = {
       classic: isClassicAuthenticated,
       home: isHomeAuthenticated,
     }
-    this.#emptyState = { classic: isClassicEmpty, home: isHomeEmpty }
+    this.#emptyState = emptyState
     await this.#initCredentialFields(settings)
     this.#addEventListeners()
     await this.#validateInitialAuthStates()
@@ -1605,7 +1646,9 @@ class SettingsApp {
 
   // In the device-settings area, one line per signed-in account that
   // lists units none of which is added to Homey yet — refreshed at boot,
-  // after a sign-in and after a sign-out, never alerted at page open.
+  // after a sign-in, after a sign-out and on the app's `accountupdate`
+  // (a device added while the page is open takes the line away), never
+  // alerted at page open.
   // Such an account is in order, so it takes neither the credentials
   // form (#1608) nor an alert; a signed-out account has nothing to add
   // from, and an emptied one is explained under the picker instead.

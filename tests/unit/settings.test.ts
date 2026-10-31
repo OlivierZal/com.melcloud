@@ -2251,4 +2251,89 @@ describe('settings page', () => {
       },
     )
   })
+
+  // The app pushes `accountupdate` whenever an account's unit counts
+  // move, the only moments the hints can change: the page re-probes both
+  // and re-judges the attention state as the boot path does, never
+  // alerting — a hint is an explanation.
+  describe('account updates', () => {
+    // The page opened across the restored session's first sync: the boot
+    // probe read an unlisted registry as not empty, so the no-device hint
+    // stood in; the sync lands, the account turns out to list nothing,
+    // and the hints swap — with no alert and the form left alone.
+    it('should explain an account the first sync finds empty while the page is open', async () => {
+      const harness = await bootPage({
+        routes: { ...defaultRoutes(), 'GET /settings/devices': {} },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(getDiv('empty_account').hidden).toBe(true)
+      expect(getDiv('unpaired_accounts').hidden).toBe(false)
+
+      swapRoutes(harness, {
+        ...defaultRoutes(),
+        'GET /sessions/classic/empty': true,
+        'GET /settings/devices': {},
+      })
+      harness.emit('accountupdate')
+      await settleDetached()
+
+      expect(getDiv('empty_account').hidden).toBe(false)
+      expect(getDiv('empty_account').textContent).toBe(
+        'settings.authenticate.emptyAccount.classic',
+      )
+      expect(getDiv('unpaired_accounts').hidden).toBe(true)
+      expect(getInput('username').value).toBe('classic@example.com')
+      expect(harness.alert).not.toHaveBeenCalled()
+    })
+
+    it('should drop the no-device hint once a device is added while the page is open', async () => {
+      const harness = await bootPage({
+        routes: { ...defaultRoutes(), 'GET /settings/devices': {} },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+
+      expect(getDiv('unpaired_accounts').hidden).toBe(false)
+
+      swapRoutes(harness, defaultRoutes())
+      harness.emit('accountupdate')
+      await settleDetached()
+
+      expect(getDiv('unpaired_accounts').hidden).toBe(true)
+      expect(harness.alert).not.toHaveBeenCalled()
+    })
+
+    // A failed probe reads as "not empty" and a failed device read as "no
+    // change": the hints stand as they were, and nothing is alerted.
+    it('should keep the hints as they were when the re-probe fails', async () => {
+      const harness = await bootPage({
+        routes: { ...defaultRoutes(), 'GET /settings/devices': {} },
+        storedSettings: {
+          password: 'classic-secret',
+          username: 'classic@example.com',
+        },
+      })
+      swapRoutes(
+        harness,
+        { ...defaultRoutes(), 'GET /settings/devices': {} },
+        {
+          'GET /sessions/classic/empty': new Error('probe down'),
+          'GET /sessions/home/empty': new Error('probe down'),
+          'GET /settings/devices': new Error('probe down'),
+        },
+      )
+      harness.emit('accountupdate')
+      await settleDetached()
+
+      expect(getDiv('empty_account').hidden).toBe(true)
+      expect(getDiv('unpaired_accounts').hidden).toBe(false)
+      expect(harness.alert).not.toHaveBeenCalled()
+    })
+  })
 })

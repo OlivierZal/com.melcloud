@@ -450,6 +450,10 @@ const unitCountLines = (
     .map(([line]) => line)
     .filter((line) => typeof line === 'string' && line.startsWith('MELCloud '))
 
+// The settings page's push, one per unit-count line written.
+const accountUpdates = (): number =>
+  mockRealtime.mock.calls.filter(([event]) => event === 'accountupdate').length
+
 const setupWidgetListeners = (): {
   mockRegisterAta: ReturnType<typeof vi.fn>
   mockRegisterCharts: ReturnType<typeof vi.fn>
@@ -1766,7 +1770,14 @@ describe('melCloudApp', () => {
   // Diagnostic reports omit list bodies over 4 KiB, so this line is the
   // only trace of how many units an account lists: one per account on
   // its first sync and on every change of the pair, never on a repeat.
+  // The same gate pushes `accountupdate` to the settings page, whose
+  // account hints can only move when these counts do — one push per
+  // line written.
   describe('unit counts', () => {
+    beforeEach(() => {
+      mockRealtime.mockClear()
+    })
+
     it("should log the listed and added counts on each account's first sync", async () => {
       const logMock = spyOnLog(app)
       mockApiInstance.registry.getDevices.mockReturnValue([
@@ -1783,6 +1794,8 @@ describe('melCloudApp', () => {
         'MELCloud Classic: 2 units listed, 1 added in Homey',
         'MELCloud Home: 1 unit listed, 0 added in Homey',
       ])
+      expect(mockRealtime).toHaveBeenCalledWith('accountupdate', null)
+      expect(accountUpdates()).toBe(2)
     })
 
     it('should not repeat unchanged counts', async () => {
@@ -1795,6 +1808,7 @@ describe('melCloudApp', () => {
       expect(unitCountLines(logMock)).toStrictEqual([
         'MELCloud Classic: 1 unit listed, 0 added in Homey',
       ])
+      expect(accountUpdates()).toBe(1)
     })
 
     // The restored session's first sync lands during `App#onInit`, when
@@ -1822,6 +1836,7 @@ describe('melCloudApp', () => {
       expect(unitCountLines(logMock)).toStrictEqual([
         'MELCloud Classic: 3 units listed, 3 added in Homey',
       ])
+      expect(accountUpdates()).toBe(1)
     })
 
     it('should log once for the syncs queued before the drivers are ready', async () => {
@@ -1834,13 +1849,16 @@ describe('melCloudApp', () => {
       await getSyncCallback()()
       await getSyncCallback()()
       const linesBeforeReady = unitCountLines(logMock)
+      const updatesBeforeReady = accountUpdates()
       resolve()
       await settleDetached()
 
       expect(linesBeforeReady).toStrictEqual([])
+      expect(updatesBeforeReady).toBe(0)
       expect(unitCountLines(logMock)).toStrictEqual([
         'MELCloud Classic: 1 unit listed, 0 added in Homey',
       ])
+      expect(accountUpdates()).toBe(1)
     })
 
     // Either side of the pair moving earns a line: a unit leaving the
@@ -1867,6 +1885,7 @@ describe('melCloudApp', () => {
         'MELCloud Classic: 0 units listed, 0 added in Homey',
         'MELCloud Classic: 0 units listed, 1 added in Homey',
       ])
+      expect(accountUpdates()).toBe(3)
     })
   })
 

@@ -308,7 +308,21 @@ coverage.
   fieldset renders one line per such account (signed in, not empty,
   no paired device of its own prefix), refreshed at boot, after a
   sign-in and after a sign-out, and never for a signed-out or an
-  emptied account. Pairing carries the mirror hint: a credential
+  emptied account. BOTH settings-page hints are re-judged once more on
+  the app's `accountupdate` realtime, pushed by the unit-count change
+  gate (`#logUnitCounts`, the registry-sync bullet below) — on a count
+  change only, never per sync: the page re-probes
+  `/sessions/:api/empty` for both accounts and `/settings/devices`
+  (where the devices are), then re-renders the two hints and the
+  attention/collapse state exactly as at boot, alerting nothing (a
+  failed probe reads as not empty / no change) and never touching the
+  credentials fields. Without the push, a page opened before the
+  restored session's first sync landed probed an UNLISTED registry
+  (not empty by definition) and, with no paired device, no
+  `deviceupdate` would ever have refreshed it: the empty-account hint
+  could never appear, and the no-device hint that stood in could
+  never swap out. The same push, same scope, lives in com.heatzy —
+  twins. Pairing carries the mirror hint: a credential
   refusal (`AuthenticationError`) on a driver the app judges
   misdirected (`isPairingMisdirected(api)`, the ONE place the rule
   lives: this account holds no paired device of its own prefix while
@@ -509,7 +523,12 @@ coverage.
   lands during `App#onInit`, when `getDrivers()` exposes nothing, and a
   report filed right after a restart must open on the real count. The
   wait runs detached from the sync callback (the library awaits it),
-  and the dedupe folds the syncs queued meanwhile into one line.
+  and the dedupe folds the syncs queued meanwhile into one line. The
+  same change gate pushes the `accountupdate` realtime the settings
+  page's account hints listen to (the no-device hints bullet above):
+  one event per line written — never a poke per sync —, so an open
+  page hears the restored session's first sync land, and a device
+  paired while it is open.
 - Home drivers compute capabilities per device from the facade — at
   pairing (`toDeviceDetails`) and again at device init
   (`getRequiredCapabilities`). `isOwner` gates NOTHING, on any driver:
