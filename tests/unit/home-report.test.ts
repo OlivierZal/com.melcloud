@@ -83,7 +83,7 @@ const point = (
 
 const NETWORK_FAILURE: ApiRequestError = { kind: 'network' }
 
-const mockFailingFetch = (failure = NETWORK_FAILURE): void => {
+const mockFailingFetch = (failure: ApiRequestError = NETWORK_FAILURE): void => {
   ensureDeviceMock.mockResolvedValue({
     getEnergySeries: vi
       .fn<(query: unknown) => Promise<unknown>>()
@@ -184,6 +184,36 @@ describe('home energy reports', () => {
         `Energy report fetch failed: Error: MELCloud request failed: network — caused by ${TRANSPORT_FAILURE_CHAIN}`,
       )
       expect(holdWarningMock).not.toHaveBeenCalled()
+    })
+
+    // Home's `not-found` is the other descriptor the SDK answers with no
+    // classified error: through `unwrapResult` the line keeps the
+    // wrapper `Error`, stack included, the plain descriptor as its cause.
+    it('should keep the wrapper error when the registry does not hold the unit', async () => {
+      cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
+      const descriptor: ApiRequestError = {
+        entityId: 'home-1',
+        kind: 'not-found',
+      }
+      mockFailingFetch(descriptor)
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        regularConfig,
+        ATA_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      expect(errorMock).toHaveBeenCalledWith(
+        'Energy report fetch failed:',
+        expect.any(Error),
+      )
+      expect(errorMock).toHaveBeenCalledWith(
+        'Energy report fetch failed:',
+        expect.objectContaining({
+          cause: descriptor,
+          message: 'MELCloud request failed: not-found',
+        }),
+      )
     })
 
     it('should keep the error object when a capability write throws', async () => {

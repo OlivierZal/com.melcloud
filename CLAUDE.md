@@ -707,8 +707,8 @@ coverage.
   instants `Temporal.Instant`. The line is for the diagnostic log
   alone: no setting, no route, no locale.
 - The app's own cloud-failure lines take the SDK's `logFailure` form
-  (api-core 2.3.1, re-exported by melcloud-api 60.4.0 beside the error
-  family): a failure the SDK has a class for — an `HttpError`, the
+  (api-core's helper, re-exported by melcloud-api since 60.4.0 beside
+  the error family): a failure the SDK has a class for — an `HttpError`, the
   `APIError` family, a transport failure (`TypeError: fetch failed`, a
   `TimeoutError`), a caller's abort — anywhere in its `cause` chain is
   ONE `error` line, the label then the chain outermost first —
@@ -728,10 +728,21 @@ coverage.
   (`lib/unwrap-result.mts`) hands the line the error the SDK classified
   — `unwrapResult` chains its `Error` to it — and the descriptor itself
   only for the two kinds the SDK answers without one (`rate-limited`,
-  Home's `not-found`), which then print as the small object they are.
-  The SDK's own `safeRequest` line
-  (`[GET …] request or validation failed:`) precedes each of these in
-  the same form; the app's line says which site the failure reached.
+  Home's `not-found`). Those two print as the small object they are at
+  the Home error-log site alone, which hands `failureCause` to the line
+  directly; through `unwrapResult` — the two report sites, every
+  `api.mts` route — the chain `Error → descriptor` holds no link the
+  SDK has a class for, so `logFailure` keeps the wrapper `Error`, stack
+  included (the report tests pin both kinds). Closing that gap is the
+  SDK's, `isKnownFailure` recognising a descriptor as a link; the app
+  never re-derives the SDK's predicate. The SDK's own `safeRequest`
+  line (`[GET …] request or validation failed:`) precedes the two
+  Result-backed reads — the reports' `getEnergy`/`getEnergySeries`, the
+  Home error log's `getErrorLog` — in the same form, the app's line then
+  saying which site the failure reached. A write goes through the
+  throwing `requestData`/`request`, so 'Write failed:' stands alone:
+  the SDK's error seam records an `HttpError` and nothing else, and a
+  transport failure on a write reaches no seam at all.
   Sites that log a programming
   error BY DESIGN keep the object: the 'Unexpected error while ensuring
   device:' branch, the IPC 'Failed to update the device warning:',
