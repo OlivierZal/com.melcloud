@@ -1,3 +1,5 @@
+import { format } from 'node:util'
+
 import {
   fireAndForget,
   getErrorMessage,
@@ -29,16 +31,20 @@ import type { EnergyReportConfig } from './base-report.mts'
 const DEBOUNCE_DELAY = 1000
 const modes: EnergyReportMode[] = ['regular', 'total']
 
-const MINUTE_MS = 60_000
-
 // A write MELCloud accepted can still come back with the previous value
 // at the next listing — the unit kept its own setpoint, or the cloud a
 // stale one — and Homey then mirrors it, so the tile seems to change its
 // mind on its own. The listing bodies are not logged, so the device logs
-// the read-back mismatch itself, once per write. The grace absorbs the
-// unit's own latency (MELCloud lists every 5 minutes and a unit applies
-// a command within a cycle or two): a read-back inside it, equal or
-// not, is never judged. The window bounds how long a write is watched.
+// the read-back mismatch itself, once per write. The watch holds the
+// value the model carries once the write resolved — the library refreshes
+// it from the write first (Classic merges the POST echo's flagged fields,
+// Home re-syncs the registry after the PUT) — which is what the wire was
+// asked for, the library's clamps and `always_on` included: a later
+// read-back differing from it is the cloud's doing, not the app's. The
+// grace covers a listing racing the write (Classic lists every 5 minutes,
+// Home every minute, and either can still carry the previous value for
+// one cycle): a read-back inside it, equal or not, is never judged. The
+// window bounds how long a write is watched.
 const READ_BACK_GRACE_MINUTES = 1
 const READ_BACK_WINDOW_MINUTES = 15
 
@@ -143,10 +149,14 @@ export abstract class BaseMELCloudDevice<
   // returns to that message instead of to a bare `null`.
   readonly #heldReasons = new Set<HeldWarningReason>()
 
-  // The Homey-domain value each capability was last written with, and
-  // when: the syncs of the next `READ_BACK_WINDOW_MINUTES` compare what
-  // the cloud reads back with it (`#checkReadBack`).
-  readonly #recentWrites = new Map<string, { at: number; value: unknown }>()
+  // What each capability was last written with — the Homey-domain value
+  // the model held once the write resolved — and when: the syncs of the
+  // next `READ_BACK_WINDOW_MINUTES` compare what the cloud reads back
+  // with it (`#checkReadBack`).
+  readonly #recentWrites = new Map<
+    string,
+    { at: Temporal.Instant; value: unknown }
+  >()
 
   readonly #reports: {
     regular?: EnergyReportOperation
@@ -230,6 +240,14 @@ export abstract class BaseMELCloudDevice<
 
   protected abstract getRequiredCapabilities(): string[]
 
+  // The Homey-domain value a sync writes for a capability from this
+  // facade — `undefined` when it writes none — read the way the sync
+  // itself reads it, so a landed write is watched on the model's value.
+  protected abstract getSyncedCapabilityValue(
+    facade: TFacade,
+    capability: string,
+  ): unknown
+
   // Where the dialects genuinely differ: each reads its own payload shape.
   protected abstract syncCapabilityValues(facade: TFacade): Promise<void>
 
@@ -281,6 +299,15 @@ export abstract class BaseMELCloudDevice<
 
   public override error(...args: unknown[]): void {
     super.error(this.getName(), '-', ...args)
+  }
+
+  // A write landing outside this device's own door — the ATA widget's
+  // group write — rewrites the model the watches are judged against, so
+  // they end BEFORE it: the library syncs every device from the refreshed
+  // models before the write resolves, and a stale watch would judge that
+  // sync.
+  public forgetWrites(): void {
+    this.#recentWrites.clear()
   }
 
   // A LASTING condition (a unit the registry no longer resolves, sync
@@ -408,23 +435,6 @@ export abstract class BaseMELCloudDevice<
     return Object.hasOwn(this.driver.tagMappings.energy, setting)
   }
 
-  protected mapCapabilitiesToDeviceTags(
-    values: Record<string, unknown>,
-  ): Record<string, unknown> {
-    this.log('Requested data:', values)
-    const tagMapping = this.#tagMappings.set
-    const result: Record<string, unknown> = {}
-    for (const [capability, value] of Object.entries(values)) {
-      const tag = tagMapping[capability]
-      if (tag === undefined) {
-        continue
-      }
-      const coerced = this.#outgoingValue(capability, value)
-      result[tag] = this.capabilityToDevice[capability]?.(coerced) ?? coerced
-    }
-    return result
-  }
-
   protected async scheduleEnergyReports(): Promise<void> {
     if (this.energyReports === null) {
       return
@@ -441,12 +451,14 @@ export abstract class BaseMELCloudDevice<
     if (device === null) {
       return
     }
-    const updateData = this.mapCapabilitiesToDeviceTags(values)
+    this.log('Requested data:', values)
+    const { capabilities, updateData } = this.#prepareUpdate(values)
+    this.#forgetWrites(capabilities, values)
     if (
-      Object.keys(updateData).length > 0 &&
+      capabilities.length > 0 &&
       (await this.#pushUpdate(device, updateData))
     ) {
-      this.#watchReadBack(values)
+      this.#watchReadBack(device, capabilities)
     }
     this.#scheduleSyncFromDevice()
   }
@@ -475,27 +487,31 @@ export abstract class BaseMELCloudDevice<
     await (isAvailable ? this.setAvailable() : this.setUnavailable(message))
   }
 
-  // A mismatch past the grace is logged once, values as they are, and the
-  // watch ends. An equal read-back is NOT a confirmation: the write echo
-  // is merged into the model right after the write, so equality is
-  // expected until the next real listing — the watch simply expires.
+  // A mismatch past the grace is logged once, values as they are in the
+  // twin apps' one line form (`node:util`'s `%s` renders any value), and
+  // the watch ends. An equal read-back is NOT a confirmation: the model
+  // was refreshed from the write, so equality is expected until the next
+  // real listing — the watch simply expires.
   #checkReadBack(capability: string, value: unknown): void {
     const written = this.#recentWrites.get(capability)
     if (written === undefined) {
       return
     }
-    const elapsedMinutes =
-      (Temporal.Now.instant().epochMilliseconds - written.at) / MINUTE_MS
+    const elapsedMinutes = written.at
+      .until(Temporal.Now.instant())
+      .total('minutes')
     if (elapsedMinutes <= READ_BACK_WINDOW_MINUTES) {
       if (elapsedMinutes < READ_BACK_GRACE_MINUTES || value === written.value) {
         return
       }
       this.log(
-        `${capability} written as`,
-        written.value,
-        'but read back as',
-        value,
-        `after ${String(Math.round(elapsedMinutes))} min`,
+        format(
+          '%s written as %s, read back as %s after %d min',
+          capability,
+          written.value,
+          value,
+          Math.round(elapsedMinutes),
+        ),
       )
     }
     // Judged, or expired unjudged: the watch ends either way.
@@ -521,6 +537,21 @@ export abstract class BaseMELCloudDevice<
     await this.applyCapabilitiesOptions()
     await this.syncFromDevice()
     await this.scheduleEnergyReports()
+  }
+
+  // A write replaces the watches of the capabilities it names, and a
+  // switch-off the mode's as well: the power-gated `thermostat_mode` read
+  // answers `off` for a unit switched off, so a mode written earlier has
+  // no read-back left to judge. Both end BEFORE the push — the library
+  // syncs every device from the refreshed model before the write
+  // resolves, and a stale watch would judge that sync.
+  #forgetWrites(capabilities: string[], values: Record<string, unknown>): void {
+    for (const capability of capabilities) {
+      this.#recentWrites.delete(capability)
+    }
+    if (this.#outgoingValue('onoff', values.onoff) === false) {
+      this.#recentWrites.delete('thermostat_mode')
+    }
   }
 
   // The registry no longer holds the id — on Home an entry the strict
@@ -561,10 +592,31 @@ export abstract class BaseMELCloudDevice<
   }
 
   // `always_on` devices never switch off from Homey: the outgoing value is
-  // coerced before any converter runs, and a read-back is judged against
-  // the coerced value, which is what the unit was asked for.
+  // coerced before any converter runs.
   #outgoingValue(capability: string, value: unknown): unknown {
     return (capability === 'onoff' && this.isAlwaysOn) || value
+  }
+
+  // What a write names, decided in one loop: the set capabilities of
+  // `values` — the ones a landed write is watched on — and the wire body,
+  // `always_on` applied, then the converters, keyed by tag.
+  #prepareUpdate(values: Record<string, unknown>): {
+    capabilities: string[]
+    updateData: Record<string, unknown>
+  } {
+    const capabilities: string[] = []
+    const updateData: Record<string, unknown> = {}
+    for (const [capability, value] of Object.entries(values)) {
+      const tag = this.#tagMappings.set[capability]
+      if (tag === undefined) {
+        continue
+      }
+      const coerced = this.#outgoingValue(capability, value)
+      updateData[tag] =
+        this.capabilityToDevice[capability]?.(coerced) ?? coerced
+      capabilities.push(capability)
+    }
+    return { capabilities, updateData }
   }
 
   // The library's observability seam logs a write that LANDS
@@ -761,16 +813,15 @@ export abstract class BaseMELCloudDevice<
     )
   }
 
-  // Remembers what a landed write asked for, per capability written; a
-  // later write of the same capability replaces the watch.
-  #watchReadBack(values: Record<string, unknown>): void {
-    const at = Temporal.Now.instant().epochMilliseconds
-    for (const [capability, value] of Object.entries(values)) {
-      if (this.#tagMappings.set[capability] !== undefined) {
-        this.#recentWrites.set(capability, {
-          at,
-          value: this.#outgoingValue(capability, value),
-        })
+  // Remembers what a landed write asked for, per capability written, as
+  // the model the library refreshed from the write reads it; a capability
+  // the sync has no value for is not watched.
+  #watchReadBack(device: TFacade, capabilities: string[]): void {
+    const at = Temporal.Now.instant()
+    for (const capability of capabilities) {
+      const value = this.getSyncedCapabilityValue(device, capability)
+      if (value !== undefined) {
+        this.#recentWrites.set(capability, { at, value })
       }
     }
   }

@@ -55,7 +55,12 @@ const {
   superSetWarningMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
 }))
 
-const facadeState = { isAvailable: true, isPoweredOn: true }
+const facadeState = {
+  isAvailable: true,
+  isPoweredOn: true,
+  operationMode: 'Heat',
+  setTemperature: 22,
+}
 
 const requiredCapabilities = vi.hoisted(() => [
   'measure_temperature',
@@ -72,7 +77,7 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
       return facadeState.isAvailable
     },
     get operationMode(): string {
-      return 'Heat'
+      return facadeState.operationMode
     },
     get power(): boolean {
       return facadeState.isPoweredOn
@@ -81,7 +86,7 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
       return 21
     },
     get setTemperature(): number {
-      return 22
+      return facadeState.setTemperature
     },
   })
 
@@ -212,7 +217,11 @@ const pinAfterWrite = (sinceWrite: Temporal.DurationLike): void => {
 }
 
 const readBackLines = (): unknown[][] =>
-  superLogMock.mock.calls.filter((args) => args.includes('but read back as'))
+  superLogMock.mock.calls.filter((args) =>
+    args.some(
+      (arg) => typeof arg === 'string' && arg.includes(', read back as '),
+    ),
+  )
 
 // A write from Homey, through the capability listener the device
 // registered on init.
@@ -225,12 +234,34 @@ const writeFromHomey = async (
 describe(BaseMELCloudDevice, () => {
   let device: TestHomeDevice
 
+  // The library refreshes the model from the write before `updateValues`
+  // resolves (Home re-syncs the registry after the PUT) and syncs every
+  // device from it on the way: the write mock mirrors both on the state
+  // the converters read.
+  const landWrite = async (
+    values: Record<string, unknown>,
+  ): Promise<boolean> => {
+    if (typeof values.power === 'boolean') {
+      facadeState.isPoweredOn = values.power
+    }
+    if (typeof values.setTemperature === 'number') {
+      facadeState.setTemperature = values.setTemperature
+    }
+    if (typeof values.operationMode === 'string') {
+      facadeState.operationMode = values.operationMode
+    }
+    await device.syncFromDevice()
+    return true
+  }
+
   // The hold/release tests read the full call sequences of the warning
   // IPC and the log, so both start empty for every test. The registry
   // reads empty by default — the boot race — and the prune tests fill it.
   beforeEach(() => {
     facadeState.isAvailable = true
     facadeState.isPoweredOn = true
+    facadeState.operationMode = 'Heat'
+    facadeState.setTemperature = 22
     getHomeFacadeMock.mockReturnValue(createMockFacade())
     isAccountEmptyMock.mockReturnValue(false)
     isRegistryListedMock.mockReturnValue(false)
@@ -796,11 +827,12 @@ describe(BaseMELCloudDevice, () => {
   })
 
   // The post-write sync the device schedules stays pending (`setTimeout`
-  // is a bare mock), so each test drives the syncs itself, at the
+  // is a bare mock), so each test drives the later syncs itself, at the
   // instants it chooses.
   describe('read-back watch', () => {
     beforeEach(async () => {
       pinAfterWrite({ seconds: 0 })
+      setValuesMock.mockImplementation(landWrite)
       await device.onInit()
       await settleDetached()
       superLogMock.mockClear()
@@ -813,6 +845,7 @@ describe(BaseMELCloudDevice, () => {
 
     it('should log one line when the cloud reads a setpoint back differently after the grace, then forget it', async () => {
       await writeFromHomey({ target_temperature: 20 })
+      facadeState.setTemperature = 22
       pinAfterWrite({ minutes: 2 })
       await device.syncFromDevice()
       pinAfterWrite({ minutes: 7 })
@@ -822,11 +855,7 @@ describe(BaseMELCloudDevice, () => {
         [
           'Test device',
           '-',
-          'target_temperature written as',
-          20,
-          'but read back as',
-          22,
-          'after 2 min',
+          'target_temperature written as 20, read back as 22 after 2 min',
         ],
       ])
     })
@@ -846,17 +875,14 @@ describe(BaseMELCloudDevice, () => {
         [
           'Test device',
           '-',
-          'onoff written as',
-          true,
-          'but read back as',
-          false,
-          'after 5 min',
+          'onoff written as true, read back as false after 5 min',
         ],
       ])
     })
 
     it('should log nothing on a differing read-back inside the grace', async () => {
       await writeFromHomey({ target_temperature: 20 })
+      facadeState.setTemperature = 22
       pinAfterWrite({ seconds: 30 })
       await device.syncFromDevice()
 
@@ -865,30 +891,66 @@ describe(BaseMELCloudDevice, () => {
 
     it('should drop a write past the window without a line', async () => {
       await writeFromHomey({ target_temperature: 20 })
+      facadeState.setTemperature = 22
       pinAfterWrite({ minutes: 16 })
       await device.syncFromDevice()
 
       expect(readBackLines()).toStrictEqual([])
     })
 
+    // The sync the library runs inside the second write reads the new
+    // value past the first write's grace: the first watch ended before
+    // the push, so nothing is logged there either.
     it('should judge the read-back against the latest write of a capability', async () => {
       await writeFromHomey({ target_temperature: 20 })
-      pinAfterWrite({ minutes: 1 })
+      pinAfterWrite({ minutes: 2 })
       await writeFromHomey({ target_temperature: 21 })
-      pinAfterWrite({ minutes: 3 })
+      facadeState.setTemperature = 22
+      pinAfterWrite({ minutes: 4 })
       await device.syncFromDevice()
 
       expect(readBackLines()).toStrictEqual([
         [
           'Test device',
           '-',
-          'target_temperature written as',
-          21,
-          'but read back as',
-          22,
-          'after 2 min',
+          'target_temperature written as 21, read back as 22 after 2 min',
         ],
       ])
+    })
+
+    // The library clamps a setpoint to the mode's bounds before the wire
+    // call: the model then holds the clamp, and so does the watch.
+    it('should watch the value the model holds for the write, not the one requested', async () => {
+      setValuesMock.mockImplementationOnce(async () =>
+        landWrite({ setTemperature: 16 }),
+      )
+      await writeFromHomey({ target_temperature: 12 })
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
+
+      facadeState.setTemperature = 19
+      pinAfterWrite({ minutes: 5 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'target_temperature written as 16, read back as 19 after 5 min',
+        ],
+      ])
+    })
+
+    it('should end the mode watch when Homey switches the unit off', async () => {
+      await writeFromHomey({ onoff: true, thermostat_mode: 'heat' })
+      pinAfterWrite({ minutes: 2 })
+      await writeFromHomey({ onoff: false })
+      pinAfterWrite({ minutes: 4 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
     })
 
     it('should judge an always_on device against the switch-on it wrote', async () => {
@@ -903,6 +965,24 @@ describe(BaseMELCloudDevice, () => {
     it('should not watch a write that made no request', async () => {
       setValuesMock.mockRejectedValueOnce(new NoChangesError(1))
       await writeFromHomey({ target_temperature: 20 })
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
+    })
+
+    it('should not watch a capability the sync never reads', async () => {
+      await writeFromHomey({ fan_speed: 3 })
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
+    })
+
+    it('should end every watch when a write lands outside its door', async () => {
+      await writeFromHomey({ target_temperature: 20 })
+      device.forgetWrites()
+      facadeState.setTemperature = 22
       pinAfterWrite({ minutes: 2 })
       await device.syncFromDevice()
 

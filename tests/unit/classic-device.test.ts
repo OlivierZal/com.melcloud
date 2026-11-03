@@ -211,6 +211,14 @@ const pinAfterWrite = (sinceWrite: Temporal.DurationLike): void => {
 describe(ClassicMELCloudDevice, () => {
   let device: TestDevice
 
+  const readBackLines = (): unknown[][] =>
+    vi
+      .mocked(device.log)
+      .mock.calls.filter(
+        ([line]) =>
+          typeof line === 'string' && line.includes(', read back as '),
+      )
+
   // The registry reads empty by default — the boot race, which keeps the
   // toast — and the prune test fills it.
   beforeEach(() => {
@@ -623,18 +631,27 @@ describe(ClassicMELCloudDevice, () => {
 
   // The Classic sync writes every capability through the base read-back
   // door too; the listing the syncs read is the mutable `data` the cached
-  // facade holds.
+  // facade holds. The library merges the POST echo into that listing and
+  // syncs every device from it before `updateValues` resolves: the write
+  // mock mirrors both.
   describe('read-back watch', () => {
     const data: Record<string, unknown> = {}
+
+    const landWrite = async (
+      updateData: Record<string, unknown>,
+    ): Promise<boolean> => {
+      Object.assign(data, updateData)
+      await device.syncFromDevice()
+      return true
+    }
 
     beforeEach(async () => {
       Object.assign(data, mockDeviceData)
       mockFacade(data)
-      setValuesMock.mockResolvedValue(true)
+      setValuesMock.mockImplementation(landWrite)
       pinAfterWrite({ seconds: 0 })
       await device.onInit()
       await settleDetached()
-      await getCapabilityListenerCallback()({ onoff: true })
       vi.mocked(device.log).mockClear()
     })
 
@@ -643,30 +660,46 @@ describe(ClassicMELCloudDevice, () => {
     })
 
     it('should log one line when the listing reads the switch back differently after the grace, then forget it', async () => {
+      await getCapabilityListenerCallback()({ onoff: true })
       data.Power = false
       pinAfterWrite({ minutes: 2 })
       await device.syncFromDevice()
       pinAfterWrite({ minutes: 7 })
       await device.syncFromDevice()
 
-      expect(vi.mocked(device.log).mock.calls).toStrictEqual([
-        ['onoff written as', true, 'but read back as', false, 'after 2 min'],
+      expect(readBackLines()).toStrictEqual([
+        ['onoff written as true, read back as false after 2 min'],
       ])
     })
 
     it('should keep watching through an equal read-back', async () => {
+      await getCapabilityListenerCallback()({ onoff: true })
       pinAfterWrite({ minutes: 2 })
       await device.syncFromDevice()
 
-      expect(device.log).not.toHaveBeenCalled()
+      expect(readBackLines()).toStrictEqual([])
 
       data.Power = false
       pinAfterWrite({ minutes: 5 })
       await device.syncFromDevice()
 
-      expect(vi.mocked(device.log).mock.calls).toStrictEqual([
-        ['onoff written as', true, 'but read back as', false, 'after 5 min'],
+      expect(readBackLines()).toStrictEqual([
+        ['onoff written as true, read back as false after 5 min'],
       ])
+    })
+
+    it('should not watch a capability the listing does not carry', async () => {
+      setValuesMock.mockImplementationOnce(async () => {
+        delete data.Power
+        await device.syncFromDevice()
+        return true
+      })
+      await getCapabilityListenerCallback()({ onoff: true })
+      data.Power = false
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
     })
   })
 

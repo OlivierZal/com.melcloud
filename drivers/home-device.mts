@@ -5,7 +5,6 @@ import type {
   HomeConvertToDevice,
   HomeDeviceFacade,
 } from '../types/home.mts'
-import { typedEntries } from '../lib/typed-object.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 import type { HomeMELCloudDriver } from './home-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
@@ -74,6 +73,13 @@ export abstract class HomeMELCloudDevice<
       : this.driver.getRequiredCapabilities(facade)
   }
 
+  protected override getSyncedCapabilityValue(
+    facade: HomeDeviceFacade<T>,
+    capability: string,
+  ): unknown {
+    return this.deviceToCapability[capability]?.(facade)
+  }
+
   // The library types the Home enums as closed vocabularies but
   // deliberately passes the wire through unenforced, so a member the
   // BFF adds or renames reaches a converter that has no entry for it
@@ -87,20 +93,18 @@ export abstract class HomeMELCloudDevice<
     device: HomeDeviceFacade<T>,
   ): Promise<void> {
     await Promise.all(
-      typedEntries(this.deviceToCapability).map(
-        async ([capability, convert]) => {
-          if (!this.hasCapability(capability)) {
-            return
-          }
-          const value = convert(device)
-          if (value === undefined) {
-            this.#logUnmapped(capability)
-            return
-          }
-          this.#logMappedAgain(capability)
-          await this.setSyncedCapabilityValue(capability, value)
-        },
-      ),
+      Object.keys(this.deviceToCapability).map(async (capability) => {
+        if (!this.hasCapability(capability)) {
+          return
+        }
+        const value = this.getSyncedCapabilityValue(device, capability)
+        if (value === undefined) {
+          this.#logUnmapped(capability)
+          return
+        }
+        this.#logMappedAgain(capability)
+        await this.setSyncedCapabilityValue(capability, value)
+      }),
     )
   }
 

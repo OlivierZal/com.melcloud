@@ -2036,6 +2036,31 @@ describe('melCloudApp', () => {
       })
     })
 
+    // The library syncs every device from the refreshed model before the
+    // write resolves, so the paired device's watches must be gone first.
+    it('should end the paired device read-back watches before the write', async () => {
+      const forgetWrites = vi.fn<() => void>()
+      const mockUpdateGroupState = vi
+        .fn<(state: unknown) => Promise<unknown>>()
+        .mockResolvedValue({ AttributeErrors: null, Success: true })
+      setupDriver(
+        [
+          mock<ClassicMELCloudDevice>({
+            driver: { id: 'home-melcloud' },
+            forgetWrites,
+            id: 'device-1',
+          }),
+        ],
+        'home-melcloud',
+      )
+      setupHomeAtaFacade({ updateGroupState: mockUpdateGroupState })
+      await app.onInit()
+
+      await app.updateTargetAtaState('homeDevices_device-1', { Power: true })
+
+      expect(forgetWrites).toHaveBeenCalledBefore(mockUpdateGroupState)
+    })
+
     // No-change tolerance is the library's own (every `updateGroupState`
     // resolves an already-matching delta as success), so the app-side
     // contract is plain propagation of whatever the facade rejects.
@@ -2079,13 +2104,44 @@ describe('melCloudApp', () => {
         .fn<(state: unknown) => Promise<unknown>>()
         .mockResolvedValue({ AttributeErrors: null, Success: true })
       mockHomeFacadeManagerGetBuilding.mockReturnValue(
-        mock<Home.BuildingFacade>({ updateGroupState: mockUpdateGroupState }),
+        mock<Home.BuildingFacade>({
+          devices: [],
+          updateGroupState: mockUpdateGroupState,
+        }),
       )
       await app.onInit()
 
       await app.updateTargetAtaState('homeBuildings_building-1', groupState)
 
       expect(mockUpdateGroupState).toHaveBeenCalledWith(groupState)
+    })
+
+    it('should end the paired members read-back watches before the write', async () => {
+      const forgetWrites = vi.fn<() => void>()
+      const mockUpdateGroupState = vi
+        .fn<(state: unknown) => Promise<unknown>>()
+        .mockResolvedValue({ AttributeErrors: null, Success: true })
+      setupDriver(
+        [
+          mock<ClassicMELCloudDevice>({
+            driver: { id: 'home-melcloud' },
+            forgetWrites,
+            id: 'device-1',
+          }),
+        ],
+        'home-melcloud',
+      )
+      mockHomeFacadeManagerGetBuilding.mockReturnValue(
+        mock<Home.BuildingFacade>({
+          devices: [{ id: 'device-1' }],
+          updateGroupState: mockUpdateGroupState,
+        }),
+      )
+      await app.onInit()
+
+      await app.updateTargetAtaState('homeBuildings_building-1', groupState)
+
+      expect(forgetWrites).toHaveBeenCalledBefore(mockUpdateGroupState)
     })
 
     it('should list the member modes in the classic vocabulary', async () => {
@@ -2613,6 +2669,7 @@ describe('melCloudApp', () => {
       await initWithFacade(
         app,
         mock<Classic.BuildingFacade>({
+          devices: [],
           updateGroupState: mockUpdateResult(null),
         }),
       )
@@ -2622,10 +2679,36 @@ describe('melCloudApp', () => {
       ).resolves.toBeUndefined()
     })
 
+    // The library patches every member model and syncs every device from
+    // them before the write resolves, so the paired members' watches must
+    // be gone first — and only theirs.
+    it('should end the paired members read-back watches before the write', async () => {
+      const forgetWrites = vi.fn<() => void>()
+      const forgetOtherWrites = vi.fn<() => void>()
+      const updateGroupState = mockUpdateResult(null)
+      setupDriver([
+        createClassicDevice({ forgetWrites, id: 1 }),
+        createClassicDevice({ forgetWrites: forgetOtherWrites, id: 3 }),
+      ])
+      await initWithFacade(
+        app,
+        mock<Classic.BuildingFacade>({
+          devices: [{ id: 1 }, { id: 2 }],
+          updateGroupState,
+        }),
+      )
+
+      await app.updateTargetAtaState('buildings_1', mock<Classic.GroupState>())
+
+      expect(forgetWrites).toHaveBeenCalledBefore(updateGroupState)
+      expect(forgetOtherWrites).not.toHaveBeenCalled()
+    })
+
     it('should throw on attribute errors', async () => {
       await initWithFacade(
         app,
         mock<Classic.BuildingFacade>({
+          devices: [],
           updateGroupState: mockUpdateResult({ temp: ['Invalid value'] }),
         }),
       )
