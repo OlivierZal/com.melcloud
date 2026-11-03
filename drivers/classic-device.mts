@@ -99,7 +99,7 @@ export abstract class ClassicMELCloudDevice<
     await Promise.all(
       entries.map(async ([capability, tag]) => {
         if (Object.hasOwn(data, tag)) {
-          await this.setCapabilityValue(
+          await this.setSyncedCapabilityValue(
             capability,
             this.#convertFromDevice(capability, tag, data),
           )

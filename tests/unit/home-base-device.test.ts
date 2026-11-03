@@ -7,8 +7,9 @@ import {
   mock,
   settleDetached,
 } from '@olivierzal/homey-kit/testing'
-import { EntityNotFoundError } from '@olivierzal/melcloud-api'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { EntityNotFoundError, NoChangesError } from '@olivierzal/melcloud-api'
+import { Temporal } from 'temporal-polyfill'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { BaseMELCloudDevice } from '../../drivers/base-device.mts'
 import {
@@ -199,6 +200,26 @@ const createTogglingDevice = (): {
     },
   })
   return { mapping, togglingDevice }
+}
+
+// The read-back watch stamps the write and the syncs off `Temporal.Now`,
+// never `Date` (see CLAUDE.md): the clock is pinned to the write's
+// instant plus the given duration.
+const pinAfterWrite = (sinceWrite: Temporal.DurationLike): void => {
+  vi.spyOn(Temporal.Now, 'instant').mockReturnValue(
+    Temporal.Instant.from('2026-11-02T10:00:00Z').add(sinceWrite),
+  )
+}
+
+const readBackLines = (): unknown[][] =>
+  superLogMock.mock.calls.filter((args) => args.includes('but read back as'))
+
+// A write from Homey, through the capability listener the device
+// registered on init.
+const writeFromHomey = async (
+  values: Record<string, unknown>,
+): Promise<void> => {
+  await getCapabilityListenerCallback()(values)
 }
 
 describe(BaseMELCloudDevice, () => {
@@ -771,6 +792,128 @@ describe(BaseMELCloudDevice, () => {
       await callback({ onoff: true })
 
       expect(setValuesMock).toHaveBeenCalledWith({ power: true })
+    })
+  })
+
+  // The post-write sync the device schedules stays pending (`setTimeout`
+  // is a bare mock), so each test drives the syncs itself, at the
+  // instants it chooses.
+  describe('read-back watch', () => {
+    beforeEach(async () => {
+      pinAfterWrite({ seconds: 0 })
+      await device.onInit()
+      await settleDetached()
+      superLogMock.mockClear()
+    })
+
+    afterEach(() => {
+      vi.mocked(Temporal.Now.instant).mockRestore()
+      getSettingMock.mockReset()
+    })
+
+    it('should log one line when the cloud reads a setpoint back differently after the grace, then forget it', async () => {
+      await writeFromHomey({ target_temperature: 20 })
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+      pinAfterWrite({ minutes: 7 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'target_temperature written as',
+          20,
+          'but read back as',
+          22,
+          'after 2 min',
+        ],
+      ])
+    })
+
+    it('should log nothing on an equal read-back and keep watching', async () => {
+      await writeFromHomey({ onoff: true })
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
+
+      facadeState.isPoweredOn = false
+      pinAfterWrite({ minutes: 5 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'onoff written as',
+          true,
+          'but read back as',
+          false,
+          'after 5 min',
+        ],
+      ])
+    })
+
+    it('should log nothing on a differing read-back inside the grace', async () => {
+      await writeFromHomey({ target_temperature: 20 })
+      pinAfterWrite({ seconds: 30 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
+    })
+
+    it('should drop a write past the window without a line', async () => {
+      await writeFromHomey({ target_temperature: 20 })
+      pinAfterWrite({ minutes: 16 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
+    })
+
+    it('should judge the read-back against the latest write of a capability', async () => {
+      await writeFromHomey({ target_temperature: 20 })
+      pinAfterWrite({ minutes: 1 })
+      await writeFromHomey({ target_temperature: 21 })
+      pinAfterWrite({ minutes: 3 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'target_temperature written as',
+          21,
+          'but read back as',
+          22,
+          'after 2 min',
+        ],
+      ])
+    })
+
+    it('should judge an always_on device against the switch-on it wrote', async () => {
+      getSettingMock.mockReturnValue(true)
+      await writeFromHomey({ onoff: false })
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
+    })
+
+    it('should not watch a write that made no request', async () => {
+      setValuesMock.mockRejectedValueOnce(new NoChangesError(1))
+      await writeFromHomey({ target_temperature: 20 })
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
+    })
+
+    it('should log nothing on a device that never wrote', async () => {
+      pinAfterWrite({ minutes: 5 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
     })
   })
 

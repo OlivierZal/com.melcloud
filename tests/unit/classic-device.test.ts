@@ -7,7 +7,8 @@ import {
   settleDetached,
 } from '@olivierzal/homey-kit/testing'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { Temporal } from 'temporal-polyfill'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyReports } from '../../drivers/base-device.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
@@ -196,6 +197,15 @@ const wireEnergyReports = (target: TestDevice): void => {
     create: (config) => new EnergyReport(target, config),
   }
   Object.defineProperty(target, 'energyReports', { value: energyReports })
+}
+
+// The read-back watch stamps the write and the syncs off `Temporal.Now`,
+// never `Date` (see CLAUDE.md): the clock is pinned to the write's
+// instant plus the given duration.
+const pinAfterWrite = (sinceWrite: Temporal.DurationLike): void => {
+  vi.spyOn(Temporal.Now, 'instant').mockReturnValue(
+    Temporal.Instant.from('2026-11-02T10:00:00Z').add(sinceWrite),
+  )
 }
 
 describe(ClassicMELCloudDevice, () => {
@@ -608,6 +618,55 @@ describe(ClassicMELCloudDevice, () => {
       await callback({})
 
       expect(setValuesMock).not.toHaveBeenCalled()
+    })
+  })
+
+  // The Classic sync writes every capability through the base read-back
+  // door too; the listing the syncs read is the mutable `data` the cached
+  // facade holds.
+  describe('read-back watch', () => {
+    const data: Record<string, unknown> = {}
+
+    beforeEach(async () => {
+      Object.assign(data, mockDeviceData)
+      mockFacade(data)
+      setValuesMock.mockResolvedValue(true)
+      pinAfterWrite({ seconds: 0 })
+      await device.onInit()
+      await settleDetached()
+      await getCapabilityListenerCallback()({ onoff: true })
+      vi.mocked(device.log).mockClear()
+    })
+
+    afterEach(() => {
+      vi.mocked(Temporal.Now.instant).mockRestore()
+    })
+
+    it('should log one line when the listing reads the switch back differently after the grace, then forget it', async () => {
+      data.Power = false
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+      pinAfterWrite({ minutes: 7 })
+      await device.syncFromDevice()
+
+      expect(vi.mocked(device.log).mock.calls).toStrictEqual([
+        ['onoff written as', true, 'but read back as', false, 'after 2 min'],
+      ])
+    })
+
+    it('should keep watching through an equal read-back', async () => {
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+
+      expect(device.log).not.toHaveBeenCalled()
+
+      data.Power = false
+      pinAfterWrite({ minutes: 5 })
+      await device.syncFromDevice()
+
+      expect(vi.mocked(device.log).mock.calls).toStrictEqual([
+        ['onoff written as', true, 'but read back as', false, 'after 5 min'],
+      ])
     })
   })
 

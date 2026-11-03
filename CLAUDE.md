@@ -671,6 +671,27 @@ coverage.
   the diagnostic log carry the drift streak, or the library's lines
   recording when MELCloud reported the unit disconnected and when it
   reconnected.
+- A setpoint the cloud reads back differently within minutes of a write
+  is logged by the device itself, once per write — the listing bodies
+  are not logged, so without it a "the app changed my setpoint" report
+  has no trace to settle it. `sendUpdate` remembers the Homey-domain
+  value of each capability a LANDED write asked for (`always_on`
+  coercion included; a folded or failed write is not watched), and
+  every sync writes through `setSyncedCapabilityValue`, the one door on
+  `BaseMELCloudDevice` both dialects share, which compares what it is
+  about to set with that value for 15 minutes
+  (`READ_BACK_WINDOW_MINUTES`). A mismatch at least 60 s after the write
+  (`READ_BACK_GRACE_MINUTES`) writes ONE `log` line, values as they are,
+  no JSON —
+  `target_temperature written as 20 but read back as 19 after 6 min` —
+  and ends the watch. A read-back INSIDE the grace never logs,
+  equal or not: that is the unit's own latency (MELCloud lists every
+  5 minutes, a unit applies a command within a cycle or two). An EQUAL
+  read-back past the grace is no confirmation either — the write echo
+  is merged into the model right after the write, so equality is
+  expected until the next real listing — and keeps the watch, which
+  expires in silence. The line is for the diagnostic log alone: no
+  setting, no route, no locale.
 - The ATA GROUP vocabulary is already cross-family, and its `Classic`
   prefix is history, not a branch: `ClassicGroupState` is the one shape
   both families' ATA facades implement (`getGroup` / `updateGroupState`),

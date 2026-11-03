@@ -98,7 +98,7 @@ export abstract class HomeMELCloudDevice<
             return
           }
           this.#logMappedAgain(capability)
-          await this.setCapabilityValue(capability, value)
+          await this.setSyncedCapabilityValue(capability, value)
         },
       ),
     )
