@@ -703,7 +703,7 @@ coverage.
   mode written earlier has no read-back left), and every watch of a
   group write's paired members (`forgetWrites`, called by
   `updateTargetAtaState` — the ATA widget writes through the facades,
-  outside the devices' door). The clock is `Temporal.Now`, the
+  outside the devices' door). A write that never reached the wire (folded as a no-change, or failed) restores the watches it would have replaced: they still have a read-back to judge. The clock is `Temporal.Now`, the
   instants `Temporal.Instant`. The line is for the diagnostic log
   alone: no setting, no route, no locale.
 - The ATA GROUP vocabulary is already cross-family, and its `Classic`

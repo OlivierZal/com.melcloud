@@ -971,6 +971,44 @@ describe(BaseMELCloudDevice, () => {
       expect(readBackLines()).toStrictEqual([])
     })
 
+    // A write that never reached the wire replaced nothing: the watch of
+    // the write before it keeps judging the listings.
+    it('should keep a landed watch through a folded write of the same capability', async () => {
+      await writeFromHomey({ target_temperature: 20 })
+      setValuesMock.mockRejectedValueOnce(new NoChangesError(1))
+      pinAfterWrite({ minutes: 1 })
+      await writeFromHomey({ target_temperature: 20 })
+      facadeState.setTemperature = 22
+      pinAfterWrite({ minutes: 6 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'target_temperature written as 20, read back as 22 after 6 min',
+        ],
+      ])
+    })
+
+    it('should keep a landed watch through a failed write of the same capability', async () => {
+      await writeFromHomey({ target_temperature: 20 })
+      setValuesMock.mockRejectedValueOnce(new Error('MELCloud down'))
+      pinAfterWrite({ minutes: 1 })
+      await writeFromHomey({ target_temperature: 21 })
+      facadeState.setTemperature = 22
+      pinAfterWrite({ minutes: 6 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'target_temperature written as 20, read back as 22 after 6 min',
+        ],
+      ])
+    })
+
     it('should not watch a capability the sync never reads', async () => {
       await writeFromHomey({ fan_speed: 3 })
       pinAfterWrite({ minutes: 2 })

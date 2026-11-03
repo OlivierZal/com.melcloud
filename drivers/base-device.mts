@@ -48,6 +48,11 @@ const modes: EnergyReportMode[] = ['regular', 'total']
 const READ_BACK_GRACE_MINUTES = 1
 const READ_BACK_WINDOW_MINUTES = 15
 
+interface RecentWrite {
+  readonly at: Temporal.Instant
+  readonly value: unknown
+}
+
 // Homey exposes its status-indicator picker on some device classes only:
 // a thermostat gets none, a heat pump does. The setting therefore drives
 // the class, `heatpump` being the closest Homey class to these units. It
@@ -153,10 +158,7 @@ export abstract class BaseMELCloudDevice<
   // the model held once the write resolved — and when: the syncs of the
   // next `READ_BACK_WINDOW_MINUTES` compare what the cloud reads back
   // with it (`#checkReadBack`).
-  readonly #recentWrites = new Map<
-    string,
-    { at: Temporal.Instant; value: unknown }
-  >()
+  readonly #recentWrites = new Map<string, RecentWrite>()
 
   readonly #reports: {
     regular?: EnergyReportOperation
@@ -453,12 +455,14 @@ export abstract class BaseMELCloudDevice<
     }
     this.log('Requested data:', values)
     const { capabilities, updateData } = this.#prepareUpdate(values)
-    this.#forgetWrites(capabilities, values)
+    const forgotten = this.#forgetWrites(capabilities, values)
     if (
       capabilities.length > 0 &&
       (await this.#pushUpdate(device, updateData))
     ) {
       this.#watchReadBack(device, capabilities)
+    } else {
+      this.#restoreWrites(forgotten)
     }
     this.#scheduleSyncFromDevice()
   }
@@ -545,13 +549,24 @@ export abstract class BaseMELCloudDevice<
   // no read-back left to judge. Both end BEFORE the push — the library
   // syncs every device from the refreshed model before the write
   // resolves, and a stale watch would judge that sync.
-  #forgetWrites(capabilities: string[], values: Record<string, unknown>): void {
-    for (const capability of capabilities) {
+  #forgetWrites(
+    capabilities: string[],
+    values: Record<string, unknown>,
+  ): Map<string, RecentWrite> {
+    const forgotten = new Map<string, RecentWrite>()
+    const ended =
+      this.#outgoingValue('onoff', values.onoff) === false
+        ? [...capabilities, 'thermostat_mode']
+        : capabilities
+    for (const capability of ended) {
+      const written = this.#recentWrites.get(capability)
+      if (written === undefined) {
+        continue
+      }
+      forgotten.set(capability, written)
       this.#recentWrites.delete(capability)
     }
-    if (this.#outgoingValue('onoff', values.onoff) === false) {
-      this.#recentWrites.delete('thermostat_mode')
-    }
+    return forgotten
   }
 
   // The registry no longer holds the id — on Home an entry the strict
@@ -690,6 +705,14 @@ export abstract class BaseMELCloudDevice<
   // Delay sync to let Homey's optimistic UI update and debounce settle.
   // The handle is kept so deletion cancels a pending sync, and failures are
   // logged instead of becoming unhandled rejections.
+  // Nothing reached the wire (a folded or failed write), so the watches
+  // it would have replaced still have a read-back to judge.
+  #restoreWrites(forgotten: Map<string, RecentWrite>): void {
+    for (const [capability, written] of forgotten) {
+      this.#recentWrites.set(capability, written)
+    }
+  }
+
   #scheduleSyncFromDevice(): void {
     if (this.#syncTimeout !== null) {
       this.homey.clearTimeout(this.#syncTimeout)
