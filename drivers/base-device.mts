@@ -510,7 +510,7 @@ export abstract class BaseMELCloudDevice<
           capability,
           written.value,
           value,
-          Math.round(elapsedMinutes),
+          Math.floor(elapsedMinutes),
         ),
       )
     }
