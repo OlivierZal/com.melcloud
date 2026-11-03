@@ -69,6 +69,12 @@ export abstract class ClassicMELCloudDevice<
   // A stale unit is one whose last-communication timestamp has aged out.
   protected override readonly unreachableWarning = 'errors.unitStale'
 
+  get #capabilityTagEntries(): OperationalCapabilityTagEntry<T>[] {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing shared [string, string][] to typed entries
+    return this
+      .operationalCapabilityTagEntries as OperationalCapabilityTagEntry<T>[]
+  }
+
   get #data(): Readonly<Classic.ListDeviceData<T>> | undefined {
     return this.cachedFacade?.data
   }
@@ -89,17 +95,30 @@ export abstract class ClassicMELCloudDevice<
     return data === undefined ? [] : this.driver.getRequiredCapabilities(data)
   }
 
+  // The listing holds one tag per capability; a tag the listing lacks has
+  // no value to read.
+  protected override getSyncedCapabilityValue(
+    facade: Classic.DeviceFacade<T>,
+    capability: string,
+  ): unknown {
+    const { data } = facade
+    const entry = this.#capabilityTagEntries.find(
+      ([entryCapability, tag]) =>
+        entryCapability === capability && Object.hasOwn(data, tag),
+    )
+    return entry === undefined
+      ? undefined
+      : this.#convertFromDevice(...entry, data)
+  }
+
   protected async setCapabilityValues(
     data: Readonly<Classic.ListDeviceData<T>>,
   ): Promise<void> {
     this.homey.api.realtime('deviceupdate', null)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing shared [string, string][] to typed entries
-    const entries = this
-      .operationalCapabilityTagEntries as OperationalCapabilityTagEntry<T>[]
     await Promise.all(
-      entries.map(async ([capability, tag]) => {
+      this.#capabilityTagEntries.map(async ([capability, tag]) => {
         if (Object.hasOwn(data, tag)) {
-          await this.setCapabilityValue(
+          await this.setSyncedCapabilityValue(
             capability,
             this.#convertFromDevice(capability, tag, data),
           )

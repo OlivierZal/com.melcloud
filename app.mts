@@ -729,6 +729,16 @@ export default class MELCloudApp extends App {
     targetId: string,
     state: Classic.GroupState,
   ): Promise<void> {
+    // The write lands outside the members' own door, and the library
+    // syncs every device from the refreshed models before it resolves:
+    // the paired members' read-back watches end first, or that sync
+    // would judge a value Homey itself asked for as the cloud's.
+    const members = this.#getDevices({
+      ids: this.#getAtaGroupMemberIds(targetId),
+    })
+    for (const device of members) {
+      device.forgetWrites()
+    }
     await this.#getAtaGroupTarget(targetId).updateGroupState(state)
   }
 
@@ -904,6 +914,21 @@ export default class MELCloudApp extends App {
         },
       },
     ]
+  }
+
+  // The units a group write addresses: a Home device target is its own
+  // member, every other target's facade lists them.
+  #getAtaGroupMemberIds(targetId: string): (number | string)[] {
+    if (isHomeDeviceValue(targetId)) {
+      return [getHomeDeviceId(targetId)]
+    }
+    if (isHomeBuildingValue(targetId)) {
+      return this.#getHomeBuildingFacade(
+        getHomeBuildingId(targetId),
+      ).devices.map(({ id }) => id)
+    }
+    const { zoneId, zoneType } = toZoneValueData(targetId)
+    return this.getClassicFacade(zoneType, zoneId).devices.map(({ id }) => id)
   }
 
   // The ATA group twin of `#getSettingsTarget`: the targetId is the

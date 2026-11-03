@@ -7,7 +7,8 @@ import {
   settleDetached,
 } from '@olivierzal/homey-kit/testing'
 import { EntityNotFoundError } from '@olivierzal/melcloud-api'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { Temporal } from 'temporal-polyfill'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyReports } from '../../drivers/base-device.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
@@ -198,8 +199,25 @@ const wireEnergyReports = (target: TestDevice): void => {
   Object.defineProperty(target, 'energyReports', { value: energyReports })
 }
 
+// The read-back watch stamps the write and the syncs off `Temporal.Now`,
+// never `Date` (see CLAUDE.md): the clock is pinned to the write's
+// instant plus the given duration.
+const pinAfterWrite = (sinceWrite: Temporal.DurationLike): void => {
+  vi.spyOn(Temporal.Now, 'instant').mockReturnValue(
+    Temporal.Instant.from('2026-11-02T10:00:00Z').add(sinceWrite),
+  )
+}
+
 describe(ClassicMELCloudDevice, () => {
   let device: TestDevice
+
+  const readBackLines = (): unknown[][] =>
+    vi
+      .mocked(device.log)
+      .mock.calls.filter(
+        ([line]) =>
+          typeof line === 'string' && line.includes(', read back as '),
+      )
 
   // The registry reads empty by default — the boot race, which keeps the
   // toast — and the prune test fills it.
@@ -608,6 +626,80 @@ describe(ClassicMELCloudDevice, () => {
       await callback({})
 
       expect(setValuesMock).not.toHaveBeenCalled()
+    })
+  })
+
+  // The Classic sync writes every capability through the base read-back
+  // door too; the listing the syncs read is the mutable `data` the cached
+  // facade holds. The library merges the POST echo into that listing and
+  // syncs every device from it before `updateValues` resolves: the write
+  // mock mirrors both.
+  describe('read-back watch', () => {
+    const data: Record<string, unknown> = {}
+
+    const landWrite = async (
+      updateData: Record<string, unknown>,
+    ): Promise<boolean> => {
+      Object.assign(data, updateData)
+      await device.syncFromDevice()
+      return true
+    }
+
+    beforeEach(async () => {
+      Object.assign(data, mockDeviceData)
+      mockFacade(data)
+      setValuesMock.mockImplementation(landWrite)
+      pinAfterWrite({ seconds: 0 })
+      await device.onInit()
+      await settleDetached()
+      vi.mocked(device.log).mockClear()
+    })
+
+    afterEach(() => {
+      vi.mocked(Temporal.Now.instant).mockRestore()
+    })
+
+    it('should log one line when the listing reads the switch back differently after the grace, then forget it', async () => {
+      await getCapabilityListenerCallback()({ onoff: true })
+      data.Power = false
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+      pinAfterWrite({ minutes: 7 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([
+        ['onoff written as true, read back as false after 2 min'],
+      ])
+    })
+
+    it('should keep watching through an equal read-back', async () => {
+      await getCapabilityListenerCallback()({ onoff: true })
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
+
+      data.Power = false
+      pinAfterWrite({ minutes: 5 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([
+        ['onoff written as true, read back as false after 5 min'],
+      ])
+    })
+
+    it('should not watch a capability the listing does not carry', async () => {
+      setValuesMock.mockImplementationOnce(async () => {
+        delete data.Power
+        await device.syncFromDevice()
+        return true
+      })
+      await getCapabilityListenerCallback()({ onoff: true })
+      data.Power = false
+      pinAfterWrite({ minutes: 2 })
+      await device.syncFromDevice()
+
+      expect(readBackLines()).toStrictEqual([])
     })
   })
 

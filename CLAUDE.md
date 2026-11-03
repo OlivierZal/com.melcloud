@@ -671,6 +671,41 @@ coverage.
   the diagnostic log carry the drift streak, or the library's lines
   recording when MELCloud reported the unit disconnected and when it
   reconnected.
+- A setpoint the cloud reads back differently within minutes of a write
+  is logged by the device itself, once per write — the listing bodies
+  are not logged, so without it a "the app changed my setpoint" report
+  has no trace to settle it. `sendUpdate` watches each capability a
+  LANDED write named (a folded or failed write is not watched) on the
+  value the MODEL holds once the write resolved, read through the
+  dialect's own sync converter (`getSyncedCapabilityValue`): the library
+  refreshes the model from the write first — Classic merges the POST
+  echo's flagged fields, Home re-syncs the registry after the PUT — so
+  that value is what the wire was asked for, the library's clamps (a
+  setpoint outside the mode's bounds) and `always_on` included, and a
+  later read-back differing from it is the cloud's doing, never the
+  app's. Every sync writes through `setSyncedCapabilityValue`, the one
+  door on `BaseMELCloudDevice` both dialects share, which compares what
+  it is about to set with that value for 15 minutes
+  (`READ_BACK_WINDOW_MINUTES`). A mismatch at least 60 s after the write
+  (`READ_BACK_GRACE_MINUTES`) writes ONE `log` line, values as they are,
+  no JSON, in the form com.heatzy shares so one grep reads both apps —
+  `target_temperature written as 20, read back as 19 after 6 min` — and
+  ends the watch. A read-back INSIDE the grace never logs, equal or
+  not: a listing racing the write (Classic lists every 5 minutes, Home
+  every minute) can still carry the previous value for one cycle. An
+  EQUAL read-back past the grace is no confirmation either — the model
+  was refreshed from the write, so equality is expected until the next
+  real listing — and keeps the watch, which expires in silence. The
+  library syncs EVERY device from the refreshed models before a write
+  resolves, so a watch a write makes stale must end BEFORE the push:
+  the capabilities the write names, `thermostat_mode` when the write
+  switches the unit off (the power-gated mode read answers `off`, so a
+  mode written earlier has no read-back left), and every watch of a
+  group write's paired members (`forgetWrites`, called by
+  `updateTargetAtaState` — the ATA widget writes through the facades,
+  outside the devices' door). A write that never reached the wire (folded as a no-change, or failed) restores the watches it would have replaced: they still have a read-back to judge. The clock is `Temporal.Now`, the
+  instants `Temporal.Instant`. The line is for the diagnostic log
+  alone: no setting, no route, no locale.
 - The ATA GROUP vocabulary is already cross-family, and its `Classic`
   prefix is history, not a branch: `ClassicGroupState` is the one shape
   both families' ATA facades implement (`getGroup` / `updateGroupState`),

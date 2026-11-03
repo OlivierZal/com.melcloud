@@ -1,3 +1,5 @@
+import { format } from 'node:util'
+
 import {
   fireAndForget,
   getErrorMessage,
@@ -11,6 +13,7 @@ import {
   isAPIError,
   NoChangesError,
 } from '@olivierzal/melcloud-api'
+import { Temporal } from 'temporal-polyfill'
 
 import type { Api } from '../types/api.mts'
 import type { CapabilityConverter } from '../types/bases.mts'
@@ -27,6 +30,28 @@ import type { EnergyReportConfig } from './base-report.mts'
 
 const DEBOUNCE_DELAY = 1000
 const modes: EnergyReportMode[] = ['regular', 'total']
+
+// A write MELCloud accepted can still come back with the previous value
+// at the next listing — the unit kept its own setpoint, or the cloud a
+// stale one — and Homey then mirrors it, so the tile seems to change its
+// mind on its own. The listing bodies are not logged, so the device logs
+// the read-back mismatch itself, once per write. The watch holds the
+// value the model carries once the write resolved — the library refreshes
+// it from the write first (Classic merges the POST echo's flagged fields,
+// Home re-syncs the registry after the PUT) — which is what the wire was
+// asked for, the library's clamps and `always_on` included: a later
+// read-back differing from it is the cloud's doing, not the app's. The
+// grace covers a listing racing the write (Classic lists every 5 minutes,
+// Home every minute, and either can still carry the previous value for
+// one cycle): a read-back inside it, equal or not, is never judged. The
+// window bounds how long a write is watched.
+const READ_BACK_GRACE_MINUTES = 1
+const READ_BACK_WINDOW_MINUTES = 15
+
+interface RecentWrite {
+  readonly at: Temporal.Instant
+  readonly value: unknown
+}
 
 // Homey exposes its status-indicator picker on some device classes only:
 // a thermostat gets none, a heat pump does. The setting therefore drives
@@ -129,6 +154,12 @@ export abstract class BaseMELCloudDevice<
   // returns to that message instead of to a bare `null`.
   readonly #heldReasons = new Set<HeldWarningReason>()
 
+  // What each capability was last written with — the Homey-domain value
+  // the model held once the write resolved — and when: the syncs of the
+  // next `READ_BACK_WINDOW_MINUTES` compare what the cloud reads back
+  // with it (`#checkReadBack`).
+  readonly #recentWrites = new Map<string, RecentWrite>()
+
   readonly #reports: {
     regular?: EnergyReportOperation
     total?: EnergyReportOperation
@@ -211,6 +242,14 @@ export abstract class BaseMELCloudDevice<
 
   protected abstract getRequiredCapabilities(): string[]
 
+  // The Homey-domain value a sync writes for a capability from this
+  // facade — `undefined` when it writes none — read the way the sync
+  // itself reads it, so a landed write is watched on the model's value.
+  protected abstract getSyncedCapabilityValue(
+    facade: TFacade,
+    capability: string,
+  ): unknown
+
   // Where the dialects genuinely differ: each reads its own payload shape.
   protected abstract syncCapabilityValues(facade: TFacade): Promise<void>
 
@@ -262,6 +301,15 @@ export abstract class BaseMELCloudDevice<
 
   public override error(...args: unknown[]): void {
     super.error(this.getName(), '-', ...args)
+  }
+
+  // A write landing outside this device's own door — the ATA widget's
+  // group write — rewrites the model the watches are judged against, so
+  // they end BEFORE it: the library syncs every device from the refreshed
+  // models before the write resolves, and a stale watch would judge that
+  // sync.
+  public forgetWrites(): void {
+    this.#recentWrites.clear()
   }
 
   // A LASTING condition (a unit the registry no longer resolves, sync
@@ -389,25 +437,6 @@ export abstract class BaseMELCloudDevice<
     return Object.hasOwn(this.driver.tagMappings.energy, setting)
   }
 
-  protected mapCapabilitiesToDeviceTags(
-    values: Record<string, unknown>,
-  ): Record<string, unknown> {
-    this.log('Requested data:', values)
-    const tagMapping = this.#tagMappings.set
-    const result: Record<string, unknown> = {}
-    for (const [capability, value] of Object.entries(values)) {
-      const tag = tagMapping[capability]
-      if (tag === undefined) {
-        continue
-      }
-      // `always_on` devices never switch off from Homey: the outgoing
-      // value is coerced before any converter runs.
-      const coerced = (capability === 'onoff' && this.isAlwaysOn) || value
-      result[tag] = this.capabilityToDevice[capability]?.(coerced) ?? coerced
-    }
-    return result
-  }
-
   protected async scheduleEnergyReports(): Promise<void> {
     if (this.energyReports === null) {
       return
@@ -424,11 +453,29 @@ export abstract class BaseMELCloudDevice<
     if (device === null) {
       return
     }
-    const updateData = this.mapCapabilitiesToDeviceTags(values)
-    if (Object.keys(updateData).length > 0) {
-      await this.#pushUpdate(device, updateData)
+    this.log('Requested data:', values)
+    const { capabilities, updateData } = this.#prepareUpdate(values)
+    const forgotten = this.#forgetWrites(capabilities, values)
+    if (
+      capabilities.length > 0 &&
+      (await this.#pushUpdate(device, updateData))
+    ) {
+      this.#watchReadBack(device, capabilities)
+    } else {
+      this.#restoreWrites(forgotten)
     }
     this.#scheduleSyncFromDevice()
+  }
+
+  // The one door a sync writes a capability through: what the cloud reads
+  // back is judged against the recent write of the capability, if any,
+  // before it lands on the tile.
+  protected async setSyncedCapabilityValue(
+    capability: string,
+    value: unknown,
+  ): Promise<void> {
+    this.#checkReadBack(capability, value)
+    await this.setCapabilityValue(capability, value)
   }
 
   // MELCloud accepting a write is not delivery: when the unit's cloud
@@ -442,6 +489,37 @@ export abstract class BaseMELCloudDevice<
     message: string,
   ): Promise<void> {
     await (isAvailable ? this.setAvailable() : this.setUnavailable(message))
+  }
+
+  // A mismatch past the grace is logged once, values as they are in the
+  // twin apps' one line form (`node:util`'s `%s` renders any value), and
+  // the watch ends. An equal read-back is NOT a confirmation: the model
+  // was refreshed from the write, so equality is expected until the next
+  // real listing — the watch simply expires.
+  #checkReadBack(capability: string, value: unknown): void {
+    const written = this.#recentWrites.get(capability)
+    if (written === undefined) {
+      return
+    }
+    const elapsedMinutes = written.at
+      .until(Temporal.Now.instant())
+      .total('minutes')
+    if (elapsedMinutes <= READ_BACK_WINDOW_MINUTES) {
+      if (elapsedMinutes < READ_BACK_GRACE_MINUTES || value === written.value) {
+        return
+      }
+      this.log(
+        format(
+          '%s written as %s, read back as %s after %d min',
+          capability,
+          written.value,
+          value,
+          Math.floor(elapsedMinutes),
+        ),
+      )
+    }
+    // Judged, or expired unjudged: the watch ends either way.
+    this.#recentWrites.delete(capability)
   }
 
   async #ensureDeviceFacade(): Promise<TFacade> {
@@ -463,6 +541,32 @@ export abstract class BaseMELCloudDevice<
     await this.applyCapabilitiesOptions()
     await this.syncFromDevice()
     await this.scheduleEnergyReports()
+  }
+
+  // A write replaces the watches of the capabilities it names, and a
+  // switch-off the mode's as well: the power-gated `thermostat_mode` read
+  // answers `off` for a unit switched off, so a mode written earlier has
+  // no read-back left to judge. Both end BEFORE the push — the library
+  // syncs every device from the refreshed model before the write
+  // resolves, and a stale watch would judge that sync.
+  #forgetWrites(
+    capabilities: string[],
+    values: Record<string, unknown>,
+  ): Map<string, RecentWrite> {
+    const forgotten = new Map<string, RecentWrite>()
+    const ended =
+      this.#outgoingValue('onoff', values.onoff) === false
+        ? [...capabilities, 'thermostat_mode']
+        : capabilities
+    for (const capability of ended) {
+      const written = this.#recentWrites.get(capability)
+      if (written === undefined) {
+        continue
+      }
+      forgotten.set(capability, written)
+      this.#recentWrites.delete(capability)
+    }
+    return forgotten
   }
 
   // The registry no longer holds the id — on Home an entry the strict
@@ -502,6 +606,34 @@ export abstract class BaseMELCloudDevice<
     return this.thermostatMode !== null && 'off' in this.thermostatMode
   }
 
+  // `always_on` devices never switch off from Homey: the outgoing value is
+  // coerced before any converter runs.
+  #outgoingValue(capability: string, value: unknown): unknown {
+    return (capability === 'onoff' && this.isAlwaysOn) || value
+  }
+
+  // What a write names, decided in one loop: the set capabilities of
+  // `values` — the ones a landed write is watched on — and the wire body,
+  // `always_on` applied, then the converters, keyed by tag.
+  #prepareUpdate(values: Record<string, unknown>): {
+    capabilities: string[]
+    updateData: Record<string, unknown>
+  } {
+    const capabilities: string[] = []
+    const updateData: Record<string, unknown> = {}
+    for (const [capability, value] of Object.entries(values)) {
+      const tag = this.#tagMappings.set[capability]
+      if (tag === undefined) {
+        continue
+      }
+      const coerced = this.#outgoingValue(capability, value)
+      updateData[tag] =
+        this.capabilityToDevice[capability]?.(coerced) ?? coerced
+      capabilities.push(capability)
+    }
+    return { capabilities, updateData }
+  }
+
   // The library's observability seam logs a write that LANDS
   // (`dataType: 'API request'`, full body and `EffectiveFlags`), and its
   // error seam logs an `HttpError`. Neither covers the two failures
@@ -517,20 +649,24 @@ export abstract class BaseMELCloudDevice<
   // new value, and the unit never moved. Every failed write is logged
   // rather than only the two uncovered ones: sorting them would mean
   // re-deriving the seam's own predicate here, and a duplicated line
-  // for an HTTP failure costs nothing beside a silent one.
+  // for an HTTP failure costs nothing beside a silent one. Answers
+  // whether the write reached the cloud — only such a write has a
+  // read-back to watch.
   async #pushUpdate(
     device: TFacade,
     updateData: Record<string, unknown>,
-  ): Promise<void> {
+  ): Promise<boolean> {
     try {
       await device.updateValues(updateData)
+      return true
     } catch (error) {
       if (error instanceof NoChangesError) {
         this.log('Not sent, identical to the last synced state:', updateData)
-        return
+        return false
       }
       this.error('Write failed:', updateData, error)
       await this.setWarning(error)
+      return false
     }
   }
 
@@ -569,6 +705,14 @@ export abstract class BaseMELCloudDevice<
   // Delay sync to let Homey's optimistic UI update and debounce settle.
   // The handle is kept so deletion cancels a pending sync, and failures are
   // logged instead of becoming unhandled rejections.
+  // Nothing reached the wire (a folded or failed write), so the watches
+  // it would have replaced still have a read-back to judge.
+  #restoreWrites(forgotten: Map<string, RecentWrite>): void {
+    for (const [capability, written] of forgotten) {
+      this.#recentWrites.set(capability, written)
+    }
+  }
+
   #scheduleSyncFromDevice(): void {
     if (this.#syncTimeout !== null) {
       this.homey.clearTimeout(this.#syncTimeout)
@@ -690,5 +834,18 @@ export abstract class BaseMELCloudDevice<
       this,
       'Energy report update failed:',
     )
+  }
+
+  // Remembers what a landed write asked for, per capability written, as
+  // the model the library refreshed from the write reads it; a capability
+  // the sync has no value for is not watched.
+  #watchReadBack(device: TFacade, capabilities: string[]): void {
+    const at = Temporal.Now.instant()
+    for (const capability of capabilities) {
+      const value = this.getSyncedCapabilityValue(device, capability)
+      if (value !== undefined) {
+        this.#recentWrites.set(capability, { at, value })
+      }
+    }
   }
 }
