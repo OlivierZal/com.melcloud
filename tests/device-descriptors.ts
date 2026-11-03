@@ -2,6 +2,11 @@ import { getMockCallArg } from '@olivierzal/homey-kit/testing'
 import { NoChangesError } from '@olivierzal/melcloud-api'
 import { describe, expect, it, vi } from 'vitest'
 
+import {
+  createTransportFailure,
+  TRANSPORT_FAILURE_CHAIN,
+} from './transport-failure.ts'
+
 const getConverter = (
   device: object,
   mapping: string,
@@ -131,8 +136,29 @@ export const testSetValuesErrorHandling = (
     // seam: the library serialises only an `HttpError`, and `setWarning`
     // clears its own toast in the same call. The error line is the only
     // trace a diagnostic report can carry, so it is pinned beside the
-    // warning.
-    it('should warn when the update rejects with a transport error', async () => {
+    // warning, in the SDK's `logFailure` form: a transport failure is ONE
+    // line naming its cause chain, with no object and so no stack, and
+    // no body — the 'Requested data:' line carries the request.
+    it('should warn and log one line when the update rejects with a transport error', async () => {
+      setValuesMock.mockRejectedValueOnce(createTransportFailure())
+      const device = getDevice() as {
+        error: (...args: unknown[]) => void
+        onInit: () => Promise<void>
+      }
+      await device.onInit()
+      const error = vi.spyOn(device, 'error')
+      const callback = getCapabilityListenerCallback()
+      await callback({ onoff: true })
+
+      expect(superSetWarningMock).toHaveBeenCalledWith('fetch failed')
+      expect(error).toHaveBeenCalledWith(
+        `Write failed: ${TRANSPORT_FAILURE_CHAIN}`,
+      )
+    })
+
+    // A rejection the SDK has no class for is a bug: its object, and so
+    // the stack that locates it, stays on the line.
+    it('should keep the error object when the update rejects with a plain error', async () => {
       setValuesMock.mockRejectedValueOnce(new Error('update failed'))
       const device = getDevice() as {
         error: (...args: unknown[]) => void
@@ -144,11 +170,7 @@ export const testSetValuesErrorHandling = (
       await callback({ onoff: true })
 
       expect(superSetWarningMock).toHaveBeenCalledWith('update failed')
-      expect(error).toHaveBeenCalledWith(
-        'Write failed:',
-        expect.any(Object),
-        expect.any(Error),
-      )
+      expect(error).toHaveBeenCalledWith('Write failed:', expect.any(Error))
     })
   })
 }

@@ -706,6 +706,50 @@ coverage.
   outside the devices' door). A write that never reached the wire (folded as a no-change, or failed) restores the watches it would have replaced: they still have a read-back to judge. The clock is `Temporal.Now`, the
   instants `Temporal.Instant`. The line is for the diagnostic log
   alone: no setting, no route, no locale.
+- The app's own cloud-failure lines take the SDK's `logFailure` form
+  (api-core's helper, re-exported by melcloud-api since 60.4.0 beside
+  the error family): a failure the SDK has a class for — an `HttpError`, the
+  `APIError` family, a transport failure (`TypeError: fetch failed`, a
+  `TimeoutError`), a caller's abort — anywhere in its `cause` chain is
+  ONE `error` line, the label then the chain outermost first —
+  `Write failed: TypeError: fetch failed — caused by Error: Connect Timeout Error (UND_ERR_CONNECT_TIMEOUT)`
+  — no error object and so no stack, since a transient's transport
+  frames read as a crash in a diagnostic report; anything else is a
+  programming error and keeps the object
+  whose stack locates it. The logger is the device or the app itself
+  (their `log`/`error` satisfy the SDK's `Logger`), never a wrapper.
+  Three sites, the ones that log an error that came from a cloud call
+  or a cloud-backed read: `#pushUpdate`'s 'Write failed:' (no body on
+  the line — `sendUpdate` logged it as 'Requested data:'), the report's
+  'Energy report fetch failed:' and the app's 'Home error log fetch
+  failed for unit …:' (the unit by its id, the SDK's convention, never
+  by name). A `Result` failure is a plain DESCRIPTOR (`{ kind, cause? }`),
+  which a chain can only spell as "a thrown object", so `failureCause`
+  (`lib/unwrap-result.mts`) hands the line the error the SDK classified
+  — `unwrapResult` chains its `Error` to it — and the descriptor itself
+  only for the two kinds the SDK answers without one (`rate-limited`,
+  Home's `not-found`). Those two print as the small object they are at
+  the Home error-log site alone, which hands `failureCause` to the line
+  directly; through `unwrapResult` — the two report sites, every
+  `api.mts` route — the chain `Error → descriptor` holds no link the
+  SDK has a class for, so `logFailure` keeps the wrapper `Error`, stack
+  included (the report tests pin both kinds). Closing that gap is the
+  SDK's, `isKnownFailure` recognising a descriptor as a link; the app
+  never re-derives the SDK's predicate. The SDK's own `safeRequest`
+  line (`[GET …] request or validation failed:`) precedes the two
+  Result-backed reads — the reports' `getEnergy`/`getEnergySeries`, the
+  Home error log's `getErrorLog` — in the same form, the app's line then
+  saying which site the failure reached. A write goes through the
+  throwing `requestData`/`request`, so 'Write failed:' stands alone:
+  the SDK's error seam records an `HttpError` and nothing else, and a
+  transport failure on a write reaches no seam at all.
+  Sites that log a programming
+  error BY DESIGN keep the object: the 'Unexpected error while ensuring
+  device:' branch, the IPC 'Failed to update the device warning:',
+  'Post-update sync failed:' (the sync reads the registry, not the
+  cloud) and the kit's `fireAndForget`/`settleAll` lines, which are
+  API-agnostic; 'Unit unreadable, warning held:' logs a registry miss,
+  not a cloud failure, and keeps its error too.
 - The ATA GROUP vocabulary is already cross-family, and its `Classic`
   prefix is history, not a branch: `ClassicGroupState` is the one shape
   both families' ATA facades implement (`getGroup` / `updateGroupState`),

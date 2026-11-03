@@ -1,6 +1,11 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import { getMockCallArg, mock } from '@olivierzal/homey-kit/testing'
-import { err, ok } from '@olivierzal/melcloud-api'
+import {
+  type ApiRequestError,
+  err,
+  HttpError,
+  ok,
+} from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 import {
   afterAll,
@@ -19,6 +24,10 @@ import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
 import { EnergyReport } from '../../drivers/classic-report.mts'
 import { createReportDeviceMocks, FAKE_NOW } from '../report-mocks.ts'
+import {
+  createTransportFailure,
+  TRANSPORT_FAILURE_CHAIN,
+} from '../transport-failure.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
 
@@ -81,12 +90,14 @@ const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   return getEnergyMock
 }
 
-const mockFailingFetch = (): void => {
+const NETWORK_FAILURE: ApiRequestError = { kind: 'network' }
+
+const mockFailingFetch = (failure: ApiRequestError = NETWORK_FAILURE): void => {
   ensureDeviceMock.mockResolvedValue({
     data: {},
     getEnergy: vi
       .fn<(query?: unknown) => Promise<unknown>>()
-      .mockResolvedValue(err({ kind: 'network' as const })),
+      .mockResolvedValue(err(failure)),
   })
 }
 
@@ -167,28 +178,68 @@ describe(EnergyReport, () => {
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
-    it('should log wrapped error when getEnergy fails', async () => {
-      const energyError = { kind: 'network' as const }
-      ensureDeviceMock.mockResolvedValue({
-        data: {},
-        getEnergy: vi
-          .fn<(query?: unknown) => Promise<unknown>>()
-          .mockResolvedValue(err(energyError)),
+    // The line follows the SDK's `logFailure` rule: a failure the SDK has
+    // a class for — here the transport failure behind the `network`
+    // descriptor — is ONE line naming the cause chain, with no error
+    // object and so no stack; a bug keeps its object (the next clause).
+    it('should log a classified fetch failure as one line naming its cause chain', async () => {
+      mockFailingFetch({ cause: createTransportFailure(), kind: 'network' })
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      expect(errorMock).toHaveBeenCalledWith(
+        `Energy report fetch failed: Error: MELCloud request failed: network — caused by ${TRANSPORT_FAILURE_CHAIN}`,
+      )
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
+    })
+
+    // The wire's common failure: the `HttpError` behind a `server`
+    // descriptor is a link the SDK has a class for, so the line is one.
+    it('should log an HTTP failure as one line naming the status', async () => {
+      mockFailingFetch({
+        cause: new HttpError('Request failed with status code 500', {
+          response: { data: {}, headers: {}, status: 500 },
+        }),
+        kind: 'server',
+        status: 500,
       })
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
       expect(errorMock).toHaveBeenCalledWith(
+        'Energy report fetch failed: Error: MELCloud request failed: server — caused by HttpError: Request failed with status code 500',
+      )
+    })
+
+    // The SDK answers its own rate-limit gate with a descriptor and no
+    // classified error, so `unwrapResult`'s wrapper carries the plain
+    // object as its cause: no link the SDK has a class for, and the line
+    // keeps the wrapper `Error`, stack included. The small-object form
+    // holds at the app's direct `failureCause` site alone.
+    it('should keep the wrapper error when the SDK answers rate-limited', async () => {
+      const descriptor: ApiRequestError = {
+        kind: 'rate-limited',
+        retryAfterMs: 42_000,
+      }
+      mockFailingFetch(descriptor)
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      expect(errorMock).toHaveBeenCalledWith(
+        'Energy report fetch failed:',
+        expect.any(Error),
+      )
+      expect(errorMock).toHaveBeenCalledWith(
         'Energy report fetch failed:',
         expect.objectContaining({
-          cause: energyError,
-          message: 'MELCloud request failed: network',
+          cause: descriptor,
+          message: 'MELCloud request failed: rate-limited',
         }),
       )
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
-    it('should log error and still schedule when setCapabilityValue throws', async () => {
+    it('should keep the error object and still schedule when setCapabilityValue throws', async () => {
       const capabilityError = new Error('capability rejected')
       setCapabilityValueMock.mockRejectedValueOnce(capabilityError)
       mockEnergyFetch({

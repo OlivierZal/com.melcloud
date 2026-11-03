@@ -31,6 +31,7 @@ import {
   type SettingManager,
   type SyncCallback,
   isClassicAtaFacade,
+  logFailure,
   resolveErrorLogWindow,
 } from '@olivierzal/melcloud-api'
 import { Intl, Temporal } from 'temporal-polyfill'
@@ -74,7 +75,7 @@ import {
   UNKNOWN_DATE_PLACEHOLDER,
 } from './lib/constants.mts'
 import { type Homey, App } from './lib/homey.mts'
-import { unwrapResult } from './lib/unwrap-result.mts'
+import { failureCause, unwrapResult } from './lib/unwrap-result.mts'
 import { toNonNegativeInt, toZoneValueData } from './lib/validation.mts'
 import {
   getHomeBuildingId,
@@ -1042,13 +1043,19 @@ export default class MELCloudApp extends App {
   }
 
   // Best-effort per device: one unreachable unit must not empty the log.
+  // The failure line names the unit by its id, as the SDK's own lines
+  // do, and its cause on one line when the SDK has a class for it.
   async #getHomeDeviceErrorEntries(
     device: Home.Device,
   ): Promise<RawErrorEntry[]> {
     const { id, name, type } = device
     const result = await this.getHomeFacade(id, type).getErrorLog()
     if (!result.ok) {
-      this.error('Home error log fetch failed:', name, result.error)
+      logFailure(
+        this,
+        `Home error log fetch failed for unit ${id}:`,
+        failureCause(result.error),
+      )
       return []
     }
     return result.value.map(({ atEpochMs, code = '', message = code }) => ({

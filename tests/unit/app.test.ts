@@ -4,6 +4,7 @@ import {
   settleDetached,
 } from '@olivierzal/homey-kit/testing'
 import {
+  type ApiRequestError,
   type HolidayModeState,
   type HolidayModeUpdate,
   type LoginCredentials,
@@ -26,6 +27,10 @@ import type * as HomeyLib from '../../lib/homey.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
 import type { Settings } from '../../types/device-settings.mts'
 import type { ManifestDriver } from '../../types/manifest.mts'
+import {
+  createTransportFailure,
+  TRANSPORT_FAILURE_CHAIN,
+} from '../transport-failure.ts'
 
 vi.mock(import('../../lib/homey.mts'), async () => {
   const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
@@ -1465,7 +1470,13 @@ describe('melCloudApp', () => {
       expect(errorLog.errors).toStrictEqual([])
     })
 
-    it('should keep the log when a Home device fails to answer', async () => {
+    // One Classic entry and a Home unit whose error log fails: the log
+    // keeps the entry, and the failure line names the unit by its id —
+    // the SDK's own convention, never the name — and the failure the
+    // SDK's `logFailure` way: ONE line naming the cause chain of a
+    // failure the SDK has a class for, the descriptor itself (a small
+    // object, no stack) for the two the SDK answers without one.
+    const stubFailingHomeErrorLog = (failure: ApiRequestError): void => {
       mockApiInstance.getErrorLog.mockResolvedValue(
         ok({
           entries: [
@@ -1489,8 +1500,15 @@ describe('melCloudApp', () => {
       mockHomeFacadeManagerGetById.mockReturnValue({
         getErrorLog: vi
           .fn<() => Promise<unknown>>()
-          .mockResolvedValue(err({ kind: 'network' })),
+          .mockResolvedValue(err(failure)),
         type: Home.DeviceType.Ata,
+      })
+    }
+
+    it('should keep the log and name a classified Home failure on one line', async () => {
+      stubFailingHomeErrorLog({
+        cause: createTransportFailure(),
+        kind: 'network',
       })
       const errorSpy = vi.fn<(...args: unknown[]) => void>()
       await app.onInit()
@@ -1503,9 +1521,25 @@ describe('melCloudApp', () => {
 
       expect(errorLog.errors).toHaveLength(1)
       expect(errorSpy).toHaveBeenCalledWith(
-        'Home error log fetch failed:',
-        'Studeerkamer',
-        { kind: 'network' },
+        `Home error log fetch failed for unit home-1: ${TRANSPORT_FAILURE_CHAIN}`,
+      )
+    })
+
+    it('should keep the log and the descriptor when a Home unit is not found', async () => {
+      stubFailingHomeErrorLog({ entityId: 'home-1', kind: 'not-found' })
+      const errorSpy = vi.fn<(...args: unknown[]) => void>()
+      await app.onInit()
+      Object.defineProperty(app, 'error', {
+        configurable: true,
+        value: errorSpy,
+      })
+
+      const errorLog = await app.getErrorLog(mock<Classic.ErrorLogQuery>())
+
+      expect(errorLog.errors).toHaveLength(1)
+      expect(errorSpy).toHaveBeenCalledWith(
+        'Home error log fetch failed for unit home-1:',
+        { entityId: 'home-1', kind: 'not-found' },
       )
     })
 
