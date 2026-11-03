@@ -2143,5 +2143,20 @@
     "pl": "Gdy zalogowane konto wykazuje urządzenia, z których żadne nie zostało jeszcze dodane do Homey, aplikacja wyjaśnia teraz, jak je dodać, w ustawieniach i podczas dodawania urządzenia. Dziennik diagnostyczny zlicza też wykazane i dodane urządzenia oraz podaje w jednym wierszu przyczynę nieudanego odczytu z chmury.",
     "ru": "Если в учётной записи, в которую выполнен вход, есть устройства, ни одно из которых ещё не добавлено в Homey, приложение теперь объясняет, как их добавить, в настройках и при добавлении устройства. Журнал диагностики также подсчитывает перечисленные и добавленные устройства и указывает причину неудачного чтения из облака в одной строке.",
     "sv": "När ett inloggat konto listar enheter som ingen av ännu har lagts till i Homey, förklarar appen nu hur du lägger till dem, i inställningarna och när du lägger till en enhet. Diagnostikloggen räknar också de listade och tillagda enheterna och anger orsaken till en misslyckad molnläsning på en rad."
+  },
+  "46.14.0": {
+    "ar": "عندما تعيد السحابة، بعد تغيير قيمة من Homey، قيمة مختلفة خلال الدقائق التالية، يسجل التطبيق الآن ذلك في سجل التشخيص. كما أصبحت أخطاء السحابة الخاصة بالتطبيق تُسجّل في سطر واحد يذكر سببها.",
+    "da": "Når skyen, efter at en værdi er ændret fra Homey, melder en anden værdi tilbage i løbet af de følgende minutter, noterer appen det nu i diagnoseloggen. Appens egne cloud-fejl logges desuden på én linje med deres årsag.",
+    "de": "Meldet die Cloud nach einer von Homey aus geänderten Einstellung in den folgenden Minuten einen anderen Wert zurück, vermerkt die App das jetzt im Diagnoseprotokoll. Außerdem werden die eigenen Cloud-Fehler der App in einer Zeile mit ihrer Ursache protokolliert.",
+    "en": "When the cloud reads back a different value within minutes of a change made from Homey, the app now notes it in the diagnostic log. The app's own cloud failures are also logged on one line naming their cause.",
+    "es": "Cuando la nube devuelve un valor distinto pocos minutos después de un cambio hecho desde Homey, la aplicación ahora lo anota en el registro de diagnóstico. Los propios fallos de la nube de la aplicación también se registran en una sola línea con su causa.",
+    "fr": "Quand le cloud relit une valeur différente dans les minutes qui suivent un changement fait depuis Homey, l'application le note désormais dans le journal de diagnostic. Les échecs cloud propres à l'application sont aussi journalisés sur une seule ligne avec leur cause.",
+    "it": "Quando il cloud rilegge un valore diverso pochi minuti dopo una modifica fatta da Homey, l'app ora lo annota nel log di diagnostica. Anche gli errori cloud propri dell'app vengono registrati su una sola riga con la loro causa.",
+    "ko": "Homey에서 값을 변경한 뒤 몇 분 안에 클라우드가 다른 값을 돌려주면, 이제 앱이 진단 로그에 기록합니다. 앱 자체의 클라우드 오류도 원인과 함께 한 줄로 기록됩니다.",
+    "nl": "Wanneer de cloud binnen enkele minuten na een wijziging vanuit Homey een andere waarde terugleest, noteert de app dat nu in het diagnoselogboek. De eigen cloudfouten van de app worden ook op één regel met hun oorzaak vastgelegd.",
+    "no": "Når skyen leser tilbake en annen verdi i minuttene etter en endring gjort fra Homey, noterer appen det nå i diagnoseloggen. Appens egne skyfeil logges også på én linje med årsaken.",
+    "pl": "Gdy chmura w ciągu kilku minut po zmianie dokonanej z Homey odczyta inną wartość, aplikacja odnotowuje to teraz w dzienniku diagnostycznym. Własne błędy chmury aplikacji są też zapisywane w jednym wierszu z ich przyczyną.",
+    "ru": "Если через несколько минут после изменения, сделанного из Homey, облако возвращает другое значение, приложение теперь отмечает это в журнале диагностики. Собственные облачные сбои приложения также записываются одной строкой с указанием причины.",
+    "sv": "När molnet läser tillbaka ett annat värde inom några minuter efter en ändring gjord från Homey, noterar appen nu det i diagnostikloggen. Appens egna molnfel loggas också på en rad med sin orsak."
   }
 }

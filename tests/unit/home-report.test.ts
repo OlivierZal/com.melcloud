@@ -1,6 +1,6 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
 import { getMockCallArg, mock } from '@olivierzal/homey-kit/testing'
-import { err, ok } from '@olivierzal/melcloud-api'
+import { type ApiRequestError, err, ok } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 import {
   afterAll,
@@ -21,6 +21,10 @@ import {
   HomeEnergyReport,
 } from '../../drivers/home-report.mts'
 import { createReportDeviceMocks, FAKE_NOW } from '../report-mocks.ts'
+import {
+  createTransportFailure,
+  TRANSPORT_FAILURE_CHAIN,
+} from '../transport-failure.ts'
 
 const {
   cleanMappingMock,
@@ -77,11 +81,13 @@ const point = (
   kilowattHours,
 })
 
-const mockFailingFetch = (): void => {
+const NETWORK_FAILURE: ApiRequestError = { kind: 'network' }
+
+const mockFailingFetch = (failure = NETWORK_FAILURE): void => {
   ensureDeviceMock.mockResolvedValue({
     getEnergySeries: vi
       .fn<(query: unknown) => Promise<unknown>>()
-      .mockResolvedValue(err({ kind: 'network' as const })),
+      .mockResolvedValue(err(failure)),
   })
 }
 
@@ -162,9 +168,29 @@ describe('home energy reports', () => {
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
-    it('should log a wrapped error when the telemetry fetch fails', async () => {
+    // One line for a failure the SDK has a class for, the error object
+    // for a bug: the base report's `logFailure` line, on this leg too.
+    it('should log a classified telemetry failure as one line', async () => {
       cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
-      mockFailingFetch()
+      mockFailingFetch({ cause: createTransportFailure(), kind: 'network' })
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        regularConfig,
+        ATA_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      expect(errorMock).toHaveBeenCalledWith(
+        `Energy report fetch failed: Error: MELCloud request failed: network — caused by ${TRANSPORT_FAILURE_CHAIN}`,
+      )
+      expect(holdWarningMock).not.toHaveBeenCalled()
+    })
+
+    it('should keep the error object when a capability write throws', async () => {
+      cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
+      mockAtaFetch([point('2026-03-18T10:30:00Z', 0.1)])
+      const capabilityError = new Error('capability rejected')
+      setCapabilityValueMock.mockRejectedValueOnce(capabilityError)
       const report = new HomeEnergyReport(
         mockDevice(),
         regularConfig,
@@ -174,11 +200,8 @@ describe('home energy reports', () => {
 
       expect(errorMock).toHaveBeenCalledWith(
         'Energy report fetch failed:',
-        expect.objectContaining({
-          message: 'MELCloud request failed: network',
-        }),
+        capabilityError,
       )
-      expect(holdWarningMock).not.toHaveBeenCalled()
     })
 
     // The Home leg shares the base report's lasting warning: held under

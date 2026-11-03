@@ -11,6 +11,7 @@ import {
   type AvailabilityAware,
   EntityNotFoundError,
   isAPIError,
+  logFailure,
   NoChangesError,
 } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
@@ -649,9 +650,12 @@ export abstract class BaseMELCloudDevice<
   // new value, and the unit never moved. Every failed write is logged
   // rather than only the two uncovered ones: sorting them would mean
   // re-deriving the seam's own predicate here, and a duplicated line
-  // for an HTTP failure costs nothing beside a silent one. Answers
-  // whether the write reached the cloud — only such a write has a
-  // read-back to watch.
+  // for an HTTP failure costs nothing beside a silent one. The line is
+  // the SDK's `logFailure` form — one line naming the cause chain for a
+  // failure the SDK has a class for, the error object with its stack for
+  // a bug — and names no body: `sendUpdate` logged the request as
+  // 'Requested data:' already. Answers whether the write reached the
+  // cloud — only such a write has a read-back to watch.
   async #pushUpdate(
     device: TFacade,
     updateData: Record<string, unknown>,
@@ -664,7 +668,7 @@ export abstract class BaseMELCloudDevice<
         this.log('Not sent, identical to the last synced state:', updateData)
         return false
       }
-      this.error('Write failed:', updateData, error)
+      logFailure(this, 'Write failed:', error)
       await this.setWarning(error)
       return false
     }

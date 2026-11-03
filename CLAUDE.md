@@ -706,6 +706,39 @@ coverage.
   outside the devices' door). A write that never reached the wire (folded as a no-change, or failed) restores the watches it would have replaced: they still have a read-back to judge. The clock is `Temporal.Now`, the
   instants `Temporal.Instant`. The line is for the diagnostic log
   alone: no setting, no route, no locale.
+- The app's own cloud-failure lines take the SDK's `logFailure` form
+  (api-core 2.3.1, re-exported by melcloud-api 60.4.0 beside the error
+  family): a failure the SDK has a class for — an `HttpError`, the
+  `APIError` family, a transport failure (`TypeError: fetch failed`, a
+  `TimeoutError`), a caller's abort — anywhere in its `cause` chain is
+  ONE `error` line, the label then the chain outermost first —
+  `Write failed: TypeError: fetch failed — caused by Error: Connect Timeout Error (UND_ERR_CONNECT_TIMEOUT)`
+  — no error object and so no stack, since a transient's transport
+  frames read as a crash in a diagnostic report; anything else is a
+  programming error and keeps the object
+  whose stack locates it. The logger is the device or the app itself
+  (their `log`/`error` satisfy the SDK's `Logger`), never a wrapper.
+  Three sites, the ones that log an error that came from a cloud call
+  or a cloud-backed read: `#pushUpdate`'s 'Write failed:' (no body on
+  the line — `sendUpdate` logged it as 'Requested data:'), the report's
+  'Energy report fetch failed:' and the app's 'Home error log fetch
+  failed for unit …:' (the unit by its id, the SDK's convention, never
+  by name). A `Result` failure is a plain DESCRIPTOR (`{ kind, cause? }`),
+  which a chain can only spell as "a thrown object", so `failureCause`
+  (`lib/unwrap-result.mts`) hands the line the error the SDK classified
+  — `unwrapResult` chains its `Error` to it — and the descriptor itself
+  only for the two kinds the SDK answers without one (`rate-limited`,
+  Home's `not-found`), which then print as the small object they are.
+  The SDK's own `safeRequest` line
+  (`[GET …] request or validation failed:`) precedes each of these in
+  the same form; the app's line says which site the failure reached.
+  Sites that log a programming
+  error BY DESIGN keep the object: the 'Unexpected error while ensuring
+  device:' branch, the IPC 'Failed to update the device warning:',
+  'Post-update sync failed:' (the sync reads the registry, not the
+  cloud) and the kit's `fireAndForget`/`settleAll` lines, which are
+  API-agnostic; 'Unit unreadable, warning held:' logs a registry miss,
+  not a cloud failure, and keeps its error too.
 - The ATA GROUP vocabulary is already cross-family, and its `Classic`
   prefix is history, not a branch: `ClassicGroupState` is the one shape
   both families' ATA facades implement (`getGroup` / `updateGroupState`),

@@ -1,5 +1,6 @@
 import type Homey from 'homey/lib/Homey'
 import type { Temporal } from 'temporal-polyfill'
+import { logFailure } from '@olivierzal/melcloud-api'
 
 import type { EnergyReportMode } from '../types/device.mts'
 import { getNow } from '../lib/temporal.mts'
@@ -135,7 +136,7 @@ export abstract class ScheduledEnergyReport {
     try {
       applied = await this.fetchAndApply()
     } catch (error) {
-      this.#device.error('Energy report fetch failed:', error)
+      logFailure(this.#device, 'Energy report fetch failed:', error)
       await this.#registerFailure()
       return
     }

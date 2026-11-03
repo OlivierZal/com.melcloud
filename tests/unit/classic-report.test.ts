@@ -19,6 +19,10 @@ import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
 import { EnergyReport } from '../../drivers/classic-report.mts'
 import { createReportDeviceMocks, FAKE_NOW } from '../report-mocks.ts'
+import {
+  createTransportFailure,
+  TRANSPORT_FAILURE_CHAIN,
+} from '../transport-failure.ts'
 
 type TestDeviceType = typeof Classic.DeviceType.Ata
 
@@ -167,28 +171,29 @@ describe(EnergyReport, () => {
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
-    it('should log wrapped error when getEnergy fails', async () => {
-      const energyError = { kind: 'network' as const }
+    // The line follows the SDK's `logFailure` rule: a failure the SDK has
+    // a class for — here the transport failure behind the `network`
+    // descriptor — is ONE line naming the cause chain, with no error
+    // object and so no stack; a bug keeps its object (the next clause).
+    it('should log a classified fetch failure as one line naming its cause chain', async () => {
       ensureDeviceMock.mockResolvedValue({
         data: {},
         getEnergy: vi
           .fn<(query?: unknown) => Promise<unknown>>()
-          .mockResolvedValue(err(energyError)),
+          .mockResolvedValue(
+            err({ cause: createTransportFailure(), kind: 'network' }),
+          ),
       })
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
       expect(errorMock).toHaveBeenCalledWith(
-        'Energy report fetch failed:',
-        expect.objectContaining({
-          cause: energyError,
-          message: 'MELCloud request failed: network',
-        }),
+        `Energy report fetch failed: Error: MELCloud request failed: network — caused by ${TRANSPORT_FAILURE_CHAIN}`,
       )
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
 
-    it('should log error and still schedule when setCapabilityValue throws', async () => {
+    it('should keep the error object and still schedule when setCapabilityValue throws', async () => {
       const capabilityError = new Error('capability rejected')
       setCapabilityValueMock.mockRejectedValueOnce(capabilityError)
       mockEnergyFetch({
