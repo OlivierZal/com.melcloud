@@ -1,0 +1,4 @@
+{
+  "extends": ["./tsconfig.json", "@olivierzal/configs/tsconfig/declarations"],
+  "include": ["**/*.d.ts"]
+}
