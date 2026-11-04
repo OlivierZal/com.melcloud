@@ -11,7 +11,7 @@ jobs:
       pull-requests: read
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-    uses: OlivierZal/configs/.github/workflows/claude.yml@f14c906e6db9327fb6a865911c994b645f15fd08 # v8.5.0
+    uses: OlivierZal/configs/.github/workflows/claude.yml@eb3af974655875cb5b993cf8e7bb65f38b0f95d5 # v8.6.0
 name: claude
 on:
   # No pull_request_review(_comment): Copilot auto-review fires them as a
