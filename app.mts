@@ -310,6 +310,15 @@ const formatErrorEntries = (
     }))
 }
 
+// The group form's mode picker: a capability's options minus `off`,
+// which the form drives through its own power control, not as a mode.
+const withoutOffMode = (
+  options: ManifestDriverCapabilitiesOptions,
+): ManifestDriverCapabilitiesOptions => ({
+  ...options,
+  values: options.values?.filter(({ id }) => id !== 'off'),
+})
+
 export default class MELCloudApp extends App {
   declare public readonly homey: MELCloudHomey
 
@@ -928,12 +937,12 @@ export default class MELCloudApp extends App {
       {
         enumType: Classic.OperationMode,
         key: 'OperationMode',
-        options: {
+        // Narrowed as the setpoint is: the manifest's list when it declares
+        // one, the vendored list otherwise — never an empty picker.
+        options: withoutOffMode({
           ...thermostatMode,
-          values: toCapabilitiesOptionsNarrowing(
-            ataOptions?.thermostat_mode,
-          ).values?.filter(({ id }) => id !== 'off'),
-        },
+          ...toCapabilitiesOptionsNarrowing(ataOptions?.thermostat_mode),
+        }),
       },
     ]
   }

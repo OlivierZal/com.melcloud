@@ -60,7 +60,18 @@ vi.mock(import('../../files.mts'), async (importOriginal) => {
       title: { en: 'Set temperature' },
       type: 'number',
     },
-    thermostatMode: { title: { en: 'Thermostat mode' }, type: 'enum' },
+    // The vendored list, `off` included: what the mode picker falls back
+    // to when the driver manifest narrows none.
+    thermostatMode: {
+      title: { en: 'Thermostat mode' },
+      type: 'enum',
+      values: [
+        { id: 'auto', title: { en: 'Auto' } },
+        { id: 'heat', title: { en: 'Heat' } },
+        { id: 'cool', title: { en: 'Cool' } },
+        { id: 'off', title: { en: 'Off' } },
+      ],
+    },
     vertical: {
       title: { en: 'Vertical' },
       type: 'enum',
@@ -1057,6 +1068,33 @@ describe('melCloudApp', () => {
       expect(
         operationModeOptions?.values?.find((value) => value.id === 'eco'),
       ).toBeDefined()
+    })
+
+    // The manifest narrows the vendored definition; a driver entry that
+    // declares no mode list leaves the vendored modes in place rather
+    // than an empty picker, `off` dropped from that list too and the
+    // ids mapped onto the Classic wire numbers like any other.
+    it('should serve the vendored modes minus off when the manifest declares none', async () => {
+      const [melcloudDriver] = mockManifestDrivers
+      Object.defineProperty(app.homey, 'manifest', {
+        configurable: true,
+        value: {
+          drivers: [{ ...melcloudDriver, capabilitiesOptions: {} }],
+          flow: mockManifestFlow,
+          version: '1.0.0',
+        },
+      })
+      await app.onInit()
+      const [, operationModeOptions] =
+        app
+          .getClassicAtaCapabilities()
+          .find(([key]) => key === 'OperationMode') ?? []
+
+      expect(operationModeOptions?.values?.map(({ id }) => id)).toStrictEqual([
+        '8',
+        '1',
+        '3',
+      ])
     })
   })
 
