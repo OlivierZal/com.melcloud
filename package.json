@@ -31,14 +31,14 @@
   },
   "prettier": "@olivierzal/configs/prettier",
   "dependencies": {
-    "@olivierzal/homey-kit": "8.0.0",
+    "@olivierzal/homey-kit": "9.0.0",
     "@olivierzal/melcloud-api": "60.4.0",
     "source-map-support": "^0.5.21",
     "temporal-polyfill": "^1.0.6"
   },
   "devDependencies": {
     "@olivierzal/configs": "8.4.0",
-    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^1.8.3",
     "@types/node": "^26.6.5",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@vitest/coverage-v8": "^5.0.5",
@@ -46,7 +46,7 @@
     "esbuild": "^0.28.2",
     "eslint": "^10.13.0",
     "happy-dom": "21.0.4",
-    "homey-apps-sdk-v3-types": "^0.3.12",
+    "homey-apps-sdk-v3-types": "^1.8.3",
     "homey-lib": "^2.52.3",
     "jiti": "^2.7.0",
     "prettier": "^3.9.10",

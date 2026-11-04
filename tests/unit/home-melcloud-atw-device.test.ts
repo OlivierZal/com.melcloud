@@ -69,7 +69,11 @@ vi.mock(import('homey'), async () => {
             __: vi
               .fn<(key: string) => string>()
               .mockImplementation((key: string) => key),
-            api: { realtime: vi.fn<(event: string, data: unknown) => void>() },
+            api: {
+              realtime: vi
+                .fn<(event: string, data: unknown) => Promise<void>>()
+                .mockResolvedValue(undefined),
+            },
             app: {
               getHomeFacade: getHomeFacadeMock,
               isAccountEmpty: vi.fn<(api: string) => boolean>(() => false),

@@ -53,13 +53,17 @@ export const createMockDeviceClass = (
 
     public homey = {
       __: vi.fn<(key: string) => string>(),
-      api: { realtime: vi.fn<(event: string, data: unknown) => void>() },
+      api: {
+        realtime: vi
+          .fn<(event: string, data: unknown) => Promise<void>>()
+          .mockResolvedValue(undefined),
+      },
       app: {
         getClassicFacade: vi.fn<(kind: string, id: number) => unknown>(),
         isAccountEmpty: vi.fn<(api: string) => boolean>(() => false),
         isRegistryListed: vi.fn<(api: string) => boolean>(() => false),
       },
-      clearTimeout: vi.fn<(timer: NodeJS.Timeout | null) => void>(),
+      clearTimeout: vi.fn<(timer: NodeJS.Timeout | undefined) => void>(),
       clock: { getTimezone: vi.fn<() => string>(() => 'Europe/Paris') },
       i18n: { getLanguage: vi.fn<() => string>(() => 'en') },
       setTimeout: vi.fn<(callback: () => void, ms: number) => NodeJS.Timeout>(),

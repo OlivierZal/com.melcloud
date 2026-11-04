@@ -1,5 +1,9 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
-import { getMockCallArg, mock } from '@olivierzal/homey-kit/testing'
+import {
+  getMockCallArg,
+  mock,
+  settleDetached,
+} from '@olivierzal/homey-kit/testing'
 import { type ApiRequestError, err, ok } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 import {
@@ -150,7 +154,7 @@ describe('home energy reports', () => {
       )
       await report.start()
 
-      expect(clearTimeoutMock).toHaveBeenCalledWith(null)
+      expect(clearTimeoutMock).toHaveBeenCalledWith(undefined)
       expect(setTimeoutMock).not.toHaveBeenCalled()
     })
 
@@ -763,12 +767,9 @@ describe('home energy reports', () => {
         expect.any(Number),
       )
 
-      const timeoutCallback = getMockCallArg<() => Promise<void>>(
-        setTimeoutMock,
-        0,
-        0,
-      )
-      await timeoutCallback()
+      const timeoutCallback = getMockCallArg<() => void>(setTimeoutMock, 0, 0)
+      timeoutCallback()
+      await settleDetached()
 
       expect(setTimeoutMock).toHaveBeenCalledTimes(2)
     })

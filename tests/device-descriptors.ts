@@ -1,4 +1,4 @@
-import { getMockCallArg } from '@olivierzal/homey-kit/testing'
+import { getMockCallArg, settleDetached } from '@olivierzal/homey-kit/testing'
 import { NoChangesError } from '@olivierzal/melcloud-api'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -391,12 +391,13 @@ export const testPostUpdateSync = (
       device.setCapabilityValue.mockClear()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
-      const syncCallback = getMockCallArg<() => Promise<void>>(
+      const syncCallback = getMockCallArg<() => void>(
         device.homey.setTimeout,
         0,
         0,
       )
-      await syncCallback()
+      syncCallback()
+      await settleDetached()
 
       expect(device.setCapabilityValue).toHaveBeenCalledWith(
         expect.any(String),
@@ -433,7 +434,7 @@ export const testPostUpdateSync = (
       await device.onInit()
       const callback = getCapabilityListenerCallback()
       await callback({ onoff: true })
-      const syncCallback = getMockCallArg<() => Promise<void>>(
+      const syncCallback = getMockCallArg<() => void>(
         device.homey.setTimeout,
         0,
         0,
@@ -444,7 +445,8 @@ export const testPostUpdateSync = (
         'syncFromDevice',
       ).mockRejectedValue(failure)
 
-      await expect(syncCallback()).resolves.toBeUndefined()
+      syncCallback()
+      await settleDetached()
 
       const {
         argsPrefix = [],

@@ -1088,17 +1088,32 @@ verdict is in configs' `.github/zizmor.yml` and `CLAUDE.md`).
 
 The bare `homey-apps-sdk-v3-types` devDependency beside the
 `@types/homey` alias is NOT a duplicate, and the two lines move together
-on every SDK-types bump. The alias is what lets `homey` and
-`homey/lib/…` resolve for TypeScript; the bare name is what satisfies
-`import-x/no-extraneous-dependencies`, which checks the RESOLVED
-package's real `name` against the manifest and never maps `homey` back
-to `@types/homey`. The app preset runs the rule without `includeTypes`,
-so the type-only imports pass on their own; the value imports — the
-`vi.mock(import('homey'))` factories of the 13 device and driver suites
-and `tests/unit/homey.test.ts` — need the bare name declared (measured
-2026-09-07: removing it fails lint on exactly those 14 files and
-nothing else — typecheck, tests and build all still pass, which is why
-it reads as dead to a grep). Never "deduplicate" it.
+on every SDK-types bump — both at `^1.8.3`, the 1.x line adopted with
+kit 9.0.0, whose contract the next paragraph and the
+`homey-override.d.ts` bullet below spell out. The alias is what lets
+`homey` and `homey/lib/…` resolve for TypeScript; the bare name is
+what satisfies `import-x/no-extraneous-dependencies`, which checks the
+RESOLVED package's real `name` against the manifest and never maps
+`homey` back to `@types/homey`. The app preset runs the rule without
+`includeTypes`, so the type-only imports pass on their own; the value
+imports — the `vi.mock(import('homey'))` factories of the 13 device
+and driver suites and `tests/unit/homey.test.ts` — need the bare name
+declared (measured 2026-09-07: removing it fails lint on exactly those
+14 files and nothing else — typecheck, tests and build all still pass,
+which is why it reads as dead to a grep). Never "deduplicate" it.
+
+Three 1.8.x contract facts the code leans on, each pinned by its
+suites: `homey.setTimeout` takes a SYNCHRONOUS callback
+(`(...args) => void`), so a deferred async step is a `fireAndForget(…)`
+inside the callback, never an `async` callback (the suites drive one
+with `callback()` then `await settleDetached()`);
+`homey.clearTimeout(timeoutId?)` takes `undefined`, so timer handles
+are `NodeJS.Timeout | undefined` and `clearTimeout(this.#handle)` needs
+no guard — never a `null` sentinel; and `homey.api.realtime()` returns
+a promise, wrapped in `fireAndForget(…, this, '… push failed:')` at its
+two sites (the app's `accountupdate`, the Classic device's
+`deviceupdate`). `import type { Homey } from 'homey'` is the one
+spelling of the SDK class type (`homey` exports it by name since 1.x).
 
 ## Runtime boundary (@olivierzal/homey-kit)
 
@@ -1111,9 +1126,20 @@ the `homey-form-*` DOM layer — the element builders `createInput`/
 `createLabel`/`createOption`/`createSelect`, `booleanOptions`, the
 typed accessors `getButton`…`getSpan` and `parseFormValue` — (`/dom`),
 the manifest readers `getDriverSettings`/`getDriverLoginSetting`/
-`mergeDeviceSettings`, the `localize` fallback (a language's string or
-its English form — never spelled locally as `x[language] ?? x.en`) and
-the manifest leaf types this app's own manifest types extend
+`mergeDeviceSettings`, whose input types describe Homey's manifest
+schema as the SDK's generated `DriverManifest` states it (since kit
+9.0.0: `this.homey.manifest.drivers` passes straight through, and this
+app declares NO manifest type of its own any more — `homey.manifest` is
+the SDK's `AppManifest`, whose `drivers` and `flow` are optional, hence
+the app's `#manifestDrivers` getter and the `flow ?? {}` read; the one
+entry the app still reads itself, a driver's `capabilitiesOptions`
+value, is `unknown` there and crosses the boundary through
+`toCapabilitiesOptionsNarrowing` in `types/manifest.mts`, a guard that
+takes the bounds and the values the schema states and leaves anything
+else to the vendored definition — never a cast), and the `localize`
+fallback (a language's string or its English form — never spelled
+locally as `x[language] ?? x.en`; a keyed string without `en` THROWS,
+Homey's schema requiring it)
 (`/manifest`), the settings transport and the settings page's whole
 freshness wiring, `watchSettingsFreshness` — entry `settings`,
 `GET /webview-hashes`, the `POST /boot-error` breadcrumb with a
@@ -1193,14 +1219,28 @@ re-deriving one:
   `createEnergyReportMock` and the `createMockDeviceClass` /
   `createMockDriverClass` re-exports.
 - `public/dom.mts`, `public/zones.mts`, and the drivers themselves.
-- `homey-override.d.ts` keeps its `declare module` block: module
-  augmentation cannot be packaged. It EXTENDS the SDK interfaces and
-  takes only the narrowed member signatures from the kit generics
-  (`TypedManagerDrivers['getDrivers']`,
-  `TypedManagerSettings['get' | 'set' | 'unset']`). Extending the SDK
-  interface and the generic side by side does not work — they both
-  declare those members, and the conflict silently resolves to the
-  SDK's wider type.
+- `homey-override.d.ts` keeps its `declare module 'homey'` block:
+  module augmentation cannot be packaged. Since the SDK types 1.x it
+  holds ONE thing, the `HomeyTypes` seam
+  (`interface HomeyTypes { app: MELCloudApp }`), which types `homey.app`
+  everywhere — on the app, every driver and every device. The
+  0.3.x-era `interface Homey extends HomeyLib { … }` block (and its
+  `declare module 'homey/lib/Homey.js'` twin) is DEAD under 1.x and
+  must not come back: `homey` now exports `Homey` as the SDK class by
+  name, so that block names the class as its own base (TS2310) and
+  collides on every member it re-types (TS2717) — errors a `.d.ts`
+  under `skipLibCheck` never reports, which is why it narrowed nothing
+  in silence (measured against 1.8.1 and 1.8.3, 2026-10/11). The
+  managers are narrowed app-side instead: `types/homey.mts` declares
+  `ManagerDrivers extends` the SDK's manager class with `getDrivers`
+  taken from the kit's `TypedManagerDrivers<MELCloudDriver>`, gathered
+  in `MELCloudHomey extends Homey`, which ONLY the app class
+  re-declares `homey` with; drivers and devices keep the SDK's `homey`,
+  reach the app through `homey.app`, and carry no `declare … homey` or
+  `declare … manifest` line any more (`driver.manifest` is the SDK's
+  `DriverManifest`, of which only `capabilities` is read).
+  `homey.settings` stays the SDK's: this app reads settings only
+  through the kit's `createSettingManager`, keyed by `prefixKey`.
 
 The manifest URL is bound ONCE, in `lib/webview-hashes.mts` — the only
 piece the kit cannot supply: `getWebviewHashes` REQUIRES the URL (its

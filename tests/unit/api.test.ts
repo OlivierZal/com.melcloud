@@ -1,7 +1,7 @@
 import type { DriverSetting } from '@olivierzal/homey-kit/manifest'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 import type * as Home from '@olivierzal/melcloud-api/home'
-import type { Homey } from 'homey/lib/Homey'
+import type { Homey } from 'homey'
 import { mock } from '@olivierzal/homey-kit/testing'
 import {
   type HolidayModeState,
