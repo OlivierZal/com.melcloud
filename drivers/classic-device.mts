@@ -1,4 +1,5 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { fireAndForget } from '@olivierzal/homey-kit'
 
 import type {
   Capabilities,
@@ -114,7 +115,11 @@ export abstract class ClassicMELCloudDevice<
   protected async setCapabilityValues(
     data: Readonly<Classic.ListDeviceData<T>>,
   ): Promise<void> {
-    this.homey.api.realtime('deviceupdate', null)
+    fireAndForget(
+      this.homey.api.realtime('deviceupdate', null),
+      this,
+      'Device update push failed:',
+    )
     await Promise.all(
       this.#capabilityTagEntries.map(async ([capability, tag]) => {
         if (Object.hasOwn(data, tag)) {

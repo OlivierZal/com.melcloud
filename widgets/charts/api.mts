@@ -2,7 +2,7 @@ import type {
   ReportChartLineOptions,
   ReportChartPieOptions,
 } from '@olivierzal/melcloud-api'
-import type { Homey } from 'homey/lib/Homey'
+import type { Homey } from 'homey'
 
 import type { FlatDeviceZone } from '../../types/zone.mts'
 import { toNonNegativeInt } from '../../lib/validation.mts'

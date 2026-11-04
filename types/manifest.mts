@@ -1,45 +1,16 @@
-import type {
-  LoginSetting as KitLoginSetting,
-  ManifestDriver as KitManifestDriver,
-  LocalizedStrings,
-  PairSetting,
-} from '@olivierzal/homey-kit/manifest'
+import type { LocalizedStrings } from '@olivierzal/homey-kit/manifest'
 
 import type { CapabilitiesOptionsValues } from './bases.mts'
 
-// The kit's login step, narrowed to the fields this app's login form
-// actually declares (the kit types the options as an open record).
-interface LoginSetting extends KitLoginSetting {
-  readonly options: {
-    readonly passwordLabel: LocalizedStrings
-    readonly usernameLabel: LocalizedStrings
-    readonly usernamePlaceholder: string
-    // A password has no format to illustrate and the label already names the
-    // field, so it carries no placeholder. The username placeholder is a
-    // single neutral ASCII example (an email is ASCII), not per-locale
-    // strings — the labels hold the localization.
-    readonly passwordPlaceholder?: string
-  }
-}
+// What a driver's manifest entry narrows on the generic capability
+// definition: the bounds and the offered values. The title and the type
+// stay the definition's.
+export type CapabilitiesOptionsNarrowing = Partial<
+  Pick<ManifestDriverCapabilitiesOptions, 'max' | 'min' | 'values'>
+>
 
-export interface Manifest {
-  readonly drivers: readonly ManifestDriver[]
-  readonly flow: ManifestFlow
-  readonly version: string
-}
-
-// The kit's driver shape (id, name, pair, settings) plus what this
-// app reads on top of it; `pair` narrows to the login step above.
-export interface ManifestDriver extends KitManifestDriver {
-  readonly capabilities: readonly string[]
-  readonly class: string
-  readonly capabilitiesOptions?: Record<
-    string,
-    ManifestDriverCapabilitiesOptions
-  >
-  readonly pair?: readonly (LoginSetting | PairSetting)[]
-}
-
+// A capability's options as this app renders them: the vendored
+// node-homey-lib definition, narrowed by the driver manifest.
 export interface ManifestDriverCapabilitiesOptions {
   readonly title: LocalizedStrings
   readonly type: string
@@ -51,13 +22,37 @@ export interface ManifestDriverCapabilitiesOptions {
   readonly values?: readonly CapabilitiesOptionsValues<string>[] | undefined
 }
 
-// The flow cards the app declares: run listeners are wired for exactly
-// these ids, so the app reads them rather than probing the registry.
-export interface ManifestFlow {
-  readonly actions: readonly ManifestFlowCard[]
-  readonly conditions: readonly ManifestFlowCard[]
-}
+const isLocalizedStrings = (value: unknown): value is LocalizedStrings =>
+  typeof value === 'object' &&
+  value !== null &&
+  'en' in value &&
+  Object.values(value).every((entry) => typeof entry === 'string')
 
-export interface ManifestFlowCard {
-  readonly id: string
+const isOptionValue = (
+  value: unknown,
+): value is CapabilitiesOptionsValues<string> =>
+  typeof value === 'object' &&
+  value !== null &&
+  'id' in value &&
+  typeof value.id === 'string' &&
+  'title' in value &&
+  isLocalizedStrings(value.title)
+
+// The SDK types a driver's `capabilitiesOptions` entries as unknown, so
+// the fields this app reads off one are checked here, at the one
+// boundary the manifest crosses; a field that is not what Homey's schema
+// states leaves the definition's own in place.
+export const toCapabilitiesOptionsNarrowing = (
+  entry: unknown,
+): CapabilitiesOptionsNarrowing => {
+  if (typeof entry !== 'object' || entry === null) {
+    return {}
+  }
+  return {
+    ...('max' in entry && typeof entry.max === 'number' && { max: entry.max }),
+    ...('min' in entry && typeof entry.min === 'number' && { min: entry.min }),
+    ...('values' in entry &&
+      Array.isArray(entry.values) &&
+      entry.values.every(isOptionValue) && { values: entry.values }),
+  }
 }

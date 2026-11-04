@@ -54,7 +54,9 @@ const {
   getSettingMock: vi.fn<(key: string) => unknown>(),
   isAccountEmptyMock: vi.fn<(api: string) => boolean>(),
   isRegistryListedMock: vi.fn<(api: string) => boolean>(),
-  realtimeMock: vi.fn<(event: string, data: unknown) => void>(),
+  realtimeMock: vi
+    .fn<(event: string, data: unknown) => Promise<void>>()
+    .mockResolvedValue(undefined),
   registerMultipleCapabilityListenerMock:
     vi.fn<
       (

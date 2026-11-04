@@ -1,5 +1,9 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
-import { getMockCallArg, mock } from '@olivierzal/homey-kit/testing'
+import {
+  getMockCallArg,
+  mock,
+  settleDetached,
+} from '@olivierzal/homey-kit/testing'
 import {
   type ApiRequestError,
   err,
@@ -161,7 +165,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
-      expect(clearTimeoutMock).toHaveBeenCalledWith(null)
+      expect(clearTimeoutMock).toHaveBeenCalledWith(undefined)
     })
 
     it('should fetch energy data and schedule when entries exist', async () => {
@@ -427,7 +431,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       report.unschedule()
 
-      expect(clearTimeoutMock).toHaveBeenCalledWith(null)
+      expect(clearTimeoutMock).toHaveBeenCalledWith(undefined)
       expect(logMock).toHaveBeenCalledWith(
         'regular energy report has been cancelled',
       )
@@ -589,12 +593,9 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
-      const timeoutCallback = getMockCallArg<() => Promise<void>>(
-        setTimeoutMock,
-        0,
-        0,
-      )
-      await timeoutCallback()
+      const timeoutCallback = getMockCallArg<() => void>(setTimeoutMock, 0, 0)
+      timeoutCallback()
+      await settleDetached()
 
       expect(setTimeoutMock).toHaveBeenCalledTimes(2)
       expect(setTimeoutMock).toHaveBeenLastCalledWith(
@@ -609,12 +610,9 @@ describe(EnergyReport, () => {
         expect.any(String),
       )
 
-      const secondCallback = getMockCallArg<() => Promise<void>>(
-        setTimeoutMock,
-        1,
-        0,
-      )
-      await secondCallback()
+      const secondCallback = getMockCallArg<() => void>(setTimeoutMock, 1, 0)
+      secondCallback()
+      await settleDetached()
 
       expect(ensureDeviceMock).toHaveBeenCalledTimes(3)
     })
@@ -636,12 +634,9 @@ describe(EnergyReport, () => {
       pinNow(
         Temporal.Instant.from('2026-03-29T03:05:00+02:00').epochMilliseconds,
       )
-      const timeoutCallback = getMockCallArg<() => Promise<void>>(
-        setTimeoutMock,
-        0,
-        0,
-      )
-      await timeoutCallback()
+      const timeoutCallback = getMockCallArg<() => void>(setTimeoutMock, 0, 0)
+      timeoutCallback()
+      await settleDetached()
 
       // Re-anchored on the new wall clock: next fire at 04:05 CEST, a full hour.
       const secondDelay = getMockCallArg<number>(setTimeoutMock, 1, 1)
@@ -656,13 +651,10 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
-      const timeoutCallback = getMockCallArg<() => Promise<void>>(
-        setTimeoutMock,
-        0,
-        0,
-      )
+      const timeoutCallback = getMockCallArg<() => void>(setTimeoutMock, 0, 0)
       report.unschedule()
-      await timeoutCallback()
+      timeoutCallback()
+      await settleDetached()
 
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })
@@ -673,12 +665,9 @@ describe(EnergyReport, () => {
       await report.start()
 
       cleanMappingMock.mockReturnValue({})
-      const timeoutCallback = getMockCallArg<() => Promise<void>>(
-        setTimeoutMock,
-        0,
-        0,
-      )
-      await timeoutCallback()
+      const timeoutCallback = getMockCallArg<() => void>(setTimeoutMock, 0, 0)
+      timeoutCallback()
+      await settleDetached()
 
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
       expect(logMock).toHaveBeenCalledWith(

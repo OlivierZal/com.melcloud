@@ -1,4 +1,4 @@
-import type { Homey } from 'homey/lib/Homey'
+import type { Homey } from 'homey'
 import { mock } from '@olivierzal/homey-kit/testing'
 import { describe, expect, it, vi } from 'vitest'
 

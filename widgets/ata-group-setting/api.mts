@@ -1,5 +1,5 @@
 import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
-import type { Homey } from 'homey/lib/Homey'
+import type { Homey } from 'homey'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 

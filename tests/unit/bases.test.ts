@@ -1,7 +1,6 @@
-import { mock } from '@olivierzal/homey-kit/testing'
 import { describe, expect, it } from 'vitest'
 
-import { type LocalizedStrings, localizeWithAffix } from '../../types/bases.mts'
+import { localizeWithAffix } from '../../types/bases.mts'
 
 describe(localizeWithAffix, () => {
   it('should join every affix language with its base string', () => {
@@ -35,15 +34,5 @@ describe(localizeWithAffix, () => {
     )
 
     expect(result.fr).toBe('Temperature Départ')
-  })
-
-  it('should fall back to the English affix for an explicitly undefined entry', () => {
-    const result = localizeWithAffix(
-      { en: 'Temperature', fr: 'Température' },
-      mock<LocalizedStrings>({ en: 'Flow', fr: undefined }),
-      'suffix',
-    )
-
-    expect(result.fr).toBe('Température Flow')
   })
 })

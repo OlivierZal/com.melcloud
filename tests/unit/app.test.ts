@@ -1,3 +1,4 @@
+import type { DriverManifest } from 'homey/types/manifest'
 import {
   getMockCallArg,
   mock,
@@ -26,7 +27,6 @@ import type * as FilesModule from '../../files.mts'
 import type * as HomeyLib from '../../lib/homey.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
 import type { Settings } from '../../types/device-settings.mts'
-import type { ManifestDriver } from '../../types/manifest.mts'
 import {
   createTransportFailure,
   TRANSPORT_FAILURE_CHAIN,
@@ -156,7 +156,9 @@ const mockSetTimeout =
   vi.fn<(callback: () => Promise<void> | void, ms: number) => void>()
 const mockCreateNotification = vi.fn<() => Promise<void>>()
 
-const mockRealtime = vi.fn<(event: string, data: unknown) => void>()
+const mockRealtime = vi
+  .fn<(event: string, data: unknown) => Promise<void>>()
+  .mockResolvedValue(undefined)
 const mockHomeyReady = vi.fn<() => Promise<void>>().mockResolvedValue()
 const mockWidgetRegister =
   vi.fn<(id: string, listener: (query: string) => unknown) => void>()
@@ -203,19 +205,12 @@ const mockManifestFlow: {
   conditions: { id: string }[]
 } = { actions: [], conditions: [] }
 
-const mockManifestDrivers: ManifestDriver[] = [
+const mockManifestDrivers: DriverManifest[] = [
   {
     capabilities: [],
     capabilitiesOptions: {
-      target_temperature: {
-        max: 31,
-        min: 10,
-        title: { en: 'Target temperature' },
-        type: 'number',
-      },
+      target_temperature: { max: 31, min: 10 },
       thermostat_mode: {
-        title: { en: 'Mode' },
-        type: 'enum',
         values: [
           { id: 'heat', title: { en: 'Heat' } },
           { id: 'cool', title: { en: 'Cool' } },
@@ -238,6 +233,7 @@ const mockManifestDrivers: ManifestDriver[] = [
         ],
         id: 'group1',
         label: { en: 'Group 1', nl: 'Groep 1' },
+        type: 'group',
       },
     ],
   },
@@ -274,8 +270,8 @@ const mockManifestDrivers: ManifestDriver[] = [
           },
         ],
         label: { en: 'No group id' },
+        type: 'group',
       },
-      { id: 'group2', label: { en: 'Childless' } },
     ],
   },
 ]
@@ -681,12 +677,13 @@ describe('melCloudApp', () => {
         // The notification is deferred through homey.setTimeout
         // (best-effort, off the event callstack): run the scheduled
         // callback to observe it.
-        const scheduled = getMockCallArg<() => Promise<void>>(
+        const scheduled = getMockCallArg<() => void>(
           mockSetTimeout,
           mockSetTimeout.mock.calls.length - 1,
           0,
         )
-        await scheduled()
+        scheduled()
+        await settleDetached()
 
         expect(mockCreateNotification).toHaveBeenCalledWith({
           excerpt: `notifications.sessionExpired.${api}`,
@@ -718,12 +715,13 @@ describe('melCloudApp', () => {
         }>(getCreateMock(), 0, 0)
 
         events.onAuthenticationLost?.()
-        const scheduled = getMockCallArg<() => Promise<void>>(
+        const scheduled = getMockCallArg<() => void>(
           mockSetTimeout,
           mockSetTimeout.mock.calls.length - 1,
           0,
         )
-        await scheduled()
+        scheduled()
+        await settleDetached()
 
         expect(mockCreateNotification).not.toHaveBeenCalled()
         expect(logMock).toHaveBeenCalledWith(
@@ -750,17 +748,19 @@ describe('melCloudApp', () => {
         }>(getCreateMock(), 0, 0)
 
         events.onAuthenticationLost?.()
-        await getMockCallArg<() => Promise<void>>(
+        getMockCallArg<() => void>(
           mockSetTimeout,
           mockSetTimeout.mock.calls.length - 1,
           0,
         )()
+        await settleDetached()
         events.onAuthenticationRestored?.()
-        await getMockCallArg<() => Promise<void>>(
+        getMockCallArg<() => void>(
           mockSetTimeout,
           mockSetTimeout.mock.calls.length - 1,
           0,
         )()
+        await settleDetached()
 
         expect(mockCreateNotification).toHaveBeenLastCalledWith({
           excerpt: `notifications.sessionRestored.${api}`,
@@ -797,11 +797,12 @@ describe('melCloudApp', () => {
       }>(mockCreate, 0, 0)
 
       events.onAuthenticationLost?.()
-      await getMockCallArg<() => Promise<void>>(
+      getMockCallArg<() => void>(
         mockSetTimeout,
         mockSetTimeout.mock.calls.length - 1,
         0,
       )()
+      await settleDetached()
       const scheduledCalls = mockSetTimeout.mock.calls.length
       events.onAuthenticationRestored?.()
 
@@ -820,7 +821,7 @@ describe('melCloudApp', () => {
       }>(mockCreate, 0, 0)
 
       events.onAuthenticationLost?.()
-      const parkedLoss = getMockCallArg<() => Promise<void>>(
+      const parkedLoss = getMockCallArg<() => void>(
         mockSetTimeout,
         mockSetTimeout.mock.calls.length - 1,
         0,
@@ -829,7 +830,8 @@ describe('melCloudApp', () => {
       // (in the field: on `homey.ready()` during boot).
       events.onAuthenticationRestored?.()
       const scheduledCalls = mockSetTimeout.mock.calls.length
-      await parkedLoss()
+      parkedLoss()
+      await settleDetached()
 
       expect(mockSetTimeout).toHaveBeenCalledTimes(scheduledCalls)
       expect(mockCreateNotification).not.toHaveBeenCalled()
@@ -847,11 +849,12 @@ describe('melCloudApp', () => {
       mockCreateNotification.mockRejectedValueOnce(new Error('fail'))
 
       events.onAuthenticationLost?.()
-      await getMockCallArg<() => Promise<void>>(
+      getMockCallArg<() => void>(
         mockSetTimeout,
         mockSetTimeout.mock.calls.length - 1,
         0,
       )()
+      await settleDetached()
       const scheduledCalls = mockSetTimeout.mock.calls.length
       events.onAuthenticationRestored?.()
 
@@ -874,11 +877,12 @@ describe('melCloudApp', () => {
       })
 
       events.onAuthenticationLost?.()
-      await getMockCallArg<() => Promise<void>>(
+      getMockCallArg<() => void>(
         mockSetTimeout,
         mockSetTimeout.mock.calls.length - 1,
         0,
       )()
+      await settleDetached()
       const scheduledCalls = mockSetTimeout.mock.calls.length
       // A later recovery must find no episode to mirror either.
       events.onAuthenticationRestored?.()
@@ -3654,26 +3658,15 @@ describe('melCloudApp', () => {
 
   describe('getDriverSettings with login settings', () => {
     it('should extract login settings from pair config', async () => {
-      const driversWithLogin: ManifestDriver[] = [
+      const driversWithLogin: DriverManifest[] = [
         {
           capabilities: [],
           class: 'thermostat',
           id: 'melcloud',
           name: { en: 'melcloud' },
-          pair: Object.assign(
-            [
-              {
-                id: 'login' as const,
-                options: {
-                  passwordLabel: { en: 'Password' },
-                  passwordPlaceholder: 'Enter password',
-                  usernameLabel: { en: 'Username' },
-                  usernamePlaceholder: 'Enter username',
-                },
-              },
-            ],
+          pair: [
             {
-              id: 'login' as const,
+              id: 'login',
               options: {
                 passwordLabel: { en: 'Password' },
                 passwordPlaceholder: 'Enter password',
@@ -3681,7 +3674,7 @@ describe('melCloudApp', () => {
                 usernamePlaceholder: 'Enter username',
               },
             },
-          ),
+          ],
         },
       ]
       Object.defineProperty(app.homey, 'manifest', {
@@ -3710,8 +3703,9 @@ describe('melCloudApp', () => {
 
       expect(mockSetTimeout).toHaveBeenCalledTimes(1)
 
-      const callback = getMockCallArg<() => Promise<void>>(mockSetTimeout, 0, 0)
-      await callback()
+      const callback = getMockCallArg<() => void>(mockSetTimeout, 0, 0)
+      callback()
+      await settleDetached()
 
       expect(mockCreateNotification).toHaveBeenCalledWith({
         excerpt: 'English changelog',
@@ -3739,8 +3733,9 @@ describe('melCloudApp', () => {
 
       expect(mockSetTimeout).toHaveBeenCalledTimes(1)
 
-      const callback = getMockCallArg<() => Promise<void>>(mockSetTimeout, 0, 0)
-      await callback()
+      const callback = getMockCallArg<() => void>(mockSetTimeout, 0, 0)
+      callback()
+      await settleDetached()
 
       expect(mockCreateNotification).toHaveBeenCalledWith({
         excerpt: 'English changelog',
@@ -3753,9 +3748,11 @@ describe('melCloudApp', () => {
       mockCreateNotification.mockRejectedValue(new Error('fail'))
       await app.onInit()
 
-      const callback = getMockCallArg<() => Promise<void>>(mockSetTimeout, 0, 0)
+      const callback = getMockCallArg<() => void>(mockSetTimeout, 0, 0)
+      callback()
+      await settleDetached()
 
-      await expect(callback()).resolves.toBeUndefined()
+      expect(mockCreateNotification).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -4026,7 +4023,7 @@ describe('melCloudApp', () => {
 
   describe('getDriverSettings with setting values', () => {
     it('should include values in driver settings when defined', async () => {
-      const driversWithValues: ManifestDriver[] = [
+      const driversWithValues: DriverManifest[] = [
         {
           capabilities: [],
           class: 'thermostat',
@@ -4036,9 +4033,9 @@ describe('melCloudApp', () => {
             {
               children: [
                 {
-                  id: 'setting_enum',
-                  label: { en: 'Enum Setting' },
-                  type: 'enum',
+                  id: 'setting_dropdown',
+                  label: { en: 'Dropdown Setting' },
+                  type: 'dropdown',
                   values: [
                     { id: 'val1', label: { en: 'Value 1', nl: 'Waarde 1' } },
                   ],
@@ -4046,6 +4043,7 @@ describe('melCloudApp', () => {
               ],
               id: 'group1',
               label: { en: 'Group 1' },
+              type: 'group',
             },
           ],
         },
@@ -4063,6 +4061,38 @@ describe('melCloudApp', () => {
       const { group1: settings } = app.getDriverSettings()
 
       expect(settings?.[0]?.values?.[0]?.label).toBe('Value 1')
+    })
+  })
+
+  // The SDK types the manifest's `drivers` and `flow` as optional: an app
+  // declaring neither reads empty lists, and only its own cards exist.
+  describe('a manifest declaring neither drivers nor flow cards', () => {
+    beforeEach(() => {
+      mockGetActionCard.mockClear()
+      mockGetConditionCard.mockClear()
+      Object.defineProperty(app.homey, 'manifest', {
+        configurable: true,
+        value: { version: '1.0.0' },
+      })
+    })
+
+    it('should list no driver setting', async () => {
+      await app.onInit()
+
+      expect(Object.keys(app.getDriverSettings())).toHaveLength(0)
+    })
+
+    it('should register the holiday-mode cards alone', async () => {
+      await app.onInit()
+
+      expect(mockGetActionCard.mock.calls.map(([id]) => id)).toStrictEqual([
+        'holiday_mode_action',
+        'holiday_mode_with_time_action',
+        'holiday_mode_false_action',
+      ])
+      expect(mockGetConditionCard.mock.calls.map(([id]) => id)).toStrictEqual([
+        'holiday_mode_condition',
+      ])
     })
   })
 })

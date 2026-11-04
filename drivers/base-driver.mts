@@ -7,14 +7,9 @@ import {
 } from '@olivierzal/melcloud-api'
 
 import type { Api, AuthenticationAPI } from '../types/api.mts'
-import type { ManifestDriver } from '../types/manifest.mts'
-import { type Homey, Driver } from '../lib/homey.mts'
+import { Driver } from '../lib/homey.mts'
 
 export abstract class BaseMELCloudDriver extends Driver {
-  declare public readonly homey: Homey.Homey
-
-  declare public readonly manifest: ManifestDriver
-
   // The account this driver pairs from: names the registry its pairing
   // consults (see `onPair`).
   protected abstract readonly api: Api

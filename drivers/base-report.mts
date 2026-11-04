@@ -1,5 +1,6 @@
-import type Homey from 'homey/lib/Homey'
+import type { Homey } from 'homey'
 import type { Temporal } from 'temporal-polyfill'
+import { fireAndForget } from '@olivierzal/homey-kit'
 import { logFailure } from '@olivierzal/melcloud-api'
 
 import type { EnergyReportMode } from '../types/device.mts'
@@ -7,7 +8,7 @@ import { getNow } from '../lib/temporal.mts'
 import type { HeldWarningReason } from './base-device.mts'
 
 interface ReportDevice {
-  readonly homey: Homey.Homey
+  readonly homey: Homey
   readonly error: (...args: unknown[]) => void
   readonly holdWarning: (reason: HeldWarningReason) => Promise<boolean>
   readonly log: (...args: unknown[]) => void
@@ -57,7 +58,7 @@ export abstract class ScheduledEnergyReport {
 
   readonly #device: ReportDevice
 
-  #reportTimeout: NodeJS.Timeout | null = null
+  #reportTimeout: NodeJS.Timeout | undefined
 
   get #actionType(): string {
     return `${this.#config.mode} energy report`
@@ -88,14 +89,14 @@ export abstract class ScheduledEnergyReport {
       return
     }
     await this.#fetchSafely()
-    if (this.#reportTimeout === null) {
+    if (this.#reportTimeout === undefined) {
       this.#armNext()
     }
   }
 
   public unschedule(): void {
     this.#device.homey.clearTimeout(this.#reportTimeout)
-    this.#reportTimeout = null
+    this.#reportTimeout = undefined
     this.#device.log(`${this.#config.mode} energy report has been cancelled`)
   }
 
@@ -111,16 +112,12 @@ export abstract class ScheduledEnergyReport {
     const delay = this.#computeNextFireDelay()
     this.#logNextRun(delay)
     this.#reportTimeout = this.#device.homey.setTimeout(
-      async () => {
-        if (!this.hasEnabledCapabilities()) {
-          this.unschedule()
-          return
-        }
-        await this.#fetchSafely()
-        // Unschedule during the await nulls the handle: stop the chain.
-        if (this.#reportTimeout !== null) {
-          this.#armNext()
-        }
+      () => {
+        fireAndForget(
+          this.#runScheduled(),
+          this.#device,
+          `${this.#config.mode} energy report run failed:`,
+        )
       },
       delay.total({ unit: 'milliseconds' }),
     )
@@ -189,6 +186,18 @@ export abstract class ScheduledEnergyReport {
     this.#consecutiveFailures = 0
     if (await this.#device.releaseWarning(this.#reason)) {
       this.#device.log(`${this.#actionType} recovered, warning released`)
+    }
+  }
+
+  async #runScheduled(): Promise<void> {
+    if (!this.hasEnabledCapabilities()) {
+      this.unschedule()
+      return
+    }
+    await this.#fetchSafely()
+    // Unschedule during the await clears the handle: stop the chain.
+    if (this.#reportTimeout !== undefined) {
+      this.#armNext()
     }
   }
 }

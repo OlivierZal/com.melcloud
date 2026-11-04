@@ -19,11 +19,7 @@ export const localizeWithAffix = (
   ...typedFromEntries(
     Object.entries(affix).map(([language, localizedAffix]) => [
       language,
-      joinWithAffix(
-        localize(base, language),
-        localizedAffix ?? affix.en,
-        position,
-      ),
+      joinWithAffix(localize(base, language), localizedAffix, position),
     ]),
   ),
   en: joinWithAffix(base.en, affix.en, position),

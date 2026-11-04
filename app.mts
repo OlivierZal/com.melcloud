@@ -4,6 +4,7 @@ import type {
   FullReportSurface,
   ReportSurface,
 } from '@olivierzal/melcloud-api/report'
+import type { DriverManifest } from 'homey/types/manifest'
 import {
   announceChangelog,
   createSettingManager,
@@ -52,7 +53,7 @@ import type {
   FormattedErrorLog,
 } from './types/error-log.mts'
 import type { HomeDeviceFacade } from './types/home.mts'
-import type { ManifestDriverCapabilitiesOptions } from './types/manifest.mts'
+import type { MELCloudHomey } from './types/homey.mts'
 import type { MELCloudDevice, MELCloudDriver } from './types/melcloud.mts'
 import type {
   DeviceOrZoneData,
@@ -74,7 +75,7 @@ import {
   OTHER_API,
   UNKNOWN_DATE_PLACEHOLDER,
 } from './lib/constants.mts'
-import { type Homey, App } from './lib/homey.mts'
+import { App } from './lib/homey.mts'
 import { failureCause, unwrapResult } from './lib/unwrap-result.mts'
 import { toNonNegativeInt, toZoneValueData } from './lib/validation.mts'
 import {
@@ -85,6 +86,10 @@ import {
   isHomeDeviceValue,
 } from './public/zones.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
+import {
+  type ManifestDriverCapabilitiesOptions,
+  toCapabilitiesOptionsNarrowing,
+} from './types/manifest.mts'
 
 // Locale-aware by-name comparator shared by every zone/building sort.
 const byName = (
@@ -306,7 +311,7 @@ const formatErrorEntries = (
 }
 
 export default class MELCloudApp extends App {
-  declare public readonly homey: Homey.Homey
+  declare public readonly homey: MELCloudHomey
 
   public get classicApi(): Classic.API {
     return this.#classicApi
@@ -349,6 +354,12 @@ export default class MELCloudApp extends App {
 
   get #homeRegistry(): Home.Registry {
     return this.#homeApi.registry
+  }
+
+  // The SDK types the manifest's drivers as optional, for the apps that
+  // declare none.
+  get #manifestDrivers(): readonly DriverManifest[] {
+    return this.homey.manifest.drivers ?? []
   }
 
   public override async onInit(): Promise<void> {
@@ -480,7 +491,7 @@ export default class MELCloudApp extends App {
   public getDriverSettings(): Partial<Record<string, DriverSetting[]>> {
     const language = this.homey.i18n.getLanguage()
     return Object.groupBy(
-      this.homey.manifest.drivers.flatMap((driver) => [
+      this.#manifestDrivers.flatMap((driver) => [
         ...getDriverSettings(driver, language),
         ...getDriverLoginSetting(driver, language),
       ]),
@@ -809,6 +820,16 @@ export default class MELCloudApp extends App {
     }
   }
 
+  async #announceSessionRestored(api: Api): Promise<void> {
+    try {
+      await this.homey.notifications.createNotification({
+        excerpt: this.homey.__(`notifications.sessionRestored.${api}`),
+      })
+    } catch {
+      // Non-critical: notification display is best-effort
+    }
+  }
+
   // The day-chart query every dialect's report reads. Derived once: the
   // window anchor and the timezone source must not drift between the six
   // call sites, which the facades' shared `(query?: ReportQuery)` contract
@@ -871,7 +892,7 @@ export default class MELCloudApp extends App {
     options: ManifestDriverCapabilitiesOptions
     enumType?: Record<string, number | string>
   }[] {
-    const ataOptions = this.homey.manifest.drivers.find(
+    const ataOptions = this.#manifestDrivers.find(
       ({ id }) => id === 'melcloud',
     )?.capabilitiesOptions
     return [
@@ -885,7 +906,7 @@ export default class MELCloudApp extends App {
         // honest — and why neither API's increment is read instead.
         options: {
           ...targetTemperature,
-          ...ataOptions?.target_temperature,
+          ...toCapabilitiesOptionsNarrowing(ataOptions?.target_temperature),
           step: getCapabilityFlowStep(targetTemperature),
         },
       },
@@ -909,9 +930,9 @@ export default class MELCloudApp extends App {
         key: 'OperationMode',
         options: {
           ...thermostatMode,
-          values: ataOptions?.thermostat_mode?.values?.filter(
-            ({ id }) => id !== 'off',
-          ),
+          values: toCapabilitiesOptionsNarrowing(
+            ataOptions?.thermostat_mode,
+          ).values?.filter(({ id }) => id !== 'off'),
         },
       },
     ]
@@ -1280,7 +1301,11 @@ export default class MELCloudApp extends App {
     }
     this.#loggedUnitCounts.set(api, line)
     this.log(line)
-    this.homey.api.realtime('accountupdate', null)
+    fireAndForget(
+      this.homey.api.realtime('accountupdate', null),
+      this,
+      'Account update push failed:',
+    )
   }
 
   // User-facing half of melcloud-api's onAuthenticationLost contract:
@@ -1292,7 +1317,13 @@ export default class MELCloudApp extends App {
   // recovery event can never outrun it.
   #notifySessionLost(api: Api): void {
     this.#sessionLossStates.set(api, 'pending')
-    this.homey.setTimeout(async () => this.#announceSessionLost(api), 0)
+    this.homey.setTimeout(() => {
+      fireAndForget(
+        this.#announceSessionLost(api),
+        this,
+        'Session loss announcement failed:',
+      )
+    }, 0)
   }
 
   // Recovery counterpart of #notifySessionLost, fed by melcloud-api's
@@ -1307,14 +1338,12 @@ export default class MELCloudApp extends App {
     if (state !== 'shown') {
       return
     }
-    this.homey.setTimeout(async () => {
-      try {
-        await this.homey.notifications.createNotification({
-          excerpt: this.homey.__(`notifications.sessionRestored.${api}`),
-        })
-      } catch {
-        // Non-critical: notification display is best-effort
-      }
+    this.homey.setTimeout(() => {
+      fireAndForget(
+        this.#announceSessionRestored(api),
+        this,
+        'Session restore announcement failed:',
+      )
     }, 0)
   }
 
@@ -1386,9 +1415,9 @@ export default class MELCloudApp extends App {
   // below), and a declared card the runtime cannot hand out throws from
   // `onInit` — a contract break, never swallowed.
   #registerCapabilityFlowListeners(): void {
-    const { actions, conditions } = this.homey.manifest.flow
+    const { actions = [], conditions = [] } = this.homey.manifest.flow ?? {}
     const capabilities = new Set(
-      this.homey.manifest.drivers.flatMap((driver) => driver.capabilities),
+      this.#manifestDrivers.flatMap((driver) => driver.capabilities),
     )
     for (const { id } of conditions) {
       const capability = id.replace(/_condition$/v, '')

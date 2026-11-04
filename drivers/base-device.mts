@@ -23,7 +23,7 @@ import type {
   EnergyReportMode,
   EnergyReportOperation,
 } from '../types/device.mts'
-import { type Homey, Device } from '../lib/homey.mts'
+import { Device } from '../lib/homey.mts'
 import { isTotalEnergyKey } from '../lib/is-total-energy-key.mts'
 import { withoutOptInCapabilities } from '../lib/opt-in-capabilities.mts'
 import type { BaseMELCloudDriver } from './base-driver.mts'
@@ -98,8 +98,6 @@ export abstract class BaseMELCloudDevice<
 
   declare public readonly getSettings: () => Record<string, unknown>
 
-  declare public readonly homey: Homey.Homey
-
   // The account the unit belongs to — names the registry a failed facade
   // lookup is judged against (see `ensureDevice`).
   protected abstract readonly api: Api
@@ -166,7 +164,7 @@ export abstract class BaseMELCloudDevice<
     total?: EnergyReportOperation
   } = {}
 
-  #syncTimeout: NodeJS.Timeout | null = null
+  #syncTimeout: NodeJS.Timeout | undefined
 
   readonly #tagMappings: {
     get: Partial<Readonly<Record<string, string>>>
@@ -222,10 +220,8 @@ export abstract class BaseMELCloudDevice<
   }
 
   public override onDeleted(): void {
-    if (this.#syncTimeout !== null) {
-      this.homey.clearTimeout(this.#syncTimeout)
-      this.#syncTimeout = null
-    }
+    this.homey.clearTimeout(this.#syncTimeout)
+    this.#syncTimeout = undefined
     this.#reports.regular?.unschedule()
     this.#reports.total?.unschedule()
   }
@@ -706,9 +702,6 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  // Delay sync to let Homey's optimistic UI update and debounce settle.
-  // The handle is kept so deletion cancels a pending sync, and failures are
-  // logged instead of becoming unhandled rejections.
   // Nothing reached the wire (a folded or failed write), so the watches
   // it would have replaced still have a read-back to judge.
   #restoreWrites(forgotten: Map<string, RecentWrite>): void {
@@ -717,17 +710,14 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
+  // Delay sync to let Homey's optimistic UI update and debounce settle.
+  // The handle is kept so deletion cancels a pending sync, and failures are
+  // logged instead of becoming unhandled rejections.
   #scheduleSyncFromDevice(): void {
-    if (this.#syncTimeout !== null) {
-      this.homey.clearTimeout(this.#syncTimeout)
-    }
-    this.#syncTimeout = this.homey.setTimeout(async () => {
-      this.#syncTimeout = null
-      try {
-        await this.syncFromDevice()
-      } catch (error) {
-        this.error('Post-update sync failed:', error)
-      }
+    this.homey.clearTimeout(this.#syncTimeout)
+    this.#syncTimeout = this.homey.setTimeout(() => {
+      this.#syncTimeout = undefined
+      fireAndForget(this.syncFromDevice(), this, 'Post-update sync failed:')
     }, DEBOUNCE_DELAY)
   }
 
