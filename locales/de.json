@@ -9,7 +9,9 @@
     "unitOffline": "MELCloud meldet dieses Gerät als offline — prüfen Sie seine WLAN-Verbindung.",
     "unitStale": "Dieses Gerät hat seit über 24 Stunden nicht mit MELCloud kommuniziert — prüfen Sie seine WLAN-Verbindung.",
     "unitUnreadable": "MELCloud führt dieses Gerät nicht mehr auf oder sendet dafür Daten, die die App nicht lesen kann — die Werte bleiben eingefroren, bis es wieder lesbar ist (Details im Diagnoseprotokoll der App).",
-    "classicAccountEmpty": "Dieses MELCloud Classic-Konto führt kein Gerät mehr auf, das die App lesen kann. Wenn Ihre Geräte zu MELCloud Home umgezogen sind, fügen Sie sie erneut als [Home]-Geräte hinzu."
+    "classicAccountEmpty": "Dieses MELCloud Classic-Konto führt kein Gerät mehr auf, das die App lesen kann. Wenn Ihre Geräte zu MELCloud Home umgezogen sind, fügen Sie sie erneut als [Home]-Geräte hinzu.",
+    "unitError": "Das Gerät selbst meldet eine Störung — __fault__. Die App gibt sie nur weiter: prüfen Sie das Gerät oder die MELCloud-App.",
+    "unitErrorUnworded": "Das Gerät selbst meldet eine Störung. Die App gibt sie nur weiter: prüfen Sie das Gerät oder die MELCloud-App."
   },
   "settings": {
     "authenticate": {

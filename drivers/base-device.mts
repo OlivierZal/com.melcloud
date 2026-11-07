@@ -9,6 +9,7 @@ import {
 } from '@olivierzal/homey-kit'
 import {
   type AvailabilityAware,
+  type FaultAware,
   EntityNotFoundError,
   isAPIError,
   logFailure,
@@ -65,14 +66,19 @@ const STATUS_INDICATOR_SETTING = 'custom_status_indicator'
 // device has ONE bubble, so it shows the first held reason, and releasing
 // a reason uncovers the next instead of clearing the tile. An unreadable
 // unit explains everything else (its energy reports fail too), so it
-// outranks them; the two energy reports of a device share a wording but
-// are separate conditions (own fetch, own schedule), so one recovering
-// never clears the bubble the other still earns. `classicAccountEmpty`
-// is the unreadable unit's other wording, never held beside it (see
+// outranks them; a fault the unit itself reports (`unitError`, an `E6`
+// indoor/outdoor communication error) outranks failing energy reports
+// too — the unit is the cause the user can act on — and is worded with
+// MELCloud's own text when the dialect carries one (`#renderHeldWarning`);
+// the two energy reports of a device share a wording but are separate
+// conditions (own fetch, own schedule), so one recovering never clears
+// the bubble the other still earns. `classicAccountEmpty` is the
+// unreadable unit's other wording, never held beside it (see
 // `emptyAccountReason`).
 const HELD_WARNINGS = [
   { message: 'errors.classicAccountEmpty', reason: 'classicAccountEmpty' },
   { message: 'errors.unitUnreadable', reason: 'unreadable' },
+  { message: 'errors.unitError', reason: 'unitError' },
   { message: 'errors.energyReportsFailing', reason: 'regularEnergyReports' },
   { message: 'errors.energyReportsFailing', reason: 'totalEnergyReports' },
 ] as const
@@ -87,9 +93,15 @@ export interface EnergyReports {
 
 export type HeldWarningReason = (typeof HELD_WARNINGS)[number]['reason']
 
+// The unit fault as the diagnostic log states it: MELCloud's own words
+// when it gave some (Classic), a plain mention otherwise (Home, or a
+// Classic fault listed without a text).
+const describeFault = (fault: string | null): string =>
+  fault ?? 'MELCloud gave no wording'
+
 export abstract class BaseMELCloudDevice<
-  TFacade extends AvailabilityAware & ClassicDeviceFacade = AvailabilityAware &
-    ClassicDeviceFacade,
+  TFacade extends AvailabilityAware & ClassicDeviceFacade & FaultAware =
+    AvailabilityAware & ClassicDeviceFacade & FaultAware,
   TId extends number | string = number | string,
 > extends Device {
   declare public readonly driver: BaseMELCloudDriver
@@ -172,13 +184,18 @@ export abstract class BaseMELCloudDevice<
     set: Partial<Readonly<Record<string, string>>>
   } = { get: {}, list: {}, set: {} }
 
+  // The fault as MELCloud last worded it while `unitError` is held —
+  // `null` on a dialect that only flags it (Home) — so the bubble carries
+  // the unit's own text and follows a rewording.
+  #unitFault: string | null = null
+
   // What the tile should carry: the highest-priority held reason's
   // message, `null` when nothing is held.
   get #heldWarning(): string | null {
     const held = HELD_WARNINGS.find(({ reason }) =>
       this.#heldReasons.has(reason),
     )
-    return held === undefined ? null : this.homey.__(held.message)
+    return held === undefined ? null : this.#renderHeldWarning(held)
   }
 
   public override async onInit(): Promise<void> {
@@ -396,11 +413,7 @@ export abstract class BaseMELCloudDevice<
         device.isAvailable,
         this.homey.__(this.unreachableWarning),
       )
-      // The unit was read again: the first success lifts the hold, with
-      // no threshold on either side — a one-minute bubble is honest, and
-      // an entry that flaps in and out of the registry is a wire fact the
-      // SDK's own drift streak logs, not something to hide.
-      await this.#releaseUnreadableWarning()
+      await this.#syncLastingConditions(device)
       await this.syncCapabilityValues(device)
     } catch (error) {
       if (!(error instanceof EntityNotFoundError)) {
@@ -580,6 +593,27 @@ export abstract class BaseMELCloudDevice<
   // and a change of wording holds the new reason before releasing the old
   // one, so it costs one IPC call: the new reason outranks the old, or is
   // recorded behind it until the release uncovers it.
+  // A fault the unit itself reports — relayed by MELCloud, never raised
+  // by it: the unit stays reachable and keeps answering writes, so
+  // nothing else on the tile would say so (a unit in `E6` echoed every
+  // write with `200`, diagnostic report of 2026-11-06). Logged once with
+  // MELCloud's wording, and re-rendered — logged again — when that
+  // wording changes under a hold already recorded.
+  async #holdUnitFault(fault: string | null): Promise<void> {
+    const shown = this.#heldWarning
+    const previous = this.#unitFault
+    const isReworded = this.#heldReasons.has('unitError') && fault !== previous
+    this.#unitFault = fault
+    if (await this.holdWarning('unitError')) {
+      this.error(
+        'Unit fault reported by MELCloud, warning held:',
+        describeFault(fault),
+      )
+    } else if (isReworded) {
+      await this.#rewordUnitFault(shown, previous)
+    }
+  }
+
   async #holdUnreadableWarning(
     error: EntityNotFoundError | NotFoundError,
   ): Promise<void> {
@@ -704,6 +738,22 @@ export abstract class BaseMELCloudDevice<
 
   // Nothing reached the wire (a folded or failed write), so the watches
   // it would have replaced still have a read-back to judge.
+  // The unit's own fault is the one reason whose wording is not a fixed
+  // key: MELCloud words it on Classic (`E6 : …`, in the account's
+  // language) and only flags it on Home, so the bubble carries the text
+  // when there is one and the dialect-neutral sentence otherwise.
+  #renderHeldWarning({
+    message,
+    reason,
+  }: (typeof HELD_WARNINGS)[number]): string {
+    if (reason !== 'unitError') {
+      return this.homey.__(message)
+    }
+    return this.#unitFault === null
+      ? this.homey.__('errors.unitErrorUnworded')
+      : this.homey.__(message, { fault: this.#unitFault })
+  }
+
   #restoreWrites(forgotten: Map<string, RecentWrite>): void {
     for (const [capability, written] of forgotten) {
       this.#recentWrites.set(capability, written)
@@ -713,6 +763,24 @@ export abstract class BaseMELCloudDevice<
   // Delay sync to let Homey's optimistic UI update and debounce settle.
   // The handle is kept so deletion cancels a pending sync, and failures are
   // logged instead of becoming unhandled rejections.
+  // A rewording under a hold already recorded: the bubble follows the
+  // wire, and a failed update puts the previous wording back on record,
+  // so the next sync retries the rewording instead of believing the tile
+  // current — the same rollback the hold and release verbs make.
+  async #rewordUnitFault(
+    shown: string | null,
+    previous: string | null,
+  ): Promise<void> {
+    if (await this.#showHeldWarning(shown)) {
+      this.error(
+        'Unit fault reworded by MELCloud:',
+        describeFault(this.#unitFault),
+      )
+      return
+    }
+    this.#unitFault = previous
+  }
+
   #scheduleSyncFromDevice(): void {
     this.homey.clearTimeout(this.#syncTimeout)
     this.#syncTimeout = this.homey.setTimeout(() => {
@@ -767,6 +835,20 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
+  // The unit was read again: the read says whether the unit itself
+  // reports a fault, and the first success lifts the unreadable hold,
+  // with no threshold on either side — a one-minute bubble is honest, and
+  // an entry that flaps in and out of the registry is a wire fact the
+  // SDK's own drift streak logs, not something to hide. The fault is
+  // judged FIRST: under a still-held unreadable warning its hold or
+  // rewording is recorded without IPC, so the release lands the tile on
+  // the right message in one call — no blank flash, no stale wording,
+  // when a pruned unit comes back faulted.
+  async #syncLastingConditions(device: TFacade): Promise<void> {
+    await this.#syncUnitFault(device)
+    await this.#releaseUnreadableWarning()
+  }
+
   async #syncOptionalCapabilities(
     newSettings: Record<string, unknown>,
     changedCapabilities: string[],
@@ -777,6 +859,25 @@ export abstract class BaseMELCloudDevice<
         : this.removeCapability(capability))
     })
     this.#tagMappings.list = this.cleanMapping(this.driver.tagMappings.list)
+  }
+
+  // The unit's own fault, judged on every read that resolves the unit
+  // (`#syncLastingConditions`): held while the unit reports one, with
+  // MELCloud's wording when the dialect carries it, released on the
+  // first read that finds it gone.
+  async #syncUnitFault(device: TFacade): Promise<void> {
+    if (device.isInError) {
+      await this.#holdUnitFault(device.errorMessage)
+      return
+    }
+    if (await this.releaseWarning('unitError')) {
+      this.log('Unit fault cleared, warning released')
+    }
+    // Forgotten once nothing holds it: a failed release keeps the reason,
+    // and its wording with it, for the next sync's retry.
+    if (!this.#heldReasons.has('unitError')) {
+      this.#unitFault = null
+    }
   }
 
   async #updateDeviceOnSettings(

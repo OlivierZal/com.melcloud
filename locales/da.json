@@ -9,7 +9,9 @@
     "unitOffline": "MELCloud melder denne enhed offline — tjek dens wi-fi-forbindelse.",
     "unitStale": "Denne enhed har ikke kommunikeret med MELCloud i over 24 timer — tjek dens wi-fi-forbindelse.",
     "unitUnreadable": "MELCloud viser ikke længere denne enhed, eller sender data for den, som appen ikke kan læse — værdierne er fastfrosne, indtil den kan læses igen (detaljer i appens diagnoselog).",
-    "classicAccountEmpty": "Denne MELCloud Classic-konto viser ikke længere nogen enhed, som appen kan læse. Hvis dine enheder er flyttet til MELCloud Home, skal du tilføje dem igen som [Home]-enheder."
+    "classicAccountEmpty": "Denne MELCloud Classic-konto viser ikke længere nogen enhed, som appen kan læse. Hvis dine enheder er flyttet til MELCloud Home, skal du tilføje dem igen som [Home]-enheder.",
+    "unitError": "Enheden selv melder en fejl — __fault__. Appen videregiver den blot: tjek enheden eller MELCloud-appen.",
+    "unitErrorUnworded": "Enheden selv melder en fejl. Appen videregiver den blot: tjek enheden eller MELCloud-appen."
   },
   "settings": {
     "authenticate": {

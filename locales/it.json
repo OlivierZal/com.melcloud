@@ -9,7 +9,9 @@
     "unitOffline": "MELCloud segnala questa unità come offline: controlla la sua connessione Wi-Fi.",
     "unitStale": "Questa unità non comunica con MELCloud da oltre 24 ore: controlla la sua connessione Wi-Fi.",
     "unitUnreadable": "MELCloud non elenca più questa unità, oppure invia per essa dati che l'app non riesce a leggere: i valori restano bloccati finché non torna leggibile (dettagli nel log di diagnostica dell'app).",
-    "classicAccountEmpty": "Questo account MELCloud Classic non elenca più alcuna unità che l'app riesca a leggere. Se le tue unità sono passate a MELCloud Home, aggiungile di nuovo come dispositivi [Home]."
+    "classicAccountEmpty": "Questo account MELCloud Classic non elenca più alcuna unità che l'app riesca a leggere. Se le tue unità sono passate a MELCloud Home, aggiungile di nuovo come dispositivi [Home].",
+    "unitError": "L'unità stessa segnala un guasto: __fault__. L'app si limita a riportarlo: controlla l'unità o l'app MELCloud.",
+    "unitErrorUnworded": "L'unità stessa segnala un guasto. L'app si limita a riportarlo: controlla l'unità o l'app MELCloud."
   },
   "settings": {
     "authenticate": {

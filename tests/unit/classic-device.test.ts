@@ -107,9 +107,15 @@ vi.mock(import('homey'), async () => {
         overrides: {
           getSetting: getSettingMock,
           homey: {
+            // A tagged call renders its tags after the key, so a
+            // wording that follows the wire (the unit's own fault) is
+            // observable; a bare key stays a bare key.
             __: vi
-              .fn<(key: string) => string>()
-              .mockImplementation((key: string) => key),
+              .fn<(key: string, tags?: Record<string, string>) => string>()
+              .mockImplementation(
+                (key: string, tags?: Record<string, string>) =>
+                  tags === undefined ? key : `${key} ${JSON.stringify(tags)}`,
+              ),
             api: { realtime: realtimeMock },
             app: {
               getClassicFacade: getFacadeMock,
@@ -161,16 +167,46 @@ const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
   },
 })
 
+interface UnitFault {
+  errorMessage: string | null
+  isInError: boolean
+}
+
+// The fault is read through getters: the device caches its facade, so a
+// test that rewords the fault mutates the object it handed in.
 const mockFacade = (
   data: Record<string, unknown> = mockDeviceData,
   isAvailable = true,
+  fault?: UnitFault,
 ): void => {
   getFacadeMock.mockReturnValue({
     data,
     getEnergy: vi.fn<(query?: unknown) => Promise<unknown>>(),
     isAvailable,
     updateValues: setValuesMock,
+    get errorMessage(): string | null {
+      return fault?.errorMessage ?? null
+    },
+    get isInError(): boolean {
+      return fault?.isInError ?? false
+    },
   })
+}
+
+// A unit reporting the one fault the 2026-11-06 report showed, worded as
+// MELCloud words it, synced once.
+const FAULT = 'E6 : Elektrisk / kommunikasjons feil (E6)'
+
+const syncFaulted = async (): Promise<{
+  fault: UnitFault
+  faultedDevice: TestDevice
+}> => {
+  const faultedDevice = new TestDevice()
+  setDriver(faultedDevice)
+  const fault: UnitFault = { errorMessage: FAULT, isInError: true }
+  mockFacade(mockDeviceData, true, fault)
+  await faultedDevice.syncFromDevice()
+  return { fault, faultedDevice }
 }
 
 const setDriver = (
@@ -988,6 +1024,72 @@ describe(ClassicMELCloudDevice, () => {
       await freshDevice.syncFromDevice()
 
       expect(realtimeMock).not.toHaveBeenCalled()
+    })
+  })
+
+  // A fault the unit reports (an `E6`) is worded by MELCloud on Classic:
+  // the bubble carries that text, and follows a rewording without a
+  // second hold.
+  describe('unit fault', () => {
+    beforeEach(() => {
+      superSetWarningMock.mockClear()
+    })
+
+    it('should hold the warning worded with the fault MELCloud reports', async () => {
+      await syncFaulted()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        [`errors.unitError ${JSON.stringify({ fault: FAULT })}`],
+      ])
+    })
+
+    it('should re-render the warning when MELCloud rewords the fault, without a second hold', async () => {
+      const { fault, faultedDevice } = await syncFaulted()
+      fault.errorMessage = 'E7 : Annen feil'
+      await faultedDevice.syncFromDevice()
+      await faultedDevice.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        [`errors.unitError ${JSON.stringify({ fault: FAULT })}`],
+        [`errors.unitError ${JSON.stringify({ fault: 'E7 : Annen feil' })}`],
+      ])
+    })
+
+    // The warning is IPC: a failed rewording keeps the old wording on
+    // record, so the next sync retries it rather than believing the tile
+    // already shows the new one.
+    it('should retry a rewording whose warning update failed', async () => {
+      const { fault, faultedDevice } = await syncFaulted()
+      fault.errorMessage = 'E7 : Annen feil'
+      superSetWarningMock.mockImplementationOnce(() => {
+        throw new Error('IPC failed')
+      })
+      await faultedDevice.syncFromDevice()
+      await faultedDevice.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        [`errors.unitError ${JSON.stringify({ fault: FAULT })}`],
+        [`errors.unitError ${JSON.stringify({ fault: 'E7 : Annen feil' })}`],
+        [`errors.unitError ${JSON.stringify({ fault: 'E7 : Annen feil' })}`],
+      ])
+    })
+
+    // A failed release keeps the reason and its wording on record, so the
+    // next healthy sync retries the release.
+    it('should retry a release whose warning update failed', async () => {
+      const { fault, faultedDevice } = await syncFaulted()
+      fault.isInError = false
+      superSetWarningMock.mockImplementationOnce(() => {
+        throw new Error('IPC failed')
+      })
+      await faultedDevice.syncFromDevice()
+      await faultedDevice.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        [`errors.unitError ${JSON.stringify({ fault: FAULT })}`],
+        [null],
+        [null],
+      ])
     })
   })
 
