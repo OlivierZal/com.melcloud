@@ -2173,5 +2173,20 @@
     "pl": "Gdy samo urządzenie zgłasza usterkę — na przykład błąd komunikacji E6 — kafelek urządzenia pokazuje to teraz w brzmieniu MELCloud: aplikacja tylko ją przekazuje, więc sprawdź urządzenie lub aplikację MELCloud.",
     "ru": "Если само устройство сообщает о неисправности — например, об ошибке связи E6, — плитка устройства теперь показывает это в формулировке MELCloud: приложение лишь передаёт её, поэтому проверьте устройство или приложение MELCloud.",
     "sv": "När enheten själv rapporterar ett fel – till exempel ett E6-kommunikationsfel – visar enhetsrutan det nu med MELClouds egen formulering: appen vidarebefordrar det bara, så kontrollera enheten eller MELCloud-appen."
+  },
+  "46.16.0": {
+    "ar": "لم يعد خطأ عابر في MELCloud يفصل التطبيق أو يطلب منك تسجيل الدخول من جديد: يعيد التطبيق المحاولة من تلقاء نفسه كل دقيقة حتى يستجيب MELCloud، ولا يطلب منك تسجيل الدخول إلا عندما يرفض MELCloud بيانات اعتمادك فعلاً.",
+    "da": "En forbigående MELCloud-fejl logger ikke længere appen ud eller beder dig logge ind igen: appen prøver selv igen hvert minut, indtil MELCloud svarer, og beder dig kun logge ind, når MELCloud faktisk afviser dine loginoplysninger.",
+    "de": "Ein vorübergehender MELCloud-Fehler meldet die App nicht mehr ab und fordert Sie nicht mehr zur erneuten Anmeldung auf: Die App versucht es jede Minute selbst erneut, bis MELCloud antwortet, und bittet Sie nur dann um eine Anmeldung, wenn MELCloud Ihre Zugangsdaten tatsächlich ablehnt.",
+    "en": "A momentary MELCloud error no longer signs the app out or asks you to sign in again: the app retries by itself every minute until MELCloud answers, and asks you to sign in only when MELCloud actually refuses your credentials.",
+    "es": "Un error momentáneo de MELCloud ya no cierra la sesión de la aplicación ni le pide que vuelva a iniciarla: la aplicación vuelve a intentarlo sola cada minuto hasta que MELCloud responde, y solo le pide iniciar sesión cuando MELCloud rechaza de verdad sus credenciales.",
+    "fr": "Une erreur passagère de MELCloud ne déconnecte plus l'application et ne vous demande plus de vous reconnecter : l'application réessaie d'elle-même chaque minute jusqu'à ce que MELCloud réponde, et ne vous demande de vous reconnecter que si MELCloud refuse réellement vos identifiants.",
+    "it": "Un errore momentaneo di MELCloud non disconnette più l'app né ti chiede di accedere di nuovo: l'app riprova da sola ogni minuto finché MELCloud risponde, e ti chiede di accedere solo quando MELCloud rifiuta davvero le tue credenziali.",
+    "ko": "일시적인 MELCloud 오류로 더 이상 앱이 로그아웃되거나 다시 로그인하라는 요청이 표시되지 않습니다. 앱은 MELCloud가 응답할 때까지 1분마다 스스로 다시 시도하며, MELCloud가 실제로 자격 증명을 거부한 경우에만 로그인을 요청합니다.",
+    "nl": "Een tijdelijke MELCloud-fout meldt de app niet langer af en vraagt u niet meer opnieuw in te loggen: de app probeert het zelf elke minuut opnieuw tot MELCloud antwoordt, en vraagt u alleen in te loggen wanneer MELCloud uw inloggegevens echt weigert.",
+    "no": "En forbigående MELCloud-feil logger ikke lenger appen ut eller ber deg logge inn på nytt: appen prøver selv igjen hvert minutt til MELCloud svarer, og ber deg bare logge inn når MELCloud faktisk avviser påloggingsopplysningene dine.",
+    "pl": "Chwilowy błąd MELCloud nie wylogowuje już aplikacji ani nie prosi o ponowne zalogowanie: aplikacja sama ponawia próbę co minutę, aż MELCloud odpowie, i prosi o zalogowanie tylko wtedy, gdy MELCloud faktycznie odrzuci Twoje dane logowania.",
+    "ru": "Кратковременная ошибка MELCloud больше не выходит из учётной записи в приложении и не просит войти снова: приложение само повторяет попытку каждую минуту, пока MELCloud не ответит, и просит войти, только если MELCloud действительно отклонил ваши учётные данные.",
+    "sv": "Ett tillfälligt MELCloud-fel loggar inte längre ut appen eller ber dig logga in igen: appen försöker själv igen varje minut tills MELCloud svarar, och ber dig bara logga in när MELCloud faktiskt avvisar dina inloggningsuppgifter."
   }
 }
