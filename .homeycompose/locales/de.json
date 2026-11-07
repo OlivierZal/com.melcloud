@@ -6,6 +6,8 @@
     "invalidDuration": "Die Dauer muss eine ganze Zahl von Tagen zwischen 0 und 365 sein.",
     "invalidHolidayModeEnd": "Das Ende des Urlaubsmodus muss in der Zukunft liegen.",
     "invalidTime": "Die Endzeit ist ungültig.",
+    "unitError": "Das Gerät selbst meldet eine Störung — __fault__. Die App gibt sie nur weiter: prüfen Sie das Gerät oder die MELCloud-App.",
+    "unitErrorUnworded": "Das Gerät selbst meldet eine Störung. Die App gibt sie nur weiter: prüfen Sie das Gerät oder die MELCloud-App.",
     "unitOffline": "MELCloud meldet dieses Gerät als offline — prüfen Sie seine WLAN-Verbindung.",
     "unitStale": "Dieses Gerät hat seit über 24 Stunden nicht mit MELCloud kommuniziert — prüfen Sie seine WLAN-Verbindung.",
     "unitUnreadable": "MELCloud führt dieses Gerät nicht mehr auf oder sendet dafür Daten, die die App nicht lesen kann — die Werte bleiben eingefroren, bis es wieder lesbar ist (Details im Diagnoseprotokoll der App).",

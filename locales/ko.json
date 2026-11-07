@@ -9,7 +9,9 @@
     "unitOffline": "MELCloud에서 이 기기가 오프라인이라고 보고합니다. Wi-Fi 연결을 확인하세요.",
     "unitStale": "이 기기가 24시간 넘게 MELCloud와 통신하지 않았습니다. Wi-Fi 연결을 확인하세요.",
     "unitUnreadable": "MELCloud가 이 기기를 더 이상 목록에 표시하지 않거나, 앱이 읽을 수 없는 데이터를 보내고 있습니다. 다시 읽을 수 있게 될 때까지 값이 고정됩니다(자세한 내용은 앱의 진단 로그 참조).",
-    "classicAccountEmpty": "이 MELCloud Classic 계정에는 앱이 읽을 수 있는 기기가 더 이상 없습니다. 기기가 MELCloud Home으로 이전되었다면 [Home] 기기로 다시 추가하세요."
+    "classicAccountEmpty": "이 MELCloud Classic 계정에는 앱이 읽을 수 있는 기기가 더 이상 없습니다. 기기가 MELCloud Home으로 이전되었다면 [Home] 기기로 다시 추가하세요.",
+    "unitError": "기기 자체에서 고장을 보고합니다 — __fault__. 앱은 이를 전달할 뿐입니다. 기기 또는 MELCloud 앱을 확인하세요.",
+    "unitErrorUnworded": "기기 자체에서 고장을 보고합니다. 앱은 이를 전달할 뿐입니다. 기기 또는 MELCloud 앱을 확인하세요."
   },
   "settings": {
     "authenticate": {

@@ -6,6 +6,8 @@
     "invalidDuration": "Varigheten må være et helt antall dager mellom 0 og 365.",
     "invalidHolidayModeEnd": "Slutten på feriemodus må være i fremtiden.",
     "invalidTime": "Sluttidspunktet er ugyldig.",
+    "unitError": "Enheten selv melder en feil — __fault__. Appen bare videreformidler den: sjekk enheten eller MELCloud-appen.",
+    "unitErrorUnworded": "Enheten selv melder en feil. Appen bare videreformidler den: sjekk enheten eller MELCloud-appen.",
     "unitOffline": "MELCloud melder at denne enheten er frakoblet — sjekk wi-fi-tilkoblingen.",
     "unitStale": "Denne enheten har ikke kommunisert med MELCloud på over 24 timer — sjekk wi-fi-tilkoblingen.",
     "unitUnreadable": "MELCloud lister ikke lenger denne enheten, eller sender data for den som appen ikke kan lese — verdiene er fryst til den kan leses igjen (detaljer i appens diagnoselogg).",

@@ -57,6 +57,7 @@ const {
 
 const facadeState = {
   isAvailable: true,
+  isInError: false,
   isPoweredOn: true,
   operationMode: 'Heat',
   setTemperature: 22,
@@ -73,8 +74,14 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
   mock<Home.DeviceAtaFacade>({
     capabilities: { hasAutomaticFanSpeed: true, numberOfFanSpeeds: 5 },
     updateValues: setValuesMock,
+    get errorMessage(): null {
+      return null
+    },
     get isAvailable(): boolean {
       return facadeState.isAvailable
+    },
+    get isInError(): boolean {
+      return facadeState.isInError
     },
     get operationMode(): string {
       return facadeState.operationMode
@@ -259,6 +266,7 @@ describe(BaseMELCloudDevice, () => {
   // reads empty by default — the boot race — and the prune tests fill it.
   beforeEach(() => {
     facadeState.isAvailable = true
+    facadeState.isInError = false
     facadeState.isPoweredOn = true
     facadeState.operationMode = 'Heat'
     facadeState.setTemperature = 22
@@ -423,6 +431,66 @@ describe(BaseMELCloudDevice, () => {
 
       expect(superSetWarningMock).not.toHaveBeenCalled()
       expect(superLogMock).not.toHaveBeenCalled()
+    })
+
+    // A fault the unit itself reports is a lasting condition the unit,
+    // not the cloud, raised: held like the others, logged once, released
+    // on the first sync that reads it gone. Home only flags it, so the
+    // bubble carries the dialect-neutral wording.
+    it('should hold the unit fault warning once and log the fault', async () => {
+      await primeDevice(device)
+      facadeState.isInError = true
+      await device.syncFromDevice()
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitErrorUnworded'],
+      ])
+      expect(superErrorMock.mock.calls).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'Unit fault reported by MELCloud, warning held:',
+          'MELCloud gave no wording',
+        ],
+      ])
+      // The 2026-07 class (#1479/#1481): a wire flag must never grey a
+      // healthy tile. A fault is a bubble — the unit stays available and
+      // keeps syncing.
+      expect(device.setAvailable).toHaveBeenCalledTimes(2)
+      expect(device.setUnavailable).not.toHaveBeenCalled()
+    })
+
+    // A pruned unit coming back faulted: the fault is recorded behind the
+    // still-held unreadable warning, and the release lands the tile on it
+    // in one call — never a blank flash in between.
+    it('should move the tile from unreadable to the fault in one call', async () => {
+      pruneFacade(await primeDevice(device), { shouldRecover: true })
+      await device.syncFromDevice()
+      facadeState.isInError = true
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitUnreadable'],
+        ['errors.unitErrorUnworded'],
+      ])
+    })
+
+    it('should release the unit fault warning once when the unit recovers', async () => {
+      await primeDevice(device)
+      facadeState.isInError = true
+      await device.syncFromDevice()
+      facadeState.isInError = false
+      await device.syncFromDevice()
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitErrorUnworded'],
+        [null],
+      ])
+      expect(superLogMock.mock.calls).toStrictEqual([
+        ['Test device', '-', 'Unit fault cleared, warning released'],
+      ])
     })
 
     // The warning is IPC: a failure is logged, never thrown, and rolls

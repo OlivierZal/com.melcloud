@@ -6,6 +6,8 @@
     "invalidDuration": "La durée doit être un nombre entier de jours entre 0 et 365.",
     "invalidHolidayModeEnd": "La fin du mode vacances doit être dans le futur.",
     "invalidTime": "L'heure de fin n'est pas valide.",
+    "unitError": "L'unité elle-même signale un défaut — __fault__. L'application ne fait que le relayer : vérifiez l'unité ou l'application MELCloud.",
+    "unitErrorUnworded": "L'unité elle-même signale un défaut. L'application ne fait que le relayer : vérifiez l'unité ou l'application MELCloud.",
     "unitOffline": "MELCloud signale cette unité hors ligne — vérifiez sa connexion Wi-Fi.",
     "unitStale": "Cette unité n'a pas communiqué avec MELCloud depuis plus de 24 h — vérifiez sa connexion Wi-Fi.",
     "unitUnreadable": "MELCloud ne recense plus cette unité, ou envoie pour elle des données que l'application ne peut pas lire — les valeurs sont figées jusqu'à ce qu'elle soit de nouveau lisible (détails dans le journal de diagnostic de l'application).",

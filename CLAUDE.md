@@ -640,6 +640,32 @@ coverage.
   MELCloud Home, holds instead of toasting at every sync — the
   population arbiter it replaced (46.8.0–46.11.x) read both as the
   boot race.
+- `unitError` (46.15.0) is the one held reason worded by the WIRE: a
+  fault the unit itself reports — Classic `HasError` with MELCloud's own
+  text in `ErrorMessages` (`E6 : …`, in the account's language), Home
+  `isInError` with no text — read through melcloud-api 60.5.0's
+  `FaultAware` contract and rendered by `#renderHeldWarning`
+  (`errors.unitError` with the `__fault__` tag, `errors.unitErrorUnworded`
+  without). It outranks the energy reports and sits under `unreadable`.
+  Why it exists: a diagnostic report of 2026-11-06 (log c6300a6a) showed
+  a unit in `E6` for hours, `Offline: false`, echoing every setpoint
+  write with `200` and the fault attached, while the tile said nothing
+  and the user restarted the app — availability is the wrong contract
+  for a fault, so nothing but this reason says it is the heat pump. It
+  never touches availability — the 2026-07 class (#1479/#1481, the raw
+  `Offline` flag greying healthy tiles) is pinned in the Home suite: a
+  faulted unit stays `setAvailable`, never `setUnavailable`. Measured
+  before shipping: one hour of per-minute reads on 13 healthy units
+  (three Classic, ten Home) never moved `HasError`, `ErrorCode`,
+  `ErrorMessages` or `isInError`, while `Offline` flipped once — so the
+  reason holds on the first faulted read, with no threshold. A rewording
+  (another code) re-renders the bubble without a second hold
+  (`#holdUnitFault`), and a failed update keeps the old wording on
+  record so the next sync retries it (`#rewordUnitFault`); the fault is
+  judged BEFORE the unreadable release (`#syncLastingConditions`), so a
+  pruned unit coming back faulted lands on its fault in one IPC. The log
+  gets the wording once per hold and once per rewording, and heatzy has
+  no twin — its API carries no fault flag.
 - Report 2026-10-02, an Ecodan on MELCloud Home shown "offline for
   hours" in Homey. The availability code is identical for ATA and ATW
   (one `syncFromDevice` skeleton over one `isAvailable` contract), so
