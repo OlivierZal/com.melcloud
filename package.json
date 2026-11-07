@@ -44,7 +44,7 @@
     "@vitest/coverage-v8": "^5.0.5",
     "chart.js": "^4.6.1",
     "esbuild": "^0.28.2",
-    "eslint": "^10.13.0",
+    "eslint": "^10.14.0",
     "happy-dom": "21.0.4",
     "homey-apps-sdk-v3-types": "^1.8.3",
     "homey-lib": "^2.52.3",
