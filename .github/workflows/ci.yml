@@ -6,7 +6,7 @@ jobs:
       packages: read
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    uses: OlivierZal/configs/.github/workflows/reusable-ci.yml@eb3af974655875cb5b993cf8e7bb65f38b0f95d5 # v8.6.0
+    uses: OlivierZal/configs/.github/workflows/reusable-ci.yml@83677ba411dc01903f5cfe02ae8f7b2eacc0a81f # v8.8.0
     with:
       check-node-version: '22'
       # The coverage/Sonar leg carries its own flag, and it runs on the
@@ -16,7 +16,9 @@ jobs:
       # every release. Quoting stays load-bearing: unquoted, JSON reads
       # 22.20 as the number 22.2 — a three-year-old release — and the
       # leg would name itself after it.
-      node-versions: '[{"node-version": "22"}, {"node-version": "22.20", "coverage": true}, {"node-version": "latest"}, {"node-version": "lts/*"}]'
+      node-versions: >-
+        [{"node-version": "22"}, {"node-version": "22.20", "coverage": true},
+        {"node-version": "latest"}, {"node-version": "lts/*"}]
 name: CI
 on:
   pull_request: {}

@@ -18,6 +18,13 @@ const config: Config[] = defineConfig([
       'lib/**/*.mts',
       'types/**/*.mts',
     ],
+    // The two melcloud-api dialect entries are consumed as namespaces by
+    // the library's own design (`import * as Classic/Home`): the value
+    // namespaces `import-x/avoid-namespace-import` admits here.
+    namespaceImportAllow: [
+      '@olivierzal/melcloud-api/classic',
+      '@olivierzal/melcloud-api/home',
+    ],
     templateExpressionAllow: [
       // Query-string serialization: interpolating URLSearchParams IS
       // its canonical stringification.
