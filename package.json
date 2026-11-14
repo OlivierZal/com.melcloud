@@ -41,7 +41,7 @@
     "@types/homey": "npm:homey-apps-sdk-v3-types@^1.8.3",
     "@types/node": "^26.6.6",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "@vitest/coverage-v8": "^5.0.5",
+    "@vitest/coverage-v8": "^5.1.0",
     "chart.js": "^4.6.1",
     "esbuild": "^0.28.2",
     "eslint": "^10.14.0",
