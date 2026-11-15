@@ -179,6 +179,7 @@ describe('home energy reports', () => {
         key === 'energy_cursor_consumed' ? '2026-03-18T09:50:00Z' : 1.5,
       )
       mockFailingFetch()
+      pinNow(Temporal.Instant.from('2026-03-18T11:10:00Z').epochMilliseconds)
       const report = new HomeEnergyReport(
         mockDevice(),
         totalConfig,
@@ -191,7 +192,7 @@ describe('home energy reports', () => {
         15 * MS_PER_MINUTE,
       )
 
-      pinNow(Temporal.Instant.from('2026-03-18T11:15:00Z').epochMilliseconds)
+      pinNow(Temporal.Instant.from('2026-03-18T11:25:00Z').epochMilliseconds)
       const getEnergySeriesMock = mockAtaFetch([
         point('2026-03-18T10:00:00Z', 0.2),
       ])
@@ -201,11 +202,11 @@ describe('home energy reports', () => {
       expect(getEnergySeriesMock).toHaveBeenCalledWith({
         from: '2026-03-18T09:50:00Z',
         interval: 'Minute',
-        to: '2026-03-18T11:00:00Z',
+        to: '2026-03-18T11:10:00Z',
       })
       expect(setStoreValueMock).toHaveBeenCalledWith(
         'energy_cursor_consumed',
-        '2026-03-18T11:00:00Z',
+        '2026-03-18T11:10:00Z',
       )
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 1.7)
     })

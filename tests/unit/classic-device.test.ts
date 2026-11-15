@@ -19,7 +19,10 @@ import type {
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
 } from '../../types/classic-capabilities.mts'
-import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
+import {
+  CLASSIC_ENERGY_REPORT_TOTAL,
+  ClassicMELCloudDevice,
+} from '../../drivers/classic-device.mts'
 import { EnergyReport } from '../../drivers/classic-report.mts'
 import {
   createCapabilityListenerCallbackGetter,
@@ -227,13 +230,7 @@ const wireEnergyReports = (target: TestDevice): void => {
       spread: { minutes: 5 },
       values: { millisecond: 0, minute: 5, second: 0 },
     },
-    total: {
-      duration: { days: 1 },
-      minus: { hours: 1 },
-      mode: 'total',
-      spread: { minutes: 25 },
-      values: { hour: 1, millisecond: 0, minute: 30, second: 0 },
-    },
+    total: { ...CLASSIC_ENERGY_REPORT_TOTAL, minus: { hours: 1 } },
     create: (config) => new EnergyReport(target, config),
   }
   Object.defineProperty(target, 'energyReports', { value: energyReports })

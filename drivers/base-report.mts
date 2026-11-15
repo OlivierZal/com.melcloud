@@ -24,7 +24,8 @@ const capitalize = ([first = '', ...rest] = ''): string =>
 // Three consecutive failures hold the device warning, the first success
 // releases it: one failed fetch is noise, three in a row are not. Retries
 // count as runs, so the user is told about fifty minutes into a failure
-// on the hourly and daily reports, ten on the five-minute one.
+// on the hourly and daily reports, ten on the five-minute one when its
+// failures are quick.
 const FAILURE_WARNING_THRESHOLD = 3
 
 // A failed run is retried before its cadence comes round: a quarter of an
@@ -37,6 +38,11 @@ const FAILURE_WARNING_THRESHOLD = 3
 // five-minute one none.
 const FIRST_RETRY_MINUTES = 15
 const LONGEST_RETRY_MINUTES = 240
+
+// A slot less than a minute ahead counts as reached: a timer can fire a
+// few milliseconds early, and the run it starts must not arm the same
+// slot again.
+const SLOT_GUARD: Temporal.DurationLike = { minutes: 1 }
 
 const APPLIED_VALUE_DECIMALS = 3
 
@@ -77,11 +83,11 @@ const spreadOffset = (
   })
 
 // Wall-clock-anchored report scheduler: every fire recomputes the next delay
-// from the current zoned time (duration + values alignment, on the
-// device's own grid — the slots shifted by its offset in their window),
-// so a DST transition shifts nothing — a fixed-milliseconds interval
-// would drift by the offset delta until the app restarts. A failed run
-// arms an earlier retry instead (`FIRST_RETRY_MINUTES`).
+// from the current zoned time (the next slot on the device's own grid —
+// the slots shifted by its offset in their window), so a DST transition
+// shifts nothing — a fixed-milliseconds interval would drift by the
+// offset delta until the app restarts. A failed run arms an earlier
+// retry instead (`FIRST_RETRY_MINUTES`).
 export abstract class ScheduledEnergyReport {
   protected get mode(): EnergyReportMode {
     return this.#config.mode
@@ -162,19 +168,10 @@ export abstract class ScheduledEnergyReport {
   }
 
   // `failures` is the run's own place in its failure streak, 0 when it
-  // did not fail. The alignment is done on the device's own grid: the
-  // clock is read minus the offset, aligned, and the offset put back.
-  // Aligned as it stands, a run ending past a boundary the offset
-  // straddles would land a whole period late — every time, for a device
-  // whose offset sits at the end of the five-minute report's minute.
+  // did not fail.
   #computeNextFireDelay(failures: number): Temporal.Duration {
     const now = getNow(this.#device.homey)
-    const cadence = now
-      .subtract(this.#spreadOffset)
-      .add(this.#config.duration)
-      .with(this.#config.values)
-      .add(this.#spreadOffset)
-      .since(now)
+    const cadence = this.#nextSlot(now).since(now)
     if (failures === 0) {
       return cadence
     }
@@ -218,6 +215,24 @@ export abstract class ScheduledEnergyReport {
         .add(delay)
         .toLocaleString(locale, { dateStyle: 'full', timeStyle: 'full' }),
     )
+  }
+
+  // The slots are aligned on the device's own grid: the clock is read
+  // minus the offset, aligned, and the offset put back. Aligned as it
+  // stands, a run ending past a boundary the offset straddles would land
+  // a whole period late — every time, for a device whose offset sits at
+  // the end of the five-minute report's minute. The slot is this
+  // period's while it is still ahead: a start-up or a retry that ran
+  // before it does not stand in for it, since a slot is the earliest
+  // instant its figures can be trusted at.
+  #nextSlot(now: Temporal.ZonedDateTime): Temporal.ZonedDateTime {
+    const frame = now.subtract(this.#spreadOffset)
+    const aligned = frame.with(this.#config.values)
+    const slot =
+      Temporal.Duration.compare(aligned.since(frame), SLOT_GUARD) > 0
+        ? aligned
+        : frame.add(this.#config.duration).with(this.#config.values)
+    return slot.add(this.#spreadOffset)
   }
 
   // Mirror of the unreadable-unit hold in `ensureDevice`: a failing

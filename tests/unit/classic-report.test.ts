@@ -728,6 +728,13 @@ describe(EnergyReport, () => {
 
       expect(armedMinutes()).toStrictEqual([15])
       expect(setCapabilityValueMock).not.toHaveBeenCalled()
+      expect(logMock).toHaveBeenCalledWith(
+        'Total energy report',
+        'will run in',
+        expect.any(String),
+        'on',
+        expect.stringContaining('12:15:00'),
+      )
     })
 
     it('should double the retry after each further consecutive failure, up to four hours', async () => {
@@ -752,8 +759,39 @@ describe(EnergyReport, () => {
       expect(armedMinutes()).toStrictEqual([10])
     })
 
+    // The retry wins while it is strictly sooner than the slot: a
+    // millisecond either side of the tie, and the tie itself.
+    it.each([
+      { delay: 900_000, now: '2026-03-18T12:49:59.999+01:00' },
+      { delay: 900_000, now: '2026-03-18T12:50:00.000+01:00' },
+      { delay: 899_999, now: '2026-03-18T12:50:00.001+01:00' },
+    ])(
+      'should arm $delay ms when an hourly run fails at $now',
+      async ({ delay, now }) => {
+        pinNow(Temporal.Instant.from(now).epochMilliseconds)
+        cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
+        mockFailingFetch()
+        const report = new EnergyReport(mockDevice, regularConfig)
+        await report.start()
+
+        expect(getMockCallArg<number>(setTimeoutMock, 0, 1)).toBe(delay)
+      },
+    )
+
+    it('should arm nothing when a run fails after the report was unscheduled', async () => {
+      mockEnergyFetch(totalData)
+      const report = new EnergyReport(mockDevice, totalConfig)
+      await report.start()
+      mockFailingFetch()
+      report.unschedule()
+      await fireArmed(0)
+
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
+    })
+
     // An hourly report failing at its own slot: two retries, then the
-    // next slot, which the third would only reach at the same instant.
+    // next slot, a quarter of an hour away when the third retry would
+    // be an hour away.
     it('should retry an hourly report twice before its next slot', async () => {
       cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
       mockFailingFetch()
@@ -913,6 +951,43 @@ describe(EnergyReport, () => {
       )
     })
 
+    // A slot is the earliest instant its figures can be trusted at, so
+    // a run before it in its period — a start-up, a retry — does not
+    // stand in for it: the slot still runs.
+    it.each([
+      { config: regularConfig, minutes: 3, now: '2026-03-18T13:02:00+01:00' },
+      { config: totalConfig, minutes: 70, now: '2026-03-18T00:20:00+01:00' },
+    ])(
+      'should still run the $config.mode slot after a run $minutes min before it',
+      async ({ config, minutes, now }) => {
+        pinNow(Temporal.Instant.from(now).epochMilliseconds)
+        cleanMappingMock.mockReturnValue({
+          measure_power: ['Auto', 'Cooling'],
+          meter_power: ['TotalAutoConsumed'],
+        })
+        const report = new EnergyReport(mockDevice, config)
+        await report.start()
+
+        expect(armedMinutes()).toStrictEqual([minutes])
+      },
+    )
+
+    // A timer can fire a few milliseconds before its slot: the run it
+    // starts arms the next period's slot, never the same one again.
+    it('should not arm the same slot again when its timer fires early', async () => {
+      pinNow(
+        Temporal.Instant.from('2026-03-18T13:04:59.997+01:00')
+          .epochMilliseconds,
+      )
+      cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      expect(getMockCallArg<number>(setTimeoutMock, 0, 1)).toBe(
+        60 * MS_PER_MINUTE + 3,
+      )
+    })
+
     // The slots are aligned on the device's own grid. Aligned on the
     // shared one, a run ending between a period's boundary and the
     // device's instant would skip that instant: here device 9652, whose
@@ -946,8 +1021,8 @@ describe(EnergyReport, () => {
 
   // Summer and winter time. A daily report runs once per local day
   // whatever the night does to the clocks: it keeps its wall-clock slot
-  // across the change, a slot the clocks skip runs as soon as they
-  // resume, and one they repeat runs the first time only.
+  // across the change, a slot the clocks skip runs an hour later on the
+  // clock, a full day after the last, and one they repeat runs once.
   describe('summer and winter time', () => {
     const MINUTES_PER_HOUR = 60
 
