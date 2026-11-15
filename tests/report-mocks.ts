@@ -8,10 +8,16 @@ export const FAKE_NOW: number = Temporal.Instant.from(
   '2026-03-18T12:00:00.000+01:00',
 ).epochMilliseconds
 
+// A window of one millisecond — the shortest there is — holds a single
+// instant, the slot's own: the suites that pin a delay to the minute use
+// it, and leave real windows to the cases that are about the spread.
+export const SINGLE_INSTANT: Temporal.DurationLike = { milliseconds: 1 }
+
 interface ReportDeviceMocks {
   readonly cleanMappingMock: ReturnType<typeof vi.fn>
   readonly clearTimeoutMock: ReturnType<typeof vi.fn>
   readonly ensureDeviceMock: ReturnType<typeof vi.fn>
+  readonly getTimezoneMock: ReturnType<typeof vi.fn<() => string>>
   readonly homey: Homey
   readonly setCapabilityValueMock: ReturnType<typeof vi.fn>
   readonly setTimeoutMock: ReturnType<typeof vi.fn>
@@ -27,15 +33,15 @@ export const createReportDeviceMocks = (): ReportDeviceMocks => {
   const setTimeoutMock = vi
     .fn<(callback: () => void, ms: number) => NodeJS.Timeout>()
     .mockReturnValue(mock<NodeJS.Timeout>())
+  const getTimezoneMock = vi.fn<() => string>(() => 'Europe/Paris')
   return {
     cleanMappingMock: vi.fn<(mapping: unknown) => Record<string, unknown>>(),
     clearTimeoutMock,
     ensureDeviceMock: vi.fn<() => Promise<unknown>>(),
+    getTimezoneMock,
     homey: mock<Homey>({
       clearTimeout: clearTimeoutMock,
-      clock: mock<Homey['clock']>({
-        getTimezone: vi.fn<() => string>(() => 'Europe/Paris'),
-      }),
+      clock: mock<Homey['clock']>({ getTimezone: getTimezoneMock }),
       i18n: mock<Homey['i18n']>({
         getLanguage: vi.fn<() => string>(() => 'en'),
       }),

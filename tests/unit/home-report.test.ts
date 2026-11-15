@@ -8,6 +8,7 @@ import { type ApiRequestError, err, ok } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -24,7 +25,11 @@ import {
   ATW_ENERGY_STRATEGY,
   HomeEnergyReport,
 } from '../../drivers/home-report.mts'
-import { createReportDeviceMocks, FAKE_NOW } from '../report-mocks.ts'
+import {
+  createReportDeviceMocks,
+  FAKE_NOW,
+  SINGLE_INSTANT,
+} from '../report-mocks.ts'
 import {
   createTransportFailure,
   TRANSPORT_FAILURE_CHAIN,
@@ -50,16 +55,30 @@ const releaseWarningMock =
 const regularConfig = {
   duration: { hours: 1 },
   mode: 'regular',
+  spread: SINGLE_INSTANT,
   values: { millisecond: 0, minute: 5, second: 0 },
 } satisfies EnergyReportConfig
 
 const totalConfig = {
   duration: { hours: 1 },
   mode: 'total',
+  spread: SINGLE_INSTANT,
   values: { millisecond: 0, minute: 5, second: 0 },
 } satisfies EnergyReportConfig
 
-const mockDevice = <T extends Home.DeviceType>(): HomeMELCloudDevice<T> =>
+// The Home air-to-water regular report, as its driver declares it.
+const fiveMinuteConfig = {
+  duration: { minutes: 5 },
+  mode: 'regular',
+  spread: { minutes: 1 },
+  values: { millisecond: 0, second: 0 },
+} satisfies EnergyReportConfig
+
+const MS_PER_MINUTE = 60_000
+
+const mockDevice = <T extends Home.DeviceType>(
+  id = 'f1e2d3c4-0000-4000-8000-000000000001',
+): HomeMELCloudDevice<T> =>
   mock<HomeMELCloudDevice<T>>({
     cleanMapping: cleanMappingMock,
     driver: { tagMappings: { energy: {} } },
@@ -68,6 +87,7 @@ const mockDevice = <T extends Home.DeviceType>(): HomeMELCloudDevice<T> =>
     getStoreValue: getStoreValueMock,
     holdWarning: holdWarningMock,
     homey,
+    id,
     log: logMock,
     releaseWarning: releaseWarningMock,
     setCapabilityValue: setCapabilityValueMock,
@@ -139,12 +159,82 @@ describe('home energy reports', () => {
     setStoreValueMock.mockResolvedValue(undefined)
   })
 
+  // A case that moves the clock hands it back here, so one red
+  // assertion cannot turn the cases after it red too.
+  afterEach(() => {
+    pinNow(FAKE_NOW)
+  })
+
   afterAll(() => {
     vi.useRealTimers()
     vi.restoreAllMocks()
   })
 
   describe('with the ATA strategy', () => {
+    // A failed fetch leaves the cursor where it was, so the early retry
+    // accrues the gap once: no window counted twice, none lost.
+    it('should accrue from the untouched cursor when a failed total is retried', async () => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
+      getStoreValueMock.mockImplementation((key: string) =>
+        key === 'energy_cursor_consumed' ? '2026-03-18T09:50:00Z' : 1.5,
+      )
+      mockFailingFetch()
+      pinNow(Temporal.Instant.from('2026-03-18T11:10:00Z').epochMilliseconds)
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        totalConfig,
+        ATA_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      expect(setStoreValueMock).not.toHaveBeenCalled()
+      expect(getMockCallArg<number>(setTimeoutMock, 0, 1)).toBe(
+        15 * MS_PER_MINUTE,
+      )
+
+      pinNow(Temporal.Instant.from('2026-03-18T11:25:00Z').epochMilliseconds)
+      const getEnergySeriesMock = mockAtaFetch([
+        point('2026-03-18T10:00:00Z', 0.2),
+      ])
+      getMockCallArg<() => void>(setTimeoutMock, 0, 0)()
+      await settleDetached()
+
+      expect(getEnergySeriesMock).toHaveBeenCalledWith({
+        from: '2026-03-18T09:50:00Z',
+        interval: 'Minute',
+        to: '2026-03-18T11:10:00Z',
+      })
+      expect(setStoreValueMock).toHaveBeenCalledWith(
+        'energy_cursor_consumed',
+        '2026-03-18T11:10:00Z',
+      )
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 1.7)
+    })
+
+    // A Home id is a string: it is told apart like a Classic number.
+    it('should give each unit an instant of its own in the window', async () => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
+      mockAtaFetch([])
+      await Promise.all(
+        ['01', '02', '03'].map(async (suffix) => {
+          const report = new HomeEnergyReport(
+            mockDevice(`f1e2d3c4-0000-4000-8000-0000000000${suffix}`),
+            { ...totalConfig, spread: { minutes: 5 } },
+            ATA_ENERGY_STRATEGY,
+          )
+          await report.start()
+        }),
+      )
+      const delays = setTimeoutMock.mock.calls.map(([, delay]: unknown[]) =>
+        Number(delay),
+      )
+
+      // 12:00 to 12:05, then the unit's own place in the five minutes.
+      expect(delays.toSorted((first, second) => first - second)).toStrictEqual(
+        [191_577, 196_587, 268_068].map((offset) => 5 * MS_PER_MINUTE + offset),
+      )
+    })
+
     it('should unschedule when no energy capability is enabled', async () => {
       cleanMappingMock.mockReturnValue({})
       const report = new HomeEnergyReport(
@@ -416,8 +506,6 @@ describe('home energy reports', () => {
         interval: 'Minute',
         to: '2026-03-18T00:00:00Z',
       })
-
-      pinNow(FAKE_NOW)
     })
 
     it('should default empty total mappings to zeroed meters', async () => {
@@ -563,6 +651,44 @@ describe('home energy reports', () => {
   })
 
   describe('with the ATW strategy', () => {
+    // Its cadence always comes sooner than the first retry would.
+    it('should not retry a five-minute report early', async () => {
+      cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
+      mockFailingFetch()
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        { ...fiveMinuteConfig, spread: SINGLE_INSTANT },
+        ATW_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      expect(getMockCallArg<number>(setTimeoutMock, 0, 1)).toBe(
+        5 * MS_PER_MINUTE,
+      )
+    })
+
+    // This unit's place in the minute is 59.793 s. Its run started at
+    // 12:00:59.793 and ends two seconds later, in the next minute: the
+    // next one is still five minutes after the first, not six.
+    it('should keep its five minutes when a run ends in the next minute', async () => {
+      pinNow(
+        Temporal.Instant.from('2026-03-18T12:01:01.793+01:00')
+          .epochMilliseconds,
+      )
+      cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
+      mockAtwFetch({})
+      const report = new HomeEnergyReport(
+        mockDevice('f1e2d3c4-0000-4000-8000-000000000030'),
+        fiveMinuteConfig,
+        ATW_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      expect(getMockCallArg<number>(setTimeoutMock, 0, 1)).toBe(
+        5 * MS_PER_MINUTE - 2000,
+      )
+    })
+
     it('should derive near-live power from the freshest minute bucket per direction', async () => {
       cleanMappingMock.mockReturnValue({
         measure_power: ['consumed'],

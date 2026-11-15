@@ -1,4 +1,5 @@
 import type * as Classic from '@olivierzal/melcloud-api/classic'
+import { sequential } from '@olivierzal/homey-kit'
 import {
   getMockCallArg,
   mock,
@@ -13,6 +14,7 @@ import {
 import { Temporal } from 'temporal-polyfill'
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -27,7 +29,11 @@ import type { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type { EnergyCapabilityTagMapping } from '../../types/classic-capabilities.mts'
 import { EnergyReport } from '../../drivers/classic-report.mts'
-import { createReportDeviceMocks, FAKE_NOW } from '../report-mocks.ts'
+import {
+  createReportDeviceMocks,
+  FAKE_NOW,
+  SINGLE_INSTANT,
+} from '../report-mocks.ts'
 import {
   createTransportFailure,
   TRANSPORT_FAILURE_CHAIN,
@@ -41,6 +47,7 @@ const {
   cleanMappingMock,
   clearTimeoutMock,
   ensureDeviceMock,
+  getTimezoneMock,
   homey,
   setCapabilityValueMock,
   setTimeoutMock,
@@ -55,6 +62,7 @@ const regularConfig = {
   duration: { hours: 1 },
   minus: { hours: 1 },
   mode: 'regular',
+  spread: SINGLE_INSTANT,
   values: { millisecond: 0, minute: 5, second: 0 },
 } satisfies EnergyReportConfig
 
@@ -62,8 +70,12 @@ const totalConfig = {
   duration: { days: 1 },
   minus: { hours: 1 },
   mode: 'total',
-  values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+  spread: SINGLE_INSTANT,
+  values: { hour: 1, millisecond: 0, minute: 30, second: 0 },
 } satisfies EnergyReportConfig
+
+// 12:00 CET (`FAKE_NOW`) to the total's next slot, 01:30.
+const MINUTES_TO_TOTAL_SLOT = 810
 
 const energyTagMapping = mock<EnergyCapabilityTagMapping<TestDeviceType>>({
   measure_power: ['Auto', 'Cooling'],
@@ -74,17 +86,21 @@ const mockDriver = mock<ClassicMELCloudDriver<TestDeviceType>>({
   tagMappings: { energy: energyTagMapping },
 })
 
-const mockDevice = mock<ClassicMELCloudDevice<TestDeviceType>>({
-  cleanMapping: cleanMappingMock,
-  driver: mockDriver,
-  ensureDevice: ensureDeviceMock,
-  error: errorMock,
-  holdWarning: holdWarningMock,
-  homey,
-  log: logMock,
-  releaseWarning: releaseWarningMock,
-  setCapabilityValue: setCapabilityValueMock,
-})
+const createMockDevice = (id = 1): ClassicMELCloudDevice<TestDeviceType> =>
+  mock<ClassicMELCloudDevice<TestDeviceType>>({
+    cleanMapping: cleanMappingMock,
+    driver: mockDriver,
+    ensureDevice: ensureDeviceMock,
+    error: errorMock,
+    holdWarning: holdWarningMock,
+    homey,
+    id,
+    log: logMock,
+    releaseWarning: releaseWarningMock,
+    setCapabilityValue: setCapabilityValueMock,
+  })
+
+const mockDevice = createMockDevice()
 
 const mockEnergyFetch = (energyData: unknown): ReturnType<typeof vi.fn> => {
   const getEnergyMock = vi
@@ -104,6 +120,18 @@ const mockFailingFetch = (failure: ApiRequestError = NETWORK_FAILURE): void => {
       .mockResolvedValue(err(failure)),
   })
 }
+
+// Fires the timer a report armed with its `index`-th `setTimeout`.
+const fireArmed = async (index: number): Promise<void> => {
+  getMockCallArg<() => void>(setTimeoutMock, index, 0)()
+  await settleDetached()
+}
+
+// Every delay armed so far, in arming order.
+const armedMinutes = (): number[] =>
+  setTimeoutMock.mock.calls.map(
+    ([, delay]: unknown[]) => Number(delay) / MS_PER_MINUTE,
+  )
 
 const createCopMocks = (
   tags: readonly string[] = ['TagProduced', 'TagConsumed'],
@@ -152,6 +180,13 @@ describe(EnergyReport, () => {
 
   beforeEach(() => {
     cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
+  })
+
+  // A case that moves the clock or the time zone hands both back here,
+  // so one red assertion cannot turn the cases after it red too.
+  afterEach(() => {
+    getTimezoneMock.mockReturnValue('Europe/Paris')
+    pinNow(FAKE_NOW)
   })
 
   afterAll(() => {
@@ -523,6 +558,7 @@ describe(EnergyReport, () => {
         duration: { hours: 1 },
         minus: { hours: 1 },
         mode: 'total',
+        spread: SINGLE_INSTANT,
         values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
       })
       await report.start()
@@ -544,6 +580,7 @@ describe(EnergyReport, () => {
         duration: { hours: 1 },
         minus: { hours: 1 },
         mode: 'total',
+        spread: SINGLE_INSTANT,
         values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
       })
       await report.start()
@@ -561,6 +598,7 @@ describe(EnergyReport, () => {
       const report = new EnergyReport(mockDevice, {
         duration: { hours: 1 },
         mode: 'regular',
+        spread: SINGLE_INSTANT,
         values: { millisecond: 0, minute: 5, second: 0 },
       })
       await report.start()
@@ -642,8 +680,6 @@ describe(EnergyReport, () => {
       const secondDelay = getMockCallArg<number>(setTimeoutMock, 1, 1)
 
       expect(secondDelay).toBe(60 * MS_PER_MINUTE)
-
-      pinNow(FAKE_NOW)
     })
 
     it('should stop the chain when unscheduled during a fire', async () => {
@@ -674,6 +710,350 @@ describe(EnergyReport, () => {
         'regular energy report has been cancelled',
       )
     })
+  })
+
+  // A failed run is retried before its cadence comes round: a nightly
+  // total that fails does not cost the day.
+  describe('retry after a failed run', () => {
+    const totalData = mock<Classic.EnergyDataAta>({ TotalAutoConsumed: 100 })
+
+    beforeEach(() => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['TotalAutoConsumed'] })
+    })
+
+    it('should retry a quarter of an hour after the failure, not at the next slot', async () => {
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, totalConfig)
+      await report.start()
+
+      expect(armedMinutes()).toStrictEqual([15])
+      expect(setCapabilityValueMock).not.toHaveBeenCalled()
+      expect(logMock).toHaveBeenCalledWith(
+        'Total energy report',
+        'will run in',
+        expect.any(String),
+        'on',
+        expect.stringContaining('12:15:00'),
+      )
+    })
+
+    it('should double the retry after each further consecutive failure, up to four hours', async () => {
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, totalConfig)
+      await report.start()
+      await sequential([0, 1, 2, 3, 4], fireArmed)
+
+      expect(armedMinutes()).toStrictEqual([15, 30, 60, 120, 240, 240])
+    })
+
+    it('should arm the cadence once it comes sooner than the retry', async () => {
+      pinNow(
+        Temporal.Instant.from('2026-03-18T12:55:00+01:00').epochMilliseconds,
+      )
+      cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      // The hourly slot, 13:05, is ten minutes away.
+      expect(armedMinutes()).toStrictEqual([10])
+    })
+
+    // The retry wins while it is strictly sooner than the slot: a
+    // millisecond either side of the tie, and the tie itself.
+    it.each([
+      { delay: 900_000, now: '2026-03-18T12:49:59.999+01:00' },
+      { delay: 900_000, now: '2026-03-18T12:50:00.000+01:00' },
+      { delay: 899_999, now: '2026-03-18T12:50:00.001+01:00' },
+    ])(
+      'should arm $delay ms when an hourly run fails at $now',
+      async ({ delay, now }) => {
+        pinNow(Temporal.Instant.from(now).epochMilliseconds)
+        cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
+        mockFailingFetch()
+        const report = new EnergyReport(mockDevice, regularConfig)
+        await report.start()
+
+        expect(getMockCallArg<number>(setTimeoutMock, 0, 1)).toBe(delay)
+      },
+    )
+
+    it('should arm nothing when a run fails after the report was unscheduled', async () => {
+      mockEnergyFetch(totalData)
+      const report = new EnergyReport(mockDevice, totalConfig)
+      await report.start()
+      mockFailingFetch()
+      report.unschedule()
+      await fireArmed(0)
+
+      expect(setTimeoutMock).toHaveBeenCalledTimes(1)
+    })
+
+    // An hourly report failing at its own slot: two retries, then the
+    // next slot, a quarter of an hour away when the third retry would
+    // be an hour away.
+    it('should retry an hourly report twice before its next slot', async () => {
+      cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, regularConfig)
+      pinNow(
+        Temporal.Instant.from('2026-03-18T13:05:00+01:00').epochMilliseconds,
+      )
+      await report.start()
+      pinNow(
+        Temporal.Instant.from('2026-03-18T13:20:00+01:00').epochMilliseconds,
+      )
+      await fireArmed(0)
+      pinNow(
+        Temporal.Instant.from('2026-03-18T13:50:00+01:00').epochMilliseconds,
+      )
+      await fireArmed(1)
+
+      expect(armedMinutes()).toStrictEqual([15, 30, 15])
+    })
+
+    it('should return to the cadence after a successful retry', async () => {
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, totalConfig)
+      await report.start()
+      mockEnergyFetch(totalData)
+      await fireArmed(0)
+
+      expect(armedMinutes()).toStrictEqual([15, MINUTES_TO_TOTAL_SLOT])
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 100)
+    })
+
+    // A skipped run — the unit unreachable — is not a failure: it earns
+    // no retry, and the streak it leaves standing arms none either.
+    it('should return to the cadence after a skipped run', async () => {
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, totalConfig)
+      await report.start()
+      ensureDeviceMock.mockResolvedValue(null)
+      await fireArmed(0)
+
+      expect(armedMinutes()).toStrictEqual([15, MINUTES_TO_TOTAL_SLOT])
+    })
+
+    it('should hold the warning at the third consecutive failure, retries included', async () => {
+      holdWarningMock.mockResolvedValueOnce(true).mockResolvedValue(false)
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, totalConfig)
+      await report.start()
+      await fireArmed(0)
+
+      expect(holdWarningMock).not.toHaveBeenCalled()
+
+      await fireArmed(1)
+
+      expect(holdWarningMock).toHaveBeenCalledWith('totalEnergyReports')
+      expect(errorMock).toHaveBeenCalledWith(
+        'total energy report failing, warning held',
+      )
+    })
+
+    // Two runs of one report can overlap — a settings change starts one
+    // while a timer's is in flight — and a success settling while the
+    // failed one holds the warning resets the shared count. The failed
+    // run still arms the retry its own failure earned.
+    it('should arm the retry its own failure earned when a success settles meanwhile', async () => {
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, totalConfig)
+      await report.start()
+      await fireArmed(0)
+      const { promise: isHeld, resolve: answerHold } =
+        Promise.withResolvers<boolean>()
+      holdWarningMock.mockReturnValueOnce(isHeld)
+      await fireArmed(1)
+      mockEnergyFetch(totalData)
+      await report.start()
+      answerHold(true)
+      await settleDetached()
+
+      expect(armedMinutes()).toStrictEqual([15, 30, 60])
+    })
+
+    // The doubling itself has no end — it reads `Infinity` past a
+    // thousand failures — but the retry does: four hours, a duration the
+    // chain can always build.
+    it('should keep to four hours however long the streak', async () => {
+      mockFailingFetch()
+      const report = new EnergyReport(mockDevice, totalConfig)
+      await sequential(
+        Array.from({ length: 1100 }, () => report),
+        async (failing) => failing.start(),
+      )
+      await fireArmed(0)
+
+      expect(armedMinutes()).toStrictEqual([15, 240])
+    })
+  })
+
+  // Every install of the app shares a report's slot: each device takes
+  // its own instant in the slot's window, so a slot is never one burst
+  // on MELCloud.
+  describe('spread across the fleet', () => {
+    const WINDOW_MINUTES = 25
+    const spreadConfig = {
+      ...totalConfig,
+      spread: { minutes: WINDOW_MINUTES },
+    } satisfies EnergyReportConfig
+    const deviceIds = Array.from({ length: 50 }, (_unused, index) => index + 1)
+
+    const startFor = async (id: number): Promise<void> => {
+      const report = new EnergyReport(createMockDevice(id), spreadConfig)
+      await report.start()
+    }
+
+    beforeEach(() => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['TotalAutoConsumed'] })
+      mockEnergyFetch(mock<Classic.EnergyDataAta>({ TotalAutoConsumed: 100 }))
+    })
+
+    it('should land every device in the window that opens at the slot', async () => {
+      await sequential(deviceIds, startFor)
+
+      expect(
+        armedMinutes().every(
+          (minutes) =>
+            minutes >= MINUTES_TO_TOTAL_SLOT &&
+            minutes < MINUTES_TO_TOTAL_SLOT + WINDOW_MINUTES,
+        ),
+      ).toBe(true)
+    })
+
+    it('should give each device an instant of its own', async () => {
+      await sequential(deviceIds, startFor)
+      const instants = new Set(armedMinutes())
+
+      expect(instants.size).toBe(deviceIds.length)
+    })
+
+    // Fifty instants squeezed into the window's first minute would pass
+    // the two cases above and still be one burst.
+    it('should use the width of the window', async () => {
+      await sequential(deviceIds, startFor)
+      const minutes = armedMinutes()
+
+      expect(Math.max(...minutes) - Math.min(...minutes)).toBeGreaterThan(
+        WINDOW_MINUTES / 2,
+      )
+    })
+
+    // The instant is a property of the id alone: the same across
+    // restarts, app versions and Homeys, so it is pinned to the
+    // millisecond for one device.
+    it('should derive the instant from the id alone', async () => {
+      await startFor(1)
+
+      expect(getMockCallArg<number>(setTimeoutMock, 0, 1)).toBe(
+        MINUTES_TO_TOTAL_SLOT * MS_PER_MINUTE + 989_619,
+      )
+    })
+
+    // A slot is the earliest instant its figures can be trusted at, so
+    // a run before it in its period — a start-up, a retry — does not
+    // stand in for it: the slot still runs.
+    it.each([
+      { config: regularConfig, minutes: 3, now: '2026-03-18T13:02:00+01:00' },
+      { config: totalConfig, minutes: 70, now: '2026-03-18T00:20:00+01:00' },
+    ])(
+      'should still run the $config.mode slot after a run $minutes min before it',
+      async ({ config, minutes, now }) => {
+        pinNow(Temporal.Instant.from(now).epochMilliseconds)
+        cleanMappingMock.mockReturnValue({
+          measure_power: ['Auto', 'Cooling'],
+          meter_power: ['TotalAutoConsumed'],
+        })
+        const report = new EnergyReport(mockDevice, config)
+        await report.start()
+
+        expect(armedMinutes()).toStrictEqual([minutes])
+      },
+    )
+
+    // A timer can fire a few milliseconds before its slot: the run it
+    // starts arms the next period's slot, never the same one again.
+    it('should not arm the same slot again when its timer fires early', async () => {
+      pinNow(
+        Temporal.Instant.from('2026-03-18T13:04:59.997+01:00')
+          .epochMilliseconds,
+      )
+      cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+
+      expect(getMockCallArg<number>(setTimeoutMock, 0, 1)).toBe(
+        60 * MS_PER_MINUTE + 3,
+      )
+    })
+
+    // The slots are aligned on the device's own grid. Aligned on the
+    // shared one, a run ending between a period's boundary and the
+    // device's instant would skip that instant: here device 9652, whose
+    // hourly instant is hh:08:08.345, would wait for 14:08 instead.
+    it('should arm the device instant still ahead in the period', async () => {
+      pinNow(
+        Temporal.Instant.from('2026-03-18T13:01:00+01:00').epochMilliseconds,
+      )
+      cleanMappingMock.mockReturnValue({ measure_power: ['Auto', 'Cooling'] })
+      const report = new EnergyReport(createMockDevice(9652), {
+        ...regularConfig,
+        spread: { minutes: 5 },
+      })
+      await report.start()
+
+      expect(getMockCallArg<number>(setTimeoutMock, 0, 1)).toBe(
+        7 * MS_PER_MINUTE + 8345,
+      )
+    })
+
+    it('should keep a device on its instant from one run to the next', async () => {
+      await startFor(1)
+      await startFor(1)
+      await fireArmed(0)
+      const [first, second, afterFire] = armedMinutes()
+
+      expect(second).toBe(first)
+      expect(afterFire).toBe(first)
+    })
+  })
+
+  // Summer and winter time. A daily report runs once per local day
+  // whatever the night does to the clocks: it keeps its wall-clock slot
+  // across the change, a slot the clocks skip runs an hour later on the
+  // clock, a full day after the last, and one they repeat runs once.
+  describe('summer and winter time', () => {
+    const MINUTES_PER_HOUR = 60
+
+    it.each([
+      // Paris changes at 02:00 and 03:00: the 01:30 slot only sees the
+      // day's length, 23 hours in March and 25 in October.
+      { hours: 24, now: '2026-03-28T01:30:00+01:00', zone: 'Paris' },
+      { hours: 23, now: '2026-03-29T01:30:00+01:00', zone: 'Paris' },
+      { hours: 25, now: '2026-10-25T01:30:00+02:00', zone: 'Paris' },
+      // London skips 01:00 to 02:00 in March: the slot runs at 02:30
+      // that night, a full day after the last, then returns to 01:30.
+      { hours: 24, now: '2026-03-28T01:30:00+00:00', zone: 'London' },
+      { hours: 23, now: '2026-03-29T02:30:00+01:00', zone: 'London' },
+      // London repeats 01:00 to 02:00 in October: the slot runs at the
+      // first 01:30, and from there the next is tomorrow's, not the
+      // second 01:30 an hour later.
+      { hours: 24, now: '2026-10-24T01:30:00+01:00', zone: 'London' },
+      { hours: 25, now: '2026-10-25T01:30:00+01:00', zone: 'London' },
+    ])(
+      'should arm the nightly slot $hours h after $now in $zone',
+      async ({ hours, now, zone }) => {
+        getTimezoneMock.mockReturnValue(`Europe/${zone}`)
+        pinNow(Temporal.Instant.from(now).epochMilliseconds)
+        cleanMappingMock.mockReturnValue({ meter_power: ['TotalAutoConsumed'] })
+        mockEnergyFetch(mock<Classic.EnergyDataAta>({ TotalAutoConsumed: 100 }))
+        const report = new EnergyReport(mockDevice, totalConfig)
+        await report.start()
+
+        expect(armedMinutes()).toStrictEqual([hours * MINUTES_PER_HOUR])
+      },
+    )
   })
 
   describe('coefficient of performance calculation', () => {

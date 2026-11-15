@@ -228,11 +228,13 @@ describe(HomeMELCloudDeviceAta, () => {
     regular: {
       duration: { hours: 1 },
       mode: 'regular',
+      spread: { minutes: 5 },
       values: { millisecond: 0, minute: 5, second: 0 },
     },
     total: {
       duration: { hours: 1 },
       mode: 'total',
+      spread: { minutes: 5 },
       values: { millisecond: 0, minute: 5, second: 0 },
     },
   })
@@ -270,6 +272,7 @@ describe(HomeMELCloudDeviceAta, () => {
         device.energyReports.create({
           duration: { hours: 1 },
           mode: 'regular',
+          spread: { minutes: 5 },
           values: { millisecond: 0, minute: 5, second: 0 },
         }),
       ).toBeInstanceOf(HomeEnergyReport)

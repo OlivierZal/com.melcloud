@@ -15,6 +15,7 @@ import { BaseMELCloudDevice } from './base-device.mts'
 export const HOME_ENERGY_REPORT_TOTAL: EnergyReportConfig = {
   duration: { hours: 1 },
   mode: 'total',
+  spread: { minutes: 5 },
   values: { millisecond: 0, minute: 5, second: 0 },
 }
 

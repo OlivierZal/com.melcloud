@@ -61,10 +61,13 @@ export const testEnergyReportConfigs = (
 ): void => {
   describe('energyReports', () => {
     it('should carry the expected configs and a factory', () => {
-      const bundle = (getDevice() as Record<string, unknown>).energyReports
+      const { energyReports } = getDevice() as {
+        energyReports: Record<string, unknown>
+      }
+      const { create, ...configs } = energyReports
 
-      expect(bundle).toMatchObject(expected)
-      expect(bundle).toHaveProperty('create', expect.any(Function))
+      expect(configs).toStrictEqual(expected)
+      expect(create).toBeTypeOf('function')
     })
   })
 }
