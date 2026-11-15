@@ -16,7 +16,10 @@ import {
   type TargetTemperatureFlowCapabilities,
   operationModeZoneFromDevice,
 } from '../../types/classic-atw.mts'
-import { ClassicMELCloudDevice } from '../classic-device.mts'
+import {
+  CLASSIC_ENERGY_REPORT_TOTAL,
+  ClassicMELCloudDevice,
+} from '../classic-device.mts'
 import { EnergyReport } from '../classic-report.mts'
 
 const convertFromDeviceMeasurePower =
@@ -88,19 +91,18 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
       isForced ? HotWaterMode.forced : HotWaterMode.auto,
   }
 
+  // The daily figures are yesterday's and shown all day: they are read in
+  // the totals' window (`CLASSIC_ENERGY_REPORT_TOTAL` says why that hour
+  // and those minutes).
   protected override readonly energyReports: EnergyReports = {
     regular: {
       duration: { days: 1 },
       minus: { days: 1 },
       mode: 'regular',
-      values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
+      spread: { minutes: 25 },
+      values: { hour: 1, millisecond: 0, minute: 30, second: 0 },
     },
-    total: {
-      duration: { days: 1 },
-      minus: { days: 1 },
-      mode: 'total',
-      values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-    },
+    total: { ...CLASSIC_ENERGY_REPORT_TOTAL, minus: { days: 1 } },
     create: (
       config: EnergyReportConfig,
     ): EnergyReport<typeof Classic.DeviceType.Atw> =>

@@ -124,13 +124,15 @@ describe(ClassicMELCloudDeviceAtw, () => {
       duration: { days: 1 },
       minus: { days: 1 },
       mode: 'regular',
-      values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
+      spread: { minutes: 25 },
+      values: { hour: 1, millisecond: 0, minute: 30, second: 0 },
     },
     total: {
       duration: { days: 1 },
       minus: { days: 1 },
       mode: 'total',
-      values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
+      spread: { minutes: 25 },
+      values: { hour: 1, millisecond: 0, minute: 30, second: 0 },
     },
   })
 
@@ -142,7 +144,8 @@ describe(ClassicMELCloudDeviceAtw, () => {
         duration: { days: 1 },
         minus: { days: 1 },
         mode: 'regular' as const,
-        values: { hour: 1, millisecond: 0, minute: 10, second: 0 },
+        spread: { minutes: 25 },
+        values: { hour: 1, millisecond: 0, minute: 30, second: 0 },
       }
       device.energyReports.create(config)
 

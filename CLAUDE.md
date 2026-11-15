@@ -374,6 +374,27 @@ coverage.
   multiplies `homey-form-*` elements needs an on-device cold-open
   check: the injected sheet's resets make untested combinations render
   arbitrarily.
+- Homey Energy counts a metered device from its meter and from nothing
+  else — measured on a Homey Pro (2026-11, firmware 13.5.2 to 13.5.5-rc,
+  456 device-days, no exception), and what report 2acb0764 turned on.
+  For a device with `meter_power` and no `energy` object in its manifest
+  (no driver here declares one), a period's consumption is the net
+  change of `meter_power` between the local midnights, credited to the
+  HOUR OF THE WRITE: `measure_power` is not integrated, a sub-capability
+  such as `meter_power.daily` is not read, and a meter that does not
+  move is 0 kWh however much the unit draws. The mobile app's Top
+  Consumers then ranks only the devices above zero (read from the
+  Android bundle 10.1.4, not observed on a phone): a unit at 0 keeps an
+  unranked '— kWh' row under 'Show all' and loses its place on the
+  card, which a user reports as the device vanishing from the Energy
+  tab. So every energy driver owes Homey a `meter_power` that moves on
+  each day the unit consumed: the Home drivers write theirs hourly from
+  a persisted cursor, the Classic ones once a night (the scheduling
+  bullet under Driver conventions) — which is also why a Classic day
+  reaches Energy the night after, as one bar. The day report is
+  `GET /api/manager/energy/report/day?date=YYYY-MM-DD`
+  (`electricity.devices.consumed[deviceId]` is
+  `{ name, total, period, price }`), readable through `homey api raw`.
 
 ## Driver conventions
 
@@ -404,6 +425,74 @@ coverage.
   tags vs the rest) happens where COP is computed, in `classic-report`,
   from the tags the report already holds — the driver precomputes
   nothing.
+- A report's schedule obeys two rules, both `ScheduledEnergyReport`'s
+  (`base-report.mts`) and both from report 2acb0764 (2026-11, a Classic
+  air-to-air unit "disappearing from the Energy tab until the app is
+  restarted"). (1) SPREAD — every config declares the window its slot is
+  spread over (`spread`, required by the type), and each device takes
+  its own instant in it, a hash of its id: the same at every run,
+  different from one device to the next. The slots are aligned on the
+  device's own grid (the clock minus its offset), so a report keeps its
+  period whatever the offset and however long a fetch takes. 45.5.0's
+  wall-clock anchoring had put every install of the app on the same
+  millisecond (the `setInterval` it replaced left each device its first
+  fetch's duration past the slot), and on those instants MELCloud
+  answered some reads with a 500 or a 502 at every hh:05 (melcloud-api's
+  CLAUDE.md, 2026-10-21) and left Classic reads unanswered for minutes
+  from 00:05 UK time — 01:05 in Central Europe, the Classic totals' slot
+  until 46.16.0, where the owner's Homey shows the nightly total writing
+  on almost no night from mid-July on. Whether the fleet causes those or
+  only runs into them is NOT known: a Homey firing two reads met the
+  same silence, and the owner's eleven-read burst is answered in about
+  half a second at hh:03 (twice) against 2.8 s at least at hh:05:00
+  (twelve bursts, autumn 2026). The spread is right either way. A
+  window OPENS on the slot the report always had, because each slot
+  states a fact about MELCloud's data that must keep holding. (a) Five
+  past the hour is a FLOOR: the figures of the hour that just closed
+  are not there on the hour — the reason the reads never sat on it
+  ("refreshed after xx:05 and not after xx:01", 2022). Nothing shows
+  that refresh moving later: re-read later in the same hour, the
+  figures were already final at hh:03 on 2026-10-27 and at hh:05 on
+  2026-10-21, eleven units each. So the hourly reports take hh:05 to
+  hh:10 and the five-minute one its own minute. (b) The Classic nightly
+  reads stay in the hour AFTER midnight's: a SUMMER- AND WINTER-TIME
+  SAFETY, the owner's since 2023 (the air-to-water reads then moved
+  from 00:10 to 01:10), kept on his word — the day MELCloud closes is
+  not guaranteed to turn with the clocks. Inside that hour the totals
+  (`CLASSIC_ENERGY_REPORT_TOTAL`) and the air-to-water daily figures
+  both take 01:30 to 01:55: 25 minutes past the :05 that fails, 10
+  before the next, short of the top of the hour where the clocks
+  change. The scheduler itself runs a daily report once per local day
+  across a change — a slot the clocks skip as soon as they resume, one
+  they repeat the first time only — which the Classic report suite pins
+  for Paris and for London, whose clocks skip and repeat that very
+  hour. (2) RETRY — a failed run is retried a quarter of an hour later,
+  twice as long after each further consecutive failure up to four
+  hours, and only while that comes sooner than the cadence; an applied
+  or a skipped run re-anchors on the cadence. Until then a failed daily
+  run waited a day: for a Classic unit that was a flat `meter_power`, a
+  day at 0 kWh in Homey Energy (the platform gotcha above). The streak
+  ends only on a success: an outage costs an hourly report two extra
+  fetches in all, a daily one nine a day at most (six from the second
+  day), the five-minute one none — each request of a fetch being tried
+  up to five times under the SDK's own retry (a fetch is one request,
+  two on a Home air-to-water unit: consumed and produced). The
+  four-hour ceiling is what brings a daily report back within hours of
+  a long outage's end and retries a failure on a later night; its price
+  is six fetches a day instead of one for a report that never succeeds.
+  A run arms the retry its OWN failure earned: two runs of one report
+  can overlap (a settings change starts one while a timer's is in
+  flight), and the shared count may have moved by the time it arms.
+  Retrying is safe on both dialects: a Classic total re-reads MELCloud's
+  lifetime figure, and a failed Home fetch leaves its cursor where it
+  was (both report suites pin it). What neither rule changes: Classic
+  consumption still reaches Homey Energy the night after, as one bar.
+  The two cures were weighed and left — an hourly lifetime read is 23
+  more of the heaviest Classic request per unit per day (an air-to-air
+  unit goes from 25 energy reads a day to 48, an air-to-water one from
+  2 to 25), and a meter run from the hourly figures needs MELCloud's
+  daily and lifetime sums to agree, which the one measurement so far
+  contradicts (12–18 % apart on a linked group, measured indirectly).
 - `capabilitiesOptions` blocks that are rigorously identical across the
   drivers defining them live in the `defaults` compose template;
   `melcloud_atw`'s labels are the reference (node-homey-lib wording).
@@ -611,8 +700,10 @@ coverage.
   with the same one closing line. (2) The energy reports —
   `ScheduledEnergyReport`
   holds its reason from the THIRD consecutive failed run (one failed
-  fetch is noise; three runs of the report's own cadence, a quarter-hour
-  to three days across the drivers) and releases it on the first
+  fetch is noise; retries count as runs, so that is about fifty minutes
+  into a failure for the hourly and daily reports, ten for the
+  five-minute one — until 46.16.0 a daily report took two days from its
+  first failed run to say so) and releases it on the first
   success, calling the verbs on every run past the threshold (the device
   de-duplicates, and a failed IPC is retried by the next run) and
   logging each transition once, per mode ('regular energy report
@@ -690,8 +781,8 @@ coverage.
   degraded to `null` by the facade): the other values move and nothing
   is greyed. A HELD WARNING `errors.energyReportsFailing` over LIVE
   values (since 46.9.0) is the energy fetch alone failing, three runs
-  in a row, on a unit that otherwise reads fine — the log carries the
-  'Energy report fetch failed:' lines. The questions that decide: is
+  in a row (retries included), on a unit that otherwise reads fine —
+  the log carries the 'Energy report fetch failed:' lines. The questions that decide: is
   the tile greyed or does it carry a bubble; do the other values still
   move; what does the MELCloud Home app itself show for the unit; does
   the diagnostic log carry the drift streak, or the library's lines

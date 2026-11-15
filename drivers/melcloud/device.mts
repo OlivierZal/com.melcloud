@@ -14,7 +14,10 @@ import {
   ThermostatModeAta,
   verticalFromDevice,
 } from '../../types/ata.mts'
-import { ClassicMELCloudDevice } from '../classic-device.mts'
+import {
+  CLASSIC_ENERGY_REPORT_TOTAL,
+  ClassicMELCloudDevice,
+} from '../classic-device.mts'
 import { EnergyReport } from '../classic-report.mts'
 
 export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
@@ -51,19 +54,17 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
       verticalFromDevice[direction],
   }
 
+  // Five past the hour is a floor, not a preference: MELCloud's figures
+  // for the hour that just closed are not there on the hour.
   protected override readonly energyReports: EnergyReports = {
     regular: {
       duration: { hours: 1 },
       minus: { hours: 1 },
       mode: 'regular',
+      spread: { minutes: 5 },
       values: { millisecond: 0, minute: 5, second: 0 },
     },
-    total: {
-      duration: { days: 1 },
-      minus: { hours: 1 },
-      mode: 'total',
-      values: { hour: 1, millisecond: 0, minute: 5, second: 0 },
-    },
+    total: { ...CLASSIC_ENERGY_REPORT_TOTAL, minus: { hours: 1 } },
     create: (
       config: EnergyReportConfig,
     ): EnergyReport<typeof Classic.DeviceType.Ata> =>

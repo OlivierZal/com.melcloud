@@ -11,8 +11,27 @@ import type {
   SetCapabilities,
 } from '../types/classic-capabilities.mts'
 import type { Settings } from '../types/device-settings.mts'
+import type { EnergyReportConfig } from './base-report.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
+
+// Both Classic totals are one lifetime read a night, each device at its
+// own instant between 01:30 and 01:55. The hour is a summer- and
+// winter-time safety, and must stay one: the day MELCloud closes is not
+// guaranteed to turn with the clocks, so the reads keep an hour's
+// margin on midnight. The minutes keep them 25 past the :05 where
+// MELCloud Classic leaves reads unanswered for minutes (00:05 UK time,
+// 01:05 in Central Europe) and short of the top of the hour, where the
+// clocks change. Only the day the read stops at (`minus`) is
+// type-specific. `meter_power` is all Homey Energy counts a Classic
+// unit's consumption from, so a night without this read is a day at
+// 0 kWh.
+export const CLASSIC_ENERGY_REPORT_TOTAL: EnergyReportConfig = {
+  duration: { days: 1 },
+  mode: 'total',
+  spread: { minutes: 25 },
+  values: { hour: 1, millisecond: 0, minute: 30, second: 0 },
+}
 
 export abstract class ClassicMELCloudDevice<
   T extends Classic.DeviceType,

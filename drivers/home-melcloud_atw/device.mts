@@ -62,12 +62,13 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
   }
 
   // Near-live power derives from minute buckets: a 5-minute cadence keeps
-  // it fresh without hammering the telemetry endpoint; meters accrue hourly
-  // at hh:05 like the Classic reports.
+  // it fresh without hammering the telemetry endpoint; meters accrue hourly,
+  // a few minutes past the hour.
   protected override readonly energyReports: EnergyReports = {
     regular: {
       duration: { minutes: 5 },
       mode: 'regular',
+      spread: { minutes: 1 },
       values: { millisecond: 0, second: 0 },
     },
     total: HOME_ENERGY_REPORT_TOTAL,

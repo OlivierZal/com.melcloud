@@ -189,11 +189,13 @@ describe(HomeMELCloudDeviceAtw, () => {
     regular: {
       duration: { minutes: 5 },
       mode: 'regular',
+      spread: { minutes: 1 },
       values: { millisecond: 0, second: 0 },
     },
     total: {
       duration: { hours: 1 },
       mode: 'total',
+      spread: { minutes: 5 },
       values: { millisecond: 0, minute: 5, second: 0 },
     },
   })
@@ -412,6 +414,7 @@ describe(HomeMELCloudDeviceAtw, () => {
         device.energyReports.create({
           duration: { minutes: 5 },
           mode: 'regular',
+          spread: { minutes: 1 },
           values: { millisecond: 0, second: 0 },
         }),
       ).toBeInstanceOf(HomeEnergyReport)

@@ -71,6 +71,7 @@ export default class HomeMELCloudDeviceAta extends HomeMELCloudDevice<AtaType> {
     regular: {
       duration: { hours: 1 },
       mode: 'regular',
+      spread: { minutes: 5 },
       values: { millisecond: 0, minute: 5, second: 0 },
     },
     total: HOME_ENERGY_REPORT_TOTAL,
