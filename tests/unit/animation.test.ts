@@ -15,11 +15,11 @@ import {
   installAnimationApi,
   loadWidgetPage,
   setDocumentVisibility,
-  stubRandomUint32,
   waitForSpawnTicks,
   waitUntil,
   widgetRoutes,
 } from '../ata-group-harness.ts'
+import { stubRandomUint32 } from '../random.ts'
 
 const HEAT = 1
 const DRY = 2

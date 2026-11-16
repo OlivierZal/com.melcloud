@@ -479,7 +479,21 @@ coverage.
   clock, a full day after the last; one they repeat once, on its first
   pass when the previous night's run stood at its slot — which the
   Classic report suite pins for Paris and for London, whose clocks skip
-  and repeat that very hour. (2) RETRY — a failed run is retried a
+  and repeat that very hour. No slot is armed behind the clock: where a
+  clock change puts the next period's slot behind as well — Lord Howe
+  Island's half hour, taken back at 02:00, sends an hour after 01:10 to
+  01:40, whose five past is the 01:05 already gone — the run is a whole
+  period away, off its slot for once (it was a negative delay: a fetch
+  about every second until 01:30). The Chatham Islands' hour, taken
+  back at a quarter to four, does the same to a run between 02:45 and
+  03:00, so a retry or a start-up; no other zone does (every zone's
+  changes of 2026 and 2027 scanned). The charts widget keeps the spread
+  for the refresh of its daily charts, which waits for the same five
+  past: each open widget draws its own instant in the five minutes
+  that follow, once, when it loads, and adds hours until that instant
+  is ahead, so that it is never armed behind the clock on those two
+  nights either.
+  (2) RETRY — a failed run is retried a
   quarter of an hour later, twice as long after each further
   consecutive failure up to four hours, and only while that comes
   sooner than the cadence; an applied or a skipped run re-anchors on
@@ -499,6 +513,18 @@ coverage.
   timer's is in flight), and the shared count may have moved by the
   time it arms; a `start()` that fails beside a pending timer arms
   nothing and waits for that timer, its failure counting in the streak.
+  Overlapping runs leave ONE timer chain all the same: every
+  `unschedule()` opens a new generation, a timer's run arms only in the
+  one its timer was armed in, and a `start()` only in the one it began
+  in and beside no timer. The handle alone could not tell a live timer
+  from the fired one a run still holds, so a run whose fetch outlived
+  an `unschedule()` and a restart armed a second chain — two fetches at
+  every slot until the app restarted — and a device deleted during its
+  start-up fetch kept a timer. The device closes its side of that one:
+  a report started after the `unschedule()` would arm, so neither the
+  deferred init (`#startReport`) nor a settings change still waiting on
+  Homey (`#updateEnergyReportsOnSettings`) starts one once Homey has
+  deleted or unloaded the device.
   Retrying is safe on both dialects: a Classic total re-reads MELCloud's
   lifetime figure, and a failed Home fetch leaves its cursor where it
   was (both report suites pin it). What neither rule changes: Classic
@@ -1352,7 +1378,8 @@ re-deriving one:
 - `tests/helpers.ts` keeps only this app's own doubles:
   `createEnergyReportMock` and the `createMockDeviceClass` /
   `createMockDriverClass` re-exports.
-- `public/dom.mts`, `public/zones.mts`, and the drivers themselves.
+- `public/dom.mts`, `public/random.mts`, `public/zones.mts`, and the
+  drivers themselves.
 - `homey-override.d.ts` keeps its `declare module 'homey'` block:
   module augmentation cannot be packaged. Since the SDK types 1.x it
   holds ONE thing, the `HomeyTypes` seam

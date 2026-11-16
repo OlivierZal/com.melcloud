@@ -100,17 +100,6 @@ export const animationsOf = (
     .filter((record) => record.element === element)
     .map(({ animation }) => animation)
 
-// Pins the CSPRNG so every generated delay and style value is exact:
-// zero collapses all spawn delays, letting a scene tick per macrotask.
-export const stubRandomUint32 = (value: number): void => {
-  vi.spyOn(crypto, 'getRandomValues').mockImplementation((array) => {
-    if (array instanceof Uint32Array) {
-      array.fill(value)
-    }
-    return array
-  })
-}
-
 // ── Fixtures ──
 
 const ataCapabilitiesFixture = (): [string, DriverCapabilitiesOptions][] => [
