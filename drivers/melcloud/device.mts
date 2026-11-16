@@ -60,12 +60,13 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
 
   // Five past the hour is a floor, not a preference: MELCloud's figures
   // for the hour that just closed are not there on the hour. The
-  // lifetime figure follows the day — it moves about every ten minutes —
-  // and `meter_power` is all Homey Energy counts a unit from, credited
-  // to the hour of the write: read once a night, a day reached Energy
-  // the night after, as one bar. So the total is read every hour too,
-  // in the half hour clear of the reads at five past and of the minutes
-  // after 00:05 UK time where MELCloud Classic leaves reads unanswered.
+  // lifetime figure moves within the hour, and `meter_power` is all
+  // Homey Energy counts a unit from, credited to the hour of the write:
+  // one read a night would book a day the night after, as one bar. So
+  // the total is read every hour too, from hh:30 to hh:55: clear of the
+  // reads at five past and, in a zone a whole number of hours from UK
+  // time, of the minutes after 00:05 there where MELCloud Classic leaves
+  // reads unanswered.
   protected override readonly energyReports: EnergyReports = {
     regular: {
       ...HOURLY_ENERGY_REPORT,

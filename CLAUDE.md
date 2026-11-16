@@ -470,7 +470,9 @@ coverage.
   then moved from 00:10 to 01:10), kept on his word — the day MELCloud
   closes is not guaranteed to turn with the clocks. They are the
   air-to-water unit's two reports (`NIGHTLY_ENERGY_REPORT`), whose
-  figures are the day before's: inside that hour its total and its
+  figures are the day before's (the owner's word and the request he
+  wrote in 2022, not measured here: his only Classic air-to-water unit
+  has read 0 since August 2026). Inside that hour its total and its
   daily figures both take 01:30 to 01:55, where they had 01:05 and
   01:10: 25 minutes past the :05 that fails, 10 before the next, short
   of the top of the hour where the clocks change. The air-to-air total
@@ -480,11 +482,23 @@ coverage.
   2026-11-16 two linked groups read 4 and 13 minutes apart had both
   moved), so Homey Energy books the day hour by hour instead of the
   night after, as one bar. Each unit keeps the instant it had at night,
-  in every hour, the window staying clear of the reads at five past.
-  The safety is the nightly reads': an hourly read of a running counter
-  does not depend on the day MELCloud has closed, and what one read
-  misses the next books; its request still stops at the day of the hour
-  that just closed (`minus`), as it did. A slot is the earliest instant
+  in every hour, the window staying clear of the reads at five past. In
+  a half-hour time zone hh:30 to hh:55 is hh:00 to hh:25 UTC: once a
+  night the totals whose instant falls in the minutes after 00:05 UK
+  time meet that silence, and the retry books them a quarter of an hour
+  later. The safety is the nightly reads': an hourly read of a running
+  counter does not depend on the day MELCloud has closed, and what one
+  read misses the next books; its request still stops at the day of the
+  hour that just closed (`minus`), as it did — so the read of the hour
+  after midnight asks for the day before, the one request of the 24
+  never seen on the wire. The figure is written as read, with no floor:
+  the owner's history shows it lower than the read before twice in 2026
+  (2026-09-07, both linked groups back to their values of 08-28 for
+  half a day; 2026-02-17, two units), cause unknown. An hourly read
+  books such a dip as a negative hour and repairs it within the hour of
+  the figure's return, where the nightly read kept it a day; a floor
+  was weighed and left out, since it would hold the meter flat after a
+  lasting correction. A slot is the earliest instant
   its figures can be trusted at, so it binds every period: a start-up
   fetch or a retry that runs before the slot in its period does not
   stand in for it, the slot still runs (one less than a minute ahead
@@ -547,9 +561,12 @@ coverage.
   lifetime figure, and a failed Home fetch leaves its cursor where it
   was (both report suites pin it). The hourly total has a price: 23
   more of the heaviest Classic request per air-to-air unit per day (48
-  energy reads a day where it had 25; a lifetime read took MELCloud
-  about a quarter of a second when measured, four times a regular one),
-  spread over 25 minutes of each hour. An air-to-water unit keeps its
+  energy reads a day where it had 25; on the owner's Homey a lifetime
+  read of a unit with history took MELCloud 2.4 s at least and 2.7 to
+  2.9 s at the median, five times a regular one's 0.6 s — 120 and 64
+  reads away from hh:05, autumn 2026 — and 3 to 8 s read alone on
+  2026-11-16; 0.4 to 1 s for a unit with no history), spread over 25
+  minutes of each hour. An air-to-water unit keeps its
   two reads a night: its figures being the day before's, an hourly read
   would book nothing sooner, and its day still reaches Homey Energy the
   night after, as one bar. The other cure stays refused: a meter run
