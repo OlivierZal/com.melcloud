@@ -78,11 +78,14 @@ const {
 
 const mockDeviceData = { FanSpeed: 3, Power: true, SetTemperature: 22 }
 
-const { energyReportStartMock } = vi.hoisted(() => ({
-  energyReportStartMock: vi
-    .fn<() => Promise<void>>()
-    .mockResolvedValue(undefined),
-}))
+const { energyReportStartMock, energyReportUnscheduleMock } = vi.hoisted(
+  () => ({
+    energyReportStartMock: vi
+      .fn<() => Promise<void>>()
+      .mockResolvedValue(undefined),
+    energyReportUnscheduleMock: vi.fn<() => void>(),
+  }),
+)
 
 // Overrides the setup-level base-report mock so the shared `start` can be
 // driven per test (e.g. a rejected restart). The implementation is a
@@ -94,7 +97,10 @@ vi.mock(import('../../drivers/classic-report.mts'), async () => {
     start: () => Promise<void>
     unschedule: () => void
   } {
-    return { start: energyReportStartMock, unschedule: vi.fn<() => void>() }
+    return {
+      start: energyReportStartMock,
+      unschedule: energyReportUnscheduleMock,
+    }
   }
   return mockModule<typeof BaseReportModule>({
     EnergyReport: vi.fn<typeof newEnergyReportMock>(newEnergyReportMock),
@@ -234,6 +240,42 @@ const wireEnergyReports = (target: TestDevice): void => {
     create: (config) => new EnergyReport(target, config),
   }
   Object.defineProperty(target, 'energyReports', { value: energyReports })
+}
+
+// A device initialised with its energy bundle, deferred init included.
+const initWithEnergyReports = async (
+  driver: ClassicMELCloudDriver<TestDeviceType> = mockDriver,
+): Promise<TestDevice> => {
+  const target = new TestDevice()
+  wireEnergyReports(target)
+  setDriver(target, driver)
+  await target.onInit()
+  await settleDetached()
+  return target
+}
+
+// A driver whose `measure_power` is an energy capability: saving that
+// setting restarts the regular report.
+const createEnergyDriver = (): typeof mockDriver => {
+  const driverWithEnergy = Object.create(mockDriver) as typeof mockDriver
+  Object.assign(driverWithEnergy, {
+    manifest: mock({
+      capabilities: ['onoff', 'measure_temperature', 'measure_power'],
+      id: 'test',
+    }),
+    tagMappings: {
+      ...mockDriver.tagMappings,
+      energy: mock<EnergyCapabilityTagMapping<TestDeviceType>>({
+        measure_power: ['Auto', 'Cooling'],
+      }),
+    },
+  })
+  return driverWithEnergy
+}
+
+const MEASURE_POWER_SAVED = {
+  changedKeys: ['measure_power'],
+  newSettings: { measure_power: true },
 }
 
 // The read-back watch stamps the write and the syncs off `Temporal.Now`,
@@ -911,11 +953,7 @@ describe(ClassicMELCloudDevice, () => {
 
     it('should create the regular and the total reports from the bundle', async () => {
       const { length: callCountBefore } = vi.mocked(EnergyReport).mock.calls
-      const deviceWithReports = new TestDevice()
-      wireEnergyReports(deviceWithReports)
-      setDriver(deviceWithReports)
-      await deviceWithReports.onInit()
-      await settleDetached()
+      const deviceWithReports = await initWithEnergyReports()
 
       expect(vi.mocked(EnergyReport).mock.calls.length - callCountBefore).toBe(
         2,
@@ -928,29 +966,10 @@ describe(ClassicMELCloudDevice, () => {
 
     it('should log when an energy report restart fails', async () => {
       const failure = new Error('report start failed')
-      const deviceWithRegular = new TestDevice()
-      wireEnergyReports(deviceWithRegular)
-      const driverWithEnergy = Object.create(mockDriver) as typeof mockDriver
-      Object.assign(driverWithEnergy, {
-        manifest: mock({
-          capabilities: ['onoff', 'measure_temperature', 'measure_power'],
-          id: 'test',
-        }),
-        tagMappings: {
-          ...mockDriver.tagMappings,
-          energy: mock<EnergyCapabilityTagMapping<TestDeviceType>>({
-            measure_power: ['Auto', 'Cooling'],
-          }),
-        },
-      })
-      setDriver(deviceWithRegular, driverWithEnergy)
-      await deviceWithRegular.onInit()
-      await settleDetached()
+      const deviceWithRegular =
+        await initWithEnergyReports(createEnergyDriver())
       energyReportStartMock.mockRejectedValueOnce(failure)
-      await deviceWithRegular.onSettings({
-        changedKeys: ['measure_power'],
-        newSettings: { measure_power: true },
-      })
+      await deviceWithRegular.onSettings(MEASURE_POWER_SAVED)
 
       expect(deviceWithRegular.error).toHaveBeenCalledWith(
         'Energy report update failed:',
@@ -962,14 +981,10 @@ describe(ClassicMELCloudDevice, () => {
       const { promise, resolve }: PromiseWithResolvers<void> =
         Promise.withResolvers()
       energyReportStartMock.mockReturnValueOnce(promise)
-      const deviceWithRegular = new TestDevice()
-      wireEnergyReports(deviceWithRegular)
-      setDriver(deviceWithRegular)
       // Resolves although the initial fetch hangs: device readiness
       // must not depend on MELCloud latency (Early 2018 Homeys hit the
       // SDK ready_timeout exactly there).
-      await deviceWithRegular.onInit()
-      await settleDetached()
+      await initWithEnergyReports()
 
       expect(energyReportStartMock).toHaveBeenCalledTimes(1)
 
@@ -977,31 +992,66 @@ describe(ClassicMELCloudDevice, () => {
     })
 
     // A device deleted in its first seconds: the deferred init is still
-    // on its way, and the report whose start-up fetch was in flight
-    // cancels its own chain. The device starts no other.
+    // on its way. The report whose start-up fetch was in flight is the
+    // one the deletion reaches, and the device starts no other.
     it('should start no further report once deleted', async () => {
       const { promise, resolve }: PromiseWithResolvers<void> =
         Promise.withResolvers()
       energyReportStartMock.mockReturnValueOnce(promise)
+      const deletedDevice = await initWithEnergyReports()
+      deletedDevice.onDeleted()
+      resolve()
+      await settleDetached()
+
+      expect(energyReportStartMock).toHaveBeenCalledTimes(1)
+      expect(energyReportUnscheduleMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('should start no report when deleted before the first', async () => {
+      const { promise, resolve }: PromiseWithResolvers<void> =
+        Promise.withResolvers()
       const deletedDevice = new TestDevice()
       wireEnergyReports(deletedDevice)
-      setDriver(deletedDevice)
+      const driverWithOptions = Object.create(mockDriver) as typeof mockDriver
+      Object.assign(driverWithOptions, {
+        getCapabilitiesOptions: vi
+          .fn<() => Record<string, unknown>>()
+          .mockReturnValue({ measure_temperature: { units: '°C' } }),
+      })
+      setDriver(deletedDevice, driverWithOptions)
+      // The deferred init waits on Homey before it reaches the reports.
+      vi.mocked(deletedDevice.setCapabilityOptions).mockReturnValueOnce(promise)
       await deletedDevice.onInit()
       await settleDetached()
       deletedDevice.onDeleted()
       resolve()
       await settleDetached()
 
-      expect(energyReportStartMock).toHaveBeenCalledTimes(1)
+      expect(energyReportStartMock).not.toHaveBeenCalled()
+    })
+
+    it('should cancel both reports once deleted', async () => {
+      const deletedDevice = await initWithEnergyReports()
+      deletedDevice.onDeleted()
+
+      expect(energyReportUnscheduleMock).toHaveBeenCalledTimes(2)
+    })
+
+    // A settings change still waiting on Homey when the device goes:
+    // its restart would arm, like a report started after the deletion.
+    it('should restart no report from a settings change once deleted', async () => {
+      const deletedDevice = await initWithEnergyReports(createEnergyDriver())
+      energyReportStartMock.mockClear()
+      const saving = deletedDevice.onSettings(MEASURE_POWER_SAVED)
+      deletedDevice.onDeleted()
+      await saving
+
+      expect(energyReportStartMock).not.toHaveBeenCalled()
     })
 
     it('should log a detached scheduling failure without breaking init', async () => {
       energyReportStartMock.mockRejectedValueOnce(new Error('fetch down'))
-      const deviceWithRegular = new TestDevice()
-      wireEnergyReports(deviceWithRegular)
-      setDriver(deviceWithRegular)
-      await deviceWithRegular.onInit()
-      await settleDetached()
+      const deviceWithRegular = await initWithEnergyReports()
 
       expect(deviceWithRegular.error).toHaveBeenCalledWith(
         'Deferred device init failed:',

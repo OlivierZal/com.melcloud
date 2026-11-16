@@ -513,16 +513,18 @@ coverage.
   timer's is in flight), and the shared count may have moved by the
   time it arms; a `start()` that fails beside a pending timer arms
   nothing and waits for that timer, its failure counting in the streak.
-  Overlapping runs leave ONE timer chain all the same: every arm and
-  every `unschedule()` opens a new generation, and a run arms only in
-  its own (a timer's run: the one its timer was armed in). The handle
-  alone could not tell a live timer from the fired one a run still
-  holds, so a run whose fetch outlived an `unschedule()` and a restart
-  armed a second chain — two fetches at every slot until the app
-  restarted — and a device deleted during its start-up fetch kept a
-  timer. The device closes its side of that one: a report started after
-  the `unschedule()` would arm, so the deferred init starts none once
-  Homey has deleted or unloaded the device (`#startReport`).
+  Overlapping runs leave ONE timer chain all the same: every
+  `unschedule()` opens a new generation, a timer's run arms only in the
+  one its timer was armed in, and a `start()` only in the one it began
+  in and beside no timer. The handle alone could not tell a live timer
+  from the fired one a run still holds, so a run whose fetch outlived
+  an `unschedule()` and a restart armed a second chain — two fetches at
+  every slot until the app restarted — and a device deleted during its
+  start-up fetch kept a timer. The device closes its side of that one:
+  a report started after the `unschedule()` would arm, so neither the
+  deferred init (`#startReport`) nor a settings change still waiting on
+  Homey (`#updateEnergyReportsOnSettings`) starts one once Homey has
+  deleted or unloaded the device.
   Retrying is safe on both dialects: a Classic total re-reads MELCloud's
   lifetime figure, and a failed Home fetch leaves its cursor where it
   was (both report suites pin it). What neither rule changes: Classic

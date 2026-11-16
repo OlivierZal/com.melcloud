@@ -1136,25 +1136,42 @@ describe(EnergyReport, () => {
       // whose five past is the 01:05 already gone.
       {
         first: '2026-04-05T01:10:00+11:00',
+        id: 1,
         minutes: [60, 25],
         second: '2026-04-05T01:40:00+10:30',
+        spread: SINGLE_INSTANT,
+        zone: 'Australia/Lord_Howe',
+      },
+      // The same night for a device 3 min 8.345 s into a five-minute
+      // window: the period away counts its offset once.
+      {
+        first: '2026-04-05T01:13:08.345+11:00',
+        id: 9652,
+        minutes: [60, 25],
+        second: '2026-04-05T01:43:08.345+10:30',
+        spread: { minutes: 5 },
         zone: 'Australia/Lord_Howe',
       },
       // The Chatham Islands' hour, taken back at a quarter to four: an
       // hour after 02:50 is 02:50 again, and 02:05 was not repeated.
       {
         first: '2026-04-05T02:50:00+13:45',
+        id: 1,
         minutes: [60, 15],
         second: '2026-04-05T02:50:00+12:45',
+        spread: SINGLE_INSTANT,
         zone: 'Pacific/Chatham',
       },
     ])(
-      'should arm a whole period ahead when the clocks put the next slot behind in $zone',
-      async ({ first, minutes, second, zone }) => {
+      'should arm device $id a whole period ahead when the clocks put the next slot behind in $zone',
+      async ({ first, id, minutes, second, spread, zone }) => {
         getTimezoneMock.mockReturnValue(zone)
         pinNow(Temporal.Instant.from(first).epochMilliseconds)
         mockEnergyFetch({ Auto: [0], Cooling: [0] })
-        const report = new EnergyReport(mockDevice, regularConfig)
+        const report = new EnergyReport(createMockDevice(id), {
+          ...regularConfig,
+          spread,
+        })
         await report.start()
         pinNow(Temporal.Instant.from(second).epochMilliseconds)
         await fireArmed(0)
