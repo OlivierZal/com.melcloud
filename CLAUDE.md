@@ -462,9 +462,10 @@ coverage.
   xx:01"; xx:05 is the slot since 2023). Nothing shows that refresh
   moving later: re-read later in the same hour, the figures were
   already final at hh:03 on 2026-10-27 and at hh:05 on 2026-10-21,
-  eleven units each. So the hourly reports take hh:05 to hh:10 — the
-  Home ones by symmetry, nothing measured tying their telemetry to five
-  past — and the five-minute one its own minute. (b) The Classic
+  eleven units each. So the hourly reports of the hour's figures take
+  hh:05 to hh:10 — the Home ones by symmetry, nothing measured tying
+  their telemetry to five past — and the five-minute one its own
+  minute. (b) The Classic
   nightly reads stay in the hour AFTER midnight's: a SUMMER- AND
   WINTER-TIME SAFETY, the owner's since 2023 (the air-to-water reads
   then moved from 00:10 to 01:10), kept on his word — the day MELCloud
