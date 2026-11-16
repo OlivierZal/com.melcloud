@@ -446,11 +446,29 @@ coverage.
   2026-10-21) and left Classic reads unanswered for minutes from 00:05
   UK time — 01:05 in Central Europe, the Classic totals' slot until
   46.16.0, where the owner's Homey shows the nightly total writing on
-  almost no night from mid-July on. Whether the fleet causes those or
+  almost no night from mid-July on. The loss has TWO onsets there, and
+  the anchoring is the second (that Homey's Insights of `meter_power`,
+  five units, 2026-01-24 to 11-11; a bucket is a time-weighted mean on
+  a five-second grid, so a single write is timed to five seconds).
+  Until 2026-04-12 the SDK's client had no time limit (none from
+  17.9.0, the SDK of June 2025, to 23.3.3), and a slow answer was a
+  late write: 250 single writes in 79 nights, 82 of them more than 35 s
+  after 01:05:00 and up to 190 s, no read provably lost. With the
+  client's 30 s per request (SDK 24.0.0, taken that day) and fetch's
+  10 s to connect (in the app by 04-18) a slow answer is a lost read:
+  nothing lands later than 45 s, and from 04-25 to 07-12 a read is
+  provably lost on 24 of 84 nights, one unit of a linked group stepping
+  while its sibling stays flat. With 45.5.0 (2026-07-17) the 01:05
+  write shows on one night in 95. Whether the fleet causes those or
   only runs into them is NOT known: a Homey firing two reads met the
   same silence, and the owner's eleven-read burst is answered in about
   half a second at hh:03 (twice) against 2.8 s at least at hh:05:00
-  (twelve bursts, autumn 2026). The spread is right either way. No
+  (twelve bursts, autumn 2026). Until 45.5.0 the exact slot was that
+  Homey's GOOD instant — the first runs after a restart, sent at
+  01:05:00.0, were written on 124 of 125 unit-nights, the runs the
+  interval had left a few seconds later being the slow ones — which is
+  what every install piling on one instant would look like from July
+  on, and proves nothing. The spread is right either way. No
   window opens before the slot its report had, because each slot states
   a fact about MELCloud's data that must keep holding. (a) Five past
   the hour is a FLOOR: the figures of the hour that just closed are not
@@ -529,12 +547,36 @@ coverage.
   lifetime figure, and a failed Home fetch leaves its cursor where it
   was (both report suites pin it). What neither rule changes: Classic
   consumption still reaches Homey Energy the night after, as one bar.
-  The two cures were weighed and left — an hourly lifetime read is 23
-  more of the heaviest Classic request per unit per day (an air-to-air
-  unit goes from 25 energy reads a day to 48, an air-to-water one from
-  2 to 25), and a meter run from the hourly figures needs MELCloud's
-  daily and lifetime sums to agree, which the one measurement so far
-  contradicts (12–18 % apart on a linked group, measured indirectly).
+  Three cures were weighed and left, the owner's condition being that
+  another method be CONFIRMED to work, and to work better, before it
+  replaces one that does. (1) An hourly lifetime read is 23 more of
+  the heaviest Classic request per unit per day (an air-to-air unit
+  goes from 25 energy reads a day to 48, an air-to-water one from 2 to
+  25): a lifetime read of a unit with history takes MELCloud 2.4 s at
+  least and 2.7 s at the median, five times a regular one (owner's
+  Homey, autumn 2026), and `/EnergyCost/Report` is the endpoint that
+  MELCloud's per-account throttling of February 2024 kept blocked
+  longest in the one public test of it, and that Home Assistant
+  stopped calling then. The draft that made the air-to-air total
+  hourly (#1766, 2026-11) was closed on that. (2) A meter run from the
+  hourly figures needs MELCloud's daily and lifetime sums to agree,
+  which the one measurement so far contradicts (12–18 % apart on a
+  linked group, measured indirectly).
+  (3) A meter fed from the listing costs no request, and is refused on
+  the public record, nothing of it measured here. The listing's
+  `CurrentEnergyConsumed` is two things under one name: on an
+  air-to-water unit the instantaneous power in kW that `measure_power`
+  reads (the only use this app ever made of it), on an air-to-air unit
+  a counter in Wh that Home Assistant feeds its energy sensor from,
+  through pymelcloud. That counter reads exactly 0 at times, is no
+  lifetime figure by pymelcloud's own word, moves 3.3 to 7.7 times
+  less than the report where MELCloud's energy correction is active
+  (Home Assistant issue 110643, open since 2024, where the report read
+  is the workaround given and this family's SDK the example cited),
+  and on a multi-split Mitsubishi's manual has the outdoor unit's
+  energy consolidated with one indoor unit. It is no fresher either:
+  on the owner's linked groups the report's lifetime figure already
+  moves by 0.1 kWh steps minutes apart.
 - `capabilitiesOptions` blocks that are rigorously identical across the
   drivers defining them live in the `defaults` compose template;
   `melcloud_atw`'s labels are the reference (node-homey-lib wording).
