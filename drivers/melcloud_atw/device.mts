@@ -16,11 +16,25 @@ import {
   type TargetTemperatureFlowCapabilities,
   operationModeZoneFromDevice,
 } from '../../types/classic-atw.mts'
-import {
-  CLASSIC_ENERGY_REPORT_TOTAL,
-  ClassicMELCloudDevice,
-} from '../classic-device.mts'
+import { ClassicMELCloudDevice } from '../classic-device.mts'
 import { EnergyReport } from '../classic-report.mts'
+
+// An air-to-water unit's figures are the day before's, and shown all
+// day: both reports are one read a night, each device at its own instant
+// between 01:30 and 01:55. The hour is a summer- and winter-time safety,
+// and must stay one: the day MELCloud closes is not guaranteed to turn
+// with the clocks, so the reads keep an hour's margin on midnight. The
+// minutes keep them 25 past the :05 where MELCloud Classic leaves reads
+// unanswered for minutes (00:05 UK time, 01:05 in Central Europe) and
+// short of the top of the hour, where the clocks change. `meter_power`
+// is all Homey Energy counts a unit's consumption from, so a night
+// without the total is a day at 0 kWh.
+const NIGHTLY_ENERGY_REPORT = {
+  duration: { days: 1 },
+  minus: { days: 1 },
+  spread: { minutes: 25 },
+  values: { hour: 1, millisecond: 0, minute: 30, second: 0 },
+} satisfies Omit<EnergyReportConfig, 'mode'>
 
 const convertFromDeviceMeasurePower =
   (
@@ -91,18 +105,9 @@ export default class ClassicMELCloudDeviceAtw extends ClassicMELCloudDevice<
       isForced ? HotWaterMode.forced : HotWaterMode.auto,
   }
 
-  // The daily figures are yesterday's and shown all day: they are read in
-  // the totals' window (`CLASSIC_ENERGY_REPORT_TOTAL` says why that hour
-  // and those minutes).
   protected override readonly energyReports: EnergyReports = {
-    regular: {
-      duration: { days: 1 },
-      minus: { days: 1 },
-      mode: 'regular',
-      spread: { minutes: 25 },
-      values: { hour: 1, millisecond: 0, minute: 30, second: 0 },
-    },
-    total: { ...CLASSIC_ENERGY_REPORT_TOTAL, minus: { days: 1 } },
+    regular: { ...NIGHTLY_ENERGY_REPORT, mode: 'regular' },
+    total: { ...NIGHTLY_ENERGY_REPORT, mode: 'total' },
     create: (
       config: EnergyReportConfig,
     ): EnergyReport<typeof Classic.DeviceType.Atw> =>

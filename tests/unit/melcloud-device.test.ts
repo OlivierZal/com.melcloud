@@ -39,11 +39,11 @@ describe(ClassicMELCloudDeviceAta, () => {
       values: { millisecond: 0, minute: 5, second: 0 },
     },
     total: {
-      duration: { days: 1 },
+      duration: { hours: 1 },
       minus: { hours: 1 },
       mode: 'total',
       spread: { minutes: 25 },
-      values: { hour: 1, millisecond: 0, minute: 30, second: 0 },
+      values: { millisecond: 0, minute: 30, second: 0 },
     },
   })
 

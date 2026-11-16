@@ -31,11 +31,11 @@ const FAILURE_WARNING_THRESHOLD = 3
 // A failed run is retried before its cadence comes round: a quarter of an
 // hour after the failure, twice as long after each further consecutive
 // one up to four hours, and only while that comes sooner than the
-// cadence. A failed daily read must not cost the day: on a Classic unit
-// that is a flat `meter_power`, which Homey Energy books as 0 kWh. The
-// streak only ends on a success: an outage costs an hourly report two
-// extra fetches in all, a daily one nine a day at most, and the
-// five-minute one none.
+// cadence. A failed daily read must not cost the day: on a Classic
+// air-to-water unit that is a flat `meter_power`, which Homey Energy
+// books as 0 kWh. The streak only ends on a success: an outage costs an
+// hourly report two extra fetches in all, a daily one nine a day at
+// most, and the five-minute one none.
 const FIRST_RETRY_MINUTES = 15
 const LONGEST_RETRY_MINUTES = 240
 

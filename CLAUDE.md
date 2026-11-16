@@ -391,10 +391,13 @@ coverage.
   unranked '— kWh' row under 'Show all' and loses its place on the
   card, which a user reports as the device vanishing from the Energy
   tab. So every energy driver owes Homey a `meter_power` that moves on
-  each day the unit consumed: the Home drivers write theirs hourly from
-  a persisted cursor, the Classic ones once a night (the scheduling
-  bullet under Driver conventions) — which is also why a Classic day
-  reaches Energy the night after, as one bar. The day report is
+  each day the unit consumed, and through the day where MELCloud's
+  figures do: the Home drivers write theirs hourly from a persisted
+  cursor, the Classic air-to-air one hourly from MELCloud's lifetime
+  figure, the Classic air-to-water one once a night, its figures being
+  the day before's (the scheduling bullet under Driver conventions) —
+  which is why an air-to-water day reaches Energy the night after, as
+  one bar. The day report is
   `GET /api/manager/energy/report/day?date=YYYY-MM-DD`
   (`electricity.devices.consumed[deviceId]` is
   `{ name, total, period, price }`), readable through `homey api raw`.
@@ -465,11 +468,23 @@ coverage.
   nightly reads stay in the hour AFTER midnight's: a SUMMER- AND
   WINTER-TIME SAFETY, the owner's since 2023 (the air-to-water reads
   then moved from 00:10 to 01:10), kept on his word — the day MELCloud
-  closes is not guaranteed to turn with the clocks. Inside that hour
-  the totals (`CLASSIC_ENERGY_REPORT_TOTAL`) and the air-to-water daily
-  figures both take 01:30 to 01:55, where they had 01:05 and 01:10: 25
-  minutes past the :05 that fails, 10 before the next, short of the top
-  of the hour where the clocks change. A slot is the earliest instant
+  closes is not guaranteed to turn with the clocks. They are the
+  air-to-water unit's two reports (`NIGHTLY_ENERGY_REPORT`), whose
+  figures are the day before's: inside that hour its total and its
+  daily figures both take 01:30 to 01:55, where they had 01:05 and
+  01:10: 25 minutes past the :05 that fails, 10 before the next, short
+  of the top of the hour where the clocks change. The air-to-air total
+  left the night in 46.17.0, for hh:30 to hh:55 of every hour:
+  MELCloud's lifetime figure for such a unit follows the day (re-read
+  every four minutes on 2026-10-22 it moved about every ten, and on
+  2026-11-16 two linked groups read 4 and 13 minutes apart had both
+  moved), so Homey Energy books the day hour by hour instead of the
+  night after, as one bar. Each unit keeps the instant it had at night,
+  in every hour, the window staying clear of the reads at five past.
+  The safety is the nightly reads': an hourly read of a running counter
+  does not depend on the day MELCloud has closed, and what one read
+  misses the next books; its request still stops at the day of the hour
+  that just closed (`minus`), as it did. A slot is the earliest instant
   its figures can be trusted at, so it binds every period: a start-up
   fetch or a retry that runs before the slot in its period does not
   stand in for it, the slot still runs (one less than a minute ahead
@@ -494,7 +509,12 @@ coverage.
   sooner than the cadence; an applied or a skipped run re-anchors on
   the cadence. Until then a failed daily run waited a day: for a
   Classic unit that was a flat `meter_power`, a day at 0 kWh in Homey
-  Energy (the platform gotcha above). The streak ends only on a
+  Energy (the platform gotcha above). On its first night on the
+  owner's Homey (2026-11-16) the hourly figures of four units landed
+  at 01:23 to 01:25 and at 01:54 where 01:05 to 01:07 was their slot —
+  a first and a second retry by their timing, no log read — and the
+  eight running units wrote their totals 3 to 8 s after their own
+  instants, from 01:30:56 to 01:54:06. The streak ends only on a
   success: an outage costs an hourly report two extra fetches in all, a
   daily one nine a day at most (five a day once the retry has reached
   its ceiling), the five-minute one none — each request of a fetch
@@ -520,14 +540,17 @@ coverage.
   Homey has deleted or unloaded the device (`#startReport`).
   Retrying is safe on both dialects: a Classic total re-reads MELCloud's
   lifetime figure, and a failed Home fetch leaves its cursor where it
-  was (both report suites pin it). What neither rule changes: Classic
-  consumption still reaches Homey Energy the night after, as one bar.
-  The two cures were weighed and left — an hourly lifetime read is 23
-  more of the heaviest Classic request per unit per day (an air-to-air
-  unit goes from 25 energy reads a day to 48, an air-to-water one from
-  2 to 25), and a meter run from the hourly figures needs MELCloud's
-  daily and lifetime sums to agree, which the one measurement so far
-  contradicts (12–18 % apart on a linked group, measured indirectly).
+  was (both report suites pin it). The hourly total has a price: 23
+  more of the heaviest Classic request per air-to-air unit per day (48
+  energy reads a day where it had 25; a lifetime read took MELCloud
+  about a quarter of a second when measured, four times a regular one),
+  spread over 25 minutes of each hour. An air-to-water unit keeps its
+  two reads a night: its figures being the day before's, an hourly read
+  would book nothing sooner, and its day still reaches Homey Energy the
+  night after, as one bar. The other cure stays refused: a meter run
+  from the hourly figures needs MELCloud's daily and lifetime sums to
+  agree, which the one measurement so far contradicts (12–18 % apart on
+  a linked group, measured indirectly).
 - `capabilitiesOptions` blocks that are rigorously identical across the
   drivers defining them live in the `defaults` compose template;
   `melcloud_atw`'s labels are the reference (node-homey-lib wording).

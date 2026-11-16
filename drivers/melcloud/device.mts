@@ -14,11 +14,15 @@ import {
   ThermostatModeAta,
   verticalFromDevice,
 } from '../../types/ata.mts'
-import {
-  CLASSIC_ENERGY_REPORT_TOTAL,
-  ClassicMELCloudDevice,
-} from '../classic-device.mts'
+import { ClassicMELCloudDevice } from '../classic-device.mts'
 import { EnergyReport } from '../classic-report.mts'
+
+// Both reports run every hour and ask for the day of the hour that just
+// closed.
+const HOURLY_ENERGY_REPORT = {
+  duration: { hours: 1 },
+  minus: { hours: 1 },
+} satisfies Partial<EnergyReportConfig>
 
 export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
   typeof Classic.DeviceType.Ata
@@ -55,16 +59,26 @@ export default class ClassicMELCloudDeviceAta extends ClassicMELCloudDevice<
   }
 
   // Five past the hour is a floor, not a preference: MELCloud's figures
-  // for the hour that just closed are not there on the hour.
+  // for the hour that just closed are not there on the hour. The
+  // lifetime figure follows the day — it moves about every ten minutes —
+  // and `meter_power` is all Homey Energy counts a unit from, credited
+  // to the hour of the write: read once a night, a day reached Energy
+  // the night after, as one bar. So the total is read every hour too,
+  // in the half hour clear of the reads at five past and of the minutes
+  // after 00:05 UK time where MELCloud Classic leaves reads unanswered.
   protected override readonly energyReports: EnergyReports = {
     regular: {
-      duration: { hours: 1 },
-      minus: { hours: 1 },
+      ...HOURLY_ENERGY_REPORT,
       mode: 'regular',
       spread: { minutes: 5 },
       values: { millisecond: 0, minute: 5, second: 0 },
     },
-    total: { ...CLASSIC_ENERGY_REPORT_TOTAL, minus: { hours: 1 } },
+    total: {
+      ...HOURLY_ENERGY_REPORT,
+      mode: 'total',
+      spread: { minutes: 25 },
+      values: { millisecond: 0, minute: 30, second: 0 },
+    },
     create: (
       config: EnergyReportConfig,
     ): EnergyReport<typeof Classic.DeviceType.Ata> =>

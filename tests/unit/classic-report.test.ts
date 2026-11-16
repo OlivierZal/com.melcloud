@@ -624,16 +624,25 @@ describe(EnergyReport, () => {
   })
 
   describe('total mode', () => {
-    it('should omit from for total mode energy requests', async () => {
-      cleanMappingMock.mockReturnValue({ meter_power: ['TotalAutoConsumed'] })
-      const getEnergyMockLocal = mockEnergyFetch(
-        mock<Classic.EnergyDataAta>({ TotalAutoConsumed: 100 }),
-      )
-      const report = new EnergyReport(mockDevice, totalConfig)
-      await report.start()
+    it.each([
+      { now: '2026-03-18T12:00:00+01:00', to: '2026-03-18' },
+      // `minus` takes an hour back: read in the hour after midnight, a
+      // total stops at the day that just closed.
+      { now: '2026-03-18T00:40:00+01:00', to: '2026-03-17' },
+    ])(
+      'should omit from and stop at $to when read at $now',
+      async ({ now, to }) => {
+        pinNow(Temporal.Instant.from(now).epochMilliseconds)
+        cleanMappingMock.mockReturnValue({ meter_power: ['TotalAutoConsumed'] })
+        const getEnergyMockLocal = mockEnergyFetch(
+          mock<Classic.EnergyDataAta>({ TotalAutoConsumed: 100 }),
+        )
+        const report = new EnergyReport(mockDevice, totalConfig)
+        await report.start()
 
-      expect(getEnergyMockLocal).toHaveBeenCalledWith({ to: '2026-03-18' })
-    })
+        expect(getEnergyMockLocal).toHaveBeenCalledWith({ to })
+      },
+    )
   })
 
   describe('wall-clock re-anchoring', () => {

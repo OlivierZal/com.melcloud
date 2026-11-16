@@ -11,6 +11,7 @@ import { Temporal } from 'temporal-polyfill'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { EnergyReports } from '../../drivers/base-device.mts'
+import type { EnergyReportConfig } from '../../drivers/base-report.mts'
 import type { ClassicMELCloudDriver } from '../../drivers/classic-driver.mts'
 import type * as BaseReportModule from '../../drivers/classic-report.mts'
 import type {
@@ -19,10 +20,7 @@ import type {
   ListCapabilityTagMapping,
   SetCapabilityTagMapping,
 } from '../../types/classic-capabilities.mts'
-import {
-  CLASSIC_ENERGY_REPORT_TOTAL,
-  ClassicMELCloudDevice,
-} from '../../drivers/classic-device.mts'
+import { ClassicMELCloudDevice } from '../../drivers/classic-device.mts'
 import { EnergyReport } from '../../drivers/classic-report.mts'
 import {
   createCapabilityListenerCallbackGetter,
@@ -219,18 +217,18 @@ const setDriver = (
   Object.defineProperty(target, 'driver', { configurable: true, value: driver })
 }
 
-// The ATA bundle, wired onto a test device the way the concrete devices
-// declare theirs; `EnergyReport` is the mocked constructor above.
+// An energy bundle, wired onto a test device the way the concrete
+// devices declare theirs. The suite reads nothing of a config but its
+// mode; `EnergyReport` is the mocked constructor above.
 const wireEnergyReports = (target: TestDevice): void => {
+  const hourly = {
+    duration: { hours: 1 },
+    spread: { minutes: 5 },
+    values: { millisecond: 0, minute: 5, second: 0 },
+  } satisfies Omit<EnergyReportConfig, 'mode'>
   const energyReports: EnergyReports = {
-    regular: {
-      duration: { hours: 1 },
-      minus: { hours: 1 },
-      mode: 'regular',
-      spread: { minutes: 5 },
-      values: { millisecond: 0, minute: 5, second: 0 },
-    },
-    total: { ...CLASSIC_ENERGY_REPORT_TOTAL, minus: { hours: 1 } },
+    regular: { ...hourly, mode: 'regular' },
+    total: { ...hourly, mode: 'total' },
     create: (config) => new EnergyReport(target, config),
   }
   Object.defineProperty(target, 'energyReports', { value: energyReports })
