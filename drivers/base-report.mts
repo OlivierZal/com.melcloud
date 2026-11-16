@@ -99,12 +99,14 @@ export abstract class ScheduledEnergyReport {
 
   readonly #device: ReportDevice
 
-  // One timer chain per report. Every arm and every `unschedule()` opens
-  // a new generation, and a run arms the next timer only in the one it
-  // belongs to: two runs can overlap (a settings change starts one while
-  // a timer's is in flight, a fetch can outlive an `unschedule()`), and
-  // the handle alone cannot tell a live timer from the fired one a run
-  // still holds, nor an `unschedule()` from a report never armed.
+  // One timer chain per report. Every `unschedule()` opens a new
+  // generation: a timer's run arms the next timer only in the one its
+  // timer was armed in, a `start()` only in the one it began in and
+  // beside no timer. Two runs can overlap (a settings change starts one
+  // while a timer's is in flight, a fetch can outlive an
+  // `unschedule()`), and the handle alone cannot tell a live timer from
+  // the fired one a run still holds, nor an `unschedule()` from a report
+  // never armed.
   #generation = 0
 
   #reportTimeout: NodeJS.Timeout | undefined
@@ -167,7 +169,6 @@ export abstract class ScheduledEnergyReport {
   #armNext(failures: number): void {
     const delay = this.#computeNextFireDelay(failures)
     this.#logNextRun(delay)
-    this.#generation += 1
     const generation = this.#generation
     this.#reportTimeout = this.#device.homey.setTimeout(
       () => {

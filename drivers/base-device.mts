@@ -165,9 +165,9 @@ export abstract class BaseMELCloudDevice<
   // returns to that message instead of to a bare `null`.
   readonly #heldReasons = new Set<HeldWarningReason>()
 
-  // Homey has deleted or unloaded the device. Its deferred init may
-  // still be on its way, and starts no report from there on
-  // (`#startReport`).
+  // Homey has deleted or unloaded the device. Its deferred init or a
+  // settings change may still be on its way, and starts no report from
+  // there on.
   #isGone = false
 
   // What each capability was last written with — the Homey-domain value
@@ -928,7 +928,12 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
+  // A settings change can still be waiting on Homey when the device
+  // goes: its restart would arm, like a report started after it.
   async #updateEnergyReportsOnSettings(changedKeys: string[]): Promise<void> {
+    if (this.#isGone) {
+      return
+    }
     await settleAll(
       modes.map(async (mode) => {
         if (

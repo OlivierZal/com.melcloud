@@ -844,8 +844,9 @@ describe('charts widget', () => {
     )
   })
 
-  it('should poll an hourly chart every minute', async () => {
+  it('should poll an hourly chart every minute, whatever instant the widget drew', async () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    stubRandomUint32(UINT32_RANGE / 2)
     const harness = await boot({ settings: { chart: 'signal' } })
     const before = harness.api.mock.calls.length
     await vi.advanceTimersByTimeAsync(60_000)
