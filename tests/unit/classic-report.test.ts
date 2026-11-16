@@ -1136,25 +1136,41 @@ describe(EnergyReport, () => {
       },
     )
 
-    // That half hour puts an hourly report's next slot behind: an hour
-    // after 01:10 is 01:40, whose five past is the 01:05 already gone.
-    // The run is a whole period away — a slot behind is a timer that
-    // runs at once, again and again — and back on its slot after it.
-    it('should arm a whole period ahead when the clocks put the next slot behind', async () => {
-      getTimezoneMock.mockReturnValue('Australia/Lord_Howe')
-      pinNow(
-        Temporal.Instant.from('2026-04-05T01:10:00+11:00').epochMilliseconds,
-      )
-      mockEnergyFetch({ Auto: [0], Cooling: [0] })
-      const report = new EnergyReport(mockDevice, regularConfig)
-      await report.start()
-      pinNow(
-        Temporal.Instant.from('2026-04-05T01:40:00+10:30').epochMilliseconds,
-      )
-      await fireArmed(0)
+    // A part of an hour repeated puts an hourly report's next slot
+    // behind. The run is a whole period away — a slot behind is a timer
+    // that runs at once, again and again — and back on its slot after
+    // it.
+    it.each([
+      // Lord Howe Island's half hour: an hour after 01:10 is 01:40,
+      // whose five past is the 01:05 already gone.
+      {
+        first: '2026-04-05T01:10:00+11:00',
+        minutes: [60, 25],
+        second: '2026-04-05T01:40:00+10:30',
+        zone: 'Australia/Lord_Howe',
+      },
+      // The Chatham Islands' hour, taken back at a quarter to four: an
+      // hour after 02:50 is 02:50 again, and 02:05 was not repeated.
+      {
+        first: '2026-04-05T02:50:00+13:45',
+        minutes: [60, 15],
+        second: '2026-04-05T02:50:00+12:45',
+        zone: 'Pacific/Chatham',
+      },
+    ])(
+      'should arm a whole period ahead when the clocks put the next slot behind in $zone',
+      async ({ first, minutes, second, zone }) => {
+        getTimezoneMock.mockReturnValue(zone)
+        pinNow(Temporal.Instant.from(first).epochMilliseconds)
+        mockEnergyFetch({ Auto: [0], Cooling: [0] })
+        const report = new EnergyReport(mockDevice, regularConfig)
+        await report.start()
+        pinNow(Temporal.Instant.from(second).epochMilliseconds)
+        await fireArmed(0)
 
-      expect(armedMinutes()).toStrictEqual([60, 25])
-    })
+        expect(armedMinutes()).toStrictEqual(minutes)
+      },
+    )
   })
 
   describe('coefficient of performance calculation', () => {

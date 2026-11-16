@@ -793,7 +793,10 @@ const getTimeout = (
   const now = Temporal.Now.zonedDateTimeISO()
   // The NEXT such instant — which is still this hour's when the draw
   // happens before it (adding a flat hour there would delay the freshly
-  // aggregated hour by a full cycle).
+  // aggregated hour by a full cycle). Where the clocks repeat part of an
+  // hour, this hour's five past is its first pass's and one hour more is
+  // still behind: hours are added until the instant is ahead, since a
+  // refresh armed behind the clock runs at once, again and again.
   let next = now
     .with({
       microsecond: 0,
@@ -803,7 +806,7 @@ const getTimeout = (
       second: 0,
     })
     .add({ milliseconds: offsetMs })
-  if (Temporal.ZonedDateTime.compare(next, now) <= 0) {
+  while (Temporal.ZonedDateTime.compare(next, now) <= 0) {
     next = next.add({ hours: 1 })
   }
   return now.until(next).total('milliseconds')
