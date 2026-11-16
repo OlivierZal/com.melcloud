@@ -835,15 +835,6 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
-  // The unit was read again: the read says whether the unit itself
-  // reports a fault, and the first success lifts the unreadable hold,
-  // with no threshold on either side — a one-minute bubble is honest, and
-  // an entry that flaps in and out of the registry is a wire fact the
-  // SDK's own drift streak logs, not something to hide. The fault is
-  // judged FIRST: under a still-held unreadable warning its hold or
-  // rewording is recorded without IPC, so the release lands the tile on
-  // the right message in one call — no blank flash, no stale wording,
-  // when a pruned unit comes back faulted.
   // A report cancels its own chain when the device goes during its
   // start-up fetch, but one started after that would arm: a device
   // deleted in its first seconds would keep a report fetching, and
@@ -857,6 +848,15 @@ export abstract class BaseMELCloudDevice<
     await report.start()
   }
 
+  // The unit was read again: the read says whether the unit itself
+  // reports a fault, and the first success lifts the unreadable hold,
+  // with no threshold on either side — a one-minute bubble is honest, and
+  // an entry that flaps in and out of the registry is a wire fact the
+  // SDK's own drift streak logs, not something to hide. The fault is
+  // judged FIRST: under a still-held unreadable warning its hold or
+  // rewording is recorded without IPC, so the release lands the tile on
+  // the right message in one call — no blank flash, no stale wording,
+  // when a pruned unit comes back faulted.
   async #syncLastingConditions(device: TFacade): Promise<void> {
     await this.#syncUnitFault(device)
     await this.#releaseUnreadableWarning()

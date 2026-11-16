@@ -484,10 +484,15 @@ coverage.
   Island's half hour, taken back at 02:00, sends an hour after 01:10 to
   01:40, whose five past is the 01:05 already gone — the run is a whole
   period away, off its slot for once (it was a negative delay: a fetch
-  about every second until 01:30). The charts widget keeps the spread
+  about every second until 01:30). The Chatham Islands' hour, taken
+  back at a quarter to four, does the same to a run between 02:45 and
+  03:00, so a retry or a start-up; no other zone does (every zone's
+  changes of 2026 and 2027 scanned). The charts widget keeps the spread
   for the refresh of its daily charts, which waits for the same five
   past: each open widget draws its own instant in the five minutes
-  that follow, once, when it loads.
+  that follow, once, when it loads, and adds hours until that instant
+  is ahead, so that it is never armed behind the clock on those two
+  nights either.
   (2) RETRY — a failed run is retried a
   quarter of an hour later, twice as long after each further
   consecutive failure up to four hours, and only while that comes
