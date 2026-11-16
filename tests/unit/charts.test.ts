@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Homey } from '../../public/widget.mts'
 import type { ChartsWidgetSettings } from '../../types/widgets.mts'
 import { ChartArcElement } from '../chart-arc.ts'
+import { stubRandomUint32, UINT32_RANGE } from '../random.ts'
 
 // ── Chart.js stand-in ──
 // The real library needs a painting canvas happy-dom does not provide.
@@ -245,6 +246,15 @@ const createHarness = (
   }
 }
 
+// The clock is stubbed through `Temporal.Now`, never `Date`:
+// `temporal-polyfill` delegates to a runtime-provided `Temporal`,
+// where a faked `Date` would never be read.
+const pinClock = (time: string): void => {
+  vi.spyOn(Temporal.Now, 'zonedDateTimeISO').mockReturnValue(
+    Temporal.ZonedDateTime.from(`2026-08-10T${time}[UTC]`),
+  )
+}
+
 const boot = async (
   options: Parameters<typeof createHarness>[0] = {},
 ): Promise<Harness> => {
@@ -324,6 +334,9 @@ describe('charts widget', () => {
     )
     FakeChart.instances.length = 0
     vi.stubGlobal('reportError', vi.fn())
+    // A widget draws its refresh instant when it loads: zero keeps it
+    // on five past the hour unless a case draws another.
+    stubRandomUint32(0)
   })
 
   afterEach(() => {
@@ -822,14 +835,7 @@ describe('charts widget', () => {
 
   it('should wait for the aggregation delay on a daily chart', async () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
-    // The clock is stubbed through `Temporal.Now`, never `Date`:
-    // `temporal-polyfill` delegates to a runtime-provided `Temporal`,
-    // where a faked `Date` would never be read.
-    const at = (time: string): Temporal.ZonedDateTime =>
-      Temporal.ZonedDateTime.from(`2026-08-10T${time}[UTC]`)
-    const nowSpy = vi
-      .spyOn(Temporal.Now, 'zonedDateTimeISO')
-      .mockReturnValue(at('10:02'))
+    pinClock('10:02')
     const harness = await boot()
     const before = harness.api.mock.calls.length
 
@@ -840,12 +846,33 @@ describe('charts widget', () => {
     expect(harness.api.mock.calls.length).toBeGreaterThan(before)
 
     // 10:07 → the next one is an hour out.
-    nowSpy.mockReturnValue(at('10:07'))
+    pinClock('10:07')
     const afterFirst = harness.api.mock.calls.length
     await vi.advanceTimersByTimeAsync(50 * 60_000)
     await settleDetached()
 
     expect(harness.api.mock.calls.length).toBeGreaterThan(afterFirst)
+  })
+
+  // Five past the hour to the millisecond would be one instant for every
+  // open widget: each draws its own in the five minutes that follow.
+  it('should refresh a daily chart at the instant the widget drew', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    // Half the range is half the window: 10:07:30, five and a half
+    // minutes after 10:02.
+    stubRandomUint32(UINT32_RANGE / 2)
+    pinClock('10:02')
+    const harness = await boot()
+    const before = harness.api.mock.calls.length
+    await vi.advanceTimersByTimeAsync(5.5 * 60_000 - 1)
+    await settleDetached()
+
+    expect(harness.api).toHaveBeenCalledTimes(before)
+
+    await vi.advanceTimersByTimeAsync(1)
+    await settleDetached()
+
+    expect(harness.api.mock.calls.length).toBeGreaterThan(before)
   })
 
   it('should format the axis ticks through the built config', async () => {

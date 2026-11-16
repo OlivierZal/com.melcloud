@@ -41,6 +41,7 @@ import {
   showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
+import { randomFraction } from '../../../public/random.mts'
 import { getZoneId } from '../../../public/zones.mts'
 import {
   type DaysQuery,
@@ -53,6 +54,9 @@ import {
 const FONT_FAMILY = 'Helvetica, Arial, sans-serif'
 Chart.defaults.font.family = FONT_FAMILY
 
+// The window a widget's refresh of a daily chart is drawn in, from five
+// past the hour (`getTimeout`).
+const DAILY_CHART_REFRESH_SPREAD_MS = 300_000
 const FONT_SIZE_VERY_SMALL = 12
 const GRID_LINE_DASH_PX = 3
 const HALF_TURN_DEGREES = 180
@@ -775,22 +779,30 @@ const fetchChartData = async (
 
 // Charts of hourly data poll every minute so the latest point shows up
 // promptly; daily aggregates only change after the full hour plus
-// MELCloud's 5-minute aggregation delay, so wait for that instant.
-const getTimeout = (chart: HomeySettings['chart']): number => {
+// MELCloud's 5-minute aggregation delay, so wait for that instant — and
+// for the widget's own offset past it: five past the hour to the
+// millisecond is one instant for every open widget, the kind of burst
+// the energy reports are spread to avoid.
+const getTimeout = (
+  chart: HomeySettings['chart'],
+  offsetMs: number,
+): number => {
   if (hourlyCharts.has(chart)) {
     return HOURLY_CHART_REFRESH_MS
   }
   const now = Temporal.Now.zonedDateTimeISO()
-  // The NEXT hh:05 — which is still this hour's when the draw happens
-  // between hh:00 and hh:05 (adding a flat hour there would delay the
-  // freshly aggregated hour by a full cycle).
-  let next = now.with({
-    microsecond: 0,
-    millisecond: 0,
-    minute: 5,
-    nanosecond: 0,
-    second: 0,
-  })
+  // The NEXT such instant — which is still this hour's when the draw
+  // happens before it (adding a flat hour there would delay the freshly
+  // aggregated hour by a full cycle).
+  let next = now
+    .with({
+      microsecond: 0,
+      millisecond: 0,
+      minute: 5,
+      nanosecond: 0,
+      second: 0,
+    })
+    .add({ milliseconds: offsetMs })
   if (Temporal.ZonedDateTime.compare(next, now) <= 0) {
     next = next.add({ hours: 1 })
   }
@@ -858,6 +870,12 @@ class ChartWidget {
   readonly #homey: Homey<HomeySettings>
 
   #isReady = false
+
+  // Drawn once, when the widget loads: its refreshes of a daily chart
+  // keep to one instant of the hour, an hour apart.
+  readonly #refreshOffsetMs = Math.floor(
+    randomFraction() * DAILY_CHART_REFRESH_SPREAD_MS,
+  )
 
   #timeout: NodeJS.Timeout | null = null
 
@@ -1008,9 +1026,12 @@ class ChartWidget {
       // flight; clearing the tracked timer here collapses both chains back
       // into one instead of leaving an orphaned timer refreshing forever.
       this.#clearRefreshTimer()
-      this.#timeout = setTimeout(() => {
-        fireAndForget(this.#draw())
-      }, getTimeout(this.#getChart()))
+      this.#timeout = setTimeout(
+        () => {
+          fireAndForget(this.#draw())
+        },
+        getTimeout(this.#getChart(), this.#refreshOffsetMs),
+      )
     }
   }
 

@@ -10,11 +10,8 @@ import {
 
 import type { Homey } from '../../../public/widget.mts'
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
-import {
-  generateStyleNumber,
-  generateStyleString,
-  randomFraction,
-} from './style-helpers.mts'
+import { randomFraction } from '../../../public/random.mts'
+import { generateStyleNumber, generateStyleString } from './style-helpers.mts'
 
 type AnimatedElement = 'flame' | 'leaf' | 'snowflake' | 'sun'
 

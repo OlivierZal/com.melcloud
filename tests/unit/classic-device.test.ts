@@ -976,6 +976,25 @@ describe(ClassicMELCloudDevice, () => {
       resolve()
     })
 
+    // A device deleted in its first seconds: the deferred init is still
+    // on its way, and the report whose start-up fetch was in flight
+    // cancels its own chain. The device starts no other.
+    it('should start no further report once deleted', async () => {
+      const { promise, resolve }: PromiseWithResolvers<void> =
+        Promise.withResolvers()
+      energyReportStartMock.mockReturnValueOnce(promise)
+      const deletedDevice = new TestDevice()
+      wireEnergyReports(deletedDevice)
+      setDriver(deletedDevice)
+      await deletedDevice.onInit()
+      await settleDetached()
+      deletedDevice.onDeleted()
+      resolve()
+      await settleDetached()
+
+      expect(energyReportStartMock).toHaveBeenCalledTimes(1)
+    })
+
     it('should log a detached scheduling failure without breaking init', async () => {
       energyReportStartMock.mockRejectedValueOnce(new Error('fetch down'))
       const deviceWithRegular = new TestDevice()

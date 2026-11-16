@@ -121,6 +121,20 @@ const mockFailingFetch = (failure: ApiRequestError = NETWORK_FAILURE): void => {
   })
 }
 
+// The next fetch hangs until the test answers it.
+const mockHangingFetch = (): ((energyData: unknown) => void) => {
+  const { promise, resolve } = Promise.withResolvers<unknown>()
+  ensureDeviceMock.mockResolvedValueOnce({
+    data: {},
+    getEnergy: vi
+      .fn<(query?: unknown) => Promise<unknown>>()
+      .mockReturnValue(promise),
+  })
+  return (energyData: unknown): void => {
+    resolve(ok(energyData))
+  }
+}
+
 // Fires the timer a report armed with its `index`-th `setTimeout`.
 const fireArmed = async (index: number): Promise<void> => {
   getMockCallArg<() => void>(setTimeoutMock, index, 0)()
@@ -712,6 +726,52 @@ describe(EnergyReport, () => {
     })
   })
 
+  // A report keeps one timer chain however its runs overlap: a run
+  // whose fetch outlives an `unschedule()` arms nothing, whatever was
+  // started since.
+  describe('overlapping runs', () => {
+    const hourlyData = { Auto: [0], Cooling: [0] }
+
+    // A timer's run hangs in its fetch, the report is cancelled (its
+    // last capability disabled) then started again (one enabled), and
+    // that fetch hangs too. Whichever settles first, the restart's
+    // timer is the only one.
+    it.each([
+      { first: 'restart', order: [1, 0] },
+      { first: "timer's run", order: [0, 1] },
+    ])(
+      'should keep one timer when the $first settles first',
+      async ({ order }) => {
+        mockEnergyFetch(hourlyData)
+        const report = new EnergyReport(mockDevice, regularConfig)
+        await report.start()
+        const answers = [mockHangingFetch(), mockHangingFetch()]
+        getMockCallArg<() => void>(setTimeoutMock, 0, 0)()
+        report.unschedule()
+        const restart = report.start()
+        await sequential(order, async (index) => {
+          answers[index]?.(hourlyData)
+          await settleDetached()
+        })
+        await restart
+
+        expect(setTimeoutMock).toHaveBeenCalledTimes(2)
+      },
+    )
+
+    // A device deleted during its start-up fetch.
+    it('should arm nothing when cancelled during the start-up fetch', async () => {
+      const answer = mockHangingFetch()
+      const report = new EnergyReport(mockDevice, regularConfig)
+      const starting = report.start()
+      report.unschedule()
+      answer(hourlyData)
+      await starting
+
+      expect(setTimeoutMock).not.toHaveBeenCalled()
+    })
+  })
+
   // A failed run is retried before its cadence comes round: a nightly
   // total that fails does not cost the day.
   describe('retry after a failed run', () => {
@@ -1029,22 +1089,34 @@ describe(EnergyReport, () => {
     it.each([
       // Paris changes at 02:00 and 03:00: the 01:30 slot only sees the
       // day's length, 23 hours in March and 25 in October.
-      { hours: 24, now: '2026-03-28T01:30:00+01:00', zone: 'Paris' },
-      { hours: 23, now: '2026-03-29T01:30:00+01:00', zone: 'Paris' },
-      { hours: 25, now: '2026-10-25T01:30:00+02:00', zone: 'Paris' },
+      { hours: 24, now: '2026-03-28T01:30:00+01:00', zone: 'Europe/Paris' },
+      { hours: 23, now: '2026-03-29T01:30:00+01:00', zone: 'Europe/Paris' },
+      { hours: 25, now: '2026-10-25T01:30:00+02:00', zone: 'Europe/Paris' },
       // London skips 01:00 to 02:00 in March: the slot runs at 02:30
       // that night, a full day after the last, then returns to 01:30.
-      { hours: 24, now: '2026-03-28T01:30:00+00:00', zone: 'London' },
-      { hours: 23, now: '2026-03-29T02:30:00+01:00', zone: 'London' },
+      { hours: 24, now: '2026-03-28T01:30:00+00:00', zone: 'Europe/London' },
+      { hours: 23, now: '2026-03-29T02:30:00+01:00', zone: 'Europe/London' },
       // London repeats 01:00 to 02:00 in October: the slot runs at the
       // first 01:30, and from there the next is tomorrow's, not the
       // second 01:30 an hour later.
-      { hours: 24, now: '2026-10-24T01:30:00+01:00', zone: 'London' },
-      { hours: 25, now: '2026-10-25T01:30:00+01:00', zone: 'London' },
+      { hours: 24, now: '2026-10-24T01:30:00+01:00', zone: 'Europe/London' },
+      { hours: 25, now: '2026-10-25T01:30:00+01:00', zone: 'Europe/London' },
+      // Lord Howe Island repeats 01:30 to 02:00 in April, its clocks
+      // going back half an hour: the same once, at the first 01:30.
+      {
+        hours: 24,
+        now: '2026-04-04T01:30:00+11:00',
+        zone: 'Australia/Lord_Howe',
+      },
+      {
+        hours: 24.5,
+        now: '2026-04-05T01:30:00+11:00',
+        zone: 'Australia/Lord_Howe',
+      },
     ])(
       'should arm the nightly slot $hours h after $now in $zone',
       async ({ hours, now, zone }) => {
-        getTimezoneMock.mockReturnValue(`Europe/${zone}`)
+        getTimezoneMock.mockReturnValue(zone)
         pinNow(Temporal.Instant.from(now).epochMilliseconds)
         cleanMappingMock.mockReturnValue({ meter_power: ['TotalAutoConsumed'] })
         mockEnergyFetch(mock<Classic.EnergyDataAta>({ TotalAutoConsumed: 100 }))
@@ -1054,6 +1126,26 @@ describe(EnergyReport, () => {
         expect(armedMinutes()).toStrictEqual([hours * MINUTES_PER_HOUR])
       },
     )
+
+    // That half hour puts an hourly report's next slot behind: an hour
+    // after 01:10 is 01:40, whose five past is the 01:05 already gone.
+    // The run is a whole period away — a slot behind is a timer that
+    // runs at once, again and again — and back on its slot after it.
+    it('should arm a whole period ahead when the clocks put the next slot behind', async () => {
+      getTimezoneMock.mockReturnValue('Australia/Lord_Howe')
+      pinNow(
+        Temporal.Instant.from('2026-04-05T01:10:00+11:00').epochMilliseconds,
+      )
+      mockEnergyFetch({ Auto: [0], Cooling: [0] })
+      const report = new EnergyReport(mockDevice, regularConfig)
+      await report.start()
+      pinNow(
+        Temporal.Instant.from('2026-04-05T01:40:00+10:30').epochMilliseconds,
+      )
+      await fireArmed(0)
+
+      expect(armedMinutes()).toStrictEqual([60, 25])
+    })
   })
 
   describe('coefficient of performance calculation', () => {

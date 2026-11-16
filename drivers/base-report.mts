@@ -99,6 +99,14 @@ export abstract class ScheduledEnergyReport {
 
   readonly #device: ReportDevice
 
+  // One timer chain per report. Every arm and every `unschedule()` opens
+  // a new generation, and a run arms the next timer only in the one it
+  // belongs to: two runs can overlap (a settings change starts one while
+  // a timer's is in flight, a fetch can outlive an `unschedule()`), and
+  // the handle alone cannot tell a live timer from the fired one a run
+  // still holds, nor an `unschedule()` from a report never armed.
+  #generation = 0
+
   #reportTimeout: NodeJS.Timeout | undefined
 
   readonly #spreadOffset: Temporal.Duration
@@ -132,8 +140,11 @@ export abstract class ScheduledEnergyReport {
       this.unschedule()
       return
     }
+    const generation = this.#generation
     const failures = await this.#fetchSafely()
-    if (this.#reportTimeout === undefined) {
+    // Beside a timer, pending or in its run, a `start()` arms nothing:
+    // that timer's chain goes on.
+    if (generation === this.#generation && this.#reportTimeout === undefined) {
       this.#armNext(failures)
     }
   }
@@ -141,6 +152,7 @@ export abstract class ScheduledEnergyReport {
   public unschedule(): void {
     this.#device.homey.clearTimeout(this.#reportTimeout)
     this.#reportTimeout = undefined
+    this.#generation += 1
     this.#device.log(`${this.#config.mode} energy report has been cancelled`)
   }
 
@@ -155,10 +167,12 @@ export abstract class ScheduledEnergyReport {
   #armNext(failures: number): void {
     const delay = this.#computeNextFireDelay(failures)
     this.#logNextRun(delay)
+    this.#generation += 1
+    const generation = this.#generation
     this.#reportTimeout = this.#device.homey.setTimeout(
       () => {
         fireAndForget(
-          this.#runScheduled(),
+          this.#runScheduled(generation),
           this.#device,
           `${this.#config.mode} energy report run failed:`,
         )
@@ -224,14 +238,23 @@ export abstract class ScheduledEnergyReport {
   // the end of the five-minute report's minute. The slot is this
   // period's while it is still ahead: a start-up or a retry that ran
   // before it does not stand in for it, since a slot is the earliest
-  // instant its figures can be trusted at.
+  // instant its figures can be trusted at. Otherwise it is the next
+  // period's — unless a clock change puts that one behind as well: on
+  // the night Lord Howe Island takes its half hour back, an hour after
+  // 01:10 is 01:40, and its `minute: 5` is the 01:05 already gone. The
+  // run is then a whole period away, off its slot for once, since a
+  // slot behind is a delay below zero, which a timer runs at once and
+  // again until the clock has passed it.
   #nextSlot(now: Temporal.ZonedDateTime): Temporal.ZonedDateTime {
     const frame = now.subtract(this.#spreadOffset)
-    const aligned = frame.with(this.#config.values)
+    const nextPeriod = frame.add(this.#config.duration)
     const slot =
-      Temporal.Duration.compare(aligned.since(frame), SLOT_GUARD) > 0
-        ? aligned
-        : frame.add(this.#config.duration).with(this.#config.values)
+      [frame, nextPeriod]
+        .map((period) => period.with(this.#config.values))
+        .find(
+          (aligned) =>
+            Temporal.Duration.compare(aligned.since(frame), SLOT_GUARD) > 0,
+        ) ?? nextPeriod
     return slot.add(this.#spreadOffset)
   }
 
@@ -270,14 +293,15 @@ export abstract class ScheduledEnergyReport {
     }
   }
 
-  async #runScheduled(): Promise<void> {
+  // `generation` is the one the run's timer was armed in: the run
+  // carries the chain on only while that chain is still the live one.
+  async #runScheduled(generation: number): Promise<void> {
     if (!this.hasEnabledCapabilities()) {
       this.unschedule()
       return
     }
     const failures = await this.#fetchSafely()
-    // Unschedule during the await clears the handle: stop the chain.
-    if (this.#reportTimeout !== undefined) {
+    if (generation === this.#generation) {
       this.#armNext(failures)
     }
   }

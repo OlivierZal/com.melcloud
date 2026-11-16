@@ -165,6 +165,11 @@ export abstract class BaseMELCloudDevice<
   // returns to that message instead of to a bare `null`.
   readonly #heldReasons = new Set<HeldWarningReason>()
 
+  // Homey has deleted or unloaded the device. Its deferred init may
+  // still be on its way, and starts no report from there on
+  // (`#startReport`).
+  #isGone = false
+
   // What each capability was last written with — the Homey-domain value
   // the model held once the write resolved — and when: the syncs of the
   // next `READ_BACK_WINDOW_MINUTES` compare what the cloud reads back
@@ -237,6 +242,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   public override onDeleted(): void {
+    this.#isGone = true
     this.homey.clearTimeout(this.#syncTimeout)
     this.#syncTimeout = undefined
     this.#reports.regular?.unschedule()
@@ -448,14 +454,8 @@ export abstract class BaseMELCloudDevice<
   }
 
   protected async scheduleEnergyReports(): Promise<void> {
-    if (this.energyReports === null) {
-      return
-    }
-    const { create, regular, total } = this.energyReports
-    this.#reports.regular = create(regular)
-    await this.#reports.regular.start()
-    this.#reports.total = create(total)
-    await this.#reports.total.start()
+    await this.#startReport('regular')
+    await this.#startReport('total')
   }
 
   protected async sendUpdate(values: Record<string, unknown>): Promise<void> {
@@ -844,6 +844,19 @@ export abstract class BaseMELCloudDevice<
   // rewording is recorded without IPC, so the release lands the tile on
   // the right message in one call — no blank flash, no stale wording,
   // when a pruned unit comes back faulted.
+  // A report cancels its own chain when the device goes during its
+  // start-up fetch, but one started after that would arm: a device
+  // deleted in its first seconds would keep a report fetching, and
+  // failing to write, until the app restarts.
+  async #startReport(mode: EnergyReportMode): Promise<void> {
+    if (this.energyReports === null || this.#isGone) {
+      return
+    }
+    const report = this.energyReports.create(this.energyReports[mode])
+    this.#reports[mode] = report
+    await report.start()
+  }
+
   async #syncLastingConditions(device: TFacade): Promise<void> {
     await this.#syncUnitFault(device)
     await this.#releaseUnreadableWarning()

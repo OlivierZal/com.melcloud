@@ -15,9 +15,9 @@ import {
   installAnimationApi,
   loadWidgetPage,
   setDocumentVisibility,
-  stubRandomUint32,
   widgetRoutes,
 } from '../ata-group-harness.ts'
+import { stubRandomUint32 } from '../random.ts'
 
 const bootWidget = async (
   options: WidgetHarnessOptions = {},
