@@ -1281,11 +1281,13 @@ class ErrorLogManager {
     }
     const ending = count % Modulo.base10
     const teen = count % Modulo.base100
-    return ending >= slavicPaucal.minEnding &&
-      ending <= slavicPaucal.maxEnding &&
-      (teen < slavicPaucal.teenMin || teen > slavicPaucal.teenMax)
-      ? this.#homey.__('settings.errorLog.errorCount.234')
-      : this.#homey.__('settings.errorLog.errorCount.plural')
+    return this.#homey.__(
+      ending >= slavicPaucal.minEnding &&
+        ending <= slavicPaucal.maxEnding &&
+        (teen < slavicPaucal.teenMin || teen > slavicPaucal.teenMax)
+        ? 'settings.errorLog.errorCount.234'
+        : 'settings.errorLog.errorCount.plural',
+    )
   }
 
   #updateErrorLogElements({
