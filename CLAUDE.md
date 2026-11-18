@@ -839,7 +839,13 @@ coverage.
   `isInError` with no text — read through melcloud-api 60.5.0's
   `FaultAware` contract and rendered by `#renderHeldWarning`
   (`errors.unitError` with the `__fault__` tag, `errors.unitErrorUnworded`
-  without). It outranks the energy reports and sits under `unreadable`.
+  without). Home's wording lives in the unit's error log, so the Home
+  device reads it there (`readFaultWording`) ONCE when the fault
+  appears — never while it is held, a Home unit syncing every minute —
+  and words the newest entry not yet cleared `code : reason`, the form
+  the Classic listing words a fault in (`describeOpenFault`,
+  `lib/unit-fault.mts`); a failed read or a log with no open entry
+  leaves the fault unworded, the read failing on one `logFailure` line. It outranks the energy reports and sits under `unreadable`.
   Why it exists: a diagnostic report of 2026-11-06 (log c6300a6a) showed
   a unit in `E6` for hours, `Offline: false`, echoing every setpoint
   write with `200` and the fault attached, while the tile said nothing
@@ -937,12 +943,13 @@ coverage.
   programming error and keeps the object
   whose stack locates it. The logger is the device or the app itself
   (their `log`/`error` satisfy the SDK's `Logger`), never a wrapper.
-  Three sites, the ones that log an error that came from a cloud call
+  Four sites, the ones that log an error that came from a cloud call
   or a cloud-backed read: `#pushUpdate`'s 'Write failed:' (no body on
   the line — `sendUpdate` logged it as 'Requested data:'), the report's
-  'Energy report fetch failed:' and the app's 'Home error log fetch
+  'Energy report fetch failed:', the app's 'Home error log fetch
   failed for unit …:' (the unit by its id, the SDK's convention, never
-  by name). A `Result` failure is a plain DESCRIPTOR (`{ kind, cause? }`),
+  by name) and the Home device's 'Unit fault wording unavailable, error
+  log fetch failed:'. A `Result` failure is a plain DESCRIPTOR (`{ kind, cause? }`),
   which a chain can only spell as "a thrown object", so `failureCause`
   (`lib/unwrap-result.mts`) hands the line the error the SDK classified
   — `unwrapResult` chains its `Error` to it — and the descriptor itself

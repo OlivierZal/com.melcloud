@@ -1,10 +1,13 @@
 import type * as Home from '@olivierzal/melcloud-api/home'
+import { logFailure } from '@olivierzal/melcloud-api'
 
 import type {
   HomeConvertFromDevice,
   HomeConvertToDevice,
   HomeDeviceFacade,
 } from '../types/home.mts'
+import { describeOpenFault } from '../lib/unit-fault.mts'
+import { failureCause } from '../lib/unwrap-result.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 import type { HomeMELCloudDriver } from './home-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
@@ -53,6 +56,24 @@ export abstract class HomeMELCloudDevice<
   // shape. The per-sync behaviour is unchanged: the write is skipped and
   // the last known value stands.
   readonly #unmappedCapabilities = new Set<string>()
+
+  // MELCloud Home flags a fault without words (`isInError`): the wording
+  // lives in the unit's error log, its entry not yet cleared. A failed
+  // read leaves the fault unworded, on one line naming the cause.
+  protected override readonly readFaultWording = async (
+    device: HomeDeviceFacade<T>,
+  ): Promise<string | null> => {
+    const result = await device.getErrorLog()
+    if (!result.ok) {
+      logFailure(
+        this,
+        'Unit fault wording unavailable, error log fetch failed:',
+        failureCause(result.error),
+      )
+      return null
+    }
+    return describeOpenFault(result.value)
+  }
 
   protected override getCapabilitiesOptions(): Partial<
     Record<string, unknown>

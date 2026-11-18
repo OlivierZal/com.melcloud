@@ -7,7 +7,12 @@ import {
   mock,
   settleDetached,
 } from '@olivierzal/homey-kit/testing'
-import { EntityNotFoundError, NoChangesError } from '@olivierzal/melcloud-api'
+import {
+  type ErrorLogEntry,
+  type Result,
+  EntityNotFoundError,
+  NoChangesError,
+} from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -20,11 +25,16 @@ import {
   testThermostatModeOff,
 } from '../device-descriptors.ts'
 import {
+  createTransportFailure,
+  TRANSPORT_FAILURE_CHAIN,
+} from '../transport-failure.ts'
+import {
   type TestHomeDevice,
   createTestHomeDevice,
 } from './home-base-device-test-device.ts'
 
 const {
+  getErrorLogMock,
   getHomeFacadeMock,
   getSettingMock,
   isAccountEmptyMock,
@@ -36,6 +46,7 @@ const {
   superLogMock,
   superSetWarningMock,
 } = vi.hoisted(() => ({
+  getErrorLogMock: vi.fn<() => Promise<Result<ErrorLogEntry[]>>>(),
   getHomeFacadeMock: vi.fn<(id: string) => unknown>(),
   getSettingMock: vi.fn<(key: string) => unknown>(),
   isAccountEmptyMock: vi.fn<(api: string) => boolean>(),
@@ -73,6 +84,7 @@ const requiredCapabilities = vi.hoisted(() => [
 const createMockFacade = (): Home.DeviceAtaFacade =>
   mock<Home.DeviceAtaFacade>({
     capabilities: { hasAutomaticFanSpeed: true, numberOfFanSpeeds: 5 },
+    getErrorLog: getErrorLogMock,
     updateValues: setValuesMock,
     get errorMessage(): null {
       return null
@@ -270,6 +282,7 @@ describe(BaseMELCloudDevice, () => {
     facadeState.isPoweredOn = true
     facadeState.operationMode = 'Heat'
     facadeState.setTemperature = 22
+    getErrorLogMock.mockResolvedValue({ ok: true, value: [] })
     getHomeFacadeMock.mockReturnValue(createMockFacade())
     isAccountEmptyMock.mockReturnValue(false)
     isRegistryListedMock.mockReturnValue(false)
@@ -459,6 +472,80 @@ describe(BaseMELCloudDevice, () => {
       // keeps syncing.
       expect(device.setAvailable).toHaveBeenCalledTimes(2)
       expect(device.setUnavailable).not.toHaveBeenCalled()
+    })
+
+    // Home words a fault only in the unit's error log: read once when the
+    // fault appears, its open entry worded the way the Classic listing
+    // words one — and not read again at every sync while it lasts.
+    it("should word a Home fault from its error log's open entry, once", async () => {
+      await primeDevice(device)
+      getErrorLogMock.mockResolvedValue({
+        ok: true,
+        value: [
+          {
+            at: '2026-11-18T15:00:00',
+            atEpochMs: 1,
+            code: 'E6',
+            deviceId: 'device-1',
+            message: 'Communication error',
+          },
+        ],
+      })
+      facadeState.isInError = true
+      await device.syncFromDevice()
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitError'],
+      ])
+      expect(superErrorMock.mock.calls).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'Unit fault reported by MELCloud, warning held:',
+          'E6 : Communication error',
+        ],
+      ])
+      expect(getErrorLogMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('should hold a Home fault unworded when its error log fails', async () => {
+      await primeDevice(device)
+      getErrorLogMock.mockResolvedValue({
+        error: { cause: createTransportFailure(), kind: 'network' },
+        ok: false,
+      })
+      facadeState.isInError = true
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitErrorUnworded'],
+      ])
+      expect(superErrorMock.mock.calls).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          `Unit fault wording unavailable, error log fetch failed: ${TRANSPORT_FAILURE_CHAIN}`,
+        ],
+        [
+          'Test device',
+          '-',
+          'Unit fault reported by MELCloud, warning held:',
+          'MELCloud gave no wording',
+        ],
+      ])
+    })
+
+    it('should read the error log again for the next fault', async () => {
+      await primeDevice(device)
+      facadeState.isInError = true
+      await device.syncFromDevice()
+      facadeState.isInError = false
+      await device.syncFromDevice()
+      facadeState.isInError = true
+      await device.syncFromDevice()
+
+      expect(getErrorLogMock).toHaveBeenCalledTimes(2)
     })
 
     // A pruned unit coming back faulted: the fault is recorded behind the

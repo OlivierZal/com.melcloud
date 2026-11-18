@@ -140,6 +140,12 @@ export abstract class BaseMELCloudDevice<
   // wire carries no energy, keeps the null default.
   protected readonly energyReports: EnergyReports | null = null
 
+  // Where a fault the read flags without words finds its wording, read
+  // once when the fault appears; none by default, the Classic listing
+  // carrying MELCloud's text on the read itself.
+  protected readonly readFaultWording:
+    ((device: TFacade) => Promise<string | null>) | null = null
+
   protected readonly thermostatMode: Record<string, string> | null = null
 
   protected get cachedFacade(): TFacade | undefined {
@@ -190,8 +196,8 @@ export abstract class BaseMELCloudDevice<
   } = { get: {}, list: {}, set: {} }
 
   // The fault as MELCloud last worded it while `unitError` is held —
-  // `null` on a dialect that only flags it (Home) — so the bubble carries
-  // the unit's own text and follows a rewording.
+  // `null` when it gave no wording — so the bubble carries the unit's own
+  // text and follows a rewording.
   #unitFault: string | null = null
 
   // What the tile should carry: the highest-priority held reason's
@@ -880,7 +886,7 @@ export abstract class BaseMELCloudDevice<
   // first read that finds it gone.
   async #syncUnitFault(device: TFacade): Promise<void> {
     if (device.isInError) {
-      await this.#holdUnitFault(device.errorMessage)
+      await this.#holdUnitFault(await this.#wordUnitFault(device))
       return
     }
     if (await this.releaseWarning('unitError')) {
@@ -960,5 +966,18 @@ export abstract class BaseMELCloudDevice<
         this.#recentWrites.set(capability, { at, value })
       }
     }
+  }
+
+  // MELCloud's wording of the fault: the read's own where the dialect
+  // carries one, else the one read when the fault appeared — never read
+  // again while the fault is held, a Home unit syncing every minute.
+  async #wordUnitFault(device: TFacade): Promise<string | null> {
+    if (device.errorMessage !== null) {
+      return device.errorMessage
+    }
+    if (this.#heldReasons.has('unitError')) {
+      return this.#unitFault
+    }
+    return (await this.readFaultWording?.(device)) ?? null
   }
 }
