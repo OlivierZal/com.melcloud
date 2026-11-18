@@ -836,8 +836,10 @@ coverage.
 - `unitError` (46.15.0) is the one held reason worded by the WIRE: a
   fault the unit itself reports — Classic `HasError` with MELCloud's own
   text in `ErrorMessages` (`E6 : …`, in the account's language), Home
-  `isInError` with no text — read through melcloud-api 60.5.0's
-  `FaultAware` contract and rendered by `#renderHeldWarning`
+  `isInError` with the code alone, the `ErrorCode` entry of its
+  `/context` settings (`E6`; melcloud-api 60.7.0, which had answered
+  `null` there until a faulted unit was read on 2026-11-18) — read
+  through melcloud-api 60.5.0's `FaultAware` contract and rendered by `#renderHeldWarning`
   (`errors.unitError` with the `__fault__` tag, `errors.unitErrorUnworded`
   without). It outranks the energy reports and sits under `unreadable`.
   Why it exists: a diagnostic report of 2026-11-06 (log c6300a6a) showed
