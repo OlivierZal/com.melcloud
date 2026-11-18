@@ -3819,9 +3819,17 @@ describe('melCloudApp', () => {
           model: 'devices',
           name: 'Building unit',
         },
+        {
+          buildingName: 'Office',
+          id: 11,
+          level: 1,
+          model: 'devices',
+          name: 'Building two',
+        },
       ])
       // The library sorts each list on its own; the two come back as one,
-      // name-sorted on the building-suffixed names.
+      // name-sorted on the building-suffixed names: the two `Building two`
+      // leaves order by their building, Maison before Office.
       stubHomeZones([
         { buildingName: 'Maison', id: 'home-3', name: 'Bedroom' },
         { buildingName: 'Maison', id: 'home-1', name: 'Building one' },
@@ -3861,6 +3869,13 @@ describe('melCloudApp', () => {
           level: 1,
           model: 'homeDevices',
           name: 'Building two (Maison)',
+        },
+        {
+          buildingName: 'Office',
+          id: 11,
+          level: 1,
+          model: 'devices',
+          name: 'Building two (Office)',
         },
         {
           buildingName: 'Building 1',

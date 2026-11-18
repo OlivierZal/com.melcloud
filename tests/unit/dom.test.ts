@@ -7,11 +7,23 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import {
   appendFormControl,
+  applySelectValue,
   hideInitError,
   populateZoneOptions,
   showInitError,
   translateAriaLabels,
 } from '../../public/dom.mts'
+
+const selectOf = (...values: string[]): HTMLSelectElement => {
+  const select = document.createElement('select')
+  for (const value of values) {
+    const option = document.createElement('option')
+    option.value = value
+    select.append(option)
+  }
+  document.body.append(select)
+  return select
+}
 
 describe('webview dom helpers', () => {
   beforeEach(() => {
@@ -35,6 +47,23 @@ describe('webview dom helpers', () => {
       appendFormControl(parent, { formControl: null, title: 'Absent' })
 
       expect(parent.childElementCount).toBe(0)
+    })
+  })
+
+  describe(applySelectValue, () => {
+    it('should select a value that has an option', () => {
+      const select = selectOf('a', 'b"c')
+      applySelectValue(select, 'b"c')
+
+      expect(select.value).toBe('b"c')
+    })
+
+    it('should keep the selection for a value without an option', () => {
+      const select = selectOf('a', 'b')
+      select.value = 'b'
+      applySelectValue(select, 'missing')
+
+      expect(select.value).toBe('b')
     })
   })
 

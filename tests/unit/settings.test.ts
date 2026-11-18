@@ -232,6 +232,27 @@ const errorLogFixture = (count: number): unknown => ({
   nextToDate: '2026-06-30',
 })
 
+// One Home building and its one ATA device, as `/home/targets` lists them.
+const homeBuildingTargets = (name: string, id: string): unknown[] => [
+  {
+    buildingName: name,
+    hasAta: true,
+    hasAtw: false,
+    id,
+    level: 0,
+    model: 'homeBuildings',
+    name,
+  },
+  {
+    buildingName: name,
+    deviceType: 'ata',
+    id: `${id}_unit`,
+    level: 1,
+    model: 'homeDevices',
+    name: 'Salon',
+  },
+]
+
 const defaultRoutes = (): Record<string, unknown> => ({
   'DELETE /sessions/classic': undefined,
   'DELETE /sessions/home': undefined,
@@ -250,6 +271,18 @@ const defaultRoutes = (): Record<string, unknown> => ({
   'POST /sessions/classic': { isAccountEmpty: false, isDeviceListStale: false },
   'POST /sessions/home': { isAccountEmpty: false, isDeviceListStale: false },
   'PUT /settings/devices': undefined,
+})
+
+const bothAccountsRoutes = (
+  homeTargets: readonly unknown[],
+): Record<string, unknown> => ({
+  ...defaultRoutes(),
+  'GET /home/targets': homeTargets,
+  'GET /sessions/home': true,
+  'GET /settings/devices': {
+    ...deviceSettingsFixture(),
+    'home-melcloud': { always_on: true },
+  },
 })
 
 const apiImplementation =
@@ -561,46 +594,26 @@ describe('settings page', () => {
     })
 
     // Classic answers first and its first building is selected; the Home
-    // list then sorts its building into place without moving the selection.
+    // list then sorts its buildings into place, one on either side of the
+    // Classic one, without moving the selection.
     it('should list the two accounts building by building', async () => {
       await bootPage({
-        routes: {
-          ...defaultRoutes(),
-          'GET /home/targets': [
-            {
-              buildingName: 'Atelier',
-              hasAta: true,
-              hasAtw: false,
-              id: 'building_2',
-              level: 0,
-              model: 'homeBuildings',
-              name: 'Atelier',
-            },
-            {
-              buildingName: 'Atelier',
-              deviceType: 'ata',
-              id: 'desk',
-              level: 1,
-              model: 'homeDevices',
-              name: 'Bureau',
-            },
-          ],
-          'GET /sessions/home': true,
-          'GET /settings/devices': {
-            ...deviceSettingsFixture(),
-            'home-melcloud': { always_on: true },
-          },
-        },
+        routes: bothAccountsRoutes([
+          ...homeBuildingTargets('Atelier', 'building_2'),
+          ...homeBuildingTargets('Villa', 'building_3'),
+        ]),
       })
       const values = [...getSelect('zones').options].map(({ value }) => value)
 
       expect(values).toStrictEqual([
         'homeBuildings_building_2',
-        'homeDevices_desk',
+        'homeDevices_building_2_unit',
         'buildings_1',
         'devices_11',
         'floors_21',
         'areas_31',
+        'homeBuildings_building_3',
+        'homeDevices_building_3_unit',
       ])
       expect(getSelect('zones').value).toBe('buildings_1')
     })
@@ -1411,6 +1424,86 @@ describe('settings page', () => {
       // Logged out: the content follows the remaining account (none).
       expect(getDiv('content').hidden).toBe(true)
       expect(getDetails('authentication').open).toBe(true)
+    })
+
+    // Each account's list is replaced on its next fill, never added to: a
+    // building the account no longer lists leaves the picker.
+    it("should replace an account's zones on its next sign-in", async () => {
+      const harness = await bootPage()
+      swapRoutes(harness, {
+        ...defaultRoutes(),
+        'GET /classic/buildings': [
+          {
+            areas: [],
+            devices: [{ id: 12, level: 1, model: 'devices', name: 'Office' }],
+            floors: [],
+            id: 2,
+            level: 0,
+            model: 'buildings',
+            name: 'Bureau',
+          },
+        ],
+      })
+      commit(getSelect('api'), 'classic')
+      commit(getInput('username'), 'user@example.com')
+      commit(getInput('password'), 'secret')
+      getButton('authenticate').click()
+      await settleDetached()
+
+      expect(
+        [...getSelect('zones').options].map(({ value }) => value),
+      ).toStrictEqual(['buildings_2', 'devices_12'])
+      expect(calledPaths(harness)).toContain(
+        'GET /targets/buildings_2/settings/frost-protection',
+      )
+    })
+
+    it("should drop an emptied account's zones", async () => {
+      const harness = await bootPage({
+        routes: bothAccountsRoutes(homeBuildingTargets('Villa', 'building_3')),
+      })
+      swapRoutes(harness, {
+        ...bothAccountsRoutes(homeBuildingTargets('Villa', 'building_3')),
+        'GET /classic/buildings': [],
+        'POST /sessions/classic': {
+          isAccountEmpty: true,
+          isDeviceListStale: false,
+        },
+      })
+      commit(getSelect('api'), 'classic')
+      commit(getInput('username'), 'user@example.com')
+      commit(getInput('password'), 'secret')
+      getButton('authenticate').click()
+      await settleDetached()
+
+      expect(
+        [...getSelect('zones').options].map(({ value }) => value),
+      ).toStrictEqual([
+        'homeBuildings_building_3',
+        'homeDevices_building_3_unit',
+      ])
+      expect(getSelect('zones').value).toBe('homeBuildings_building_3')
+    })
+
+    it("should drop a signed-out account's zones and follow the selection", async () => {
+      const harness = await bootPage({
+        routes: bothAccountsRoutes(homeBuildingTargets('Villa', 'building_3')),
+        storedSettings: { password: 'secret', username: 'user@example.com' },
+      })
+      commit(getSelect('api'), 'classic')
+      getButton('reset_credentials').click()
+      await settleDetached()
+
+      expect(
+        [...getSelect('zones').options].map(({ value }) => value),
+      ).toStrictEqual([
+        'homeBuildings_building_3',
+        'homeDevices_building_3_unit',
+      ])
+      expect(calledPaths(harness)).toContain(
+        'GET /targets/homeBuildings_building_3/settings/frost-protection',
+      )
+      expect(getDiv('content').hidden).toBe(false)
     })
 
     it('should do nothing when the reset is declined', async () => {
