@@ -258,6 +258,60 @@ describe('ata group setting widget', () => {
     expect(harness.ready).toHaveBeenCalledTimes(1)
   })
 
+  // A mixed answer would ask the zone now shown for its member modes:
+  // a late answer from a zone the user left paints nothing at all.
+  it('should paint nothing from a zone the user left', async () => {
+    const get = Promise.withResolvers<unknown>()
+    const harness = await bootWidget({
+      deferredRoutes: {
+        'GET /targets/devices_11/ata': async () => get.promise,
+      },
+    })
+    commit(getSelect('zones'), 'devices_11')
+    commit(getSelect('zones'), 'buildings_1')
+    await settleDetached()
+    get.resolve({
+      ...groupStateFixture(),
+      OperationMode: null,
+      SetTemperature: 19,
+    })
+    await settleDetached()
+
+    expect(getSelect('SetTemperature').value).not.toBe('19')
+    expect(
+      calledPaths(harness).filter((path) => path.endsWith('/modes')),
+    ).toStrictEqual([])
+  })
+
+  it('should paint nothing from a real-time read of a zone the user left', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    const get = Promise.withResolvers<unknown>()
+    let reads = 0
+    const harness = await bootWidget({
+      deferredRoutes: {
+        'GET /targets/buildings_1/ata': async () => {
+          reads += 1
+          return reads === 1 ? groupStateFixture() : get.promise
+        },
+      },
+      routes: {
+        ...widgetRoutes(),
+        'GET /targets/devices_11/ata': groupStateFixture(),
+      },
+    })
+    harness.emit('deviceupdate')
+    await vi.advanceTimersByTimeAsync(1000)
+    commit(getSelect('zones'), 'devices_11')
+    await settleDetached()
+    get.resolve({ ...groupStateFixture(), OperationMode: null })
+    await settleDetached()
+
+    expect(reads).toBe(2)
+    expect(
+      calledPaths(harness).filter((path) => path.endsWith('/modes')),
+    ).toStrictEqual([])
+  })
+
   it('should update through the gate with haptic feedback', async () => {
     const harness = await bootWidget()
     const apply = getButton('apply_values_melcloud')

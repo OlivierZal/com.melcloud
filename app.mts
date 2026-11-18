@@ -9,6 +9,7 @@ import {
   announceChangelog,
   createSettingManager,
   fireAndForget,
+  getErrorMessage,
   NotFoundError,
   settleAll,
 } from '@olivierzal/homey-kit'
@@ -196,6 +197,13 @@ type AtaGroupTarget = Pick<
   Classic.ZoneFacade,
   'getGroup' | 'getMemberOperationModes' | 'updateGroupState'
 >
+
+// A fan-out's failures — several units of a Home building — travel as
+// one message, since the webview reads a thrown error's message alone.
+const joinFailures = (error: AggregateError): Error => {
+  const messages = error.errors.map((failure) => getErrorMessage(failure))
+  return new Error(`${error.message}: ${messages.join('; ')}`, { cause: error })
+}
 
 // A flat autocomplete/select item: the `${model}_${id}` option value as
 // `id` (unique, and the routing key run listeners parse) plus the display
@@ -765,9 +773,12 @@ export default class MELCloudApp extends App {
     try {
       await target.updateGroupState(state)
     } catch (error) {
-      // Logged and rethrown untouched, never handled: the widget shows the
-      // message, and the diagnostic log keeps the line.
-      logFailure(this, 'Group write failed:', error)
+      // Logged, never handled: the widget shows the message, and the
+      // diagnostic log keeps the line.
+      this.#logGroupWriteFailure(error)
+      if (error instanceof AggregateError) {
+        throw joinFailures(error)
+      }
       throw error
     }
   }
@@ -1296,6 +1307,16 @@ export default class MELCloudApp extends App {
     this.log('Boot: ready after', process.uptime().toFixed(1), 's')
   }
 
+  // One line per failure, a fan-out's included, so each names what it
+  // failed on.
+  #logGroupWriteFailure(error: unknown): void {
+    const failures: unknown[] =
+      error instanceof AggregateError ? error.errors : [error]
+    for (const failure of failures) {
+      logFailure(this, 'Group write failed:', failure)
+    }
+  }
+
   // One line per account when the pair (listed by the account, added in
   // Homey) changes, the first sync included: diagnostic reports omit
   // list bodies over 4 KiB, so this is the only trace of how many units
@@ -1533,12 +1554,14 @@ export default class MELCloudApp extends App {
 
   // Holiday-mode / condition targets: every Classic zone/device and every
   // Home building/device, each carrying its `${model}_${id}` routing value
-  // and a building-suffixed display name, name-sorted.
+  // and a building-suffixed display name, each building both accounts
+  // list under one name tagged with its own account, name-sorted.
   #searchHolidayModeTargets(query: string): FlatZoneItem[] {
-    return filterZonesByName(
-      toFlatZoneItems([...this.getClassicTargets(), ...this.getHomeTargets()]),
-      query,
-    )
+    const targets = tagSameNameBuildings([
+      ...this.getClassicTargets(),
+      ...this.getHomeTargets(),
+    ])
+    return filterZonesByName(toFlatZoneItems(targets), query)
   }
 
   // Residual credentials on an API without any paired device only get

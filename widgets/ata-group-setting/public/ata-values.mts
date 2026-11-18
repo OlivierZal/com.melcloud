@@ -215,14 +215,19 @@ export class AtaValueManager {
   // The FULL sync: initial load, zone switch and Refresh all mean "show
   // me the zone as it stands", so every control takes the server state,
   // edits included — an edit is a zone-scoped statement, not a portable
-  // one. The real-time path is `fetchValuesKeepingEdits`.
-  public async fetchValues(): Promise<Classic.GroupState> {
+  // one. The real-time path is `fetchValuesKeepingEdits`. An answer the
+  // picker moved away from is filed under its zone and nothing more
+  // (`null`): the zone now shown has a read of its own.
+  public async fetchValues(): Promise<Classic.GroupState | null> {
     const target = this.#zone.value
     const values = await homeyApiGet<Classic.GroupState>(
       this.#homey,
       getAtaStatePath(target),
     )
     this.#updateZoneMapping(target, { ...this.#defaultAtaValues, ...values })
+    if (this.#zone.value !== target) {
+      return null
+    }
     this.#syncAtaValues()
     // `runBusy`'s generation guard keeps this from releasing a save
     // that a live PUT still owns.
@@ -236,7 +241,7 @@ export class AtaValueManager {
   // `recompute` re-judges the kept edits against the zone's NEW state:
   // Update greys exactly when every edit was caught up (a no-op button
   // must not arm) and re-arms the moment one diverges again.
-  public async fetchValuesKeepingEdits(): Promise<Classic.GroupState> {
+  public async fetchValuesKeepingEdits(): Promise<Classic.GroupState | null> {
     const target = this.#zone.value
     const previous = { ...this.#zoneMapping[target] }
     const values = await homeyApiGet<Classic.GroupState>(
@@ -244,6 +249,9 @@ export class AtaValueManager {
       getAtaStatePath(target),
     )
     this.#updateZoneMapping(target, { ...this.#defaultAtaValues, ...values })
+    if (this.#zone.value !== target) {
+      return null
+    }
     this.#syncPristineAtaValues(previous)
     this.#dirtyGate.recompute()
     return values
@@ -279,20 +287,30 @@ export class AtaValueManager {
           body satisfies Classic.GroupState,
         )
       } catch (error) {
-        // The edit stays armed for a retry.
-        await this.#showUpdateError(error)
+        // The edit stays armed for a retry, and the error shows only
+        // under the zone it was sent to.
+        if (this.#zone.value === target) {
+          await this.#showUpdateError(error)
+        }
         return
       }
-      // The target's known state absorbs the accepted write immediately:
-      // the debounced `deviceupdate` refetch confirms it later, but
-      // until then the body filter (and so `isActionable`) must judge
-      // against what the server now holds, not the pre-write state.
-      this.#updateZoneMapping(target, body)
-      if (this.#zone.value === target) {
-        this.#dirtyGate.markSaved()
-      }
-      await this.hideUpdateError()
+      await this.#absorbWrite(target, body)
     })
+  }
+
+  // The target's known state absorbs the accepted write immediately: the
+  // debounced `deviceupdate` refetch confirms it later, but until then
+  // the body filter (and so `isActionable`) must judge against what the
+  // server now holds, not the pre-write state.
+  async #absorbWrite(
+    target: string,
+    body: Partial<Classic.GroupState>,
+  ): Promise<void> {
+    this.#updateZoneMapping(target, body)
+    if (this.#zone.value === target) {
+      this.#dirtyGate.markSaved()
+    }
+    await this.hideUpdateError()
   }
 
   #buildAtaValuesBody(): Classic.GroupState {

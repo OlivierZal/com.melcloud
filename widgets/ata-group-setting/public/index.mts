@@ -106,9 +106,12 @@ class WidgetApp {
   // Zone switch and initial load take the full sync ("show me the zone
   // as it stands"); the real-time stream must not clobber an edit in
   // progress, so it goes through the edit-keeping sync instead.
+  // An answer the picker moved away from paints nothing.
   async #fetchAndAnimate(): Promise<void> {
     const values = await this.#ataValueManager.fetchValues()
-    await this.#animationController.applyAnimation(values)
+    if (values !== null) {
+      await this.#animationController.applyAnimation(values)
+    }
   }
 
   async #initTargets(): Promise<void> {
@@ -134,7 +137,9 @@ class WidgetApp {
 
   async #refreshKeepingEdits(): Promise<void> {
     const values = await this.#ataValueManager.fetchValuesKeepingEdits()
-    await this.#animationController.applyAnimation(values)
+    if (values !== null) {
+      await this.#animationController.applyAnimation(values)
+    }
   }
 
   async #run(): Promise<void> {

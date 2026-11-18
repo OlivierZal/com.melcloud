@@ -64,7 +64,7 @@ export const tagSameNameBuildings = <T extends NamedZone>(
     const tag = DIALECT_TAGS.get(zone.model)
     const key = toBuildingKey(zone.name)
     return tag !== undefined && classicKeys.has(key) && homeKeys.has(key)
-      ? { ...zone, name: `${zone.name} ${tag}` }
+      ? { ...zone, name: `${zone.name.trim()} ${tag}` }
       : zone
   })
 }

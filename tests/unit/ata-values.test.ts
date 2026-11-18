@@ -416,6 +416,30 @@ describe('ata value manager', () => {
     expect(getSelect('SetTemperature').value).toBe('25')
   })
 
+  // The zone now shown has a read of its own: the late answer repaints
+  // nothing, an edit made there meanwhile included, and reports itself
+  // superseded.
+  // The write went to the zone the user has left: its failure is not
+  // shown under the zone now on screen.
+  it('should keep a refused write off the zone the user moved to', async () => {
+    const put = Promise.withResolvers<undefined>()
+    const { manager } = await createManager({
+      deferredRoutes: {
+        'PUT /targets/buildings_1/ata': async () => put.promise,
+      },
+    })
+    await manager.fetchValues()
+    getSelect('SetTemperature').value = '25'
+    const write = manager.setValues()
+    getSelect('zones').value = 'devices_11'
+    put.reject(new Error('Unit offline'))
+    await write
+
+    expect(
+      document.querySelector('#update_error')?.hasAttribute('hidden'),
+    ).toBe(true)
+  })
+
   it.each(['fetchValues', 'fetchValuesKeepingEdits'] as const)(
     'should file a %s answer under the zone it asked about',
     async (method) => {
@@ -428,8 +452,12 @@ describe('ata value manager', () => {
       const zone = getSelect('zones')
       const read = manager[method]()
       zone.value = 'devices_11'
+      getSelect('SetTemperature').value = '22'
       get.resolve({ ...groupStateFixture(), SetTemperature: 19 })
-      await read
+
+      await expect(read).resolves.toBeNull()
+      expect(getSelect('SetTemperature').value).toBe('22')
+
       manager.displayValues()
 
       expect(getSelect('SetTemperature').value).toBe('')

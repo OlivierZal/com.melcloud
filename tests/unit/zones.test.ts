@@ -149,7 +149,7 @@ describe('zones', () => {
     ]
 
     expect(tagSameNameBuildings(zones).map(({ name }) => name)).toStrictEqual([
-      'Atelier  [Classic]',
+      'Atelier [Classic]',
       'Atelier [Home]',
       'Re\u{301}sidence [Classic]',
       'R\u{E9}sidence [Home]',
