@@ -55,7 +55,15 @@ const {
   superSetWarningMock: vi.fn<(...args: readonly unknown[]) => unknown>(),
 }))
 
-const facadeState = {
+const facadeState: {
+  errorMessage: string | null
+  isAvailable: boolean
+  isInError: boolean
+  isPoweredOn: boolean
+  operationMode: string
+  setTemperature: number
+} = {
+  errorMessage: null,
   isAvailable: true,
   isInError: false,
   isPoweredOn: true,
@@ -74,8 +82,8 @@ const createMockFacade = (): Home.DeviceAtaFacade =>
   mock<Home.DeviceAtaFacade>({
     capabilities: { hasAutomaticFanSpeed: true, numberOfFanSpeeds: 5 },
     updateValues: setValuesMock,
-    get errorMessage(): null {
-      return null
+    get errorMessage(): string | null {
+      return facadeState.errorMessage
     },
     get isAvailable(): boolean {
       return facadeState.isAvailable
@@ -265,6 +273,7 @@ describe(BaseMELCloudDevice, () => {
   // IPC and the log, so both start empty for every test. The registry
   // reads empty by default — the boot race — and the prune tests fill it.
   beforeEach(() => {
+    facadeState.errorMessage = null
     facadeState.isAvailable = true
     facadeState.isInError = false
     facadeState.isPoweredOn = true
@@ -435,8 +444,8 @@ describe(BaseMELCloudDevice, () => {
 
     // A fault the unit itself reports is a lasting condition the unit,
     // not the cloud, raised: held like the others, logged once, released
-    // on the first sync that reads it gone. Home only flags it, so the
-    // bubble carries the dialect-neutral wording.
+    // on the first sync that reads it gone. A unit that gives no code
+    // gets the dialect-neutral wording.
     it('should hold the unit fault warning once and log the fault', async () => {
       await primeDevice(device)
       facadeState.isInError = true
@@ -459,6 +468,27 @@ describe(BaseMELCloudDevice, () => {
       // keeps syncing.
       expect(device.setAvailable).toHaveBeenCalledTimes(2)
       expect(device.setUnavailable).not.toHaveBeenCalled()
+    })
+
+    // Home words its fault with the code alone (`/context`'s `ErrorCode`),
+    // which the bubble carries like Classic's sentence.
+    it('should carry the Home fault code on the tile', async () => {
+      await primeDevice(device)
+      facadeState.isInError = true
+      facadeState.errorMessage = 'E6'
+      await device.syncFromDevice()
+
+      expect(superSetWarningMock.mock.calls).toStrictEqual([
+        ['errors.unitError'],
+      ])
+      expect(superErrorMock.mock.calls).toStrictEqual([
+        [
+          'Test device',
+          '-',
+          'Unit fault reported by MELCloud, warning held:',
+          'E6',
+        ],
+      ])
     })
 
     // A pruned unit coming back faulted: the fault is recorded behind the

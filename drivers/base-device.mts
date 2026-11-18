@@ -190,8 +190,8 @@ export abstract class BaseMELCloudDevice<
   } = { get: {}, list: {}, set: {} }
 
   // The fault as MELCloud last worded it while `unitError` is held —
-  // `null` on a dialect that only flags it (Home) — so the bubble carries
-  // the unit's own text and follows a rewording.
+  // `null` when it gave no wording — so the bubble carries the unit's own
+  // text and follows a rewording.
   #unitFault: string | null = null
 
   // What the tile should carry: the highest-priority held reason's
@@ -740,8 +740,9 @@ export abstract class BaseMELCloudDevice<
   // it would have replaced still have a read-back to judge.
   // The unit's own fault is the one reason whose wording is not a fixed
   // key: MELCloud words it on Classic (`E6 : …`, in the account's
-  // language) and only flags it on Home, so the bubble carries the text
-  // when there is one and the dialect-neutral sentence otherwise.
+  // language) and gives the code alone on Home (`E6`), so the bubble
+  // carries the wording when there is one and the dialect-neutral
+  // sentence otherwise.
   #renderHeldWarning({
     message,
     reason,
