@@ -38,6 +38,54 @@ const zoneOptions = (): { label: string | null; value: string }[] =>
     value,
   }))
 
+// Both accounts list a "Domicile"; only Home lists a "Villa".
+const sameNameRoutes = (): Record<string, unknown> => ({
+  ...widgetRoutes(),
+  'GET /classic/buildings': [
+    {
+      areas: [],
+      devices: [{ id: 11, level: 1, model: 'devices', name: 'Living room' }],
+      floors: [],
+      id: 1,
+      level: 0,
+      model: 'buildings',
+      name: 'Domicile',
+    },
+  ],
+  'GET /home/targets/ata': [
+    {
+      buildingName: 'Domicile',
+      id: 'b_2',
+      level: 0,
+      model: 'homeBuildings',
+      name: 'Domicile',
+    },
+    {
+      buildingName: 'Domicile',
+      deviceType: 'ata',
+      id: 'ata_2',
+      level: 1,
+      model: 'homeDevices',
+      name: 'Bureau',
+    },
+    {
+      buildingName: 'Villa',
+      id: 'b_1',
+      level: 0,
+      model: 'homeBuildings',
+      name: 'Villa',
+    },
+    {
+      buildingName: 'Villa',
+      deviceType: 'ata',
+      id: 'ata_1',
+      level: 1,
+      model: 'homeDevices',
+      name: 'Salon',
+    },
+  ],
+})
+
 const updateError = (): HTMLElement => {
   const element = document.querySelector('#update_error')
   if (element instanceof HTMLElement) {
@@ -139,67 +187,55 @@ describe('ata group setting widget', () => {
   })
 
   // Only the labels move: the option values stay the targetIds the
-  // routes resolve.
+  // routes resolve, and the house the two buildings make is offered whole
+  // right after them.
   it('should tag a building name both accounts list', async () => {
-    await bootWidget({
-      routes: {
-        ...widgetRoutes(),
-        'GET /classic/buildings': [
-          {
-            areas: [],
-            devices: [
-              { id: 11, level: 1, model: 'devices', name: 'Living room' },
-            ],
-            floors: [],
-            id: 1,
-            level: 0,
-            model: 'buildings',
-            name: 'Domicile',
-          },
-        ],
-        'GET /home/targets/ata': [
-          {
-            buildingName: 'Domicile',
-            id: 'b_2',
-            level: 0,
-            model: 'homeBuildings',
-            name: 'Domicile',
-          },
-          {
-            buildingName: 'Domicile',
-            deviceType: 'ata',
-            id: 'ata_2',
-            level: 1,
-            model: 'homeDevices',
-            name: 'Bureau',
-          },
-          {
-            buildingName: 'Villa',
-            id: 'b_1',
-            level: 0,
-            model: 'homeBuildings',
-            name: 'Villa',
-          },
-          {
-            buildingName: 'Villa',
-            deviceType: 'ata',
-            id: 'ata_1',
-            level: 1,
-            model: 'homeDevices',
-            name: 'Salon',
-          },
-        ],
-      },
-    })
+    await bootWidget({ routes: sameNameRoutes() })
 
     expect(zoneOptions()).toStrictEqual([
       { label: ' Domicile [Classic]', value: 'buildings_1' },
       { label: '··· Living room', value: 'devices_11' },
       { label: ' Domicile [Home]', value: 'homeBuildings_b_2' },
       { label: '··· Bureau', value: 'homeDevices_ata_2' },
+      { label: ' Domicile [Classic + Home]', value: 'mergedBuildings_1_b_2' },
       { label: ' Villa', value: 'homeBuildings_b_1' },
       { label: '··· Salon', value: 'homeDevices_ata_1' },
     ])
+    // A widget with no default zone still opens on the first building.
+    expect(getSelect('zones').value).toBe('buildings_1')
+  })
+
+  // The merged value rides the same routes as any other: the app resolves
+  // it, the widget never splits it.
+  it('should read and write a merged house through its own value', async () => {
+    const harness = await bootWidget({
+      routes: {
+        ...sameNameRoutes(),
+        'GET /targets/mergedBuildings_1_b_2/ata': groupStateFixture(),
+        'PUT /targets/mergedBuildings_1_b_2/ata': undefined,
+      },
+      settings: {
+        default_zone: {
+          buildingName: 'Domicile',
+          id: '1_b_2',
+          level: 0,
+          model: 'mergedBuildings',
+          name: 'Domicile [Classic + Home]',
+        },
+      },
+    })
+    commit(getSelect('SetTemperature'), '25')
+    getButton('apply_values_melcloud').click()
+    await settleDetached()
+
+    expect(calledPaths(harness)).toContain(
+      'GET /targets/mergedBuildings_1_b_2/ata',
+    )
+    expect(harness.api).toHaveBeenLastCalledWith(
+      'PUT',
+      '/targets/mergedBuildings_1_b_2/ata',
+      { SetTemperature: 25 },
+    )
   })
 
   it('should keep one selector source alive when the other fails', async () => {

@@ -1,38 +1,52 @@
 import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
-// What the two dialects' picker routes serve: a Classic building, its
+// A house both accounts list under one name, read and written as one
+// group (`toMergedBuilding`).
+export interface MergedBuildingZone {
+  readonly buildingName: string
+  readonly id: string
+  readonly level: 0
+  readonly model: 'mergedBuildings'
+  readonly name: string
+}
+
+// What the zone pickers list at the top level: a Classic building, its
 // subzones nested, or a Home building or device, flat — every Home entry
-// naming its building.
+// naming its building —, and in the ATA group widget the merged houses.
 export type PickerListZone =
-  Classic.BuildingZone | HomeBuildingZone | HomeDeviceZone
+  Classic.BuildingZone | HomeBuildingZone | HomeDeviceZone | MergedBuildingZone
 
-// Everything the zone pickers can list: a Classic zone at any level, or
-// a Home building and its devices.
-export type PickerZone = Classic.Zone | HomeBuildingZone | HomeDeviceZone
-
-const getBuildingName = (zone: PickerListZone): string =>
-  zone.model === 'buildings' ? zone.name : zone.buildingName
-
-// Both dialects' picker lists as one, sorted by building name. The sort is
-// stable, so each Home building keeps its own devices right behind it, in
-// the order the library lists them.
-export const sortByBuilding = (
-  zones: readonly PickerListZone[],
-): PickerListZone[] =>
-  zones.toSorted((zone, other) =>
-    getBuildingName(zone).localeCompare(getBuildingName(other)),
-  )
+// Everything the zone pickers can list: a Classic zone at any level, a
+// Home building and its devices, or a merged house.
+export type PickerZone =
+  Classic.Zone | HomeBuildingZone | HomeDeviceZone | MergedBuildingZone
 
 // Two buildings are the same house when their names match once trimmed
 // and composed alike (NFC); letter case still tells them apart.
 export const toBuildingKey = (name: string): string =>
   name.trim().normalize('NFC')
 
+const getBuildingKey = (zone: PickerListZone): string =>
+  toBuildingKey(zone.model === 'buildings' ? zone.name : zone.buildingName)
+
+// Both dialects' picker lists as one, sorted by building name, the same
+// house's buildings comparing equal. The sort is stable, so each Home
+// building keeps its own devices right behind it, in the order the
+// library lists them, and a house's buildings keep the order they came
+// in.
+export const sortByBuilding = (
+  zones: readonly PickerListZone[],
+): PickerListZone[] =>
+  zones.toSorted((zone, other) =>
+    getBuildingKey(zone).localeCompare(getBuildingKey(other)),
+  )
+
 // The driver-prefix tokens, spelled the same in every locale.
 const DIALECT_TAGS: ReadonlyMap<string, string> = new Map([
   ['buildings', '[Classic]'],
   ['homeBuildings', '[Home]'],
+  ['mergedBuildings', '[Classic + Home]'],
 ])
 
 interface NamedZone {
@@ -52,9 +66,10 @@ const getBuildingKeys = (
 
 // Display copies of a list spanning both accounts: a building whose name
 // the other account's buildings hold too takes its own account's tag, so
-// the two stop reading alike. Option values, nested subzones and devices
-// stay as they are, and so does the input. A list sorted by building is
-// tagged after `sortByBuilding`, which keys on the bare names.
+// the two stop reading alike, and a merged house takes both. Option
+// values, nested subzones and devices stay as they are, and so does the
+// input. A list sorted by building is tagged after `sortByBuilding`,
+// which keys on the bare names.
 export const tagSameNameBuildings = <T extends NamedZone>(
   zones: readonly T[],
 ): T[] => {
@@ -68,6 +83,71 @@ export const tagSameNameBuildings = <T extends NamedZone>(
       : zone
   })
 }
+
+// The two buildings of a house both accounts list under one name.
+export interface SameNamePair {
+  readonly classic: Classic.BuildingZone
+  readonly home: HomeBuildingZone
+}
+
+// Each name's one building on a side, `null` for a name that side holds
+// twice or more.
+const toUniqueByKey = <T extends NamedZone>(
+  zones: readonly T[],
+): Map<string, T | null> => {
+  const unique = new Map<string, T | null>()
+  for (const zone of zones) {
+    const key = toBuildingKey(zone.name)
+    unique.set(key, unique.has(key) ? null : zone)
+  }
+  return unique
+}
+
+// The houses both accounts list under one name: a name held by exactly
+// one building on each side. A name either account holds twice pairs
+// nothing, since a merged house joins one building per account.
+export const pairSameNameBuildings = (
+  zones: readonly PickerListZone[],
+): SameNamePair[] => {
+  const classics = toUniqueByKey(
+    zones.filter((zone) => zone.model === 'buildings'),
+  )
+  const homes = toUniqueByKey(
+    zones.filter((zone) => zone.model === 'homeBuildings'),
+  )
+  const pairs: SameNamePair[] = []
+  for (const [key, classic] of classics) {
+    const home = homes.get(key) ?? null
+    if (classic !== null && home !== null) {
+      pairs.push({ classic, home })
+    }
+  }
+  return pairs
+}
+
+// The merged house of a pair: its value joins the two buildings' ids,
+// and it sorts and reads under the Classic building's name.
+export const toMergedBuilding = ({
+  classic,
+  home,
+}: SameNamePair): MergedBuildingZone => ({
+  buildingName: classic.name,
+  id: `${String(classic.id)}_${home.id}`,
+  level: 0,
+  model: 'mergedBuildings',
+  name: classic.name,
+})
+
+// The list with a merged house added for each pair, left for
+// `sortByBuilding` to place: the sort is stable, so each one lands right
+// after its two buildings, and a widget with no default zone still opens
+// on the building it opened on before.
+export const withMergedBuildings = (
+  zones: readonly PickerListZone[],
+): PickerListZone[] => [
+  ...zones,
+  ...pairSameNameBuildings(zones).map((pair) => toMergedBuilding(pair)),
+]
 
 // Only Classic zones nest — the Home entries carry none of the subzone
 // keys, so the walk bottoms out on them.
@@ -104,3 +184,9 @@ export const isHomeBuildingValue = (value: string): boolean =>
 
 export const getHomeBuildingId = (value: string): string =>
   value.slice(HOME_BUILDING_VALUE_PREFIX.length)
+
+// A merged house is recognized by its prefix and resolved by looking its
+// whole value up among the pairs the registries hold now — never split:
+// both halves are ids, and a Home id may hold underscores.
+export const isMergedBuildingValue = (value: string): boolean =>
+  value.startsWith('mergedBuildings_')

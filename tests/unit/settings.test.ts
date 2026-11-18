@@ -622,7 +622,8 @@ describe('settings page', () => {
 
     // Classic answers first, untagged; the Home list's rebuild tags the
     // name both accounts list. Only the labels move: the option values
-    // stay the targetIds the routes resolve.
+    // stay the targetIds the routes resolve, and no merged house joins
+    // them — the settings write one account at a time.
     it('should tag a building name both accounts list', async () => {
       await bootPage({
         routes: {

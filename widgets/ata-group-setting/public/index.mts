@@ -21,7 +21,11 @@ import {
   showErrorLine,
   translateAriaLabels,
 } from '../../../public/dom.mts'
-import { sortByBuilding, tagSameNameBuildings } from '../../../public/zones.mts'
+import {
+  sortByBuilding,
+  tagSameNameBuildings,
+  withMergedBuildings,
+} from '../../../public/zones.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 
@@ -128,9 +132,12 @@ class WidgetApp {
     const { default_zone: defaultZone } = this.#homey.getSettings()
     this.#addEventListeners()
     this.#ataValueManager.createAtaFormControls()
-    this.#ataValueManager.populateZoneOptions(
-      tagSameNameBuildings(sortByBuilding([...buildings, ...homeTargets])),
+    // A house both accounts list under one name is offered whole too,
+    // after its two buildings, each of which stays selectable.
+    const zones = sortByBuilding(
+      withMergedBuildings([...buildings, ...homeTargets]),
     )
+    this.#ataValueManager.populateZoneOptions(tagSameNameBuildings(zones))
     this.#ataValueManager.applyDefaultZone(defaultZone)
     await this.#fetchAndAnimate()
   }

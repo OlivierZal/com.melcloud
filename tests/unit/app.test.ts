@@ -8,6 +8,7 @@ import {
   type ApiRequestError,
   type HolidayModeState,
   type HolidayModeUpdate,
+  type HomeBuildingZone,
   type LoginCredentials,
   type ProtectionUpdate,
   type ReportChartLineOptions,
@@ -15,6 +16,7 @@ import {
   type Result,
   type SyncCallback,
   err,
+  NoChangesError,
   ok,
   UpdateRejectedError,
 } from '@olivierzal/melcloud-api'
@@ -312,6 +314,7 @@ const setupMocks = (): void => {
   mockHomeCreate.mockResolvedValue(mockHomeApiInstance)
   mockFacadeManagerConstructor.mockImplementation(newMockFacadeManager)
   mockHomeFacadeManagerConstructor.mockImplementation(newMockHomeFacadeManager)
+  mockFacadeManagerGetBuildings.mockReturnValue([])
   mockHomeFacadeManagerGetZones.mockReturnValue([])
   mockGetLanguage.mockReturnValue('en')
   mockGetTimezone.mockReturnValue('Europe/Paris')
@@ -505,6 +508,24 @@ const mockUpdateResult = (
     : vi
         .fn<() => Promise<void>>()
         .mockRejectedValue(new UpdateRejectedError(attributeErrors))
+
+// The merged-house write outcomes the naming table combines.
+const classicApplied = (): ReturnType<typeof vi.fn> => mockUpdateResult(null)
+const classicRefused = (): ReturnType<typeof vi.fn> =>
+  mockUpdateResult({ temp: ['Invalid value'] })
+const homeUnitsFailed = (): Error =>
+  new AggregateError(
+    [createTransportFailure(), createTransportFailure()],
+    'Group update failed on members',
+  )
+const BOTH_ACCOUNTS_FAILED =
+  /^Group update failed on groups: MELCloud Classic: temp: Invalid value; MELCloud Home: fetch failed$/v
+
+// A group read answering `result`, the merged-house legs' double.
+const mockGroupRead = (
+  result: Result<Classic.GroupState>,
+): ReturnType<typeof vi.fn> =>
+  vi.fn<() => Promise<Result<Classic.GroupState>>>().mockResolvedValue(result)
 
 const initWithHolidayModeFacade = async (
   app: InstanceType<typeof MelCloudApp>,
@@ -2292,6 +2313,297 @@ describe('melCloudApp', () => {
     })
   })
 
+  // A house both accounts list under one name: the ATA routes resolve its
+  // value by looking it up among the pairs the registries hold now, and
+  // the SDK combines the two buildings.
+  describe('merged building ata group', () => {
+    const MERGED_VALUE = 'mergedBuildings_1_b_1'
+    const classicHouse = {
+      areas: [],
+      devices: [],
+      floors: [],
+      id: 1,
+      level: 0,
+      model: 'buildings',
+      name: 'Domicile',
+    } satisfies Classic.BuildingZone
+    const homeHouse = {
+      buildingName: 'Domicile',
+      hasAta: true,
+      hasAtw: false,
+      id: 'b_1',
+      level: 0,
+      model: 'homeBuildings',
+      name: 'Domicile',
+    } satisfies HomeBuildingZone
+
+    const setupHouse = ({
+      classic = {},
+      home = {},
+      homeName = 'Domicile',
+    }: {
+      classic?: Partial<Record<keyof Classic.BuildingFacade, unknown>>
+      home?: Partial<Record<keyof Home.BuildingFacade, unknown>>
+      homeName?: string
+    } = {}): void => {
+      mockFacadeManagerGetBuildings.mockReturnValue([classicHouse])
+      mockHomeFacadeManagerGetZones.mockReturnValue([
+        { ...homeHouse, buildingName: homeName, name: homeName },
+      ])
+      mockFacadeManagerGetById.mockReturnValue(
+        mock<Classic.BuildingFacade>({ devices: [{ id: 10 }], ...classic }),
+      )
+      mockHomeFacadeManagerGetBuilding.mockReturnValue(
+        mock<Home.BuildingFacade>({ devices: [{ id: 'home-1' }], ...home }),
+      )
+    }
+
+    it('should fold the two buildings into one group state', async () => {
+      setupHouse({
+        classic: {
+          getGroup: mockGroupRead(ok({ Power: true, SetTemperature: 20 })),
+        },
+        home: {
+          getGroup: mockGroupRead(ok({ Power: true, SetTemperature: 22 })),
+        },
+      })
+      await app.onInit()
+
+      await expect(app.getTargetAtaState(MERGED_VALUE)).resolves.toStrictEqual({
+        FanSpeed: null,
+        OperationMode: null,
+        Power: true,
+        SetTemperature: null,
+        VaneHorizontalDirection: null,
+        VaneVerticalDirection: null,
+      })
+      expect(mockFacadeManagerGetById).toHaveBeenCalledWith('buildings', 1)
+      expect(mockHomeFacadeManagerGetBuilding).toHaveBeenCalledWith('b_1')
+    })
+
+    // Half the house is never shown as the whole of it.
+    it('should fail the read when one building cannot answer', async () => {
+      setupHouse({
+        classic: { getGroup: mockGroupRead(ok({ Power: true })) },
+        home: {
+          getGroup: mockGroupRead(
+            err({ kind: 'rate-limited', retryAfterMs: null }),
+          ),
+        },
+      })
+      await app.onInit()
+
+      await expect(app.getTargetAtaState(MERGED_VALUE)).rejects.toThrow(
+        'MELCloud request failed: rate-limited',
+      )
+    })
+
+    it('should list both buildings member modes', async () => {
+      const classicModes = vi
+        .fn<() => Classic.OperationMode[]>()
+        .mockReturnValue([Classic.OperationMode.heat])
+      const homeModes = vi
+        .fn<() => Classic.OperationMode[]>()
+        .mockReturnValue([Classic.OperationMode.cool])
+      setupHouse({
+        classic: { getMemberOperationModes: classicModes },
+        home: { getMemberOperationModes: homeModes },
+      })
+      await app.onInit()
+
+      expect(app.getTargetAtaModes(MERGED_VALUE)).toStrictEqual([
+        Classic.OperationMode.heat,
+        Classic.OperationMode.cool,
+      ])
+      expect(classicModes).toHaveBeenCalledWith({ poweredOnly: true })
+      expect(homeModes).toHaveBeenCalledWith({ poweredOnly: true })
+    })
+
+    it('should write both buildings once every member watch has ended', async () => {
+      const forgetClassicWrites = vi.fn<() => void>()
+      const forgetHomeWrites = vi.fn<() => void>()
+      const classicUpdate = mockUpdateResult(null)
+      const homeUpdate = mockUpdateResult(null)
+      mockGetDrivers.mockReturnValue({
+        'home-melcloud': createMockDriver(
+          [
+            mock<ClassicMELCloudDevice>({
+              driver: { id: 'home-melcloud' },
+              forgetWrites: forgetHomeWrites,
+              id: 'home-1',
+            }),
+          ],
+          'home-melcloud',
+        ),
+        melcloud: createMockDriver([
+          createClassicDevice({ forgetWrites: forgetClassicWrites, id: 10 }),
+        ]),
+      })
+      setupHouse({
+        classic: { updateGroupState: classicUpdate },
+        home: { updateGroupState: homeUpdate },
+      })
+      await app.onInit()
+      const state = { SetTemperature: 21 }
+
+      await app.updateTargetAtaState(MERGED_VALUE, state)
+
+      expect(classicUpdate).toHaveBeenCalledExactlyOnceWith(state)
+      expect(homeUpdate).toHaveBeenCalledExactlyOnceWith(state)
+      expect(forgetClassicWrites).toHaveBeenCalledBefore(classicUpdate)
+      expect(forgetHomeWrites).toHaveBeenCalledBefore(classicUpdate)
+      expect(forgetClassicWrites).toHaveBeenCalledBefore(homeUpdate)
+      expect(forgetHomeWrites).toHaveBeenCalledBefore(homeUpdate)
+    })
+
+    it.each([
+      {
+        description: 'a renamed building',
+        value: MERGED_VALUE,
+        setup: (): void => {
+          setupHouse({ homeName: 'Villa' })
+        },
+      },
+      {
+        description: 'a signed-out account',
+        value: MERGED_VALUE,
+        setup: (): void => {
+          setupHouse()
+          mockHomeFacadeManagerGetZones.mockReturnValue([])
+        },
+      },
+      {
+        description: 'a second building of that name',
+        value: MERGED_VALUE,
+        setup: (): void => {
+          setupHouse()
+          mockFacadeManagerGetBuildings.mockReturnValue([
+            classicHouse,
+            { ...classicHouse, id: 2 },
+          ])
+        },
+      },
+      {
+        description: 'another pair',
+        value: 'mergedBuildings_1_b_2',
+        setup: (): void => {
+          setupHouse()
+        },
+      },
+    ])(
+      'should refuse $description before any watch ends',
+      async ({ setup, value }) => {
+        const forgetWrites = vi.fn<() => void>()
+        const classicUpdate = mockUpdateResult(null)
+        setupDriver([createClassicDevice({ forgetWrites, id: 10 })])
+        setup()
+        mockFacadeManagerGetById.mockReturnValue(
+          mock<Classic.BuildingFacade>({
+            devices: [{ id: 10 }],
+            updateGroupState: classicUpdate,
+          }),
+        )
+        await app.onInit()
+
+        await expect(
+          app.updateTargetAtaState(value, { Power: true }),
+        ).rejects.toThrow('errors.zoneNotFound')
+        expect(forgetWrites).not.toHaveBeenCalled()
+        expect(classicUpdate).not.toHaveBeenCalled()
+      },
+    )
+
+    // The account that applied the change stays applied: the message says
+    // which one did not, each distinct reason once, and a retry sends the
+    // same values to both. Each failure is its own log line, a unit of
+    // the Home building's fan-out included.
+    it.each([
+      {
+        classicUpdate: classicApplied,
+        description: 'the account that did not apply the change',
+        homeFailure: createTransportFailure,
+        lines: 1,
+        message: /^MELCloud Home: fetch failed$/v,
+      },
+      {
+        classicUpdate: classicRefused,
+        description: 'both accounts when neither applied the change',
+        homeFailure: createTransportFailure,
+        lines: 2,
+        message: BOTH_ACCOUNTS_FAILED,
+      },
+      {
+        classicUpdate: classicRefused,
+        description: 'both accounts when every Home unit failed too',
+        homeFailure: homeUnitsFailed,
+        lines: 3,
+        message: BOTH_ACCOUNTS_FAILED,
+      },
+      {
+        classicUpdate: classicApplied,
+        description: 'the account of every Home unit that did not apply it',
+        homeFailure: homeUnitsFailed,
+        lines: 2,
+        message:
+          /^Group update failed on members: MELCloud Home: fetch failed$/v,
+      },
+    ])(
+      'should name $description',
+      async ({ classicUpdate, homeFailure, lines, message }) => {
+        setupHouse({
+          classic: { updateGroupState: classicUpdate() },
+          home: {
+            updateGroupState: vi
+              .fn<() => Promise<void>>()
+              .mockRejectedValue(homeFailure()),
+          },
+        })
+        await app.onInit()
+        const errorSpy = spyOnError(app)
+
+        await expect(
+          app.updateTargetAtaState(MERGED_VALUE, { Power: true }),
+        ).rejects.toThrow(message)
+        expect(errorSpy).toHaveBeenCalledTimes(lines)
+        expect(errorSpy).toHaveBeenLastCalledWith(
+          `Group write failed: Error: MELCloud Home: fetch failed — caused by ${TRANSPORT_FAILURE_CHAIN}`,
+        )
+      },
+    )
+
+    // The Classic facade answers an empty delta with `NoChangesError`, which
+    // the combination counts as a success: the account label must not
+    // hide it.
+    it('should count a building that has nothing to change as applied', async () => {
+      setupHouse({
+        classic: {
+          updateGroupState: vi
+            .fn<() => Promise<void>>()
+            .mockRejectedValue(new NoChangesError(1)),
+        },
+        home: { updateGroupState: mockUpdateResult(null) },
+      })
+      await app.onInit()
+      const errorSpy = spyOnError(app)
+
+      await expect(
+        app.updateTargetAtaState(MERGED_VALUE, {}),
+      ).resolves.toBeUndefined()
+      expect(errorSpy).not.toHaveBeenCalled()
+    })
+
+    // Only the ATA routes know the merged value: the settings routes
+    // parse one account's values and refuse the rest.
+    it('should leave the merged value to the ATA routes', async () => {
+      setupHouse()
+      await app.onInit()
+
+      await expect(app.getTargetFrostProtection(MERGED_VALUE)).rejects.toThrow(
+        'Invalid zone type: mergedBuildings',
+      )
+    })
+  })
+
   describe('frost protection settings retrieval', () => {
     it('should delegate to facade', async () => {
       const mockData = mock<Classic.FrostProtectionData>()
@@ -3993,9 +4305,21 @@ describe('melCloudApp', () => {
     })
 
     // The leaves keep their building suffix; a building both accounts
-    // list under one name takes its own account's tag.
+    // list under one name takes its own account's tag, and the house the
+    // two make is offered whole too.
     it('should tag a building name both accounts list for the ata-group-setting widget', async () => {
       const { mockRegisterAta } = setupWidgetListeners()
+      mockFacadeManagerGetBuildings.mockReturnValue([
+        {
+          areas: [],
+          devices: [],
+          floors: [],
+          id: 1,
+          level: 0,
+          model: 'buildings',
+          name: 'Domicile',
+        },
+      ])
       mockFacadeManagerGetZones.mockReturnValue([
         {
           buildingName: 'Domicile',
@@ -4052,6 +4376,13 @@ describe('melCloudApp', () => {
           level: 1,
           model: 'homeDevices',
           name: 'Chambre (Domicile)',
+        },
+        {
+          buildingName: 'Domicile',
+          id: '1_b_1',
+          level: 0,
+          model: 'mergedBuildings',
+          name: 'Domicile [Classic + Home]',
         },
         {
           buildingName: 'Domicile',
