@@ -3820,9 +3820,8 @@ describe('melCloudApp', () => {
           name: 'Building unit',
         },
       ])
-      // Unsorted on purpose: home targets must come back alpha-sorted
-      // (building, then its devices), appended after the classic ones.
-      // The library sorts its picker list, so the stub is already ordered.
+      // The library sorts each list on its own; the two come back as one,
+      // name-sorted on the building-suffixed names.
       stubHomeZones([
         { buildingName: 'Maison', id: 'home-3', name: 'Bedroom' },
         { buildingName: 'Maison', id: 'home-1', name: 'Building one' },
@@ -3837,8 +3836,8 @@ describe('melCloudApp', () => {
       )
       const result = ataCallback('build')
 
-      // Classic zones then Home building/devices; leaves suffixed with their
-      // building, buildings kept bare; the query matches the suffixed names.
+      // Leaves suffixed with their building, buildings kept bare, both
+      // dialects interleaved by name; the query matches the suffixed names.
       expect(result).toStrictEqual([
         {
           buildingName: 'Building 1',
@@ -3846,13 +3845,6 @@ describe('melCloudApp', () => {
           level: 0,
           model: 'buildings',
           name: 'Building 1',
-        },
-        {
-          buildingName: 'Building 1',
-          id: 10,
-          level: 1,
-          model: 'devices',
-          name: 'Building unit (Building 1)',
         },
         {
           buildingName: 'Maison',
@@ -3869,6 +3861,13 @@ describe('melCloudApp', () => {
           level: 1,
           model: 'homeDevices',
           name: 'Building two (Maison)',
+        },
+        {
+          buildingName: 'Building 1',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Building unit (Building 1)',
         },
       ])
       expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({

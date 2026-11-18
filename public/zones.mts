@@ -1,9 +1,28 @@
 import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
+// What the two dialects' picker routes serve: a Classic building, its
+// subzones nested, or a Home building or device, flat — every Home entry
+// naming its building.
+export type PickerListZone =
+  Classic.BuildingZone | HomeBuildingZone | HomeDeviceZone
+
 // Everything the zone pickers can list: a Classic zone at any level, or
 // a Home building and its devices.
 export type PickerZone = Classic.Zone | HomeBuildingZone | HomeDeviceZone
+
+const getBuildingName = (zone: PickerListZone): string =>
+  zone.model === 'buildings' ? zone.name : zone.buildingName
+
+// Both dialects' picker lists as one, sorted by building name. The sort is
+// stable, so each Home building keeps its own devices right behind it, in
+// the order the library lists them.
+export const sortByBuilding = (
+  zones: readonly PickerListZone[],
+): PickerListZone[] =>
+  zones.toSorted((zone, other) =>
+    getBuildingName(zone).localeCompare(getBuildingName(other)),
+  )
 
 // Only Classic zones nest — the Home entries carry none of the subzone
 // keys, so the walk bottoms out on them.

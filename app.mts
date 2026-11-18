@@ -1504,8 +1504,8 @@ export default class MELCloudApp extends App {
   }
 
   // Everything the ATA group widget can target: every Classic zone/device
-  // and every Home building/device, each leaf suffixed with its building
-  // and the whole list drawn from the two shared sources.
+  // and every Home building/device, each leaf suffixed with its building,
+  // the whole list drawn from the two shared sources and name-sorted.
   #searchAtaTargets(
     query: string,
   ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[] {
@@ -1513,7 +1513,9 @@ export default class MELCloudApp extends App {
       [
         ...this.getClassicTargets(Classic.DeviceType.Ata),
         ...this.getHomeTargets(Home.DeviceType.Ata),
-      ].map((node) => ({ ...node, name: toFlatName(node) })),
+      ]
+        .map((node) => ({ ...node, name: toFlatName(node) }))
+        .toSorted(byName),
       query,
     )
   }

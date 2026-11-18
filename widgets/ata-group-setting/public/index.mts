@@ -21,6 +21,7 @@ import {
   showInitError,
   translateAriaLabels,
 } from '../../../public/dom.mts'
+import { sortByBuilding } from '../../../public/zones.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 
@@ -120,8 +121,9 @@ class WidgetApp {
     const { default_zone: defaultZone } = this.#homey.getSettings()
     this.#addEventListeners()
     this.#ataValueManager.createAtaFormControls()
-    this.#ataValueManager.populateZoneOptions(buildings)
-    this.#ataValueManager.populateZoneOptions(homeTargets)
+    this.#ataValueManager.populateZoneOptions(
+      sortByBuilding([...buildings, ...homeTargets]),
+    )
     this.#ataValueManager.applyDefaultZone(defaultZone)
     await this.#fetchAndAnimate()
   }

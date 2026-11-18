@@ -215,7 +215,16 @@ coverage.
   leg: a Home ATA target answers NotFoundError, nothing emulated). The
   charts widget lists its pickers from ONE `GET /devices` route (both
   dialects' device leaves merged, alpha-sorted, `deviceType`-tagged —
-  the widget filters per chart client-side). No-change group writes are
+  the widget filters per chart client-side). The zone pickers keep one
+  route per dialect (`/classic/buildings`, `/home/targets[/ata]`) and
+  show ONE list sorted by building name, through `sortByBuilding`
+  (`public/zones.mts`): a Classic building carries its nested subzones,
+  a Home building its devices, and the stable sort keeps each block
+  whole; the settings select keeps each account's last list and
+  rebuilds, so an account answering late sorts into place without
+  moving the selection. The flat autocomplete lists (the holiday-mode
+  cards, both widgets' `default_zone`) are name-sorted on the
+  building-suffixed names. No-change group writes are
   the LIBRARY's business: every melcloud-api `updateGroupState` leg
   resolves an already-matching delta as success, so the app-side
   handlers are plain delegations (verdict 2026-08, recorded on

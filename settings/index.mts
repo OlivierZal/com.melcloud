@@ -67,7 +67,12 @@ import {
   populateZoneOptions as populateZoneSelect,
   translateAriaLabels,
 } from '../public/dom.mts'
-import { type PickerZone, getZoneId } from '../public/zones.mts'
+import {
+  type PickerListZone,
+  type PickerZone,
+  getZoneId,
+  sortByBuilding,
+} from '../public/zones.mts'
 
 // ── Helpers ──
 
@@ -1420,7 +1425,7 @@ class SettingsApp {
     if (buildings.length === 0) {
       throw new NoDeviceError(this.#homey, 'classic')
     }
-    this.#zoneSettingsManager.populateZoneOptions(buildings)
+    this.#zoneSettingsManager.populateZoneOptions('classic', buildings)
     // Not awaited, so it no longer blocks `ready()`: this only fills the
     // zone panel's initial values (silent, default fallback) and the zone
     // selector re-fetches on change anyway. The error log is left to its
@@ -1439,7 +1444,6 @@ class SettingsApp {
     return { classic: isClassicEmpty, home: isHomeEmpty }
   }
 
-  // Home targets are appended after any Classic zones.
   async #fetchHomeTargets(): Promise<void> {
     // A tree: each Home building followed by its own devices (indented),
     // both frost/holiday targets.
@@ -1447,9 +1451,9 @@ class SettingsApp {
       this.#homey,
       '/home/targets',
     )
-    this.#zoneSettingsManager.populateZoneOptions(targets)
+    this.#zoneSettingsManager.populateZoneOptions('home', targets)
     // See #fetchClassicBuildings: fills the initial panel values only (the
-    // first option, a Classic zone when both accounts are paired).
+    // selected option, which the other account's list does not move).
     fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
   }
 
@@ -1754,6 +1758,13 @@ class ZoneSettingsManager {
 
   #zoneMapping: Partial<Record<string, MixableZoneSettings>> = {}
 
+  // Each account's picker list as last fetched: the select shows both as
+  // one list, sorted by building whichever account answered last.
+  readonly #zonesByApi: Record<Api, readonly PickerListZone[]> = {
+    classic: [],
+    home: [],
+  }
+
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#frostProtectionDirtyGate = createValuesGate('frost_protection', [
@@ -1896,9 +1907,20 @@ class ZoneSettingsManager {
     }
   }
 
-  public populateZoneOptions(zones: PickerZone[]): void {
+  public populateZoneOptions(api: Api, zones: readonly PickerListZone[]): void {
+    this.#zonesByApi[api] = zones
     this.#registerOverheatZones(zones)
-    populateZoneSelect(this.#zone, zones)
+    // Rebuilt rather than appended, so a building sorts into place among
+    // the other account's; the selection stays where it was.
+    const { value } = this.#zone
+    this.#zone.replaceChildren()
+    populateZoneSelect(
+      this.#zone,
+      sortByBuilding([...this.#zonesByApi.classic, ...this.#zonesByApi.home]),
+    )
+    if ([...this.#zone.options].some((option) => option.value === value)) {
+      this.#zone.value = value
+    }
     // Only after the options land: on a Home-only boot the selection
     // settles during the populate, and refreshing visibility before it
     // read the pre-populate value — hiding the panel for a capable

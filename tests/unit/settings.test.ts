@@ -560,6 +560,51 @@ describe('settings page', () => {
       expect(getDiv('auto_adjust_section').hidden).toBe(false)
     })
 
+    // Classic answers first and its first building is selected; the Home
+    // list then sorts its building into place without moving the selection.
+    it('should list the two accounts building by building', async () => {
+      await bootPage({
+        routes: {
+          ...defaultRoutes(),
+          'GET /home/targets': [
+            {
+              buildingName: 'Atelier',
+              hasAta: true,
+              hasAtw: false,
+              id: 'building_2',
+              level: 0,
+              model: 'homeBuildings',
+              name: 'Atelier',
+            },
+            {
+              buildingName: 'Atelier',
+              deviceType: 'ata',
+              id: 'desk',
+              level: 1,
+              model: 'homeDevices',
+              name: 'Bureau',
+            },
+          ],
+          'GET /sessions/home': true,
+          'GET /settings/devices': {
+            ...deviceSettingsFixture(),
+            'home-melcloud': { always_on: true },
+          },
+        },
+      })
+      const values = [...getSelect('zones').options].map(({ value }) => value)
+
+      expect(values).toStrictEqual([
+        'homeBuildings_building_2',
+        'homeDevices_desk',
+        'buildings_1',
+        'devices_11',
+        'floors_21',
+        'areas_31',
+      ])
+      expect(getSelect('zones').value).toBe('buildings_1')
+    })
+
     // The page names no driver: the `home-` prefix alone tells the two
     // APIs apart, so a Home driver it has never heard of still counts.
     it('should count an unnamed home-* driver as home devices', async () => {

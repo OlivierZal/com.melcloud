@@ -89,6 +89,41 @@ describe('ata group setting widget', () => {
     expect(calledPaths(harness)).not.toContain('GET /classic/capabilities/ata')
   })
 
+  it('should list the two accounts building by building', async () => {
+    await bootWidget({
+      routes: {
+        ...widgetRoutes(),
+        'GET /home/targets/ata': [
+          {
+            buildingName: 'Atelier',
+            id: 'b_2',
+            level: 0,
+            model: 'homeBuildings',
+            name: 'Atelier',
+          },
+          {
+            buildingName: 'Atelier',
+            deviceType: 'ata',
+            id: 'ata_2',
+            level: 1,
+            model: 'homeDevices',
+            name: 'Bureau',
+          },
+        ],
+        'GET /targets/homeBuildings_b_2/ata': groupStateFixture(),
+      },
+    })
+
+    expect(
+      [...getSelect('zones').options].map(({ value }) => value),
+    ).toStrictEqual([
+      'homeBuildings_b_2',
+      'homeDevices_ata_2',
+      'buildings_1',
+      'devices_11',
+    ])
+  })
+
   it('should keep one selector source alive when the other fails', async () => {
     const harness = await bootWidget({
       failures: { 'GET /classic/buildings': new Error('classic down') },
