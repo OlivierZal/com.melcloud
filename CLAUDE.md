@@ -207,7 +207,12 @@ coverage.
   (`…/settings/{frost-protection,holiday-mode,overheat-protection}`,
   resolver `#getSettingsTarget`), the ATA GROUP routes (`…/ata` GET/PUT
   and `…/ata/modes`, resolver `#getAtaGroupTarget`; the modes read is
-  the library's `getMemberOperationModes({poweredOnly: true})`) and the
+  the library's `getMemberOperationModes({poweredOnly: true})`; a merged
+  house's `mergedBuildings_<classicId>_<homeId>` resolves first, looked
+  up among the pairs the registries hold now — never split, a Home id
+  holding underscores — while the frost, holiday and chart routes refuse
+  it and the overheat read answers `null`, as for any target outside
+  Home) and the
   CHART routes
   (`…/logs/{report,hourly-temperatures,operation-modes,signal,temperatures}`,
   resolvers `#getReportTarget`/`#getFullReportTarget` over the
@@ -218,9 +223,10 @@ coverage.
   the widget filters per chart client-side). The zone pickers keep one
   route per dialect (`/classic/buildings`, `/home/targets[/ata]`) and
   show ONE list sorted by building name, through `sortByBuilding`
-  (`public/zones.mts`): a Classic building carries its nested subzones,
-  a Home building its devices, and the stable sort keeps each block
-  whole. The settings select keeps each account's last list and
+  (`public/zones.mts`, keyed by `toBuildingKey`, so the same house's
+  buildings compare equal): a Classic building carries its nested
+  subzones, a Home building its devices, and the stable sort keeps each
+  block whole. The settings select keeps each account's last list and
   rebuilds from both: an account answering late sorts into place
   without moving the selection, an emptied or signed-out account's
   zones leave it (a logout wipes that account's registry, so a write to
@@ -239,8 +245,18 @@ coverage.
   `default_zone` autocomplete and the holiday-mode cards — through
   `tagSameNameBuildings`, which copies the display name only, trimmed
   (option values stay `${model}_${id}`), and runs AFTER
-  `sortByBuilding`, which keys on the bare names. The
-  tags are the driver-prefix tokens, untranslated. No-change group writes are
+  `sortByBuilding`, which keys on the untagged names. The
+  tags are the driver-prefix tokens, untranslated. The ATA widget and
+  its autocomplete also offer the house such a pair makes — exactly one
+  building per account under that rule (`pairSameNameBuildings`; a name
+  either account holds twice pairs nothing) — as `Name [Classic + Home]`
+  (`toMergedBuilding`), the two buildings staying selectable: the picker
+  adds it BEFORE the sort (`withMergedBuildings`), whose stability puts
+  it right after the second building's devices, so a widget with no
+  `default_zone` opens where it did; the autocomplete lists it in name
+  order. The settings page and the holiday-mode cards offer no merged
+  house: their frost, holiday and overheat writes stay one account at a
+  time. No-change group writes are
   the LIBRARY's business: every melcloud-api `updateGroupState` leg
   resolves an already-matching delta as success, so the app-side
   handlers are plain delegations (verdict 2026-08, recorded on
@@ -954,8 +970,9 @@ coverage.
   failed for unit …:' (the unit by its id, the SDK's convention, never
   by name) and `updateTargetAtaState`'s 'Group write failed:' (logged
   and rethrown, the ATA widget showing the message under its buttons;
-  a fan-out's `AggregateError` — several units of a Home building —
-  logs one line per failure and travels as one message joining them,
+  a fan-out's `AggregateError` — both accounts of a merged house,
+  several units of a Home building, the two nested — logs one line per
+  failure and travels as one message joining each distinct reason once,
   the webview reading a thrown error's message alone). A `Result` failure is a plain DESCRIPTOR (`{ kind, cause? }`),
   which a chain can only spell as "a thrown object", so `failureCause`
   (`lib/unwrap-result.mts`) hands the line the error the SDK classified
@@ -996,7 +1013,15 @@ coverage.
   the only family-visible step is ADDRESSING — the widget's
   `${model}_${id}` option value rides `/targets/:targetId/ata`
   verbatim and the app's `#getAtaGroupTarget` resolves the facade, so
-  even that step is app-side only. The prefix has twice been misread as
+  even that step is app-side only. A merged house is the SDK's
+  `combineAtaGroups` over its two building facades (melcloud-api 60.8.0:
+  a read that fails closed, a field-wise fold, both writes sent at once,
+  no rollback); the app only addresses it, labelling each building's
+  failed write — each of its units' when the Home building's fan-out
+  fails — with its account (`withAccountOnFailure`), so a change one
+  account did not apply says which. A no-change passes through that
+  wrapper untouched: the Classic facade throws `NoChangesError` on an
+  empty delta, and the combination counts it as the success it is. The prefix has twice been misread as
   a missing abstraction (2026-08) — it is the common surface.
 - Flow-card run listeners are wired by the APP, once per card, for
   exactly the capability cards the app manifest declares: `app.mts`

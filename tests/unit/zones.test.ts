@@ -11,9 +11,13 @@ import {
   getZoneName,
   isHomeBuildingValue,
   isHomeDeviceValue,
+  isMergedBuildingValue,
+  pairSameNameBuildings,
   sortByBuilding,
   tagSameNameBuildings,
   toBuildingKey,
+  toMergedBuilding,
+  withMergedBuildings,
 } from '../../public/zones.mts'
 
 const classicBuilding = (name: string): Classic.BuildingZone =>
@@ -183,5 +187,108 @@ describe('zones', () => {
       'Villa',
       'Maison',
     ])
+  })
+
+  // One building per account and name, under the same-house rule: a
+  // name either account holds twice, or only one account holds, pairs
+  // nothing.
+  it('should pair a name held by exactly one building per account', () => {
+    const atelier = classicBuilding('Atelier ')
+    const homeAtelier = homeBuilding('Atelier')
+    const residence = classicBuilding('Re\u{301}sidence')
+    const homeResidence = homeBuilding('R\u{E9}sidence')
+
+    expect(
+      pairSameNameBuildings([
+        atelier,
+        homeAtelier,
+        residence,
+        homeResidence,
+        classicBuilding('domicile'),
+        homeBuilding('Domicile'),
+        classicBuilding('Maison'),
+        classicBuilding('Maison'),
+        homeBuilding('Maison'),
+        classicBuilding('Chalet'),
+        homeBuilding('Villa'),
+        homeBuilding('Villa'),
+        classicBuilding('Villa'),
+        homeDevice('Atelier', 'Atelier'),
+      ]),
+    ).toStrictEqual([
+      { classic: atelier, home: homeAtelier },
+      { classic: residence, home: homeResidence },
+    ])
+  })
+
+  // The value joins both ids whole, a Home id's underscores included,
+  // and the house reads and sorts under the Classic building's name.
+  it('should build a merged house from its pair', () => {
+    expect(
+      toMergedBuilding({
+        classic: mock<Classic.BuildingZone>({ id: 1, name: 'Domicile' }),
+        home: mock<HomeBuildingZone>({ id: 'b_2', name: 'Domicile ' }),
+      }),
+    ).toStrictEqual({
+      buildingName: 'Domicile',
+      id: '1_b_2',
+      level: 0,
+      model: 'mergedBuildings',
+      name: 'Domicile',
+    })
+    expect(getZoneId('1_b_2', 'mergedBuildings')).toBe('mergedBuildings_1_b_2')
+  })
+
+  // Each building stays selectable, and the house both make lands right
+  // after the second one's devices: a list never starts on it, so a
+  // widget with no default zone opens where it did before.
+  it('should list a merged house right after its two buildings', () => {
+    const zones = [
+      classicBuilding('Domicile'),
+      homeBuilding('Villa'),
+      homeBuilding('Domicile'),
+      homeDevice('Domicile', 'Bureau'),
+    ]
+
+    expect(
+      tagSameNameBuildings(sortByBuilding(withMergedBuildings(zones))).map(
+        ({ model, name }) => `${model}: ${name}`,
+      ),
+    ).toStrictEqual([
+      'buildings: Domicile [Classic]',
+      'homeBuildings: Domicile [Home]',
+      'homeDevices: Bureau',
+      'mergedBuildings: Domicile [Classic + Home]',
+      'homeBuildings: Villa',
+    ])
+  })
+
+  // The sort keys on the same rule as the pairing, so names differing in
+  // spacing alone keep the house together and its merged entry after it.
+  it('should keep a house together when its names differ in spacing alone', () => {
+    const zones = [
+      classicBuilding(' Domicile'),
+      homeBuilding('Bureau'),
+      homeBuilding('Domicile '),
+      homeDevice('Domicile ', 'Salon'),
+    ]
+
+    expect(
+      tagSameNameBuildings(sortByBuilding(withMergedBuildings(zones))).map(
+        ({ model, name }) => `${model}: ${name}`,
+      ),
+    ).toStrictEqual([
+      'homeBuildings: Bureau',
+      'buildings: Domicile [Classic]',
+      'homeBuildings: Domicile [Home]',
+      'homeDevices: Salon',
+      'mergedBuildings: Domicile [Classic + Home]',
+    ])
+  })
+
+  it('should detect a merged value by its prefix', () => {
+    expect(isMergedBuildingValue('mergedBuildings_1_b_2')).toBe(true)
+    expect(isMergedBuildingValue('buildings_1')).toBe(false)
+    expect(isMergedBuildingValue('homeBuildings_mergedBuildings_1')).toBe(false)
   })
 })

@@ -1,6 +1,7 @@
 import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
+import type { MergedBuildingZone } from '../public/zones.mts'
 import type { BaseSettings } from './bases.mts'
 
 // Report-history cap shared by the charts widget API validation, the
@@ -12,8 +13,9 @@ export interface AtaGroupSettingWidgetSettings extends BaseSettings {
   // existed report null and must keep animating.
   readonly animations: boolean | null
   // Classic zone collections and devices, plus the Home buildings
-  // (account-level groups) and their devices.
-  readonly default_zone: Classic.Zone | HomeBuildingZone | HomeDeviceZone | null
+  // (account-level groups) and their devices, and the merged houses.
+  readonly default_zone:
+    Classic.Zone | HomeBuildingZone | HomeDeviceZone | MergedBuildingZone | null
 }
 
 export interface ChartsWidgetSettings extends BaseSettings {

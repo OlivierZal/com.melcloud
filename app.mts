@@ -21,6 +21,7 @@ import {
   mergeDeviceSettings,
 } from '@olivierzal/homey-kit/manifest'
 import {
+  type AtaGroup,
   type DeviceType,
   type FlatZone,
   type HolidayModeUpdate,
@@ -32,8 +33,10 @@ import {
   type Result,
   type SettingManager,
   type SyncCallback,
+  combineAtaGroups,
   isClassicAtaFacade,
   logFailure,
+  NoChangesError,
   resolveErrorLogWindow,
 } from '@olivierzal/melcloud-api'
 import { Intl, Temporal } from 'temporal-polyfill'
@@ -80,12 +83,17 @@ import { App } from './lib/homey.mts'
 import { failureCause, unwrapResult } from './lib/unwrap-result.mts'
 import { toNonNegativeInt, toZoneValueData } from './lib/validation.mts'
 import {
+  type MergedBuildingZone,
+  type SameNamePair,
   getHomeBuildingId,
   getHomeDeviceId,
   getZoneId,
   isHomeBuildingValue,
   isHomeDeviceValue,
+  isMergedBuildingValue,
+  pairSameNameBuildings,
   tagSameNameBuildings,
+  toMergedBuilding,
 } from './public/zones.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 import {
@@ -188,21 +196,51 @@ const getLocalizedCapabilitiesOptions = (
   })),
 })
 
-// The ATA group surface every target answers — Classic zone facades,
-// both families' ATA device facades (each a group of one) and the Home
-// building facade — per the melcloud-api contract this feature tracks:
-// state and member modes speak the ONE Classic-numbered vocabulary
-// whichever API serves the target.
-type AtaGroupTarget = Pick<
-  Classic.ZoneFacade,
-  'getGroup' | 'getMemberOperationModes' | 'updateGroupState'
->
+// A fan-out's failures leaf by leaf, a fan-out nested in another — the
+// units of a merged house's Home building — included.
+const toFailures = (error: unknown): unknown[] =>
+  error instanceof AggregateError
+    ? error.errors.flatMap((failure: unknown) => toFailures(failure))
+    : [error]
 
-// A fan-out's failures — several units of a Home building — travel as
-// one message, since the webview reads a thrown error's message alone.
+// A failure, or each of a fan-out's, named after the account it failed
+// on; a fan-out keeps its own message.
+const labelFailure = (error: unknown, account: string): Error =>
+  error instanceof AggregateError
+    ? new AggregateError(
+        error.errors.map((failure: unknown) => labelFailure(failure, account)),
+        error.message,
+      )
+    : new Error(`${account}: ${getErrorMessage(error)}`, { cause: error })
+
+// A merged house's write reaches two accounts, either of which can fail
+// alone: each one's failure names its account, so the message says which
+// one did not apply the change. A no-change passes through untouched,
+// for `combineAtaGroups` to count as the success it is.
+const withAccountOnFailure = (group: AtaGroup, api: Api): AtaGroup => ({
+  getGroup: async () => group.getGroup(),
+  getMemberOperationModes: (options) => group.getMemberOperationModes(options),
+  updateGroupState: async (state): Promise<void> => {
+    try {
+      await group.updateGroupState(state)
+    } catch (error) {
+      throw error instanceof NoChangesError
+        ? error
+        : labelFailure(error, API_DISPLAY_NAMES[api])
+    }
+  },
+})
+
+// A fan-out's failures — both accounts of a merged house, several units
+// of a Home building — travel as one message, each distinct reason once,
+// since the webview reads a thrown error's message alone.
 const joinFailures = (error: AggregateError): Error => {
-  const messages = error.errors.map((failure) => getErrorMessage(failure))
-  return new Error(`${error.message}: ${messages.join('; ')}`, { cause: error })
+  const messages = new Set(
+    toFailures(error).map((failure) => getErrorMessage(failure)),
+  )
+  return new Error(`${error.message}: ${[...messages].join('; ')}`, {
+    cause: error,
+  })
 }
 
 // A flat autocomplete/select item: the `${model}_${id}` option value as
@@ -968,8 +1006,12 @@ export default class MELCloudApp extends App {
   }
 
   // The units a group write addresses: a Home device target is its own
-  // member, every other target's facade lists them.
+  // member, every other target's facades list them.
   #getAtaGroupMemberIds(targetId: string): (number | string)[] {
+    if (isMergedBuildingValue(targetId)) {
+      const { classic, home } = this.#getMergedBuildingFacades(targetId)
+      return [...classic.devices, ...home.devices].map(({ id }) => id)
+    }
     if (isHomeDeviceValue(targetId)) {
       return [getHomeDeviceId(targetId)]
     }
@@ -984,8 +1026,17 @@ export default class MELCloudApp extends App {
 
   // The ATA group twin of `#getSettingsTarget`: the targetId is the
   // picker value verbatim, and addressing is the only family-visible
-  // step — everything downstream speaks the one group vocabulary.
-  #getAtaGroupTarget(targetId: string): AtaGroupTarget {
+  // step — everything downstream speaks the one group vocabulary. A
+  // merged house is the SDK's combination of its two buildings, the app
+  // only addressing them.
+  #getAtaGroupTarget(targetId: string): AtaGroup {
+    if (isMergedBuildingValue(targetId)) {
+      const { classic, home } = this.#getMergedBuildingFacades(targetId)
+      return combineAtaGroups([
+        withAccountOnFailure(classic, 'classic'),
+        withAccountOnFailure(home, 'home'),
+      ])
+    }
     if (isHomeBuildingValue(targetId)) {
       return this.#getHomeBuildingFacade(getHomeBuildingId(targetId))
     }
@@ -994,10 +1045,17 @@ export default class MELCloudApp extends App {
       : this.#getClassicAtaGroupFacade(toZoneValueData(targetId))
   }
 
-  #getClassicAtaGroupFacade({
-    zoneId,
-    zoneType,
-  }: DeviceOrZoneData): AtaGroupTarget {
+  // The houses both accounts list under one name, paired from the lists
+  // the ATA group widget pairs, so every merged value it offers resolves
+  // here while the registries still hold it.
+  #getAtaSameNamePairs(): SameNamePair[] {
+    return pairSameNameBuildings([
+      ...this.getClassicBuildings(Classic.DeviceType.Ata),
+      ...this.getHomeTargets(Home.DeviceType.Ata),
+    ])
+  }
+
+  #getClassicAtaGroupFacade({ zoneId, zoneType }: DeviceOrZoneData): AtaGroup {
     if (zoneType !== 'devices') {
       return this.getClassicFacade(zoneType, zoneId)
     }
@@ -1156,6 +1214,27 @@ export default class MELCloudApp extends App {
     return this.#getClient(api).registry.getDevices().length
   }
 
+  // A merged value is looked up, never split, among the pairs the
+  // registries hold now: one no pair matches — a building renamed, an
+  // account signed out, a second building of that name — answers
+  // zone-not-found, before any write.
+  #getMergedBuildingFacades(targetId: string): {
+    classic: Classic.BuildingFacade | Classic.ZoneFacade
+    home: Home.BuildingFacade
+  } {
+    const pair = this.#getAtaSameNamePairs().find((candidate) => {
+      const { id, model } = toMergedBuilding(candidate)
+      return getZoneId(id, model) === targetId
+    })
+    if (pair === undefined) {
+      throw new NotFoundError(this.homey.__('errors.zoneNotFound'))
+    }
+    return {
+      classic: this.getClassicFacade('buildings', pair.classic.id),
+      home: this.#getHomeBuildingFacade(pair.home.id),
+    }
+  }
+
   // This account's devices paired in Homey, across every driver of its
   // dialect.
   #getPairedDevices(api: Api): MELCloudDevice[] {
@@ -1310,9 +1389,7 @@ export default class MELCloudApp extends App {
   // One line per failure, a fan-out's included, so each names what it
   // failed on.
   #logGroupWriteFailure(error: unknown): void {
-    const failures: unknown[] =
-      error instanceof AggregateError ? error.errors : [error]
-    for (const failure of failures) {
+    for (const failure of toFailures(error)) {
       logFailure(this, 'Group write failed:', failure)
     }
   }
@@ -1536,18 +1613,19 @@ export default class MELCloudApp extends App {
   // Everything the ATA group widget can target: every Classic zone/device
   // and every Home building/device, each leaf suffixed with its building
   // and each building both accounts list under one name tagged with its
-  // own account, the whole list drawn from the two shared sources and
-  // name-sorted.
+  // own account, plus the merged houses, the whole list drawn from the
+  // two shared sources and name-sorted.
   #searchAtaTargets(
     query: string,
-  ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[] {
+  ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone | MergedBuildingZone)[] {
     return filterZonesByName(
-      tagSameNameBuildings(
-        [
+      tagSameNameBuildings([
+        ...[
           ...this.getClassicTargets(Classic.DeviceType.Ata),
           ...this.getHomeTargets(Home.DeviceType.Ata),
         ].map((node) => ({ ...node, name: toFlatName(node) })),
-      ).toSorted(byName),
+        ...this.#getAtaSameNamePairs().map((pair) => toMergedBuilding(pair)),
+      ]).toSorted(byName),
       query,
     )
   }
