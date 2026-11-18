@@ -37,6 +37,7 @@ import { Temporal } from 'temporal-polyfill'
 import type { Homey } from '../../../public/widget.mts'
 import type { FlatDeviceZone } from '../../../types/zone.mts'
 import {
+  applySelectValue,
   hideInitError,
   showInitError,
   translateAriaLabels,
@@ -278,14 +279,6 @@ const toRadians = (degrees: number): number =>
   (degrees * Math.PI) / HALF_TURN_DEGREES
 
 // ── Select helpers ──
-
-// Guarded assignment: writing a value with no matching option would reset
-// the select to an empty selection.
-const applySelectValue = (select: HTMLSelectElement, value: string): void => {
-  if (select.querySelector(`option[value="${CSS.escape(value)}"]`) !== null) {
-    select.value = value
-  }
-}
 
 // The bounds filter shields the picker from a value the wire may carry
 // despite the manifest bounds: a pre-rename instance (no stored value) or

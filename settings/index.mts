@@ -64,10 +64,16 @@ import type {
   FormattedErrorLog,
 } from '../types/error-log.mts'
 import {
+  applySelectValue,
   populateZoneOptions as populateZoneSelect,
   translateAriaLabels,
 } from '../public/dom.mts'
-import { type PickerZone, getZoneId } from '../public/zones.mts'
+import {
+  type PickerListZone,
+  type PickerZone,
+  getZoneId,
+  sortByBuilding,
+} from '../public/zones.mts'
 
 // ── Helpers ──
 
@@ -1417,17 +1423,12 @@ class SettingsApp {
       this.#homey,
       '/classic/buildings',
     )
+    // Filled before the empty check, so an emptied account drops its
+    // zones like the Home one does.
+    this.#zoneSettingsManager.populateZoneOptions('classic', buildings)
     if (buildings.length === 0) {
       throw new NoDeviceError(this.#homey, 'classic')
     }
-    this.#zoneSettingsManager.populateZoneOptions(buildings)
-    // Not awaited, so it no longer blocks `ready()`: this only fills the
-    // zone panel's initial values (silent, default fallback) and the zone
-    // selector re-fetches on change anyway. The error log is left to its
-    // on-demand "See" button — prefetching it blocked first paint on a
-    // MELCloud cloud round-trip (~350 ms on a Homey Pro 2019) and its
-    // alert-on-failure would surface unprompted.
-    fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
   }
 
   // Which accounts list no unit at all, as the app answers now.
@@ -1439,7 +1440,6 @@ class SettingsApp {
     return { classic: isClassicEmpty, home: isHomeEmpty }
   }
 
-  // Home targets are appended after any Classic zones.
   async #fetchHomeTargets(): Promise<void> {
     // A tree: each Home building followed by its own devices (indented),
     // both frost/holiday targets.
@@ -1447,10 +1447,7 @@ class SettingsApp {
       this.#homey,
       '/home/targets',
     )
-    this.#zoneSettingsManager.populateZoneOptions(targets)
-    // See #fetchClassicBuildings: fills the initial panel values only (the
-    // first option, a Classic zone when both accounts are paired).
-    fireAndForget(this.#zoneSettingsManager.fetchZoneSettings())
+    this.#zoneSettingsManager.populateZoneOptions('home', targets)
   }
 
   // A failed probe reads as "not empty": the hint is an explanation,
@@ -1552,12 +1549,14 @@ class SettingsApp {
     this.#refreshVisibility()
   }
 
-  // The app-side logout already killed the session, so mark this API
-  // unauthenticated and re-render — the panel reopens on the now-empty
-  // account.
+  // The app-side logout already killed the session and wiped the account's
+  // registry, so mark this API unauthenticated, drop its zones and
+  // re-render — the panel reopens on the now-empty account, and the zone
+  // panels follow the selection the other account's list leaves.
   #onLogOut(api: Api): void {
     this.#authState[api] = false
     this.#emptyState[api] = false
+    this.#zoneSettingsManager.populateZoneOptions(api, [])
     this.#refreshVisibility()
   }
 
@@ -1754,6 +1753,13 @@ class ZoneSettingsManager {
 
   #zoneMapping: Partial<Record<string, MixableZoneSettings>> = {}
 
+  // Each account's picker list as last fetched: the select shows both as
+  // one list, sorted by building whichever account answered last.
+  readonly #zonesByApi: Record<Api, readonly PickerListZone[]> = {
+    classic: [],
+    home: [],
+  }
+
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#frostProtectionDirtyGate = createValuesGate('frost_protection', [
@@ -1896,14 +1902,33 @@ class ZoneSettingsManager {
     }
   }
 
-  public populateZoneOptions(zones: PickerZone[]): void {
+  public populateZoneOptions(api: Api, zones: readonly PickerListZone[]): void {
+    this.#zonesByApi[api] = zones
     this.#registerOverheatZones(zones)
-    populateZoneSelect(this.#zone, zones)
+    // Rebuilt rather than appended, so a building sorts into place among
+    // the other account's; the selection stays where it was.
+    const { value } = this.#zone
+    this.#zone.replaceChildren()
+    populateZoneSelect(
+      this.#zone,
+      sortByBuilding([...this.#zonesByApi.classic, ...this.#zonesByApi.home]),
+    )
+    applySelectValue(this.#zone, value)
     // Only after the options land: on a Home-only boot the selection
     // settles during the populate, and refreshing visibility before it
     // read the pre-populate value — hiding the panel for a capable
     // first target until the user moved the picker away and back.
     this.#refreshOverheatVisibility()
+    // The panels follow the selection when the fill moved it: a first
+    // fill, or a zone a signed-out or emptied account took with it. Not
+    // awaited, so it never blocks `ready()`; it is silent (defaults on
+    // failure), and the error log stays on its on-demand "See" button —
+    // prefetching it blocked first paint on a MELCloud round-trip
+    // (~350 ms on a Homey Pro 2019) and its failure alert would surface
+    // unprompted.
+    if (this.#zone.value !== value && this.#zone.value !== '') {
+      fireAndForget(this.fetchZoneSettings())
+    }
   }
 
   /**

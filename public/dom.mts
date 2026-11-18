@@ -12,6 +12,18 @@ import {
   getZoneName,
 } from './zones.mts'
 
+// Guarded assignment: writing a value with no matching option would reset
+// the select to an empty selection. Membership is read off the options,
+// never through a built selector, which a quote in the value would break.
+export const applySelectValue = (
+  select: HTMLSelectElement,
+  value: string,
+): void => {
+  if ([...select.options].some((option) => option.value === value)) {
+    select.value = value
+  }
+}
+
 export const appendFormControl = (
   parent: HTMLElement,
   {

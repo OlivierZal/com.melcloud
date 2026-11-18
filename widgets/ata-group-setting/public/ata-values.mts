@@ -25,7 +25,11 @@ import {
 import type { Homey } from '../../../public/widget.mts'
 import type { DriverCapabilitiesOptions } from '../../../types/driver-settings.mts'
 import type { AtaGroupSettingWidgetSettings } from '../../../types/widgets.mts'
-import { appendFormControl, populateZoneOptions } from '../../../public/dom.mts'
+import {
+  appendFormControl,
+  applySelectValue,
+  populateZoneOptions,
+} from '../../../public/dom.mts'
 import { type PickerZone, getZoneId } from '../../../public/zones.mts'
 
 // The generated controls are styled by element selectors in
@@ -168,13 +172,7 @@ export class AtaValueManager {
     }
 
     const { id, model } = defaultZone
-    const value = getZoneId(id, model)
-    if (
-      document.querySelector(`#zones option[value="${CSS.escape(value)}"]`) !==
-      null
-    ) {
-      this.#zone.value = value
-    }
+    applySelectValue(this.#zone, getZoneId(id, model))
   }
 
   public createAtaFormControls(): void {
