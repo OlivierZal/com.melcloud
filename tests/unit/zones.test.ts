@@ -12,6 +12,8 @@ import {
   isHomeBuildingValue,
   isHomeDeviceValue,
   sortByBuilding,
+  tagSameNameBuildings,
+  toBuildingKey,
 } from '../../public/zones.mts'
 
 const classicBuilding = (name: string): Classic.BuildingZone =>
@@ -85,6 +87,101 @@ describe('zones', () => {
       classicMaison,
       homeMaison,
       salon,
+    ])
+  })
+
+  it('should key a building name trimmed and composed, case kept', () => {
+    expect(toBuildingKey('  Domicile\t')).toBe('Domicile')
+    // An accent typed as a combining mark keys like its precomposed form.
+    expect(toBuildingKey('Re\u{301}sidence')).toBe('R\u{E9}sidence')
+    expect(toBuildingKey('domicile')).not.toBe(toBuildingKey('Domicile'))
+  })
+
+  // Only the display name moves: the id and model the option value is
+  // built from, the nested subzones and the Home devices stay as given.
+  it('should tag the buildings both accounts list under one name, nothing else', () => {
+    const living = { id: 11, level: 1, model: 'devices', name: 'Living' }
+    const classicDomicile = mock<Classic.BuildingZone>({
+      devices: [living],
+      id: 1,
+      model: 'buildings',
+      name: 'Domicile',
+    })
+    const homeDomicile = mock<HomeBuildingZone>({
+      buildingName: 'Domicile',
+      id: 'b_1',
+      model: 'homeBuildings',
+      name: 'Domicile',
+    })
+    const salon = homeDevice('Domicile', 'Salon')
+    const bureau = classicBuilding('Bureau')
+
+    expect(
+      tagSameNameBuildings([bureau, classicDomicile, homeDomicile, salon]),
+    ).toStrictEqual([
+      bureau,
+      {
+        devices: [living],
+        id: 1,
+        model: 'buildings',
+        name: 'Domicile [Classic]',
+      },
+      {
+        buildingName: 'Domicile',
+        id: 'b_1',
+        model: 'homeBuildings',
+        name: 'Domicile [Home]',
+      },
+      salon,
+    ])
+    expect(classicDomicile.name).toBe('Domicile')
+    expect(homeDomicile.name).toBe('Domicile')
+  })
+
+  it('should pair building names under the same-house rule', () => {
+    const zones = [
+      classicBuilding('Atelier '),
+      homeBuilding('Atelier'),
+      classicBuilding('Re\u{301}sidence'),
+      homeBuilding('R\u{E9}sidence'),
+      classicBuilding('domicile'),
+      homeBuilding('Domicile'),
+    ]
+
+    expect(tagSameNameBuildings(zones).map(({ name }) => name)).toStrictEqual([
+      'Atelier  [Classic]',
+      'Atelier [Home]',
+      'Re\u{301}sidence [Classic]',
+      'R\u{E9}sidence [Home]',
+      'domicile',
+      'Domicile',
+    ])
+  })
+
+  // A name repeated within one account is no cross-account collision,
+  // while one both accounts hold tags every building that holds it; a
+  // device named after a building keeps its name.
+  it('should tag a shared name on every building that holds it', () => {
+    const zones = [
+      classicBuilding('Maison'),
+      classicBuilding('Maison'),
+      homeBuilding('Maison'),
+      classicBuilding('Chalet'),
+      classicBuilding('Chalet'),
+      homeBuilding('Villa'),
+      homeBuilding('Villa'),
+      homeDevice('Villa', 'Maison'),
+    ]
+
+    expect(tagSameNameBuildings(zones).map(({ name }) => name)).toStrictEqual([
+      'Maison [Classic]',
+      'Maison [Classic]',
+      'Maison [Home]',
+      'Chalet',
+      'Chalet',
+      'Villa',
+      'Villa',
+      'Maison',
     ])
   })
 })

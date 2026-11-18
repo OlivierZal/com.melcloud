@@ -73,6 +73,7 @@ import {
   type PickerZone,
   getZoneId,
   sortByBuilding,
+  tagSameNameBuildings,
 } from '../public/zones.mts'
 
 // ── Helpers ──
@@ -1908,12 +1909,15 @@ class ZoneSettingsManager {
     this.#zonesByApi[api] = zones
     this.#registerOverheatZones(zones)
     // Rebuilt rather than appended, so a building sorts into place among
-    // the other account's; the selection stays where it was.
+    // the other account's, tagged with its account when the other one
+    // lists its name too; the selection stays where it was.
     const { value } = this.#zone
     this.#zone.replaceChildren()
     populateZoneSelect(
       this.#zone,
-      sortByBuilding([...this.#zonesByApi.classic, ...this.#zonesByApi.home]),
+      tagSameNameBuildings(
+        sortByBuilding([...this.#zonesByApi.classic, ...this.#zonesByApi.home]),
+      ),
     )
     applySelectValue(this.#zone, value)
     // Only after the options land: on a Home-only boot the selection

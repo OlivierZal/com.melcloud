@@ -24,6 +24,51 @@ export const sortByBuilding = (
     getBuildingName(zone).localeCompare(getBuildingName(other)),
   )
 
+// Two buildings are the same house when their names match once trimmed
+// and composed alike (NFC); letter case still tells them apart.
+export const toBuildingKey = (name: string): string =>
+  name.trim().normalize('NFC')
+
+// The driver-prefix tokens, spelled the same in every locale.
+const DIALECT_TAGS: ReadonlyMap<string, string> = new Map([
+  ['buildings', '[Classic]'],
+  ['homeBuildings', '[Home]'],
+])
+
+interface NamedZone {
+  readonly model: string
+  readonly name: string
+}
+
+const getBuildingKeys = (
+  zones: readonly NamedZone[],
+  model: string,
+): Set<string> =>
+  new Set(
+    zones
+      .filter((zone) => zone.model === model)
+      .map(({ name }) => toBuildingKey(name)),
+  )
+
+// Display copies of a list spanning both accounts: a building whose name
+// the other account's buildings hold too takes its own account's tag, so
+// the two stop reading alike. Option values, nested subzones and devices
+// stay as they are, and so does the input. A list sorted by building is
+// tagged after `sortByBuilding`, which keys on the bare names.
+export const tagSameNameBuildings = <T extends NamedZone>(
+  zones: readonly T[],
+): T[] => {
+  const classicKeys = getBuildingKeys(zones, 'buildings')
+  const homeKeys = getBuildingKeys(zones, 'homeBuildings')
+  return zones.map((zone) => {
+    const tag = DIALECT_TAGS.get(zone.model)
+    const key = toBuildingKey(zone.name)
+    return tag !== undefined && classicKeys.has(key) && homeKeys.has(key)
+      ? { ...zone, name: `${zone.name} ${tag}` }
+      : zone
+  })
+}
+
 // Only Classic zones nest — the Home entries carry none of the subzone
 // keys, so the walk bottoms out on them.
 export const getSubzones = (zone: PickerZone): Classic.Zone[] => [

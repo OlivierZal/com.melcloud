@@ -8,9 +8,9 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import {
   appendFormControl,
   applySelectValue,
-  hideInitError,
+  hideErrorLine,
   populateZoneOptions,
-  showInitError,
+  showErrorLine,
   translateAriaLabels,
 } from '../../public/dom.mts'
 
@@ -23,6 +23,14 @@ const selectOf = (...values: string[]): HTMLSelectElement => {
   }
   document.body.append(select)
   return select
+}
+
+const appendLine = (id: string): HTMLParagraphElement => {
+  const element = document.createElement('p')
+  element.id = id
+  element.hidden = true
+  document.body.append(element)
+  return element
 }
 
 describe('webview dom helpers', () => {
@@ -122,28 +130,34 @@ describe('webview dom helpers', () => {
     })
   })
 
-  describe('init error', () => {
-    it('should show then hide the message element', () => {
-      const element = document.createElement('p')
-      element.id = 'init_error'
-      element.hidden = true
-      document.body.append(element)
-      showInitError(new Error('boom'))
+  describe('error lines', () => {
+    it('should show then hide the line its id names', () => {
+      const element = appendLine('update_error')
+      const other = appendLine('init_error')
+      showErrorLine('update_error', new Error('boom'))
 
       expect(element.hidden).toBe(false)
       expect(element.textContent).toBe('boom')
-
-      hideInitError()
-
+      expect(other.hidden).toBe(true)
+      expect(hideErrorLine('update_error')).toBe(true)
       expect(element.hidden).toBe(true)
       expect(element.textContent).toBe('')
+      // Nothing was showing any more, so nothing shrank.
+      expect(hideErrorLine('update_error')).toBe(false)
     })
 
-    it('should tolerate a page without the element', () => {
+    it('should find a line whose id needs escaping', () => {
+      const element = appendLine('error:line')
+      showErrorLine('error:line', 'boom')
+
+      expect(element.textContent).toBe('boom')
+    })
+
+    it('should tolerate a page without the line', () => {
       expect(() => {
-        showInitError(new Error('boom'))
-        hideInitError()
+        showErrorLine('init_error', new Error('boom'))
       }).not.toThrow()
+      expect(hideErrorLine('init_error')).toBe(false)
     })
   })
 })

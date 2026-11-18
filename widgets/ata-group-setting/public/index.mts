@@ -17,11 +17,11 @@ import { homeyApiGet, watchWidgetFreshness } from '@olivierzal/homey-kit/widget'
 import type { Homey } from '../../../public/widget.mts'
 import type { AtaGroupSettingWidgetSettings as HomeySettings } from '../../../types/widgets.mts'
 import {
-  hideInitError,
-  showInitError,
+  hideErrorLine,
+  showErrorLine,
   translateAriaLabels,
 } from '../../../public/dom.mts'
-import { sortByBuilding } from '../../../public/zones.mts'
+import { sortByBuilding, tagSameNameBuildings } from '../../../public/zones.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
 
@@ -68,8 +68,10 @@ class WidgetApp {
       return
     }
     await runWebview(this.#homey, this.#run(), {
-      onError: showInitError,
       height: () => document.body.scrollHeight,
+      onError: (error) => {
+        showErrorLine('init_error', error)
+      },
     })
     this.#isReady = true
   }
@@ -79,6 +81,8 @@ class WidgetApp {
     const refreshAtaValues = getButton('refresh_values_melcloud')
     const updateAtaValues = getButton('apply_values_melcloud')
     zone.addEventListener('change', () => {
+      // A write error belongs to the zone the write was sent to.
+      fireAndForget(this.#ataValueManager.hideUpdateError())
       fireAndForget(this.#fetchAndAnimate())
     })
     refreshAtaValues.addEventListener('click', () => {
@@ -122,7 +126,7 @@ class WidgetApp {
     this.#addEventListeners()
     this.#ataValueManager.createAtaFormControls()
     this.#ataValueManager.populateZoneOptions(
-      sortByBuilding([...buildings, ...homeTargets]),
+      tagSameNameBuildings(sortByBuilding([...buildings, ...homeTargets])),
     )
     this.#ataValueManager.applyDefaultZone(defaultZone)
     await this.#fetchAndAnimate()
@@ -144,7 +148,7 @@ class WidgetApp {
     await this.#initTargets()
     // A load that outlived its timeout recovers here: drop the message
     // and resize to the recovered content (`ready` heights are one-shot).
-    hideInitError()
+    hideErrorLine('init_error')
     if (this.#isReady) {
       await this.#homey.setHeight(document.body.scrollHeight)
     }

@@ -84,6 +84,7 @@ import {
   getZoneId,
   isHomeBuildingValue,
   isHomeDeviceValue,
+  tagSameNameBuildings,
 } from './public/zones.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 import {
@@ -743,9 +744,9 @@ export default class MELCloudApp extends App {
   // `NoChangesError`, its twins propagated), but melcloud-api 53.0.0
   // pins no-op tolerance in the library itself — every `updateGroupState`
   // resolves a delta the target already matches as the success it is —
-  // so nothing can propagate and a catch here would re-derive a library
-  // invariant. The widget's arming gate blocks empty bodies, not bodies
-  // the device caught up with meanwhile; those are successes too.
+  // so nothing can propagate and a no-change catch here would re-derive a
+  // library invariant. The widget's arming gate blocks empty bodies, not
+  // bodies the device caught up with meanwhile; those are successes too.
   public async updateTargetAtaState(
     targetId: string,
     state: Classic.GroupState,
@@ -760,7 +761,15 @@ export default class MELCloudApp extends App {
     for (const device of members) {
       device.forgetWrites()
     }
-    await this.#getAtaGroupTarget(targetId).updateGroupState(state)
+    const target = this.#getAtaGroupTarget(targetId)
+    try {
+      await target.updateGroupState(state)
+    } catch (error) {
+      // Logged and rethrown untouched, never handled: the widget shows the
+      // message, and the diagnostic log keeps the line.
+      logFailure(this, 'Group write failed:', error)
+      throw error
+    }
   }
 
   public async updateTargetFrostProtection(
@@ -1504,18 +1513,20 @@ export default class MELCloudApp extends App {
   }
 
   // Everything the ATA group widget can target: every Classic zone/device
-  // and every Home building/device, each leaf suffixed with its building,
-  // the whole list drawn from the two shared sources and name-sorted.
+  // and every Home building/device, each leaf suffixed with its building
+  // and each building both accounts list under one name tagged with its
+  // own account, the whole list drawn from the two shared sources and
+  // name-sorted.
   #searchAtaTargets(
     query: string,
   ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[] {
     return filterZonesByName(
-      [
-        ...this.getClassicTargets(Classic.DeviceType.Ata),
-        ...this.getHomeTargets(Home.DeviceType.Ata),
-      ]
-        .map((node) => ({ ...node, name: toFlatName(node) }))
-        .toSorted(byName),
+      tagSameNameBuildings(
+        [
+          ...this.getClassicTargets(Classic.DeviceType.Ata),
+          ...this.getHomeTargets(Home.DeviceType.Ata),
+        ].map((node) => ({ ...node, name: toFlatName(node) })),
+      ).toSorted(byName),
       query,
     )
   }

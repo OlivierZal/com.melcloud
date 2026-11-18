@@ -32,6 +32,20 @@ const bootWidget = async (
 const calledPaths = (harness: WidgetHarness): string[] =>
   harness.api.mock.calls.map(([method, path]) => `${method} ${path}`)
 
+const zoneOptions = (): { label: string | null; value: string }[] =>
+  [...getSelect('zones').options].map(({ textContent, value }) => ({
+    label: textContent,
+    value,
+  }))
+
+const updateError = (): HTMLElement => {
+  const element = document.querySelector('#update_error')
+  if (element instanceof HTMLElement) {
+    return element
+  }
+  throw new TypeError('The page has no write-error line')
+}
+
 const commit = (
   element: HTMLElement & { value: string },
   value: string,
@@ -124,6 +138,70 @@ describe('ata group setting widget', () => {
     ])
   })
 
+  // Only the labels move: the option values stay the targetIds the
+  // routes resolve.
+  it('should tag a building name both accounts list', async () => {
+    await bootWidget({
+      routes: {
+        ...widgetRoutes(),
+        'GET /classic/buildings': [
+          {
+            areas: [],
+            devices: [
+              { id: 11, level: 1, model: 'devices', name: 'Living room' },
+            ],
+            floors: [],
+            id: 1,
+            level: 0,
+            model: 'buildings',
+            name: 'Domicile',
+          },
+        ],
+        'GET /home/targets/ata': [
+          {
+            buildingName: 'Domicile',
+            id: 'b_2',
+            level: 0,
+            model: 'homeBuildings',
+            name: 'Domicile',
+          },
+          {
+            buildingName: 'Domicile',
+            deviceType: 'ata',
+            id: 'ata_2',
+            level: 1,
+            model: 'homeDevices',
+            name: 'Bureau',
+          },
+          {
+            buildingName: 'Villa',
+            id: 'b_1',
+            level: 0,
+            model: 'homeBuildings',
+            name: 'Villa',
+          },
+          {
+            buildingName: 'Villa',
+            deviceType: 'ata',
+            id: 'ata_1',
+            level: 1,
+            model: 'homeDevices',
+            name: 'Salon',
+          },
+        ],
+      },
+    })
+
+    expect(zoneOptions()).toStrictEqual([
+      { label: ' Domicile [Classic]', value: 'buildings_1' },
+      { label: '··· Living room', value: 'devices_11' },
+      { label: ' Domicile [Home]', value: 'homeBuildings_b_2' },
+      { label: '··· Bureau', value: 'homeDevices_ata_2' },
+      { label: ' Villa', value: 'homeBuildings_b_1' },
+      { label: '··· Salon', value: 'homeDevices_ata_1' },
+    ])
+  })
+
   it('should keep one selector source alive when the other fails', async () => {
     const harness = await bootWidget({
       failures: { 'GET /classic/buildings': new Error('classic down') },
@@ -198,6 +276,68 @@ describe('ata group setting widget', () => {
     const put = harness.api.mock.calls.findLast(([method]) => method === 'PUT')
 
     expect(put?.[2]).toStrictEqual({ SetTemperature: 25 })
+    // No write error was showing, so the widget keeps its height.
+    expect(harness.setHeight).not.toHaveBeenCalled()
+  })
+
+  // The widget SDK has no alert: a refused Update says why under the
+  // buttons, the widget growing to show it and shrinking back once a
+  // write lands.
+  it('should show a refused write until a write lands', async () => {
+    const put = vi
+      .fn<() => Promise<unknown>>()
+      .mockRejectedValueOnce(new Error('Unit offline'))
+      .mockResolvedValueOnce(undefined)
+    const harness = await bootWidget({
+      deferredRoutes: { 'PUT /targets/buildings_1/ata': put },
+    })
+    const apply = getButton('apply_values_melcloud')
+    commit(getSelect('SetTemperature'), '25')
+    apply.click()
+    await settleDetached()
+
+    expect(updateError().hidden).toBe(false)
+    expect(updateError().textContent).toBe('Unit offline')
+    expect(harness.setHeight).toHaveBeenCalledExactlyOnceWith(
+      expect.any(Number),
+    )
+    // The edit stays armed for a retry.
+    expect(apply.disabled).toBe(false)
+
+    apply.click()
+    await settleDetached()
+
+    expect(updateError().hidden).toBe(true)
+    expect(updateError().textContent).toBe('')
+    expect(harness.setHeight).toHaveBeenCalledTimes(2)
+    expect(apply.disabled).toBe(true)
+  })
+
+  // A write error belongs to its zone: the real-time refetch keeps it,
+  // leaving the zone drops it.
+  it('should keep a refused write shown until the zone is left', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    const harness = await bootWidget({
+      failures: { 'PUT /targets/buildings_1/ata': new Error('Unit offline') },
+      routes: {
+        ...widgetRoutes(),
+        'GET /targets/devices_11/ata': groupStateFixture(),
+      },
+    })
+    commit(getSelect('SetTemperature'), '25')
+    getButton('apply_values_melcloud').click()
+    await settleDetached()
+    harness.emit('deviceupdate')
+    await vi.advanceTimersByTimeAsync(1000)
+    await settleDetached()
+
+    expect(updateError().hidden).toBe(false)
+
+    commit(getSelect('zones'), 'devices_11')
+    await settleDetached()
+
+    expect(updateError().hidden).toBe(true)
+    expect(harness.setHeight).toHaveBeenCalledTimes(2)
   })
 
   it('should refresh the form back to the known state', async () => {

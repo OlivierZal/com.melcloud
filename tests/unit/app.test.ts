@@ -2793,6 +2793,33 @@ describe('melCloudApp', () => {
         app.updateTargetAtaState('buildings_1', mock<Classic.GroupState>()),
       ).rejects.toThrow('temp: Invalid value')
     })
+
+    // The rejection still reaches the widget, which shows its message;
+    // the diagnostic log keeps the SDK's one line for it.
+    it('should log a refused write once and rethrow it', async () => {
+      const failure = createTransportFailure()
+      await initWithFacade(
+        app,
+        mock<Classic.BuildingFacade>({
+          devices: [],
+          updateGroupState: vi
+            .fn<() => Promise<void>>()
+            .mockRejectedValue(failure),
+        }),
+      )
+      const errorSpy = vi.fn<(...args: unknown[]) => void>()
+      Object.defineProperty(app, 'error', {
+        configurable: true,
+        value: errorSpy,
+      })
+
+      await expect(
+        app.updateTargetAtaState('buildings_1', mock<Classic.GroupState>()),
+      ).rejects.toBe(failure)
+      expect(errorSpy).toHaveBeenCalledExactlyOnceWith(
+        `Group write failed: ${TRANSPORT_FAILURE_CHAIN}`,
+      )
+    })
   })
 
   describe('device settings update', () => {
@@ -3888,6 +3915,98 @@ describe('melCloudApp', () => {
       expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
         type: Classic.DeviceType.Ata,
       })
+    })
+
+    // The leaves keep their building suffix; a building both accounts
+    // list under one name takes its own account's tag.
+    it('should tag a building name both accounts list for the ata-group-setting widget', async () => {
+      const { mockRegisterAta } = setupWidgetListeners()
+      mockFacadeManagerGetZones.mockReturnValue([
+        {
+          buildingName: 'Domicile',
+          id: 1,
+          level: 0,
+          model: 'buildings',
+          name: 'Domicile',
+        },
+        {
+          buildingName: 'Domicile',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Salon',
+        },
+        {
+          buildingName: 'Office',
+          id: 2,
+          level: 0,
+          model: 'buildings',
+          name: 'Office',
+        },
+      ])
+      mockHomeFacadeManagerGetZones.mockReturnValue([
+        {
+          buildingName: 'Domicile',
+          id: 'b_1',
+          level: 0,
+          model: 'homeBuildings',
+          name: 'Domicile',
+        },
+        {
+          buildingName: 'Domicile',
+          deviceType: 'ata',
+          id: 'home-1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Chambre',
+        },
+      ])
+      await app.onInit()
+
+      const ataCallback = getMockCallArg<(query: string) => unknown[]>(
+        mockRegisterAta,
+        0,
+        1,
+      )
+
+      expect(ataCallback('')).toStrictEqual([
+        {
+          buildingName: 'Domicile',
+          deviceType: 'ata',
+          id: 'home-1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Chambre (Domicile)',
+        },
+        {
+          buildingName: 'Domicile',
+          id: 1,
+          level: 0,
+          model: 'buildings',
+          name: 'Domicile [Classic]',
+        },
+        {
+          buildingName: 'Domicile',
+          id: 'b_1',
+          level: 0,
+          model: 'homeBuildings',
+          name: 'Domicile [Home]',
+        },
+        {
+          buildingName: 'Office',
+          id: 2,
+          level: 0,
+          model: 'buildings',
+          name: 'Office',
+        },
+        {
+          buildingName: 'Domicile',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Salon (Domicile)',
+        },
+      ])
     })
 
     it('should serve building-suffixed device zones to the charts widget', async () => {

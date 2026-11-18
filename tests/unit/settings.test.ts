@@ -618,6 +618,46 @@ describe('settings page', () => {
       expect(getSelect('zones').value).toBe('buildings_1')
     })
 
+    // Classic answers first, untagged; the Home list's rebuild tags the
+    // name both accounts list. Only the labels move: the option values
+    // stay the targetIds the routes resolve.
+    it('should tag a building name both accounts list', async () => {
+      await bootPage({
+        routes: {
+          ...bothAccountsRoutes([
+            ...homeBuildingTargets('Domicile', 'building_2'),
+            ...homeBuildingTargets('Villa', 'building_3'),
+          ]),
+          'GET /classic/buildings': [
+            {
+              areas: [],
+              devices: [
+                { id: 11, level: 1, model: 'devices', name: 'Living room' },
+              ],
+              floors: [],
+              id: 1,
+              level: 0,
+              model: 'buildings',
+              name: 'Domicile',
+            },
+          ],
+        },
+      })
+      const options = [...getSelect('zones').options].map((option) => ({
+        label: option.textContent,
+        value: option.value,
+      }))
+
+      expect(options).toStrictEqual([
+        { label: ' Domicile [Classic]', value: 'buildings_1' },
+        { label: '··· Living room', value: 'devices_11' },
+        { label: ' Domicile [Home]', value: 'homeBuildings_building_2' },
+        { label: '··· Salon', value: 'homeDevices_building_2_unit' },
+        { label: ' Villa', value: 'homeBuildings_building_3' },
+        { label: '··· Salon', value: 'homeDevices_building_3_unit' },
+      ])
+    })
+
     // The page names no driver: the `home-` prefix alone tells the two
     // APIs apart, so a Home driver it has never heard of still counts.
     it('should count an unnamed home-* driver as home devices', async () => {

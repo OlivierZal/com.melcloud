@@ -28,7 +28,9 @@ import type { AtaGroupSettingWidgetSettings } from '../../../types/widgets.mts'
 import {
   appendFormControl,
   applySelectValue,
+  hideErrorLine,
   populateZoneOptions,
+  showErrorLine,
 } from '../../../public/dom.mts'
 import { type PickerZone, getZoneId } from '../../../public/zones.mts'
 
@@ -122,6 +124,11 @@ const temperatureOptions = (
 // no family branch remains in the path.
 const getAtaStatePath = (value: string): string => `/targets/${value}/ata`
 
+// The line under the buttons that says why an Update failed: the widget
+// SDK has no alert, and a rejection would otherwise reach the dev tools
+// alone.
+const UPDATE_ERROR_ID = 'update_error'
+
 // ── AtaValueManager class ──
 
 export class AtaValueManager {
@@ -210,11 +217,12 @@ export class AtaValueManager {
   // edits included — an edit is a zone-scoped statement, not a portable
   // one. The real-time path is `fetchValuesKeepingEdits`.
   public async fetchValues(): Promise<Classic.GroupState> {
+    const target = this.#zone.value
     const values = await homeyApiGet<Classic.GroupState>(
       this.#homey,
-      getAtaStatePath(this.#zone.value),
+      getAtaStatePath(target),
     )
-    this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
+    this.#updateZoneMapping(target, { ...this.#defaultAtaValues, ...values })
     this.#syncAtaValues()
     // `runBusy`'s generation guard keeps this from releasing a save
     // that a live PUT still owns.
@@ -229,15 +237,25 @@ export class AtaValueManager {
   // Update greys exactly when every edit was caught up (a no-op button
   // must not arm) and re-arms the moment one diverges again.
   public async fetchValuesKeepingEdits(): Promise<Classic.GroupState> {
-    const previous = { ...this.#zoneMapping[this.#zone.value] }
+    const target = this.#zone.value
+    const previous = { ...this.#zoneMapping[target] }
     const values = await homeyApiGet<Classic.GroupState>(
       this.#homey,
-      getAtaStatePath(this.#zone.value),
+      getAtaStatePath(target),
     )
-    this.#updateZoneMapping({ ...this.#defaultAtaValues, ...values })
+    this.#updateZoneMapping(target, { ...this.#defaultAtaValues, ...values })
     this.#syncPristineAtaValues(previous)
     this.#dirtyGate.recompute()
     return values
+  }
+
+  // Dropped once a write lands or its zone is left, never by a
+  // background refetch; the widget shrinks back only when the line was
+  // showing.
+  public async hideUpdateError(): Promise<void> {
+    if (hideErrorLine(UPDATE_ERROR_ID)) {
+      await this.#homey.setHeight(document.body.scrollHeight)
+    }
   }
 
   public populateZoneOptions(zones: PickerZone[] = []): void {
@@ -248,20 +266,32 @@ export class AtaValueManager {
     // The gate's `isActionable` arms Update only on a non-empty body —
     // never re-derive that invariant here.
     await this.#dirtyGate.runBusy(async () => {
+      // The picker stays live across the request, so the zone can move
+      // under it: the target is pinned once, addresses the route and
+      // takes the accepted body, and the form is rebaselined only while
+      // it still shows that target.
+      const target = this.#zone.value
       const body = this.#buildAtaValuesBody()
-      await homeyApiPut(
-        this.#homey,
-        getAtaStatePath(this.#zone.value),
-        body satisfies Classic.GroupState,
-      )
-      // The zone's known state absorbs the accepted write immediately:
+      try {
+        await homeyApiPut(
+          this.#homey,
+          getAtaStatePath(target),
+          body satisfies Classic.GroupState,
+        )
+      } catch (error) {
+        // The edit stays armed for a retry.
+        await this.#showUpdateError(error)
+        return
+      }
+      // The target's known state absorbs the accepted write immediately:
       // the debounced `deviceupdate` refetch confirms it later, but
       // until then the body filter (and so `isActionable`) must judge
       // against what the server now holds, not the pre-write state.
-      this.#updateZoneMapping(body)
-      // New pristine baseline is the just-applied form. A rejected PUT
-      // throws before this, so the edit stays dirty for a retry.
-      this.#dirtyGate.markSaved()
+      this.#updateZoneMapping(target, body)
+      if (this.#zone.value === target) {
+        this.#dirtyGate.markSaved()
+      }
+      await this.hideUpdateError()
     })
   }
 
@@ -323,6 +353,12 @@ export class AtaValueManager {
       createOption(select, option)
     }
     select.value = wanted
+  }
+
+  // The widget grows to show the line: `ready` heights are one-shot.
+  async #showUpdateError(error: unknown): Promise<void> {
+    showErrorLine(UPDATE_ERROR_ID, error)
+    await this.#homey.setHeight(document.body.scrollHeight)
   }
 
   #syncAtaValues(): void {
@@ -388,9 +424,12 @@ export class AtaValueManager {
     ataValue.value = value
   }
 
-  #updateZoneMapping(data: Partial<Classic.GroupState>): void {
-    const { value } = this.#zone
-    this.#zoneMapping[value] = { ...this.#zoneMapping[value], ...data }
+  // The target is passed in, never re-read: every caller files an answer
+  // after an await, and the picker stays live throughout, so reading it
+  // here would file the answer under whichever zone the user has since
+  // selected.
+  #updateZoneMapping(target: string, data: Partial<Classic.GroupState>): void {
+    this.#zoneMapping[target] = { ...this.#zoneMapping[target], ...data }
   }
 
   // The offered temperatures depend on the chosen mode, so the picker is

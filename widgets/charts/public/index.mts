@@ -38,8 +38,8 @@ import type { Homey } from '../../../public/widget.mts'
 import type { FlatDeviceZone } from '../../../types/zone.mts'
 import {
   applySelectValue,
-  hideInitError,
-  showInitError,
+  hideErrorLine,
+  showErrorLine,
   translateAriaLabels,
 } from '../../../public/dom.mts'
 import { randomFraction } from '../../../public/random.mts'
@@ -906,8 +906,10 @@ class ChartWidget {
       return
     }
     await runWebview(this.#homey, this.#run(), {
-      onError: showInitError,
       height: () => document.body.scrollHeight,
+      onError: (error) => {
+        showErrorLine('init_error', error)
+      },
     })
     this.#isReady = true
   }
@@ -1194,7 +1196,7 @@ class ChartWidget {
     await this.#initControls()
     // A load that outlived its timeout recovers here: drop the message
     // and resize to the recovered content (`ready` heights are one-shot).
-    hideInitError()
+    hideErrorLine('init_error')
     if (this.#isReady) {
       await this.#homey.setHeight(document.body.scrollHeight)
     }
