@@ -450,6 +450,12 @@ const lastCallBody = (harness: Harness, key: string): unknown => {
   return call?.find((argument) => typeof argument === 'object')
 }
 
+const zoneOptions = (): { label: string | null; value: string }[] =>
+  [...getSelect('zones').options].map(({ textContent, value }) => ({
+    label: textContent,
+    value,
+  }))
+
 const calledPaths = (harness: Harness): string[] =>
   harness.api.mock.calls.map(([method, path]) => `${method} ${path}`)
 
@@ -518,12 +524,8 @@ describe('settings page', () => {
 
     it('should populate the zone select from the classic tree', async () => {
       await bootPage()
-      const options = [...getSelect('zones').options].map((option) => ({
-        label: option.textContent,
-        value: option.value,
-      }))
 
-      expect(options).toStrictEqual([
+      expect(zoneOptions()).toStrictEqual([
         { label: ' Home', value: 'buildings_1' },
         { label: '··· Living room', value: 'devices_11' },
         { label: '··· Upstairs', value: 'floors_21' },
@@ -616,6 +618,42 @@ describe('settings page', () => {
         'homeDevices_building_3_unit',
       ])
       expect(getSelect('zones').value).toBe('buildings_1')
+    })
+
+    // Classic answers first, untagged; the Home list's rebuild tags the
+    // name both accounts list. Only the labels move: the option values
+    // stay the targetIds the routes resolve.
+    it('should tag a building name both accounts list', async () => {
+      await bootPage({
+        routes: {
+          ...bothAccountsRoutes([
+            ...homeBuildingTargets('Domicile', 'building_2'),
+            ...homeBuildingTargets('Villa', 'building_3'),
+          ]),
+          'GET /classic/buildings': [
+            {
+              areas: [],
+              devices: [
+                { id: 11, level: 1, model: 'devices', name: 'Living room' },
+              ],
+              floors: [],
+              id: 1,
+              level: 0,
+              model: 'buildings',
+              name: 'Domicile',
+            },
+          ],
+        },
+      })
+
+      expect(zoneOptions()).toStrictEqual([
+        { label: ' Domicile [Classic]', value: 'buildings_1' },
+        { label: '··· Living room', value: 'devices_11' },
+        { label: ' Domicile [Home]', value: 'homeBuildings_building_2' },
+        { label: '··· Salon', value: 'homeDevices_building_2_unit' },
+        { label: ' Villa', value: 'homeBuildings_building_3' },
+        { label: '··· Salon', value: 'homeDevices_building_3_unit' },
+      ])
     })
 
     // The page names no driver: the `home-` prefix alone tells the two

@@ -454,6 +454,15 @@ const spyOnLog = (
   return logMock
 }
 
+// The app's `error` the same way, for the failure lines a test asserts.
+const spyOnError = (
+  app: InstanceType<typeof MelCloudApp>,
+): ReturnType<typeof vi.fn<(...args: unknown[]) => void>> => {
+  const errorMock = vi.fn<(...args: unknown[]) => void>()
+  Object.defineProperty(app, 'error', { configurable: true, value: errorMock })
+  return errorMock
+}
+
 // The unit-count lines alone, the boot marks left aside.
 const unitCountLines = (
   logMock: ReturnType<typeof vi.fn<(...args: unknown[]) => void>>,
@@ -2237,6 +2246,40 @@ describe('melCloudApp', () => {
       })
     })
 
+    // Several units failing come back as one message, each failure on
+    // its own log line.
+    it('should report each unit failure of the fan-out', async () => {
+      const failures = new AggregateError(
+        [createTransportFailure(), new Error('Unit refused')],
+        'Group update failed on devices',
+      )
+      mockHomeFacadeManagerGetBuilding.mockReturnValue(
+        mock<Home.BuildingFacade>({
+          devices: [],
+          updateGroupState: vi
+            .fn<() => Promise<void>>()
+            .mockRejectedValue(failures),
+        }),
+      )
+      await app.onInit()
+      const errorSpy = spyOnError(app)
+
+      await expect(
+        app.updateTargetAtaState('homeBuildings_building-1', groupState),
+      ).rejects.toThrow(
+        /^Group update failed on devices: fetch failed; Unit refused$/v,
+      )
+      expect(errorSpy).toHaveBeenNthCalledWith(
+        1,
+        `Group write failed: ${TRANSPORT_FAILURE_CHAIN}`,
+      )
+      expect(errorSpy).toHaveBeenNthCalledWith(
+        2,
+        'Group write failed:',
+        new Error('Unit refused'),
+      )
+    })
+
     it('should throw not-found for an unknown building', async () => {
       mockHomeFacadeManagerGetBuilding.mockReturnValue(null)
       await app.onInit()
@@ -2793,6 +2836,29 @@ describe('melCloudApp', () => {
         app.updateTargetAtaState('buildings_1', mock<Classic.GroupState>()),
       ).rejects.toThrow('temp: Invalid value')
     })
+
+    // The rejection still reaches the widget, which shows its message;
+    // the diagnostic log keeps the SDK's one line for it.
+    it('should log a refused write once and rethrow it', async () => {
+      const failure = createTransportFailure()
+      await initWithFacade(
+        app,
+        mock<Classic.BuildingFacade>({
+          devices: [],
+          updateGroupState: vi
+            .fn<() => Promise<void>>()
+            .mockRejectedValue(failure),
+        }),
+      )
+      const errorSpy = spyOnError(app)
+
+      await expect(
+        app.updateTargetAtaState('buildings_1', mock<Classic.GroupState>()),
+      ).rejects.toBe(failure)
+      expect(errorSpy).toHaveBeenCalledExactlyOnceWith(
+        `Group write failed: ${TRANSPORT_FAILURE_CHAIN}`,
+      )
+    })
   })
 
   describe('device settings update', () => {
@@ -3141,6 +3207,42 @@ describe('melCloudApp', () => {
         ])
 
         expect(autocomplete('')).toHaveLength(2)
+      })
+
+      // A holiday Flow bound to the wrong account's building would put
+      // the other house on holiday: a building both accounts list under
+      // one name takes its own account's tag here too.
+      it('should tag a building name both accounts list', async () => {
+        mockFacadeManagerGetZones.mockReturnValue([
+          {
+            buildingName: 'Maison',
+            id: 1,
+            level: 0,
+            model: 'buildings',
+            name: 'Maison',
+          },
+        ])
+        mockHomeFacadeManagerGetZones.mockReturnValue([
+          {
+            buildingName: 'Maison',
+            id: 'b-1',
+            level: 0,
+            model: 'homeBuildings',
+            name: 'Maison',
+          },
+        ])
+        await app.onInit()
+
+        const autocomplete = getMockCallArg<(query: string) => unknown>(
+          mockActionRegisterAutocomplete,
+          0,
+          1,
+        )
+
+        expect(autocomplete('')).toStrictEqual([
+          { id: 'buildings_1', name: 'Maison [Classic]' },
+          { id: 'homeBuildings_b-1', name: 'Maison [Home]' },
+        ])
       })
 
       it('should serve the condition card with the same autocomplete', async () => {
@@ -3888,6 +3990,98 @@ describe('melCloudApp', () => {
       expect(mockFacadeManagerGetZones).toHaveBeenCalledWith({
         type: Classic.DeviceType.Ata,
       })
+    })
+
+    // The leaves keep their building suffix; a building both accounts
+    // list under one name takes its own account's tag.
+    it('should tag a building name both accounts list for the ata-group-setting widget', async () => {
+      const { mockRegisterAta } = setupWidgetListeners()
+      mockFacadeManagerGetZones.mockReturnValue([
+        {
+          buildingName: 'Domicile',
+          id: 1,
+          level: 0,
+          model: 'buildings',
+          name: 'Domicile',
+        },
+        {
+          buildingName: 'Domicile',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Salon',
+        },
+        {
+          buildingName: 'Office',
+          id: 2,
+          level: 0,
+          model: 'buildings',
+          name: 'Office',
+        },
+      ])
+      mockHomeFacadeManagerGetZones.mockReturnValue([
+        {
+          buildingName: 'Domicile',
+          id: 'b_1',
+          level: 0,
+          model: 'homeBuildings',
+          name: 'Domicile',
+        },
+        {
+          buildingName: 'Domicile',
+          deviceType: 'ata',
+          id: 'home-1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Chambre',
+        },
+      ])
+      await app.onInit()
+
+      const ataCallback = getMockCallArg<(query: string) => unknown[]>(
+        mockRegisterAta,
+        0,
+        1,
+      )
+
+      expect(ataCallback('')).toStrictEqual([
+        {
+          buildingName: 'Domicile',
+          deviceType: 'ata',
+          id: 'home-1',
+          level: 1,
+          model: 'homeDevices',
+          name: 'Chambre (Domicile)',
+        },
+        {
+          buildingName: 'Domicile',
+          id: 1,
+          level: 0,
+          model: 'buildings',
+          name: 'Domicile [Classic]',
+        },
+        {
+          buildingName: 'Domicile',
+          id: 'b_1',
+          level: 0,
+          model: 'homeBuildings',
+          name: 'Domicile [Home]',
+        },
+        {
+          buildingName: 'Office',
+          id: 2,
+          level: 0,
+          model: 'buildings',
+          name: 'Office',
+        },
+        {
+          buildingName: 'Domicile',
+          id: 10,
+          level: 1,
+          model: 'devices',
+          name: 'Salon (Domicile)',
+        },
+      ])
     })
 
     it('should serve building-suffixed device zones to the charts widget', async () => {

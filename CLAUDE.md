@@ -232,7 +232,15 @@ coverage.
   differ only on letters a language sorts apart, Å, Ä and Ö after Z in
   Swedish. The flat autocomplete lists (the holiday-mode cards, both
   widgets' `default_zone`) are name-sorted on the building-suffixed
-  names. No-change group writes are
+  names. A building BOTH accounts list under one name (trimmed and
+  NFC-composed; letter case still tells two apart, `toBuildingKey`)
+  reads `Name [Classic]` / `Name [Home]` wherever the two lists meet —
+  the zone pickers, the settings select, the ATA widget's
+  `default_zone` autocomplete and the holiday-mode cards — through
+  `tagSameNameBuildings`, which copies the display name only, trimmed
+  (option values stay `${model}_${id}`), and runs AFTER
+  `sortByBuilding`, which keys on the bare names. The
+  tags are the driver-prefix tokens, untranslated. No-change group writes are
   the LIBRARY's business: every melcloud-api `updateGroupState` leg
   resolves an already-matching delta as success, so the app-side
   handlers are plain delegations (verdict 2026-08, recorded on
@@ -924,7 +932,7 @@ coverage.
   mode written earlier has no read-back left), and every watch of a
   group write's paired members (`forgetWrites`, called by
   `updateTargetAtaState` — the ATA widget writes through the facades,
-  outside the devices' door). A write that never reached the wire (folded as a no-change, or failed) restores the watches it would have replaced: they still have a read-back to judge. The clock is `Temporal.Now`, the
+  outside the devices' door). A device write that never reached the wire (folded as a no-change, or failed) restores the watches it would have replaced: they still have a read-back to judge. A group write's members do not get theirs back when it fails: a fan-out can fail after some units applied it, and a restored watch would then blame the cloud for the value Homey itself asked for. The clock is `Temporal.Now`, the
   instants `Temporal.Instant`. The line is for the diagnostic log
   alone: no setting, no route, no locale.
 - The app's own cloud-failure lines take the SDK's `logFailure` form
@@ -939,12 +947,16 @@ coverage.
   programming error and keeps the object
   whose stack locates it. The logger is the device or the app itself
   (their `log`/`error` satisfy the SDK's `Logger`), never a wrapper.
-  Three sites, the ones that log an error that came from a cloud call
+  Four sites, the ones that log an error that came from a cloud call
   or a cloud-backed read: `#pushUpdate`'s 'Write failed:' (no body on
   the line — `sendUpdate` logged it as 'Requested data:'), the report's
-  'Energy report fetch failed:' and the app's 'Home error log fetch
+  'Energy report fetch failed:', the app's 'Home error log fetch
   failed for unit …:' (the unit by its id, the SDK's convention, never
-  by name). A `Result` failure is a plain DESCRIPTOR (`{ kind, cause? }`),
+  by name) and `updateTargetAtaState`'s 'Group write failed:' (logged
+  and rethrown, the ATA widget showing the message under its buttons;
+  a fan-out's `AggregateError` — several units of a Home building —
+  logs one line per failure and travels as one message joining them,
+  the webview reading a thrown error's message alone). A `Result` failure is a plain DESCRIPTOR (`{ kind, cause? }`),
   which a chain can only spell as "a thrown object", so `failureCause`
   (`lib/unwrap-result.mts`) hands the line the error the SDK classified
   — `unwrapResult` chains its `Error` to it — and the descriptor itself
@@ -961,7 +973,8 @@ coverage.
   Result-backed reads — the reports' `getEnergy`/`getEnergySeries`, the
   Home error log's `getErrorLog` — in the same form, the app's line then
   saying which site the failure reached. A write goes through the
-  throwing `requestData`/`request`, so 'Write failed:' stands alone:
+  throwing `requestData`/`request`, so 'Write failed:' and 'Group write
+  failed:' stand alone:
   the SDK's error seam records an `HttpError` and nothing else, and a
   transport failure on a write reaches no seam at all.
   Sites that log a programming
@@ -1124,6 +1137,17 @@ coverage.
   switch (an edit is a zone-scoped statement, not a portable one) and
   Refresh, which remains the deliberate way back to the zone's current
   state.
+- An ATA group write the app refuses shows its message on the widget's
+  `#update_error` line (the widget SDK has no alert) and leaves the
+  edit armed for a retry; the line clears once a write lands or the
+  zone changes, and the widget resizes only when the line was showing.
+  The target is pinned at the click: the picker stays live during the
+  request, so the accepted body is filed under the zone it was sent to,
+  the form is rebaselined and a refusal shown only while it still shows
+  that zone. Reads pin their zone the same way: an answer the picker
+  moved away from is filed under its zone and paints nothing, form or
+  scene (`fetchValues` answers `null`), the zone now shown having a
+  read of its own.
 - Widgets ship separately; they cannot share files at runtime. The zone
   selector's ghost styling is deliberately duplicated as byte-identical
   `styles/zone-select.css` twins, pinned by `tests/unit/widget-styles.test.ts`

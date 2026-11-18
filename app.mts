@@ -9,6 +9,7 @@ import {
   announceChangelog,
   createSettingManager,
   fireAndForget,
+  getErrorMessage,
   NotFoundError,
   settleAll,
 } from '@olivierzal/homey-kit'
@@ -84,6 +85,7 @@ import {
   getZoneId,
   isHomeBuildingValue,
   isHomeDeviceValue,
+  tagSameNameBuildings,
 } from './public/zones.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 import {
@@ -195,6 +197,13 @@ type AtaGroupTarget = Pick<
   Classic.ZoneFacade,
   'getGroup' | 'getMemberOperationModes' | 'updateGroupState'
 >
+
+// A fan-out's failures — several units of a Home building — travel as
+// one message, since the webview reads a thrown error's message alone.
+const joinFailures = (error: AggregateError): Error => {
+  const messages = error.errors.map((failure) => getErrorMessage(failure))
+  return new Error(`${error.message}: ${messages.join('; ')}`, { cause: error })
+}
 
 // A flat autocomplete/select item: the `${model}_${id}` option value as
 // `id` (unique, and the routing key run listeners parse) plus the display
@@ -743,9 +752,9 @@ export default class MELCloudApp extends App {
   // `NoChangesError`, its twins propagated), but melcloud-api 53.0.0
   // pins no-op tolerance in the library itself — every `updateGroupState`
   // resolves a delta the target already matches as the success it is —
-  // so nothing can propagate and a catch here would re-derive a library
-  // invariant. The widget's arming gate blocks empty bodies, not bodies
-  // the device caught up with meanwhile; those are successes too.
+  // so nothing can propagate and a no-change catch here would re-derive a
+  // library invariant. The widget's arming gate blocks empty bodies, not
+  // bodies the device caught up with meanwhile; those are successes too.
   public async updateTargetAtaState(
     targetId: string,
     state: Classic.GroupState,
@@ -760,7 +769,18 @@ export default class MELCloudApp extends App {
     for (const device of members) {
       device.forgetWrites()
     }
-    await this.#getAtaGroupTarget(targetId).updateGroupState(state)
+    const target = this.#getAtaGroupTarget(targetId)
+    try {
+      await target.updateGroupState(state)
+    } catch (error) {
+      // Logged, never handled: the widget shows the message, and the
+      // diagnostic log keeps the line.
+      this.#logGroupWriteFailure(error)
+      if (error instanceof AggregateError) {
+        throw joinFailures(error)
+      }
+      throw error
+    }
   }
 
   public async updateTargetFrostProtection(
@@ -1287,6 +1307,16 @@ export default class MELCloudApp extends App {
     this.log('Boot: ready after', process.uptime().toFixed(1), 's')
   }
 
+  // One line per failure, a fan-out's included, so each names what it
+  // failed on.
+  #logGroupWriteFailure(error: unknown): void {
+    const failures: unknown[] =
+      error instanceof AggregateError ? error.errors : [error]
+    for (const failure of failures) {
+      logFailure(this, 'Group write failed:', failure)
+    }
+  }
+
   // One line per account when the pair (listed by the account, added in
   // Homey) changes, the first sync included: diagnostic reports omit
   // list bodies over 4 KiB, so this is the only trace of how many units
@@ -1504,30 +1534,34 @@ export default class MELCloudApp extends App {
   }
 
   // Everything the ATA group widget can target: every Classic zone/device
-  // and every Home building/device, each leaf suffixed with its building,
-  // the whole list drawn from the two shared sources and name-sorted.
+  // and every Home building/device, each leaf suffixed with its building
+  // and each building both accounts list under one name tagged with its
+  // own account, the whole list drawn from the two shared sources and
+  // name-sorted.
   #searchAtaTargets(
     query: string,
   ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone)[] {
     return filterZonesByName(
-      [
-        ...this.getClassicTargets(Classic.DeviceType.Ata),
-        ...this.getHomeTargets(Home.DeviceType.Ata),
-      ]
-        .map((node) => ({ ...node, name: toFlatName(node) }))
-        .toSorted(byName),
+      tagSameNameBuildings(
+        [
+          ...this.getClassicTargets(Classic.DeviceType.Ata),
+          ...this.getHomeTargets(Home.DeviceType.Ata),
+        ].map((node) => ({ ...node, name: toFlatName(node) })),
+      ).toSorted(byName),
       query,
     )
   }
 
   // Holiday-mode / condition targets: every Classic zone/device and every
   // Home building/device, each carrying its `${model}_${id}` routing value
-  // and a building-suffixed display name, name-sorted.
+  // and a building-suffixed display name, each building both accounts
+  // list under one name tagged with its own account, name-sorted.
   #searchHolidayModeTargets(query: string): FlatZoneItem[] {
-    return filterZonesByName(
-      toFlatZoneItems([...this.getClassicTargets(), ...this.getHomeTargets()]),
-      query,
-    )
+    const targets = tagSameNameBuildings([
+      ...this.getClassicTargets(),
+      ...this.getHomeTargets(),
+    ])
+    return filterZonesByName(toFlatZoneItems(targets), query)
   }
 
   // Residual credentials on an API without any paired device only get

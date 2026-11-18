@@ -1,11 +1,12 @@
 // @vitest-environment happy-dom
 // @vitest-environment-options {"settings": {"disableJavaScriptFileLoading": true, "navigation": {"disableMainFrameNavigation": true}}}
 
+import type { DirtyGate, DirtyGateOptions } from '@olivierzal/homey-kit/webview'
 import type { HomeDeviceZone } from '@olivierzal/melcloud-api'
 import { sequential } from '@olivierzal/homey-kit'
 import { getFieldset, getSelect } from '@olivierzal/homey-kit/dom'
 import { mock } from '@olivierzal/homey-kit/testing'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AtaValueManager } from '../../widgets/ata-group-setting/public/ata-values.mts'
 import {
@@ -16,6 +17,28 @@ import {
   loadWidgetPage,
   widgetRoutes,
 } from '../ata-group-harness.ts'
+
+// A predicate-mode gate keeps no trace of a rebaseline — `markSaved`
+// only re-evaluates, which the busy release does anyway — so the suite
+// watches the call itself.
+const markSaved = vi.hoisted(() => vi.fn<() => void>())
+
+vi.mock(import('@olivierzal/homey-kit/webview'), async (importOriginal) => {
+  const original = await importOriginal()
+  return {
+    ...original,
+    createDirtyGate: (options: DirtyGateOptions): DirtyGate => {
+      const gate = original.createDirtyGate(options)
+      return {
+        ...gate,
+        markSaved: (): void => {
+          markSaved()
+          gate.markSaved()
+        },
+      }
+    },
+  }
+})
 
 interface ManagerHarness extends WidgetHarness {
   readonly manager: AtaValueManager
@@ -350,6 +373,101 @@ describe('ata value manager', () => {
 
     expect(isApplyDisabled() || lastPutBody(harness)).toBe(true)
   })
+
+  it('should rebaseline the form a landed write still shows', async () => {
+    const { manager } = await createManager()
+    await manager.fetchValues()
+    getSelect('SetTemperature').value = '25'
+    markSaved.mockClear()
+    await manager.setValues()
+
+    expect(markSaved).toHaveBeenCalledExactlyOnceWith()
+  })
+
+  // The picker stays live while the write is in flight: the accepted body
+  // is filed under the zone the write went to, and the zone shown since
+  // is not rebaselined.
+  it('should keep a write on its zone when the picker moves', async () => {
+    const put = Promise.withResolvers<undefined>()
+    const { manager, ...harness } = await createManager({
+      deferredRoutes: {
+        'PUT /targets/buildings_1/ata': async () => put.promise,
+      },
+    })
+    const zone = getSelect('zones')
+    await manager.fetchValues()
+    getSelect('SetTemperature').value = '25'
+    const write = manager.setValues()
+    zone.value = 'devices_11'
+    markSaved.mockClear()
+    put.resolve(undefined)
+    await write
+
+    expect(harnessPaths(harness.api)).toContain('PUT /targets/buildings_1/ata')
+    expect(markSaved).not.toHaveBeenCalled()
+
+    manager.displayValues()
+
+    expect(getSelect('SetTemperature').value).toBe('')
+
+    zone.value = 'buildings_1'
+    manager.displayValues()
+
+    expect(getSelect('SetTemperature').value).toBe('25')
+  })
+
+  // The zone now shown has a read of its own: the late answer repaints
+  // nothing, an edit made there meanwhile included, and reports itself
+  // superseded.
+  // The write went to the zone the user has left: its failure is not
+  // shown under the zone now on screen.
+  it('should keep a refused write off the zone the user moved to', async () => {
+    const put = Promise.withResolvers<undefined>()
+    const { manager } = await createManager({
+      deferredRoutes: {
+        'PUT /targets/buildings_1/ata': async () => put.promise,
+      },
+    })
+    await manager.fetchValues()
+    getSelect('SetTemperature').value = '25'
+    const write = manager.setValues()
+    getSelect('zones').value = 'devices_11'
+    put.reject(new Error('Unit offline'))
+    await write
+
+    expect(
+      document.querySelector('#update_error')?.hasAttribute('hidden'),
+    ).toBe(true)
+  })
+
+  it.each(['fetchValues', 'fetchValuesKeepingEdits'] as const)(
+    'should file a %s answer under the zone it asked about',
+    async (method) => {
+      const get = Promise.withResolvers<unknown>()
+      const { manager } = await createManager({
+        deferredRoutes: {
+          'GET /targets/buildings_1/ata': async () => get.promise,
+        },
+      })
+      const zone = getSelect('zones')
+      const read = manager[method]()
+      zone.value = 'devices_11'
+      getSelect('SetTemperature').value = '22'
+      get.resolve({ ...groupStateFixture(), SetTemperature: 19 })
+
+      await expect(read).resolves.toBeNull()
+      expect(getSelect('SetTemperature').value).toBe('22')
+
+      manager.displayValues()
+
+      expect(getSelect('SetTemperature').value).toBe('')
+
+      zone.value = 'buildings_1'
+      manager.displayValues()
+
+      expect(getSelect('SetTemperature').value).toBe('19')
+    },
+  )
 
   it('should restore the known state on refresh', async () => {
     const { manager } = await createManager()

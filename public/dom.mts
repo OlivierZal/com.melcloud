@@ -72,30 +72,45 @@ export const translateAriaLabels = (
   }
 }
 
+// An error line is optional: a page without it keeps working.
+const findErrorLine = (id: string): HTMLElement | null => {
+  const element = document.querySelector(`#${CSS.escape(id)}`)
+  return element instanceof HTMLElement ? element : null
+}
+
 /**
- * Clears the `#init_error` element: called when the init work completes,
- * so a load that outlives its timeout removes the degraded state once it
- * eventually succeeds.
+ * Clears a static error line: the init failure once the init work
+ * completes, so a load that outlives its timeout removes the degraded
+ * state once it eventually succeeds; a write failure once a write lands
+ * or its zone is left.
+ * @param id - The line's element id, without `#`.
+ * @returns Whether the line was showing, so a widget resizes only when
+ * its content actually shrank.
  */
-export const hideInitError = (): void => {
-  const element = document.querySelector('#init_error')
-  if (!(element instanceof HTMLElement)) {
-    return
+export const hideErrorLine = (id: string): boolean => {
+  const element = findErrorLine(id)
+  // `hidden` also reads 'until-found', which hides the line too.
+  if (element?.hidden !== false) {
+    return false
   }
 
   element.hidden = true
   element.textContent = ''
+  return true
 }
 
 /**
- * Reveals the static `#init_error` element with the failure message: the
- * webview stays visible (`ready()` fires in the caller's `finally`), so
- * the user sees why the page is degraded instead of an endless overlay.
- * @param error - The init failure to display.
+ * Reveals a static error line with the failure message, so the user sees
+ * why instead of nothing: an init failure once the overlay ends
+ * (`ready()` fires in the caller's `finally`) rather than an endless
+ * overlay, a write the app refused rather than an Update that silently
+ * stays armed.
+ * @param id - The line's element id, without `#`.
+ * @param error - The failure to display.
  */
-export const showInitError = (error: unknown): void => {
-  const element = document.querySelector('#init_error')
-  if (!(element instanceof HTMLElement)) {
+export const showErrorLine = (id: string, error: unknown): void => {
+  const element = findErrorLine(id)
+  if (element === null) {
     return
   }
 
