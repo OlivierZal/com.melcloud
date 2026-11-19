@@ -1287,11 +1287,11 @@ class ErrorLogManager {
       return this.#homey.__('settings.errorLog.empty', { from })
     }
     const { lang } = document.documentElement
-    const category = new Intl.PluralRules(lang).select(count)
-    return this.#homey.__(`settings.errorLog.summary.${category}`, {
-      count: count.toLocaleString(lang),
-      from,
-    })
+    const pluralRules = new Intl.PluralRules(lang)
+    return this.#homey.__(
+      `settings.errorLog.summary.${pluralRules.select(count)}`,
+      { count: count.toLocaleString(lang), from },
+    )
   }
 
   // A range's rows go under the `listedCount` already shown (zero starts
