@@ -388,6 +388,11 @@ export default class MELCloudApp extends App {
 
   #homeApi!: Home.API
 
+  // Each Home unit's error log as read since the newest window was last
+  // asked for: a unit answers its whole log, so the older windows that
+  // follow only filter it.
+  readonly #homeErrorLogs = new Map<string, readonly RawErrorEntry[]>()
+
   #homeFacadeManager!: Home.FacadeManager
 
   // The accounts a registry sync has landed for (see `isRegistryListed`).
@@ -557,7 +562,8 @@ export default class MELCloudApp extends App {
 
   // One chronological log across both accounts: the Classic page drives the
   // window (its tiling is authoritative), Home entries are fetched per
-  // device and filtered into that window so pages never overlap.
+  // device and filtered into that window so pages never overlap. The
+  // newest window reads the Home logs afresh; the older ones reuse them.
   public async getErrorLog(
     query: Classic.ErrorLogQuery,
   ): Promise<FormattedErrorLog> {
@@ -575,7 +581,7 @@ export default class MELCloudApp extends App {
           ? null
           : Temporal.PlainDate.from(query.to),
     }
-    const allHomeEntries = await this.#getHomeErrorEntries()
+    const allHomeEntries = await this.#getHomeErrorEntries(window.to === null)
     const homeEntries = allHomeEntries.filter((entry) =>
       isWithinErrorLogWindow(entry.instant, window),
     )
@@ -1152,11 +1158,17 @@ export default class MELCloudApp extends App {
 
   // Best-effort per device: one unreachable unit must not empty the log.
   // The failure line names the unit by its id, as the SDK's own lines
-  // do, and its cause on one line when the SDK has a class for it.
+  // do, and its cause on one line when the SDK has a class for it. A
+  // log read is kept for the windows that follow; a failed read is not,
+  // so the next window asks the unit again.
   async #getHomeDeviceErrorEntries(
     device: Home.Device,
-  ): Promise<RawErrorEntry[]> {
+  ): Promise<readonly RawErrorEntry[]> {
     const { id, name, type } = device
+    const kept = this.#homeErrorLogs.get(id)
+    if (kept !== undefined) {
+      return kept
+    }
     const result = await this.getHomeFacade(id, type).getErrorLog()
     if (!result.ok) {
       logFailure(
@@ -1166,11 +1178,15 @@ export default class MELCloudApp extends App {
       )
       return []
     }
-    return result.value.map(({ atEpochMs, code = '', message = code }) => ({
-      device: name,
-      error: message,
-      instant: toErrorInstant(atEpochMs),
-    }))
+    const entries = result.value.map(
+      ({ atEpochMs, code = '', message = code }) => ({
+        device: name,
+        error: message,
+        instant: toErrorInstant(atEpochMs),
+      }),
+    )
+    this.#homeErrorLogs.set(id, entries)
+    return entries
   }
 
   // Device facade lookup shared by every Home surface: type-agnostic
@@ -1187,7 +1203,12 @@ export default class MELCloudApp extends App {
     return facade
   }
 
-  async #getHomeErrorEntries(): Promise<RawErrorEntry[]> {
+  async #getHomeErrorEntries(
+    isNewestWindow: boolean,
+  ): Promise<RawErrorEntry[]> {
+    if (isNewestWindow) {
+      this.#homeErrorLogs.clear()
+    }
     const logs = await Promise.all(
       this.#homeRegistry
         .getDevices()
