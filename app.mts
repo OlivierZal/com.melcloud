@@ -1621,15 +1621,16 @@ export default class MELCloudApp extends App {
     query: string,
   ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone | MergedBuildingZone)[] {
     const pairs = this.#getAtaSameNamePairs()
+    const targets = withoutPairedBuildings(
+      [
+        ...this.getClassicTargets(Classic.DeviceType.Ata),
+        ...this.getHomeTargets(Home.DeviceType.Ata),
+      ],
+      pairs,
+    )
     return filterZonesByName(
       tagSameNameBuildings([
-        ...withoutPairedBuildings(
-          [
-            ...this.getClassicTargets(Classic.DeviceType.Ata),
-            ...this.getHomeTargets(Home.DeviceType.Ata),
-          ],
-          pairs,
-        ).map((node) => ({ ...node, name: toFlatName(node) })),
+        ...targets.map((node) => ({ ...node, name: toFlatName(node) })),
         ...pairs.map((pair) => toMergedBuilding(pair)),
       ]).toSorted(byName),
       query,
