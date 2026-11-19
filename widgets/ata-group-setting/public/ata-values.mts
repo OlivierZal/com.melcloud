@@ -32,7 +32,11 @@ import {
   populateZoneOptions,
   showErrorLine,
 } from '../../../public/dom.mts'
-import { type PickerZone, getZoneId } from '../../../public/zones.mts'
+import {
+  type PickerListZone,
+  type PickerZone,
+  toDefaultZoneValue,
+} from '../../../public/zones.mts'
 
 // The generated controls are styled by element selectors in
 // `styles/layout.css` (Homey design tokens) — no utility classes needed,
@@ -173,13 +177,13 @@ export class AtaValueManager {
 
   public applyDefaultZone(
     defaultZone: AtaGroupSettingWidgetSettings['default_zone'],
+    zones: readonly PickerListZone[],
   ): void {
     if (defaultZone === null) {
       return
     }
 
-    const { id, model } = defaultZone
-    applySelectValue(this.#zone, getZoneId(id, model))
+    applySelectValue(this.#zone, toDefaultZoneValue(defaultZone, zones))
   }
 
   public createAtaFormControls(): void {

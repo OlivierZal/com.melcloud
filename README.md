@@ -34,7 +34,7 @@ This app integrates [MELCloud](https://app.melcloud.com/) and [MELCloud Home](ht
 
 Moved from MELCloud to MELCloud Home? Select Home in the app settings, sign in with your MELCloud Home account, then add your units again as \[Home\] devices. A MELCloud Classic account that no longer lists any unit says so on its devices, in pairing and in the settings.
 
-Your house is split across a MELCloud Classic account and a MELCloud Home account under one name? The air-to-air group widget offers it whole, as "Name \[Classic + Home\]", right after its two buildings, which stay selectable as "Name \[Classic\]" and "Name \[Home\]": a change sent to the house reaches both accounts, and a change one of them did not apply says which one.
+Your house is split across a MELCloud Classic account and a MELCloud Home account under one name? The air-to-air group widget lists it as one entry, "Name \[Classic + Home\]", with the Classic building's floors, areas and units and the Home building's units under it: a change sent to the house reaches both accounts, and a change one of them did not apply says which one. A widget whose default zone was one of the two buildings opens on the house.
 
 Signed in, but your units are not in Homey yet? The app settings say so and point to Add device → MELCloud → the \[Classic\] or \[Home\] devices of your account. A pairing wizard that refuses your credentials, when this account has no device in Homey yet and your other MELCloud account is signed in and lists units, tells you to add them as that account's devices instead.
 

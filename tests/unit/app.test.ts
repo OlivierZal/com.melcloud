@@ -4304,10 +4304,9 @@ describe('melCloudApp', () => {
       })
     })
 
-    // The leaves keep their building suffix; a building both accounts
-    // list under one name takes its own account's tag, and the house the
-    // two make is offered whole too.
-    it('should tag a building name both accounts list for the ata-group-setting widget', async () => {
+    // The leaves keep their building suffix, and the house two buildings
+    // of one name make is offered in their place, as the widget lists it.
+    it('should offer a house in place of its two buildings to the ata-group-setting widget', async () => {
       const { mockRegisterAta } = setupWidgetListeners()
       mockFacadeManagerGetBuildings.mockReturnValue([
         {
@@ -4378,25 +4377,14 @@ describe('melCloudApp', () => {
           name: 'Chambre (Domicile)',
         },
         {
+          areas: [],
           buildingName: 'Domicile',
+          devices: [],
+          floors: [],
           id: '1_b_1',
           level: 0,
           model: 'mergedBuildings',
           name: 'Domicile [Classic + Home]',
-        },
-        {
-          buildingName: 'Domicile',
-          id: 1,
-          level: 0,
-          model: 'buildings',
-          name: 'Domicile [Classic]',
-        },
-        {
-          buildingName: 'Domicile',
-          id: 'b_1',
-          level: 0,
-          model: 'homeBuildings',
-          name: 'Domicile [Home]',
         },
         {
           buildingName: 'Office',

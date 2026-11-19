@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 // @vitest-environment-options {"settings": {"disableJavaScriptFileLoading": true, "navigation": {"disableMainFrameNavigation": true}}}
 
-import type { HomeDeviceZone } from '@olivierzal/melcloud-api'
+import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import { getButton, getSelect } from '@olivierzal/homey-kit/dom'
 import { mock, settleDetached } from '@olivierzal/homey-kit/testing'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -38,10 +38,20 @@ const zoneOptions = (): { label: string | null; value: string }[] =>
     value,
   }))
 
-// Both accounts list a "Domicile"; only Home lists a "Villa".
+// Both accounts list a "Domicile"; only Classic lists an "Atelier", which
+// sorts first, and only Home a "Villa".
 const sameNameRoutes = (): Record<string, unknown> => ({
   ...widgetRoutes(),
   'GET /classic/buildings': [
+    {
+      areas: [],
+      devices: [{ id: 21, level: 1, model: 'devices', name: 'Cuisine' }],
+      floors: [],
+      id: 2,
+      level: 0,
+      model: 'buildings',
+      name: 'Atelier',
+    },
     {
       areas: [],
       devices: [{ id: 11, level: 1, model: 'devices', name: 'Living room' }],
@@ -84,6 +94,8 @@ const sameNameRoutes = (): Record<string, unknown> => ({
       name: 'Salon',
     },
   ],
+  'GET /targets/buildings_2/ata': groupStateFixture(),
+  'GET /targets/mergedBuildings_1_b_2/ata': groupStateFixture(),
 })
 
 const updateError = (): HTMLElement => {
@@ -186,23 +198,42 @@ describe('ata group setting widget', () => {
     ])
   })
 
-  // Only the labels move: the option values stay the targetIds the
-  // routes resolve, and the house the two buildings make is offered whole
-  // right after them.
-  it('should tag a building name both accounts list', async () => {
+  // The house the two buildings make is ONE entry in place of them: it
+  // nests what the Classic building holds and leads the Home building's
+  // units, its value the targetId the routes resolve.
+  it('should list a house both accounts share as one entry', async () => {
     await bootWidget({ routes: sameNameRoutes() })
 
     expect(zoneOptions()).toStrictEqual([
-      { label: ' Domicile [Classic]', value: 'buildings_1' },
-      { label: '··· Living room', value: 'devices_11' },
-      { label: ' Domicile [Home]', value: 'homeBuildings_b_2' },
-      { label: '··· Bureau', value: 'homeDevices_ata_2' },
+      { label: ' Atelier', value: 'buildings_2' },
+      { label: '··· Cuisine', value: 'devices_21' },
       { label: ' Domicile [Classic + Home]', value: 'mergedBuildings_1_b_2' },
+      { label: '··· Living room', value: 'devices_11' },
+      { label: '··· Bureau', value: 'homeDevices_ata_2' },
       { label: ' Villa', value: 'homeBuildings_b_1' },
       { label: '··· Salon', value: 'homeDevices_ata_1' },
     ])
-    // A widget with no default zone still opens on the first building.
-    expect(getSelect('zones').value).toBe('buildings_1')
+    // A widget with no default zone opens on the first entry.
+    expect(getSelect('zones').value).toBe('buildings_2')
+  })
+
+  // A default stored as one of the two buildings, before the house read
+  // as one entry, opens on the house.
+  it('should open a default stored as one of the two buildings on the house', async () => {
+    await bootWidget({
+      routes: sameNameRoutes(),
+      settings: {
+        default_zone: mock<HomeBuildingZone>({
+          buildingName: 'Domicile',
+          id: 'b_2',
+          level: 0,
+          model: 'homeBuildings',
+          name: 'Domicile [Home]',
+        }),
+      },
+    })
+
+    expect(getSelect('zones').value).toBe('mergedBuildings_1_b_2')
   })
 
   // The merged value rides the same routes as any other: the app resolves
@@ -211,12 +242,14 @@ describe('ata group setting widget', () => {
     const harness = await bootWidget({
       routes: {
         ...sameNameRoutes(),
-        'GET /targets/mergedBuildings_1_b_2/ata': groupStateFixture(),
         'PUT /targets/mergedBuildings_1_b_2/ata': undefined,
       },
       settings: {
         default_zone: {
+          areas: [],
           buildingName: 'Domicile',
+          devices: [],
+          floors: [],
           id: '1_b_2',
           level: 0,
           model: 'mergedBuildings',

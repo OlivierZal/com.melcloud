@@ -132,13 +132,13 @@ class WidgetApp {
     const { default_zone: defaultZone } = this.#homey.getSettings()
     this.#addEventListeners()
     this.#ataValueManager.createAtaFormControls()
-    // A house both accounts list under one name is offered whole too,
-    // after its two buildings, each of which stays selectable.
+    // A house both accounts list under one name is one entry, holding
+    // what its two buildings hold.
     const zones = sortByBuilding(
       withMergedBuildings([...buildings, ...homeTargets]),
     )
     this.#ataValueManager.populateZoneOptions(tagSameNameBuildings(zones))
-    this.#ataValueManager.applyDefaultZone(defaultZone)
+    this.#ataValueManager.applyDefaultZone(defaultZone, zones)
     await this.#fetchAndAnimate()
   }
 

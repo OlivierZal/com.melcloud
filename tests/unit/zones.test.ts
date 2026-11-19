@@ -16,15 +16,22 @@ import {
   sortByBuilding,
   tagSameNameBuildings,
   toBuildingKey,
+  toDefaultZoneValue,
   toMergedBuilding,
   withMergedBuildings,
+  withoutPairedBuildings,
 } from '../../public/zones.mts'
 
-const classicBuilding = (name: string): Classic.BuildingZone =>
-  mock<Classic.BuildingZone>({ model: 'buildings', name })
+const classicBuilding = (name: string, id?: number): Classic.BuildingZone =>
+  mock<Classic.BuildingZone>({ id, model: 'buildings', name })
 
-const homeBuilding = (name: string): HomeBuildingZone =>
-  mock<HomeBuildingZone>({ buildingName: name, model: 'homeBuildings', name })
+const homeBuilding = (name: string, id?: string): HomeBuildingZone =>
+  mock<HomeBuildingZone>({
+    buildingName: name,
+    id,
+    model: 'homeBuildings',
+    name,
+  })
 
 const homeDevice = (buildingName: string, name: string): HomeDeviceZone =>
   mock<HomeDeviceZone>({ buildingName, model: 'homeDevices', name })
@@ -221,16 +228,28 @@ describe('zones', () => {
     ])
   })
 
-  // The value joins both ids whole, a Home id's underscores included,
-  // and the house reads and sorts under the Classic building's name.
+  // The value joins both ids whole, a Home id's underscores included, and
+  // the house reads and sorts under the Classic building's name, nesting
+  // what that building holds.
   it('should build a merged house from its pair', () => {
+    const living = { id: 11, level: 1, model: 'devices', name: 'Living' }
+
     expect(
       toMergedBuilding({
-        classic: mock<Classic.BuildingZone>({ id: 1, name: 'Domicile' }),
+        classic: mock<Classic.BuildingZone>({
+          areas: [],
+          devices: [living],
+          floors: [],
+          id: 1,
+          name: 'Domicile',
+        }),
         home: mock<HomeBuildingZone>({ id: 'b_2', name: 'Domicile ' }),
       }),
     ).toStrictEqual({
+      areas: [],
       buildingName: 'Domicile',
+      devices: [living],
+      floors: [],
       id: '1_b_2',
       level: 0,
       model: 'mergedBuildings',
@@ -239,14 +258,14 @@ describe('zones', () => {
     expect(getZoneId('1_b_2', 'mergedBuildings')).toBe('mergedBuildings_1_b_2')
   })
 
-  // Each building stays selectable, and the house both make lands right
-  // after the second one's devices: a list never starts on it, so a
-  // widget with no default zone opens where it did before.
-  it('should list a merged house right after its two buildings', () => {
+  // The house stands in for its two buildings and leads the Home
+  // building's devices, tagged though no building is left to tell it
+  // from.
+  it('should list a house both accounts share as one entry', () => {
     const zones = [
-      classicBuilding('Domicile'),
-      homeBuilding('Villa'),
-      homeBuilding('Domicile'),
+      classicBuilding('Domicile', 1),
+      homeBuilding('Villa', 'b_1'),
+      homeBuilding('Domicile', 'b_2'),
       homeDevice('Domicile', 'Bureau'),
     ]
 
@@ -255,21 +274,19 @@ describe('zones', () => {
         ({ model, name }) => `${model}: ${name}`,
       ),
     ).toStrictEqual([
-      'buildings: Domicile [Classic]',
-      'homeBuildings: Domicile [Home]',
-      'homeDevices: Bureau',
       'mergedBuildings: Domicile [Classic + Home]',
+      'homeDevices: Bureau',
       'homeBuildings: Villa',
     ])
   })
 
   // The sort keys on the same rule as the pairing, so names differing in
-  // spacing alone keep the house together and its merged entry after it.
+  // spacing alone keep the house ahead of its Home devices.
   it('should keep a house together when its names differ in spacing alone', () => {
     const zones = [
-      classicBuilding(' Domicile'),
-      homeBuilding('Bureau'),
-      homeBuilding('Domicile '),
+      classicBuilding(' Domicile', 1),
+      homeBuilding('Bureau', 'b_1'),
+      homeBuilding('Domicile ', 'b_2'),
       homeDevice('Domicile ', 'Salon'),
     ]
 
@@ -279,11 +296,147 @@ describe('zones', () => {
       ),
     ).toStrictEqual([
       'homeBuildings: Bureau',
-      'buildings: Domicile [Classic]',
-      'homeBuildings: Domicile [Home]',
-      'homeDevices: Salon',
       'mergedBuildings: Domicile [Classic + Home]',
+      'homeDevices: Salon',
     ])
+  })
+
+  // Pairs drawn from the building tree filter a flat list by option
+  // value: the two buildings leave, everything else stays — a zone of
+  // another model under the same id included.
+  it('should drop the two buildings of each pair from another list', () => {
+    const pair = {
+      classic: classicBuilding('Domicile', 1),
+      home: homeBuilding('Domicile', 'b_2'),
+    }
+
+    expect(
+      withoutPairedBuildings(
+        [
+          { id: 1, model: 'buildings' },
+          { id: 1, model: 'devices' },
+          { id: 'b_2', model: 'homeBuildings' },
+          { id: 'ata_2', model: 'homeDevices' },
+          { id: 2, model: 'buildings' },
+        ],
+        [pair],
+      ),
+    ).toStrictEqual([
+      { id: 1, model: 'devices' },
+      { id: 'ata_2', model: 'homeDevices' },
+      { id: 2, model: 'buildings' },
+    ])
+  })
+
+  describe('default zone', () => {
+    const living = { id: 11, level: 1, model: 'devices', name: 'Living' }
+    const domicile = mock<Classic.BuildingZone>({
+      areas: [],
+      devices: [living],
+      floors: [],
+      id: 1,
+      level: 0,
+      model: 'buildings',
+      name: 'Domicile',
+    })
+    const homeDomicile = mock<HomeBuildingZone>({
+      buildingName: 'Domicile',
+      id: 'b_2',
+      level: 0,
+      model: 'homeBuildings',
+      name: 'Domicile',
+    })
+    const bureau = mock<HomeDeviceZone>({
+      buildingName: 'Domicile',
+      id: 'ata_2',
+      level: 1,
+      model: 'homeDevices',
+      name: 'Bureau',
+    })
+    const villa = mock<HomeBuildingZone>({
+      buildingName: 'Villa',
+      id: 'b_1',
+      level: 0,
+      model: 'homeBuildings',
+      name: 'Villa',
+    })
+    const listed = sortByBuilding(
+      withMergedBuildings([domicile, homeDomicile, bureau, villa]),
+    )
+
+    it('should keep a zone the list still offers, subzones included', () => {
+      expect(
+        toDefaultZoneValue(
+          mock<Classic.FlatZone>({
+            buildingName: 'Domicile',
+            id: 11,
+            model: 'devices',
+          }),
+          listed,
+        ),
+      ).toBe('devices_11')
+      expect(toDefaultZoneValue(villa, listed)).toBe('homeBuildings_b_1')
+    })
+
+    // Stored as either building, before its house read as one entry.
+    it('should open a building of a merged house on the house', () => {
+      expect(
+        toDefaultZoneValue(
+          mock<Classic.FlatZone>({
+            buildingName: 'Domicile',
+            id: 1,
+            model: 'buildings',
+            name: 'Domicile [Classic]',
+          }),
+          listed,
+        ),
+      ).toBe('mergedBuildings_1_b_2')
+      expect(toDefaultZoneValue(homeDomicile, listed)).toBe(
+        'mergedBuildings_1_b_2',
+      )
+    })
+
+    // The Home account signed out: the Classic building is left.
+    it('should open a house whose pair broke on the building left under its name', () => {
+      expect(
+        toDefaultZoneValue(
+          toMergedBuilding({ classic: domicile, home: homeDomicile }),
+          sortByBuilding(withMergedBuildings([domicile, villa])),
+        ),
+      ).toBe('buildings_1')
+    })
+
+    // A unit gone from its house opens on the house; a name the list no
+    // longer offers, or a Classic zone stored with no building name,
+    // keeps its own value, which selects nothing.
+    it('should fall back on the house of a zone gone from the list, if any', () => {
+      expect(
+        toDefaultZoneValue(
+          mock<HomeDeviceZone>({
+            buildingName: 'Villa',
+            id: 'ata_9',
+            model: 'homeDevices',
+          }),
+          listed,
+        ),
+      ).toBe('homeBuildings_b_1')
+      expect(
+        toDefaultZoneValue(
+          mock<HomeBuildingZone>({
+            buildingName: 'Chalet',
+            id: 'b_9',
+            model: 'homeBuildings',
+          }),
+          listed,
+        ),
+      ).toBe('homeBuildings_b_9')
+      expect(
+        toDefaultZoneValue(
+          mock<Classic.BuildingZone>({ id: 1, model: 'buildings' }),
+          listed,
+        ),
+      ).toBe('buildings_1')
+    })
   })
 
   it('should detect a merged value by its prefix', () => {

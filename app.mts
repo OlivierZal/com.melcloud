@@ -94,6 +94,7 @@ import {
   pairSameNameBuildings,
   tagSameNameBuildings,
   toMergedBuilding,
+  withoutPairedBuildings,
 } from './public/zones.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 import {
@@ -1610,21 +1611,26 @@ export default class MELCloudApp extends App {
       )
   }
 
-  // Everything the ATA group widget can target: every Classic zone/device
-  // and every Home building/device, each leaf suffixed with its building
-  // and each building both accounts list under one name tagged with its
-  // own account, plus the merged houses, the whole list drawn from the
-  // two shared sources and name-sorted.
+  // Everything the ATA group widget can target, as its picker offers it:
+  // every Classic zone/device and every Home building/device, each leaf
+  // suffixed with its building, a house both accounts list under one
+  // name as its merged house in place of its two buildings, and any other
+  // building whose name both accounts hold tagged with its own account,
+  // the whole list drawn from the two shared sources and name-sorted.
   #searchAtaTargets(
     query: string,
   ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone | MergedBuildingZone)[] {
+    const pairs = this.#getAtaSameNamePairs()
     return filterZonesByName(
       tagSameNameBuildings([
-        ...[
-          ...this.getClassicTargets(Classic.DeviceType.Ata),
-          ...this.getHomeTargets(Home.DeviceType.Ata),
-        ].map((node) => ({ ...node, name: toFlatName(node) })),
-        ...this.#getAtaSameNamePairs().map((pair) => toMergedBuilding(pair)),
+        ...withoutPairedBuildings(
+          [
+            ...this.getClassicTargets(Classic.DeviceType.Ata),
+            ...this.getHomeTargets(Home.DeviceType.Ata),
+          ],
+          pairs,
+        ).map((node) => ({ ...node, name: toFlatName(node) })),
+        ...pairs.map((pair) => toMergedBuilding(pair)),
       ]).toSorted(byName),
       query,
     )

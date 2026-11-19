@@ -2,8 +2,12 @@ import type { HomeBuildingZone, HomeDeviceZone } from '@olivierzal/melcloud-api'
 import type * as Classic from '@olivierzal/melcloud-api/classic'
 
 // A house both accounts list under one name, read and written as one
-// group (`toMergedBuilding`).
-export interface MergedBuildingZone {
+// group (`toMergedBuilding`). It nests its Classic building's subzones,
+// so a picker walks them under it as under the building.
+export interface MergedBuildingZone extends Pick<
+  Classic.BuildingZone,
+  'areas' | 'devices' | 'floors'
+> {
   readonly buildingName: string
   readonly id: string
   readonly level: 0
@@ -13,7 +17,8 @@ export interface MergedBuildingZone {
 
 // What the zone pickers list at the top level: a Classic building, its
 // subzones nested, or a Home building or device, flat — every Home entry
-// naming its building —, and in the ATA group widget the merged houses.
+// naming its building —, and in the ATA group widget the merged house
+// standing in for a pair's two buildings.
 export type PickerListZone =
   Classic.BuildingZone | HomeBuildingZone | HomeDeviceZone | MergedBuildingZone
 
@@ -66,19 +71,24 @@ const getBuildingKeys = (
 
 // Display copies of a list spanning both accounts: a building whose name
 // the other account's buildings hold too takes its own account's tag, so
-// the two stop reading alike, and a merged house takes both. Option
-// values, nested subzones and devices stay as they are, and so does the
-// input. A list sorted by building is tagged after `sortByBuilding`,
-// which keys on the bare names.
+// the two stop reading alike, and a merged house always takes both, the
+// list holding it in place of its two buildings. Option values, nested
+// subzones and devices stay as they are, and so does the input. A list
+// sorted by building is tagged after `sortByBuilding`, which keys on the
+// bare names.
 export const tagSameNameBuildings = <T extends NamedZone>(
   zones: readonly T[],
 ): T[] => {
   const classicKeys = getBuildingKeys(zones, 'buildings')
   const homeKeys = getBuildingKeys(zones, 'homeBuildings')
+  const isSharedName = (name: string): boolean => {
+    const key = toBuildingKey(name)
+    return classicKeys.has(key) && homeKeys.has(key)
+  }
   return zones.map((zone) => {
     const tag = DIALECT_TAGS.get(zone.model)
-    const key = toBuildingKey(zone.name)
-    return tag !== undefined && classicKeys.has(key) && homeKeys.has(key)
+    return tag !== undefined &&
+      (zone.model === 'mergedBuildings' || isSharedName(zone.name))
       ? { ...zone, name: `${zone.name.trim()} ${tag}` }
       : zone
   })
@@ -125,29 +135,59 @@ export const pairSameNameBuildings = (
   return pairs
 }
 
-// The merged house of a pair: its value joins the two buildings' ids,
-// and it sorts and reads under the Classic building's name.
+// The merged house of a pair: its value joins the two buildings' ids, it
+// sorts and reads under the Classic building's name, and it nests that
+// building's subzones.
 export const toMergedBuilding = ({
   classic,
   home,
 }: SameNamePair): MergedBuildingZone => ({
+  areas: classic.areas,
   buildingName: classic.name,
+  devices: classic.devices,
+  floors: classic.floors,
   id: `${String(classic.id)}_${home.id}`,
   level: 0,
   model: 'mergedBuildings',
   name: classic.name,
 })
 
-// The list with a merged house added for each pair, left for
-// `sortByBuilding` to place: the sort is stable, so each one lands right
-// after its two buildings, and a widget with no default zone still opens
-// on the building it opened on before.
+interface ValuedZone {
+  readonly id: number | string
+  readonly model: string
+}
+
+// The list without the two buildings of each pair, which the pair's
+// merged house stands in for. Matched by option value, so pairs drawn
+// from another list of the same accounts apply too.
+export const withoutPairedBuildings = <T extends ValuedZone>(
+  zones: readonly T[],
+  pairs: readonly SameNamePair[],
+): T[] => {
+  const pairedValues = new Set(
+    pairs.flatMap(({ classic, home }) => [
+      getZoneId(classic.id, classic.model),
+      getZoneId(home.id, home.model),
+    ]),
+  )
+  return zones.filter(
+    ({ id, model }) => !pairedValues.has(getZoneId(id, model)),
+  )
+}
+
+// The list with each house both accounts list under one name as ONE
+// entry: its merged house stands in for its two buildings, and the Home
+// building's devices stay. The houses come first, so the stable
+// `sortByBuilding` puts each one ahead of those devices.
 export const withMergedBuildings = (
   zones: readonly PickerListZone[],
-): PickerListZone[] => [
-  ...zones,
-  ...pairSameNameBuildings(zones).map((pair) => toMergedBuilding(pair)),
-]
+): PickerListZone[] => {
+  const pairs = pairSameNameBuildings(zones)
+  return [
+    ...pairs.map((pair) => toMergedBuilding(pair)),
+    ...withoutPairedBuildings(zones, pairs),
+  ]
+}
 
 // Only Classic zones nest — the Home entries carry none of the subzone
 // keys, so the walk bottoms out on them.
@@ -162,6 +202,41 @@ export const getZoneId = (id: number | string, model: string): string =>
 
 export const getZoneName = (name: string, level: number): string =>
   `${'···'.repeat(level)} ${name}`
+
+// Every option value a picker list renders, its subzones' included.
+const getZoneValues = (zones: readonly PickerZone[]): string[] =>
+  zones.flatMap((zone) => [
+    getZoneId(zone.id, zone.model),
+    ...getZoneValues(getSubzones(zone)),
+  ])
+
+// The building a stored zone was stamped with: every Home entry and
+// merged house carries one, a Classic zone only when the autocomplete
+// that stored it did.
+const getStoredBuildingName = (zone: PickerZone): string | undefined =>
+  'buildingName' in zone ? zone.buildingName : undefined
+
+// The option a stored default zone opens on: its own while the list
+// offers it, else the house-level entry listed under its building name —
+// a building whose house reads as one entry opens on that house, a house
+// whose pair broke (an account signed out, a building renamed) on the
+// building left under its name. Failing both, its own value, which
+// selects nothing: the picker stays on its first entry.
+export const toDefaultZoneValue = (
+  zone: PickerZone,
+  zones: readonly PickerListZone[],
+): string => {
+  const value = getZoneId(zone.id, zone.model)
+  const buildingName = getStoredBuildingName(zone)
+  if (buildingName === undefined || getZoneValues(zones).includes(value)) {
+    return value
+  }
+  const key = toBuildingKey(buildingName)
+  const house = zones.find(
+    (candidate) => candidate.level === 0 && getBuildingKey(candidate) === key,
+  )
+  return house === undefined ? value : getZoneId(house.id, house.model)
+}
 
 // A selected option value is `${model}_${id}`. A Home device carries model
 // `homeDevices` and a string id that may itself contain underscores, so

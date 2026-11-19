@@ -134,19 +134,40 @@ describe('ata value manager', () => {
   it('should apply a matching default zone and skip the rest', async () => {
     const { manager } = await createManager()
     const zone = getSelect('zones')
-    manager.applyDefaultZone(null)
+    manager.applyDefaultZone(null, classicZones())
 
     expect(zone.value).toBe('buildings_1')
 
-    manager.applyDefaultZone(mock<HomeDeviceZone>({ id: 11, model: 'devices' }))
+    manager.applyDefaultZone(
+      mock<HomeDeviceZone>({ id: 11, model: 'devices' }),
+      classicZones(),
+    )
 
     expect(zone.value).toBe('devices_11')
 
     manager.applyDefaultZone(
       mock<HomeDeviceZone>({ id: 'missing', model: 'homeDevices' }),
+      classicZones(),
     )
 
     expect(zone.value).toBe('devices_11')
+  })
+
+  // A unit the list no longer offers opens on the house it named.
+  it('should fall back on the house of a default zone gone from the list', async () => {
+    const { manager } = await createManager()
+    const zone = getSelect('zones')
+    zone.value = 'devices_11'
+    manager.applyDefaultZone(
+      mock<HomeDeviceZone>({
+        buildingName: 'Home',
+        id: 'gone',
+        model: 'homeDevices',
+      }),
+      classicZones(),
+    )
+
+    expect(zone.value).toBe('buildings_1')
   })
 
   it('should keep an empty populate call harmless', async () => {

@@ -241,22 +241,30 @@ coverage.
   names. A building BOTH accounts list under one name (trimmed and
   NFC-composed; letter case still tells two apart, `toBuildingKey`)
   reads `Name [Classic]` / `Name [Home]` wherever the two lists meet —
-  the zone pickers, the settings select, the ATA widget's
-  `default_zone` autocomplete and the holiday-mode cards — through
-  `tagSameNameBuildings`, which copies the display name only, trimmed
-  (option values stay `${model}_${id}`), and runs AFTER
-  `sortByBuilding`, which keys on the untagged names. The
+  the settings select and the holiday-mode cards, and the ATA widget's
+  picker and `default_zone` autocomplete when the name pairs nothing
+  (below) — through `tagSameNameBuildings`, which copies the display
+  name only, trimmed (option values stay `${model}_${id}`), and runs
+  AFTER `sortByBuilding`, which keys on the untagged names. The
   tags are the driver-prefix tokens, untranslated. The ATA widget and
-  its autocomplete also offer the house such a pair makes — exactly one
+  its autocomplete list the house such a pair makes — exactly one
   building per account under that rule (`pairSameNameBuildings`; a name
-  either account holds twice pairs nothing) — as `Name [Classic + Home]`
-  (`toMergedBuilding`), the two buildings staying selectable: the picker
-  adds it BEFORE the sort (`withMergedBuildings`), whose stability puts
-  it right after the second building's devices, so a widget with no
-  `default_zone` opens where it did; the autocomplete lists it in name
-  order. The settings page and the holiday-mode cards offer no merged
-  house: their frost, holiday and overheat writes stay one account at a
-  time. No-change group writes are
+  either account holds twice pairs nothing) — as ONE entry,
+  `Name [Classic + Home]` (`toMergedBuilding`, tagged whatever else the
+  list holds), in PLACE of its two buildings (`withoutPairedBuildings`,
+  matching by option value, so the autocomplete's flat list drops them
+  under the pairs the building tree makes): the house nests its Classic
+  building's subzones, and the picker adds it BEFORE the sort
+  (`withMergedBuildings`), whose stability puts it ahead of its Home
+  building's devices; the autocomplete lists it in name order. A stored
+  `default_zone` the picker no longer offers — a building now inside a
+  house, a house whose pair broke — opens on the house-level entry
+  listed under its stamped `buildingName` (`toDefaultZoneValue`), and
+  one with no such entry, or no `buildingName` (a Classic zone stored
+  before the library stamped one), on the first entry. The settings
+  page and the holiday-mode cards offer no merged house: their frost,
+  holiday and overheat writes stay one account at a time. No-change
+  group writes are
   the LIBRARY's business: every melcloud-api `updateGroupState` leg
   resolves an already-matching delta as success, so the app-side
   handlers are plain delegations (verdict 2026-08, recorded on
