@@ -55,17 +55,15 @@
         "device": "Apparaat",
         "error": "Fout"
       },
-      "error": "Kies een datum voor\n__from__.",
-      "errorCount": {
-        "0": "fout",
-        "1": "fout",
-        "234": "fouten",
-        "plural": "fouten"
-      },
+      "empty": "Geen fouten sinds __from__",
       "legend": "Foutenoverzicht",
-      "period": "Sinds __from__:",
-      "see": "Bekijk alle fouten",
-      "since": "sinds"
+      "older": "Vorige maand",
+      "see": "Tonen",
+      "since": "Sinds",
+      "summary": {
+        "one": "__count__ fout sinds __from__",
+        "other": "__count__ fouten sinds __from__"
+      }
     },
     "frostProtection": {
       "enabled": "<strong>Bevriesbeveiliging</strong> inschakelen",

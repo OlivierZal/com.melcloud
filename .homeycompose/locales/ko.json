@@ -68,17 +68,15 @@
     },
     "errorLog": {
       "columns": { "date": "날짜", "device": "기기", "error": "오류" },
-      "error": "__from__ 이전 날짜를 선택하세요.",
-      "errorCount": {
-        "0": "개 오류",
-        "1": "개 오류",
-        "234": "개 오류",
-        "plural": "개 오류"
-      },
+      "empty": "__from__ 이후 오류 없음",
       "legend": "오류 기록",
-      "period": "__from__ 이후:",
-      "see": "모든 오류 보기",
-      "since": "이후"
+      "older": "이전 달",
+      "see": "보기",
+      "since": "시작일",
+      "summary": {
+        "one": "__from__ 이후 오류 __count__개",
+        "other": "__from__ 이후 오류 __count__개"
+      }
     },
     "frostProtection": {
       "enabled": "<strong>동파 방지</strong> 활성화",

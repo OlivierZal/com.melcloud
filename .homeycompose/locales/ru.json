@@ -68,17 +68,17 @@
     },
     "errorLog": {
       "columns": { "date": "Дата", "device": "Устройство", "error": "Ошибка" },
-      "error": "Выберите дату до\n__from__.",
-      "errorCount": {
-        "0": "ошибок",
-        "1": "ошибка",
-        "234": "ошибки",
-        "plural": "ошибок"
-      },
+      "empty": "Нет ошибок с __from__",
       "legend": "Журнал ошибок",
-      "period": "С __from__:",
-      "see": "Показать все ошибки",
-      "since": "с"
+      "older": "Предыдущий месяц",
+      "see": "Показать",
+      "since": "С",
+      "summary": {
+        "few": "__count__ ошибки с __from__",
+        "many": "__count__ ошибок с __from__",
+        "one": "__count__ ошибка с __from__",
+        "other": "__count__ ошибки с __from__"
+      }
     },
     "frostProtection": {
       "enabled": "Включить <strong>защиту от замерзания</strong>",

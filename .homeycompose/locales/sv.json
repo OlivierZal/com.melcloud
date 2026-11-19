@@ -68,12 +68,15 @@
     },
     "errorLog": {
       "columns": { "date": "Datum", "device": "Enhet", "error": "Fel" },
-      "error": "Välj ett datum före\n__from__.",
-      "errorCount": { "0": "fel", "1": "fel", "234": "fel", "plural": "fel" },
+      "empty": "Inga fel sedan __from__",
       "legend": "Felhistorik",
-      "period": "Sedan __from__:",
-      "see": "Se alla fel",
-      "since": "sedan"
+      "older": "Föregående månad",
+      "see": "Visa",
+      "since": "Sedan",
+      "summary": {
+        "one": "__count__ fel sedan __from__",
+        "other": "__count__ fel sedan __from__"
+      }
     },
     "frostProtection": {
       "enabled": "Aktivera <strong>frostskydd</strong>",

@@ -55,17 +55,18 @@
         "device": "الجهاز",
         "error": "الخطأ"
       },
-      "error": "اختر تاريخًا قبل\n__from__.",
-      "errorCount": {
-        "0": "أخطاء",
-        "1": "خطأ",
-        "234": "أخطاء",
-        "plural": "أخطاء"
-      },
+      "empty": "لا توجد أخطاء منذ __from__",
       "legend": "سجل الأخطاء",
-      "period": "منذ __from__:",
-      "see": "عرض جميع الأخطاء",
-      "since": "منذ"
+      "older": "الشهر السابق",
+      "see": "عرض",
+      "since": "منذ",
+      "summary": {
+        "few": "__count__ أخطاء منذ __from__",
+        "many": "__count__ خطأً منذ __from__",
+        "one": "خطأ واحد منذ __from__",
+        "other": "__count__ خطأ منذ __from__",
+        "two": "خطآن منذ __from__"
+      }
     },
     "frostProtection": {
       "enabled": "تفعيل <strong>الحماية من التجمد</strong>",

@@ -385,6 +385,24 @@ coverage.
   its own dialect's driver prefix verbatim (`[Classic]`/`[Home]`) and
   never the other's, which the suites pin per locale
   (`tests/locales.ts`).
+- The error history (settings page) lists on the click only — a read at
+  boot held first paint and raised its alert unprompted (45.2.3) — and
+  its "since" field always states what the list covers: it opens on the
+  default range (30 days, the library's `period` 29, from the phone's
+  `Temporal.Now`), holds no day past today, and fills back to the
+  default when "Show" finds it cleared. "Show" replaces the list,
+  "Previous month" appends the window before the listed one and moves
+  the field back to its start, and the whole section freezes
+  (`disabled` + `aria-busy`) while a read runs; a failed read leaves
+  the list as it was. The one summary line is worded by
+  `Intl.PluralRules` on the page language, so each locale's
+  `settings.errorLog.summary` carries every CLDR category its language
+  gives a count — `two`/`few`/`many` in Arabic, `few`/`many` in Polish
+  and Russian, `many` for the Romance millions — and never fewer than
+  English's `one`/`other`, which the typed locale map requires of every
+  language, Korean's unused `one` included; an empty range reads its
+  own sentence (`empty`). The suite pins each locale against the
+  runtime's rules.
 - Settings-CSS sharing — VERDICT (2026-08, after the `./dom` adoption):
   the cascade fixes STAY LOCAL, in all three apps. Two independent
   reasons, either sufficient. (1) The kit ships no stylesheet and

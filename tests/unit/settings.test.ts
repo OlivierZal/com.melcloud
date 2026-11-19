@@ -15,7 +15,8 @@ import {
   getSpan,
 } from '@olivierzal/homey-kit/dom'
 import { mock, settleDetached } from '@olivierzal/homey-kit/testing'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { Temporal } from 'temporal-polyfill'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { DeviceSettings } from '../../types/device-settings.mts'
 import { start } from '../../settings/index.mts'
@@ -221,15 +222,42 @@ const holidayFixture = (): unknown => ({
   startDate: '2026-08-10T10:00',
 })
 
-const errorLogFixture = (count: number): unknown => ({
+// The windows the error-log suite pages through with the clock pinned
+// on 31 July 2026: the default range from 2 July, then the month before.
+interface ErrorWindow {
+  readonly fromDateHuman: string
+  readonly nextFromDate: string
+  readonly nextToDate: string
+}
+
+const newestErrorWindow: ErrorWindow = {
+  fromDateHuman: '2 Jul 2026',
+  nextFromDate: '2026-06-02',
+  nextToDate: '2026-07-01',
+}
+
+const olderErrorWindow: ErrorWindow = {
+  fromDateHuman: '2 Jun 2026',
+  nextFromDate: '2026-05-03',
+  nextToDate: '2026-06-01',
+}
+
+const newestErrorsKey =
+  'GET /logs/errors?from=2026-07-02&offset=0&period=29&to='
+
+const olderErrorsKey =
+  'GET /logs/errors?from=2026-06-02&offset=0&period=29&to=2026-07-01'
+
+const errorLogFixture = (
+  count: number,
+  errorWindow: ErrorWindow = newestErrorWindow,
+): unknown => ({
   errors: Array.from({ length: count }, (_unusedValue, index) => ({
     date: `2026-07-${String(index + 1).padStart(2, '0')}`,
     device: 'Living room',
     error: `Failure ${String(index)}`,
   })),
-  fromDateHuman: '1 July 2026',
-  nextFromDate: '2026-07-01',
-  nextToDate: '2026-06-30',
+  ...errorWindow,
 })
 
 // One Home building and its one ATA device, as `/home/targets` lists them.
@@ -465,24 +493,28 @@ const hintLines = (): (string | null)[] =>
     ({ textContent }) => textContent,
   )
 
-// Route the paged error-log fetches (their query strings vary by page)
-// while every other route keeps its default answer.
-const seeErrors = async (harness: Harness, count: number): Promise<void> => {
-  const routes = defaultRoutes()
-  harness.api.mockImplementation((...callArgs: ApiCallArgs) => {
-    const [method, path] = callArgs
-    const callback = callArgs.findLast(
-      (argument): argument is ApiCallback => typeof argument === 'function',
-    )
-    if (path.startsWith('/logs/errors')) {
-      callback?.(null, errorLogFixture(count))
-      return
-    }
-    callback?.(null, routes[`${method} ${path}`])
-  })
+// The rows the error log lists, cell by cell.
+const errorCells = (): (string | null)[] =>
+  [...document.querySelectorAll('#error_log td')].map(
+    ({ textContent }) => textContent,
+  )
+
+// The error-log reads among the routes the page called.
+const errorLogReads = (harness: Harness): string[] =>
+  calledPaths(harness).filter((path) => path.includes('/logs/errors'))
+
+// Boots with the error-log windows answered, and lists the default range.
+const showErrors = async (
+  routes: Readonly<Record<string, unknown>>,
+): Promise<Harness> => {
+  const harness = await bootPage({ routes: { ...defaultRoutes(), ...routes } })
   getButton('see').click()
   await settleDetached()
+  return harness
 }
+
+// Counts reaching every plural category the 13 languages use.
+const pluralProbeCounts = [1, 2, 3, 5, 11, 21, 22, 100, 1_000_000]
 
 describe('settings page', () => {
   beforeEach(() => {
@@ -1586,92 +1618,205 @@ describe('settings page', () => {
   })
 
   describe('error log', () => {
-    it('should render the fetched errors and the singular count', async () => {
-      const harness = await bootPage()
-      await seeErrors(harness, 1)
-
-      expect(getSpan('error_count').textContent).toBe(
-        '1 settings.errorLog.errorCount.1',
-      )
-
-      const cells = [...document.querySelectorAll('#error_log td')].map(
-        ({ textContent }) => textContent,
-      )
-
-      expect(cells).toStrictEqual(['2026-07-01', 'Living room', 'Failure 0'])
-      expect(getInput('since').value).toBe('2026-07-01')
-    })
-
-    it('should use the paucal form for slavic counts', async () => {
-      const harness = await bootPage()
-      await seeErrors(harness, 3)
-
-      expect(getSpan('error_count').textContent).toBe(
-        '3 settings.errorLog.errorCount.234',
+    // The clock is pinned through `Temporal.Now`, never `Date`: the page
+    // reads today at boot, so the default range opens on 2 July 2026.
+    beforeEach(() => {
+      vi.spyOn(Temporal.Now, 'plainDateISO').mockReturnValue(
+        Temporal.PlainDate.from('2026-07-31'),
       )
     })
 
-    it('should use the plural form for teen counts', async () => {
-      const harness = await bootPage()
-      await seeErrors(harness, 3)
-      // 3 + 10 = 13: a teen, plural despite its 3 ending.
-      await seeErrors(harness, 10)
-
-      expect(getSpan('error_count').textContent).toBe(
-        '13 settings.errorLog.errorCount.plural',
-      )
-      // The second batch reused the same table body.
-      expect(document.querySelectorAll('#error_log table')).toHaveLength(1)
-      expect(document.querySelectorAll('#error_log tbody tr')).toHaveLength(13)
+    afterEach(() => {
+      vi.restoreAllMocks()
     })
 
-    it('should use the zero form on an empty log', async () => {
+    // Listing stays on the click: the field states the default range
+    // without reading anything.
+    it('should open on the default range, reading nothing', async () => {
       const harness = await bootPage()
-      await seeErrors(harness, 0)
 
-      expect(getSpan('error_count').textContent).toBe(
-        '0 settings.errorLog.errorCount.0',
+      expect(getInput('since').value).toBe('2026-07-02')
+      expect(getInput('since').max).toBe('2026-07-31')
+      expect(getSpan('error_summary').textContent).toBe('')
+      expect(getDiv('error_log_older').hidden).toBe(true)
+      expect(errorLogReads(harness)).toStrictEqual([])
+    })
+
+    it('should list the errors since the date in one summary line', async () => {
+      await showErrors({ [newestErrorsKey]: errorLogFixture(1) })
+
+      expect(getSpan('error_summary').textContent).toBe(
+        'settings.errorLog.summary.one {"count":"1","from":"2 Jul 2026"}',
+      )
+      expect(errorCells()).toStrictEqual([
+        '2026-07-01',
+        'Living room',
+        'Failure 0',
+      ])
+      expect(getInput('since').value).toBe('2026-07-02')
+      expect(getDiv('error_log_older').hidden).toBe(false)
+    })
+
+    // The page language's plural rules pick the form: French reads 3 in
+    // its general plural.
+    it('should word the count by the page language plural rules', async () => {
+      await showErrors({ [newestErrorsKey]: errorLogFixture(3) })
+
+      expect(getSpan('error_summary').textContent).toBe(
+        'settings.errorLog.summary.other {"count":"3","from":"2 Jul 2026"}',
+      )
+    })
+
+    it('should say so when the range holds no error', async () => {
+      await showErrors({ [newestErrorsKey]: errorLogFixture(0) })
+
+      expect(getSpan('error_summary').textContent).toBe(
+        'settings.errorLog.empty {"from":"2 Jul 2026"}',
       )
       expect(document.querySelector('#error_log table')).toBeNull()
+      expect(getDiv('error_log_older').hidden).toBe(false)
     })
 
-    it('should clamp a since date beyond the window', async () => {
-      const harness = await bootPage()
-      await seeErrors(harness, 1)
-      // `nextToDate` landed as the upper bound: exceed it.
-      commit(getInput('since'), '2026-07-15')
+    it('should replace the list when Show runs again', async () => {
+      const harness = await showErrors({
+        [newestErrorsKey]: errorLogFixture(3),
+      })
+      swapRoutes(harness, {
+        ...defaultRoutes(),
+        'GET /logs/errors?from=2026-07-20&offset=0&period=29&to=':
+          errorLogFixture(1, {
+            fromDateHuman: '20 Jul 2026',
+            nextFromDate: '2026-06-20',
+            nextToDate: '2026-07-19',
+          }),
+      })
+      commit(getInput('since'), '2026-07-20')
+      getButton('see').click()
+      await settleDetached()
 
-      expect(getInput('since').value).toBe('2026-06-30')
-      expect(harness.alert).toHaveBeenCalledWith(
-        'settings.errorLog.error {"from":"1 July 2026"}',
+      expect(document.querySelectorAll('#error_log tbody tr')).toHaveLength(1)
+      expect(getSpan('error_summary').textContent).toBe(
+        'settings.errorLog.summary.one {"count":"1","from":"20 Jul 2026"}',
       )
+      expect(getInput('since').value).toBe('2026-07-20')
     })
 
-    it('should keep a since date inside the window', async () => {
+    // "Previous month" asks for the window before the listed range, lists
+    // it under the same table, counts both and moves the field back.
+    it('should append the month before under the list', async () => {
+      await showErrors({
+        [newestErrorsKey]: errorLogFixture(3),
+        [olderErrorsKey]: errorLogFixture(10, olderErrorWindow),
+      })
+      getButton('see_older').click()
+      await settleDetached()
+
+      expect(document.querySelectorAll('#error_log table')).toHaveLength(1)
+      expect(document.querySelectorAll('#error_log tbody tr')).toHaveLength(13)
+      expect(getSpan('error_summary').textContent).toBe(
+        'settings.errorLog.summary.other {"count":"13","from":"2 Jun 2026"}',
+      )
+      expect(getInput('since').value).toBe('2026-06-02')
+    })
+
+    // The button stays hidden until a range is listed; a click it could
+    // still receive asks nothing.
+    it('should ask nothing for a previous month before any listing', async () => {
       const harness = await bootPage()
-      await seeErrors(harness, 1)
+      getButton('see_older').click()
+      await settleDetached()
+
+      expect(errorLogReads(harness)).toStrictEqual([])
+    })
+
+    it('should hold a since date past today to today', async () => {
+      const harness = await bootPage()
+      commit(getInput('since'), '2026-08-15')
+
+      expect(getInput('since').value).toBe('2026-07-31')
+      expect(harness.alert).not.toHaveBeenCalled()
+    })
+
+    it('should keep a since date up to today', async () => {
+      await bootPage()
       commit(getInput('since'), '2026-06-01')
 
       expect(getInput('since').value).toBe('2026-06-01')
-      expect(harness.alert).not.toHaveBeenCalledWith(
-        'settings.errorLog.error {"from":"1 July 2026"}',
+    })
+
+    it('should list the default range once the field was cleared', async () => {
+      await bootPage({
+        routes: { ...defaultRoutes(), [newestErrorsKey]: errorLogFixture(1) },
+      })
+      commit(getInput('since'), '')
+      getButton('see').click()
+      await settleDetached()
+
+      expect(getInput('since').value).toBe('2026-07-02')
+      expect(getSpan('error_summary').textContent).toBe(
+        'settings.errorLog.summary.one {"count":"1","from":"2 Jul 2026"}',
       )
     })
 
-    it('should alert and re-enable the button when the fetch fails', async () => {
-      const harness = await bootPage({
-        failures: {
-          'GET /logs/errors?from=&offset=0&period=29&to=': new Error(
-            'log down',
-          ),
-        },
+    // One read at a time: the whole section is disabled and busy while
+    // the read runs, and released after it.
+    it('should freeze the section while a read runs', async () => {
+      const harness = await bootPage()
+      const section = getFieldset('error_log_section')
+      const answer = apiImplementation(
+        {},
+        { ...defaultRoutes(), [newestErrorsKey]: errorLogFixture(1) },
+      )
+      const states: string[] = []
+      harness.api.mockImplementation((...callArgs: ApiCallArgs) => {
+        states.push(
+          `${String(section.disabled)} ${String(section.getAttribute('aria-busy'))}`,
+        )
+        answer(...callArgs)
+      })
+      getButton('see').click()
+      await settleDetached()
+
+      expect(states).toStrictEqual(['true true'])
+      expect(section.disabled).toBe(false)
+      expect(section.getAttribute('aria-busy')).toBe('false')
+    })
+
+    // A failed read changes nothing on the page: the list it would have
+    // replaced stays, with its summary.
+    it('should alert a failed read and keep the list shown', async () => {
+      const harness = await showErrors({
+        [newestErrorsKey]: errorLogFixture(3),
+      })
+      swapRoutes(harness, defaultRoutes(), {
+        [newestErrorsKey]: new Error('log down'),
       })
       getButton('see').click()
       await settleDetached()
 
       expect(harness.alert).toHaveBeenCalledWith('log down')
-      expect(getButton('see').disabled).toBe(false)
+      expect(document.querySelectorAll('#error_log tbody tr')).toHaveLength(3)
+      expect(getSpan('error_summary').textContent).toBe(
+        'settings.errorLog.summary.other {"count":"3","from":"2 Jul 2026"}',
+      )
+      expect(getFieldset('error_log_section').disabled).toBe(false)
     })
+
+    // Every language words the summary in each plural form its rules give
+    // a count of listed errors: these counts reach Arabic's dual, few and
+    // many, the Slavic few and many, and the Romance millions.
+    it.each(Object.entries(locales))(
+      'should word every %s plural form of the summary',
+      (language, { settings }) => {
+        const rules = new Intl.PluralRules(language)
+
+        expect(Object.keys(settings.errorLog.summary)).toStrictEqual(
+          expect.arrayContaining(
+            pluralProbeCounts.map((count) => rules.select(count)),
+          ),
+        )
+      },
+    )
   })
 
   describe('zone panels', () => {

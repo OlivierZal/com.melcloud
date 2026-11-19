@@ -115,40 +115,47 @@
     </details>
     <!-- Shown when at least one API is authenticated — hidden by default to prevent flash -->
     <div id="content" hidden>
-      <fieldset class="homey-form-fieldset">
+      <fieldset id="error_log_section" class="homey-form-fieldset">
         <legend class="homey-form-legend" data-i18n="settings.errorLog.legend">
           Error history
         </legend>
-        <div class="homey-form-group container">
-          <button
-            id="see"
-            type="button"
-            class="homey-button-secondary-shadow"
-            data-i18n="settings.errorLog.see"
-          >
-            See all errors
-          </button>
+        <div class="homey-form-group">
           <div class="container-inline-end">
             <label
               class="homey-form-label unset-margin"
               data-i18n="settings.errorLog.since"
               for="since"
-              >since</label
+              >Since</label
             >
             <input id="since" type="date" />
+            <button
+              id="see"
+              type="button"
+              class="homey-button-secondary-shadow"
+              data-i18n="settings.errorLog.see"
+            >
+              Show
+            </button>
           </div>
         </div>
-        <div id="error_log" class="homey-form-group">
-          <div class="container-inline-end">
-            <span
-              id="period"
-              class="homey-form-label unset-margin bolded"
-            ></span>
-            <span
-              id="error_count"
-              class="homey-form-label unset-margin"
-              aria-live="polite"
-            ></span>
+        <div class="homey-form-group">
+          <span
+            id="error_summary"
+            class="homey-form-label unset-margin bolded"
+            aria-live="polite"
+          ></span>
+          <div id="error_log"></div>
+          <!-- Shown once a range is listed: before that there is no
+               month to go back from. -->
+          <div id="error_log_older" hidden>
+            <button
+              id="see_older"
+              type="button"
+              class="homey-button-secondary-shadow-full"
+              data-i18n="settings.errorLog.older"
+            >
+              Previous month
+            </button>
           </div>
         </div>
       </fieldset>

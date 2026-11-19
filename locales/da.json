@@ -55,17 +55,15 @@
         "device": "Enhed",
         "error": "Fejl"
       },
-      "error": "Vælg en dato før\n__from__.",
-      "errorCount": {
-        "0": "fejl",
-        "1": "fejl",
-        "234": "fejl",
-        "plural": "fejl"
-      },
+      "empty": "Ingen fejl siden den __from__",
       "legend": "Fejlhistorik",
-      "period": "Siden __from__:",
-      "see": "Se alle fejl",
-      "since": "siden den"
+      "older": "Forrige måned",
+      "see": "Vis",
+      "since": "Siden den",
+      "summary": {
+        "one": "__count__ fejl siden den __from__",
+        "other": "__count__ fejl siden den __from__"
+      }
     },
     "frostProtection": {
       "enabled": "Aktiver <strong>frostbeskyttelse</strong>",
