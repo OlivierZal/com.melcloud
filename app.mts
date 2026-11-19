@@ -1156,19 +1156,33 @@ export default class MELCloudApp extends App {
     return facade
   }
 
-  // Best-effort per device: one unreachable unit must not empty the log.
-  // The failure line names the unit by its id, as the SDK's own lines
-  // do, and its cause on one line when the SDK has a class for it. A
-  // log read is kept for the windows that follow; a failed read is not,
-  // so the next window asks the unit again.
+  // A Home unit's entries: the log a read already brought, else a fresh
+  // read, kept for the windows that follow when it succeeds — a failed
+  // read keeps nothing, so the next window asks the unit again.
   async #getHomeDeviceErrorEntries(
     device: Home.Device,
   ): Promise<readonly RawErrorEntry[]> {
-    const { id, name, type } = device
-    const kept = this.#homeErrorLogs.get(id)
+    const kept = this.#homeErrorLogs.get(device.id)
     if (kept !== undefined) {
       return kept
     }
+    const entries = await this.#getHomeDeviceErrorLog(device)
+    if (entries === null) {
+      return []
+    }
+    this.#homeErrorLogs.set(device.id, entries)
+    return entries
+  }
+
+  // Best-effort per device: one unreachable unit must not empty the log.
+  // The failure line names the unit by its id, as the SDK's own lines
+  // do, and its cause on one line when the SDK has a class for it; the
+  // read then answers `null`.
+  async #getHomeDeviceErrorLog({
+    id,
+    name,
+    type,
+  }: Home.Device): Promise<RawErrorEntry[] | null> {
     const result = await this.getHomeFacade(id, type).getErrorLog()
     if (!result.ok) {
       logFailure(
@@ -1176,17 +1190,13 @@ export default class MELCloudApp extends App {
         `Home error log fetch failed for unit ${id}:`,
         failureCause(result.error),
       )
-      return []
+      return null
     }
-    const entries = result.value.map(
-      ({ atEpochMs, code = '', message = code }) => ({
-        device: name,
-        error: message,
-        instant: toErrorInstant(atEpochMs),
-      }),
-    )
-    this.#homeErrorLogs.set(id, entries)
-    return entries
+    return result.value.map(({ atEpochMs, code = '', message = code }) => ({
+      device: name,
+      error: message,
+      instant: toErrorInstant(atEpochMs),
+    }))
   }
 
   // Device facade lookup shared by every Home surface: type-agnostic

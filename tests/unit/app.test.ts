@@ -611,6 +611,18 @@ const stubHomeDevice = (facade: unknown): void => {
   mockHomeFacadeManagerGetById.mockReturnValue(facade)
 }
 
+// A Classic error-log page holding no entry, its window from March 1st.
+const stubEmptyClassicErrorLog = (): void => {
+  mockApiInstance.getErrorLog.mockResolvedValue(
+    ok({
+      entries: [],
+      fromDate: '2026-03-01',
+      nextFromDate: '2026-02-01',
+      nextToDate: '2026-02-28',
+    }),
+  )
+}
+
 // The ATA routes gate on the facade's own `type`.
 const setupHomeAtaFacade = (
   overrides: Partial<Record<keyof Home.DeviceAtaFacade, unknown>>,
@@ -1399,17 +1411,6 @@ describe('melCloudApp', () => {
         type: Home.DeviceType.Ata,
       })
       return getErrorLog
-    }
-
-    const stubEmptyClassicErrorLog = (): void => {
-      mockApiInstance.getErrorLog.mockResolvedValue(
-        ok({
-          entries: [],
-          fromDate: '2026-03-01',
-          nextFromDate: '2026-02-01',
-          nextToDate: '2026-02-28',
-        }),
-      )
     }
 
     // A unit answers its whole log, so the older windows only filter the
