@@ -83,7 +83,7 @@ import { App } from './lib/homey.mts'
 import { failureCause, unwrapResult } from './lib/unwrap-result.mts'
 import { toNonNegativeInt, toZoneValueData } from './lib/validation.mts'
 import {
-  type MergedBuildingZone,
+  type MergedBuildingItem,
   type SameNamePair,
   getHomeBuildingId,
   getHomeDeviceId,
@@ -93,7 +93,7 @@ import {
   isMergedBuildingValue,
   pairSameNameBuildings,
   tagSameNameBuildings,
-  toMergedBuilding,
+  toMergedItem,
 } from './public/zones.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 import {
@@ -1223,7 +1223,7 @@ export default class MELCloudApp extends App {
     home: Home.BuildingFacade
   } {
     const pair = this.#getAtaSameNamePairs().find((candidate) => {
-      const { id, model } = toMergedBuilding(candidate)
+      const { id, model } = toMergedItem(candidate)
       return getZoneId(id, model) === targetId
     })
     if (pair === undefined) {
@@ -1611,20 +1611,30 @@ export default class MELCloudApp extends App {
   }
 
   // Everything the ATA group widget can target: every Classic zone/device
-  // and every Home building/device, each leaf suffixed with its building
-  // and each building both accounts list under one name tagged with its
-  // own account, plus the merged houses, the whole list drawn from the
-  // two shared sources and name-sorted.
+  // and every Home building/device, each leaf suffixed with its building,
+  // a house both accounts list under one name as ONE item in place of
+  // its two buildings, and a name either account holds twice tagged with
+  // each building's account; the whole list drawn from the two shared
+  // sources and name-sorted.
   #searchAtaTargets(
     query: string,
-  ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone | MergedBuildingZone)[] {
+  ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone | MergedBuildingItem)[] {
+    const pairs = this.#getAtaSameNamePairs()
+    const houseBuildings = new Set(
+      pairs.flatMap(({ classic, home }) => [
+        getZoneId(classic.id, 'buildings'),
+        getZoneId(home.id, 'homeBuildings'),
+      ]),
+    )
     return filterZonesByName(
       tagSameNameBuildings([
         ...[
           ...this.getClassicTargets(Classic.DeviceType.Ata),
           ...this.getHomeTargets(Home.DeviceType.Ata),
-        ].map((node) => ({ ...node, name: toFlatName(node) })),
-        ...this.#getAtaSameNamePairs().map((pair) => toMergedBuilding(pair)),
+        ]
+          .filter(({ id, model }) => !houseBuildings.has(getZoneId(id, model)))
+          .map((node) => ({ ...node, name: toFlatName(node) })),
+        ...pairs.map((pair) => toMergedItem(pair)),
       ]).toSorted(byName),
       query,
     )

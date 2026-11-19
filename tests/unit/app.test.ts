@@ -521,6 +521,19 @@ const homeUnitsFailed = (): Error =>
 const BOTH_ACCOUNTS_FAILED =
   /^Group update failed on groups: MELCloud Classic: temp: Invalid value; MELCloud Home: fetch failed$/v
 
+// A Classic building named "Maison", as both the tree and the flat
+// Classic lists carry it.
+const maisonZone = (id: number): Record<string, unknown> => ({
+  areas: [],
+  buildingName: 'Maison',
+  devices: [],
+  floors: [],
+  id,
+  level: 0,
+  model: 'buildings',
+  name: 'Maison',
+})
+
 // A group read answering `result`, the merged-house legs' double.
 const mockGroupRead = (
   result: Result<Classic.GroupState>,
@@ -4304,10 +4317,43 @@ describe('melCloudApp', () => {
       })
     })
 
-    // The leaves keep their building suffix; a building both accounts
-    // list under one name takes its own account's tag, and the house the
-    // two make is offered whole too.
-    it('should tag a building name both accounts list for the ata-group-setting widget', async () => {
+    // The leaves keep their building suffix; a house both accounts list
+    // under one name is ONE item, no account named and its name trimmed,
+    // in place of its two buildings.
+    // A name either account holds twice is no single house: each of its
+    // buildings stays, tagged with its account.
+    it('should tag the buildings of a name held twice by one account for the ata-group-setting widget', async () => {
+      const { mockRegisterAta } = setupWidgetListeners()
+      mockFacadeManagerGetBuildings.mockReturnValue([
+        maisonZone(1),
+        maisonZone(3),
+      ])
+      mockFacadeManagerGetZones.mockReturnValue([maisonZone(1), maisonZone(3)])
+      mockHomeFacadeManagerGetZones.mockReturnValue([
+        {
+          buildingName: 'Maison',
+          id: 'b_1',
+          level: 0,
+          model: 'homeBuildings',
+          name: 'Maison',
+        },
+      ])
+      await app.onInit()
+
+      const ataCallback = getMockCallArg<
+        (query: string) => { model: string; name: string }[]
+      >(mockRegisterAta, 0, 1)
+
+      expect(
+        ataCallback('').map(({ model, name }) => `${model}: ${name}`),
+      ).toStrictEqual([
+        'buildings: Maison [Classic]',
+        'buildings: Maison [Classic]',
+        'homeBuildings: Maison [Home]',
+      ])
+    })
+
+    it('should offer a house both accounts share once to the ata-group-setting widget', async () => {
       const { mockRegisterAta } = setupWidgetListeners()
       mockFacadeManagerGetBuildings.mockReturnValue([
         {
@@ -4317,19 +4363,19 @@ describe('melCloudApp', () => {
           id: 1,
           level: 0,
           model: 'buildings',
-          name: 'Domicile',
+          name: ' Domicile',
         },
       ])
       mockFacadeManagerGetZones.mockReturnValue([
         {
-          buildingName: 'Domicile',
+          buildingName: ' Domicile',
           id: 1,
           level: 0,
           model: 'buildings',
-          name: 'Domicile',
+          name: ' Domicile',
         },
         {
-          buildingName: 'Domicile',
+          buildingName: ' Domicile',
           id: 10,
           level: 1,
           model: 'devices',
@@ -4382,21 +4428,7 @@ describe('melCloudApp', () => {
           id: '1_b_1',
           level: 0,
           model: 'mergedBuildings',
-          name: 'Domicile [Classic + Home]',
-        },
-        {
-          buildingName: 'Domicile',
-          id: 1,
-          level: 0,
-          model: 'buildings',
-          name: 'Domicile [Classic]',
-        },
-        {
-          buildingName: 'Domicile',
-          id: 'b_1',
-          level: 0,
-          model: 'homeBuildings',
-          name: 'Domicile [Home]',
+          name: 'Domicile',
         },
         {
           buildingName: 'Office',
@@ -4406,7 +4438,7 @@ describe('melCloudApp', () => {
           name: 'Office',
         },
         {
-          buildingName: 'Domicile',
+          buildingName: ' Domicile',
           id: 10,
           level: 1,
           model: 'devices',

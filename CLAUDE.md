@@ -236,27 +236,33 @@ coverage.
   with the webview's collation (the phone's locale) while the library
   orders what each building holds with the Homey process's — the two
   differ only on letters a language sorts apart, Å, Ä and Ö after Z in
-  Swedish. The flat autocomplete lists (the holiday-mode cards, both
+  Swedish; a merged house's units, gathered from both accounts, are
+  sorted in the webview too. The flat autocomplete lists (the holiday-mode cards, both
   widgets' `default_zone`) are name-sorted on the building-suffixed
   names. A building BOTH accounts list under one name (trimmed and
   NFC-composed; letter case still tells two apart, `toBuildingKey`)
-  reads `Name [Classic]` / `Name [Home]` wherever the two lists meet —
-  the zone pickers, the settings select, the ATA widget's
-  `default_zone` autocomplete and the holiday-mode cards — through
-  `tagSameNameBuildings`, which copies the display name only, trimmed
-  (option values stay `${model}_${id}`), and runs AFTER
-  `sortByBuilding`, which keys on the untagged names. The
-  tags are the driver-prefix tokens, untranslated. The ATA widget and
-  its autocomplete also offer the house such a pair makes — exactly one
-  building per account under that rule (`pairSameNameBuildings`; a name
-  either account holds twice pairs nothing) — as `Name [Classic + Home]`
-  (`toMergedBuilding`), the two buildings staying selectable: the picker
-  adds it BEFORE the sort (`withMergedBuildings`), whose stability puts
-  it right after the second building's devices, so a widget with no
-  `default_zone` opens where it did; the autocomplete lists it in name
-  order. The settings page and the holiday-mode cards offer no merged
-  house: their frost, holiday and overheat writes stay one account at a
-  time. No-change group writes are
+  reads `Name [Classic]` / `Name [Home]` wherever the two lists meet
+  unmerged — the settings select, the holiday-mode cards, and in the
+  ATA widget and its autocomplete a name either account holds twice —
+  through `tagSameNameBuildings`, which copies the display name only,
+  trimmed (option values stay `${model}_${id}`), and runs AFTER
+  `sortByBuilding`, which keys on the untagged names. The tags are the
+  driver-prefix tokens, untranslated. The ATA widget and its
+  autocomplete list the house such a pair makes — exactly one building
+  per account under that rule (`pairSameNameBuildings`; a name either
+  account holds twice pairs nothing) — ONCE, under its name, no account
+  named (the owner's call, 2026-11-19: no Classic, Home and
+  Classic + Home trio). In the picker the two buildings and the Home
+  one's devices give way to the merged house (`mergeSameNameBuildings`),
+  which holds the units of both accounts in name order, then the
+  Classic areas and floors, each still selectable on its own; in the
+  autocomplete its one item (`toMergedItem`) replaces the two
+  buildings, the leaves keeping their building suffix. A `default_zone`
+  stored on either building opens on the house (`toHouseDefault`), and
+  a widget with no default opens on the first building in name order,
+  the house included. The settings page and the holiday-mode cards
+  keep the two tagged buildings: their frost, holiday and overheat
+  writes stay one account at a time. No-change group writes are
   the LIBRARY's business: every melcloud-api `updateGroupState` leg
   resolves an already-matching delta as success, so the app-side
   handlers are plain delegations (verdict 2026-08, recorded on

@@ -22,9 +22,12 @@ import {
   translateAriaLabels,
 } from '../../../public/dom.mts'
 import {
+  type PickerListZone,
+  mergeSameNameBuildings,
+  pairSameNameBuildings,
   sortByBuilding,
   tagSameNameBuildings,
-  withMergedBuildings,
+  toHouseDefault,
 } from '../../../public/zones.mts'
 import { AnimationController, AnimationDelay } from './animation.mts'
 import { AtaValueManager } from './ata-values.mts'
@@ -129,17 +132,24 @@ class WidgetApp {
     if (buildings.length === 0 && homeTargets.length === 0) {
       return
     }
-    const { default_zone: defaultZone } = this.#homey.getSettings()
     this.#addEventListeners()
     this.#ataValueManager.createAtaFormControls()
-    // A house both accounts list under one name is offered whole too,
-    // after its two buildings, each of which stays selectable.
-    const zones = sortByBuilding(
-      withMergedBuildings([...buildings, ...homeTargets]),
-    )
-    this.#ataValueManager.populateZoneOptions(tagSameNameBuildings(zones))
-    this.#ataValueManager.applyDefaultZone(defaultZone)
+    this.#populateTargets([...buildings, ...homeTargets])
     await this.#fetchAndAnimate()
+  }
+
+  // A house both accounts list under one name is ONE entry over
+  // everything its two buildings hold, and a default stored on either
+  // building opens on it.
+  #populateTargets(listed: readonly PickerListZone[]): void {
+    const zones = sortByBuilding(mergeSameNameBuildings(listed))
+    this.#ataValueManager.populateZoneOptions(tagSameNameBuildings(zones))
+    this.#ataValueManager.applyDefaultZone(
+      toHouseDefault(
+        this.#homey.getSettings().default_zone,
+        pairSameNameBuildings(listed),
+      ),
+    )
   }
 
   async #refreshKeepingEdits(): Promise<void> {
