@@ -22,7 +22,13 @@ import {
 } from '../../public/zones.mts'
 
 const classicBuilding = (name: string): Classic.BuildingZone =>
-  mock<Classic.BuildingZone>({ model: 'buildings', name })
+  mock<Classic.BuildingZone>({
+    areas: [],
+    devices: [],
+    floors: [],
+    model: 'buildings',
+    name,
+  })
 
 const homeBuilding = (name: string): HomeBuildingZone =>
   mock<HomeBuildingZone>({ buildingName: name, model: 'homeBuildings', name })
@@ -287,6 +293,29 @@ describe('zones', () => {
     expect(tagSameNameBuildings([house]).map(({ name }) => name)).toStrictEqual(
       ['Domicile'],
     )
+  })
+
+  // The pairing rule decides what merges: names differing in spacing make
+  // one house, read under the trimmed name, and each house keeps its own
+  // Home units.
+  it('should merge each house under the pairing rule, with its own Home units', () => {
+    const bureau = homeDevice('Domicile', 'Bureau')
+    const terrasse = homeDevice('Villa', 'Terrasse')
+    const houses = mergeSameNameBuildings([
+      classicBuilding('Domicile '),
+      homeBuilding('Domicile'),
+      bureau,
+      classicBuilding('Villa'),
+      homeBuilding('Villa'),
+      terrasse,
+    ])
+
+    expect(
+      houses.map((house) => [house.model, house.name, getSubzones(house)]),
+    ).toStrictEqual([
+      ['mergedBuildings', 'Domicile', [bureau]],
+      ['mergedBuildings', 'Villa', [terrasse]],
+    ])
   })
 
   // A name either account holds twice is no single house: its buildings

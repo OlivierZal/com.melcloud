@@ -38,6 +38,15 @@ const zoneOptions = (): { label: string | null; value: string }[] =>
     value,
   }))
 
+// A Home building sorting before every other.
+const ATELIER = {
+  buildingName: 'Atelier',
+  id: 'b_0',
+  level: 0,
+  model: 'homeBuildings',
+  name: 'Atelier',
+}
+
 // Both accounts list a "Domicile"; only Home lists a "Villa", and
 // `homeFirst` the Home entries sorting before them.
 const sameNameRoutes = (
@@ -205,6 +214,40 @@ describe('ata group setting widget', () => {
     ])
   })
 
+  // A name either account holds twice is no single house: its buildings
+  // stay listed, each tagged with its account.
+  it('should tag the buildings of a name held twice by one account', async () => {
+    await bootWidget({
+      routes: {
+        ...widgetRoutes(),
+        'GET /classic/buildings': [1, 3].map((id) => ({
+          areas: [],
+          devices: [],
+          floors: [],
+          id,
+          level: 0,
+          model: 'buildings',
+          name: 'Maison',
+        })),
+        'GET /home/targets/ata': [
+          {
+            buildingName: 'Maison',
+            id: 'b_2',
+            level: 0,
+            model: 'homeBuildings',
+            name: 'Maison',
+          },
+        ],
+      },
+    })
+
+    expect(zoneOptions()).toStrictEqual([
+      { label: ' Maison [Classic]', value: 'buildings_1' },
+      { label: ' Maison [Classic]', value: 'buildings_3' },
+      { label: ' Maison [Home]', value: 'homeBuildings_b_2' },
+    ])
+  })
+
   // The picker lists neither building any more: a widget set on one of
   // them opens on the house, not on the first building in name order.
   it.each([
@@ -215,15 +258,7 @@ describe('ata group setting widget', () => {
     async (defaultZone) => {
       await bootWidget({
         routes: {
-          ...sameNameRoutes([
-            {
-              buildingName: 'Atelier',
-              id: 'b_0',
-              level: 0,
-              model: 'homeBuildings',
-              name: 'Atelier',
-            },
-          ]),
+          ...sameNameRoutes([ATELIER]),
           'GET /targets/mergedBuildings_1_b_2/ata': groupStateFixture(),
         },
         settings: { default_zone: mock<HomeDeviceZone>(defaultZone) },
@@ -234,11 +269,12 @@ describe('ata group setting widget', () => {
   )
 
   // The merged value rides the same routes as any other: the app resolves
-  // it, the widget never splits it.
+  // it, the widget never splits it. A building sorting first proves the
+  // stored house is what the widget opens on.
   it('should read and write a merged house through its own value', async () => {
     const harness = await bootWidget({
       routes: {
-        ...sameNameRoutes(),
+        ...sameNameRoutes([ATELIER]),
         'GET /targets/mergedBuildings_1_b_2/ata': groupStateFixture(),
         'PUT /targets/mergedBuildings_1_b_2/ata': undefined,
       },

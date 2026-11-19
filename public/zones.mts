@@ -134,16 +134,17 @@ export const pairSameNameBuildings = (
 }
 
 // The merged house of a pair: its value joins the two buildings' ids,
-// and it sorts and reads under the Classic building's name.
+// and it sorts and reads under the Classic building's name, trimmed like
+// every name a flat list shows.
 export const toMergedItem = ({
   classic,
   home,
 }: SameNamePair): MergedBuildingItem => ({
-  buildingName: classic.name,
+  buildingName: classic.name.trim(),
   id: `${String(classic.id)}_${home.id}`,
   level: 0,
   model: 'mergedBuildings',
-  name: classic.name,
+  name: classic.name.trim(),
 })
 
 const byName = (zone: NamedZone, other: NamedZone): number =>

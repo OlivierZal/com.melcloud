@@ -236,7 +236,8 @@ coverage.
   with the webview's collation (the phone's locale) while the library
   orders what each building holds with the Homey process's — the two
   differ only on letters a language sorts apart, Å, Ä and Ö after Z in
-  Swedish. The flat autocomplete lists (the holiday-mode cards, both
+  Swedish; a merged house's units, gathered from both accounts, are
+  sorted in the webview too. The flat autocomplete lists (the holiday-mode cards, both
   widgets' `default_zone`) are name-sorted on the building-suffixed
   names. A building BOTH accounts list under one name (trimmed and
   NFC-composed; letter case still tells two apart, `toBuildingKey`)
