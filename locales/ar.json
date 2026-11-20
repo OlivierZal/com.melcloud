@@ -154,7 +154,8 @@
     },
     "days": "عدد الأيام",
     "loadFailed": "فشل التحميل",
-    "zones": "المناطق"
+    "zones": "المناطق",
+    "selectZone": "اختر المنطقة"
   },
   "notifications": {
     "sessionExpired": {

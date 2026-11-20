@@ -131,7 +131,7 @@ describe('ata value manager', () => {
     expect(paths).toContain('GET /targets/homeDevices_ata_1/ata')
   })
 
-  it('should apply a matching default zone and skip the rest', async () => {
+  it('should open on the first zone without a default, on a listed one with it', async () => {
     const { manager } = await createManager()
     const zone = getSelect('zones')
     manager.applyDefaultZone(null)
@@ -141,12 +141,25 @@ describe('ata value manager', () => {
     manager.applyDefaultZone(mock<HomeDeviceZone>({ id: 11, model: 'devices' }))
 
     expect(zone.value).toBe('devices_11')
+  })
 
+  // No zone, no target: neither sync reads anything, and the placeholder
+  // heads the list without being selectable.
+  it('should select no zone for a default the list does not hold', async () => {
+    const { api, manager } = await createManager()
+    const zone = getSelect('zones')
     manager.applyDefaultZone(
       mock<HomeDeviceZone>({ id: 'missing', model: 'homeDevices' }),
     )
 
-    expect(zone.value).toBe('devices_11')
+    expect(zone.value).toBe('')
+    expect(optionValues(zone)).toStrictEqual(['', 'buildings_1', 'devices_11'])
+    expect(zone.options[0]?.disabled).toBe(true)
+    await expect(manager.fetchValues()).resolves.toBeNull()
+    await expect(manager.fetchValuesKeepingEdits()).resolves.toBeNull()
+    expect(
+      harnessPaths(api).filter((path) => path.startsWith('GET /targets/')),
+    ).toStrictEqual([])
   })
 
   it('should keep an empty populate call harmless', async () => {

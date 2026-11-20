@@ -153,7 +153,8 @@
     },
     "days": "Liczba dni",
     "loadFailed": "Ładowanie nie powiodło się",
-    "zones": "Strefy"
+    "zones": "Strefy",
+    "selectZone": "Wybierz strefę"
   },
   "notifications": {
     "sessionExpired": {

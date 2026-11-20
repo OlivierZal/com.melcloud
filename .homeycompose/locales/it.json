@@ -165,6 +165,7 @@
     },
     "days": "Numero di giorni",
     "loadFailed": "Caricamento non riuscito",
+    "selectZone": "Seleziona zona",
     "zones": "Zone"
   }
 }

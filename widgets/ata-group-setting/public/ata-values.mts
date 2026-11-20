@@ -124,6 +124,10 @@ const temperatureOptions = (
 // no family branch remains in the path.
 const getAtaStatePath = (value: string): string => `/targets/${value}/ata`
 
+// The picker's value while no zone is selected: no target to read or to
+// write.
+const NO_ZONE = ''
+
 // The line under the buttons that says why an Update failed: the widget
 // SDK has no alert, and a rejection would otherwise reach the dev tools
 // alone.
@@ -167,10 +171,15 @@ export class AtaValueManager {
       fieldsetElements: [ataValuesElement],
       refreshElements: [getButton('refresh_values_melcloud')],
       isActionable: (): boolean =>
+        this.#zone.value !== NO_ZONE &&
         Object.keys(this.#buildAtaValuesBody()).length > 0,
     })
   }
 
+  // A stored default the lists no longer hold opens on NO zone, behind a
+  // placeholder: left on the first option, the widget would hand every
+  // write meant for one unit to the first building, unasked — a unit
+  // registered again, or moved to the other account, is all it takes.
   public applyDefaultZone(
     defaultZone: AtaGroupSettingWidgetSettings['default_zone'],
   ): void {
@@ -179,7 +188,9 @@ export class AtaValueManager {
     }
 
     const { id, model } = defaultZone
-    applySelectValue(this.#zone, getZoneId(id, model))
+    if (!applySelectValue(this.#zone, getZoneId(id, model))) {
+      this.#offerNoZone()
+    }
   }
 
   public createAtaFormControls(): void {
@@ -215,23 +226,20 @@ export class AtaValueManager {
   // The FULL sync: initial load, zone switch and Refresh all mean "show
   // me the zone as it stands", so every control takes the server state,
   // edits included — an edit is a zone-scoped statement, not a portable
-  // one. The real-time path is `fetchValuesKeepingEdits`. An answer the
-  // picker moved away from is filed under its zone and nothing more
-  // (`null`): the zone now shown has a read of its own.
+  // one. The form therefore leaves the previous zone BEFORE the read,
+  // not when it lands: until then it shows what is known of the target
+  // (nothing, for one never read) and Update is greyed, so a tap in
+  // between carries no value made for another zone. The real-time path
+  // is `fetchValuesKeepingEdits`.
   public async fetchValues(): Promise<Classic.GroupState | null> {
-    const target = this.#zone.value
-    const values = await homeyApiGet<Classic.GroupState>(
-      this.#homey,
-      getAtaStatePath(target),
-    )
-    this.#updateZoneMapping(target, { ...this.#defaultAtaValues, ...values })
-    if (this.#zone.value !== target) {
-      return null
+    this.displayValues()
+    const values = await this.#readZone(this.#zone.value)
+    if (values !== null) {
+      this.#syncAtaValues()
+      // `runBusy`'s generation guard keeps this from releasing a save
+      // that a live PUT still owns.
+      this.#dirtyGate.markSaved()
     }
-    this.#syncAtaValues()
-    // `runBusy`'s generation guard keeps this from releasing a save
-    // that a live PUT still owns.
-    this.#dirtyGate.markSaved()
     return values
   }
 
@@ -244,16 +252,11 @@ export class AtaValueManager {
   public async fetchValuesKeepingEdits(): Promise<Classic.GroupState | null> {
     const target = this.#zone.value
     const previous = { ...this.#zoneMapping[target] }
-    const values = await homeyApiGet<Classic.GroupState>(
-      this.#homey,
-      getAtaStatePath(target),
-    )
-    this.#updateZoneMapping(target, { ...this.#defaultAtaValues, ...values })
-    if (this.#zone.value !== target) {
-      return null
+    const values = await this.#readZone(target)
+    if (values !== null) {
+      this.#syncPristineAtaValues(previous)
+      this.#dirtyGate.recompute()
     }
-    this.#syncPristineAtaValues(previous)
-    this.#dirtyGate.recompute()
     return values
   }
 
@@ -350,6 +353,33 @@ export class AtaValueManager {
 
   #isGroupAtaState(value: string): value is keyof Classic.GroupState {
     return Object.hasOwn(this.#defaultAtaValues, value)
+  }
+
+  // The placeholder that stands for "no zone": shown, never selectable
+  // again once a zone is picked.
+  #offerNoZone(): void {
+    const placeholder = document.createElement('option')
+    placeholder.value = NO_ZONE
+    placeholder.textContent = this.#homey.__('widgets.selectZone')
+    placeholder.disabled = true
+    this.#zone.prepend(placeholder)
+    this.#zone.value = NO_ZONE
+  }
+
+  // Reads one target's state and files it under that target. Without a
+  // target there is nothing to read, and an answer the picker moved
+  // away from is filed and nothing more: `null` either way, the zone
+  // now shown having a read of its own.
+  async #readZone(target: string): Promise<Classic.GroupState | null> {
+    if (target === NO_ZONE) {
+      return null
+    }
+    const values = await homeyApiGet<Classic.GroupState>(
+      this.#homey,
+      getAtaStatePath(target),
+    )
+    this.#updateZoneMapping(target, { ...this.#defaultAtaValues, ...values })
+    return this.#zone.value === target ? values : null
   }
 
   // Rebuilds the temperature picker for the active floor, keeping the

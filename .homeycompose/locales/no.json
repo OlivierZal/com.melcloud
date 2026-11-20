@@ -164,6 +164,7 @@
     },
     "days": "Antall dager",
     "loadFailed": "Innlasting mislyktes",
+    "selectZone": "Velg sone",
     "zones": "Soner"
   }
 }

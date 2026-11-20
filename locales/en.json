@@ -151,7 +151,8 @@
     },
     "days": "Number of days",
     "loadFailed": "Loading failed",
-    "zones": "Zones"
+    "zones": "Zones",
+    "selectZone": "Select zone"
   },
   "notifications": {
     "sessionExpired": {
