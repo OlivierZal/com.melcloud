@@ -231,7 +231,15 @@ coverage.
   without moving the selection, an emptied or signed-out account's
   zones leave it (a logout wipes that account's registry, so a write to
   one would answer "zone not found"), and the zone panels refetch
-  whenever a fill moves the selection. A widget with no `default_zone`
+  whenever a fill moves the selection. A panel paints the zone now
+  selected and nothing else (46.18.0): the three of them leave the
+  previous zone BEFORE any read, re-baselined, and a zone nothing is
+  known of (never read, or its read failed) shows the page's defaults,
+  on Refresh too. Until then the reads ran one after the other, each
+  freezing its own panel alone, so the two others kept the previous
+  zone's values, armed if they were, and an Apply sent them to the
+  zone just picked (reproduced: a holiday `PUT` during the frost read);
+  a failed read left them there for good, as the new zone's. A widget with no `default_zone`
   opens on the first building in name order. The buildings are compared
   with the webview's collation (the phone's locale) while the library
   orders what each building holds with the Homey process's — the two
