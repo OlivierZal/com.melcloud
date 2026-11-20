@@ -249,14 +249,13 @@ const oldestErrorWindow: ErrorWindow = {
   nextToDate: '2026-05-02',
 }
 
-const newestErrorsKey =
-  'GET /logs/errors?from=2026-07-02&offset=0&period=29&to='
+const newestErrorsKey = 'GET /logs/errors?from=2026-07-02&period=29&to='
 
 const olderErrorsKey =
-  'GET /logs/errors?from=2026-06-02&offset=0&period=29&to=2026-07-01'
+  'GET /logs/errors?from=2026-06-02&period=29&to=2026-07-01'
 
 const oldestErrorsKey =
-  'GET /logs/errors?from=2026-05-03&offset=0&period=29&to=2026-06-01'
+  'GET /logs/errors?from=2026-05-03&period=29&to=2026-06-01'
 
 const errorLogFixture = (
   count: number,
@@ -1705,15 +1704,14 @@ describe('settings page', () => {
         [newestErrorsKey]: errorLogFixture(3),
       })
       const monthBeforeKey =
-        'GET /logs/errors?from=2026-06-20&offset=0&period=29&to=2026-07-19'
+        'GET /logs/errors?from=2026-06-20&period=29&to=2026-07-19'
       swapRoutes(harness, {
         ...defaultRoutes(),
-        'GET /logs/errors?from=2026-07-20&offset=0&period=29&to=':
-          errorLogFixture(1, {
-            fromDateHuman: '20 Jul 2026',
-            nextFromDate: '2026-06-20',
-            nextToDate: '2026-07-19',
-          }),
+        'GET /logs/errors?from=2026-07-20&period=29&to=': errorLogFixture(1, {
+          fromDateHuman: '20 Jul 2026',
+          nextFromDate: '2026-06-20',
+          nextToDate: '2026-07-19',
+        }),
         [monthBeforeKey]: errorLogFixture(0, olderErrorWindow),
       })
       commit(getInput('since'), '2026-07-20')

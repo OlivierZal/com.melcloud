@@ -184,7 +184,6 @@ describe('api', () => {
       const errorLog = mock<FormattedErrorLog>()
       const query = mock<ErrorLogQueryParams>({
         from: '2026-01-01',
-        offset: '2',
         period: '7',
         to: '2026-01-31',
       })
@@ -195,7 +194,6 @@ describe('api', () => {
       expect(result).toBe(errorLog)
       expect(mockApp.getErrorLog).toHaveBeenCalledWith({
         from: '2026-01-01',
-        offset: 2,
         period: 7,
         to: '2026-01-31',
       })
@@ -213,35 +211,22 @@ describe('api', () => {
       expect(mockApp.getErrorLog).toHaveBeenCalledWith({})
     })
 
-    it('should throw on empty string numeric query param', async () => {
-      await expect(
-        api.getErrorLog({
-          homey,
-          query: mock<Partial<ErrorLogQueryParams>>({ offset: '' }),
-        }),
-      ).rejects.toThrow('offset: expected non-negative integer, got ')
-      expect(mockApp.getErrorLog).not.toHaveBeenCalled()
-    })
-
-    it('should throw on non-numeric query param', async () => {
-      await expect(
-        api.getErrorLog({
-          homey,
-          query: mock<Partial<ErrorLogQueryParams>>({ period: 'abc' }),
-        }),
-      ).rejects.toThrow('period: expected non-negative integer, got abc')
-      expect(mockApp.getErrorLog).not.toHaveBeenCalled()
-    })
-
-    it('should throw on infinite query param', async () => {
-      await expect(
-        api.getErrorLog({
-          homey,
-          query: mock<Partial<ErrorLogQueryParams>>({ period: 'Infinity' }),
-        }),
-      ).rejects.toThrow('period: expected non-negative integer, got Infinity')
-      expect(mockApp.getErrorLog).not.toHaveBeenCalled()
-    })
+    // A period that is no count of days never reaches the app: an empty
+    // string, a word and an infinity are each refused by name.
+    it.each(['', 'abc', 'Infinity'])(
+      'should throw on the period "%s"',
+      async (period) => {
+        await expect(
+          api.getErrorLog({
+            homey,
+            query: mock<Partial<ErrorLogQueryParams>>({ period }),
+          }),
+        ).rejects.toThrow(
+          `period: expected non-negative integer, got ${period}`,
+        )
+        expect(mockApp.getErrorLog).not.toHaveBeenCalled()
+      },
+    )
   })
 
   describe('home targets retrieval', () => {
