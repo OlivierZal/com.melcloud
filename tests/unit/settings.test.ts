@@ -223,7 +223,8 @@ const holidayFixture = (): unknown => ({
 })
 
 // The windows the error-log suite pages through with the clock pinned
-// on 31 July 2026: the default range from 2 July, then the month before.
+// on 31 July 2026: the default range from 2 July, then the two months
+// before it.
 interface ErrorWindow {
   readonly fromDateHuman: string
   readonly nextFromDate: string
@@ -242,11 +243,20 @@ const olderErrorWindow: ErrorWindow = {
   nextToDate: '2026-06-01',
 }
 
+const oldestErrorWindow: ErrorWindow = {
+  fromDateHuman: '3 May 2026',
+  nextFromDate: '2026-04-03',
+  nextToDate: '2026-05-02',
+}
+
 const newestErrorsKey =
   'GET /logs/errors?from=2026-07-02&offset=0&period=29&to='
 
 const olderErrorsKey =
   'GET /logs/errors?from=2026-06-02&offset=0&period=29&to=2026-07-01'
+
+const oldestErrorsKey =
+  'GET /logs/errors?from=2026-05-03&offset=0&period=29&to=2026-06-01'
 
 const errorLogFixture = (
   count: number,
@@ -511,6 +521,12 @@ const showErrors = async (
   getButton('see').click()
   await settleDetached()
   return harness
+}
+
+// Asks for the month before the listed range.
+const showOlderErrors = async (): Promise<void> => {
+  getButton('see_older').click()
+  await settleDetached()
 }
 
 // Counts reaching every plural category the 13 languages use.
@@ -1657,13 +1673,18 @@ describe('settings page', () => {
       expect(getDiv('error_log_older').hidden).toBe(false)
     })
 
-    // The page language's plural rules pick the form: French reads 3 in
-    // its general plural.
-    it('should word the count by the page language plural rules', async () => {
-      await showErrors({ [newestErrorsKey]: errorLogFixture(3) })
+    // The page language words the count and writes it: Egyptian Arabic
+    // reads 2 in its dual and in its own digit (U+0662), where English
+    // reads a plural and "2". No language Homey speaks writes a count
+    // under a thousand unlike English, hence the regional tag.
+    it('should word and write the count in the page language', async () => {
+      await showErrors({
+        'GET /language': 'ar-EG',
+        [newestErrorsKey]: errorLogFixture(2),
+      })
 
       expect(getSpan('error_summary').textContent).toBe(
-        'settings.errorLog.summary.other {"count":"3","from":"2 Jul 2026"}',
+        'settings.errorLog.summary.two {"count":"\u{662}","from":"2 Jul 2026"}',
       )
     })
 
@@ -1677,10 +1698,14 @@ describe('settings page', () => {
       expect(getDiv('error_log_older').hidden).toBe(false)
     })
 
+    // Show again replaces what the page holds: the list, its summary,
+    // the field, and the month "previous month" then asks for.
     it('should replace the list when Show runs again', async () => {
       const harness = await showErrors({
         [newestErrorsKey]: errorLogFixture(3),
       })
+      const monthBeforeKey =
+        'GET /logs/errors?from=2026-06-20&offset=0&period=29&to=2026-07-19'
       swapRoutes(harness, {
         ...defaultRoutes(),
         'GET /logs/errors?from=2026-07-20&offset=0&period=29&to=':
@@ -1689,6 +1714,7 @@ describe('settings page', () => {
             nextFromDate: '2026-06-20',
             nextToDate: '2026-07-19',
           }),
+        [monthBeforeKey]: errorLogFixture(0, olderErrorWindow),
       })
       commit(getInput('since'), '2026-07-20')
       getButton('see').click()
@@ -1699,6 +1725,10 @@ describe('settings page', () => {
         'settings.errorLog.summary.one {"count":"1","from":"20 Jul 2026"}',
       )
       expect(getInput('since').value).toBe('2026-07-20')
+
+      await showOlderErrors()
+
+      expect(errorLogReads(harness).at(-1)).toBe(monthBeforeKey)
     })
 
     // "Previous month" asks for the window before the listed range, lists
@@ -1708,8 +1738,7 @@ describe('settings page', () => {
         [newestErrorsKey]: errorLogFixture(3),
         [olderErrorsKey]: errorLogFixture(10, olderErrorWindow),
       })
-      getButton('see_older').click()
-      await settleDetached()
+      await showOlderErrors()
 
       expect(document.querySelectorAll('#error_log table')).toHaveLength(1)
       expect(document.querySelectorAll('#error_log tbody tr')).toHaveLength(13)
@@ -1719,12 +1748,33 @@ describe('settings page', () => {
       expect(getInput('since').value).toBe('2026-06-02')
     })
 
+    // Each listed window names the one before it, so a second click
+    // reads one month further back, never the same month twice.
+    it('should walk one month further back at each click', async () => {
+      const harness = await showErrors({
+        [newestErrorsKey]: errorLogFixture(3),
+        [olderErrorsKey]: errorLogFixture(10, olderErrorWindow),
+        [oldestErrorsKey]: errorLogFixture(2, oldestErrorWindow),
+      })
+      await showOlderErrors()
+      await showOlderErrors()
+
+      expect(errorLogReads(harness)).toStrictEqual([
+        newestErrorsKey,
+        olderErrorsKey,
+        oldestErrorsKey,
+      ])
+      expect(getSpan('error_summary').textContent).toBe(
+        'settings.errorLog.summary.other {"count":"15","from":"3 May 2026"}',
+      )
+      expect(getInput('since').value).toBe('2026-05-03')
+    })
+
     // The button stays hidden until a range is listed; a click it could
     // still receive asks nothing.
     it('should ask nothing for a previous month before any listing', async () => {
       const harness = await bootPage()
-      getButton('see_older').click()
-      await settleDetached()
+      await showOlderErrors()
 
       expect(errorLogReads(harness)).toStrictEqual([])
     })
