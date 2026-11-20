@@ -90,7 +90,8 @@ export abstract class ClassicMELCloudDevice<
   protected override readonly unreachableWarning = 'errors.unitStale'
 
   get #capabilityTagEntries(): OperationalCapabilityTagEntry<T>[] {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing shared [string, string][] to typed entries
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion --
+       narrowing shared [string, string][] to typed entries */
     return this
       .operationalCapabilityTagEntries as OperationalCapabilityTagEntry<T>[]
   }
@@ -162,7 +163,9 @@ export abstract class ClassicMELCloudDevice<
     tag: keyof Classic.ListDeviceData<T>,
     data: Readonly<Classic.ListDeviceData<T>>,
   ): Capabilities<T>[TKey] {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- raw tag values and union-returning converters narrow to the capability's type
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion --
+       raw tag values and union-returning converters narrow to the capability's
+       type */
     return (this.deviceToCapability[capability]?.(data) ??
       data[tag]) as Capabilities<T>[TKey]
   }

@@ -1,10 +1,11 @@
 import { vi } from 'vitest'
 
-// - `overrides`: instance-level props assigned in the constructor (shallow merge).
-// - `superMocks`: prototype-level async methods that delegate to the provided vi.fn.
-//   Required when BaseMELCloudDevice calls super.X() (e.g. addCapability,
-//   removeCapability, setWarning) — instance vi.fn properties can't be invoked
-//   through super in a subclass.
+// - `overrides`: instance-level props assigned in the constructor (shallow
+//   merge).
+// - `superMocks`: prototype-level async methods that delegate to the provided
+//   vi.fn. Required when BaseMELCloudDevice calls super.X() (e.g.
+//   addCapability, removeCapability, setWarning) — instance vi.fn properties
+//   can't be invoked through super in a subclass.
 interface MockDeviceClassOptions {
   readonly overrides?: Readonly<Record<string, unknown>>
   readonly superMocks?: Readonly<

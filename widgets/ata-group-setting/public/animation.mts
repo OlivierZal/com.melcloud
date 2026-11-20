@@ -179,7 +179,8 @@ const spawnUntilAborted = async (
   spawn: () => void,
 ): Promise<void> => {
   for (;;) {
-    // eslint-disable-next-line no-await-in-loop -- sequential by design: each spawn waits out its own randomized delay
+    /* eslint-disable-next-line no-await-in-loop -- sequential by design: each
+       spawn waits out its own randomized delay */
     await sleep(generateSpawnDelay(), signal)
     // The abort can land between the sleep settling and this continuation
     // running (an earlier microtask may abort mid-drain); spawning then

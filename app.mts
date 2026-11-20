@@ -955,7 +955,9 @@ export default class MELCloudApp extends App {
     // with its releases. The narrowing rides the prefixing that already
     // happens here, and nowhere else in the app.
     const prefixKey = (key: string): keyof HomeySettings =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- the library's SettingManager contract types its keys as plain strings
+      /* eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion --
+         the library's SettingManager contract types its keys as plain
+         strings */
       (api === 'classic'
         ? key
         : `${api}${key.charAt(0).toUpperCase()}${key.slice(1)}`) as keyof HomeySettings

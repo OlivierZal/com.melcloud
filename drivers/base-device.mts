@@ -282,7 +282,8 @@ export abstract class BaseMELCloudDevice<
   public cleanMapping<TMapping extends Readonly<Record<string, unknown>>>(
     capabilityTagMapping: TMapping,
   ): Partial<TMapping> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- fromEntries widens the filtered entries to Record<string, unknown>
+    /* eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion --
+       fromEntries widens the filtered entries to Record<string, unknown> */
     return Object.fromEntries(
       Object.entries(capabilityTagMapping).filter(([capability]) =>
         this.hasCapability(capability),
