@@ -35,6 +35,7 @@ import {
   type SyncCallback,
   combineAtaGroups,
   isClassicAtaFacade,
+  isWithinErrorLogWindow,
   logFailure,
   NoChangesError,
   resolveErrorLogWindow,
@@ -285,41 +286,13 @@ const filterZonesByName = <T extends { readonly name: string }>(
 // The webview always asks for 29-day pages; mirrored here for the synthetic
 // window served when Classic is signed out.
 const DEFAULT_ERROR_LOG_PERIOD_DAYS = 29
+// Each entry keeps the moment the library anchored at its boundary
+// (`atEpochMs`, `null` where the wire cannot say); the app never
+// re-derives one from the wall-clock `at`.
 interface RawErrorEntry {
+  readonly atEpochMs: number | null
   readonly device: string
   readonly error: string
-  readonly instant: Temporal.Instant | null
-}
-
-// The library anchors each entry's moment at its own boundary
-// (`atEpochMs`, `null` where the wire cannot say); the app never
-// re-derives an instant from the wall-clock `at`.
-const toErrorInstant = (atEpochMs: number | null): Temporal.Instant | null =>
-  atEpochMs === null ? null : Temporal.Instant.fromEpochMilliseconds(atEpochMs)
-
-// An entry without an instant cannot be judged against a dated window;
-// it rides the open-ended newest page (`to` unset) only, so it shows
-// exactly once instead of on every page.
-const isWithinErrorLogWindow = (
-  instant: Temporal.Instant | null,
-  {
-    from,
-    timeZone,
-    to,
-  }: {
-    readonly from: Temporal.PlainDate
-    readonly timeZone: string
-    readonly to: Temporal.PlainDate | null
-  },
-): boolean => {
-  if (instant === null) {
-    return to === null
-  }
-  const day = instant.toZonedDateTimeISO(timeZone).toPlainDate()
-  return (
-    Temporal.PlainDate.compare(day, from) >= 0 &&
-    (to === null || Temporal.PlainDate.compare(day, to) <= 0)
-  )
 }
 
 // Newest first; entries without an instant sink to the end — their
@@ -329,9 +302,9 @@ const compareErrorEntries = (
   first: RawErrorEntry,
   other: RawErrorEntry,
 ): number =>
-  first.instant === null || other.instant === null
-    ? Number(first.instant === null) - Number(other.instant === null)
-    : Temporal.Instant.compare(other.instant, first.instant)
+  first.atEpochMs === null || other.atEpochMs === null
+    ? Number(first.atEpochMs === null) - Number(other.atEpochMs === null)
+    : other.atEpochMs - first.atEpochMs
 
 const formatErrorEntries = (
   entries: readonly RawErrorEntry[],
@@ -347,11 +320,11 @@ const formatErrorEntries = (
   })
   return entries
     .toSorted(compareErrorEntries)
-    .map(({ device, error, instant }) => ({
+    .map(({ atEpochMs, device, error }) => ({
       date:
-        instant === null
+        atEpochMs === null
           ? UNKNOWN_DATE_PLACEHOLDER
-          : dateTimeMedFormat.format(instant),
+          : dateTimeMedFormat.format(atEpochMs),
       device,
       error,
     }))
@@ -573,23 +546,18 @@ export default class MELCloudApp extends App {
       query,
       timeZone,
     )
-    const window = {
-      from: Temporal.PlainDate.from(fromDate),
-      timeZone,
-      to:
-        query.to === undefined || query.to === ''
-          ? null
-          : Temporal.PlainDate.from(query.to),
-    }
-    const allHomeEntries = await this.#getHomeErrorEntries(window.to === null)
+    const bounds = { fromDate, to: query.to }
+    const allHomeEntries = await this.#getHomeErrorEntries(
+      query.to === undefined || query.to === '',
+    )
     const homeEntries = allHomeEntries.filter((entry) =>
-      isWithinErrorLogWindow(entry.instant, window),
+      isWithinErrorLogWindow(entry, bounds, timeZone),
     )
     const classicEntries = entries.map(
       ({ atEpochMs, deviceId, message }): RawErrorEntry => ({
+        atEpochMs,
         device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
         error: message,
-        instant: toErrorInstant(atEpochMs),
       }),
     )
     return {
@@ -1197,9 +1165,9 @@ export default class MELCloudApp extends App {
       return null
     }
     return result.value.map(({ atEpochMs, code = '', message = code }) => ({
+      atEpochMs,
       device: name,
       error: message,
-      instant: toErrorInstant(atEpochMs),
     }))
   }
 
