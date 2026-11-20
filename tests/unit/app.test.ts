@@ -21,7 +21,15 @@ import {
   UpdateRejectedError,
 } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  type Mock,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 import * as Classic from '@olivierzal/melcloud-api/classic'
 import * as Home from '@olivierzal/melcloud-api/home'
 
@@ -601,6 +609,18 @@ const stubHomeZones = (
 
 const stubHomeDevice = (facade: unknown): void => {
   mockHomeFacadeManagerGetById.mockReturnValue(facade)
+}
+
+// A Classic error-log page holding no entry, its window from March 1st.
+const stubEmptyClassicErrorLog = (): void => {
+  mockApiInstance.getErrorLog.mockResolvedValue(
+    ok({
+      entries: [],
+      fromDate: '2026-03-01',
+      nextFromDate: '2026-02-01',
+      nextToDate: '2026-02-28',
+    }),
+  )
 }
 
 // The ATA routes gate on the facade's own `type`.
@@ -1365,7 +1385,7 @@ describe('melCloudApp', () => {
 
     // Entries arrive with the library's `atEpochMs` (derived from the
     // instant-form `at` here; pass `null` explicitly for a stamp the
-    // wire could not say).
+    // wire could not say). Answers the unit's log read, to count them.
     const stubHomeAtaDevice = (
       entries: {
         at: string
@@ -1374,22 +1394,74 @@ describe('melCloudApp', () => {
         code?: string
         message?: string
       }[],
-    ): void => {
+    ): Mock<() => Promise<unknown>> => {
+      const getErrorLog = vi
+        .fn<() => Promise<unknown>>()
+        .mockResolvedValue(
+          ok(
+            entries.map((entry) => ({
+              atEpochMs: Temporal.Instant.from(entry.at).epochMilliseconds,
+              ...entry,
+            })),
+          ),
+        )
       mockHomeRegistry.getDevices.mockReturnValue([homeAtaDevice])
       mockHomeFacadeManagerGetById.mockReturnValue({
-        getErrorLog: vi
-          .fn<() => Promise<unknown>>()
-          .mockResolvedValue(
-            ok(
-              entries.map((entry) => ({
-                atEpochMs: Temporal.Instant.from(entry.at).epochMilliseconds,
-                ...entry,
-              })),
-            ),
-          ),
+        getErrorLog,
         type: Home.DeviceType.Ata,
       })
+      return getErrorLog
     }
+
+    // A unit answers its whole log, so the older windows only filter the
+    // one the newest window read; asking for the newest again reads anew.
+    it('should read each Home log once for the windows after the newest', async () => {
+      stubEmptyClassicErrorLog()
+      const getErrorLog = stubHomeAtaDevice([
+        { at: '2026-03-20T10:00:00Z', deviceId: 'guid-1', message: 'Recent' },
+        { at: '2026-03-10T10:00:00Z', deviceId: 'guid-1', message: 'Older' },
+      ])
+      await app.onInit()
+
+      const newest = await app.getErrorLog(mock<Classic.ErrorLogQuery>())
+      const older = await app.getErrorLog(
+        mock<Classic.ErrorLogQuery>({ to: '2026-03-14' }),
+      )
+
+      expect(newest.errors.map(({ error }) => error)).toStrictEqual([
+        'Recent',
+        'Older',
+      ])
+      expect(older.errors.map(({ error }) => error)).toStrictEqual(['Older'])
+      expect(getErrorLog).toHaveBeenCalledTimes(1)
+
+      await app.getErrorLog(mock<Classic.ErrorLogQuery>({ to: '' }))
+
+      expect(getErrorLog).toHaveBeenCalledTimes(2)
+    })
+
+    // A failed read keeps nothing: the next window asks the unit again,
+    // and keeps the log it then gets.
+    it('should read a failed Home log again with the next window', async () => {
+      stubEmptyClassicErrorLog()
+      const getErrorLog = stubHomeAtaDevice([
+        { at: '2026-03-10T10:00:00Z', deviceId: 'guid-1', message: 'Older' },
+      ])
+      getErrorLog.mockResolvedValueOnce(
+        err({ cause: createTransportFailure(), kind: 'network' }),
+      )
+      await app.onInit()
+
+      const newest = await app.getErrorLog(mock<Classic.ErrorLogQuery>())
+      const older = await app.getErrorLog(
+        mock<Classic.ErrorLogQuery>({ to: '2026-03-14' }),
+      )
+      await app.getErrorLog(mock<Classic.ErrorLogQuery>({ to: '2026-03-12' }))
+
+      expect(newest.errors).toStrictEqual([])
+      expect(older.errors.map(({ error }) => error)).toStrictEqual(['Older'])
+      expect(getErrorLog).toHaveBeenCalledTimes(2)
+    })
 
     it('should merge Home errors chronologically into the Classic window', async () => {
       mockApiInstance.getErrorLog.mockResolvedValue(
