@@ -166,7 +166,9 @@ export class EnergyReport<
       applied.map(async ([capability, value]) =>
         this.#device.setCapabilityValue(
           capability,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- number result narrowed to energy capability type
+          /* eslint-disable-next-line
+             @typescript-eslint/no-unsafe-type-assertion -- number result
+             narrowed to energy capability type */
           value as Capabilities<T>[string & keyof EnergyCapabilities<T>],
         ),
       ),

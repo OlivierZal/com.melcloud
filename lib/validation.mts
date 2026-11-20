@@ -18,13 +18,17 @@ const fieldPrefix = (field?: string): string =>
 
 /**
  * Parses `value` as a non-negative finite integer (0 included).
- * @param value - The candidate to coerce, accepted as a number or numeric string.
+ * @param value - The candidate to coerce, accepted as a number or numeric
+ * string.
  * @param root0 - Parsing constraints.
- * @param root0.field - Field name prepended to error messages so callers can locate the invalid input.
- * @param root0.max - Inclusive upper bound above which the parsed value is rejected.
+ * @param root0.field - Field name prepended to error messages so callers can
+ * locate the invalid input.
+ * @param root0.max - Inclusive upper bound above which the parsed value is
+ * rejected.
  * @returns The parsed integer, guaranteed non-negative and within `max`.
  * @throws {@link TypeError} when `value` is neither a number nor a string.
- * @throws {@link RangeError} when the parsed number is negative, unsafe, fractional, or exceeds `max`.
+ * @throws {@link RangeError} when the parsed number is negative, unsafe,
+ * fractional, or exceeds `max`.
  */
 export const toNonNegativeInt = (
   value: unknown,
@@ -59,9 +63,11 @@ export const toNonNegativeInt = (
  * picker item — into validated coordinates. The model is a single word and
  * the id numeric, so the first underscore separates them; the type is then
  * guarded exactly like a request path param.
- * @param value - The `${model}_${id}` option value emitted by a flat picker item.
+ * @param value - The `${model}_${id}` option value emitted by a flat picker
+ * item.
  * @returns The decoded coordinates narrowed to `DeviceOrZoneData`.
- * @throws {@link RangeError} when the type is neither a known zone collection nor `devices`.
+ * @throws {@link RangeError} when the type is neither a known zone collection
+ * nor `devices`.
  */
 export const toZoneValueData = (value: string): DeviceOrZoneData => {
   const separator = value.indexOf('_')

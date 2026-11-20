@@ -42,7 +42,8 @@ export type CapabilitiesOptions<T extends Classic.DeviceType> =
  * capability value, parameterized by device type. Like the Home dialect's
  * converters, it receives the whole payload and picks its fields
  * explicitly — no positional value threading.
- * @template T - Classic device type selecting the list-payload input and operational-capability output shapes.
+ * @template T - Classic device type selecting the list-payload input and
+ * operational-capability output shapes.
  */
 export type ConvertFromDevice<T extends Classic.DeviceType> = (
   data: Readonly<Classic.ListDeviceData<T>>,
@@ -51,7 +52,8 @@ export type ConvertFromDevice<T extends Classic.DeviceType> = (
 /**
  * Converter from a Homey capability value to the corresponding classic device
  * data value, parameterized by device type.
- * @template T - Classic device type selecting the set-capability input and update-data output shapes.
+ * @template T - Classic device type selecting the set-capability input and
+ * update-data output shapes.
  */
 export type ConvertToDevice<T extends Classic.DeviceType> = Bivariant<
   SetCapabilities<T>[keyof SetCapabilities<T>],

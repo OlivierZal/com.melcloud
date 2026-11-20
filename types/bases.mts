@@ -51,7 +51,8 @@ export type BaseSettings = Partial<Record<string, unknown>>
  * @template TOut - The converter's return type.
  */
 export type Bivariant<TIn, TOut> = {
-  // eslint-disable-next-line @typescript-eslint/method-signature-style -- method syntax is bivariant: see the doc comment above
+  /* eslint-disable-next-line @typescript-eslint/method-signature-style --
+     method syntax is bivariant: see the doc comment above */
   bivariant(value: TIn): TOut
 }['bivariant']
 

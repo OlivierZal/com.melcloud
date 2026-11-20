@@ -690,7 +690,8 @@ describe(EnergyReport, () => {
       timeoutCallback()
       await settleDetached()
 
-      // Re-anchored on the new wall clock: next fire at 04:05 CEST, a full hour.
+      // Re-anchored on the new wall clock: next fire at 04:05 CEST, a full
+      // hour.
       const secondDelay = getMockCallArg<number>(setTimeoutMock, 1, 1)
 
       expect(secondDelay).toBe(60 * MS_PER_MINUTE)
