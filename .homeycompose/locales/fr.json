@@ -68,17 +68,16 @@
     },
     "errorLog": {
       "columns": { "date": "Date", "device": "Appareil", "error": "Erreur" },
-      "error": "Choisissez une date antérieure au\n__from__.",
-      "errorCount": {
-        "0": "erreur",
-        "1": "erreur",
-        "234": "erreurs",
-        "plural": "erreurs"
-      },
+      "empty": "Aucune erreur depuis le __from__",
       "legend": "Historique des erreurs",
-      "period": "Depuis le __from__ :",
-      "see": "Voir les erreurs",
-      "since": "depuis le"
+      "older": "Mois précédent",
+      "see": "Afficher",
+      "since": "Depuis le",
+      "summary": {
+        "many": "__count__ erreurs depuis le __from__",
+        "one": "__count__ erreur depuis le __from__",
+        "other": "__count__ erreurs depuis le __from__"
+      }
     },
     "frostProtection": {
       "enabled": "Activer la <strong>protection contre le gel</strong>",

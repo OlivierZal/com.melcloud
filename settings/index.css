@@ -122,20 +122,25 @@ body fieldset[hidden] {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-/* Inline label + input (error log "since" row) */
+/* The error log's "since" row: label, date input, Show button */
 .container-inline-end {
   align-items: center;
   display: flex;
+  gap: var(--homey-su-2);
 }
 
 .container-inline-end > input {
   flex: 1;
 }
 
-/* Label overrides for inline use in flex containers */
+/* Label overrides for inline use (the "since" row, the summary line) */
 .homey-form-label.unset-margin {
   margin: unset;
-  margin-inline-end: var(--homey-su-1);
+}
+
+/* "Previous month" sits under the listed range */
+#error_log_older {
+  margin-block-start: var(--homey-su-2);
 }
 
 .homey-form-label.bolded {

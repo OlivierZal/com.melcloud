@@ -598,9 +598,11 @@ export default class MELCloudApp extends App {
         locale,
         timeZone,
       }),
+      // The short month a phone's date field shows, so the page's summary
+      // spells the range's start as its "since" field does.
       fromDateHuman: Temporal.PlainDate.from(fromDate).toLocaleString(locale, {
         day: 'numeric',
-        month: 'long',
+        month: 'short',
         year: 'numeric',
       }),
     }

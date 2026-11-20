@@ -68,17 +68,15 @@
     },
     "errorLog": {
       "columns": { "date": "Dato", "device": "Enhet", "error": "Feil" },
-      "error": "Velg en dato før\n__from__.",
-      "errorCount": {
-        "0": "feil",
-        "1": "feil",
-        "234": "feil",
-        "plural": "feil"
-      },
+      "empty": "Ingen feil siden __from__",
       "legend": "Feilhistorikk",
-      "period": "Siden __from__:",
-      "see": "Se alle feil",
-      "since": "siden"
+      "older": "Forrige måned",
+      "see": "Vis",
+      "since": "Siden",
+      "summary": {
+        "one": "__count__ feil siden __from__",
+        "other": "__count__ feil siden __from__"
+      }
     },
     "frostProtection": {
       "enabled": "Aktiver <strong>frostbeskyttelse</strong>",

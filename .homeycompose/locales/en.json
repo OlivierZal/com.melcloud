@@ -68,17 +68,15 @@
     },
     "errorLog": {
       "columns": { "date": "Date", "device": "Device", "error": "Error" },
-      "error": "Choose a date before\n__from__.",
-      "errorCount": {
-        "0": "error",
-        "1": "error",
-        "234": "errors",
-        "plural": "errors"
-      },
+      "empty": "No errors since __from__",
       "legend": "Error history",
-      "period": "Since __from__:",
-      "see": "See all errors",
-      "since": "since"
+      "older": "Previous month",
+      "see": "Show",
+      "since": "Since",
+      "summary": {
+        "one": "__count__ error since __from__",
+        "other": "__count__ errors since __from__"
+      }
     },
     "frostProtection": {
       "enabled": "Enable <strong>frost protection</strong>",

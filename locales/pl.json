@@ -55,17 +55,17 @@
         "device": "Urządzenie",
         "error": "Błąd"
       },
-      "error": "Wybierz datę przed\n__from__.",
-      "errorCount": {
-        "0": "błędów",
-        "1": "błąd",
-        "234": "błędy",
-        "plural": "błędów"
-      },
+      "empty": "Brak błędów od __from__",
       "legend": "Historia błędów",
-      "period": "Od __from__:",
-      "see": "Pokaż wszystkie błędy",
-      "since": "od"
+      "older": "Poprzedni miesiąc",
+      "see": "Pokaż",
+      "since": "Od",
+      "summary": {
+        "few": "__count__ błędy od __from__",
+        "many": "__count__ błędów od __from__",
+        "one": "__count__ błąd od __from__",
+        "other": "__count__ błędu od __from__"
+      }
     },
     "frostProtection": {
       "enabled": "Włącz <strong>ochronę przed zamarzaniem</strong>",

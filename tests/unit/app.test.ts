@@ -1778,7 +1778,8 @@ describe('melCloudApp', () => {
             error: 'test',
           },
         ],
-        fromDateHuman: expect.not.stringContaining('2026-03-01'),
+        // The short month the page's date field shows.
+        fromDateHuman: 'Mar 1, 2026',
         nextFromDate: '2026-03-15',
         nextToDate: '2026-03-31',
       })

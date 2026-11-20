@@ -55,17 +55,15 @@
         "device": "Gerät",
         "error": "Fehler"
       },
-      "error": "Wählen Sie ein Datum vor\n__from__.",
-      "errorCount": {
-        "0": "Fehler",
-        "1": "Fehler",
-        "234": "Fehler",
-        "plural": "Fehler"
-      },
+      "empty": "Keine Fehler seit dem __from__",
       "legend": "Fehlerprotokoll",
-      "period": "Seit __from__:",
-      "see": "Alle Fehler anzeigen",
-      "since": "seit"
+      "older": "Vorheriger Monat",
+      "see": "Anzeigen",
+      "since": "Seit",
+      "summary": {
+        "one": "__count__ Fehler seit dem __from__",
+        "other": "__count__ Fehler seit dem __from__"
+      }
     },
     "frostProtection": {
       "enabled": "<strong>Frostschutz</strong> aktivieren",

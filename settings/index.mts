@@ -45,6 +45,7 @@ import {
   clampFrostProtection,
   clampOverheatProtection,
 } from '@olivierzal/melcloud-api/protection'
+import { Temporal } from 'temporal-polyfill'
 
 import type {
   Api,
@@ -127,12 +128,18 @@ const applyCredentialHints = (
 
 // ── DOM helpers ──
 
-const Modulo = { base10: 10, base100: 100 } as const
+// The error history's window length as the library counts it: a window
+// spans `period + 1` days, so the default range and each "previous
+// month" step cover 30 days.
+const ERROR_LOG_PERIOD_DAYS = 29
 
-// Slavic plural rules: numbers ending in 2/3/4 use a special plural
-// form, except 12-14 which use the regular plural
-const PLURAL_THRESHOLD = 2
-const slavicPaucal = { maxEnding: 4, minEnding: 2, teenMax: 14, teenMin: 12 }
+// The "since" field opens on the default range, so it never reads
+// empty, and offers no day past today.
+const initSinceInput = (input: HTMLInputElement): void => {
+  const today = Temporal.Now.plainDateISO()
+  input.max = today.toString()
+  input.value = today.subtract({ days: ERROR_LOG_PERIOD_DAYS }).toString()
+}
 
 const commonElementTypes = new Set(['checkbox', 'dropdown'])
 
@@ -410,6 +417,10 @@ const serializeSettingElements = (elements: HTMLValueElement[]): string =>
         : element.value,
     ),
   )
+
+// One error-history window as the query spells it: ISO dates, `to`
+// empty for the newest range, which runs to today.
+type ErrorLogRange = Pick<ErrorLogQueryParams, 'from' | 'to'>
 
 // Panel values, where a field may be `null` to mean "mixed" across a Home
 // building's devices — rendered indeterminate (blank).
@@ -1170,82 +1181,63 @@ class DeviceSettingsManager {
 class ErrorLogManager {
   #errorCount = 0
 
-  readonly #errorCountLabel: HTMLSpanElement
-
   readonly #errorLog: HTMLDivElement
 
   #errorLogTBody: HTMLTableSectionElement | null = null
 
-  #from = ''
-
   readonly #homey: Homey
 
-  readonly #periodLabel: HTMLSpanElement
+  readonly #olderButton: HTMLButtonElement
+
+  // The window before the listed range, as "previous month" asks for it;
+  // `null` until a range is listed.
+  #olderRange: ErrorLogRange | null = null
+
+  readonly #olderRow: HTMLDivElement
+
+  readonly #section: HTMLFieldSetElement
 
   readonly #seeButton: HTMLButtonElement
 
   readonly #sinceInput: HTMLInputElement
 
-  #to = ''
+  readonly #summary: HTMLSpanElement
 
   public constructor(homey: Homey) {
     this.#homey = homey
     this.#errorLog = getDiv('error_log')
-    this.#errorCountLabel = getSpan('error_count')
-    this.#periodLabel = getSpan('period')
-    this.#sinceInput = getInput('since')
+    this.#olderButton = getButton('see_older')
+    this.#olderRow = getDiv('error_log_older')
+    this.#section = getFieldset('error_log_section')
     this.#seeButton = getButton('see')
+    this.#sinceInput = getInput('since')
+    this.#summary = getSpan('error_summary')
+    initSinceInput(this.#sinceInput)
   }
 
   public addEventListeners(): void {
     this.#sinceInput.addEventListener('change', () => {
-      if (!(
-        this.#to !== '' &&
-        this.#sinceInput.value !== '' &&
-        // Both ISO YYYY-MM-DD — the date input's sanitised value and the
-        // API's PlainDate.toString() — so string order is date order.
-        this.#sinceInput.value > this.#to
-      )) {
-        return
+      // Both ISO YYYY-MM-DD, so string order is date order: a day past
+      // today, typed where the picker does not block it, falls back to
+      // today.
+      if (this.#sinceInput.value > this.#sinceInput.max) {
+        this.#sinceInput.value = this.#sinceInput.max
       }
-
-      this.#sinceInput.value = this.#to
-      fireAndForget(
-        this.#homey.alert(
-          this.#homey.__('settings.errorLog.error', { from: this.#from }),
-        ),
-      )
     })
     this.#seeButton.addEventListener('click', () => {
-      fireAndForget(this.fetchErrorLog())
-    })
-  }
-
-  /**
-   * @alerts Displays fetch errors to the user.
-   */
-  public async fetchErrorLog(): Promise<void> {
-    // Native `disabled` (not a CSS class): it also blocks keyboard
-    // activation during the in-flight fetch and is announced by screen
-    // readers.
-    this.#seeButton.disabled = true
-    try {
-      const data = await homeyApiGet<FormattedErrorLog>(
-        this.#homey,
-        `/logs/errors?${new URLSearchParams({
-          from: this.#sinceInput.value,
-          offset: '0',
-          period: '29',
-          to: this.#to,
-        } satisfies ErrorLogQueryParams)}`,
+      // A field cleared by hand lists the default range, and shows it.
+      if (this.#sinceInput.value === '') {
+        initSinceInput(this.#sinceInput)
+      }
+      fireAndForget(
+        this.#showErrors({ from: this.#sinceInput.value, to: '' }, 0),
       )
-      this.#updateErrorLogElements(data)
-      this.#appendErrorLogRows(data.errors)
-    } catch (error) {
-      await this.#homey.alert(getErrorMessage(error))
-    } finally {
-      this.#seeButton.disabled = false
-    }
+    })
+    this.#olderButton.addEventListener('click', () => {
+      if (this.#olderRange !== null) {
+        fireAndForget(this.#showErrors(this.#olderRange, this.#errorCount))
+      }
+    })
   }
 
   #appendErrorLogRows(errors: readonly FormattedErrorDetails[]): void {
@@ -1276,35 +1268,76 @@ class ErrorLogManager {
     return table.createTBody()
   }
 
-  #getErrorCountText(count: number): string {
-    if (count < PLURAL_THRESHOLD) {
-      return this.#homey.__(`settings.errorLog.errorCount.${String(count)}`)
-    }
-    const ending = count % Modulo.base10
-    const teen = count % Modulo.base100
-    return this.#homey.__(
-      ending >= slavicPaucal.minEnding &&
-        ending <= slavicPaucal.maxEnding &&
-        (teen < slavicPaucal.teenMin || teen > slavicPaucal.teenMax)
-        ? 'settings.errorLog.errorCount.234'
-        : 'settings.errorLog.errorCount.plural',
+  async #fetchErrors({ from, to }: ErrorLogRange): Promise<FormattedErrorLog> {
+    return homeyApiGet<FormattedErrorLog>(
+      this.#homey,
+      `/logs/errors?${new URLSearchParams({
+        from,
+        offset: '0',
+        period: String(ERROR_LOG_PERIOD_DAYS),
+        to,
+      } satisfies ErrorLogQueryParams)}`,
     )
   }
 
-  #updateErrorLogElements({
-    errors,
-    fromDateHuman,
-    nextFromDate,
-    nextToDate,
-  }: FormattedErrorLog): void {
-    this.#errorCount += errors.length
-    this.#from = fromDateHuman
-    this.#to = nextToDate
-    this.#errorCountLabel.textContent = `${String(this.#errorCount)} ${this.#getErrorCountText(this.#errorCount)}`
-    this.#periodLabel.textContent = this.#homey.__('settings.errorLog.period', {
-      from: this.#from,
-    })
-    this.#sinceInput.value = nextFromDate
+  // The count is worded by the page language's plural rules; an empty
+  // range says so in a sentence of its own.
+  #getSummaryText(count: number, from: string): string {
+    if (count === 0) {
+      return this.#homey.__('settings.errorLog.empty', { from })
+    }
+    const { lang } = document.documentElement
+    const pluralRules = new Intl.PluralRules(lang)
+    return this.#homey.__(
+      `settings.errorLog.summary.${pluralRules.select(count)}`,
+      { count: count.toLocaleString(lang), from },
+    )
+  }
+
+  // A range's rows go under the `listedCount` already shown (zero starts
+  // the list afresh); the summary and the field then state what the list
+  // covers, and the window before it becomes "previous month".
+  #render(
+    { errors, fromDateHuman, nextFromDate, nextToDate }: FormattedErrorLog,
+    { from }: ErrorLogRange,
+    listedCount: number,
+  ): void {
+    if (listedCount === 0) {
+      this.#errorLog.replaceChildren()
+      this.#errorLogTBody = null
+    }
+    this.#appendErrorLogRows(errors)
+    this.#errorCount = listedCount + errors.length
+    this.#summary.textContent = this.#getSummaryText(
+      this.#errorCount,
+      fromDateHuman,
+    )
+    this.#sinceInput.value = from
+    this.#olderRange = { from: nextFromDate, to: nextToDate }
+    this.#olderRow.hidden = false
+  }
+
+  // Native `disabled` on the whole section (not a CSS class): it blocks
+  // keyboard activation too, so a second click cannot interleave a
+  // replace with an append, nor the answer overwrite a date typed
+  // meanwhile; `aria-busy` mirrors the freeze.
+  #setBusy(isBusy: boolean): void {
+    this.#section.disabled = isBusy
+    this.#section.setAttribute('aria-busy', String(isBusy))
+  }
+
+  /**
+   * @alerts Displays fetch errors to the user.
+   */
+  async #showErrors(range: ErrorLogRange, listedCount: number): Promise<void> {
+    this.#setBusy(true)
+    try {
+      this.#render(await this.#fetchErrors(range), range, listedCount)
+    } catch (error) {
+      await this.#homey.alert(getErrorMessage(error))
+    } finally {
+      this.#setBusy(false)
+    }
   }
 }
 

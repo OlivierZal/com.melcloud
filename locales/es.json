@@ -55,17 +55,16 @@
         "device": "Dispositivo",
         "error": "Error"
       },
-      "error": "Elija una fecha anterior a\n__from__.",
-      "errorCount": {
-        "0": "error",
-        "1": "error",
-        "234": "errores",
-        "plural": "errores"
-      },
+      "empty": "Ningún error desde el __from__",
       "legend": "Historial de errores",
-      "period": "Desde __from__:",
-      "see": "Ver los errores",
-      "since": "desde el"
+      "older": "Mes anterior",
+      "see": "Mostrar",
+      "since": "Desde el",
+      "summary": {
+        "many": "__count__ errores desde el __from__",
+        "one": "__count__ error desde el __from__",
+        "other": "__count__ errores desde el __from__"
+      }
     },
     "frostProtection": {
       "enabled": "Activar <strong>protección contra el hielo</strong>",
