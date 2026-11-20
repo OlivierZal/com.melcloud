@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-// @vitest-environment-options {"settings": {"disableJavaScriptFileLoading": true, "navigation": {"disableMainFrameNavigation": true}}}
+// @vitest-environment-options {"settings": {"disableJavaScriptFileLoading": true, "handleDisabledFileLoadingAsSuccess": true, "navigation": {"disableMainFrameNavigation": true}}}
 
 import type { DirtyGate, DirtyGateOptions } from '@olivierzal/homey-kit/webview'
 import type { HomeDeviceZone } from '@olivierzal/melcloud-api'
