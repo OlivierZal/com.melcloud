@@ -166,6 +166,7 @@
     },
     "days": "Liczba dni",
     "loadFailed": "Ładowanie nie powiodło się",
+    "selectZone": "Wybierz strefę",
     "zones": "Strefy"
   }
 }

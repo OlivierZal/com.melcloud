@@ -61,16 +61,16 @@ describe('webview dom helpers', () => {
   describe(applySelectValue, () => {
     it('should select a value that has an option', () => {
       const select = selectOf('a', 'b"c')
-      applySelectValue(select, 'b"c')
 
+      expect(applySelectValue(select, 'b"c')).toBe(true)
       expect(select.value).toBe('b"c')
     })
 
     it('should keep the selection for a value without an option', () => {
       const select = selectOf('a', 'b')
       select.value = 'b'
-      applySelectValue(select, 'missing')
 
+      expect(applySelectValue(select, 'missing')).toBe(false)
       expect(select.value).toBe('b')
     })
   })

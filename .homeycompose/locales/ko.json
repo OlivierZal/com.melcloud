@@ -164,6 +164,7 @@
     },
     "days": "일수",
     "loadFailed": "로드에 실패했습니다",
+    "selectZone": "구역 선택",
     "zones": "구역"
   }
 }

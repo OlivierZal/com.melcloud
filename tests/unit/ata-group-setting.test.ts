@@ -341,6 +341,43 @@ describe('ata group setting widget', () => {
     expect(getSelect('zones').value).toBe('devices_11')
   })
 
+  // A widget set on a unit the lists no longer hold opens on no zone,
+  // behind a placeholder, where the first building would have taken
+  // every write meant for that unit: nothing is read and a control
+  // moved meanwhile arms nothing, until a zone is picked.
+  it('should open on no zone when the stored default is not listed', async () => {
+    const harness = await bootWidget({
+      routes: {
+        ...widgetRoutes(),
+        'GET /targets/devices_11/ata': {
+          ...groupStateFixture(),
+          SetTemperature: 19,
+        },
+      },
+      settings: {
+        default_zone: mock<HomeDeviceZone>({ id: 999, model: 'devices' }),
+      },
+    })
+    const zone = getSelect('zones')
+    commit(getSelect('SetTemperature'), '25')
+
+    expect(zoneOptions()[0]).toStrictEqual({
+      label: 'widgets.selectZone',
+      value: '',
+    })
+    expect(zone.value).toBe('')
+    expect(zone.options[0]?.disabled).toBe(true)
+    expect(getButton('apply_values_melcloud').disabled).toBe(true)
+    expect(
+      calledPaths(harness).filter((path) => path.startsWith('GET /targets/')),
+    ).toStrictEqual([])
+
+    commit(zone, 'devices_11')
+    await settleDetached()
+
+    expect(getSelect('SetTemperature').value).toBe('19')
+  })
+
   it('should refetch and re-animate on a zone change', async () => {
     const harness = await bootWidget({
       routes: {
@@ -410,6 +447,33 @@ describe('ata group setting widget', () => {
     expect(
       calledPaths(harness).filter((path) => path.endsWith('/modes')),
     ).toStrictEqual([])
+  })
+
+  // An edit is made for the zone it was made on: the form leaves that
+  // zone the moment the picker moves, so a tap on Update before the new
+  // zone's read lands has nothing of the old one to send.
+  it('should send nothing made for one zone to the zone picked next', async () => {
+    const get = Promise.withResolvers<unknown>()
+    const harness = await bootWidget({
+      deferredRoutes: {
+        'GET /targets/devices_11/ata': async () => get.promise,
+      },
+    })
+    commit(getSelect('SetTemperature'), '25')
+    commit(getSelect('zones'), 'devices_11')
+    getButton('apply_values_melcloud').click()
+    await settleDetached()
+
+    expect(
+      calledPaths(harness).filter((path) => path.startsWith('PUT ')),
+    ).toStrictEqual([])
+    expect(getSelect('SetTemperature').value).toBe('')
+    expect(getButton('apply_values_melcloud').disabled).toBe(true)
+
+    get.resolve({ ...groupStateFixture(), SetTemperature: 19 })
+    await settleDetached()
+
+    expect(getSelect('SetTemperature').value).toBe('19')
   })
 
   it('should update through the gate with haptic feedback', async () => {

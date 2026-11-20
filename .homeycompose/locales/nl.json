@@ -164,6 +164,7 @@
     },
     "days": "Aantal dagen",
     "loadFailed": "Laden mislukt",
+    "selectZone": "Selecteer zone",
     "zones": "Zones"
   }
 }

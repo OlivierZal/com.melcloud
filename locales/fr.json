@@ -152,7 +152,8 @@
     },
     "days": "Nombre de jours",
     "loadFailed": "Le chargement a échoué",
-    "zones": "Zones"
+    "zones": "Zones",
+    "selectZone": "Sélectionner la zone"
   },
   "notifications": {
     "sessionExpired": {

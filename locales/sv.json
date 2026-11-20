@@ -151,7 +151,8 @@
     },
     "days": "Antal dagar",
     "loadFailed": "Inläsningen misslyckades",
-    "zones": "Zoner"
+    "zones": "Zoner",
+    "selectZone": "Välj zon"
   },
   "notifications": {
     "sessionExpired": {

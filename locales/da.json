@@ -151,7 +151,8 @@
     },
     "days": "Antal dage",
     "loadFailed": "Indlæsning mislykkedes",
-    "zones": "Zoner"
+    "zones": "Zoner",
+    "selectZone": "Vælg zone"
   },
   "notifications": {
     "sessionExpired": {

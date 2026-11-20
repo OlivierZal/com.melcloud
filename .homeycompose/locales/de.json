@@ -164,6 +164,7 @@
     },
     "days": "Anzahl der Tage",
     "loadFailed": "Laden fehlgeschlagen",
+    "selectZone": "Zone auswählen",
     "zones": "Zonen"
   }
 }

@@ -15,13 +15,17 @@ import {
 // Guarded assignment: writing a value with no matching option would reset
 // the select to an empty selection. Membership is read off the options,
 // never through a built selector, which a quote in the value would break.
+// Answers whether the value was offered, for the caller a missing one
+// matters to.
 export const applySelectValue = (
   select: HTMLSelectElement,
   value: string,
-): void => {
-  if ([...select.options].some((option) => option.value === value)) {
+): boolean => {
+  const isOffered = [...select.options].some((option) => option.value === value)
+  if (isOffered) {
     select.value = value
   }
+  return isOffered
 }
 
 export const appendFormControl = (

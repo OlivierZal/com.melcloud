@@ -151,7 +151,8 @@
     },
     "days": "Antall dager",
     "loadFailed": "Innlasting mislyktes",
-    "zones": "Soner"
+    "zones": "Soner",
+    "selectZone": "Velg sone"
   },
   "notifications": {
     "sessionExpired": {

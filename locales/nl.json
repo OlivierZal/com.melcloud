@@ -151,7 +151,8 @@
     },
     "days": "Aantal dagen",
     "loadFailed": "Laden mislukt",
-    "zones": "Zones"
+    "zones": "Zones",
+    "selectZone": "Selecteer zone"
   },
   "notifications": {
     "sessionExpired": {

@@ -153,7 +153,8 @@
     },
     "days": "Количество дней",
     "loadFailed": "Не удалось загрузить",
-    "zones": "Зоны"
+    "zones": "Зоны",
+    "selectZone": "Выберите зону"
   },
   "notifications": {
     "sessionExpired": {

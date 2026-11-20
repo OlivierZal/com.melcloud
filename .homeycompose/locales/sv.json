@@ -164,6 +164,7 @@
     },
     "days": "Antal dagar",
     "loadFailed": "Inläsningen misslyckades",
+    "selectZone": "Välj zon",
     "zones": "Zoner"
   }
 }

@@ -260,7 +260,13 @@ coverage.
   buildings, the leaves keeping their building suffix. A `default_zone`
   stored on either building opens on the house (`toHouseDefault`), and
   a widget with no default opens on the first building in name order,
-  the house included. The settings page and the holiday-mode cards
+  the house included. A stored default the lists no longer hold opens
+  on NO zone (46.18.0), behind a `widgets.selectZone` placeholder that
+  heads the list and cannot be picked again: no read, and Update never
+  arms without a target. Left on the first option, as until then, the
+  widget handed every write meant for one unit to the first building,
+  unasked, and a unit registered again or moved from Classic to Home is
+  all it takes. The settings page and the holiday-mode cards
   keep the two tagged buildings: their frost, holiday and overheat
   writes stay one account at a time. No-change group writes are
   the LIBRARY's business: every melcloud-api `updateGroupState` leg
@@ -1193,7 +1199,12 @@ coverage.
   no request could carry. Full resyncs stay full: initial load, zone
   switch (an edit is a zone-scoped statement, not a portable one) and
   Refresh, which remains the deliberate way back to the zone's current
-  state.
+  state. A zone switch takes effect BEFORE its read, not when it lands
+  (46.18.0): `fetchValues` first repaints the form from what is known
+  of the new target, nothing for one never read, which greys Update.
+  Until then the form kept the previous zone's values, armed, for as
+  long as the read took, and a tap on Update sent that whole state to
+  the zone just picked (reproduced: a `PUT` to the new target).
 - An ATA group write the app refuses shows its message on the widget's
   `#update_error` line (the widget SDK has no alert) and leaves the
   edit armed for a retry; the line clears once a write lands or the
