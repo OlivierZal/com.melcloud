@@ -1273,7 +1273,6 @@ class ErrorLogManager {
       this.#homey,
       `/logs/errors?${new URLSearchParams({
         from,
-        offset: '0',
         period: String(ERROR_LOG_PERIOD_DAYS),
         to,
       } satisfies ErrorLogQueryParams)}`,

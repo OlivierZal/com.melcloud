@@ -402,7 +402,15 @@ coverage.
   English's `one`/`other`, which the typed locale map requires of every
   language, Korean's unused `one` included; an empty range reads its
   own sentence (`empty`). The suite pins each locale against the
-  runtime's rules.
+  runtime's rules. Which entries a page holds is the library's rule on
+  both accounts (melcloud-api 60.9.0): the Classic wire windows its
+  own, and the Home entries, which each unit answers as one log, are
+  filed by `isWithinErrorLogWindow` against the page's start and the
+  query's `to`, their day read in the Homey's time zone. The route
+  takes `from`, `period` and `to` and no `offset`: every page since
+  2023 pinned `from`, where the library ignores an offset, so a page is
+  the newest (no `to`) or a chained one — the two shapes whose end the
+  query itself states, which an offset page's does not.
 - Settings-CSS sharing — VERDICT (2026-08, after the `./dom` adoption):
   the cascade fixes STAY LOCAL, in all three apps. Two independent
   reasons, either sufficient. (1) The kit ships no stylesheet and

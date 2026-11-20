@@ -184,7 +184,6 @@ describe('api', () => {
       const errorLog = mock<FormattedErrorLog>()
       const query = mock<ErrorLogQueryParams>({
         from: '2026-01-01',
-        offset: '2',
         period: '7',
         to: '2026-01-31',
       })
@@ -195,7 +194,6 @@ describe('api', () => {
       expect(result).toBe(errorLog)
       expect(mockApp.getErrorLog).toHaveBeenCalledWith({
         from: '2026-01-01',
-        offset: 2,
         period: 7,
         to: '2026-01-31',
       })
@@ -217,9 +215,9 @@ describe('api', () => {
       await expect(
         api.getErrorLog({
           homey,
-          query: mock<Partial<ErrorLogQueryParams>>({ offset: '' }),
+          query: mock<Partial<ErrorLogQueryParams>>({ period: '' }),
         }),
-      ).rejects.toThrow('offset: expected non-negative integer, got ')
+      ).rejects.toThrow('period: expected non-negative integer, got ')
       expect(mockApp.getErrorLog).not.toHaveBeenCalled()
     })
 

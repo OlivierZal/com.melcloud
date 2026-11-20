@@ -176,16 +176,14 @@ const api = {
   },
   getErrorLog: async ({
     homey: { app },
-    query: { from, offset, period, to },
+    query: { from, period, to },
   }: {
     homey: Homey
     query: Partial<ErrorLogQueryParams>
   }): Promise<FormattedErrorLog> => {
-    const parsedOffset = toOptionalNonNegativeInt(offset, 'offset')
     const parsedPeriod = toOptionalNonNegativeInt(period, 'period')
     return app.getErrorLog({
       ...(from !== undefined && { from }),
-      ...(parsedOffset !== undefined && { offset: parsedOffset }),
       ...(parsedPeriod !== undefined && { period: parsedPeriod }),
       ...(to !== undefined && { to }),
     })

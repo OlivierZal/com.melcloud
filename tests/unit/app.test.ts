@@ -1627,6 +1627,45 @@ describe('melCloudApp', () => {
       expect(errorLog.errors).toStrictEqual([])
     })
 
+    // A page's days are the Homey's, never the host process's: an error
+    // logged at one in the morning on 1 March in Auckland opens that
+    // page, while UTC and Paris still read 28 February.
+    it('should read the day of a Home entry in the Homey time zone', async () => {
+      mockGetTimezone.mockReturnValue('Pacific/Auckland')
+      stubEmptyClassicErrorLog()
+      stubHomeAtaDevice([
+        {
+          at: '2026-02-28T12:00:00Z',
+          deviceId: 'guid-1',
+          message: 'First of the month',
+        },
+      ])
+      await app.onInit()
+
+      const errorLog = await app.getErrorLog(mock<Classic.ErrorLogQuery>())
+
+      expect(errorLog.errors.map(({ error }) => error)).toStrictEqual([
+        'First of the month',
+      ])
+    })
+
+    // A row is dated as the Homey reads the entry's moment, in its
+    // language and its time zone, to the minute: 14:30 UTC on the 28th
+    // is 03:30 on the 29th in Auckland.
+    it('should date a row in the Homey language and time zone', async () => {
+      mockGetLanguage.mockReturnValue('fr')
+      mockGetTimezone.mockReturnValue('Pacific/Auckland')
+      stubEmptyClassicErrorLog()
+      stubHomeAtaDevice([
+        { at: '2026-03-28T14:30:00Z', deviceId: 'guid-1', message: 'Dated' },
+      ])
+      await app.onInit()
+
+      const errorLog = await app.getErrorLog(mock<Classic.ErrorLogQuery>())
+
+      expect(errorLog.errors[0]?.date).toMatch(/^29 mars 2026\D+03:30$/v)
+    })
+
     // One Classic entry and a Home unit whose error log fails: the log
     // keeps the entry, and the failure line names the unit by its id —
     // the SDK's own convention, never the name — and the failure the

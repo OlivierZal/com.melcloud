@@ -1,10 +1,10 @@
 // Shared between settings/index.mts (URLSearchParams source) and api.mts
 // (Homey-routed query receiver). Defined as strings because URL query params
 // are inherently strings — api.mts converts to numbers for the Classic
-// query that drives the aggregated log's pagination window.
+// query that drives the aggregated log's pagination window. A page is
+// pinned on `from` and chained on `to`; no offset is asked for.
 export interface ErrorLogQueryParams {
   readonly from: string
-  readonly offset: string
   readonly period: string
   readonly to: string
 }

@@ -35,6 +35,7 @@ import {
   type SyncCallback,
   combineAtaGroups,
   isClassicAtaFacade,
+  isWithinErrorLogWindow,
   logFailure,
   NoChangesError,
   resolveErrorLogWindow,
@@ -285,41 +286,18 @@ const filterZonesByName = <T extends { readonly name: string }>(
 // The webview always asks for 29-day pages; mirrored here for the synthetic
 // window served when Classic is signed out.
 const DEFAULT_ERROR_LOG_PERIOD_DAYS = 29
-interface RawErrorEntry {
-  readonly device: string
-  readonly error: string
-  readonly instant: Temporal.Instant | null
-}
+// The page the settings page asks for: pinned on `from`, chained on
+// `to`, never an offset one — the library's window rule would need that
+// page's resolved end, which its query does not carry.
+type ErrorLogPageQuery = Omit<Classic.ErrorLogQuery, 'offset'>
 
 // The library anchors each entry's moment at its own boundary
-// (`atEpochMs`, `null` where the wire cannot say); the app never
-// re-derives an instant from the wall-clock `at`.
-const toErrorInstant = (atEpochMs: number | null): Temporal.Instant | null =>
-  atEpochMs === null ? null : Temporal.Instant.fromEpochMilliseconds(atEpochMs)
-
-// An entry without an instant cannot be judged against a dated window;
-// it rides the open-ended newest page (`to` unset) only, so it shows
-// exactly once instead of on every page.
-const isWithinErrorLogWindow = (
-  instant: Temporal.Instant | null,
-  {
-    from,
-    timeZone,
-    to,
-  }: {
-    readonly from: Temporal.PlainDate
-    readonly timeZone: string
-    readonly to: Temporal.PlainDate | null
-  },
-): boolean => {
-  if (instant === null) {
-    return to === null
-  }
-  const day = instant.toZonedDateTimeISO(timeZone).toPlainDate()
-  return (
-    Temporal.PlainDate.compare(day, from) >= 0 &&
-    (to === null || Temporal.PlainDate.compare(day, to) <= 0)
-  )
+// (`atEpochMs`, `null` where the wire cannot say); the app carries it
+// as it is and never re-derives an instant from the wall-clock `at`.
+interface RawErrorEntry {
+  readonly atEpochMs: number | null
+  readonly device: string
+  readonly error: string
 }
 
 // Newest first; entries without an instant sink to the end — their
@@ -329,9 +307,9 @@ const compareErrorEntries = (
   first: RawErrorEntry,
   other: RawErrorEntry,
 ): number =>
-  first.instant === null || other.instant === null
-    ? Number(first.instant === null) - Number(other.instant === null)
-    : Temporal.Instant.compare(other.instant, first.instant)
+  first.atEpochMs === null || other.atEpochMs === null
+    ? Number(first.atEpochMs === null) - Number(other.atEpochMs === null)
+    : other.atEpochMs - first.atEpochMs
 
 const formatErrorEntries = (
   entries: readonly RawErrorEntry[],
@@ -347,11 +325,11 @@ const formatErrorEntries = (
   })
   return entries
     .toSorted(compareErrorEntries)
-    .map(({ device, error, instant }) => ({
+    .map(({ atEpochMs, device, error }) => ({
       date:
-        instant === null
+        atEpochMs === null
           ? UNKNOWN_DATE_PLACEHOLDER
-          : dateTimeMedFormat.format(instant),
+          : dateTimeMedFormat.format(atEpochMs),
       device,
       error,
     }))
@@ -562,10 +540,11 @@ export default class MELCloudApp extends App {
 
   // One chronological log across both accounts: the Classic page drives the
   // window (its tiling is authoritative), Home entries are fetched per
-  // device and filtered into that window so pages never overlap. The
-  // newest window reads the Home logs afresh; the older ones reuse them.
+  // device and filed into that window by the library's own rule, so
+  // pages never overlap. The newest window (no `to`) reads the Home logs
+  // afresh; the older ones reuse them.
   public async getErrorLog(
-    query: Classic.ErrorLogQuery,
+    query: ErrorLogPageQuery,
   ): Promise<FormattedErrorLog> {
     const locale = this.homey.i18n.getLanguage()
     const timeZone = this.homey.clock.getTimezone()
@@ -573,23 +552,18 @@ export default class MELCloudApp extends App {
       query,
       timeZone,
     )
-    const window = {
-      from: Temporal.PlainDate.from(fromDate),
-      timeZone,
-      to:
-        query.to === undefined || query.to === ''
-          ? null
-          : Temporal.PlainDate.from(query.to),
-    }
-    const allHomeEntries = await this.#getHomeErrorEntries(window.to === null)
+    const { to } = query
+    const allHomeEntries = await this.#getHomeErrorEntries(
+      to === undefined || to === '',
+    )
     const homeEntries = allHomeEntries.filter((entry) =>
-      isWithinErrorLogWindow(entry.instant, window),
+      isWithinErrorLogWindow(entry, { fromDate, to }, timeZone),
     )
     const classicEntries = entries.map(
       ({ atEpochMs, deviceId, message }): RawErrorEntry => ({
+        atEpochMs,
         device: this.#classicRegistry.devices.getById(deviceId)?.name ?? '',
         error: message,
-        instant: toErrorInstant(atEpochMs),
       }),
     )
     return {
@@ -1077,7 +1051,7 @@ export default class MELCloudApp extends App {
   }
 
   async #getClassicErrorLogPage(
-    query: Classic.ErrorLogQuery,
+    query: ErrorLogPageQuery,
     timeZone: string,
   ): Promise<Classic.ErrorLog> {
     if (!this.#classicApi.isAuthenticated()) {
@@ -1197,9 +1171,9 @@ export default class MELCloudApp extends App {
       return null
     }
     return result.value.map(({ atEpochMs, code = '', message = code }) => ({
+      atEpochMs,
       device: name,
       error: message,
-      instant: toErrorInstant(atEpochMs),
     }))
   }
 
