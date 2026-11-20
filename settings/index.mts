@@ -1836,53 +1836,56 @@ class ZoneSettingsManager {
     this.#overheatProtectionDirtyGate.markSaved()
   }
 
-  /**
-   * @silent Falls back to default values on error.
-   */
+  // Every panel paints the zone now selected and nothing else: a zone
+  // nothing is known of yet (never read, or its read failed) shows the
+  // page's defaults, like a device with no such setting, never the
+  // values of the zone shown before it.
   public displayFrostProtectionData(): void {
-    const data = this.#zoneMapping[this.#zone.value]
-    if (data !== undefined) {
-      const { isEnabled = false, max, min } = data.frost_protection ?? {}
-      // `null` (a Home building's devices disagree) reads as blank; a plain
-      // `undefined` (a device with no frost config) reads as "No".
-      this.#frostProtectionEnabled.value =
-        isEnabled === null ? '' : String(isEnabled)
-      this.#frostProtectionMinTemperature.value = String(min ?? '')
-      this.#frostProtectionMaxTemperature.value = String(max ?? '')
-    }
+    const {
+      isEnabled = false,
+      max,
+      min,
+    } = this.#zoneMapping[this.#zone.value]?.frost_protection ?? {}
+    // `null` (a Home building's devices disagree) reads as blank; a plain
+    // `undefined` (a device with no frost config) reads as "No".
+    this.#frostProtectionEnabled.value =
+      isEnabled === null ? '' : String(isEnabled)
+    this.#frostProtectionMinTemperature.value = String(min ?? '')
+    this.#frostProtectionMaxTemperature.value = String(max ?? '')
     // Populating the panel re-baselines it: the freshly loaded (or saved)
     // values become the pristine state, so Apply drops back to disabled.
     this.#frostProtectionDirtyGate.markSaved()
   }
 
   public displayHolidayModeData(): void {
-    const data = this.#zoneMapping[this.#zone.value]
-    if (data !== undefined) {
-      const { endDate, isEnabled = false, startDate } = data.holiday_mode ?? {}
-      // `null` enabled (mixed across a building) reads as blank; dates show
-      // only when the window is definitely on and itself not mixed.
-      this.#holidayModeEnabled.value =
-        isEnabled === null ? '' : String(isEnabled)
-      this.#holidayModeStartDate.value =
-        isEnabled === true ? (startDate ?? '') : ''
-      this.#holidayModeEndDate.value = isEnabled === true ? (endDate ?? '') : ''
-    }
+    const {
+      endDate,
+      isEnabled = false,
+      startDate,
+    } = this.#zoneMapping[this.#zone.value]?.holiday_mode ?? {}
+    // `null` enabled (mixed across a building) reads as blank; dates show
+    // only when the window is definitely on and itself not mixed.
+    this.#holidayModeEnabled.value = isEnabled === null ? '' : String(isEnabled)
+    this.#holidayModeStartDate.value =
+      isEnabled === true ? (startDate ?? '') : ''
+    this.#holidayModeEndDate.value = isEnabled === true ? (endDate ?? '') : ''
     // Populating the panel re-baselines it: the freshly loaded (or saved)
     // values become the pristine state, so Apply drops back to disabled.
     this.#holidayModeDirtyGate.markSaved()
   }
 
   public displayOverheatProtectionData(): void {
-    const data = this.#zoneMapping[this.#zone.value]
-    if (data !== undefined) {
-      const { isEnabled = false, max, min } = data.overheat_protection ?? {}
-      // `null` (a Home building's ATA devices disagree) reads as blank; a
-      // plain `undefined` (no overheat config) reads as "No".
-      this.#overheatProtectionEnabled.value =
-        isEnabled === null ? '' : String(isEnabled)
-      this.#overheatProtectionMinTemperature.value = String(min ?? '')
-      this.#overheatProtectionMaxTemperature.value = String(max ?? '')
-    }
+    const {
+      isEnabled = false,
+      max,
+      min,
+    } = this.#zoneMapping[this.#zone.value]?.overheat_protection ?? {}
+    // `null` (a Home building's ATA devices disagree) reads as blank; a
+    // plain `undefined` (no overheat config) reads as "No".
+    this.#overheatProtectionEnabled.value =
+      isEnabled === null ? '' : String(isEnabled)
+    this.#overheatProtectionMinTemperature.value = String(min ?? '')
+    this.#overheatProtectionMaxTemperature.value = String(max ?? '')
     // Populating the panel re-baselines it: the freshly loaded (or saved)
     // values become the pristine state, so Apply drops back to disabled.
     this.#overheatProtectionDirtyGate.markSaved()
@@ -1927,7 +1930,15 @@ class ZoneSettingsManager {
     })
   }
 
+  // The three panels leave the previous zone BEFORE any read, not as
+  // each read lands: the reads run one after the other, each freezing
+  // its own panel alone, so until then the two others kept the previous
+  // zone's values, armed if they were, and an Apply sent them to the
+  // zone just picked.
   public async fetchZoneSettings(): Promise<void> {
+    this.displayFrostProtectionData()
+    this.displayHolidayModeData()
+    this.displayOverheatProtectionData()
     await this.fetchFrostProtectionData()
     await this.fetchHolidayModeData()
     // Home-only panel: skip the fetch entirely for targets that cannot

@@ -1961,6 +1961,64 @@ describe('settings page', () => {
       expect(getInput('min').value).toBe('8')
     })
 
+    // A panel is a statement about the zone it shows: the three of them
+    // leave the previous zone the moment the picker moves, before any
+    // read lands, so an Apply pressed meanwhile has nothing of the old
+    // zone to send.
+    it('should send nothing made for one zone to the zone picked next', async () => {
+      const harness = await bootPage()
+      const pending: ApiCallback[] = []
+      const passThrough = apiImplementation({}, defaultRoutes())
+      harness.api.mockImplementation((...callArgs: ApiCallArgs) => {
+        const [, path] = callArgs
+        const callback = callArgs.findLast(
+          (argument): argument is ApiCallback => typeof argument === 'function',
+        )
+        if (
+          path === '/targets/devices_11/settings/frost-protection' &&
+          callback !== undefined
+        ) {
+          pending.push(callback)
+          return
+        }
+        passThrough(...callArgs)
+      })
+      commit(getInput('end_date'), '2026-08-25T10:00')
+      commit(getSelect('zones'), 'devices_11')
+      getButton('apply_holiday_mode').click()
+      await settleDetached()
+
+      expect(pending).toHaveLength(1)
+      expect(
+        calledPaths(harness).filter((path) => path.startsWith('PUT ')),
+      ).toStrictEqual([])
+      expect(getButton('apply_holiday_mode').disabled).toBe(true)
+      expect(getInput('end_date').value).toBe('')
+    })
+
+    // A zone whose read fails shows the page's defaults, never the
+    // settings of the zone shown before it.
+    it('should show the defaults for a zone whose read fails', async () => {
+      const harness = await bootPage()
+      swapRoutes(harness, defaultRoutes(), {
+        'GET /targets/devices_11/settings/frost-protection': new Error(
+          'panel down',
+        ),
+        'GET /targets/devices_11/settings/holiday-mode': new Error(
+          'panel down',
+        ),
+      })
+      commit(getSelect('zones'), 'devices_11')
+      await settleDetached()
+
+      expect(getSelect('enabled_frost_protection').value).toBe('false')
+      expect(getInput('min').value).toBe('')
+      expect(getInput('max').value).toBe('')
+      expect(getSelect('enabled_holiday_mode').value).toBe('false')
+      expect(getInput('start_date').value).toBe('')
+      expect(getInput('end_date').value).toBe('')
+    })
+
     it('should fall back to defaults when the panel fetch fails', async () => {
       await bootPage({
         failures: {
@@ -1974,7 +2032,9 @@ describe('settings page', () => {
       expect(getInput('min').value).toBe('')
     })
 
-    it('should keep the form on a refresh of an uncached panel', async () => {
+    // Refresh is the way back to what is known of the zone: with
+    // nothing known, that is the page's defaults, and an edit goes.
+    it('should return an uncached panel to the defaults on refresh', async () => {
       await bootPage({
         failures: {
           'GET /targets/buildings_1/settings/frost-protection': new Error(
@@ -1985,17 +2045,17 @@ describe('settings page', () => {
           ),
         },
       })
-      // Nothing cached for the zone: a refresh only re-baselines.
       commit(getInput('min'), '5')
       getButton('refresh_frost_protection').click()
 
-      expect(getInput('min').value).toBe('5')
+      expect(getInput('min').value).toBe('')
       expect(getButton('apply_frost_protection').disabled).toBe(true)
 
       commit(getInput('start_date'), '2026-09-01T08:00')
       getButton('refresh_holiday_mode').click()
 
-      expect(getInput('start_date').value).toBe('2026-09-01T08:00')
+      expect(getInput('start_date').value).toBe('')
+      expect(getSelect('enabled_holiday_mode').value).toBe('false')
       expect(getButton('apply_holiday_mode').disabled).toBe(true)
     })
 
@@ -2377,6 +2437,33 @@ describe('settings page', () => {
       )
     })
 
+    // The third panel leaves the previous target with the two others:
+    // a unit whose read fails shows the defaults, not its building's
+    // thresholds.
+    it('should show the defaults for a target whose overheat read fails', async () => {
+      await bootHome({
+        failures: {
+          'GET /targets/homeDevices_ata_device/settings/overheat-protection':
+            new Error('down'),
+        },
+        routes: {
+          'GET /targets/homeBuildings_building_1/settings/overheat-protection':
+            { isEnabled: true, max: 38, min: 33 },
+        },
+      })
+      commit(getSelect('zones'), 'homeBuildings_building_1')
+      await settleDetached()
+
+      expect(getInput('overheat_min').value).toBe('33')
+
+      commit(getSelect('zones'), 'homeDevices_ata_device')
+      await settleDetached()
+
+      expect(getSelect('enabled_overheat_protection').value).toBe('false')
+      expect(getInput('overheat_min').value).toBe('')
+      expect(getInput('overheat_max').value).toBe('')
+    })
+
     it('should apply overheat protection to a home building', async () => {
       const harness = await bootHome()
       commit(getSelect('zones'), 'homeBuildings_building_1')
@@ -2458,7 +2545,7 @@ describe('settings page', () => {
       )
     })
 
-    it('should keep the form on a refresh of an unfetched target', async () => {
+    it('should return an unfetched target to the defaults on refresh', async () => {
       await bootHome({
         failures: {
           'GET /targets/homeDevices_ata_device/settings/frost-protection':
@@ -2471,11 +2558,10 @@ describe('settings page', () => {
       })
       commit(getSelect('zones'), 'homeDevices_ata_device')
       await settleDetached()
-      // Nothing cached for the target: a refresh only re-baselines.
       commit(getInput('overheat_min'), '35')
       getButton('refresh_overheat_protection').click()
 
-      expect(getInput('overheat_min').value).toBe('35')
+      expect(getInput('overheat_min').value).toBe('')
       expect(getButton('apply_overheat_protection').disabled).toBe(true)
     })
 
