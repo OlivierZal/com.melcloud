@@ -9,7 +9,7 @@ import {
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 
 // The sync script is a top-level-await script reading and writing
 // through the current directory, so each test materializes a miniature
@@ -53,16 +53,15 @@ const runSync = async (): Promise<void> => {
 }
 
 describe('capability definition sync', () => {
-  let workDirectory = ''
-
   beforeEach(async () => {
-    workDirectory = await mkdtemp(path.join(tmpdir(), 'sync-'))
+    const workDirectory = await mkdtemp(path.join(tmpdir(), 'sync-'))
+    // Registered before anything below can throw, so a setup that fails
+    // halfway still leaves no directory behind.
+    onTestFinished(async () => {
+      process.chdir(initialDirectory)
+      await rm(workDirectory, { force: true, recursive: true })
+    })
     process.chdir(workDirectory)
-  })
-
-  afterEach(async () => {
-    process.chdir(initialDirectory)
-    await rm(workDirectory, { force: true, recursive: true })
   })
 
   it('should vendor exactly the capabilities the drivers consume', async () => {

@@ -41,8 +41,8 @@ describe(ClassicMELCloudDriverErv, () => {
 
   testTagMappings(() => driver, tagMappings)
 
-  describe('tag mappings', () => {
-    it('should have empty energy capability tag mapping', () => {
+  describe('energy tag mapping', () => {
+    it('should be empty', () => {
       expect(driver.tagMappings.energy).toStrictEqual({})
     })
   })
