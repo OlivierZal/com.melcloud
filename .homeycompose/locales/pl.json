@@ -5,6 +5,7 @@
     "energyReportsFailing": "Raporty energii nie powiodły się kilka razy z rzędu — wartości energii mogą być nieaktualne.",
     "invalidDuration": "Czas trwania musi być całkowitą liczbą dni od 0 do 365.",
     "invalidHolidayModeEnd": "Koniec trybu wakacyjnego musi być w przyszłości.",
+    "invalidHolidayModeOrder": "Koniec trybu wakacyjnego musi być po jego rozpoczęciu.",
     "invalidTime": "Godzina zakończenia jest nieprawidłowa.",
     "unitError": "Samo urządzenie zgłasza usterkę — __fault__. Aplikacja tylko ją przekazuje: sprawdź urządzenie lub aplikację MELCloud.",
     "unitErrorUnworded": "Samo urządzenie zgłasza usterkę. Aplikacja tylko ją przekazuje: sprawdź urządzenie lub aplikację MELCloud.",

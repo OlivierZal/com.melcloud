@@ -5,6 +5,7 @@
     "energyReportsFailing": "Energy reports have failed several times in a row — the energy values may be stale.",
     "invalidDuration": "The duration must be a whole number of days between 0 and 365.",
     "invalidHolidayModeEnd": "The holiday-mode end must be in the future.",
+    "invalidHolidayModeOrder": "The holiday-mode end must be after its start.",
     "invalidTime": "The end time is invalid.",
     "unitError": "The unit itself reports a fault — __fault__. The app only relays it: check the unit or the MELCloud app.",
     "unitErrorUnworded": "The unit itself reports a fault. The app only relays it: check the unit or the MELCloud app.",

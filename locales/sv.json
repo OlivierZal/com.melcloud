@@ -11,7 +11,8 @@
     "unitUnreadable": "MELCloud listar inte längre den här enheten, eller skickar data för den som appen inte kan läsa — värdena är frysta tills den kan läsas igen (detaljer i appens diagnostiklogg).",
     "classicAccountEmpty": "Det här MELCloud Classic-kontot listar inte längre någon enhet som appen kan läsa. Om dina enheter har flyttats till MELCloud Home, lägg till dem igen som [Home]-enheter.",
     "unitError": "Enheten själv rapporterar ett fel — __fault__. Appen vidarebefordrar det bara: kontrollera enheten eller MELCloud-appen.",
-    "unitErrorUnworded": "Enheten själv rapporterar ett fel. Appen vidarebefordrar det bara: kontrollera enheten eller MELCloud-appen."
+    "unitErrorUnworded": "Enheten själv rapporterar ett fel. Appen vidarebefordrar det bara: kontrollera enheten eller MELCloud-appen.",
+    "invalidHolidayModeOrder": "Semesterlägets slut måste vara efter dess start."
   },
   "settings": {
     "authenticate": {

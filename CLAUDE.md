@@ -302,6 +302,32 @@ coverage.
   it does not spell, which is what makes a broken extractor a failure
   instead of a silent pass, and what makes separate "the regex still
   matches" clauses redundant.
+- A holiday window has ONE clock here and one rule (46.18.4). Every
+  entry point, the settings page and the three flow cards, hands
+  `updateTargetHolidayMode` bounds on the HOMEY's clock, an absent one
+  meaning now (`#completeHolidayModeWindow`; the page stamping the
+  phone's clock was #1595). A window it turns on must end in the future
+  and after its start (`#assertHolidayModeWindow`, the two
+  `errors.invalidHolidayMode*` strings, on both accounts): MELCloud Home
+  stores a window that ends before it starts without a word, and the
+  library's own refusal of one is in English. A start already past is no
+  fault: it reads "from now". What each account's wire does with the
+  window is the library's (melcloud-api 62.0.3, whose CLAUDE.md holds
+  the measures of 2026-11-21): Classic stores UTC; MELCloud Home reads a
+  window on the unit's own clock, arms it at its start and takes none
+  that has begun, so the library sends any start that is not a minute
+  ahead of now a minute ahead. "From now", and a change to a holiday in
+  progress, therefore take effect about a minute after the write on
+  MELCloud Home, and a window that ends within that minute gets the
+  library's own sentence. Until 46.18.3 a MELCloud Home window went out
+  an hour early in a Central European winter, and one starting now, or
+  within that hour, was refused by MELCloud and did not take effect. On
+  MELCloud Home `isEnabled` says a window is set, not that it is
+  running: it was still true two minutes after a window had closed, and
+  it is what the `holiday_mode_condition` card and the panel read. After
+  an Apply the panel repaints what the form held, so a start left blank
+  or already past shows as typed until the zone is read again, while the
+  unit holds the minute after the Apply.
 - Dirty-gating: `createDirtyGate` (`@olivierzal/homey-kit/webview`) is
   the ONE primitive behind every
   webview Apply/Refresh pair (settings sections, frost/holiday/overheat

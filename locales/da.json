@@ -11,7 +11,8 @@
     "unitUnreadable": "MELCloud viser ikke længere denne enhed, eller sender data for den, som appen ikke kan læse — værdierne er fastfrosne, indtil den kan læses igen (detaljer i appens diagnoselog).",
     "classicAccountEmpty": "Denne MELCloud Classic-konto viser ikke længere nogen enhed, som appen kan læse. Hvis dine enheder er flyttet til MELCloud Home, skal du tilføje dem igen som [Home]-enheder.",
     "unitError": "Enheden selv melder en fejl — __fault__. Appen videregiver den blot: tjek enheden eller MELCloud-appen.",
-    "unitErrorUnworded": "Enheden selv melder en fejl. Appen videregiver den blot: tjek enheden eller MELCloud-appen."
+    "unitErrorUnworded": "Enheden selv melder en fejl. Appen videregiver den blot: tjek enheden eller MELCloud-appen.",
+    "invalidHolidayModeOrder": "Afslutningen på ferietilstand skal være efter starten."
   },
   "settings": {
     "authenticate": {

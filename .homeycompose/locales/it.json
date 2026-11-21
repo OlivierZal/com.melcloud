@@ -5,6 +5,7 @@
     "energyReportsFailing": "I report energetici sono falliti più volte di seguito — i valori energetici potrebbero non essere aggiornati.",
     "invalidDuration": "La durata deve essere un numero intero di giorni compreso tra 0 e 365.",
     "invalidHolidayModeEnd": "La fine della modalità vacanza deve essere nel futuro.",
+    "invalidHolidayModeOrder": "La fine della modalità vacanza deve essere successiva al suo inizio.",
     "invalidTime": "L'ora di fine non è valida.",
     "unitError": "L'unità stessa segnala un guasto: __fault__. L'app si limita a riportarlo: controlla l'unità o l'app MELCloud.",
     "unitErrorUnworded": "L'unità stessa segnala un guasto. L'app si limita a riportarlo: controlla l'unità o l'app MELCloud.",

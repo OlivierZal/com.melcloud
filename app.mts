@@ -879,6 +879,26 @@ export default class MELCloudApp extends App {
     }
   }
 
+  // A window that is turned on ends in the future, and after its start.
+  // Said here, in the user's language, before any account is asked:
+  // MELCloud Home stores a window that ends before it starts without a
+  // word, and the library's own refusal of one is in English. A start
+  // already past is no fault: it reads "from now", which is the
+  // library's to send.
+  #assertHolidayModeWindow(
+    { endDate, startDate }: HolidayModeUpdate,
+    now: Temporal.PlainDateTime,
+  ): void {
+    const end = Temporal.PlainDateTime.from(endDate)
+    if (Temporal.PlainDateTime.compare(end, now) <= 0) {
+      throw new RangeError(this.homey.__('errors.invalidHolidayModeEnd'))
+    }
+    const start = Temporal.PlainDateTime.from(startDate)
+    if (Temporal.PlainDateTime.compare(end, start) <= 0) {
+      throw new RangeError(this.homey.__('errors.invalidHolidayModeOrder'))
+    }
+  }
+
   // The day-chart query every dialect's report reads. Derived once: the
   // window anchor and the timezone source must not drift between the six
   // call sites, which the facades' shared `(query?: ReportQuery)` contract
@@ -889,20 +909,23 @@ export default class MELCloudApp extends App {
 
   // One clock for every entry point: the Homey's. An absent bound means
   // "now" — stamping here keeps the settings page and the flow cards on
-  // the same clock whatever timezone the phone sits in.
+  // the same clock whatever timezone the phone sits in. One rule for
+  // them too, on a window it turns on (`#assertHolidayModeWindow`).
   #completeHolidayModeWindow({
     endDate,
     isEnabled,
     startDate,
   }: HolidayModeSettings): HolidayModeUpdate {
-    const nowAtHomey = Temporal.Now.plainDateTimeISO(
-      this.homey.clock.getTimezone(),
-    ).toString()
-    return {
-      endDate: endDate ?? nowAtHomey,
+    const now = Temporal.Now.plainDateTimeISO(this.homey.clock.getTimezone())
+    const window = {
+      endDate: endDate ?? now.toString(),
       isEnabled,
-      startDate: startDate ?? nowAtHomey,
+      startDate: startDate ?? now.toString(),
     }
+    if (isEnabled) {
+      this.#assertHolidayModeWindow(window, now)
+    }
+    return window
   }
 
   #createNotification(language: string): void {
@@ -1307,19 +1330,20 @@ export default class MELCloudApp extends App {
 
   // The window a holiday card applies: start = now, end = `days` calendar
   // days after today at `endTime` (default 00:00 — the start of that day,
-  // not 24:00). The end is rejected when it is not after now (e.g. 0 days
-  // at a time already past today).
+  // not 24:00). An end that is not after now (0 days at a time already
+  // past today) is refused where every window is judged, in
+  // `#assertHolidayModeWindow`.
   #holidayModeWindow(
     days: number,
     endTime?: Temporal.PlainTime,
   ): HolidayModeUpdate {
     const now = Temporal.Now.plainDateTimeISO(this.homey.clock.getTimezone())
-    const end = now.toPlainDate().add({ days }).toPlainDateTime(endTime)
-    if (Temporal.PlainDateTime.compare(end, now) <= 0) {
-      throw new RangeError(this.homey.__('errors.invalidHolidayModeEnd'))
-    }
     return {
-      endDate: end.toString(),
+      endDate: now
+        .toPlainDate()
+        .add({ days })
+        .toPlainDateTime(endTime)
+        .toString(),
       isEnabled: true,
       startDate: now.toString(),
     }
