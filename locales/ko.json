@@ -91,7 +91,8 @@
       "enabled": "<strong>과열 방지</strong> 사용",
       "max": "최고 온도",
       "min": "최저 온도",
-      "airToAir": "(공기 대 공기)"
+      "airToAir": "(공기 대 공기)",
+      "homeAirToAir": "(MELCloud Home, 공기 대 공기)"
     }
   },
   "warnings": {

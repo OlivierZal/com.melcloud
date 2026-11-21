@@ -93,7 +93,15 @@ caught real failures that the others miss:
   `watchSettingsFreshness` from `@olivierzal/homey-kit/settings`), whose
   fresh stamps pull the fresh assets;
   a mismatch that survives its refetch is reported to
-  `POST /boot-error`. The guarantee lives in the BOOT check, and which
+  `POST /boot-error`. The check runs FIRST, in each entry's `start()`,
+  before the bundle reads anything of the document (46.19.0): the page
+  it exists to replace is an earlier version's, and a bundle that looked
+  an element up on it beforehand (a field initializer of its manager
+  classes) died on the first id that version lacked, no handshake ever
+  reached and the overlay left up at every open. Found in review and
+  reproduced before the fix: the 46.18.4 settings page under a bundle
+  that reads one new span. Each entry's suite boots it on a stale page
+  that lacks an element. The guarantee lives in the BOOT check, and which
   surface needs it was measured on device (2026-08-07): the web-app
   settings page is destroyed and REMOUNTED when the app restarts, and
   mobile widgets reload too — both are fresh for free. Only the mobile
@@ -205,19 +213,23 @@ coverage.
   picker value verbatim (`buildings_1`, `homeDevices_<guid>` — split at
   the FIRST underscore): the SETTINGS routes
   (`…/settings/{frost-protection,holiday-mode,overheat-protection}`,
-  resolver `#getSettingsTarget`), the ATA GROUP routes (`…/ata` GET/PUT
+  resolvers `#getSettingsTarget` and, for overheat,
+  `#getOverheatTarget`), the ATA GROUP routes (`…/ata` GET/PUT
   and `…/ata/modes`, resolver `#getAtaGroupTarget`; the modes read is
-  the library's `getMemberOperationModes({poweredOnly: true})`; a merged
-  house's `mergedBuildings_<classicId>_<homeId>` resolves first, looked
-  up among the pairs the registries hold now — never split, a Home id
-  holding underscores — while the frost, holiday and chart routes refuse
-  it and the overheat read answers `null`, as for any target outside
-  Home) and the
+  the library's `getMemberOperationModes({poweredOnly: true})`) and the
   CHART routes
   (`…/logs/{report,hourly-temperatures,operation-modes,signal,temperatures}`,
   resolvers `#getReportTarget`/`#getFullReportTarget` over the
   melcloud-api `/report` interfaces — the ATW-only charts pin the Home
-  leg: a Home ATA target answers NotFoundError, nothing emulated). The
+  leg: a Home ATA target answers NotFoundError, nothing emulated). A
+  merged house's `mergedBuildings_<classicId>_<homeId>` resolves first
+  on the settings and the ATA group routes, looked up among the pairs
+  its surface lists now, never split, a Home id holding underscores
+  (`#getMergedBuildingFacades`): the settings pair every building the
+  two accounts list (`#getSameNamePairs`), the ATA group the buildings
+  that hold an air-to-air unit (`#getAtaSameNamePairs`), so a value one
+  surface offers can be unknown to the other, which answers
+  zone-not-found. The chart routes refuse it. The
   charts widget lists its pickers from ONE `GET /devices` route (both
   dialects' device leaves merged, alpha-sorted, `deviceType`-tagged —
   the widget filters per chart client-side). The zone pickers keep one
@@ -226,12 +238,22 @@ coverage.
   (`public/zones.mts`, keyed by `toBuildingKey`, so the same house's
   buildings compare equal): a Classic building carries its nested
   subzones, a Home building its devices, and the stable sort keeps each
-  block whole. The settings select keeps each account's last list and
+  block whole. The settings page lists what each signed-in account
+  LISTS, whatever Homey holds of it, on both accounts (46.19.0; until
+  then the Home list waited for a Home device added to Homey, which
+  would have left a house the holiday cards list as one and the page as
+  its Classic half). Its select keeps each account's last list and
   rebuilds from both: an account answering late sorts into place
   without moving the selection, an emptied or signed-out account's
   zones leave it (a logout wipes that account's registry, so a write to
-  one would answer "zone not found"), and the zone panels refetch
-  whenever a fill moves the selection. A panel paints the zone now
+  one would answer "zone not found"), and the selection goes along with
+  a building to the merged house the late list makes of it, and with a
+  house that comes apart to its building that stays
+  (`toFollowedValues`). The zone panels refetch whenever a fill moves
+  the selection, and a chain of reads ends once the picker has left its
+  zone (`#fetchWhileSelected`): the zone now selected has a chain of
+  its own, and the first one went on to read it a second time. A panel
+  paints the zone now
   selected and nothing else (46.18.0): the three of them leave the
   previous zone BEFORE any read, re-baselined, and a zone nothing is
   known of (never read, or its read failed) shows the page's defaults,
@@ -247,25 +269,27 @@ coverage.
   Swedish; a merged house's units, gathered from both accounts, are
   sorted in the webview too. The flat autocomplete lists (the holiday-mode cards, both
   widgets' `default_zone`) are name-sorted on the building-suffixed
-  names. A building BOTH accounts list under one name (trimmed and
-  NFC-composed; letter case still tells two apart, `toBuildingKey`)
-  reads `Name [Classic]` / `Name [Home]` wherever the two lists meet
-  unmerged — the settings select, the holiday-mode cards, and in the
-  ATA widget and its autocomplete a name either account holds twice —
-  through `tagSameNameBuildings`, which copies the display name only,
-  trimmed (option values stay `${model}_${id}`), and runs AFTER
-  `sortByBuilding`, which keys on the untagged names. The tags are the
-  driver-prefix tokens, untranslated. The ATA widget and its
-  autocomplete list the house such a pair makes — exactly one building
-  per account under that rule (`pairSameNameBuildings`; a name either
-  account holds twice pairs nothing) — ONCE, under its name, no account
-  named (the owner's call, 2026-11-19: no Classic, Home and
-  Classic + Home trio). In the picker the two buildings and the Home
+  names. A house BOTH accounts list under one name (trimmed and
+  NFC-composed; letter case still tells two apart, `toBuildingKey`),
+  exactly one building per account under that rule
+  (`pairSameNameBuildings`; a name either account holds twice pairs
+  nothing), is listed ONCE on every surface that spans the accounts,
+  under its name, no account named: the ATA widget and its autocomplete
+  (the owner's call, 2026-11-19: no Classic, Home and Classic + Home
+  trio), then the settings select and the holiday-mode cards (46.19.0,
+  the owner's call of 2026-11-21: one API behind both accounts, so one
+  entry and one flow). In a picker the two buildings and the Home
   one's devices give way to the merged house (`mergeSameNameBuildings`),
   which holds the units of both accounts in name order, then the
-  Classic areas and floors, each still selectable on its own; in the
-  autocomplete its one item (`toMergedItem`) replaces the two
-  buildings, the leaves keeping their building suffix. A `default_zone`
+  Classic areas and floors, each still selectable on its own; in a flat
+  list its one item (`toMergedItem`) replaces the two buildings, the
+  leaves keeping their building suffix (`toHouseTargets`, the one
+  composition behind the widget's autocomplete and the cards'). Only a
+  name either account holds twice still reads `Name [Classic]` /
+  `Name [Home]`, through `tagSameNameBuildings`, which copies the
+  display name only, trimmed (option values stay `${model}_${id}`), and
+  runs AFTER `sortByBuilding`, which keys on the untagged names. The
+  tags are the driver-prefix tokens, untranslated. A `default_zone`
   stored on either building opens on the house (`toHouseDefault`), and
   a widget with no default opens on the first building in name order,
   the house included. A stored default the lists no longer hold opens
@@ -274,14 +298,39 @@ coverage.
   arms without a target. Left on the first option, as until then, the
   widget handed every write meant for one unit to the first building,
   unasked, and a unit registered again or moved from Classic to Home is
-  all it takes. The settings page and the holiday-mode cards
-  keep the two tagged buildings: their frost, holiday and overheat
-  writes stay one account at a time. No-change group writes are
+  all it takes. On the settings routes a merged house is the SDK's
+  `combineSettingsTargets` over its two building facades (melcloud-api
+  62.1.0): frost protection and holiday mode read as one fold that
+  fails closed, a field the accounts disagree on reading mixed, and
+  written to both accounts at once, no rollback, each account's failed
+  write named after it (`withAccountOnSettingsFailure`). A fan-out's
+  failures, the two accounts' or a Home building's clocks', leave as
+  one message joining each distinct reason once (`withJoinedFailures`);
+  no line is logged, the page or the flow showing the message. Three
+  things follow from the two wires. A holiday "from now" reads back
+  with a mixed start on a house, MELCloud Home holding the minute after
+  MELCloud Classic's (the holiday bullet below), so the panel shows the
+  start blank. The `holiday_mode_condition` card reads a house as on
+  holiday only when both accounts say so. And a write MELCloud Home
+  refuses before any request, a window that ends within its minute of
+  lead, still lands on MELCloud Classic, the message saying which
+  account did not take it. A flow saved on one of the two buildings
+  before 46.19.0 keeps that building as its target, one account as
+  before, under the tagged name it was saved with: nothing widens an
+  automation unasked, and picking the house again is what spans both.
+  No-change group writes are
   the LIBRARY's business: every melcloud-api `updateGroupState` leg
   resolves an already-matching delta as success, so the app-side
   handlers are plain delegations (verdict 2026-08, recorded on
   `updateTargetAtaState`). Overheat stays Home-only: a Classic target
-  reads `null` and refuses the write. The
+  reads `null` and refuses the write, and a merged house answers
+  through its Home building alone (`#getOverheatTarget`), which the
+  page says beside the setting, "(MELCloud Home, air-to-air)"
+  (`settings.overheatProtection.homeAirToAir`), where a mixed Home
+  building says "(air-to-air)"; a house whose Home building holds no
+  air-to-air unit shows no overheat panel. What is eligible is read
+  anew at every fill (`#registerOverheatZones`): a target that stopped
+  being so leaves with the list that says it. The
   inter-app grouping route is `GET /devices/groups` (the extension
   degrades to "no grouping" when it is absent).
   `@olivierzal/homey-kit/settings` is the settings pages' transport
@@ -1142,7 +1191,8 @@ coverage.
   a read that fails closed, a field-wise fold, both writes sent at once,
   no rollback); the app only addresses it, labelling each building's
   failed write — each of its units' when the Home building's fan-out
-  fails — with its account (`withAccountOnFailure`), so a change one
+  fails — with its account (`withAccountOnFailure`, over the
+  `onAccount` its settings twin shares), so a change one
   account did not apply says which. A no-change passes through that
   wrapper untouched: the Classic facade throws `NoChangesError` on an
   empty delta, and the combination counts it as the success it is. The prefix has twice been misread as

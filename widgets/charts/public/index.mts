@@ -899,12 +899,6 @@ class ChartWidget {
   // `ready()` always fires — an unbounded await here would hold Homey's
   // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
-    // A stale cached page refetches itself once (never-cached address)
-    // instead of booting: skip the init — the document is about to be
-    // replaced.
-    if (await watchWidgetFreshness(this.#homey, 'charts')) {
-      return
-    }
     await runWebview(this.#homey, this.#run(), {
       height: () => document.body.scrollHeight,
       onError: (error) => {
@@ -1263,6 +1257,13 @@ class ChartWidget {
  * @param homey - The Homey instance handed to `onHomeyReady`.
  */
 export const start = async (homey: Homey<HomeySettings>): Promise<void> => {
+  // A stale cached page refetches itself once (never-cached address)
+  // instead of booting: the document is about to be replaced. It is an
+  // earlier version's, so the check comes before anything is built on
+  // it: this bundle may read from the page what that version lacks.
+  if (await watchWidgetFreshness(homey, 'charts')) {
+    return
+  }
   // Register only what the chart types use so esbuild tree-shakes the rest.
   Chart.register(
     ArcElement,

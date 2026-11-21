@@ -558,7 +558,14 @@ describe('charts widget', () => {
     expect(harness.api.mock.calls.length).toBeGreaterThan(before)
   })
 
-  it('should skip the boot when the page is stale', async () => {
+  // The page that needs replacing is an earlier version's and may lack
+  // what this bundle reads from it: the freshness check comes before
+  // anything is built on the document.
+  it.each([
+    { description: 'the page is stale', lacking: '#no-such-element' },
+    { description: 'a stale page lacks an element', lacking: '#days' },
+  ])('should skip the boot when $description', async ({ lacking }) => {
+    document.querySelector(lacking)?.remove()
     const stamp = document.createElement('script')
     stamp.setAttribute('src', 'index.js?v=aaaaaaaa')
     document.head.append(stamp)

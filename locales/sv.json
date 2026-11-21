@@ -91,7 +91,8 @@
       "enabled": "Aktivera <strong>överhettningsskydd</strong>",
       "max": "Maximitemperatur",
       "min": "Minimitemperatur",
-      "airToAir": "(luft-luft)"
+      "airToAir": "(luft-luft)",
+      "homeAirToAir": "(MELCloud Home, luft-luft)"
     }
   },
   "warnings": {

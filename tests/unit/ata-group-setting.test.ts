@@ -149,7 +149,14 @@ describe('ata group setting widget', () => {
     expect(harness.ready).toHaveBeenCalledTimes(1)
   })
 
-  it('should skip the boot when the page is stale', async () => {
+  // The page that needs replacing is an earlier version's and may lack
+  // what this bundle reads from it: the freshness check comes before
+  // anything is built on the document.
+  it.each([
+    { description: 'the page is stale', lacking: '#no-such-element' },
+    { description: 'a stale page lacks an element', lacking: '#animation' },
+  ])('should skip the boot when $description', async ({ lacking }) => {
+    document.querySelector(lacking)?.remove()
     const stamp = document.createElement('script')
     stamp.setAttribute('src', 'index.js?v=aaaaaaaa')
     document.head.append(stamp)
@@ -161,6 +168,7 @@ describe('ata group setting widget', () => {
     })
 
     expect(harness.ready).not.toHaveBeenCalled()
+    expect(calledPaths(harness)).toContain('GET /webview-hashes')
     expect(calledPaths(harness)).not.toContain('GET /classic/capabilities/ata')
   })
 
