@@ -94,8 +94,8 @@ const mockDevice = <T extends Home.DeviceType>(
     setStoreValue: setStoreValueMock,
   })
 
-// One normalized series sample, the library's 55.2.0 shape: instant as
-// epoch ms, energy in kWh — `null` on either field where the wire
+// One hour bucket of the library's normalized series: its start as
+// epoch ms, its energy in kWh — `null` on either field where the wire
 // garbled it.
 const point = (
   at: string | null,
@@ -115,29 +115,34 @@ const mockFailingFetch = (failure: ApiRequestError = NETWORK_FAILURE): void => {
   })
 }
 
+// An air-to-air unit answers its one direction.
 const mockAtaFetch = (
-  points: Home.EnergySeriesPoint[],
+  consumed: Home.EnergySeriesPoint[],
 ): ReturnType<typeof vi.fn> => {
   const getEnergySeriesMock = vi
     .fn<(query: unknown) => Promise<unknown>>()
-    .mockResolvedValue(ok(points))
+    .mockResolvedValue(ok({ consumed }))
   ensureDeviceMock.mockResolvedValue({ getEnergySeries: getEnergySeriesMock })
   return getEnergySeriesMock
 }
 
-const mockAtwFetch = (perMeasure: {
+// An air-to-water unit answers both directions in one read.
+const mockAtwFetch = ({
+  consumed = [],
+  produced = [],
+}: {
   consumed?: Home.EnergySeriesPoint[]
   produced?: Home.EnergySeriesPoint[]
 }): ReturnType<typeof vi.fn> => {
-  // Synchronous mock of the async contract: awaiting a plain value works,
-  // and a promise-returning arrow here would ping-pong between
-  // promise-function-async's autofix and require-await.
   const getEnergySeriesMock = vi
-    .fn<(query: { measure: 'consumed' | 'produced' }) => unknown>()
-    .mockImplementation(({ measure }) => ok(perMeasure[measure] ?? []))
+    .fn<(query: unknown) => Promise<unknown>>()
+    .mockResolvedValue(ok({ consumed, produced }))
   ensureDeviceMock.mockResolvedValue({ getEnergySeries: getEnergySeriesMock })
   return getEnergySeriesMock
 }
+
+const instantOf = (iso: string): number =>
+  Temporal.Instant.from(iso).epochMilliseconds
 
 const pinNow = (epochMilliseconds: number): void => {
   vi.spyOn(Temporal.Now, 'zonedDateTimeISO').mockImplementation(
@@ -176,10 +181,10 @@ describe('home energy reports', () => {
     it('should accrue from the untouched cursor when a failed total is retried', async () => {
       cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
       getStoreValueMock.mockImplementation((key: string) =>
-        key === 'energy_cursor_consumed' ? '2026-03-18T09:50:00Z' : 1.5,
+        key === 'energy_cursor_consumed' ? '2026-03-18T08:55:00Z' : 1.5,
       )
       mockFailingFetch()
-      pinNow(Temporal.Instant.from('2026-03-18T11:10:00Z').epochMilliseconds)
+      pinNow(instantOf('2026-03-18T11:10:00Z'))
       const report = new HomeEnergyReport(
         mockDevice(),
         totalConfig,
@@ -192,21 +197,21 @@ describe('home energy reports', () => {
         15 * MS_PER_MINUTE,
       )
 
-      pinNow(Temporal.Instant.from('2026-03-18T11:25:00Z').epochMilliseconds)
+      pinNow(instantOf('2026-03-18T11:25:00Z'))
       const getEnergySeriesMock = mockAtaFetch([
-        point('2026-03-18T10:00:00Z', 0.2),
+        point('2026-03-18T09:00:00Z', 0.2),
       ])
       getMockCallArg<() => void>(setTimeoutMock, 0, 0)()
       await settleDetached()
 
+      // The retry reads up to its own horizon.
       expect(getEnergySeriesMock).toHaveBeenCalledWith({
-        from: '2026-03-18T09:50:00Z',
-        interval: 'Minute',
-        to: '2026-03-18T11:10:00Z',
+        from: '2026-03-18T08:55:00Z',
+        to: '2026-03-18T10:21:00Z',
       })
       expect(setStoreValueMock).toHaveBeenCalledWith(
         'energy_cursor_consumed',
-        '2026-03-18T11:10:00Z',
+        '2026-03-18T10:21:00Z',
       )
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 1.7)
     })
@@ -312,7 +317,7 @@ describe('home energy reports', () => {
 
     it('should keep the error object when a capability write throws', async () => {
       cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
-      mockAtaFetch([point('2026-03-18T10:30:00Z', 0.1)])
+      mockAtaFetch([point('2026-03-18T10:00:00Z', 0.1)])
       const capabilityError = new Error('capability rejected')
       setCapabilityValueMock.mockRejectedValueOnce(capabilityError)
       const report = new HomeEnergyReport(
@@ -397,7 +402,11 @@ describe('home energy reports', () => {
       expect(releaseWarningMock).not.toHaveBeenCalled()
     })
 
-    it('should average pulses over the trailing window and sum the local day', async () => {
+    // No live power on the wire, and an air-to-air counter moves in
+    // 100 Wh steps: the reading is the average of the last two closed
+    // hours, the hour in progress left out of it.
+    it('should average the last two closed hours and sum the local day', async () => {
+      pinNow(instantOf('2026-03-18T11:20:00Z'))
       cleanMappingMock.mockReturnValue({
         measure_power: ['consumed'],
         'meter_power.daily': ['consumed'],
@@ -405,11 +414,13 @@ describe('home energy reports', () => {
       const getEnergySeriesMock = mockAtaFetch([
         // Before the local midnight (2026-03-17T23:00Z): excluded everywhere.
         point('2026-03-17T22:00:00Z', 0.1),
-        // In the local day, before the trailing 2 h window (09:00Z).
+        // In the local day, before the two closed hours.
         point('2026-03-18T05:00:00Z', 0.1),
-        // In both the day and the power window.
-        point('2026-03-18T10:30:00Z', 0.1),
-        point('2026-03-18T10:59:00Z', 0.3),
+        // The two closed hours.
+        point('2026-03-18T09:00:00Z', 0.1),
+        point('2026-03-18T10:00:00Z', 0.3),
+        // The hour in progress: in the day, not in the power.
+        point('2026-03-18T11:00:00Z', 0.5),
       ])
       const report = new HomeEnergyReport(
         mockDevice(),
@@ -418,18 +429,17 @@ describe('home energy reports', () => {
       )
       await report.start()
 
-      // The fetch spans from the local midnight (earlier than now − 2 h).
-      expect(getEnergySeriesMock).toHaveBeenCalledWith({
+      // The read spans from the local midnight (earlier than now − 2 h).
+      expect(getEnergySeriesMock).toHaveBeenCalledExactlyOnceWith({
         from: '2026-03-17T23:00:00Z',
-        interval: 'Minute',
-        to: '2026-03-18T11:00:00Z',
+        to: '2026-03-18T11:20:00Z',
       })
-      // 0.4 kWh over the trailing 2 h → 200 W.
+      // 0.4 kWh over the two closed hours → 200 W.
       expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 200)
-      // Since local midnight: 0.5 kWh.
+      // Since local midnight: 1 kWh.
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'meter_power.daily',
-        0.5,
+        1,
       )
     })
 
@@ -438,8 +448,8 @@ describe('home energy reports', () => {
     it('should count a null energy as 0', async () => {
       cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
       mockAtaFetch([
-        point('2026-03-18T10:30:00Z', null),
-        point('2026-03-18T10:31:00Z', 0.1),
+        point('2026-03-18T09:00:00Z', null),
+        point('2026-03-18T10:00:00Z', 0.1),
       ])
       const report = new HomeEnergyReport(
         mockDevice(),
@@ -455,7 +465,7 @@ describe('home energy reports', () => {
     // dropped instead of polluting a sum it cannot date.
     it('should drop a sample without an instant', async () => {
       cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
-      mockAtaFetch([point(null, 5), point('2026-03-18T10:31:00Z', 0.1)])
+      mockAtaFetch([point(null, 5), point('2026-03-18T10:00:00Z', 0.1)])
       const report = new HomeEnergyReport(
         mockDevice(),
         regularConfig,
@@ -503,7 +513,6 @@ describe('home energy reports', () => {
 
       expect(getEnergySeriesMock).toHaveBeenCalledWith({
         from: '2026-03-17T22:00:00Z',
-        interval: 'Minute',
         to: '2026-03-18T00:00:00Z',
       })
     })
@@ -536,26 +545,30 @@ describe('home energy reports', () => {
       await report.start()
 
       expect(getEnergySeriesMock).not.toHaveBeenCalled()
-      // Cursor anchored at now − 15 min; meter starts at 0.
+      // Cursor anchored at the horizon, an hour and four minutes back:
+      // no bucket that started before the meter did is its to count.
       expect(setStoreValueMock).toHaveBeenCalledWith('energy_total_consumed', 0)
       expect(setStoreValueMock).toHaveBeenCalledWith(
         'energy_cursor_consumed',
-        '2026-03-18T10:45:00Z',
+        '2026-03-18T09:56:00Z',
       )
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 0)
     })
 
-    it('should accrue strictly-later pulses and advance the cursor', async () => {
+    // A bucket is counted once it has closed, an hour after its start,
+    // and stood four minutes more.
+    it('should accrue the settled hours past the cursor and advance it', async () => {
       cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
       getStoreValueMock.mockImplementation((key: string) =>
-        key === 'energy_cursor_consumed' ? '2026-03-18T09:00:00Z' : 1.5,
+        key === 'energy_cursor_consumed' ? '2026-03-18T07:45:00Z' : 1.5,
       )
       const getEnergySeriesMock = mockAtaFetch([
-        // Exactly at the cursor: already counted by the previous run.
-        point('2026-03-18T09:00:00Z', 0.1),
-        point('2026-03-18T10:00:00Z', 0.2),
-        // Beyond the safety margin (now − 15 min): left for the next run.
-        point('2026-03-18T10:50:00Z', 0.4),
+        // Started before the cursor: counted by an earlier run.
+        point('2026-03-18T07:00:00Z', 0.1),
+        point('2026-03-18T08:00:00Z', 0.2),
+        point('2026-03-18T09:00:00Z', 0.3),
+        // Closed on the hour, a moment ago: left for the next run.
+        point('2026-03-18T10:00:00Z', 0.4),
       ])
       const report = new HomeEnergyReport(
         mockDevice(),
@@ -564,18 +577,14 @@ describe('home energy reports', () => {
       )
       await report.start()
 
-      expect(getEnergySeriesMock).toHaveBeenCalledWith({
-        from: '2026-03-18T09:00:00Z',
-        interval: 'Minute',
-        to: '2026-03-18T10:45:00Z',
+      expect(getEnergySeriesMock).toHaveBeenCalledExactlyOnceWith({
+        from: '2026-03-18T07:45:00Z',
+        to: '2026-03-18T09:56:00Z',
       })
-      expect(setStoreValueMock).toHaveBeenCalledWith(
-        'energy_total_consumed',
-        1.7,
-      )
+      expect(setStoreValueMock).toHaveBeenCalledWith('energy_total_consumed', 2)
       expect(setStoreValueMock).toHaveBeenCalledWith(
         'energy_cursor_consumed',
-        '2026-03-18T10:45:00Z',
+        '2026-03-18T09:56:00Z',
       )
       // The watermark is committed BEFORE the total: an interruption
       // between the two writes is permanent either way, and this order
@@ -584,13 +593,179 @@ describe('home energy reports', () => {
         'energy_cursor_consumed',
         'energy_total_consumed',
       ])
-      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 1.7)
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 2)
+    })
+
+    // Two runs meet on the watermark: the bucket that starts on it is
+    // the later run's, so no hour is counted twice and none is skipped.
+    it('should count each bucket once across consecutive runs', async () => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
+      const store = new Map<string, unknown>([
+        ['energy_cursor_consumed', '2026-03-18T07:00:00Z'],
+        ['energy_total_consumed', 0],
+      ])
+      getStoreValueMock.mockImplementation((key: string) => store.get(key))
+      setStoreValueMock.mockImplementation(async (key, value) => {
+        await Promise.resolve()
+        store.set(key, value)
+      })
+      mockAtaFetch([
+        point('2026-03-18T07:00:00Z', 1),
+        point('2026-03-18T08:00:00Z', 2),
+        point('2026-03-18T09:00:00Z', 4),
+      ])
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        totalConfig,
+        ATA_ENERGY_STRATEGY,
+      )
+      // Horizon 09:00: the 07:00 and 08:00 buckets.
+      pinNow(instantOf('2026-03-18T10:04:00Z'))
+      await report.start()
+
+      expect(store.get('energy_total_consumed')).toBe(3)
+
+      // Horizon 10:00: the 09:00 bucket, and nothing again.
+      pinNow(instantOf('2026-03-18T11:04:00Z'))
+      await report.start()
+
+      expect(store.get('energy_total_consumed')).toBe(7)
+      expect(store.get('energy_cursor_consumed')).toBe('2026-03-18T10:00:00Z')
+    })
+
+    // The report's slot is five past the hour: the hour that has just
+    // closed is counted there, and not before it has stood its four
+    // minutes.
+    it.each([
+      { minute: '05', outcome: 'count', total: 1.75 },
+      { minute: '03', outcome: 'leave', total: 1.5 },
+    ])(
+      'should $outcome the hour that has just closed at :$minute',
+      async ({ minute, total }) => {
+        pinNow(instantOf(`2026-03-18T11:${minute}:00Z`))
+        cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
+        getStoreValueMock.mockImplementation((key: string) =>
+          key === 'energy_cursor_consumed' ? '2026-03-18T09:30:00Z' : 1.5,
+        )
+        mockAtaFetch([point('2026-03-18T10:00:00Z', 0.25)])
+        const report = new HomeEnergyReport(
+          mockDevice(),
+          totalConfig,
+          ATA_ENERGY_STRATEGY,
+        )
+        await report.start()
+
+        expect(setCapabilityValueMock).toHaveBeenCalledWith(
+          'meter_power',
+          total,
+        )
+      },
+    )
+
+    // Runs overlap: a settings change starts one while a timer's is in
+    // flight. Each waits for the one before it, so the later run reads
+    // the watermark the earlier one moved: fetching from the one it
+    // found, it would count the same hour again.
+    it('should not count a window twice when two runs overlap', async () => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
+      const store = new Map<string, unknown>([
+        ['energy_cursor_consumed', '2026-03-18T07:52:00Z'],
+        ['energy_total_consumed', 100],
+      ])
+      getStoreValueMock.mockImplementation((key: string) => store.get(key))
+      setStoreValueMock.mockImplementation(async (key, value) => {
+        await Promise.resolve()
+        store.set(key, value)
+      })
+      const answer = ok({ consumed: [point('2026-03-18T08:00:00Z', 1.5)] })
+      const { promise: slowAnswer, resolve: answerSlow } =
+        Promise.withResolvers<unknown>()
+      const getEnergySeriesMock = vi
+        .fn<(query: unknown) => Promise<unknown>>()
+        .mockReturnValueOnce(slowAnswer)
+        .mockResolvedValue(answer)
+      ensureDeviceMock.mockResolvedValue({
+        getEnergySeries: getEnergySeriesMock,
+      })
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        totalConfig,
+        ATA_ENERGY_STRATEGY,
+      )
+
+      const runs = [report.start(), report.start()]
+      await settleDetached()
+      answerSlow(answer)
+      await Promise.all(runs)
+
+      expect(store.get('energy_total_consumed')).toBe(101.5)
+      expect(getEnergySeriesMock).toHaveBeenCalledTimes(1)
+    })
+
+    // The wire keeps about three months. A watermark from before that —
+    // a Homey switched off for a season — starts at the floor: walked up
+    // a week per run, it would ask windows the wire no longer has.
+    it('should start a watermark older than the retention at its floor', async () => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
+      getStoreValueMock.mockImplementation((key: string) =>
+        key === 'energy_cursor_consumed' ? '2025-06-01T00:00:00Z' : 10,
+      )
+      const getEnergySeriesMock = mockAtaFetch([
+        point('2025-12-20T00:00:00Z', 0.5),
+      ])
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        totalConfig,
+        ATA_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      // Ninety days before the horizon, and a week from there.
+      expect(getEnergySeriesMock).toHaveBeenCalledExactlyOnceWith({
+        from: '2025-12-18T09:56:00Z',
+        to: '2025-12-25T09:56:00Z',
+      })
+      expect(setStoreValueMock).toHaveBeenCalledWith(
+        'energy_cursor_consumed',
+        '2025-12-25T09:56:00Z',
+      )
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 10.5)
+    })
+
+    // A read costs one request per day of its window: a long downtime is
+    // caught up a week per run, each run keeping what it counted.
+    it('should catch up a week at most per run', async () => {
+      cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
+      getStoreValueMock.mockImplementation((key: string) =>
+        key === 'energy_cursor_consumed' ? '2026-03-01T00:00:00Z' : 10,
+      )
+      const getEnergySeriesMock = mockAtaFetch([
+        point('2026-03-07T23:00:00Z', 0.5),
+        // Past the week: the next run's.
+        point('2026-03-08T00:00:00Z', 0.25),
+      ])
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        totalConfig,
+        ATA_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      expect(getEnergySeriesMock).toHaveBeenCalledExactlyOnceWith({
+        from: '2026-03-01T00:00:00Z',
+        to: '2026-03-08T00:00:00Z',
+      })
+      expect(setStoreValueMock).toHaveBeenCalledWith(
+        'energy_cursor_consumed',
+        '2026-03-08T00:00:00Z',
+      )
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 10.5)
     })
 
     // A Homey booting after a power cut can run with a clock still
-    // behind, which puts `upTo` in the past. Rewinding the watermark
-    // there would have the next run re-accrue a window already counted,
-    // and a lifetime meter cannot unlearn invented energy.
+    // behind, which puts the horizon in the past. Rewinding the
+    // watermark there would have the next run re-accrue buckets already
+    // counted, and a lifetime meter cannot unlearn invented energy.
     it('should keep the watermark when the clock has stepped back', async () => {
       cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
       getStoreValueMock.mockImplementation((key: string) =>
@@ -632,10 +807,10 @@ describe('home energy reports', () => {
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 2)
     })
 
-    it('should not fetch when the cursor already sits at the safety margin', async () => {
+    it('should not fetch when the cursor already sits at the horizon', async () => {
       cleanMappingMock.mockReturnValue({ meter_power: ['consumed'] })
       getStoreValueMock.mockImplementation((key: string) =>
-        key === 'energy_cursor_consumed' ? '2026-03-18T10:45:00Z' : 3,
+        key === 'energy_cursor_consumed' ? '2026-03-18T09:56:00Z' : 3,
       )
       const getEnergySeriesMock = mockAtaFetch([])
       const report = new HomeEnergyReport(
@@ -689,18 +864,27 @@ describe('home energy reports', () => {
       )
     })
 
-    it('should derive near-live power from the freshest minute bucket per direction', async () => {
+    // The air-to-water hour in progress grows on the wire as it goes:
+    // the reading averages the last closed hour and what has elapsed of
+    // the current one, and one read answers both directions.
+    it('should average the last closed hour and the hour in progress, per direction', async () => {
+      pinNow(instantOf('2026-03-18T11:30:00Z'))
       cleanMappingMock.mockReturnValue({
         measure_power: ['consumed'],
         'measure_power.produced': ['produced'],
       })
       const getEnergySeriesMock = mockAtwFetch({
         consumed: [
-          // Out-of-order on purpose: the freshest bucket must win.
-          point('2026-03-18T10:58:00Z', 0.05),
-          point('2026-03-18T10:57:00Z', 0.2),
+          // Before the last closed hour: not in the reading.
+          point('2026-03-18T09:00:00Z', 5),
+          // Out of order on purpose: the buckets are placed by their start.
+          point('2026-03-18T11:00:00Z', 0.25),
+          point('2026-03-18T10:00:00Z', 0.5),
         ],
-        produced: [point('2026-03-18T10:59:00Z', 0.15)],
+        produced: [
+          point('2026-03-18T10:00:00Z', 2),
+          point('2026-03-18T11:00:00Z', 1),
+        ],
       })
       const report = new HomeEnergyReport(
         mockDevice(),
@@ -709,23 +893,58 @@ describe('home energy reports', () => {
       )
       await report.start()
 
-      expect(getEnergySeriesMock).toHaveBeenCalledWith(
-        expect.objectContaining({ interval: 'Minute', measure: 'consumed' }),
-      )
-      expect(getEnergySeriesMock).toHaveBeenCalledWith(
-        expect.objectContaining({ interval: 'Minute', measure: 'produced' }),
-      )
-      // 0.05 kWh over one minute → 3 kW.
-      expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 3000)
+      expect(getEnergySeriesMock).toHaveBeenCalledExactlyOnceWith({
+        from: '2026-03-17T23:00:00Z',
+        to: '2026-03-18T11:30:00Z',
+      })
+      // 0.75 kWh over an hour and a half → 500 W.
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 500)
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'measure_power.produced',
-        9000,
+        2000,
       )
     })
 
-    it('should report 0 W when the freshest bucket is older than the horizon', async () => {
+    // An hour the wire leaves out is an idle one: the last closed hour
+    // is still averaged over the whole span.
+    it('should average over the span when the hour in progress is idle', async () => {
+      pinNow(instantOf('2026-03-18T11:30:00Z'))
       cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
-      mockAtwFetch({ consumed: [point('2026-03-18T10:00:00Z', 0.5)] })
+      mockAtwFetch({ consumed: [point('2026-03-18T10:00:00Z', 0.6)] })
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        regularConfig,
+        ATW_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 400)
+    })
+
+    // The buckets start on the unit's own clock, a half hour off UTC in
+    // some zones: the hour in progress is read off the buckets.
+    it('should follow buckets that do not start on a round UTC hour', async () => {
+      cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
+      mockAtwFetch({
+        consumed: [
+          point('2026-03-18T09:30:00Z', 0.5),
+          point('2026-03-18T10:30:00Z', 0.25),
+        ],
+      })
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        regularConfig,
+        ATW_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      // 0.75 kWh from 09:30 to 11:00 → 500 W.
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('measure_power', 500)
+    })
+
+    it('should read 0 W when the wire left out the last two hours', async () => {
+      cleanMappingMock.mockReturnValue({ measure_power: ['consumed'] })
+      mockAtwFetch({ consumed: [point('2026-03-18T09:00:00Z', 0.5)] })
       const report = new HomeEnergyReport(
         mockDevice(),
         regularConfig,
@@ -747,11 +966,11 @@ describe('home energy reports', () => {
           // Before local midnight: excluded from every daily figure.
           point('2026-03-17T20:00:00Z', 9),
           point('2026-03-18T06:00:00Z', 2),
-          point('2026-03-18T10:58:00Z', 0.5),
+          point('2026-03-18T10:00:00Z', 0.5),
         ],
         produced: [
-          point('2026-03-18T06:30:00Z', 7),
-          point('2026-03-18T10:59:00Z', 0.5),
+          point('2026-03-18T06:00:00Z', 7),
+          point('2026-03-18T10:00:00Z', 0.5),
         ],
       })
       const report = new HomeEnergyReport(
@@ -795,7 +1014,7 @@ describe('home energy reports', () => {
       cleanMappingMock.mockReturnValue({
         'meter_power.cop_daily': ['consumed', 'produced'],
       })
-      mockAtwFetch({ produced: [point('2026-03-18T06:30:00Z', 6)] })
+      mockAtwFetch({ produced: [point('2026-03-18T06:00:00Z', 6)] })
       const report = new HomeEnergyReport(
         mockDevice(),
         regularConfig,
@@ -809,7 +1028,7 @@ describe('home energy reports', () => {
       )
     })
 
-    it('should accrue both directions and derive the total CoP', async () => {
+    it('should accrue both directions from one read and derive the total CoP', async () => {
       cleanMappingMock.mockReturnValue({
         meter_power: ['consumed'],
         'meter_power.cop': ['consumed', 'produced'],
@@ -817,13 +1036,13 @@ describe('home energy reports', () => {
       })
       getStoreValueMock.mockImplementation((key: string) => {
         if (key.startsWith('energy_cursor')) {
-          return '2026-03-18T10:00:00Z'
+          return '2026-03-18T08:00:00Z'
         }
         return key === 'energy_total_consumed' ? 2 : 6
       })
-      mockAtwFetch({
-        consumed: [point('2026-03-18T10:30:00Z', 1)],
-        produced: [point('2026-03-18T10:30:00Z', 3)],
+      const getEnergySeriesMock = mockAtwFetch({
+        consumed: [point('2026-03-18T09:00:00Z', 1)],
+        produced: [point('2026-03-18T09:00:00Z', 3)],
       })
       const report = new HomeEnergyReport(
         mockDevice(),
@@ -832,12 +1051,89 @@ describe('home energy reports', () => {
       )
       await report.start()
 
+      expect(getEnergySeriesMock).toHaveBeenCalledExactlyOnceWith({
+        from: '2026-03-18T08:00:00Z',
+        to: '2026-03-18T09:56:00Z',
+      })
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 3)
       expect(setCapabilityValueMock).toHaveBeenCalledWith(
         'meter_power.produced',
         9,
       )
       expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power.cop', 3)
+    })
+
+    // The two meters keep a watermark each: the one read starts at the
+    // older, and each direction counts from its own.
+    it('should count each direction from its own watermark', async () => {
+      cleanMappingMock.mockReturnValue({
+        meter_power: ['consumed'],
+        'meter_power.produced': ['produced'],
+      })
+      getStoreValueMock.mockImplementation((key: string) => {
+        if (key === 'energy_cursor_consumed') {
+          return '2026-03-18T07:45:00Z'
+        }
+        return key === 'energy_cursor_produced' ? '2026-03-18T08:45:00Z' : 0
+      })
+      const hours = [
+        point('2026-03-18T08:00:00Z', 1),
+        point('2026-03-18T09:00:00Z', 2),
+      ]
+      const getEnergySeriesMock = mockAtwFetch({
+        consumed: hours,
+        produced: hours,
+      })
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        totalConfig,
+        ATW_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      expect(getEnergySeriesMock).toHaveBeenCalledExactlyOnceWith({
+        from: '2026-03-18T07:45:00Z',
+        to: '2026-03-18T09:56:00Z',
+      })
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 3)
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'meter_power.produced',
+        2,
+      )
+    })
+
+    // A meter that starts while the other is catching up counts nothing
+    // of the downtime it never saw: its watermark opens at the horizon.
+    it('should start a new meter at the horizon while another catches up', async () => {
+      cleanMappingMock.mockReturnValue({
+        meter_power: ['consumed'],
+        'meter_power.produced': ['produced'],
+      })
+      getStoreValueMock.mockImplementation((key: string) =>
+        key === 'energy_cursor_consumed' ? '2026-03-01T00:00:00Z' : undefined,
+      )
+      const week = [point('2026-03-02T00:00:00Z', 4)]
+      mockAtwFetch({ consumed: week, produced: week })
+      const report = new HomeEnergyReport(
+        mockDevice(),
+        totalConfig,
+        ATW_ENERGY_STRATEGY,
+      )
+      await report.start()
+
+      expect(setStoreValueMock).toHaveBeenCalledWith(
+        'energy_cursor_consumed',
+        '2026-03-08T00:00:00Z',
+      )
+      expect(setStoreValueMock).toHaveBeenCalledWith(
+        'energy_cursor_produced',
+        '2026-03-18T09:56:00Z',
+      )
+      expect(setCapabilityValueMock).toHaveBeenCalledWith('meter_power', 4)
+      expect(setCapabilityValueMock).toHaveBeenCalledWith(
+        'meter_power.produced',
+        0,
+      )
     })
 
     it('should use 1 as the total CoP divisor when nothing was consumed', async () => {

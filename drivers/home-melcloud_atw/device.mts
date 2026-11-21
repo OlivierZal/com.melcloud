@@ -61,9 +61,9 @@ export default class HomeMELCloudDeviceAtw extends HomeMELCloudDevice<AtwType> {
     'thermostat_mode.zone2': ({ operationModeZone2 }) => operationModeZone2,
   }
 
-  // Near-live power derives from minute buckets: a 5-minute cadence keeps
-  // it fresh without hammering the telemetry endpoint; meters accrue hourly,
-  // a few minutes past the hour.
+  // The hour in progress grows on the wire as it goes: a 5-minute cadence
+  // keeps power and the day's figures fresh at one request a run; meters
+  // accrue hourly, a few minutes past the hour.
   protected override readonly energyReports: EnergyReports = {
     regular: {
       duration: { minutes: 5 },

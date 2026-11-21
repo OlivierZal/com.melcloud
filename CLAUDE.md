@@ -515,6 +515,56 @@ coverage.
   tags vs the rest) happens where COP is computed, in `classic-report`,
   from the tags the report already holds — the driver precomputes
   nothing.
+- The Home reports are built on HOUR buckets, the finest grain the
+  MELCloud Home wire has served since 2026-11-20, around noon UTC. That
+  day MELCloud stopped answering the minute-grained telemetry the
+  reports had read since their first release, and every energy read of
+  every Home unit failed: a frozen `meter_power`, no power, no daily
+  figure, the energy-reports warning on every Home tile (46.18.1;
+  melcloud-api 62.0.0 and its CLAUDE.md hold the wire's side). One
+  `getEnergySeries` read per run answers every direction the unit
+  reports, each bucket stamped with its start. The day's figures sum
+  the buckets that start in the local day, the one in progress
+  included. Power is an average over whole buckets, the wire having no
+  live power: an air-to-air counter moves in 100 Wh steps, which make
+  anything finer than a couple of hours noise, so its reading is the
+  mean of the last two CLOSED hours; an air-to-water unit's hour grows
+  by the minute, so its reading is the last closed hour and what has
+  elapsed of the current one, over that span — the hour in progress
+  being read off the buckets themselves, which start on the unit's own
+  clock and not on a round UTC hour everywhere.
+  A lifetime total counts a bucket once it has closed and stood four
+  minutes more, an hour and four minutes after its start
+  (`SETTLED_BUCKET_AGE`). A closed bucket has read final from its close
+  on — watched around one close on 2026-11-21, and the public record
+  says the same of an air-to-water unit over a day (melcloud-api's
+  CLAUDE.md holds both) — and four minutes are what counts the hour
+  that has just closed at the report's own slot, five past: the meter
+  trails the clock by five minutes to an hour and ten, as it did on
+  minute buckets. A meter found short of the MELCloud app's own figures
+  puts that margin in question first. The cursor is a watermark over
+  bucket STARTS, every bucket that started before it being counted, so
+  two runs in a row meet on it without counting an hour twice or
+  skipping one. Runs that OVERLAP take turns (`#applyTotalsInTurn`,
+  each waiting for the one before it): a settings change starts a run
+  while a timer's is in flight, and the later one, fetching from a
+  watermark the earlier was about to move, counted that window twice
+  (found in review, before any release; the engine it replaced read
+  the watermark and the total at once, and could not). Downtime is
+  caught up a week per run (`CATCH_UP`): a read costs one request per
+  day of its window, and a window left to grow could fail, and grow,
+  for good. The outage itself is recovered that way, the cursors having
+  stood still since the 20th. A watermark older than the wire's three
+  months starts ninety days back (`RETENTION`): what lies before it is
+  gone, and a meter walking up to the present a week per run, through
+  windows the wire may refuse, would stand still on the first it did.
+  A cursor written by 46.18.0 or earlier meant "counted up to this
+  minute": the hour bucket that holds it is skipped at the first run,
+  a few minutes of one hour, once — the side to err on, a meter never
+  inventing energy (the order of the two store writes says the same).
+  An air-to-air bucket is a UTC hour whatever the zone: where the
+  clock sits a half or three quarters of an hour off UTC, the day's
+  figure opens on the first hour that starts in the day.
 - A report's schedule obeys two rules, both `ScheduledEnergyReport`'s
   (`base-report.mts`) and both from report 2acb0764 (2026-11, a Classic
   air-to-air unit "disappearing from the Energy tab until the app is
@@ -609,7 +659,9 @@ coverage.
   daily one nine a day at most (five a day once the retry has reached
   its ceiling), the five-minute one none — each request of a fetch
   being tried up to five times under the SDK's own retry (a fetch is
-  one request, two on a Home air-to-water unit: consumed and produced).
+  one request on Classic and one per day of its window on Home: one for
+  most runs, two around a midnight, up to eight when a total catches up
+  a week).
   The four-hour ceiling is what brings a daily report back within four
   hours of a long outage's end and retries a failure on a later night;
   its price is six fetches a day instead of one for a report that never
@@ -814,9 +866,9 @@ coverage.
   `hotWater.lastLegionellaActivationEpochMs` (the year-1 "never ran"
   sentinel and garbage read `null`, shown as the shared em-dash
   marker) and the error log's `atEpochMs`/`clearedAtEpochMs` — and the
-  Home telemetry decode (`getEnergySeries`: epoch-ms instants, kWh
-  whatever the type): the app never re-derives an instant or a unit
-  from a wall-clock wire string.
+  Home energy decode (`getEnergySeries`: hour buckets, their starts as
+  epoch-ms instants, kWh whatever the type): the app never re-derives
+  an instant or a unit from a wall-clock wire string.
 - Two warning verbs on `BaseMELCloudDevice`, chosen by the condition's
   LIFETIME. `setWarning` is the transient TOAST for one-shot errors (a
   failed write, a refused setting): it shows the message and resets in

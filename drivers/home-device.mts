@@ -10,8 +10,8 @@ import type { HomeMELCloudDriver } from './home-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
 
 // Both Home report wires resolve total-mode reads the same way; only the
-// regular cadence is type-specific (the ATW interval measures are
-// near-live, the ATA cumulative one is not).
+// regular cadence is type-specific (the air-to-water hour in progress
+// grows by the minute, the air-to-air one in 100 Wh steps).
 export const HOME_ENERGY_REPORT_TOTAL: EnergyReportConfig = {
   duration: { hours: 1 },
   mode: 'total',
