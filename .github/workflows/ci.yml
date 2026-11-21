@@ -6,7 +6,7 @@ jobs:
       packages: read
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    uses: OlivierZal/configs/.github/workflows/reusable-ci.yml@fec6cb6f6314305339ebf7fef322da2080e5cbba # v8.11.0
+    uses: OlivierZal/configs/.github/workflows/reusable-ci.yml@571d0d1b4802e5620508c3253ef90181e005b066 # v8.12.0
     with:
       check-node-version: '22'
       # The coverage/Sonar leg carries its own flag, and it runs on the
@@ -24,4 +24,8 @@ on:
   pull_request: {}
   push:
     branches: [main]
+  # The push the Dependabot lane never raises: a merge it performs is
+  # pushed with `GITHUB_TOKEN`, which starts no workflow.
+  schedule:
+    - cron: '23 4 * * *'
 permissions: {}

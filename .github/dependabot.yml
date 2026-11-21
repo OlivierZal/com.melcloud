@@ -62,6 +62,14 @@ updates:
         patterns:
           - '@vitest/*'
           - vitest
+    # The adoption of @olivierzal/configs moves eslint with it: the rule
+    # tables are audited against one minor, and a minor merged here first
+    # runs unread. Its patches still come through.
+    ignore:
+      - dependency-name: eslint
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
     package-ecosystem: npm
     registries:
       - npm-github
