@@ -30,10 +30,11 @@ import {
   type ProtectionUpdate,
   type ReportChartLineOptions,
   type ReportChartPieOptions,
-  type Result,
   type SettingManager,
+  type SettingsTarget,
   type SyncCallback,
   combineAtaGroups,
+  combineSettingsTargets,
   isClassicAtaFacade,
   isWithinErrorLogWindow,
   logFailure,
@@ -95,6 +96,7 @@ import {
   pairSameNameBuildings,
   tagSameNameBuildings,
   toMergedItem,
+  toMergedValue,
 } from './public/zones.mts'
 import { fanSpeedValues } from './types/ata-erv.mts'
 import {
@@ -110,16 +112,6 @@ const byName = (
 
 const HOLIDAY_MODE_MAX_DURATION_DAYS = 365
 const HOLIDAY_MODE_OFF_DURATION = 0
-
-// The one surface every settings target answers — Classic zone/device
-// facades, Home device facades and the Home building facade alike; the
-// widened return unions absorb the building aggregates' per-field nulls.
-interface SettingsTarget {
-  readonly getFrostProtection: () => Promise<Result<TargetProtectionState>>
-  readonly getHolidayMode: () => Promise<Result<TargetHolidayModeState>>
-  readonly updateFrostProtection: (update: ProtectionUpdate) => Promise<void>
-  readonly updateHolidayMode: (update: HolidayModeUpdate) => Promise<void>
-}
 
 const DRIVER_IDS_BY_TYPE: Partial<Record<DeviceType, string>> = {
   [Classic.DeviceType.Ata]: 'melcloud',
@@ -218,23 +210,44 @@ const labelFailure = (error: unknown, account: string): Error =>
 // alone: each one's failure names its account, so the message says which
 // one did not apply the change. A no-change passes through untouched,
 // for `combineAtaGroups` to count as the success it is.
+const onAccount = async (
+  api: Api,
+  write: () => Promise<void>,
+): Promise<void> => {
+  try {
+    await write()
+  } catch (error) {
+    throw error instanceof NoChangesError
+      ? error
+      : labelFailure(error, API_DISPLAY_NAMES[api])
+  }
+}
+
+// One account's half of a merged house's ATA group, its write labelled.
 const withAccountOnFailure = (group: AtaGroup, api: Api): AtaGroup => ({
   getGroup: async () => group.getGroup(),
   getMemberOperationModes: (options) => group.getMemberOperationModes(options),
-  updateGroupState: async (state): Promise<void> => {
-    try {
-      await group.updateGroupState(state)
-    } catch (error) {
-      throw error instanceof NoChangesError
-        ? error
-        : labelFailure(error, API_DISPLAY_NAMES[api])
-    }
-  },
+  updateGroupState: async (state) =>
+    onAccount(api, async () => group.updateGroupState(state)),
+})
+
+// One account's half of a merged house's settings, its writes labelled.
+const withAccountOnSettingsFailure = (
+  target: SettingsTarget,
+  api: Api,
+): SettingsTarget => ({
+  getFrostProtection: async () => target.getFrostProtection(),
+  getHolidayMode: async () => target.getHolidayMode(),
+  updateFrostProtection: async (update) =>
+    onAccount(api, async () => target.updateFrostProtection(update)),
+  updateHolidayMode: async (update) =>
+    onAccount(api, async () => target.updateHolidayMode(update)),
 })
 
 // A fan-out's failures — both accounts of a merged house, several units
-// of a Home building — travel as one message, each distinct reason once,
-// since the webview reads a thrown error's message alone.
+// or clocks of a Home building — travel as one message, each distinct
+// reason once, since a webview or a flow card reads a thrown error's
+// message alone.
 const joinFailures = (error: AggregateError): Error => {
   const messages = new Set(
     toFailures(error).map((failure) => getErrorMessage(failure)),
@@ -244,9 +257,23 @@ const joinFailures = (error: AggregateError): Error => {
   })
 }
 
-// A flat autocomplete/select item: the `${model}_${id}` option value as
-// `id` (unique, and the routing key run listeners parse) plus the display
-// name. Shared by the holiday flow cards and the settings zone selector.
+// A write whose fan-out, if it has one, fails with that one message.
+const withJoinedFailures = async (
+  write: () => Promise<void>,
+): Promise<void> => {
+  try {
+    await write()
+  } catch (error) {
+    if (error instanceof AggregateError) {
+      throw joinFailures(error)
+    }
+    throw error
+  }
+}
+
+// A flat autocomplete item: the `${model}_${id}` option value as `id`
+// (unique, and the routing key run listeners parse) plus the display
+// name. What the holiday flow cards list, and get back as their argument.
 interface FlatZoneItem {
   readonly id: string
   readonly name: string
@@ -265,15 +292,29 @@ const toFlatName = ({ buildingName, model, name }: FlatZone): string => {
     : `${trimmed} (${buildingName.trim()})`
 }
 
-// Flat autocomplete items over the given nodes, name-sorted. The selected
-// item's `id` carries the `${model}_${id}` routing value run listeners parse.
-const toFlatZoneItems = (nodes: readonly FlatZone[]): FlatZoneItem[] =>
-  nodes
-    .map((node) => ({
-      id: getZoneId(node.id, node.model),
-      name: toFlatName(node),
-    }))
-    .toSorted(byName)
+// A flat list over both accounts: each leaf suffixed with its building,
+// a house both accounts list under one name as ONE item in place of its
+// two buildings, a name either account holds twice tagged with each
+// building's account, the whole name-sorted. The one composition behind
+// the flat lists that hold buildings: the ATA group widget's default
+// zone and the holiday cards.
+const toHouseTargets = <T extends FlatZone>(
+  targets: readonly T[],
+  pairs: readonly SameNamePair[],
+): (MergedBuildingItem | T)[] => {
+  const houseBuildings = new Set(
+    pairs.flatMap(({ classic, home }) => [
+      getZoneId(classic.id, 'buildings'),
+      getZoneId(home.id, 'homeBuildings'),
+    ]),
+  )
+  return tagSameNameBuildings([
+    ...targets
+      .filter(({ id, model }) => !houseBuildings.has(getZoneId(id, model)))
+      .map((node) => ({ ...node, name: toFlatName(node) })),
+    ...pairs.map((pair) => toMergedItem(pair)),
+  ]).toSorted(byName)
+}
 
 const filterZonesByName = <T extends { readonly name: string }>(
   zones: readonly T[],
@@ -679,7 +720,7 @@ export default class MELCloudApp extends App {
   public async getTargetOverheatProtection(
     targetId: string,
   ): Promise<TargetProtectionState> {
-    const target = this.#getHomeTarget(targetId)
+    const target = this.#getOverheatTarget(targetId)
     return target === null
       ? null
       : unwrapResult(await target.getOverheatProtection())
@@ -807,15 +848,19 @@ export default class MELCloudApp extends App {
     targetId: string,
     settings: ProtectionUpdate,
   ): Promise<void> {
-    await this.#getSettingsTarget(targetId).updateFrostProtection(settings)
+    await withJoinedFailures(async () =>
+      this.#getSettingsTarget(targetId).updateFrostProtection(settings),
+    )
   }
 
   public async updateTargetHolidayMode(
     targetId: string,
     settings: HolidayModeSettings,
   ): Promise<void> {
-    await this.#getSettingsTarget(targetId).updateHolidayMode(
-      this.#completeHolidayModeWindow(settings),
+    await withJoinedFailures(async () =>
+      this.#getSettingsTarget(targetId).updateHolidayMode(
+        this.#completeHolidayModeWindow(settings),
+      ),
     )
   }
 
@@ -823,7 +868,7 @@ export default class MELCloudApp extends App {
     targetId: string,
     settings: ProtectionUpdate,
   ): Promise<void> {
-    const target = this.#getHomeTarget(targetId)
+    const target = this.#getOverheatTarget(targetId)
     if (target === null) {
       // Overheat protection does not exist on the Classic wire: a write
       // addressed to a Classic target is a caller error, not a no-op.
@@ -1016,7 +1061,10 @@ export default class MELCloudApp extends App {
   // member, every other target's facades list them.
   #getAtaGroupMemberIds(targetId: string): (number | string)[] {
     if (isMergedBuildingValue(targetId)) {
-      const { classic, home } = this.#getMergedBuildingFacades(targetId)
+      const { classic, home } = this.#getMergedBuildingFacades(
+        targetId,
+        this.#getAtaSameNamePairs(),
+      )
       return [...classic.devices, ...home.devices].map(({ id }) => id)
     }
     if (isHomeDeviceValue(targetId)) {
@@ -1038,7 +1086,10 @@ export default class MELCloudApp extends App {
   // only addressing them.
   #getAtaGroupTarget(targetId: string): AtaGroup {
     if (isMergedBuildingValue(targetId)) {
-      const { classic, home } = this.#getMergedBuildingFacades(targetId)
+      const { classic, home } = this.#getMergedBuildingFacades(
+        targetId,
+        this.#getAtaSameNamePairs(),
+      )
       return combineAtaGroups([
         withAccountOnFailure(classic, 'classic'),
         withAccountOnFailure(home, 'home'),
@@ -1054,7 +1105,8 @@ export default class MELCloudApp extends App {
 
   // The houses both accounts list under one name, paired from the lists
   // the ATA group widget pairs, so every merged value it offers resolves
-  // here while the registries still hold it.
+  // here while the registries still hold it: the buildings that hold an
+  // air-to-air unit, where `#getSameNamePairs` pairs every building.
   #getAtaSameNamePairs(): SameNamePair[] {
     return pairSameNameBuildings([
       ...this.getClassicBuildings(Classic.DeviceType.Ata),
@@ -1229,8 +1281,7 @@ export default class MELCloudApp extends App {
   }
 
   // The Home target for a picker value, or `null` when the value
-  // addresses the Classic family. Doubles as the overheat resolver:
-  // overheat protection exists on Home targets only.
+  // addresses the Classic family or a merged house.
   #getHomeTarget(
     targetId: string,
   ): Home.BuildingFacade | Home.DeviceAtaFacade | Home.DeviceAtwFacade | null {
@@ -1246,18 +1297,20 @@ export default class MELCloudApp extends App {
     return this.#getClient(api).registry.getDevices().length
   }
 
-  // A merged value is looked up, never split, among the pairs the
-  // registries hold now: one no pair matches — a building renamed, an
+  // A merged value is looked up, never split, among the pairs its
+  // surface lists now: one no pair matches — a building renamed, an
   // account signed out, a second building of that name — answers
   // zone-not-found, before any write.
-  #getMergedBuildingFacades(targetId: string): {
+  #getMergedBuildingFacades(
+    targetId: string,
+    pairs: readonly SameNamePair[],
+  ): {
     classic: Classic.BuildingFacade | Classic.ZoneFacade
     home: Home.BuildingFacade
   } {
-    const pair = this.#getAtaSameNamePairs().find((candidate) => {
-      const { id, model } = toMergedItem(candidate)
-      return getZoneId(id, model) === targetId
-    })
+    const pair = pairs.find(
+      (candidate) => toMergedValue(candidate) === targetId,
+    )
     if (pair === undefined) {
       throw new NotFoundError(this.homey.__('errors.zoneNotFound'))
     }
@@ -1265,6 +1318,16 @@ export default class MELCloudApp extends App {
       classic: this.getClassicFacade('buildings', pair.classic.id),
       home: this.#getHomeBuildingFacade(pair.home.id),
     }
+  }
+
+  // Overheat protection exists on MELCloud Home alone: a merged house
+  // answers through its Home building, a Classic target not at all.
+  #getOverheatTarget(
+    targetId: string,
+  ): Home.BuildingFacade | Home.DeviceAtaFacade | Home.DeviceAtwFacade | null {
+    return isMergedBuildingValue(targetId)
+      ? this.#getMergedBuildingFacades(targetId, this.#getSameNamePairs()).home
+      : this.#getHomeTarget(targetId)
   }
 
   // This account's devices paired in Homey, across every driver of its
@@ -1283,10 +1346,32 @@ export default class MELCloudApp extends App {
       : this.#getClassicReportDevice(targetId)
   }
 
+  // The houses both accounts list under one name, paired from every
+  // building they list: what the settings page and the holiday cards
+  // pair, so every merged value they offer resolves here.
+  #getSameNamePairs(): SameNamePair[] {
+    return pairSameNameBuildings([
+      ...this.getClassicBuildings(),
+      ...this.getHomeTargets(),
+    ])
+  }
+
   // The one target resolver behind the neutral settings routes: the
   // targetId is the picker value verbatim (`${model}_${id}`), so
-  // addressing is the only family-visible step left.
+  // addressing is the only family-visible step left. A merged house is
+  // the SDK's combination of its two buildings: one read folded from
+  // both accounts, one write sent to both, each account's failure named.
   #getSettingsTarget(targetId: string): SettingsTarget {
+    if (isMergedBuildingValue(targetId)) {
+      const { classic, home } = this.#getMergedBuildingFacades(
+        targetId,
+        this.#getSameNamePairs(),
+      )
+      return combineSettingsTargets([
+        withAccountOnSettingsFailure(classic, 'classic'),
+        withAccountOnSettingsFailure(home, 'home'),
+      ])
+    }
     const homeTarget = this.#getHomeTarget(targetId)
     if (homeTarget !== null) {
       return homeTarget
@@ -1644,45 +1729,36 @@ export default class MELCloudApp extends App {
   }
 
   // Everything the ATA group widget can target: every Classic zone/device
-  // and every Home building/device, each leaf suffixed with its building,
-  // a house both accounts list under one name as ONE item in place of
-  // its two buildings, and a name either account holds twice tagged with
-  // each building's account; the whole list drawn from the two shared
-  // sources and name-sorted.
+  // and every Home building/device that holds an air-to-air unit, a house
+  // both accounts list under one name once (`toHouseTargets`), drawn from
+  // the two shared sources.
   #searchAtaTargets(
     query: string,
   ): (Classic.Zone | HomeBuildingZone | HomeDeviceZone | MergedBuildingItem)[] {
-    const pairs = this.#getAtaSameNamePairs()
-    const houseBuildings = new Set(
-      pairs.flatMap(({ classic, home }) => [
-        getZoneId(classic.id, 'buildings'),
-        getZoneId(home.id, 'homeBuildings'),
-      ]),
-    )
     return filterZonesByName(
-      tagSameNameBuildings([
-        ...[
+      toHouseTargets(
+        [
           ...this.getClassicTargets(Classic.DeviceType.Ata),
           ...this.getHomeTargets(Home.DeviceType.Ata),
-        ]
-          .filter(({ id, model }) => !houseBuildings.has(getZoneId(id, model)))
-          .map((node) => ({ ...node, name: toFlatName(node) })),
-        ...pairs.map((pair) => toMergedItem(pair)),
-      ]).toSorted(byName),
+        ],
+        this.#getAtaSameNamePairs(),
+      ),
       query,
     )
   }
 
   // Holiday-mode / condition targets: every Classic zone/device and every
-  // Home building/device, each carrying its `${model}_${id}` routing value
-  // and a building-suffixed display name, each building both accounts
-  // list under one name tagged with its own account, name-sorted.
+  // Home building/device, a house both accounts list under one name once
+  // (`toHouseTargets`), each item carrying its `${model}_${id}` routing
+  // value, the one the run listeners resolve, and its display name.
   #searchHolidayModeTargets(query: string): FlatZoneItem[] {
-    const targets = tagSameNameBuildings([
-      ...this.getClassicTargets(),
-      ...this.getHomeTargets(),
-    ])
-    return filterZonesByName(toFlatZoneItems(targets), query)
+    return filterZonesByName(
+      toHouseTargets(
+        [...this.getClassicTargets(), ...this.getHomeTargets()],
+        this.#getSameNamePairs(),
+      ).map(({ id, model, name }) => ({ id: getZoneId(id, model), name })),
+      query,
+    )
   }
 
   // Residual credentials on an API without any paired device only get

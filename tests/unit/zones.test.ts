@@ -17,8 +17,10 @@ import {
   sortByBuilding,
   tagSameNameBuildings,
   toBuildingKey,
+  toFollowedValues,
   toHouseDefault,
   toMergedItem,
+  toMergedValue,
 } from '../../public/zones.mts'
 
 const classicBuilding = (name: string): Classic.BuildingZone =>
@@ -367,6 +369,34 @@ describe('zones', () => {
     ).toStrictEqual(house)
     expect(toHouseDefault(office, [pair])).toBe(office)
     expect(toHouseDefault(null, [pair])).toBeNull()
+  })
+
+  // Both ways: a selection on one of the house's buildings follows it
+  // to the house once the other account's list lands, and a house that
+  // came apart, one account gone, goes to whichever of its two buildings
+  // is still listed, the caller trying each value in turn. Any other
+  // selection stays where it is, a unit of the house included.
+  it('should say where a selection goes once the lists have moved', () => {
+    const pair = {
+      classic: mock<Classic.BuildingZone>({ id: 1, name: 'Domicile' }),
+      home: mock<HomeBuildingZone>({ id: 'b_2', name: 'Domicile' }),
+    }
+    const house = 'mergedBuildings_1_b_2'
+    const apart = [house, 'buildings_1', 'homeBuildings_b_2']
+
+    expect(toMergedValue(pair)).toBe(house)
+    expect(toFollowedValues('buildings_1', [], [pair])).toStrictEqual([house])
+    expect(toFollowedValues('homeBuildings_b_2', [], [pair])).toStrictEqual([
+      house,
+    ])
+    expect(toFollowedValues(house, [pair], [pair])).toStrictEqual(apart)
+    expect(toFollowedValues(house, [pair], [])).toStrictEqual(apart)
+    // A whole value is matched, never a prefix of one.
+    expect(
+      ['buildings_2', 'buildings_12', 'devices_1', ''].flatMap((value) =>
+        toFollowedValues(value, [pair], [pair]),
+      ),
+    ).toStrictEqual(['buildings_2', 'buildings_12', 'devices_1', ''])
   })
 
   it('should detect a merged value by its prefix', () => {

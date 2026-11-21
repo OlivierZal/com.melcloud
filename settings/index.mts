@@ -71,10 +71,15 @@ import {
 } from '../public/dom.mts'
 import {
   type PickerListZone,
-  type PickerZone,
+  type SameNamePair,
   getZoneId,
+  isMergedBuildingValue,
+  mergeSameNameBuildings,
+  pairSameNameBuildings,
   sortByBuilding,
   tagSameNameBuildings,
+  toFollowedValues,
+  toMergedValue,
 } from '../public/zones.mts'
 
 // ── Helpers ──
@@ -386,23 +391,28 @@ const createValuesGate = (
 
 // Option values driving the Home-only overheat panel, read off the
 // membership flags each served building node carries: `capable` lists
-// every Home ATA device plus each building owning one; `atwBuildings`
-// lists the buildings owning at least one ATW, so a capable building
-// can show the "(air-to-air)" scope qualifier when its bulk write
-// skips ATW.
+// every Home ATA device, each building owning one and the house such a
+// building makes with a Classic one of its name; `atwBuildings` lists
+// the buildings owning at least one ATW, so a capable building can show
+// the "(air-to-air)" scope qualifier when its bulk write skips ATW.
 const collectOverheatZoneValues = (
-  zones: readonly PickerZone[],
+  zones: readonly PickerListZone[],
 ): { atwBuildings: string[]; capable: string[] } => ({
   atwBuildings: zones
     .filter((zone) => zone.model === 'homeBuildings' && zone.hasAtw)
     .map((zone) => getZoneId(zone.id, zone.model)),
-  capable: zones
-    .filter(
-      (zone) =>
-        (zone.model === 'homeBuildings' && zone.hasAta) ||
-        (zone.model === 'homeDevices' && zone.deviceType === 'ata'),
-    )
-    .map((zone) => getZoneId(zone.id, zone.model)),
+  capable: [
+    ...zones
+      .filter(
+        (zone) =>
+          (zone.model === 'homeBuildings' && zone.hasAta) ||
+          (zone.model === 'homeDevices' && zone.deviceType === 'ata'),
+      )
+      .map((zone) => getZoneId(zone.id, zone.model)),
+    ...pairSameNameBuildings(zones)
+      .filter(({ home }) => home.hasAta)
+      .map((pair) => toMergedValue(pair)),
+  ],
 })
 
 // Serialize a device-settings section's controls as a pure form snapshot for
@@ -1394,12 +1404,6 @@ class SettingsApp {
   // `ready()` always fires — an unbounded await here would hold Homey's
   // loading overlay open forever on a single hung or failed call.
   public async init(): Promise<void> {
-    // A stale cached page refetches itself once (never-cached address)
-    // instead of booting: skip the init — the document is about to be
-    // replaced.
-    if (await watchSettingsFreshness(this.#homey)) {
-      return
-    }
     const { error, hasFailed } = await runWebview(this.#homey, this.#run())
     if (hasFailed) {
       // After `ready` (runWebview's finally): an alert raised under the
@@ -1443,11 +1447,9 @@ class SettingsApp {
   // words. The stale-list and empty-account alerts outrank that message
   // (`#postLoginMessage`), each explaining why there is nothing to add.
   async #ensureDevicesForApi(api: Api): Promise<void> {
-    if (api === 'classic') {
-      await this.#fetchClassicBuildings()
-    } else if (this.#hasHomeDevices()) {
-      await this.#fetchHomeTargets()
-    }
+    await (api === 'classic'
+      ? this.#fetchClassicBuildings()
+      : this.#fetchHomeTargets())
     if (!this.#hasDevices(api)) {
       throw new NoDeviceError(this.#homey, api)
     }
@@ -1509,10 +1511,6 @@ class SettingsApp {
     return Object.keys(this.#deviceSettingsManager.deviceSettings).some(
       (driverId) => toApi(driverId) === api,
     )
-  }
-
-  #hasHomeDevices(): boolean {
-    return this.#hasDevices('home')
   }
 
   async #initCredentialFields({
@@ -1708,7 +1706,7 @@ class SettingsApp {
       await this.#validateInitialClassicAuth()
     }
     if (this.#authState.home) {
-      await this.#validateInitialHomeAuth()
+      await this.#fetchHomeTargets()
     }
   }
 
@@ -1724,19 +1722,13 @@ class SettingsApp {
       }
     }
   }
-
-  async #validateInitialHomeAuth(): Promise<void> {
-    if (this.#hasHomeDevices()) {
-      await this.#fetchHomeTargets()
-    }
-  }
 }
 
 // ── ZoneSettingsManager ──
 class ZoneSettingsManager {
   // Home buildings owning at least one ATW device: a capable building in
   // this set shows the "(air-to-air)" scope qualifier.
-  readonly #atwBuildingValues = new Set<string>()
+  #atwBuildingValues: ReadonlySet<string> = new Set()
 
   readonly #frostProtectionDirtyGate: DirtyGate
 
@@ -1762,9 +1754,12 @@ class ZoneSettingsManager {
 
   readonly #homey: Homey
 
-  // Option values (devices and buildings) eligible for the Home-only
-  // overheat panel: Home ATA devices and buildings owning at least one.
-  readonly #overheatCapableValues = new Set<string>()
+  // Option values (devices, buildings and merged houses) eligible for
+  // the Home-only overheat panel: Home ATA devices, the buildings owning
+  // at least one and the houses those buildings are part of.
+  #overheatCapableValues: ReadonlySet<string> = new Set()
+
+  readonly #overheatHouseScope = getSpan('overheat_protection_house_scope')
 
   readonly #overheatPanel = getFieldset('overheat_protection_panel')
 
@@ -1936,42 +1931,40 @@ class ZoneSettingsManager {
   // zone's values, armed if they were, and an Apply sent them to the
   // zone just picked.
   public async fetchZoneSettings(): Promise<void> {
+    const target = this.#zone.value
     this.displayFrostProtectionData()
     this.displayHolidayModeData()
     this.displayOverheatProtectionData()
     await this.fetchFrostProtectionData()
-    await this.fetchHolidayModeData()
+    await this.#fetchWhileSelected(target, async () =>
+      this.fetchHolidayModeData(),
+    )
     // Home-only panel: skip the fetch entirely for targets that cannot
     // carry the feature (Classic zones, ATW devices).
-    if (this.#overheatCapableValues.has(this.#zone.value)) {
-      await this.fetchOverheatProtectionData()
+    if (this.#overheatCapableValues.has(target)) {
+      await this.#fetchWhileSelected(target, async () =>
+        this.fetchOverheatProtectionData(),
+      )
     }
   }
 
   public populateZoneOptions(api: Api, zones: readonly PickerListZone[]): void {
+    const formerPairs = pairSameNameBuildings(this.#listedZones())
     this.#zonesByApi[api] = zones
-    this.#registerOverheatZones(zones)
-    // Rebuilt rather than appended, so a building sorts into place among
-    // the other account's, tagged with its account when the other one
-    // lists its name too; the selection stays where it was.
+    const listed = this.#listedZones()
+    this.#registerOverheatZones(listed)
     const { value } = this.#zone
-    this.#zone.replaceChildren()
-    populateZoneSelect(
-      this.#zone,
-      tagSameNameBuildings(
-        sortByBuilding([...this.#zonesByApi.classic, ...this.#zonesByApi.home]),
-      ),
-    )
-    applySelectValue(this.#zone, value)
+    this.#rebuildZoneOptions(listed, formerPairs)
     // Only after the options land: on a Home-only boot the selection
     // settles during the populate, and refreshing visibility before it
     // read the pre-populate value — hiding the panel for a capable
     // first target until the user moved the picker away and back.
     this.#refreshOverheatVisibility()
     // The panels follow the selection when the fill moved it: a first
-    // fill, or a zone a signed-out or emptied account took with it. Not
-    // awaited, so it never blocks `ready()`; it is silent (defaults on
-    // failure), and the error log stays on its on-demand "See" button —
+    // fill, a building that became a house, a house that came apart, or
+    // a zone a signed-out or emptied account took with it. Not awaited,
+    // so it never blocks `ready()`; it is silent (defaults on failure),
+    // and the error log stays on its on-demand "See" button —
     // prefetching it blocked first paint on a MELCloud round-trip
     // (~350 ms on a Homey Pro 2019) and its failure alert would surface
     // unprompted.
@@ -2185,6 +2178,18 @@ class ZoneSettingsManager {
     })
   }
 
+  // A chain of reads ends once the picker has left its zone: the zone
+  // now selected has a chain of its own, and a second read of it costs
+  // MELCloud a request for nothing.
+  async #fetchWhileSelected(
+    target: string,
+    read: () => Promise<void>,
+  ): Promise<void> {
+    if (this.#zone.value === target) {
+      await read()
+    }
+  }
+
   // GET one zone-setting panel: refresh the cached zone mapping and
   // the panel, silent on failure (the UI falls back to default values).
   async #fetchZoneSetting({
@@ -2268,6 +2273,11 @@ class ZoneSettingsManager {
     }
   }
 
+  // What the two accounts list now, as one list.
+  #listedZones(): PickerListZone[] {
+    return [...this.#zonesByApi.classic, ...this.#zonesByApi.home]
+  }
+
   // PUT one zone-setting panel: refresh the cached zone mapping and
   // the panel, alert success or failure.
   async #putZoneSetting(
@@ -2334,24 +2344,51 @@ class ZoneSettingsManager {
     }
   }
 
+  // Rebuilt rather than appended, so a building sorts into place among
+  // the other account's, and a house both accounts list under one name
+  // is ONE entry over the units of both; the selection stays where it
+  // was, going along with a building to the house it became and with a
+  // house that came apart to its building that stays.
+  #rebuildZoneOptions(
+    listed: readonly PickerListZone[],
+    formerPairs: readonly SameNamePair[],
+  ): void {
+    const zones = sortByBuilding(mergeSameNameBuildings(listed))
+    const followedValues = toFollowedValues(
+      this.#zone.value,
+      formerPairs,
+      pairSameNameBuildings(listed),
+    )
+    this.#zone.replaceChildren()
+    populateZoneSelect(this.#zone, tagSameNameBuildings(zones))
+    for (const followed of followedValues) {
+      if (applySelectValue(this.#zone, followed)) {
+        break
+      }
+    }
+  }
+
   #refreshOverheatVisibility(): void {
     const { value } = this.#zone
     const isCapable = this.#overheatCapableValues.has(value)
     this.#overheatPanel.hidden = !isCapable
-    // The bulk write of a mixed building silently skips its ATW devices —
-    // the qualifier says so; a pure-ATA building (or a device) needs none.
+    // A bulk write reaches less than its target holds, and a qualifier
+    // says so: a house both accounts list, its MELCloud Home air-to-air
+    // units alone, MELCloud Classic having no such setting; a mixed
+    // Home building, not its ATW devices. A pure-ATA building (or a
+    // device) needs none.
+    this.#overheatHouseScope.hidden =
+      !isCapable || !isMergedBuildingValue(value)
     this.#overheatScope.hidden =
       !isCapable || !this.#atwBuildingValues.has(value)
   }
 
-  #registerOverheatZones(zones: readonly PickerZone[]): void {
+  // Read anew at every fill, off what the two accounts list now: a
+  // target that stopped being eligible leaves with the list that says so.
+  #registerOverheatZones(zones: readonly PickerListZone[]): void {
     const { atwBuildings, capable } = collectOverheatZoneValues(zones)
-    for (const value of capable) {
-      this.#overheatCapableValues.add(value)
-    }
-    for (const value of atwBuildings) {
-      this.#atwBuildingValues.add(value)
-    }
+    this.#overheatCapableValues = new Set(capable)
+    this.#atwBuildingValues = new Set(atwBuildings)
   }
 
   // A blank enabled select means a Home building's devices disagree
@@ -2382,6 +2419,13 @@ class ZoneSettingsManager {
  * @param homey - The Homey instance handed to `onHomeyReady`.
  */
 export const start = async (homey: Homey): Promise<void> => {
+  // A stale cached page refetches itself once (never-cached address)
+  // instead of booting: the document is about to be replaced. It is an
+  // earlier version's, so the check comes before anything is built on
+  // it: this bundle may read from the page what that version lacks.
+  if (await watchSettingsFreshness(homey)) {
+    return
+  }
   translateAriaLabels((key) => homey.__(key))
   const app = new SettingsApp(homey)
   await app.init()

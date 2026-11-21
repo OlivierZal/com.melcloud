@@ -290,10 +290,48 @@ const homeBuildingTargets = (name: string, id: string): unknown[] => [
   },
 ]
 
+// The Classic building "Domicile" and its one unit, as
+// `/classic/buildings` lists them.
+const classicDomicile = (): unknown[] => [
+  {
+    areas: [],
+    devices: [{ id: 11, level: 1, model: 'devices', name: 'Living room' }],
+    floors: [],
+    id: 1,
+    level: 0,
+    model: 'buildings',
+    name: 'Domicile',
+  },
+]
+
+const HOUSE = 'mergedBuildings_1_building_2'
+
+// The Home building "Domicile" holding an air-to-water unit alone.
+const homeDomicileWithoutAta = (): unknown[] => [
+  {
+    buildingName: 'Domicile',
+    hasAta: false,
+    hasAtw: true,
+    id: 'building_2',
+    level: 0,
+    model: 'homeBuildings',
+    name: 'Domicile',
+  },
+  {
+    buildingName: 'Domicile',
+    deviceType: 'atw',
+    id: 'ecodan',
+    level: 1,
+    model: 'homeDevices',
+    name: 'Ecodan',
+  },
+]
+
 const defaultRoutes = (): Record<string, unknown> => ({
   'DELETE /sessions/classic': undefined,
   'DELETE /sessions/home': undefined,
   'GET /classic/buildings': classicBuildingsFixture(),
+  'GET /home/targets': [],
   'GET /language': 'fr',
   'GET /sessions/classic': true,
   'GET /sessions/classic/empty': false,
@@ -320,6 +358,18 @@ const bothAccountsRoutes = (
     ...deviceSettingsFixture(),
     'home-melcloud': { always_on: true },
   },
+})
+
+// Both accounts signed in and listing "Domicile": the house they make,
+// beside whatever else the Home account lists.
+const houseRoutes = (
+  homeTargets: readonly unknown[] = homeBuildingTargets(
+    'Domicile',
+    'building_2',
+  ),
+): Record<string, unknown> => ({
+  ...bothAccountsRoutes(homeTargets),
+  'GET /classic/buildings': classicDomicile(),
 })
 
 const apiImplementation =
@@ -487,6 +537,13 @@ const lastCallBody = (harness: Harness, key: string): unknown => {
   return call?.find((argument) => typeof argument === 'object')
 }
 
+// A page whose stamp is not the one the app serves now: a cached one.
+const stampStale = (): void => {
+  const stamp = document.createElement('script')
+  stamp.setAttribute('src', 'index.js?v=aaaaaaaa')
+  document.head.append(stamp)
+}
+
 const zoneOptions = (): { label: string | null; value: string }[] =>
   [...getSelect('zones').options].map(({ textContent, value }) => ({
     label: textContent,
@@ -644,15 +701,23 @@ describe('settings page', () => {
 
     // Classic answers first and its first building is selected; the Home
     // list then sorts its buildings into place, one on either side of the
-    // Classic one, without moving the selection.
+    // Classic one, without moving the selection, so without a second
+    // read of its panels.
     it('should list the two accounts building by building', async () => {
-      await bootPage({
+      const harness = await bootPage({
         routes: bothAccountsRoutes([
           ...homeBuildingTargets('Atelier', 'building_2'),
           ...homeBuildingTargets('Villa', 'building_3'),
         ]),
       })
       const values = [...getSelect('zones').options].map(({ value }) => value)
+
+      expect(
+        calledPaths(harness).filter((called) => called.includes('/targets/')),
+      ).toStrictEqual([
+        'GET /targets/buildings_1/settings/frost-protection',
+        'GET /targets/buildings_1/settings/holiday-mode',
+      ])
 
       expect(values).toStrictEqual([
         'homeBuildings_building_2',
@@ -667,31 +732,86 @@ describe('settings page', () => {
       expect(getSelect('zones').value).toBe('buildings_1')
     })
 
-    // Classic answers first, untagged; the Home list's rebuild tags the
-    // name both accounts list. Only the labels move: the option values
-    // stay the targetIds the routes resolve, and no merged house joins
-    // them — the settings write one account at a time.
-    it('should tag a building name both accounts list', async () => {
+    // A house both accounts list under one name is ONE entry, no
+    // account named, over the units of both, each still selectable on
+    // its own. Classic answers first and its building is selected: when
+    // the Home list makes it a house, the selection follows it there,
+    // past the building that now heads the list, and the panels read
+    // the house.
+    it('should list a house both accounts share once and follow it', async () => {
+      const harness = await bootPage({
+        routes: houseRoutes([
+          ...homeBuildingTargets('Atelier', 'building_3'),
+          ...homeBuildingTargets('Domicile', 'building_2'),
+          ...homeBuildingTargets('Villa', 'building_4'),
+        ]),
+      })
+
+      expect(zoneOptions()).toStrictEqual([
+        { label: ' Atelier', value: 'homeBuildings_building_3' },
+        { label: '··· Salon', value: 'homeDevices_building_3_unit' },
+        { label: ' Domicile', value: HOUSE },
+        { label: '··· Living room', value: 'devices_11' },
+        { label: '··· Salon', value: 'homeDevices_building_2_unit' },
+        { label: ' Villa', value: 'homeBuildings_building_4' },
+        { label: '··· Salon', value: 'homeDevices_building_4_unit' },
+      ])
+      expect(getSelect('zones').value).toBe(HOUSE)
+      expect(calledPaths(harness)).toStrictEqual(
+        expect.arrayContaining([
+          `GET /targets/${HOUSE}/settings/frost-protection`,
+          `GET /targets/${HOUSE}/settings/holiday-mode`,
+        ]),
+      )
+    })
+
+    // The Classic fill starts a chain of reads on its building, the Home
+    // fill moves the selection to the house and starts another: the
+    // first ends where the picker left its zone, so each panel of the
+    // house is read once.
+    it('should read a house once per panel at page open', async () => {
+      const harness = await bootPage({ routes: houseRoutes() })
+
+      expect(
+        calledPaths(harness).filter((path) =>
+          path.includes(`/targets/${HOUSE}/`),
+        ),
+      ).toStrictEqual([
+        `GET /targets/${HOUSE}/settings/frost-protection`,
+        `GET /targets/${HOUSE}/settings/holiday-mode`,
+        `GET /targets/${HOUSE}/settings/overheat-protection`,
+      ])
+    })
+
+    // The zones are what an account lists, whatever Homey holds of it,
+    // on either account: a house is one entry here as soon as both list
+    // it, as it is in the holiday cards.
+    it('should list a signed-in Home account with no device added', async () => {
       await bootPage({
         routes: {
-          ...bothAccountsRoutes([
-            ...homeBuildingTargets('Domicile', 'building_2'),
-            ...homeBuildingTargets('Villa', 'building_3'),
-          ]),
-          'GET /classic/buildings': [
-            {
-              areas: [],
-              devices: [
-                { id: 11, level: 1, model: 'devices', name: 'Living room' },
-              ],
-              floors: [],
-              id: 1,
-              level: 0,
-              model: 'buildings',
-              name: 'Domicile',
-            },
-          ],
+          ...defaultRoutes(),
+          'GET /classic/buildings': classicDomicile(),
+          'GET /home/targets': homeBuildingTargets('Domicile', 'building_2'),
+          'GET /sessions/home': true,
         },
+      })
+
+      expect(zoneOptions().map(({ value }) => value)).toStrictEqual([
+        HOUSE,
+        'devices_11',
+        'homeDevices_building_2_unit',
+      ])
+    })
+
+    // A name either account holds twice is no single house: its
+    // buildings stay, each tagged with its account. Only the labels
+    // move: the option values stay the targetIds the routes resolve.
+    it('should tag a name either account holds twice', async () => {
+      await bootPage({
+        routes: houseRoutes([
+          ...homeBuildingTargets('Domicile', 'building_2'),
+          ...homeBuildingTargets('Domicile', 'building_3'),
+        ]),
       })
 
       expect(zoneOptions()).toStrictEqual([
@@ -699,7 +819,7 @@ describe('settings page', () => {
         { label: '··· Living room', value: 'devices_11' },
         { label: ' Domicile [Home]', value: 'homeBuildings_building_2' },
         { label: '··· Salon', value: 'homeDevices_building_2_unit' },
-        { label: ' Villa', value: 'homeBuildings_building_3' },
+        { label: ' Domicile [Home]', value: 'homeBuildings_building_3' },
         { label: '··· Salon', value: 'homeDevices_building_3_unit' },
       ])
     })
@@ -732,8 +852,8 @@ describe('settings page', () => {
         },
       })
 
-      // The initial validation skips targets; the alert path is the
-      // post-login one, so booting stays silent here.
+      // The alert path is the post-login one: booting stays silent.
+      expect(harness.alert).not.toHaveBeenCalled()
       expect(getDiv('content').hidden).toBe(false)
       expect(harness.ready).toHaveBeenCalledTimes(1)
     })
@@ -761,9 +881,7 @@ describe('settings page', () => {
     })
 
     it('should skip the boot when the page is stale', async () => {
-      const stamp = document.createElement('script')
-      stamp.setAttribute('src', 'index.js?v=aaaaaaaa')
-      document.head.append(stamp)
+      stampStale()
       const harness = await bootPage({
         routes: {
           ...defaultRoutes(),
@@ -773,6 +891,24 @@ describe('settings page', () => {
 
       // The document is about to be replaced: no section is built.
       expect(document.querySelector('#username')).toBeNull()
+      expect(harness.ready).not.toHaveBeenCalled()
+    })
+
+    // The page that needs replacing is an earlier version's, which lacks
+    // what this bundle reads from it: the freshness check comes before
+    // anything is built on the document. Built first, the bundle dies
+    // on the missing element and the overlay stays up at every open.
+    it('should refetch a stale page of an earlier version, whatever it lacks', async () => {
+      getSpan('overheat_protection_house_scope').remove()
+      stampStale()
+      const harness = await bootPage({
+        routes: {
+          ...defaultRoutes(),
+          'GET /webview-hashes': { settings: 'bbbbbbbb' },
+        },
+      })
+
+      expect(calledPaths(harness)).toContain('GET /webview-hashes')
       expect(harness.ready).not.toHaveBeenCalled()
     })
 
@@ -1146,16 +1282,26 @@ describe('settings page', () => {
       expect(values).toContain('homeDevices_ata_device')
     })
 
+    // A Home sign-in whose account lists units none of which is added
+    // alerts where pairing starts and still fills the zone panel from
+    // what the account lists, as a Classic one does.
     it('should alert after a home sign-in with no home device', async () => {
       const harness = await bootPage()
       commit(getSelect('api'), 'home')
       commit(getInput('username'), 'home@example.com')
       commit(getInput('password'), 'secret')
-      swapRoutes(harness, { ...defaultRoutes(), 'GET /sessions/home': true })
+      swapRoutes(harness, {
+        ...defaultRoutes(),
+        'GET /home/targets': homeTargetsFixture(),
+        'GET /sessions/home': true,
+      })
       getButton('authenticate').click()
       await settleDetached()
 
       expect(harness.alert).toHaveBeenCalledWith('settings.devices.none.home')
+      expect(zoneOptions().map(({ value }) => value)).toContain(
+        'homeBuildings_building_1',
+      )
     })
 
     // A Classic sign-in whose account lists units none of which is added
@@ -1569,6 +1715,36 @@ describe('settings page', () => {
         'homeDevices_building_3_unit',
       ])
       expect(getSelect('zones').value).toBe('homeBuildings_building_3')
+    })
+
+    // A house is two accounts' doing: when one signs out, the other's
+    // building is back on its own, and the selection goes to it, past
+    // the building that heads the list, the panels reading it.
+    it('should give a house back to the account that stays', async () => {
+      const harness = await bootPage({
+        routes: houseRoutes([
+          ...homeBuildingTargets('Atelier', 'building_3'),
+          ...homeBuildingTargets('Domicile', 'building_2'),
+        ]),
+        storedSettings: { password: 'secret', username: 'user@example.com' },
+      })
+
+      expect(getSelect('zones').value).toBe(HOUSE)
+
+      commit(getSelect('api'), 'classic')
+      getButton('reset_credentials').click()
+      await settleDetached()
+
+      expect(zoneOptions()).toStrictEqual([
+        { label: ' Atelier', value: 'homeBuildings_building_3' },
+        { label: '··· Salon', value: 'homeDevices_building_3_unit' },
+        { label: ' Domicile', value: 'homeBuildings_building_2' },
+        { label: '··· Salon', value: 'homeDevices_building_2_unit' },
+      ])
+      expect(getSelect('zones').value).toBe('homeBuildings_building_2')
+      expect(calledPaths(harness)).toContain(
+        'GET /targets/homeBuildings_building_2/settings/frost-protection',
+      )
     })
 
     it("should drop a signed-out account's zones and follow the selection", async () => {
@@ -2409,6 +2585,97 @@ describe('settings page', () => {
 
       expect(getFieldset('overheat_protection_panel').hidden).toBe(false)
       expect(getSpan('overheat_protection_scope').hidden).toBe(false)
+    })
+
+    // Overheat protection is MELCloud Home's alone: on a house both
+    // accounts share, the panel says so, in place of the plain
+    // air-to-air note, and reads and writes the house's value.
+    it('should show on a shared house with its own scope note', async () => {
+      const harness = await bootPage({
+        routes: {
+          ...houseRoutes(),
+          [`GET /targets/${HOUSE}/settings/overheat-protection`]: {
+            isEnabled: true,
+            max: 38,
+            min: 33,
+          },
+        },
+      })
+
+      expect(getSelect('zones').value).toBe(HOUSE)
+      expect(getFieldset('overheat_protection_panel').hidden).toBe(false)
+      expect(getSpan('overheat_protection_house_scope').hidden).toBe(false)
+      expect(getSpan('overheat_protection_scope').hidden).toBe(true)
+      expect(getInput('overheat_min').value).toBe('33')
+
+      commit(getInput('overheat_max'), '39')
+      getButton('apply_overheat_protection').click()
+      await settleDetached()
+
+      expect(
+        lastCallBody(
+          harness,
+          `PUT /targets/${HOUSE}/settings/overheat-protection`,
+        ),
+      ).toStrictEqual({ isEnabled: true, max: 39, min: 33 })
+    })
+
+    // The note is the house's alone: a unit of it, or a Home building
+    // on its own, keeps the panel it had.
+    it.each([
+      { isShown: true, target: 'homeDevices_building_2_unit' },
+      { isShown: true, target: 'homeBuildings_building_4' },
+      { isShown: false, target: 'devices_11' },
+    ])(
+      'should keep the house note off $target',
+      async ({ isShown, target }) => {
+        await bootPage({
+          routes: houseRoutes([
+            ...homeBuildingTargets('Domicile', 'building_2'),
+            ...homeBuildingTargets('Villa', 'building_4'),
+          ]),
+        })
+        commit(getSelect('zones'), target)
+        await settleDetached()
+
+        expect(getFieldset('overheat_protection_panel').hidden).toBe(!isShown)
+        expect(getSpan('overheat_protection_house_scope').hidden).toBe(true)
+      },
+    )
+
+    // A house whose Home building holds no air-to-air unit has nothing
+    // the setting reaches.
+    it('should stay hidden on a house with no Home air-to-air unit', async () => {
+      const harness = await bootPage({
+        routes: houseRoutes(homeDomicileWithoutAta()),
+      })
+
+      expect(getSelect('zones').value).toBe(HOUSE)
+      expect(getFieldset('overheat_protection_panel').hidden).toBe(true)
+      expect(calledPaths(harness)).not.toContain(
+        `GET /targets/${HOUSE}/settings/overheat-protection`,
+      )
+    })
+
+    // The panel follows what the lists say now: a house whose Home
+    // building has lost its last air-to-air unit loses the panel, and
+    // its note, at the next fill.
+    it('should leave a house whose Home air-to-air units are gone', async () => {
+      const harness = await bootPage({ routes: houseRoutes() })
+
+      expect(getFieldset('overheat_protection_panel').hidden).toBe(false)
+
+      swapRoutes(harness, houseRoutes(homeDomicileWithoutAta()))
+      commit(getSelect('api'), 'home')
+      commit(getInput('username'), 'home@example.com')
+      commit(getInput('password'), 'secret')
+      getButton('authenticate').click()
+      await settleDetached()
+      await settleDetached()
+
+      expect(getSelect('zones').value).toBe(HOUSE)
+      expect(getFieldset('overheat_protection_panel').hidden).toBe(true)
+      expect(getSpan('overheat_protection_house_scope').hidden).toBe(true)
     })
 
     it('should show without the qualifier on an ata device', async () => {

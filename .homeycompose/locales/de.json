@@ -95,6 +95,7 @@
     "overheatProtection": {
       "airToAir": "(Luft-Luft)",
       "enabled": "<strong>Überhitzungsschutz</strong> aktivieren",
+      "homeAirToAir": "(MELCloud Home, Luft-Luft)",
       "max": "Maximaltemperatur",
       "min": "Minimaltemperatur"
     },

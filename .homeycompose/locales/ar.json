@@ -98,6 +98,7 @@
     "overheatProtection": {
       "airToAir": "(هواء-هواء)",
       "enabled": "تفعيل <strong>الحماية من فرط التسخين</strong>",
+      "homeAirToAir": "(MELCloud Home، هواء-هواء)",
       "max": "درجة الحرارة القصوى",
       "min": "درجة الحرارة الدنيا"
     },

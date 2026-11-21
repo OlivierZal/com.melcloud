@@ -92,7 +92,8 @@
       "enabled": "Attiva la <strong>protezione dal surriscaldamento</strong>",
       "max": "Temperatura massima",
       "min": "Temperatura minima",
-      "airToAir": "(aria-aria)"
+      "airToAir": "(aria-aria)",
+      "homeAirToAir": "(MELCloud Home, aria-aria)"
     }
   },
   "warnings": {

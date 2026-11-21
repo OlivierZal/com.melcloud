@@ -93,7 +93,8 @@
       "enabled": "Włącz <strong>ochronę przed przegrzaniem</strong>",
       "max": "Temperatura maksymalna",
       "min": "Temperatura minimalna",
-      "airToAir": "(powietrze-powietrze)"
+      "airToAir": "(powietrze-powietrze)",
+      "homeAirToAir": "(MELCloud Home, powietrze-powietrze)"
     }
   },
   "warnings": {

@@ -207,6 +207,23 @@ export const getZoneId = (id: number | string, model: string): string =>
 export const getZoneName = (name: string, level: number): string =>
   `${'···'.repeat(level)} ${name}`
 
+// The option value of a pair's merged house, the one its routes resolve.
+export const toMergedValue = (pair: SameNamePair): string => {
+  const { id, model } = toMergedItem(pair)
+  return getZoneId(id, model)
+}
+
+// The pair whose house lists a building's value in its place, if any.
+const findHouse = (
+  value: string,
+  pairs: readonly SameNamePair[],
+): SameNamePair | undefined =>
+  pairs.find(
+    ({ classic, home }) =>
+      value === getZoneId(classic.id, 'buildings') ||
+      value === getZoneId(home.id, 'homeBuildings'),
+  )
+
 // A default zone stored on one of a merged house's buildings stands for
 // the house, which the picker lists in their place.
 export const toHouseDefault = <
@@ -218,13 +235,29 @@ export const toHouseDefault = <
   if (zone === null) {
     return null
   }
-  const value = getZoneId(zone.id, zone.model)
-  const pair = pairs.find(
-    ({ classic, home }) =>
-      value === getZoneId(classic.id, 'buildings') ||
-      value === getZoneId(home.id, 'homeBuildings'),
-  )
+  const pair = findHouse(getZoneId(zone.id, zone.model), pairs)
   return pair === undefined ? zone : toMergedItem(pair)
+}
+
+// Where a selection goes once the lists have moved, each value to try
+// in turn: a building goes to the house it became; a house that came
+// apart, one account gone, to whichever of its two buildings is still
+// listed; anything else stays where it was.
+export const toFollowedValues = (
+  value: string,
+  formerPairs: readonly SameNamePair[],
+  pairs: readonly SameNamePair[],
+): string[] => {
+  const formerHouse = formerPairs.find((pair) => toMergedValue(pair) === value)
+  if (formerHouse !== undefined) {
+    return [
+      value,
+      getZoneId(formerHouse.classic.id, 'buildings'),
+      getZoneId(formerHouse.home.id, 'homeBuildings'),
+    ]
+  }
+  const house = findHouse(value, pairs)
+  return [house === undefined ? value : toMergedValue(house)]
 }
 
 // A selected option value is `${model}_${id}`. A Home device carries model

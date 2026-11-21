@@ -94,7 +94,8 @@
       "enabled": "تفعيل <strong>الحماية من فرط التسخين</strong>",
       "max": "درجة الحرارة القصوى",
       "min": "درجة الحرارة الدنيا",
-      "airToAir": "(هواء-هواء)"
+      "airToAir": "(هواء-هواء)",
+      "homeAirToAir": "(MELCloud Home، هواء-هواء)"
     }
   },
   "warnings": {
