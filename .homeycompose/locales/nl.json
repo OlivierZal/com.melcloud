@@ -5,6 +5,7 @@
     "energyReportsFailing": "De energierapporten zijn meerdere keren na elkaar mislukt — de energiewaarden kunnen verouderd zijn.",
     "invalidDuration": "De duur moet een geheel aantal dagen tussen 0 en 365 zijn.",
     "invalidHolidayModeEnd": "Het einde van de vakantiemodus moet in de toekomst liggen.",
+    "invalidHolidayModeOrder": "Het einde van de vakantiemodus moet na het begin liggen.",
     "invalidTime": "De eindtijd is ongeldig.",
     "unitError": "De unit zelf meldt een storing — __fault__. De app geeft die alleen door: controleer de unit of de MELCloud-app.",
     "unitErrorUnworded": "De unit zelf meldt een storing. De app geeft die alleen door: controleer de unit of de MELCloud-app.",

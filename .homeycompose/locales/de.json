@@ -5,6 +5,7 @@
     "energyReportsFailing": "Die Energieberichte sind mehrmals in Folge fehlgeschlagen — die Energiewerte können veraltet sein.",
     "invalidDuration": "Die Dauer muss eine ganze Zahl von Tagen zwischen 0 und 365 sein.",
     "invalidHolidayModeEnd": "Das Ende des Urlaubsmodus muss in der Zukunft liegen.",
+    "invalidHolidayModeOrder": "Das Ende des Urlaubsmodus muss nach seinem Beginn liegen.",
     "invalidTime": "Die Endzeit ist ungültig.",
     "unitError": "Das Gerät selbst meldet eine Störung — __fault__. Die App gibt sie nur weiter: prüfen Sie das Gerät oder die MELCloud-App.",
     "unitErrorUnworded": "Das Gerät selbst meldet eine Störung. Die App gibt sie nur weiter: prüfen Sie das Gerät oder die MELCloud-App.",

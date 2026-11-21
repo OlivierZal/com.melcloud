@@ -3461,6 +3461,103 @@ describe('melCloudApp', () => {
         app.updateTargetHolidayMode('buildings_1', mock<HolidayModeUpdate>()),
       ).rejects.toThrow('date: Invalid date')
     })
+
+    // One rule for every entry point, said in the user's language
+    // before any account is asked: MELCloud Home stores a window that
+    // ends before it starts without a word, and the library's own
+    // refusal of one is in English.
+    describe('window checks', () => {
+      beforeEach(() => {
+        vi.spyOn(Temporal.Now, 'plainDateTimeISO').mockReturnValue(
+          Temporal.PlainDateTime.from('2026-08-18T09:30:00'),
+        )
+      })
+
+      afterEach(() => {
+        vi.mocked(Temporal.Now.plainDateTimeISO).mockRestore()
+      })
+
+      it.each([
+        {
+          expected: 'errors.invalidHolidayModeEnd',
+          label: 'ends in the past',
+          settings: { endDate: '2026-08-17T12:00', isEnabled: true },
+        },
+        {
+          expected: 'errors.invalidHolidayModeEnd',
+          label: 'ends now',
+          settings: { endDate: '2026-08-18T09:30', isEnabled: true },
+        },
+        {
+          expected: 'errors.invalidHolidayModeEnd',
+          label: 'has no end',
+          settings: { isEnabled: true },
+        },
+        {
+          expected: 'errors.invalidHolidayModeOrder',
+          label: 'ends before it starts',
+          settings: {
+            endDate: '2026-08-25T12:00',
+            isEnabled: true,
+            startDate: '2026-08-26T08:00',
+          },
+        },
+        {
+          expected: 'errors.invalidHolidayModeOrder',
+          label: 'ends as it starts',
+          settings: {
+            endDate: '2026-08-25T12:00',
+            isEnabled: true,
+            startDate: '2026-08-25T12:00',
+          },
+        },
+      ])(
+        'should refuse an enabled window that $label',
+        async ({ expected, settings }) => {
+          const updateHolidayMode = mockUpdateResult(null)
+          await initWithFacade(
+            app,
+            mock<Classic.ZoneFacade>({ updateHolidayMode }),
+          )
+
+          await expect(
+            app.updateTargetHolidayMode('buildings_1', settings),
+          ).rejects.toThrow(expected)
+          expect(updateHolidayMode).not.toHaveBeenCalled()
+        },
+      )
+
+      // A start already past reads "from now", which is the library's to
+      // send; and a window that is turned off is not judged at all.
+      it.each([
+        {
+          label: 'a window already begun',
+          settings: {
+            endDate: '2026-08-25T12:00',
+            isEnabled: true,
+            startDate: '2026-08-11T08:00',
+          },
+        },
+        {
+          label: 'the dates of a window it turns off, whatever they say',
+          settings: {
+            endDate: '2026-08-11T08:00',
+            isEnabled: false,
+            startDate: '2026-08-17T12:00',
+          },
+        },
+      ])('should pass on $label', async ({ settings }) => {
+        const updateHolidayMode = mockUpdateResult(null)
+        await initWithFacade(
+          app,
+          mock<Classic.ZoneFacade>({ updateHolidayMode }),
+        )
+
+        await app.updateTargetHolidayMode('buildings_1', settings)
+
+        expect(updateHolidayMode).toHaveBeenCalledWith(settings)
+      })
+    })
   })
 
   // The capability cards are app-level and shared by every driver their
@@ -4183,9 +4280,9 @@ describe('melCloudApp', () => {
       })
 
       await app.updateTargetHolidayMode('homeBuildings_b1', {
-        endDate: 'e',
+        endDate: '2099-08-05T00:00',
         isEnabled: true,
-        startDate: 's',
+        startDate: '2099-08-01T00:00',
       })
       await app.updateTargetOverheatProtection('homeBuildings_b1', {
         isEnabled: false,
@@ -4194,9 +4291,9 @@ describe('melCloudApp', () => {
       })
 
       expect(updateHolidayMode).toHaveBeenCalledWith({
-        endDate: 'e',
+        endDate: '2099-08-05T00:00',
         isEnabled: true,
-        startDate: 's',
+        startDate: '2099-08-01T00:00',
       })
       expect(updateOverheatProtection).toHaveBeenCalledWith({
         isEnabled: false,

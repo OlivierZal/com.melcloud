@@ -5,6 +5,7 @@
     "energyReportsFailing": "Energirapporterne er fejlet flere gange i træk — energiværdierne kan være forældede.",
     "invalidDuration": "Varigheden skal være et helt antal dage mellem 0 og 365.",
     "invalidHolidayModeEnd": "Afslutningen på ferietilstand skal være i fremtiden.",
+    "invalidHolidayModeOrder": "Afslutningen på ferietilstand skal være efter starten.",
     "invalidTime": "Sluttidspunktet er ugyldigt.",
     "unitError": "Enheden selv melder en fejl — __fault__. Appen videregiver den blot: tjek enheden eller MELCloud-appen.",
     "unitErrorUnworded": "Enheden selv melder en fejl. Appen videregiver den blot: tjek enheden eller MELCloud-appen.",
