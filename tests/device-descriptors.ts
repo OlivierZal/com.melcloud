@@ -32,19 +32,6 @@ export const testCapabilityToDeviceConverters = (
   })
 }
 
-export const testDeviceToCapabilityConverters = (
-  getDevice: () => object,
-  cases: [string, unknown, unknown][],
-): void => {
-  describe('device-to-capability conversions', () => {
-    it.each(cases)('%s(%s) should return %s', (key, input, expected) => {
-      expect(
-        getConverter(getDevice(), 'deviceToCapability', key)?.(input),
-      ).toBe(expected)
-    })
-  })
-}
-
 export const testDeletion = (getDevice: () => object): void => {
   describe('deletion', () => {
     it('should not throw when called', () => {

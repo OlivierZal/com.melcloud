@@ -20,14 +20,14 @@ const fieldPrefix = (field?: string): string =>
  * Parses `value` as a non-negative finite integer (0 included).
  * @param value - The candidate to coerce, accepted as a number or numeric
  * string.
- * @param root0 - Parsing constraints.
- * @param root0.field - Field name prepended to error messages so callers can
- * locate the invalid input.
- * @param root0.max - Inclusive upper bound above which the parsed value is
- * rejected.
+ * @param constraints - Parsing constraints.
+ * @param constraints.field - Field name prepended to error messages so
+ * callers can locate the invalid input.
+ * @param constraints.max - Inclusive upper bound above which the parsed
+ * value is rejected.
  * @returns The parsed integer, guaranteed non-negative and within `max`.
- * @throws {@link TypeError} when `value` is neither a number nor a string.
- * @throws {@link RangeError} when the parsed number is negative, unsafe,
+ * @throws A {@link TypeError} when `value` is neither a number nor a string.
+ * @throws A {@link RangeError} when the parsed number is negative, unsafe,
  * fractional, or exceeds `max`.
  */
 export const toNonNegativeInt = (
@@ -66,7 +66,7 @@ export const toNonNegativeInt = (
  * @param value - The `${model}_${id}` option value emitted by a flat picker
  * item.
  * @returns The decoded coordinates narrowed to `DeviceOrZoneData`.
- * @throws {@link RangeError} when the type is neither a known zone collection
+ * @throws A {@link RangeError} when the type is neither a known zone collection
  * nor `devices`.
  */
 export const toZoneValueData = (value: string): DeviceOrZoneData => {

@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 
 // The bundler is a top-level-await script working against the current
 // directory (the Homey CLI runs it from the packaged app's root), so
@@ -76,17 +76,16 @@ const stampsOf = async (directory: string): Promise<string[]> => {
 }
 
 describe('bundle script', () => {
-  let workDirectory = ''
-
   beforeEach(async () => {
-    workDirectory = await mkdtemp(path.join(tmpdir(), 'bundle-'))
+    const workDirectory = await mkdtemp(path.join(tmpdir(), 'bundle-'))
+    // Registered before anything below can throw, so a setup that fails
+    // halfway still leaves no directory behind.
+    onTestFinished(async () => {
+      process.chdir(initialDirectory)
+      await rm(workDirectory, { force: true, recursive: true })
+    })
     process.chdir(workDirectory)
     await seedApp()
-  })
-
-  afterEach(async () => {
-    process.chdir(initialDirectory)
-    await rm(workDirectory, { force: true, recursive: true })
   })
 
   it.each(ENTRIES)(

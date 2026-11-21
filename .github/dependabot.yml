@@ -6,9 +6,11 @@ registries:
 updates:
   # Both ecosystems share the `build(deps)` type: it keeps every bump under
   # one `git log --grep` and leaves `ci` to mean hand-written CI changes.
-  # Pinned rather than left to Dependabot, which otherwise infers prefix and
-  # capitalization from each repo's history and lands a different style per
-  # repo.
+  # The prefix is pinned rather than left to Dependabot, which otherwise
+  # infers it from each repo's history and lands a different one per repo.
+  # The case of the subject's first word cannot be pinned (`commit-message`
+  # takes `prefix`, `prefix-development` and `include` only) and follows
+  # that history: `Bump` in api-core and melcloud-api, `bump` elsewhere.
   - commit-message:
       prefix: build(deps)
     cooldown:
@@ -18,13 +20,15 @@ updates:
       actions:
         patterns:
           - '*'
-    # The workflow refs and the npm pin are one version on two channels,
-    # and a check enforces their agreement. Dependabot cannot bump both
-    # in one PR (separate ecosystems), so a lone ref bump would fail the
-    # check and deadlock against its npm twin: the npm pin drives, and
-    # the dependabot-fix run carries the refs along.
+    # One version covers both channels of @olivierzal/configs and of
+    # @olivierzal/homey-kit, the npm pin and the workflow refs, and the
+    # pin check enforces it. Only the npm channel is driven here: a
+    # workflow-ref bump on its own would face that check against an npm
+    # pin that has not moved, and each of the two pull requests would
+    # block the other. The adoption moves the pin and the refs together.
     ignore:
       - dependency-name: OlivierZal/configs
+      - dependency-name: OlivierZal/homey-kit
     package-ecosystem: github-actions
     schedule:
       interval: weekly
