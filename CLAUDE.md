@@ -370,13 +370,23 @@ coverage.
   MELCloud Home, and a window that ends within that minute gets the
   library's own sentence. Until 46.18.3 a MELCloud Home window went out
   an hour early in a Central European winter, and one starting now, or
-  within that hour, was refused by MELCloud and did not take effect. On
-  MELCloud Home `isEnabled` says a window is set, not that it is
-  running: it was still true two minutes after a window had closed, and
-  it is what the `holiday_mode_condition` card and the panel read. After
-  an Apply the panel repaints what the form held, so a start left blank
-  or already past shows as typed until the zone is read again, while the
-  unit holds the minute after the Apply.
+  within that hour, was refused by MELCloud and did not take effect.
+  `isEnabled`, which the `holiday_mode_condition` card and the panel
+  read, means one thing on both accounts since melcloud-api 62.1.1: the
+  wire's flag until the window's end, and off from it. It says a window
+  is set and not over, never that it is running: a window set ahead
+  reads as its flag says before its start. Until 46.19.0 a MELCloud
+  Home window still read as on once it was over, that wire keeping its
+  flag (still true 102 s after a window had closed, how long is not
+  known); what MELCloud Classic's own flag does then is not measured.
+  A window that has ended therefore shows as disabled in the panel, its
+  dates blank, and the panel sends nothing for it: the flag MELCloud
+  keeps stays as MELCloud leaves it, with no effect seen (a window
+  written over a closed one was taken like the first), and the "turn
+  off" card still clears it. After an Apply the panel repaints what the
+  form held, so a start left blank or already past shows as typed until
+  the zone is read again, while the unit holds the minute after the
+  Apply.
 - Dirty-gating: `createDirtyGate` (`@olivierzal/homey-kit/webview`) is
   the ONE primitive behind every
   webview Apply/Refresh pair (settings sections, frost/holiday/overheat
