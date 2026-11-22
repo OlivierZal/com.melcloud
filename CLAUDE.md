@@ -1528,9 +1528,14 @@ as the npm pin (configs' `check-pins.sh` polices the pair for the kit
 as it does for configs, so a kit adoption moves the `uses:` refs in the
 same commit as the pin). The caller keeps its triggers, its grants,
 its `HOMEY_PAT` secret and its bundle list (the three pages' compat
-pairs); the required check reads `validate / Validate app`. The
-composite action is gone since the configs 6.1.0 / homey-kit 6.2.0
-adoption — each reusable reaches its OWN repository's
+pairs); the required check reads `validate / Validate app`. A second
+job of `publish.yml`, over the kit's `reusable-homey-build-link.yml`
+(9.1.0, with the `actions: read` grant it takes), reads the page of
+the uploaded build off the publish job's log and prints it in the
+run's summary: a release is published from that page, where the
+publish job answers the app's. The composite action is gone since the
+configs 6.1.0 / homey-kit 6.2.0 adoption — each reusable reaches its
+OWN repository's
 `.github/actions/setup-node-and-install` through `$/`, GitHub's self-repository syntax (the repository that defines the
 workflow, at the running commit; GitHub.com only, runner 2.336.0 or
 newer); what used to be this app's own settings on it
@@ -1825,7 +1830,9 @@ reader fails open with an empty map).
   regenerate `app.json`, and land it all through a PR. Then tag
   `vX.Y.Z` and publish a GitHub release: `publish.yml` fires on
   release-published (environment `homey`) and pushes to the App Store
-  via athombv's action. `update-version.yml` is deleted
+  via athombv's action; its second job then prints, in the run's
+  summary, the page of the build to publish from Developer Tools.
+  `update-version.yml` is deleted
   debt (it committed directly to `main`, which the ruleset forbids) —
   never restore it; the PR + release flow above replaces it.
 - Store submissions: a rejected version number cannot be resubmitted —
