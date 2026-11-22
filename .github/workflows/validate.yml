@@ -6,7 +6,7 @@ jobs:
     permissions:
       contents: read
       packages: read
-    uses: OlivierZal/homey-kit/.github/workflows/reusable-homey-validate.yml@7efc6d3b9735fc06de8259b127b1c25b32e13258 # v9.0.0
+    uses: OlivierZal/homey-kit/.github/workflows/reusable-homey-validate.yml@fd13297589659e3207f9215548276b70beccd17e # v9.1.0
 name: Validate
 on:
   pull_request: {}
