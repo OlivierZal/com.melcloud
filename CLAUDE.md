@@ -196,6 +196,12 @@ coverage.
   Homey CLI regenerates those outputs on every preprocess and writes them
   WITHOUT a trailing newline. Commit the CLI-generated form verbatim — do
   not "fix" the missing newline, and never edit generated files directly.
+  For the locales the CLI MERGES each source into the generated file it
+  finds and never removes a text (`HomeyCompose._composeLocales`, read in
+  homey 4.6.3): one written in a generated locale alone survives every
+  build until that file is generated afresh, and one its source dropped
+  keeps shipping. `tests/unit/locales.test.ts` holds the generated
+  locales to their sources, through the kit's `findLocaleDrift`.
 - `homey:validate` acts as a pre-push formatter hook of sorts: if it
   touches files, amend before pushing.
 - Widget webviews get Homey's injected class-based stylesheet and the
