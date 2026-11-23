@@ -7,6 +7,7 @@
     "invalidHolidayModeEnd": "Afslutningen på ferietilstand skal være i fremtiden.",
     "invalidHolidayModeOrder": "Afslutningen på ferietilstand skal være efter starten.",
     "invalidTime": "Sluttidspunktet er ugyldigt.",
+    "shutdownDisabled": "Ikke slukket: »Deaktiver slukning fra Homey« er slået til for __names__. Intet blev ændret.",
     "unitError": "Enheden selv melder en fejl — __fault__. Appen videregiver den blot: tjek enheden eller MELCloud-appen.",
     "unitErrorUnworded": "Enheden selv melder en fejl. Appen videregiver den blot: tjek enheden eller MELCloud-appen.",
     "unitOffline": "MELCloud melder denne enhed offline — tjek dens wi-fi-forbindelse.",

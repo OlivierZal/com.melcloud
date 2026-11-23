@@ -37,10 +37,12 @@ import type * as FilesModule from '../../files.mts'
 import type * as HomeyLib from '../../lib/homey.mts'
 import type { ClassicMELCloudDevice } from '../../types/classic.mts'
 import type { Settings } from '../../types/device-settings.mts'
+import { locales } from '../locales.ts'
 import {
   createTransportFailure,
   TRANSPORT_FAILURE_CHAIN,
 } from '../transport-failure.ts'
+import settingsOptions from '../../.homeycompose/drivers/settings/options.json' with { type: 'json' }
 
 vi.mock(import('../../lib/homey.mts'), async () => {
   const { mock: mockModule } = await import('@olivierzal/homey-kit/testing')
@@ -508,6 +510,11 @@ const setupWidgetListeners = (): {
 // than each test wrapping its own spy in a try/finally.
 const FIXED_NOW = '2026-07-19T08:30:00'
 
+// "Disable shutdown from Homey" as each language's device settings
+// label it.
+const ALWAYS_ON_LABELS: Readonly<Record<string, string>> =
+  settingsOptions.children.find(({ id }) => id === 'always_on')?.label ?? {}
+
 const mockUpdateResult = (
   attributeErrors: Record<string, string[]> | null,
 ): ReturnType<typeof vi.fn> =>
@@ -516,6 +523,29 @@ const mockUpdateResult = (
     : vi
         .fn<() => Promise<void>>()
         .mockRejectedValue(new UpdateRejectedError(attributeErrors))
+
+// A Classic zone whose one paired member Homey may not switch off:
+// answers the zone's group write, for the test to judge.
+const initWithAlwaysOnMember = async (
+  app: InstanceType<typeof MelCloudApp>,
+  type: Classic.DeviceType,
+): Promise<ReturnType<typeof vi.fn>> => {
+  const updateGroupState = mockUpdateResult(null)
+  setupDriver([
+    mock<ClassicMELCloudDevice>({
+      driver: { type },
+      forgetWrites: vi.fn<() => void>(),
+      id: 1,
+      isAlwaysOn: true,
+      getName: () => 'Salon',
+    }),
+  ])
+  await initWithFacade(
+    app,
+    mock<Classic.BuildingFacade>({ devices: [{ id: 1 }], updateGroupState }),
+  )
+  return updateGroupState
+}
 
 // The merged-house write outcomes the naming table combines.
 const classicApplied = (): ReturnType<typeof vi.fn> => mockUpdateResult(null)
@@ -2475,6 +2505,91 @@ describe('melCloudApp', () => {
       expect(forgetWrites).toHaveBeenCalledBefore(mockUpdateGroupState)
     })
 
+    describe('with members Homey may not switch off', () => {
+      const mockUpdateGroupState = vi.fn<(state: unknown) => Promise<unknown>>()
+
+      const member = (
+        name: string,
+        isAlwaysOn: boolean,
+        type: Home.DeviceType = Home.DeviceType.Ata,
+      ): ClassicMELCloudDevice =>
+        mock<ClassicMELCloudDevice>({
+          driver: { type },
+          forgetWrites: vi.fn<() => void>(),
+          id: name,
+          isAlwaysOn,
+          getName: () => name,
+        })
+
+      beforeEach(async () => {
+        mockUpdateGroupState
+          .mockReset()
+          .mockResolvedValue({ AttributeErrors: null, Success: true })
+        mockGetDrivers.mockReturnValue({
+          'home-melcloud': createMockDriver(
+            [
+              member('Salon', true),
+              member('Bureau', false),
+              member('Chambre', true),
+            ],
+            'home-melcloud',
+          ),
+          'home-melcloud_atw': createMockDriver(
+            [member('Chauffe-eau', true, Home.DeviceType.Atw)],
+            'home-melcloud_atw',
+          ),
+        })
+        mockHomeFacadeManagerGetBuilding.mockReturnValue(
+          mock<Home.BuildingFacade>({
+            devices: [
+              { id: 'Salon' },
+              { id: 'Bureau' },
+              { id: 'Chambre' },
+              { id: 'Chauffe-eau' },
+            ],
+            updateGroupState: mockUpdateGroupState,
+          }),
+        )
+        await app.onInit()
+      })
+
+      // A group write reaches every air-to-air unit of its target at
+      // once, so the switch-off stops for all of them, before anything
+      // is sent. The air-to-water unit is none of its business.
+      it('should refuse the switch-off, name those air-to-air members and send nothing', async () => {
+        await expect(
+          app.updateTargetAtaState('homeBuildings_building-1', {
+            Power: false,
+            SetTemperature: 20,
+          }),
+        ).rejects.toThrow('errors.shutdownDisabled')
+        expect(mockTranslate).toHaveBeenCalledWith('errors.shutdownDisabled', {
+          names: 'Salon, Chambre',
+        })
+        expect(mockUpdateGroupState).not.toHaveBeenCalled()
+      })
+
+      it.each([
+        ['a switch-on', { Power: true }],
+        ['a change that leaves the power alone', { SetTemperature: 20 }],
+      ])('should send %s', async (_name, state) => {
+        await app.updateTargetAtaState('homeBuildings_building-1', state)
+
+        expect(mockUpdateGroupState).toHaveBeenCalledWith(state)
+      })
+
+      // The refusal sends its reader to a setting: it quotes the label
+      // that setting carries on the device's own page, language by
+      // language, and keeps the place of the names.
+      it.each(Object.entries(locales))(
+        'quotes the setting as the %s device settings spell it',
+        (language, { errors: { shutdownDisabled } }) => {
+          expect(shutdownDisabled).toContain(ALWAYS_ON_LABELS[language])
+          expect(shutdownDisabled).toContain('__names__')
+        },
+      )
+    })
+
     it('should list the member modes in the classic vocabulary', async () => {
       const getMemberOperationModes = vi
         .fn<() => Classic.OperationMode[]>()
@@ -3571,6 +3686,37 @@ describe('melCloudApp', () => {
 
       expect(forgetWrites).toHaveBeenCalledBefore(updateGroupState)
       expect(forgetOtherWrites).not.toHaveBeenCalled()
+    })
+
+    // "Disable shutdown from Homey" holds for a group write as it does
+    // for the device's own tile, on the units that write reaches: the
+    // air-to-air ones.
+    describe('with a member Homey may not switch off', () => {
+      it('should refuse the switch-off when that member is an air-to-air unit', async () => {
+        const updateGroupState = await initWithAlwaysOnMember(
+          app,
+          Classic.DeviceType.Ata,
+        )
+
+        await expect(
+          app.updateTargetAtaState('buildings_1', { Power: false }),
+        ).rejects.toThrow('errors.shutdownDisabled')
+        expect(mockTranslate).toHaveBeenCalledWith('errors.shutdownDisabled', {
+          names: 'Salon',
+        })
+        expect(updateGroupState).not.toHaveBeenCalled()
+      })
+
+      it('should send the switch-off when that member is of another type', async () => {
+        const updateGroupState = await initWithAlwaysOnMember(
+          app,
+          Classic.DeviceType.Atw,
+        )
+
+        await app.updateTargetAtaState('buildings_1', { Power: false })
+
+        expect(updateGroupState).toHaveBeenCalledWith({ Power: false })
+      })
     })
 
     it('should throw on attribute errors', async () => {

@@ -110,6 +110,11 @@ const byName = (
   other: { readonly name: string },
 ): number => first.name.localeCompare(other.name)
 
+// A group write reaches the air-to-air units of its target, on either
+// connection, and no other.
+const isAirToAir = ({ driver: { type } }: MELCloudDevice): boolean =>
+  type === Classic.DeviceType.Ata || type === Home.DeviceType.Ata
+
 const HOLIDAY_MODE_MAX_DURATION_DAYS = 365
 const HOLIDAY_MODE_OFF_DURATION = 0
 
@@ -820,16 +825,7 @@ export default class MELCloudApp extends App {
     targetId: string,
     state: Classic.GroupState,
   ): Promise<void> {
-    // The write lands outside the members' own door, and the library
-    // syncs every device from the refreshed models before it resolves:
-    // the paired members' read-back watches end first, or that sync
-    // would judge a value Homey itself asked for as the cloud's.
-    const members = this.#getDevices({
-      ids: this.#getAtaGroupMemberIds(targetId),
-    })
-    for (const device of members) {
-      device.forgetWrites()
-    }
+    this.#settleGroupMembers(targetId, state)
     const target = this.#getAtaGroupTarget(targetId)
     try {
       await target.updateGroupState(state)
@@ -1759,6 +1755,36 @@ export default class MELCloudApp extends App {
       ).map(({ id, model, name }) => ({ id: getZoneId(id, model), name })),
       query,
     )
+  }
+
+  // What a group write settles with the paired members of its target
+  // before it leaves. The write reaches every air-to-air unit of the
+  // target at once, so one of them that Homey may not switch off stops
+  // a switch-off for all of them: nothing is sent, and the message
+  // names it. Then the members' read-back watches end: the write lands
+  // outside their own door, and the library syncs every device from the
+  // refreshed models before it resolves, a sync that would judge a
+  // value Homey itself asked for as the cloud's.
+  #settleGroupMembers(
+    targetId: string,
+    { Power: isOn }: Classic.GroupState,
+  ): void {
+    const members = this.#getDevices({
+      ids: this.#getAtaGroupMemberIds(targetId),
+    })
+    if (isOn === false) {
+      const names = members
+        .filter((device) => isAirToAir(device) && device.isAlwaysOn)
+        .map((device) => device.getName())
+      if (names.length > 0) {
+        throw new Error(
+          this.homey.__('errors.shutdownDisabled', { names: names.join(', ') }),
+        )
+      }
+    }
+    for (const device of members) {
+      device.forgetWrites()
+    }
   }
 
   // Residual credentials on an API without any paired device only get

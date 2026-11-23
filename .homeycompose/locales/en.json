@@ -7,6 +7,7 @@
     "invalidHolidayModeEnd": "The holiday-mode end must be in the future.",
     "invalidHolidayModeOrder": "The holiday-mode end must be after its start.",
     "invalidTime": "The end time is invalid.",
+    "shutdownDisabled": "Not switched off: “Disable shutdown from Homey” is on for __names__. Nothing was changed.",
     "unitError": "The unit itself reports a fault — __fault__. The app only relays it: check the unit or the MELCloud app.",
     "unitErrorUnworded": "The unit itself reports a fault. The app only relays it: check the unit or the MELCloud app.",
     "unitOffline": "MELCloud reports this unit as offline — check its Wi-Fi connection.",

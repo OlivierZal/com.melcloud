@@ -7,6 +7,7 @@
     "invalidHolidayModeEnd": "La fine della modalità vacanza deve essere nel futuro.",
     "invalidHolidayModeOrder": "La fine della modalità vacanza deve essere successiva al suo inizio.",
     "invalidTime": "L'ora di fine non è valida.",
+    "shutdownDisabled": "Non spento: «Disattiva lo spegnimento da Homey» è attivo per __names__. Non è stato modificato nulla.",
     "unitError": "L'unità stessa segnala un guasto: __fault__. L'app si limita a riportarlo: controlla l'unità o l'app MELCloud.",
     "unitErrorUnworded": "L'unità stessa segnala un guasto. L'app si limita a riportarlo: controlla l'unità o l'app MELCloud.",
     "unitOffline": "MELCloud segnala questa unità come offline: controlla la sua connessione Wi-Fi.",

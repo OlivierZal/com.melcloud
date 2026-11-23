@@ -12,7 +12,8 @@
     "classicAccountEmpty": "Dieses MELCloud Classic-Konto führt kein Gerät mehr auf, das die App lesen kann. Wenn Ihre Geräte zu MELCloud Home umgezogen sind, fügen Sie sie erneut als [Home]-Geräte hinzu.",
     "unitError": "Das Gerät selbst meldet eine Störung — __fault__. Die App gibt sie nur weiter: prüfen Sie das Gerät oder die MELCloud-App.",
     "unitErrorUnworded": "Das Gerät selbst meldet eine Störung. Die App gibt sie nur weiter: prüfen Sie das Gerät oder die MELCloud-App.",
-    "invalidHolidayModeOrder": "Das Ende des Urlaubsmodus muss nach seinem Beginn liegen."
+    "invalidHolidayModeOrder": "Das Ende des Urlaubsmodus muss nach seinem Beginn liegen.",
+    "shutdownDisabled": "Nicht ausgeschaltet: „Abschaltung von Homey deaktivieren“ ist für __names__ aktiviert. Es wurde nichts geändert."
   },
   "settings": {
     "authenticate": {

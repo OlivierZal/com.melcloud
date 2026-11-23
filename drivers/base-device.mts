@@ -127,6 +127,10 @@ export abstract class BaseMELCloudDevice<
     return this.getData().id
   }
 
+  public get isAlwaysOn(): boolean {
+    return Boolean(this.getSetting('always_on'))
+  }
+
   // How an unreadable unit is worded when its whole account lists no
   // unit at all. A Classic account emptied that way is the signature of
   // the move to MELCloud Home, which the Classic tiles then name; a Home
@@ -144,10 +148,6 @@ export abstract class BaseMELCloudDevice<
 
   protected get cachedFacade(): TFacade | undefined {
     return this.#deviceFacade
-  }
-
-  protected get isAlwaysOn(): boolean {
-    return Boolean(this.getSetting('always_on'))
   }
 
   protected get operationalCapabilityTagEntries(): [string, string][] {

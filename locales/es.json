@@ -12,7 +12,8 @@
     "classicAccountEmpty": "Esta cuenta de MELCloud Classic ya no incluye ninguna unidad que la aplicación pueda leer. Si tus unidades se trasladaron a MELCloud Home, vuelve a añadirlas como dispositivos [Home].",
     "unitError": "La propia unidad indica una avería: __fault__. La aplicación solo la transmite: compruebe la unidad o la aplicación MELCloud.",
     "unitErrorUnworded": "La propia unidad indica una avería. La aplicación solo la transmite: compruebe la unidad o la aplicación MELCloud.",
-    "invalidHolidayModeOrder": "El fin del modo vacaciones debe ser posterior a su inicio."
+    "invalidHolidayModeOrder": "El fin del modo vacaciones debe ser posterior a su inicio.",
+    "shutdownDisabled": "No se ha apagado: «Desactivar el apagado desde Homey» está activado para __names__. No se ha cambiado nada."
   },
   "settings": {
     "authenticate": {

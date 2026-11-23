@@ -1362,6 +1362,22 @@ coverage.
   Until then the form kept the previous zone's values, armed, for as
   long as the read took, and a tap on Update sent that whole state to
   the zone just picked (reproduced: a `PUT` to the new target).
+- `always_on` ("Disable shutdown from Homey") holds for a group write
+  too (46.19.2). The setting lives in the device's own write path
+  (`#outgoingValue` coerces a switch-off to `true`), and the ATA widget
+  writes through the facades, outside that door: until then it switched
+  such a unit off. `updateTargetAtaState` now refuses a `Power: false`
+  as a whole, before anything is sent, when a paired AIR-TO-AIR member
+  of the target has the setting on, with `errors.shutdownDisabled`: the
+  message names those members and quotes the setting's label, language
+  by language (pinned against `.homeycompose/drivers/settings/options.json`
+  in `tests/unit/app.test.ts`). A unit of another type in the same zone
+  does not count: a group write reaches the air-to-air units alone
+  (melcloud-api's `@classicUpdateDevices({ type: Ata })`, the Home
+  building's ATA fan-out). A switch-on and a change that leaves the
+  power alone go out as before. Refused rather than coerced: the write
+  is one state for every member, so a coerced power would switch on, or
+  a dropped one leave on, the members the user did ask to switch off.
 - An ATA group write the app refuses shows its message on the widget's
   `#update_error` line (the widget SDK has no alert) and leaves the
   edit armed for a retry; the line clears once a write lands or the

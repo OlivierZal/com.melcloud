@@ -12,7 +12,8 @@
     "classicAccountEmpty": "Dit MELCloud Classic-account vermeldt geen enkele unit meer die de app kan lezen. Zijn je units naar MELCloud Home verhuisd, voeg ze dan opnieuw toe als [Home]-apparaten.",
     "unitError": "De unit zelf meldt een storing — __fault__. De app geeft die alleen door: controleer de unit of de MELCloud-app.",
     "unitErrorUnworded": "De unit zelf meldt een storing. De app geeft die alleen door: controleer de unit of de MELCloud-app.",
-    "invalidHolidayModeOrder": "Het einde van de vakantiemodus moet na het begin liggen."
+    "invalidHolidayModeOrder": "Het einde van de vakantiemodus moet na het begin liggen.",
+    "shutdownDisabled": "Niet uitgeschakeld: ‘Schakel uitschakeling van Homey uit’ staat aan voor __names__. Er is niets gewijzigd."
   },
   "settings": {
     "authenticate": {
