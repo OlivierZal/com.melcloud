@@ -1,6 +1,6 @@
 # MELCloud for Homey
 
-A [Homey](https://homey.app/) app for controlling Mitsubishi Electric HVAC devices via [MELCloud](https://app.melcloud.com/) and [MELCloud Home](https://melcloudhome.com/).
+A [Homey](https://homey.app/) app for controlling Mitsubishi Electric HVAC devices via [MELCloud](https://app.melcloud.com/) and [MELCloud Home](https://melcloudhome.com/). The Homey App Store lists it as [MELCloud & MELCloud Home](https://homey.app/a/com.mecloud).
 
 [![License](https://img.shields.io/github/license/OlivierZal/com.melcloud)](LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/OlivierZal/com.melcloud?sort=semver)](https://github.com/OlivierZal/com.melcloud/releases)
@@ -11,56 +11,95 @@ A [Homey](https://homey.app/) app for controlling Mitsubishi Electric HVAC devic
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=OlivierZal_com.melcloud&metric=alert_status)](https://sonarcloud.io/dashboard?id=OlivierZal_com.melcloud)
 [![Test coverage](https://sonarcloud.io/api/project_badges/measure?project=OlivierZal_com.melcloud&metric=coverage)](https://sonarcloud.io/component_measures?id=OlivierZal_com.melcloud&metric=coverage)
 
-## Introduction
+## Supported devices
 
-This app integrates [MELCloud](https://app.melcloud.com/) and [MELCloud Home](https://melcloudhome.com/) into [Homey](https://homey.app/) to control Mitsubishi Electric HVAC devices:
+The app adds five kinds of device to Homey. Each kind's name starts with \[Classic\] or \[Home\]: \[Classic\] for a unit registered with MELCloud Classic, the app's name for Mitsubishi Electric's original MELCloud service, \[Home\] for one registered with MELCloud Home. Not sure which one you have? MELCloud Classic is the account you use in Mitsubishi Electric's MELCloud app and at [app.melcloud.com](https://app.melcloud.com/); MELCloud Home is the one you use in its MELCloud Home app and at [melcloudhome.com](https://melcloudhome.com/).
 
-### MELCloud (classic)
+- "\[Classic\] Air-to-air heat pump": an air conditioner, with its outdoor temperature and its energy use by mode.
+- "\[Classic\] Air-to-water heat pump": one or two zones and the hot water tank, with flow temperatures, energy use and CoP.
+- "\[Classic\] Energy recovery ventilator (ERV)": a ventilation unit, with CO₂ and PM2.5 readings when it has the sensors.
+- "\[Home\] Air-to-air heat pump": an air conditioner, with its energy use when the unit reports it.
+- "\[Home\] Air-to-water heat pump": one or two zones and the hot water tank, with energy use and CoP when the unit reports them.
 
-- **Air-to-air heat pumps** (ATA) — cooling, heating, fan speed, vane position
-- **Air-to-water heat pumps** (ATW) — zones, hot water, flow temperatures
-- **Energy recovery ventilators** (ERV) — ventilation modes, bypass
+## Features
 
-### MELCloud Home
+### Control and monitoring
 
-- **Air-to-air heat pumps** (ATA) — cooling, heating, fan speed, vane position
-- **Air-to-water heat pumps** (ATW) — zones, hot water, energy reporting
+What a device shows depends on its unit (a second zone, cooling, a hot water tank, sensors) and on the values switched on in its settings.
 
-## Installation
+- **Air-to-air heat pumps.** You set "Turned on", "Target temperature", "Thermostat mode" (Automatic, Cool, Dry, Fan, Heat, Off), "Fan speed" (0 means automatic, on units with an automatic speed), "Vertical vane" and "Horizontal vane", and you read "Temperature". \[Classic\] devices also show "Outdoor temperature", "Current fan speed" and "Silent mode".
+- **Air-to-water heat pumps.** You set "Turned on" and, for each zone, a "Target temperature" and a "Thermostat mode" (Indoor temperature, Fixed flow temperature or Weather compensation curve, plus cooling variants of the first two on a unit that can cool), as well as "Hot water mode" (Automatic, Forced) and "Hot water target temperature". You read the room and hot water temperatures, and an "Operational state" for the unit, for domestic hot water and for each zone. \[Classic\] devices add the flow target temperatures, the outdoor, flow and return temperatures and "Frequency".
+- **Energy recovery ventilators.** You set "Turned on", "Thermostat mode" (Automatic, Bypass, Energy Recovery, Off) and "Fan speed", and you read "Temperature", "Outdoor temperature", "CO₂" and "PM2.5".
 
-1. Install the [MELCloud app](https://homey.app/a/com.mecloud) from the Homey App Store.
-2. Open the app settings and log in with your MELCloud credentials.
-3. Add your devices via the pairing wizard.
+### Flow cards
 
-Moved from MELCloud to MELCloud Home? Select Home in the app settings, sign in with your MELCloud Home account, then add your units again as \[Home\] devices. A MELCloud Classic account that no longer lists any unit says so on its devices, in pairing and in the settings.
+Homey's own cards for on/off, target temperature, thermostat mode, fan speed, hot water mode, operational state, temperature and power work with these devices; an ERV device has no others. The app adds its own:
 
-Your house is split across a MELCloud Classic account and a MELCloud Home account under one name? The app settings, the holiday mode Flow cards and the air-to-air group widget list it once, under its name, and every unit of both accounts stays selectable on its own: a change sent to the house reaches both accounts, and a change one of them did not apply says which. Frost protection and holiday mode cover the whole house; overheat protection is a MELCloud Home setting and reaches the house's MELCloud Home air-to-air units alone. A Flow saved on one of the two buildings keeps that building: pick the house in the card to cover both accounts.
+- **Air-to-air heat pumps.** The vertical and the horizontal vane each have a When card ("The vertical vane changed"), an And card ("The vertical vane is/is not …") and a Then card ("Set the vertical vane"). \[Classic\] devices add "The current fan speed changed" and, for the silent mode, "turned on", "turned off" and "is on/off" cards.
+- **Air-to-water heat pumps.** When and And cards for the operational state of domestic hot water, of zone 1 and of zone 2, and for the thermostat mode in zone 2. Then: "Set the hot water temperature", "Set the temperature in zone 2", "Set the mode in zone 2". \[Classic\] devices add "Set the flow temperature" and "Set the cool flow temperature" (each also "in zone 2"), and "turned on", "turned off" and "is on/off" cards for each on/off indicator, such as the booster heaters and the defrost mode.
+- **Holiday mode**, not tied to a device: you pick a building, a floor, an area or a single unit. And: "Holiday mode is enabled/disabled". Then: "Set holiday mode" for a number of days (0 turns it off), "Set holiday mode with an end time", "Turn off holiday mode". A holiday set by a card starts at once and ends the given number of calendar days after today, at 00:00 or at the end time you give.
 
-Signed in, but your units are not in Homey yet? The app settings say so and point to Add device → MELCloud → the \[Classic\] or \[Home\] devices of your account. A pairing wizard that refuses your credentials, when this account has no device in Homey yet and your other MELCloud account is signed in and lists units, tells you to add them as that account's devices instead.
+### Widgets
+
+- "Air-to-air device setting": sets the on/off state, target temperature, fan speed, vanes and mode of one air-to-air unit, or of all those of a building, a floor or an area at once.
+- "MELCloud History": charts of what MELCloud recorded for a unit (operational states, temperatures, signal strength and the energy report), over 1 to 365 days for the charts that span days. The charts on offer depend on the unit.
+
+### App settings
+
+The app's settings page lets you:
+
+- sign in to MELCloud Home, to MELCloud Classic or to both under "Credentials", and sign an account out with "Reset";
+- read the "Error history": the errors MELCloud recorded for your units since the date you pick;
+- under "All device settings", apply "Disable shutdown from Homey" and "Display signal strength" to every device at once, and set the display options of all the \[Classic\] air-to-air or air-to-water heat pumps at once;
+- under "Zone and device settings", set holiday mode, frost protection and, for MELCloud Home air-to-air units, overheat protection on a building, a floor, an area or a single unit;
+- once you have an air-to-air device, open the store page of [MELCloud extension](https://homey.app/a/com.mecloud.extension), an optional companion app that keeps cooling within 8 °C of the outdoor temperature.
+
+### Device settings
+
+- "Disable shutdown from Homey": the device's own controls and Flow cards can no longer switch it off, and switching the setting on switches the device on. The remote control, the unit itself and the "Air-to-air device setting" widget can still switch it off.
+- "Display signal strength": adds "Signal Strength" to the device.
+- "Allow a custom status indicator", on the four heat pump kinds: lets you choose the device's status indicator in Homey, which then lists the device among heat pumps, no longer among thermostats.
+- \[Classic\] devices also choose which power, energy and CoP values they show: all modes together or each mode for an air-to-air heat pump, total or daily and by use for an air-to-water one. On an air-to-water heat pump, "Dashboard display" shows or hides the on/off indicators and the extra temperatures, and "Using external sensors" adds the temperatures of the sensors THW6 to THW10.
+
+### Energy and Insights
+
+- The four heat pump kinds report "Power" and "Energy", on \[Home\] devices when the unit reports them. Air-to-water heat pumps also report "Produced power", "Produced energy" and "CoP". The "Power" value is an estimate.
+- Daily values come with them on \[Home\] devices and are a choice in the settings of \[Classic\] devices, which can also split energy by mode (air-to-air) or by use (air-to-water).
+- An ERV reports neither power nor energy. In Insights, the on/off indicators are logged under their own names, such as "Booster heater 1 turned on".
+
+## Requirements
+
+- A Homey Pro with Homey v12.9.0 or later. The app does not run on Homey Cloud.
+- A MELCloud Classic account, a MELCloud Home account or both, with the email address and password you use in Mitsubishi Electric's own app. A MELCloud Home account created with Sign in with Apple or Google has no password the app can use.
+- Units already registered in that account: the app adds what the account lists.
+- Internet access: the app reaches your units through Mitsubishi Electric's MELCloud service, not over your local network.
+
+## Getting started
+
+1. Install [MELCloud & MELCloud Home](https://homey.app/a/com.mecloud) from the Homey App Store.
+2. Add a device and pick the kind that matches your unit and its service: a \[Classic\] kind for MELCloud Classic, a \[Home\] kind for MELCloud Home.
+3. Sign in with the email address and password of that account when asked, then select your units.
+
+If you have both accounts, repeat steps 2 and 3 with a device kind of the other service: each account signs in separately. You can also sign in, or sign in again later, from the app settings or by repairing a device.
+
+## Good to know
+
+- The app reads your units from MELCloud every minute on MELCloud Home and every 5 minutes on MELCloud Classic: a change made on the remote control or in Mitsubishi Electric's own app shows in Homey at the next reading.
+- On MELCloud Classic, the energy totals are read once a night, between 01:30 and 01:55, so a day's consumption is added to them the night after. The daily values of a \[Classic\] air-to-water heat pump are those of the day before.
+- Moved from MELCloud Classic to MELCloud Home? Sign in to your MELCloud Home account and add your units again as \[Home\] devices.
+- When both accounts list a building under the same name, the app treats the two as one house: the app settings, the holiday mode cards and the "Air-to-air device setting" widget show it once. A change sent to the house reaches both accounts, and each unit stays selectable on its own. A Flow already saved on one account's building keeps that building: pick the house in the card to cover both.
 
 ## Supported languages
 
 Arabic, Danish, Dutch, English, French, German, Italian, Korean, Norwegian, Polish, Russian, Spanish, Swedish.
 
-## Development
+## Help and feedback
 
-Requirements: Node.js 22 (see `.nvmrc`) and the [Homey CLI](https://apps.developer.homey.app/the-basics/getting-started) (`npx homey`).
+Ask questions and share feedback in the [Homey Community topic](https://community.homey.app/t/73094). Report a problem or request a feature on the [issues page](https://github.com/OlivierZal/com.melcloud/issues). To report a security vulnerability, follow [SECURITY.md](SECURITY.md).
 
-```bash title="Common commands"
-npm ci               # install dependencies
-npm test             # run the test suite (vitest)
-npm run typecheck    # type-check with the native TypeScript compiler
-npm run lint         # eslint (TS, HTML, CSS, JSON, YAML, Markdown)
-npm run build        # bundle browser entries (esbuild) + native tsc compile
-npm run homey:start  # run the app on your Homey (remote)
-```
+## Contributing
 
-Architecture notes:
-
-- The API layer lives in [@olivierzal/melcloud-api](https://github.com/OlivierZal/melcloud-api), a sibling repository with its own tooling; API bugs are fixed there, not worked around here.
-- Browser code (both widgets' `public/` and the `settings/` page) is bundled by `scripts/bundle.mts` into a compat pair per entry — `index.js` (IIFE, what the shipped HTML loads) and `index.mjs` (for HTMLs cached by phones from earlier app versions) — emitted into `.homeybuild`, the packaged app, never into the source tree. `npm run build` produces them, and the Homey CLI runs it automatically on validate/publish. Shared helpers live in `public/` and are imported directly by widgets and settings.
-- Both the build and `npm run typecheck` use the native TypeScript 7 compiler (`@typescript/native`, the npm `typescript` package at 7.x) for speed, and both invoke it by its explicit path, `node ./node_modules/@typescript/native/bin/tsc` — the native compiler declares its own `tsc` bin but loses the `.bin/tsc` slot to `@typescript/old` (the TypeScript 6 the compat package depends on) under npm's bin-conflict resolution, so a bare `tsc` (or `tsc6`) would typecheck with TypeScript 6 instead. The TypeScript 6 JS API continues as `@typescript/typescript6`, aliased under the `typescript` name for tools with a `typescript` peer (typescript-eslint), until TypeScript 7.1 ships its stable programmatic API; that line is for programmatic importers only, never for a binary.
-- Test coverage is enforced at 100% on branches, functions, lines and statements across every `.mts` source — webview pages and widgets included; only the packaged `.homeybuild` output is excluded.
+To work on the app itself, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Disclaimer
 
@@ -68,4 +107,4 @@ This app is not endorsed, verified or approved by Mitsubishi Electric Corporatio
 
 ## License
 
-GPL-3.0-only
+[GPL-3.0-only](LICENSE) © Olivier Zalmanski

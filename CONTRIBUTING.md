@@ -12,6 +12,8 @@ workflow expected before opening a pull request.
 - A GitHub personal access token with the `read:packages` scope, exported
   as `NODE_AUTH_TOKEN` — [`.npmrc`](.npmrc) reads that variable to fetch
   the `@olivierzal` packages from GitHub Packages
+- The [Homey CLI](https://apps.developer.homey.app/the-basics/getting-started),
+  which the `homey:*` scripts run through `npx homey`
 - A Homey Pro to install onto, for anything touching a webview
 
 ## Setup
@@ -29,7 +31,7 @@ caught failures the others miss:
 
 ```sh title="checks"
 npm run format          # prettier --check (npm run format:fix to write)
-npm run lint            # ESLint, including CSS and HTML
+npm run lint            # ESLint, including CSS, HTML, JSON, YAML and Markdown
 npm run typecheck       # native tsc --noEmit
 npm test                # vitest run
 npm run test:coverage   # must remain at 100% on all four axes
@@ -39,8 +41,8 @@ npm run homey:validate  # Homey validation at publish level
 
 `typecheck` and `build` call the native TypeScript 7 compiler by its
 explicit path (`node ./node_modules/@typescript/native/bin/tsc`). Leave
-it explicit: `tsc` and `tsc6` on the `PATH` are the TypeScript 6 compat
-package, so a shortened script would check against the wrong compiler.
+it explicit: two installed packages declare a `tsc` bin, and the
+explicit path names the one these scripts mean.
 
 `npm run homey:validate` **may rewrite files** — `app.json` and
 `locales/*.json` are generated. If it touches anything, amend before
@@ -67,7 +69,8 @@ add the missing `l`, in the manifest, the code or the docs.
 
 Node-side code follows `engines.node` and may use modern APIs freely.
 
-Webview code — [`settings/`](settings), [`public/`](public),
+Webview code — [`settings/`](settings), [`public/`](public) (the
+helpers the settings page and both widgets import directly),
 `widgets/*/public/` and [`types/widgets.mts`](types/widgets.mts),
 which ships into the charts bundle — runs on **phone browser engines**,
 not on the Homey. Its ceiling is **es2023**, derived from the Homey
@@ -96,7 +99,9 @@ repo, and a headless probe cannot see it.
 ## Coverage
 
 Branches, functions, lines and statements are enforced at **100%** in
-[`vitest.config.ts`](vitest.config.ts). New code arrives with the tests
+[`vitest.config.ts`](vitest.config.ts), across every `.mts` source,
+webview pages and widgets included; only the packaged `.homeybuild`
+output is excluded. New code arrives with the tests
 that keep those thresholds green. A test that cannot fail proves nothing
 — verify by mutation that a new test breaks when the behaviour it pins
 breaks.
