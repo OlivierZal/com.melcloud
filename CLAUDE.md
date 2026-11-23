@@ -23,18 +23,29 @@ caught real failures that the others miss:
   Only `coverage/` and `.homeybuild/` escape it, through `.gitignore` —
   the pages under them are generated.
 - `npm run lint` / `npm run lint:fix` — ESLint (needs its 8 GB heap; also
-  lints CSS and HTML via the css/html plugins). What the html plugin
+  lints CSS and HTML via the css/html plugins, and JSON, YAML and
+  Markdown through the preset's own blocks). What the html plugin
   keeps is what prettier does NOT do: `head-order`, `sort-attrs` (`id`
   before `class`, then alphabetical — the pages already comply, so its
   silence means conformance, not absence) and
   `no-whitespace-only-children`, plus the quality rules.
 - `npm run typecheck` — TypeScript 7, reached by its explicit path,
-  `node ./node_modules/@typescript/native/bin/tsc`. The path is
-  load-bearing: the native compiler declares a `tsc` bin of its own but
-  LOSES the `.bin/tsc` slot to `@typescript/old` (the TS 6 the
-  `@typescript/typescript6` compat package depends on) under npm's
-  bin-conflict resolution, so a bare `tsc` — or `tsc6` — would silently
-  typecheck with TypeScript 6 instead. Never shorten it.
+  `node ./node_modules/@typescript/native/bin/tsc`. Never shorten it.
+  Not because a bare `tsc` runs the wrong compiler today: re-measured
+  2026-11-22, in this tree and in fresh installs under npm 10.9.8 and
+  11.20.0, `.bin/tsc` is the native 7.x compiler and `tsc6` the only
+  shim of the TypeScript 6 compat package (it was the other way round
+  when the layout was adopted, in August 2026). Two installed packages
+  declare a `tsc` bin, `@typescript/native` and `@typescript/old` (the
+  TypeScript 6 the compat package depends on), and npm gives the shim to
+  one of them: the explicit path names the package the script means, so
+  a layout change fails loudly instead of swapping the compiler behind
+  the shim. `@typescript/native` is the npm `typescript` package at 7.x;
+  the TypeScript 6 JS API stays installed as `@typescript/typescript6`,
+  aliased under the `typescript` name for the tools that declare a
+  `typescript` peer (typescript-eslint), until TypeScript 7.1 ships its
+  stable programmatic API: that line serves programmatic importers only,
+  never a binary.
 - `npm test` / `npm run test:coverage` — vitest; branches are at 100%,
   keep them there.
 - `npm run build` — esbuild bundles (`scripts/bundle.mts`) + a `tsc`
@@ -1764,6 +1775,11 @@ reader fails open with an empty map).
   SECURITY.md, CLAUDE.md) — never a later sweep; the 2026-08 README
   audit caught exactly the drift this prevents (a shipped Home ATW
   driver absent from its README, a stale `Result` kind list).
+- README.md speaks to the app's USER, a Homey owner: what the app does,
+  in the words Homey shows, how to get started, and what the UI does
+  not say by itself. No technical detail there (build, compiler, tests,
+  modules, protocols): that is CONTRIBUTING.md's and this file's
+  (owner's rule, 2026-11-22).
 - Every substantive wave ends with a targeted cleanup pass over its OWN
   diff — residue, history-narrating comments, orphaned helpers, missed
   factorings — before it is considered releasable. Sequence features
