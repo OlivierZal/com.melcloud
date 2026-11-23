@@ -293,6 +293,21 @@ describe(BaseMELCloudDevice, () => {
     it('should return the device id from getData', () => {
       expect(device.id).toBe('device-1')
     })
+
+    // The name is what its owner typed, and a diagnostic report pasted
+    // into a public issue reproduces every device line: the unit is
+    // named by its MELCloud id, the one the SDK's own lines carry.
+    it('should name the unit by its id on a device line, never by the name its owner gave it', () => {
+      device.log('Requested data:', { onoff: true })
+      device.error('Write failed:', 'boom')
+
+      expect(superLogMock.mock.calls).toStrictEqual([
+        ['device-1', '-', 'Requested data:', { onoff: true }],
+      ])
+      expect(superErrorMock.mock.calls).toStrictEqual([
+        ['device-1', '-', 'Write failed:', 'boom'],
+      ])
+    })
   })
 
   describe('initialization', () => {
@@ -387,7 +402,7 @@ describe(BaseMELCloudDevice, () => {
       ])
       expect(superErrorMock.mock.calls).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'Unit unreadable, warning held:',
           expect.any(EntityNotFoundError),
@@ -429,7 +444,7 @@ describe(BaseMELCloudDevice, () => {
         [null],
       ])
       expect(superLogMock.mock.calls).toStrictEqual([
-        ['Test device', '-', 'Unit readable again, warning released'],
+        ['device-1', '-', 'Unit readable again, warning released'],
       ])
       expect(device.setAvailable).toHaveBeenCalledTimes(2)
     })
@@ -457,7 +472,7 @@ describe(BaseMELCloudDevice, () => {
       ])
       expect(superErrorMock.mock.calls).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'Unit fault reported by MELCloud, warning held:',
           'MELCloud gave no wording',
@@ -483,7 +498,7 @@ describe(BaseMELCloudDevice, () => {
       ])
       expect(superErrorMock.mock.calls).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'Unit fault reported by MELCloud, warning held:',
           'E6',
@@ -519,7 +534,7 @@ describe(BaseMELCloudDevice, () => {
         [null],
       ])
       expect(superLogMock.mock.calls).toStrictEqual([
-        ['Test device', '-', 'Unit fault cleared, warning released'],
+        ['device-1', '-', 'Unit fault cleared, warning released'],
       ])
     })
 
@@ -536,13 +551,13 @@ describe(BaseMELCloudDevice, () => {
 
       expect(superErrorMock.mock.calls).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'Failed to update the device warning:',
           expect.any(Error),
         ],
         [
-          'Test device',
+          'device-1',
           '-',
           'Unit unreadable, warning held:',
           expect.any(EntityNotFoundError),
@@ -569,7 +584,7 @@ describe(BaseMELCloudDevice, () => {
         [null],
       ])
       expect(superLogMock.mock.calls).toStrictEqual([
-        ['Test device', '-', 'Unit readable again, warning released'],
+        ['device-1', '-', 'Unit readable again, warning released'],
       ])
     })
 
@@ -642,7 +657,7 @@ describe(BaseMELCloudDevice, () => {
       ])
       expect(superErrorMock.mock.calls).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'Unit unreadable, warning held:',
           expect.any(NotFoundError),
@@ -951,7 +966,7 @@ describe(BaseMELCloudDevice, () => {
 
       expect(readBackLines()).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'target_temperature written as 20, read back as 22 after 2 min',
         ],
@@ -971,7 +986,7 @@ describe(BaseMELCloudDevice, () => {
 
       expect(readBackLines()).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'onoff written as true, read back as false after 5 min',
         ],
@@ -1009,7 +1024,7 @@ describe(BaseMELCloudDevice, () => {
 
       expect(readBackLines()).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'target_temperature written as 21, read back as 22 after 2 min',
         ],
@@ -1034,7 +1049,7 @@ describe(BaseMELCloudDevice, () => {
 
       expect(readBackLines()).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'target_temperature written as 16, read back as 19 after 5 min',
         ],
@@ -1082,7 +1097,7 @@ describe(BaseMELCloudDevice, () => {
 
       expect(readBackLines()).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'target_temperature written as 20, read back as 22 after 6 min',
         ],
@@ -1100,7 +1115,7 @@ describe(BaseMELCloudDevice, () => {
 
       expect(readBackLines()).toStrictEqual([
         [
-          'Test device',
+          'device-1',
           '-',
           'target_temperature written as 20, read back as 22 after 6 min',
         ],
@@ -1134,7 +1149,7 @@ describe(BaseMELCloudDevice, () => {
   })
 
   testPostUpdateSync(() => device, getCapabilityListenerCallback, {
-    argsPrefix: ['Test device', '-'],
+    argsPrefix: ['device-1', '-'],
     get: () => superErrorMock,
   })
 
@@ -1184,13 +1199,13 @@ describe(BaseMELCloudDevice, () => {
     it('should prepend the device name to logs', () => {
       device.log('synced')
 
-      expect(superLogMock).toHaveBeenCalledWith('Test device', '-', 'synced')
+      expect(superLogMock).toHaveBeenCalledWith('device-1', '-', 'synced')
     })
 
     it('should prepend the device name to error logs', () => {
       device.error('failed')
 
-      expect(superErrorMock).toHaveBeenCalledWith('Test device', '-', 'failed')
+      expect(superErrorMock).toHaveBeenCalledWith('device-1', '-', 'failed')
     })
   })
 })
