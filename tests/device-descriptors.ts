@@ -108,7 +108,7 @@ export const testSetValuesErrorHandling = (
 
       expect(superSetWarningMock).not.toHaveBeenCalled()
       expect(log).toHaveBeenCalledWith(
-        'Not sent, identical to the last synced state:',
+        'Not sent, it would change nothing on the unit:',
         expect.any(Object),
       )
     })

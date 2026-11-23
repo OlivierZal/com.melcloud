@@ -701,8 +701,11 @@ export abstract class BaseMELCloudDevice<
       await device.updateValues(updateData)
       return true
     } catch (error) {
+      // The SDK compares what it would SEND with what the unit holds: a
+      // setpoint is rounded and bounded first, so the request logged
+      // above can differ from the synced state and still change nothing.
       if (error instanceof NoChangesError) {
-        this.log('Not sent, identical to the last synced state:', updateData)
+        this.log('Not sent, it would change nothing on the unit:', updateData)
         return false
       }
       logFailure(this, 'Write failed:', error)

@@ -1116,6 +1116,47 @@ coverage.
   the app's own process). The log's side is the SDK's: since 62.3.0 the
   first sync that reads a unit silent writes one ERROR line with the
   same stamp, which a report keeps far longer than its `log` lines.
+- Report 2026-11-23, "target temperature reverts to an old setting" on
+  a Classic air-to-air unit. The log settled it: a Flow asked 16.4,
+  then 16, 15.6 and 15.2, MELCloud accepted each write (200, the value
+  echoed), and the read-back lines told the rest: 16.4 read back as
+  18, 15.6 and 15.2 read back as 16, while 16 held. Reproduced the same day
+  on a real unit: a setpoint BETWEEN two half degrees is accepted,
+  listed as written until the unit communicates (8 min 18 s), then the
+  unit's previous setpoint comes back; a half degree holds. MELCloud
+  Home differs only in manner: the unit rounds by itself, about a
+  minute later. Not a regression — nothing had ever rounded. The fix is
+  the SDK's (melcloud-api 62.3.1, the rule being MELCloud's and not
+  Homey's): every air-to-air setpoint leaves on the half degree, within
+  its mode's bounds, and that happens BEFORE the SDK decides whether
+  anything changes. Three consequences here, none needing code but the
+  first. (1) 'Requested data:' can name 16.4 while the wire carries
+  16.5, and a request that rounds to what the unit holds is folded:
+  that line reads 'Not sent, it would change nothing on the unit:' (it
+  said 'identical to the last synced state', which 16.4 against 16.5 is
+  not). (2) The tile follows on its own: the post-write sync sets the
+  capability from the SDK's model, which holds what was SENT. (3) The
+  read-back watch records that same model value, so a rounded write
+  never logs a false mismatch. No request was added anywhere: a Classic
+  write to a unit stays ONE POST whose answer is enough, read through
+  its flags, and nothing on a device's write path reads to confirm it
+  (the owner's rule; the SDK pins it on its transport, and a read right
+  after a POST answers the value just written, for minutes, saying
+  nothing of the unit). ONE read does follow a write here, and has since
+  the widget's real-time path exists: every Classic device sync pushes
+  `deviceupdate`, the sync a write triggers included, and an ATA group
+  widget OPEN on that zone answers a second later with a group read
+  (`/Group/Get`). Its answer repaints the widget's pristine controls and
+  nothing else: no model, no capability, no write. What MELCloud answers
+  there a second after a write is NOT measured; keeping, delaying or
+  replacing that read by the SDK's own models is the owner's to decide.
+  The grid is
+  the half degree for EVERY unit, one that advertises whole degrees
+  included (`temperatureStep` 1, published by the facade, unused here):
+  com.melcloud.extension computes its targets on half degrees and reads
+  any other tile value as a change made by hand, so a whole-degree grid
+  must arrive WITH its hosts — this app publishing the unit's step, the
+  extension reading it — and is the owner's decision to take.
 - Report 2026-10-02, an Ecodan on MELCloud Home shown "offline for
   hours" in Homey. The availability code is identical for ATA and ATW
   (one `syncFromDevice` skeleton over one `isAvailable` contract), so
