@@ -3,14 +3,14 @@ jobs:
     needs: publish
     permissions:
       actions: read
-    uses: OlivierZal/homey-kit/.github/workflows/reusable-homey-build-link.yml@fd13297589659e3207f9215548276b70beccd17e # v9.1.0
+    uses: OlivierZal/homey-kit/.github/workflows/reusable-homey-build-link.yml@2a7fb082127e14944a3ccf3199aebafeb9c8e211 # v10.0.0
   publish:
     permissions:
       contents: read
       packages: read
     secrets:
       HOMEY_PAT: ${{ secrets.HOMEY_PAT }}
-    uses: OlivierZal/homey-kit/.github/workflows/reusable-homey-publish.yml@fd13297589659e3207f9215548276b70beccd17e # v9.1.0
+    uses: OlivierZal/homey-kit/.github/workflows/reusable-homey-publish.yml@2a7fb082127e14944a3ccf3199aebafeb9c8e211 # v10.0.0
     with:
       bundles: |
         settings/index.js
