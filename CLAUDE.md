@@ -1147,9 +1147,14 @@ coverage.
   `deviceupdate`, the sync a write triggers included, and an ATA group
   widget OPEN on that zone answers a second later with a group read
   (`/Group/Get`). Its answer repaints the widget's pristine controls and
-  nothing else: no model, no capability, no write. What MELCloud answers
-  there a second after a write is NOT measured; keeping, delaying or
-  replacing that read by the SDK's own models is the owner's to decide.
+  nothing else: no model, no capability, no write. On a group whose
+  units hold different setpoints it answers no setpoint at all, before
+  a unit's write as after it (measured 2026-11-23); a group holding one
+  setpoint is not measured. Existing behaviour, left as it is. The
+  owner's word of that day covers both sides: no read and no extra call
+  is to be ADDED around a write, since a second source can only bring an
+  old value back over a good one, and what works is not re-engineered
+  against a risk nobody measured.
   The grid is
   the half degree for EVERY unit, one that advertises whole degrees
   included (`temperatureStep` 1, published by the facade, unused here):
