@@ -15,7 +15,7 @@ describe(failureCause, () => {
   })
 
   it('should answer the descriptor when the SDK classified no error', () => {
-    const error = { kind: 'rate-limited' as const, retryAfterMs: null }
+    const error = { entityId: 'home-1', kind: 'not-found' as const }
 
     expect(failureCause(error)).toBe(error)
   })
