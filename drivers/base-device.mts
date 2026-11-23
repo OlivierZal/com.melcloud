@@ -320,8 +320,11 @@ export abstract class BaseMELCloudDevice<
     }
   }
 
+  // A device line names the unit by its MELCloud id, the one the SDK's
+  // own lines carry: the name is what its owner typed, and a diagnostic
+  // report pasted into a public issue reproduces every line.
   public override error(...args: unknown[]): void {
-    super.error(this.getName(), '-', ...args)
+    super.error(this.id, '-', ...args)
   }
 
   // A write landing outside this device's own door — the ATA widget's
@@ -361,7 +364,7 @@ export abstract class BaseMELCloudDevice<
   }
 
   public override log(...args: unknown[]): void {
-    super.log(this.getName(), '-', ...args)
+    super.log(this.id, '-', ...args)
   }
 
   // Clears a held reason on the first pass that found its condition over;

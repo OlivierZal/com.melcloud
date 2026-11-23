@@ -590,6 +590,18 @@ coverage.
 
 ## Driver conventions
 
+- A device line names the unit by its MELCLOUD ID, never by its name
+  (2026-11-23). `BaseMELCloudDevice` overrides `log` and `error` to
+  prefix every line with `this.id`, the id the SDK's own lines carry
+  (`ATA unit 123 …`, the `DeviceID` of a request), so the two read
+  together and Homey's own `[Device:<uuid>]` prefix is mapped to it on
+  every line. The prefix was `getName()` until then: the name is what
+  its owner typed, and a diagnostic report pasted into a public issue
+  reproduces every device line (a report of that day carried one beside
+  the account holder's own name, which the SDK blanked in 62.3.0).
+  Nothing a user typed goes into a log line: a name is for a message
+  shown to that user (`errors.shutdownDisabled` lists the units it
+  refuses by name, in the widget), never for the log.
 - Driver ids are a store compat contract: Home drivers are namespaced
   `home-*`, Classic ids are bare — and that prefix IS the API
   membership rule. `app.mts` (`toApi`, behind `#getPairedDevices` —
