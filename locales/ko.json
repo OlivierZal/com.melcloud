@@ -12,7 +12,8 @@
     "classicAccountEmpty": "이 MELCloud Classic 계정에는 앱이 읽을 수 있는 기기가 더 이상 없습니다. 기기가 MELCloud Home으로 이전되었다면 [Home] 기기로 다시 추가하세요.",
     "unitError": "기기 자체에서 고장을 보고합니다 — __fault__. 앱은 이를 전달할 뿐입니다. 기기 또는 MELCloud 앱을 확인하세요.",
     "unitErrorUnworded": "기기 자체에서 고장을 보고합니다. 앱은 이를 전달할 뿐입니다. 기기 또는 MELCloud 앱을 확인하세요.",
-    "invalidHolidayModeOrder": "휴가 모드 종료는 시작 이후여야 합니다."
+    "invalidHolidayModeOrder": "휴가 모드 종료는 시작 이후여야 합니다.",
+    "shutdownDisabled": "꺼지지 않았습니다: __names__에 “Homey에서 종료 비활성화”가 켜져 있습니다. 변경된 내용이 없습니다."
   },
   "settings": {
     "authenticate": {

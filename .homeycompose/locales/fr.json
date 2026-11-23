@@ -7,6 +7,7 @@
     "invalidHolidayModeEnd": "La fin du mode vacances doit être dans le futur.",
     "invalidHolidayModeOrder": "La fin du mode vacances doit être après son début.",
     "invalidTime": "L'heure de fin n'est pas valide.",
+    "shutdownDisabled": "Non éteint : « Désactiver l'extinction depuis Homey » est activé pour __names__. Rien n'a été modifié.",
     "unitError": "L'unité elle-même signale un défaut — __fault__. L'application ne fait que le relayer : vérifiez l'unité ou l'application MELCloud.",
     "unitErrorUnworded": "L'unité elle-même signale un défaut. L'application ne fait que le relayer : vérifiez l'unité ou l'application MELCloud.",
     "unitOffline": "MELCloud signale cette unité hors ligne — vérifiez sa connexion Wi-Fi.",

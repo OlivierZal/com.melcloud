@@ -56,7 +56,7 @@ The app's settings page lets you:
 
 ### Device settings
 
-- "Disable shutdown from Homey": the device's own controls and Flow cards can no longer switch it off, and switching the setting on switches the device on. The remote control, the unit itself and the "Air-to-air device setting" widget can still switch it off.
+- "Disable shutdown from Homey": the device's own controls and Flow cards can no longer switch it off, and switching the setting on switches the device on. The "Air-to-air device setting" widget does not switch it off either: a switch-off that would reach it is refused as a whole, with a message that names the device. The remote control and the unit itself can still switch it off.
 - "Display signal strength": adds "Signal Strength" to the device.
 - "Allow a custom status indicator", on the four heat pump kinds: lets you choose the device's status indicator in Homey, which then lists the device among heat pumps, no longer among thermostats.
 - The two \[Classic\] heat pump kinds also choose which values they show: power and energy, for all modes together or for each mode, on an air-to-air heat pump; energy, produced energy and CoP, total or daily, for all modes together or by use, on an air-to-water one. On an air-to-water heat pump, "Dashboard display" shows or hides the on/off indicators and the extra temperatures, and "Using external sensors" adds the temperatures of the sensors THW6 to THW10.

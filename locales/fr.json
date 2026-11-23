@@ -12,7 +12,8 @@
     "classicAccountEmpty": "Ce compte MELCloud Classic ne recense plus aucune unité que l'application puisse lire. Si vos unités sont passées sur MELCloud Home, ajoutez-les de nouveau comme appareils [Home].",
     "unitError": "L'unité elle-même signale un défaut — __fault__. L'application ne fait que le relayer : vérifiez l'unité ou l'application MELCloud.",
     "unitErrorUnworded": "L'unité elle-même signale un défaut. L'application ne fait que le relayer : vérifiez l'unité ou l'application MELCloud.",
-    "invalidHolidayModeOrder": "La fin du mode vacances doit être après son début."
+    "invalidHolidayModeOrder": "La fin du mode vacances doit être après son début.",
+    "shutdownDisabled": "Non éteint : « Désactiver l'extinction depuis Homey » est activé pour __names__. Rien n'a été modifié."
   },
   "settings": {
     "authenticate": {

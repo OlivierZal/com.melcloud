@@ -12,7 +12,8 @@
     "classicAccountEmpty": "Det här MELCloud Classic-kontot listar inte längre någon enhet som appen kan läsa. Om dina enheter har flyttats till MELCloud Home, lägg till dem igen som [Home]-enheter.",
     "unitError": "Enheten själv rapporterar ett fel — __fault__. Appen vidarebefordrar det bara: kontrollera enheten eller MELCloud-appen.",
     "unitErrorUnworded": "Enheten själv rapporterar ett fel. Appen vidarebefordrar det bara: kontrollera enheten eller MELCloud-appen.",
-    "invalidHolidayModeOrder": "Semesterlägets slut måste vara efter dess start."
+    "invalidHolidayModeOrder": "Semesterlägets slut måste vara efter dess start.",
+    "shutdownDisabled": "Inte avstängd: ”Inaktivera avstängning från Homey” är på för __names__. Inget har ändrats."
   },
   "settings": {
     "authenticate": {

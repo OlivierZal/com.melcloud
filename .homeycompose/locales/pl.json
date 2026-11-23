@@ -7,6 +7,7 @@
     "invalidHolidayModeEnd": "Koniec trybu wakacyjnego musi być w przyszłości.",
     "invalidHolidayModeOrder": "Koniec trybu wakacyjnego musi być po jego rozpoczęciu.",
     "invalidTime": "Godzina zakończenia jest nieprawidłowa.",
+    "shutdownDisabled": "Nie wyłączono: „Wyłącz zamykanie z Homey” jest włączone dla: __names__. Nic nie zostało zmienione.",
     "unitError": "Samo urządzenie zgłasza usterkę — __fault__. Aplikacja tylko ją przekazuje: sprawdź urządzenie lub aplikację MELCloud.",
     "unitErrorUnworded": "Samo urządzenie zgłasza usterkę. Aplikacja tylko ją przekazuje: sprawdź urządzenie lub aplikację MELCloud.",
     "unitOffline": "MELCloud zgłasza, że to urządzenie jest offline — sprawdź jego połączenie Wi-Fi.",

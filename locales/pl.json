@@ -12,7 +12,8 @@
     "classicAccountEmpty": "To konto MELCloud Classic nie wykazuje już żadnego urządzenia, które aplikacja może odczytać. Jeśli Twoje urządzenia zostały przeniesione do MELCloud Home, dodaj je ponownie jako urządzenia [Home].",
     "unitError": "Samo urządzenie zgłasza usterkę — __fault__. Aplikacja tylko ją przekazuje: sprawdź urządzenie lub aplikację MELCloud.",
     "unitErrorUnworded": "Samo urządzenie zgłasza usterkę. Aplikacja tylko ją przekazuje: sprawdź urządzenie lub aplikację MELCloud.",
-    "invalidHolidayModeOrder": "Koniec trybu wakacyjnego musi być po jego rozpoczęciu."
+    "invalidHolidayModeOrder": "Koniec trybu wakacyjnego musi być po jego rozpoczęciu.",
+    "shutdownDisabled": "Nie wyłączono: „Wyłącz zamykanie z Homey” jest włączone dla: __names__. Nic nie zostało zmienione."
   },
   "settings": {
     "authenticate": {

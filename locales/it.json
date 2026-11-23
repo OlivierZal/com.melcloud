@@ -12,7 +12,8 @@
     "classicAccountEmpty": "Questo account MELCloud Classic non elenca più alcuna unità che l'app riesca a leggere. Se le tue unità sono passate a MELCloud Home, aggiungile di nuovo come dispositivi [Home].",
     "unitError": "L'unità stessa segnala un guasto: __fault__. L'app si limita a riportarlo: controlla l'unità o l'app MELCloud.",
     "unitErrorUnworded": "L'unità stessa segnala un guasto. L'app si limita a riportarlo: controlla l'unità o l'app MELCloud.",
-    "invalidHolidayModeOrder": "La fine della modalità vacanza deve essere successiva al suo inizio."
+    "invalidHolidayModeOrder": "La fine della modalità vacanza deve essere successiva al suo inizio.",
+    "shutdownDisabled": "Non spento: «Disattiva lo spegnimento da Homey» è attivo per __names__. Non è stato modificato nulla."
   },
   "settings": {
     "authenticate": {

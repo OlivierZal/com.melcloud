@@ -12,7 +12,8 @@
     "classicAccountEmpty": "لم يعد حساب MELCloud Classic هذا يُدرج أي وحدة يستطيع التطبيق قراءتها. إذا انتقلت وحداتك إلى MELCloud Home، فأضفها مجددًا كأجهزة [Home].",
     "unitError": "الوحدة نفسها تبلّغ عن عطل — __fault__. التطبيق ينقله فقط: تحقق من الوحدة أو من تطبيق MELCloud.",
     "unitErrorUnworded": "الوحدة نفسها تبلّغ عن عطل. التطبيق ينقله فقط: تحقق من الوحدة أو من تطبيق MELCloud.",
-    "invalidHolidayModeOrder": "يجب أن تكون نهاية وضع الإجازة بعد بدايته."
+    "invalidHolidayModeOrder": "يجب أن تكون نهاية وضع الإجازة بعد بدايته.",
+    "shutdownDisabled": "لم يتم الإيقاف: «تعطيل الإيقاف من Homey» مفعّل لـ __names__. لم يتغيّر شيء."
   },
   "settings": {
     "authenticate": {

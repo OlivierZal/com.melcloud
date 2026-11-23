@@ -7,6 +7,7 @@
     "invalidHolidayModeEnd": "Semesterlägets slut måste vara i framtiden.",
     "invalidHolidayModeOrder": "Semesterlägets slut måste vara efter dess start.",
     "invalidTime": "Sluttiden är ogiltig.",
+    "shutdownDisabled": "Inte avstängd: ”Inaktivera avstängning från Homey” är på för __names__. Inget har ändrats.",
     "unitError": "Enheten själv rapporterar ett fel — __fault__. Appen vidarebefordrar det bara: kontrollera enheten eller MELCloud-appen.",
     "unitErrorUnworded": "Enheten själv rapporterar ett fel. Appen vidarebefordrar det bara: kontrollera enheten eller MELCloud-appen.",
     "unitOffline": "MELCloud rapporterar att enheten är offline — kontrollera dess wifi-anslutning.",

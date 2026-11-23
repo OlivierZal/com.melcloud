@@ -12,7 +12,8 @@
     "classicAccountEmpty": "This MELCloud Classic account no longer lists any unit the app can read. If your units moved to MELCloud Home, add them again as [Home] devices.",
     "unitError": "The unit itself reports a fault — __fault__. The app only relays it: check the unit or the MELCloud app.",
     "unitErrorUnworded": "The unit itself reports a fault. The app only relays it: check the unit or the MELCloud app.",
-    "invalidHolidayModeOrder": "The holiday-mode end must be after its start."
+    "invalidHolidayModeOrder": "The holiday-mode end must be after its start.",
+    "shutdownDisabled": "Not switched off: “Disable shutdown from Homey” is on for __names__. Nothing was changed."
   },
   "settings": {
     "authenticate": {
