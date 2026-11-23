@@ -12,6 +12,7 @@
     "unitErrorUnworded": "Enheten selv melder en feil. Appen bare videreformidler den: sjekk enheten eller MELCloud-appen.",
     "unitOffline": "MELCloud melder at denne enheten er frakoblet — sjekk wi-fi-tilkoblingen.",
     "unitStale": "Denne enheten har ikke kommunisert med MELCloud på over 24 timer — sjekk wi-fi-tilkoblingen.",
+    "unitStaleSince": "Denne enheten har ikke kommunisert med MELCloud siden __date__ — sjekk wi-fi-tilkoblingen.",
     "unitUnreadable": "MELCloud lister ikke lenger denne enheten, eller sender data for den som appen ikke kan lese — verdiene er fryst til den kan leses igjen (detaljer i appens diagnoselogg).",
     "zoneNotFound": "Sone ikke funnet."
   },

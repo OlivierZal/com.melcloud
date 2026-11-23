@@ -11,6 +11,7 @@ import type {
   SetCapabilities,
 } from '../types/classic-capabilities.mts'
 import type { Settings } from '../types/device-settings.mts'
+import { formatLastCommunicationDate } from '../lib/last-communication-date.mts'
 import type { EnergyReportConfig } from './base-report.mts'
 import type { ClassicMELCloudDriver } from './classic-driver.mts'
 import { BaseMELCloudDevice } from './base-device.mts'
@@ -88,6 +89,19 @@ export abstract class ClassicMELCloudDevice<
 
   // A stale unit is one whose last-communication timestamp has aged out.
   protected override readonly unreachableWarning = 'errors.unitStale'
+
+  // The listing stamps a unit's last communication, so the message
+  // dates the silence; a stamp with no date to show keeps the undated
+  // wording.
+  protected override get unreachableMessage(): string {
+    const date = formatLastCommunicationDate(
+      this.#data?.LastTimeStamp,
+      this.homey.i18n.getLanguage(),
+    )
+    return date === null
+      ? super.unreachableMessage
+      : this.homey.__('errors.unitStaleSince', { date })
+  }
 
   get #capabilityTagEntries(): OperationalCapabilityTagEntry<T>[] {
     /* eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion --

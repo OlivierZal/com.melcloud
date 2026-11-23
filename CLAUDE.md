@@ -1097,6 +1097,25 @@ coverage.
   pruned unit coming back faulted lands on its fault in one IPC. The log
   gets the wording once per hold and once per rewording, and heatzy has
   no twin — its API carries no fault flag.
+- Report 2026-11-23, a Classic unit greyed with "has not communicated
+  with MELCloud for over 24 hours — check its Wi-Fi connection", read
+  by its owner as "the wifi does not work": four sign-ins and two app
+  restarts in thirteen minutes, for a unit whose energy history stops
+  six months earlier. Not an app defect, and nothing in the message
+  said so. The Classic listing stamps each unit's last communication
+  (`LastTimeStamp`, the building's own wall clock), so the greyed tile
+  now DATES it: `errors.unitStaleSince`, "has not communicated with
+  MELCloud since 3 May 2026", the date spelled in the Homey's language
+  by `formatLastCommunicationDate` (`lib/last-communication-date.mts`,
+  date only, no zone applied: day-scale is all that stamp is safe for).
+  A stamp that cannot be read, or the year-one placeholder of a unit
+  that never communicated, keeps the undated `errors.unitStale`. The
+  seam is `unreachableMessage`, a getter of the base device the Classic
+  device overrides; Home keeps `errors.unitOffline` undated, its wire
+  giving a boolean and no date (the streak it is judged on starts with
+  the app's own process). The log's side is the SDK's: since 62.3.0 the
+  first sync that reads a unit silent writes one ERROR line with the
+  same stamp, which a report keeps far longer than its `log` lines.
 - Report 2026-10-02, an Ecodan on MELCloud Home shown "offline for
   hours" in Homey. The availability code is identical for ATA and ATW
   (one `syncFromDevice` skeleton over one `isAvailable` contract), so

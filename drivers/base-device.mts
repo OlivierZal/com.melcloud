@@ -158,6 +158,12 @@ export abstract class BaseMELCloudDevice<
     }).filter((entry): entry is [string, string] => entry[1] !== undefined)
   }
 
+  // What a unit MELCloud cannot reach shows its owner. A dialect that
+  // can date the silence says since when.
+  protected get unreachableMessage(): string {
+    return this.homey.__(this.unreachableWarning)
+  }
+
   #deviceFacade?: TFacade
 
   // The lasting conditions currently held; the tile shows the first of
@@ -419,10 +425,7 @@ export abstract class BaseMELCloudDevice<
       return
     }
     try {
-      await this.syncAvailability(
-        device.isAvailable,
-        this.homey.__(this.unreachableWarning),
-      )
+      await this.syncAvailability(device.isAvailable, this.unreachableMessage)
       await this.#syncLastingConditions(device)
       await this.syncCapabilityValues(device)
     } catch (error) {

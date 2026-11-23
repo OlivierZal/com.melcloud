@@ -529,6 +529,31 @@ describe(ClassicMELCloudDevice, () => {
       expect(device.setAvailable).not.toHaveBeenCalled()
     })
 
+    // The listing dates the silence, so the owner reads since when: a
+    // unit silent for months is not fixed by signing in again or by
+    // restarting the app, which is what "over 24 hours" invited.
+    it('should say since when a silent unit last communicated', async () => {
+      mockFacade(
+        { ...mockDeviceData, LastTimeStamp: '2026-05-03T14:22:00' },
+        false,
+      )
+      await device.syncFromDevice()
+
+      expect(device.setUnavailable).toHaveBeenCalledWith(
+        'errors.unitStaleSince {"date":"May 3, 2026"}',
+      )
+    })
+
+    it('should keep the undated wording when the listing gives no date to show', async () => {
+      mockFacade(
+        { ...mockDeviceData, LastTimeStamp: '0001-01-01T00:00:00' },
+        false,
+      )
+      await device.syncFromDevice()
+
+      expect(device.setUnavailable).toHaveBeenCalledWith('errors.unitStale')
+    })
+
     it('should mark the device available while the unit is reachable', async () => {
       await device.syncFromDevice()
 
