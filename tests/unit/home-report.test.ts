@@ -285,7 +285,7 @@ describe('home energy reports', () => {
       expect(holdWarningMock).not.toHaveBeenCalled()
     })
 
-    // Home's `not-found` is the other descriptor the SDK answers with no
+    // Home's `not-found` is the one descriptor the SDK answers with no
     // classified error: through `unwrapResult` the line keeps the
     // wrapper `Error`, stack included, the plain descriptor as its cause.
     it('should keep the wrapper error when the registry does not hold the unit', async () => {

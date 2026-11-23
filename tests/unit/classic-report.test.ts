@@ -10,6 +10,7 @@ import {
   err,
   HttpError,
   ok,
+  RateLimitError,
 } from '@olivierzal/melcloud-api'
 import { Temporal } from 'temporal-polyfill'
 import {
@@ -264,30 +265,23 @@ describe(EnergyReport, () => {
       )
     })
 
-    // The SDK answers its own rate-limit gate with a descriptor and no
-    // classified error, so `unwrapResult`'s wrapper carries the plain
-    // object as its cause: no link the SDK has a class for, and the line
-    // keeps the wrapper `Error`, stack included. The small-object form
-    // holds at the app's direct `failureCause` site alone.
-    it('should keep the wrapper error when the SDK answers rate-limited', async () => {
-      const descriptor: ApiRequestError = {
+    // The SDK's rate-limit gate answers with the `RateLimitError` it
+    // raised as the descriptor's cause: a link the SDK has a class for,
+    // so a pause reads as one line and carries no stack.
+    it('should log a rate-limit pause as one line naming the gate', async () => {
+      mockFailingFetch({
+        cause: new RateLimitError('API requests are on hold for 42 seconds', {
+          retryAfter: Temporal.Duration.from({ seconds: 42 }),
+          unblockAt: null,
+        }),
         kind: 'rate-limited',
         retryAfterMs: 42_000,
-      }
-      mockFailingFetch(descriptor)
+      })
       const report = new EnergyReport(mockDevice, regularConfig)
       await report.start()
 
       expect(errorMock).toHaveBeenCalledWith(
-        'Energy report fetch failed:',
-        expect.any(Error),
-      )
-      expect(errorMock).toHaveBeenCalledWith(
-        'Energy report fetch failed:',
-        expect.objectContaining({
-          cause: descriptor,
-          message: 'MELCloud request failed: rate-limited',
-        }),
+        'Energy report fetch failed: Error: MELCloud request failed: rate-limited — caused by RateLimitError: API requests are on hold for 42 seconds',
       )
       expect(setTimeoutMock).toHaveBeenCalledTimes(1)
     })

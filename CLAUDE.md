@@ -1171,15 +1171,17 @@ coverage.
   which a chain can only spell as "a thrown object", so `failureCause`
   (`lib/unwrap-result.mts`) hands the line the error the SDK classified
   — `unwrapResult` chains its `Error` to it — and the descriptor itself
-  only for the two kinds the SDK answers without one (`rate-limited`,
-  Home's `not-found`). Those two print as the small object they are at
-  the Home error-log site alone, which hands `failureCause` to the line
-  directly; through `unwrapResult` — the two report sites, every
-  `api.mts` route — the chain `Error → descriptor` holds no link the
-  SDK has a class for, so `logFailure` keeps the wrapper `Error`, stack
-  included (the report tests pin both kinds). Closing that gap is the
-  SDK's, `isKnownFailure` recognising a descriptor as a link; the app
-  never re-derives the SDK's predicate. The SDK's own `safeRequest`
+  only for the one kind the SDK answers without one, Home's `not-found`
+  (the rate-limit gate's refusal carries its `RateLimitError` since
+  melcloud-api 62.2.0, so a pause reads as one line: the Classic report
+  test pins it). That one prints as the small object it is at the Home
+  error-log site alone, which hands `failureCause` to the line directly;
+  through `unwrapResult` — the two report sites, every `api.mts` route —
+  the chain `Error → descriptor` holds no link the SDK has a class for,
+  so `logFailure` keeps the wrapper `Error`, stack included (the Home
+  report test pins it). Closing that gap is the SDK's, `isKnownFailure`
+  recognising a descriptor as a link; the app never re-derives the
+  SDK's predicate. The SDK's own `safeRequest`
   line (`[GET …] request or validation failed:`) precedes the two
   Result-backed reads — the reports' `getEnergy`/`getEnergySeries`, the
   Home error log's `getErrorLog` — in the same form, the app's line then

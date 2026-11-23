@@ -4,9 +4,9 @@ import type { ApiRequestError, Result } from '@olivierzal/melcloud-api'
 // error a best-effort read threw into a plain descriptor, which a cause
 // chain can only spell as "a thrown object": the descriptor stands aside
 // for the error it classified — an `HttpError`, a refused credential, a
-// transport failure — and the two the SDK answers without one (its own
-// rate-limit gate, a Home id the registry does not hold) stand on their
-// own, as the small object they are.
+// transport failure, the rate-limit gate's `RateLimitError` — and the
+// one the SDK answers without an error (a Home id the registry does not
+// hold) stands on its own, as the small object it is.
 export const failureCause = (error: ApiRequestError): unknown =>
   'cause' in error && error.cause !== undefined ? error.cause : error
 
